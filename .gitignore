@@ -1,0 +1,10 @@
+.DS_Store
+.nyc_output/
+coverage
+coverage-wtr
+junit
+logs
+node_modules/
+test-results.xml
+**/xcuserdata/*
+**/xcshareddata/*

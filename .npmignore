@@ -1,0 +1,11 @@
+*.tgz
+.*
+coverage
+coverage-wtr
+junit
+logs
+node_modules/
+test
+test-results.xml
+**/xcuserdata/*
+**/xcshareddata/*
