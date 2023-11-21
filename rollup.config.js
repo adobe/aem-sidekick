@@ -17,6 +17,7 @@ import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
 import esbuild from 'rollup-plugin-esbuild';
 import copy from 'rollup-plugin-copy';
 import sourcemaps from 'rollup-plugin-sourcemaps';
+import replace from '@rollup/plugin-replace';
 import sidekickManifestBuildPlugin from './build/build.js';
 
 function shared(browser) {
@@ -52,6 +53,9 @@ function plugins(browser) {
       targets: [
         { src: 'src/extension/*', ignore: ['src/extension/app'], dest: `./dist/${browser}` },
       ],
+    }),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('production'),
     }),
     sidekickManifestBuildPlugin(browser),
   ];

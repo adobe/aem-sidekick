@@ -28,3 +28,4 @@ import '@spectrum-web-components/icons-workflow/icons/sp-icon-real-time-customer
 
 import './app/aem-sidekick.js';
 import './app/components/action-bar.js';
+import './app/components/example.js';
