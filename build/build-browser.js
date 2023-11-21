@@ -18,7 +18,7 @@ import configs from '../rollup.config.js';
 const supportedBrowsers = ['chrome', 'safari', 'firefox'];
 
 async function buildConfig(name) {
-  const config = configs.find((c) => c.output.dir.includes(name));
+  const config = configs.find(c => c.output.dir.includes(name));
   if (!config) {
     console.error(`No config found for ${name}`);
     return;
