@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "build/build.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "sidekickManifestBuildPlugin",
+          "parameters": [
+            {
+              "name": "browser"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "sidekickManifestBuildPlugin",
+            "module": "build/build.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "build/publish.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "test/setup-env.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/extension/background.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/extension/content.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/extension/index.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/extension/utils.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "loadScript",
+          "parameters": [
+            {
+              "name": "path"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "loadScript",
+          "declaration": {
+            "name": "loadScript",
+            "module": "src/extension/utils.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/extension/app/aem-sidekick.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "AemSidekick",
+          "members": [
+            {
+              "kind": "method",
+              "name": "getTheme"
+            },
+            {
+              "kind": "field",
+              "name": "theme",
+              "type": {
+                "text": "string"
+              },
+              "default": "'light'",
+              "privacy": "public",
+              "attribute": "theme"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "theme",
+              "fieldName": "theme"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "aem-sidekick",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "aem-sidekick",
+          "declaration": {
+            "name": "AemSidekick",
+            "module": "src/extension/app/aem-sidekick.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/extension/app/components/action-bar.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ActionBar",
+          "members": [],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "action-bar",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ActionBar",
+          "declaration": {
+            "name": "ActionBar",
+            "module": "src/extension/app/components/action-bar.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "action-bar",
+          "declaration": {
+            "name": "ActionBar",
+            "module": "src/extension/app/components/action-bar.js"
+          }
+        }
+      ]
+    }
+  ]
+}
