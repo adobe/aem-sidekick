@@ -35,6 +35,10 @@ class AemSidekick extends LitElement {
   async connectedCallback() {
     super.connectedCallback();
     this.getTheme();
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      this.getTheme();
+    });
   }
 
   getTheme() {
