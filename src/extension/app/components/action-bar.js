@@ -36,25 +36,25 @@ export class ActionBar extends LitElement {
       <div class="action-bar">
         <sp-action-group>
             <sp-action-button quiet>
-                <sp-icon-play></sp-icon-play>
+                <sp-icon-play slot="icon"></sp-icon-play>
             </sp-action-button>
             <sp-action-button quiet>
-                <sp-icon-edit></sp-icon-edit>
+                <sp-icon-edit slot="icon"></sp-icon-edit>
             </sp-action-button>
             <sp-action-button quiet>
-                <sp-icon-refresh></sp-icon-refresh>
-            </sp-action-button>
-        </sp-action-group>
-        <sp-divider size="s" vertical></sp-divider>
-        <sp-action-group>
-            <sp-action-button quiet>
-                <sp-icon-share></sp-icon-share>
+                <sp-icon-refresh slot="icon"></sp-icon-refresh>
             </sp-action-button>
         </sp-action-group>
         <sp-divider size="s" vertical></sp-divider>
         <sp-action-group>
             <sp-action-button quiet>
-                <sp-icon-real-time-customer-profile></sp-icon-real-time-customer-profile>
+                <sp-icon-share slot="icon"></sp-icon-share>
+            </sp-action-button>
+        </sp-action-group>
+        <sp-divider size="s" vertical></sp-divider>
+        <sp-action-group>
+            <sp-action-button quiet>
+                <sp-icon-real-time-customer-profile slot="icon"></sp-icon-real-time-customer-profile>
             </sp-action-button>
         </sp-action-group>
       </div>

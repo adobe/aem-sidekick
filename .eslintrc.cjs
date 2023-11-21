@@ -12,9 +12,10 @@
 
 module.exports = {
   root: true,
-  extends: '@adobe/helix',
+  extends: ['@adobe/helix', '@open-wc/eslint-config'],
   env: {
     browser: true,
+    mocha: true,
   },
   parserOptions: {
     allowImportExportEverywhere: true,

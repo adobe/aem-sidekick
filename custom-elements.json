@@ -4,43 +4,6 @@
   "modules": [
     {
       "kind": "javascript-module",
-      "path": "build/build.js",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "sidekickManifestBuildPlugin",
-          "parameters": [
-            {
-              "name": "browser"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "sidekickManifestBuildPlugin",
-            "module": "build/build.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "build/publish.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "test/setup-env.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/extension/background.js",
       "declarations": [],
       "exports": []
