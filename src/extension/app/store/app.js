@@ -23,12 +23,10 @@
  */
 
 import { UserStore } from './user.js';
-import { SitesStore } from './sites.js';
 
 class AppStore {
   constructor() {
     this.userStore = new UserStore(this);
-    this.siteStore = new SitesStore(this);
   }
 }
 

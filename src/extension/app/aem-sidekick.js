@@ -11,8 +11,6 @@
  */
 
 import { LitElement, html, css } from 'lit';
-import { reaction } from 'mobx';
-import { appStore } from './store/app.js';
 
 class AemSidekick extends LitElement {
   static properties = {
@@ -41,16 +39,6 @@ class AemSidekick extends LitElement {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
       this.getTheme();
     });
-
-    this.reactionDisposer = reaction(
-      // Reaction to this specific property
-      () => appStore.userStore.value,
-      () => {
-        console.log('reaction: user store');
-        // Update component when value changes
-        this.requestUpdate();
-      },
-    );
   }
 
   disconnectedCallback() {
@@ -71,9 +59,7 @@ class AemSidekick extends LitElement {
         color=${this.theme === 'dark' ? 'dark' : 'light'}
         scale="medium"
       >
-        <example-element></example-element>
         <action-bar></action-bar>
-        ${appStore.userStore.value}
       </sp-theme>
     `;
   }
