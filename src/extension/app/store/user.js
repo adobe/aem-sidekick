@@ -21,7 +21,6 @@ export class UserStore {
   }
 
   increment() {
-    console.log('increment user store');
     this.value += 1;
   }
 }
