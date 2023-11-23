@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Adobe. All rights reserved.
+ * Copyright 2023 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,20 +9,15 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-module.exports = {
-  nodeResolve: true,
-  port: 2000,
-  coverage: true,
-  coverageConfig: {
-    include: ['./src/**'],
-    report: true,
-    reportDir: 'coverage-wtr',
-  },
-  testRunnerHtml: testFramework => `
-  <html>
-    <body>
-      <script>window.process = { env: { NODE_ENV: "development" } }</script>
-      <script type="module" src="${testFramework}"></script>
-    </body>
-  </html>`,
-};
+
+async function onUpdated(tabId, changeInfo) {
+  if (changeInfo.status === 'complete') {
+    // execute content script
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      files: ['./content.js'],
+    });
+  }
+}
+
+chrome.tabs.onUpdated.addListener(onUpdated);

@@ -14,25 +14,6 @@
 import fs from 'fs-extra';
 import archiver from 'archiver';
 
-const supportedBrowsers = ['chrome', 'safari'];
-
-async function copyResources(browser) {
-  const sourceDir = './src/extension';
-  const targetDir = `./dist/${browser}`;
-  try {
-    await fs.remove(targetDir);
-    await fs.ensureDir(targetDir);
-    await fs.copy(sourceDir, targetDir, {
-      overwrite: true,
-      filter: (src) => src.split('/').pop() !== 'manifest.json',
-    });
-  } catch (e) {
-    console.error(`  failed to copy resources: ${e.message}`);
-    process.exit(1);
-  }
-  console.log(`  resources copied to ${targetDir}`);
-}
-
 function copyManifestKeys(sourceObj, browser) {
   const targetObj = {};
   Object.keys(sourceObj).forEach((sourceKey) => {
@@ -47,7 +28,7 @@ function copyManifestKeys(sourceObj, browser) {
     }
     if (typeof sourceObj[sourceKey] === 'object') {
       if (Array.isArray(sourceObj[sourceKey])) {
-        targetObj[targetKey] = sourceObj[sourceKey].map((key) => key);
+        targetObj[targetKey] = sourceObj[sourceKey].map(key => key);
       } else {
         targetObj[targetKey] = copyManifestKeys(sourceObj[sourceKey], browser);
       }
@@ -94,28 +75,23 @@ function zipExtension(browser) {
   console.log(`  zip created at ${zip}`);
 }
 
-// run build script
-const browser = process.argv[2];
-if (!browser) {
-  console.log(`specify one of the following browers: ${supportedBrowsers.join(', ')}`);
-  process.exit(1);
+export default function sidekickManifestBuildPlugin(browser) {
+  return {
+    name: 'sidekick-manifest-build',
+    generateBundle() {
+      // Code to run after bundle is generated
+      console.log(`building ${browser} extension...`);
+      buildManifest(browser)
+        .then(() => {
+          if (browser === 'chrome') {
+            zipExtension(browser);
+          }
+          console.log('done.');
+        })
+        .catch((e) => {
+          console.error(e);
+          process.exit(1);
+        });
+    },
+  };
 }
-if (!supportedBrowsers.includes(browser)) {
-  console.error(`unsupported browser ${browser}`);
-  process.exit(1);
-}
-
-console.log(`building ${browser} extension...`);
-
-copyResources(browser)
-  .then(() => buildManifest(browser))
-  .then(() => {
-    if (browser === 'chrome') {
-      zipExtension(browser);
-    }
-    console.log('done.');
-  })
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });

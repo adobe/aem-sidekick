@@ -4,6 +4,7 @@
   "description": "AEM Sidekick Extension",
   "type": "module",
   "scripts": {
+    "analyze": "cem analyze --litelement",
     "lint": "eslint .",
     "test:mocha": "c8 mocha",
     "test:wtr": "wtr \"./test/wtr/*.test.js\"",
@@ -11,9 +12,11 @@
     "test": "npm run test:mocha && npm run test:wtr",
     "docs": "npx jsdoc2md -c .jsdoc.json --files './src/*.js'  > docs/API.md",
     "semantic-release": "semantic-release",
-    "build": "npm run build:safari && npm run build:chrome",
-    "build:safari": "node ./build/build.js safari",
-    "build:chrome": "node ./build/build.js chrome",
+    "build:watch": "rimraf dist && rollup -c rollup.config.js --watch && npm run build:analyze",
+    "build": "rimraf dist && rollup -c rollup.config.js && npm run build:analyze",
+    "build:analyze": "npm run analyze -- --globs src/extension/app/aem-sidekick.js",
+    "build:safari": "node ./build/build-browser.js safari",
+    "build:chrome": "node ./build/build-browser.js chrome",
     "publish:chrome": "node ./build/publish.js chrome",
     "prepare": "husky install"
   },
@@ -34,14 +37,34 @@
     "reporter": "mocha-multi-reporters",
     "reporter-options": "configFile=.mocha-multi.json"
   },
+  "dependencies": {
+    "@spectrum-web-components/action-button": "0.40.0",
+    "@spectrum-web-components/action-group": "0.40.0",
+    "@spectrum-web-components/button": "0.40.0",
+    "@spectrum-web-components/divider": "0.40.0",
+    "@spectrum-web-components/icon": "0.40.0",
+    "@spectrum-web-components/icons": "0.40.0",
+    "@spectrum-web-components/icons-workflow": "0.40.0",
+    "@spectrum-web-components/theme": "0.40.0",
+    "@spectrum-web-components/toast": "0.40.0",
+    "lit": "3.1.0",
+    "mobx": "6.11.0"
+  },
   "devDependencies": {
     "@adobe/eslint-config-helix": "2.0.5",
     "@adobe/fetch": "4.1.1",
     "@babel/eslint-parser": "7.22.15",
+    "@custom-elements-manifest/analyzer": "0.4.17",
     "@esm-bundle/chai": "4.3.4-fix.0",
+    "@open-wc/eslint-config": "^12.0.2",
+    "@open-wc/testing": "^4.0.0",
+    "@rollup/plugin-node-resolve": "13.0.6",
+    "@rollup/plugin-replace": "^5.0.5",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
+    "@web/rollup-plugin-html": "1.11.0",
+    "@web/rollup-plugin-import-meta-assets": "1.0.7",
     "@web/test-runner": "0.18.0",
     "@web/test-runner-commands": "0.9.0",
     "ajv": "8.12.0",
@@ -60,10 +83,16 @@
     "puppeteer-core": "21.1.1",
     "puppeteer-to-istanbul": "1.4.0",
     "request": "2.88.2",
+    "rimraf": "5.0.5",
+    "rollup": "2.60.0",
+    "rollup-plugin-copy": "3.4.0",
+    "rollup-plugin-esbuild": "5.0.0",
+    "rollup-plugin-sourcemaps": "0.6.3",
     "semantic-release": "22.0.7",
     "semantic-release-react-native": "1.8.2"
   },
   "lint-staged": {
     "*.js": "eslint"
-  }
+  },
+  "customElements": "custom-elements.json"
 }
