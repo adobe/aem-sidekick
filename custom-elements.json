@@ -129,6 +129,143 @@
           }
         }
       ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/extension/app/components/example.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ExampleElement",
+          "members": [],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "example-element",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ExampleElement",
+          "declaration": {
+            "name": "ExampleElement",
+            "module": "src/extension/app/components/example.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "example-element",
+          "declaration": {
+            "name": "ExampleElement",
+            "module": "src/extension/app/components/example.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/extension/app/store/app.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "appStore",
+          "default": "new AppStore()"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "appStore",
+          "declaration": {
+            "name": "appStore",
+            "module": "src/extension/app/store/app.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/extension/app/store/sites.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SitesStore",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "method",
+              "name": "increment"
+            },
+            {
+              "kind": "field",
+              "name": "appStore",
+              "default": "appStore"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SitesStore",
+          "declaration": {
+            "name": "SitesStore",
+            "module": "src/extension/app/store/sites.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/extension/app/store/user.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "UserStore",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "method",
+              "name": "increment"
+            },
+            {
+              "kind": "field",
+              "name": "appStore",
+              "default": "appStore"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UserStore",
+          "declaration": {
+            "name": "UserStore",
+            "module": "src/extension/app/store/user.js"
+          }
+        }
+      ]
     }
   ]
 }
