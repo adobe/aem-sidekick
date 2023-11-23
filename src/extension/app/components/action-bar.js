@@ -11,7 +11,6 @@
  */
 
 import { LitElement, html, css } from 'lit';
-import { appStore } from '../store/app.js';
 
 export class ActionBar extends LitElement {
   static styles = css`
@@ -38,12 +37,11 @@ export class ActionBar extends LitElement {
         <sp-action-group>
             <sp-action-button quiet>
                 <sp-icon-play slot="icon"></sp-icon-play>
-                ${appStore.siteStore.value}
             </sp-action-button>
-            <sp-action-button quiet @click=${() => appStore.userStore.increment()}>
+            <sp-action-button quiet>
                 <sp-icon-edit slot="icon"></sp-icon-edit>
             </sp-action-button>
-            <sp-action-button quiet @click=${() => appStore.siteStore.increment()}>
+            <sp-action-button quiet>
                 <sp-icon-refresh slot="icon"></sp-icon-refresh>
             </sp-action-button>
         </sp-action-group>
