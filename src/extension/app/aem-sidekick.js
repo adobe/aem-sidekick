@@ -42,7 +42,6 @@ class AemSidekick extends LitElement {
   }
 
   disconnectedCallback() {
-    this.reactionDisposer(); // Dispose reaction
     super.disconnectedCallback();
   }
 
