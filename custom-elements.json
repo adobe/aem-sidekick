@@ -4,49 +4,6 @@
   "modules": [
     {
       "kind": "javascript-module",
-      "path": "src/extension/background.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/extension/content.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/extension/index.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/extension/utils.js",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "loadScript",
-          "parameters": [
-            {
-              "name": "path"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "loadScript",
-          "declaration": {
-            "name": "loadScript",
-            "module": "src/extension/utils.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/extension/app/aem-sidekick.js",
       "declarations": [
         {
@@ -132,42 +89,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/extension/app/components/example.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "ExampleElement",
-          "members": [],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "example-element",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "ExampleElement",
-          "declaration": {
-            "name": "ExampleElement",
-            "module": "src/extension/app/components/example.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "example-element",
-          "declaration": {
-            "name": "ExampleElement",
-            "module": "src/extension/app/components/example.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/extension/app/store/app.js",
       "declarations": [
         {
@@ -183,46 +104,6 @@
           "declaration": {
             "name": "appStore",
             "module": "src/extension/app/store/app.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/extension/app/store/sites.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "SitesStore",
-          "members": [
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "number"
-              },
-              "default": "0"
-            },
-            {
-              "kind": "method",
-              "name": "increment"
-            },
-            {
-              "kind": "field",
-              "name": "appStore",
-              "default": "appStore"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "SitesStore",
-          "declaration": {
-            "name": "SitesStore",
-            "module": "src/extension/app/store/sites.js"
           }
         }
       ]

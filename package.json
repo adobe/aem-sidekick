@@ -14,7 +14,7 @@
     "semantic-release": "semantic-release",
     "build:watch": "rimraf dist && rollup -c rollup.config.js --watch && npm run build:analyze",
     "build": "rimraf dist && rollup -c rollup.config.js && npm run build:analyze",
-    "build:analyze": "npm run analyze -- --exclude build dist test coverage coverage-wtr",
+    "build:analyze": "npm run analyze -- --globs src/extension/app/**",
     "build:safari": "node ./build/build-browser.js safari",
     "build:chrome": "node ./build/build-browser.js chrome",
     "publish:chrome": "node ./build/publish.js chrome",
