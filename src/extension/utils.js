@@ -57,3 +57,57 @@ export async function removeConfig(area, prop) {
 export async function clearConfig(area) {
   return chrome.storage[area].clear();
 }
+
+/**
+ * Returns an existing project configuration.
+ * @param {Object|string} project The project settings or handle
+ * @returns {Promise<Object>} The project configuration
+ */
+export async function getProject(project) {
+  let owner;
+  let repo;
+  if (typeof project === 'string' && project.includes('/')) {
+    [owner, repo] = project.split('/');
+  } else {
+    ({ owner, repo } = project);
+  }
+  if (owner && repo) {
+    const handle = `${owner}/${repo}`;
+    const projectConfig = await getConfig('sync', handle);
+    if (projectConfig) {
+      // if service worker, check session storage for auth token
+      if (typeof window === 'undefined') {
+        const auth = await getConfig('session', handle) || {};
+        return {
+          ...projectConfig,
+          ...auth,
+        };
+      } else {
+        return projectConfig;
+      }
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Assembles a state object from multiple storage types.
+ * @param {Function} cb The function to call with the state object
+ * @returns {Promise<void>}
+ */
+export async function getState(cb) {
+  if (typeof cb === 'function') {
+    const display = await getConfig('local', 'hlxSidekickDisplay') || false;
+    const adminVersion = await getConfig('local', 'hlxSidekickAdminVersion');
+
+    const pushDown = await getConfig('sync', 'hlxSidekickPushDown') || false;
+    const projects = await Promise.all((await getConfig('sync', 'hlxSidekickProjects') || [])
+      .map((handle) => getProject(handle)));
+    cb({
+      display,
+      adminVersion,
+      pushDown,
+      projects,
+    });
+  }
+}
