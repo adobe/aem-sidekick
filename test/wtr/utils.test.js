@@ -10,10 +10,21 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-disable no-unused-expressions */
-/* eslint-env mocha */
 
 import { expect } from '@esm-bundle/chai';
 import { setUserAgent } from '@web/test-runner-commands';
+import sinon from 'sinon';
+
+import chromeMock from './mocks/chrome.js';
+import {
+  getConfig,
+  setConfig,
+  removeConfig,
+  clearConfig,
+} from '../../src/extension/utils.js';
+
+window.chrome = chromeMock;
+const sandbox = sinon.createSandbox();
 
 describe('Test utils', () => {
   before(async () => {
@@ -23,4 +34,29 @@ describe('Test utils', () => {
   it('dummy', async () => {
     expect(true).to.be.true;
   });
+});
+
+it('getConfig', async () => {
+  const spy = sandbox.spy(window.chrome.storage.local, 'get');
+  await getConfig('local', 'test');
+  expect(spy.calledWith('test')).to.be.true;
+});
+
+it('setConfig', async () => {
+  const spy = sandbox.spy(window.chrome.storage.local, 'set');
+  const obj = { foo: 'bar' };
+  await setConfig('local', obj);
+  expect(spy.calledWith(obj)).to.be.true;
+});
+
+it('removeConfig', async () => {
+  const spy = sandbox.spy(window.chrome.storage.local, 'remove');
+  await removeConfig('local', 'foo');
+  expect(spy.calledWith('foo')).to.be.true;
+});
+
+it('clearConfig', async () => {
+  const spy = sandbox.spy(window.chrome.storage.local, 'clear');
+  await clearConfig('local');
+  expect(spy.called).to.be.true;
 });
