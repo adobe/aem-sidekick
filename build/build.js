@@ -28,7 +28,7 @@ function copyManifestKeys(sourceObj, browser) {
     }
     if (typeof sourceObj[sourceKey] === 'object') {
       if (Array.isArray(sourceObj[sourceKey])) {
-        targetObj[targetKey] = sourceObj[sourceKey].map(key => key);
+        targetObj[targetKey] = sourceObj[sourceKey].map((key) => key);
       } else {
         targetObj[targetKey] = copyManifestKeys(sourceObj[sourceKey], browser);
       }
