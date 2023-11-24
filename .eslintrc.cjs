@@ -12,7 +12,7 @@
 
 module.exports = {
   root: true,
-  extends: ['@adobe/helix', '@open-wc/eslint-config'],
+  extends: ['@open-wc/eslint-config', '@adobe/helix'],
   env: {
     browser: true,
     mocha: true,
