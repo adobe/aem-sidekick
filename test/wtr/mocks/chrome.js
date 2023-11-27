@@ -9,9 +9,25 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+
 import { readFile } from '@web/test-runner-commands';
 
 const ID = 'dummy';
+
+const TABS = {
+  1: {
+    id: 1,
+    url: 'https://main--blog--adobe.hlx.page/',
+  },
+  2: {
+    id: 2,
+    url: 'https://www.example.com/',
+  },
+  3: {
+    id: 2,
+    url: 'http://localhost:3000/',
+  },
+};
 
 class StorageMock {
   constructor(state = {}) {
@@ -46,9 +62,13 @@ export default {
   runtime: {
     id: ID,
     getManifest: async () => readFile({ path: '../../src/extension/manifest.json' }).then((mf) => JSON.parse(mf)),
-    getURL: (path) => `chrome-extension://${ID}${path}`,
+    getURL: (path) => `/test/wtr/fixtures/${path}`,
     lastError: null,
     sendMessage: () => {},
+    onMessage: {
+      addListener: () => {},
+      removeListener: () => {},
+    },
     onMessageExternal: {
       // simulate external message from admin API with authToken
       addListener: (func) => func({ owner: 'test', repo: 'auth-project', authToken: 'foo' }),
@@ -79,6 +99,11 @@ export default {
   },
   tabs: {
     create: async ({ url }) => ({ url, id: 7 }),
+    get: async (id) => (id ? TABS[id] : {}),
+    sendMessage: async () => {},
     remove: async () => {},
+  },
+  scripting: {
+    executeScript: () => {},
   },
 };

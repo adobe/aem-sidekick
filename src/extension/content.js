@@ -11,9 +11,33 @@
  */
 
 (async () => {
-  const { loadScript } = await import('./utils.js');
-  loadScript('index.js');
+  // ensure hlx namespace
+  window.hlx = window.hlx || {};
 
-  const sidekick = document.createElement('aem-sidekick');
-  document.body.prepend(sidekick);
+  const { loadScript, getDisplay } = await import('./utils.js');
+  const display = await getDisplay();
+  let sidekick = document.querySelector('aem-sidekick');
+  if (!sidekick) {
+    // wait for config matches
+    chrome.runtime.onMessage.addListener(async ({ configMatches = [] }, { tab }) => {
+      // only accept message from background script
+      if (tab) {
+        return;
+      }
+      if (configMatches.length === 1) {
+        // load sidekick
+        const [config] = configMatches;
+        // console.log('single match', config);
+        await loadScript('index.js');
+        sidekick = document.querySelector('aem-sidekick');
+        sidekick.dataset.config = JSON.stringify(config);
+        sidekick.setAttribute('open', display);
+      } else {
+        // todo: multiple matches, project picker?
+        // console.log('multiple matches', configMatches);
+      }
+    });
+  } else {
+    sidekick.setAttribute('open', display);
+  }
 })();

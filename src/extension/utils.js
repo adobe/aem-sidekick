@@ -9,13 +9,71 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/* eslint-disable no-console */
 
-export function loadScript(path) {
-  const script = document.createElement('script');
-  script.type = 'module';
-  script.src = chrome.runtime.getURL(path);
-  document.head.appendChild(script);
+export const DEV_URL = 'http://localhost:3000';
+export const GH_URL = 'https://github.com/';
+
+/**
+ * Loads a script as a module via <code>script</code> element in the
+ * document's <code>head</code> element.
+ * @param {string} path The script path
+ */
+export async function loadScript(path) {
+  return new Promise((resolve) => {
+    const src = chrome.runtime.getURL(path);
+    if (!document.querySelector(`script[src="${src}"]`)) {
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = src;
+      script.onload = () => resolve();
+      document.head.appendChild(script);
+    }
+  });
+}
+
+/**
+ * Checks if a host is a valid project host.
+ * @private
+ * @param {string} host The base host
+ * @param {string} owner The owner
+ * @param {string} host The repo
+ * @returns {boolean} <code>true</code> if project host, else <code>false</code>
+ */
+export function isValidProjectHost(host, owner, repo) {
+  const [third, second, first] = host.split('.');
+  return host.endsWith(first)
+    && ['page', 'live'].includes(first)
+    && ['aem', 'hlx'].includes(second)
+    && third.endsWith(`--${repo}--${owner}`);
+}
+
+/**
+ * Returns matches from configured projects for a given tab URL.
+ * @param {Object[]} configs The project configurations
+ * @param {string} tabUrl The tab URL
+ * @returns {Promise<Object[]>} The matches
+ */
+export async function getConfigMatches(configs, tabUrl) {
+  const {
+    host: checkHost,
+  } = new URL(tabUrl);
+  // exclude disabled configs
+  configs = configs.filter((cfg) => !cfg.disabled);
+  const matches = configs.filter((cfg) => {
+    const {
+      owner,
+      repo,
+      host: prodHost,
+      previewHost,
+      liveHost,
+    } = cfg;
+    return checkHost === prodHost // production host
+      || checkHost === previewHost // custom inner
+      || checkHost === liveHost // custom outer
+      || isValidProjectHost(checkHost, owner, repo); // inner or outer
+  });
+  // todo: check url cache if no matches
+  return matches;
 }
 
 /**
@@ -59,55 +117,53 @@ export async function clearConfig(area) {
 }
 
 /**
- * Returns an existing project configuration.
- * @param {Object|string} project The project settings or handle
- * @returns {Promise<Object>} The project configuration
+ * Returns the display status.
+ * @returns {Promise<boolean>} The current display status
  */
-export async function getProject(project) {
-  let owner;
-  let repo;
-  if (typeof project === 'string' && project.includes('/')) {
-    [owner, repo] = project.split('/');
-  } else {
-    ({ owner, repo } = project);
-  }
-  if (owner && repo) {
-    const handle = `${owner}/${repo}`;
-    const projectConfig = await getConfig('sync', handle);
-    if (projectConfig) {
-      // if service worker, check session storage for auth token
-      if (typeof window === 'undefined') {
-        const auth = await getConfig('session', handle) || {};
-        return {
-          ...projectConfig,
-          ...auth,
-        };
-      } else {
-        return projectConfig;
-      }
-    }
-  }
-  return undefined;
+export async function getDisplay() {
+  const display = await getConfig('local', 'hlxSidekickDisplay') || false;
+  return display;
 }
 
 /**
- * Assembles a state object from multiple storage types.
- * @param {Function} cb The function to call with the state object
- * @returns {Promise<void>}
+ * Sets the display status.
+ * @param {boolean} display <code>true</code> if sidekick should be shown, else <code>false</code>
+ * @returns {Promise<boolean>} The new display status
  */
-export async function getState(cb) {
-  if (typeof cb === 'function') {
-    const display = await getConfig('local', 'hlxSidekickDisplay') || false;
-    const adminVersion = await getConfig('local', 'hlxSidekickAdminVersion');
+export async function setDisplay(display) {
+  await setConfig('local', {
+    hlxSidekickDisplay: display,
+  });
+  return display;
+}
 
-    const pushDown = await getConfig('sync', 'hlxSidekickPushDown') || false;
-    const projects = await Promise.all((await getConfig('sync', 'hlxSidekickProjects') || [])
-      .map((handle) => getProject(handle)));
-    cb({
-      display,
-      adminVersion,
-      pushDown,
-      projects,
-    });
+/**
+ * Toggles the display status.
+ * @returns {Promise<boolean>} The new display status
+ */
+export async function toggleDisplay() {
+  const display = await getDisplay();
+  // console.log(`toggleDisplay from ${display} to ${!display}`);
+  return setDisplay(!display);
+}
+
+/**
+ * Extracts settings from a GitHub URL.
+ * @param {string} giturl The GitHub URL
+ * @returns {Objct} The GitHub settings
+ */
+export function getGitHubSettings(giturl) {
+  if (typeof giturl === 'string' && giturl.startsWith(GH_URL)) {
+    const [owner, repository,, ref = 'main'] = new URL(giturl).pathname.toLowerCase()
+      .substring(1).split('/');
+    if (owner && repository) {
+      const repo = repository.endsWith('.git') ? repository.split('.git')[0] : repository;
+      return {
+        owner,
+        repo,
+        ref,
+      };
+    }
   }
+  return {};
 }
