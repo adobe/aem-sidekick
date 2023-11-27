@@ -10,17 +10,80 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-disable no-unused-expressions */
-/* eslint-env mocha */
 
 import { expect } from '@esm-bundle/chai';
 import { setUserAgent } from '@web/test-runner-commands';
+import sinon from 'sinon';
+
+import chromeMock from './mocks/chrome.js';
+import {
+  getConfig,
+  setConfig,
+  removeConfig,
+  clearConfig,
+  getProject,
+  getState,
+} from '../../src/extension/utils.js';
+
+window.chrome = chromeMock;
 
 describe('Test utils', () => {
+  const sandbox = sinon.createSandbox();
+
   before(async () => {
     await setUserAgent('HeadlessChrome');
   });
 
-  it('dummy', async () => {
-    expect(true).to.be.true;
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it('getConfig', async () => {
+    const spy = sandbox.spy(window.chrome.storage.local, 'get');
+    await getConfig('local', 'test');
+    expect(spy.calledWith('test')).to.be.true;
+  });
+
+  it('setConfig', async () => {
+    const spy = sandbox.spy(window.chrome.storage.local, 'set');
+    const obj = { foo: 'bar' };
+    await setConfig('local', obj);
+    expect(spy.calledWith(obj)).to.be.true;
+  });
+
+  it('removeConfig', async () => {
+    const spy = sandbox.spy(window.chrome.storage.local, 'remove');
+    await removeConfig('local', 'foo');
+    expect(spy.calledWith('foo')).to.be.true;
+  });
+
+  it('clearConfig', async () => {
+    const spy = sandbox.spy(window.chrome.storage.local, 'clear');
+    await clearConfig('local');
+    expect(spy.called).to.be.true;
+  });
+
+  it('getProject', async () => {
+    const spy = sandbox.spy(window.chrome.storage.sync, 'get');
+    // get project with handle
+    let project = await getProject('adobe/blog');
+    expect(spy.calledWith('adobe/blog')).to.be.true;
+    expect(project.giturl).to.equal('https://github.com/adobe/blog');
+    // get project with config object
+    project = await getProject({ owner: 'adobe', repo: 'blog' });
+    expect(spy.calledWith('adobe/blog')).to.be.true;
+    expect(project.giturl).to.equal('https://github.com/adobe/blog');
+  });
+
+  it('getState', async () => {
+    const spy = sandbox.spy(window.chrome.storage.sync, 'get');
+    const state = await new Promise((resolve) => {
+      getState((s) => {
+        resolve(s);
+      });
+    });
+    expect(spy.calledWith('hlxSidekickProjects')).to.be.true;
+    expect(typeof state).to.equal('object');
+    expect(Object.keys(state).length).to.equal(4);
   });
 });

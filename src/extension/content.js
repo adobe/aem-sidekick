@@ -11,9 +11,9 @@
  */
 
 (async () => {
-  const { loadScript } = await import(chrome.runtime.getURL('utils.js'));
+  const { loadScript } = await import('./utils.js');
   loadScript('index.js');
 
   const sidekick = document.createElement('aem-sidekick');
-  document.body.parentElement.prepend(sidekick);
+  document.body.prepend(sidekick);
 })();
