@@ -44,6 +44,7 @@
           "_locales/*",
           "check-tab.js",
           "index.js",
+          "lib/polyfills.min.js",
           "module.js",
           "project.js",
           "rum.js",
