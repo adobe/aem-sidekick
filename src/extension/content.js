@@ -16,7 +16,7 @@
 
   const { loadScript, getDisplay } = await import('./utils.js');
   const display = await getDisplay();
-  let sidekick = document.querySelector('aem-sidekick');
+  let { sidekick } = window.hlx;
   if (!sidekick) {
     // wait for config matches
     chrome.runtime.onMessage.addListener(async ({ configMatches = [] }, { tab }) => {
@@ -29,9 +29,11 @@
         const [config] = configMatches;
         // console.log('single match', config);
         await loadScript('index.js');
-        sidekick = document.querySelector('aem-sidekick');
+        sidekick = document.createElement('aem-sidekick');
         sidekick.dataset.config = JSON.stringify(config);
         sidekick.setAttribute('open', display);
+        document.body.prepend(sidekick);
+        window.hlx.sidekick = sidekick;
       } else {
         // todo: multiple matches, project picker?
         // console.log('multiple matches', configMatches);

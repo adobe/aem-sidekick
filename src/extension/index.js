@@ -28,7 +28,3 @@ import '@spectrum-web-components/icons-workflow/icons/sp-icon-real-time-customer
 
 import './app/aem-sidekick.js';
 import './app/components/action-bar.js';
-
-const sidekick = document.createElement('aem-sidekick');
-document.body.prepend(sidekick);
-window.hlx.sidekick = sidekick;
