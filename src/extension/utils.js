@@ -58,20 +58,21 @@ export async function getConfigMatches(configs, tabUrl) {
     host: checkHost,
   } = new URL(tabUrl);
   // exclude disabled configs
-  configs = configs.filter((cfg) => !cfg.disabled);
-  const matches = configs.filter((cfg) => {
-    const {
-      owner,
-      repo,
-      host: prodHost,
-      previewHost,
-      liveHost,
-    } = cfg;
-    return checkHost === prodHost // production host
-      || checkHost === previewHost // custom inner
-      || checkHost === liveHost // custom outer
-      || isValidProjectHost(checkHost, owner, repo); // inner or outer
-  });
+  const matches = configs
+    .filter((cfg) => !cfg.disabled)
+    .filter((cfg) => {
+      const {
+        owner,
+        repo,
+        host: prodHost,
+        previewHost,
+        liveHost,
+      } = cfg;
+      return checkHost === prodHost // production host
+        || checkHost === previewHost // custom inner
+        || checkHost === liveHost // custom outer
+        || isValidProjectHost(checkHost, owner, repo); // inner or outer
+    });
   // todo: check url cache if no matches
   return matches;
 }
