@@ -14,7 +14,7 @@
   // ensure hlx namespace
   window.hlx = window.hlx || {};
 
-  const { loadScript, getDisplay } = await import('./utils.js');
+  const { getDisplay } = await import('./utils.js');
   const display = await getDisplay();
   let { sidekick } = window.hlx;
   if (!sidekick) {
@@ -28,7 +28,8 @@
         // load sidekick
         const [config] = configMatches;
         // console.log('single match', config);
-        await loadScript('index.js');
+        await import('./lib/polyfills.min.js');
+        await import('./index.js');
         sidekick = document.createElement('aem-sidekick');
         sidekick.dataset.config = JSON.stringify(config);
         sidekick.setAttribute('open', display);
