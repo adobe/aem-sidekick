@@ -42,17 +42,12 @@
       {
         "resources": [
           "_locales/*",
-          "app.css",
-          "de.css",
-          "configpicker.js",
-          "fr.css",
-          "lib/js-yaml.min.js",
-          "lib/polyfills.min.js",
+          "check-tab.js",
           "index.js",
           "module.js",
-          "sidekick.js",
-          "utils.js",
+          "project.js",
           "rum.js",
+          "utils.js",
           "view/json/json.html",
           "view-doc-source/js/content.js"
         ],

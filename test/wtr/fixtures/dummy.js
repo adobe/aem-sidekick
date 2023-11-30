@@ -10,28 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import {
-  toggleDisplay,
-} from './utils.js';
-import checkTab from './check-tab.js';
-
-chrome.action.onClicked.addListener(async ({ id }) => {
-  // toggle the sidekick when the action is clicked
-  await toggleDisplay();
-  checkTab(id);
-});
-
-chrome.tabs.onUpdated.addListener(async (id, info) => {
-  if (info.status === 'complete') {
-    checkTab(id);
-  }
-});
-
-chrome.tabs.onActivated.addListener(({ tabId: id }) => {
-  checkTab(id);
-});
-
-// todo: auth header handling
-
-// todo: listen for external messages and implement listeners:
-// updateAuthToken, deleteAuthToken, closePalette, loadSidekick
+const foo = document.querySelector('.foo');
+if (foo) {
+  foo.remove();
+}

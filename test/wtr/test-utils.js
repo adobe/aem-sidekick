@@ -48,3 +48,7 @@ export const recursiveQueryAll = (element, selector) => findAllDeep(
   selector,
   10,
 );
+
+export const sleep = (ms = 0) => new Promise((resolve) => {
+  setTimeout(resolve, ms);
+});
