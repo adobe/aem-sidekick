@@ -26,12 +26,13 @@ function shared(browser) {
       entryFileNames: '[name].js',
       chunkFileNames: '[name].js',
       assetFileNames: '[name][extname]',
+      exports: 'named',
       format: 'es',
       dir: `dist/${browser}`,
       sourcemap: true,
     },
 
-    preserveEntrySignatures: false,
+    preserveEntrySignatures: true,
   };
 }
 

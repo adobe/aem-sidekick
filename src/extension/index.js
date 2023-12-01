@@ -26,5 +26,7 @@ import '@spectrum-web-components/icons-workflow/icons/sp-icon-refresh.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-share.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-real-time-customer-profile.js';
 
-import './app/aem-sidekick.js';
+import { AemSidekick } from './app/aem-sidekick.js';
 import './app/components/action-bar.js';
+
+export { AemSidekick };

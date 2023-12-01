@@ -24,12 +24,23 @@
               "default": "'light'",
               "privacy": "public",
               "attribute": "theme"
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "default": "config",
+              "privacy": "public",
+              "attribute": "config"
             }
           ],
           "attributes": [
             {
               "name": "theme",
               "fieldName": "theme"
+            },
+            {
+              "name": "config",
+              "fieldName": "config"
             }
           ],
           "superclass": {
@@ -41,6 +52,14 @@
         }
       ],
       "exports": [
+        {
+          "kind": "js",
+          "name": "AemSidekick",
+          "declaration": {
+            "name": "AemSidekick",
+            "module": "src/extension/app/aem-sidekick.js"
+          }
+        },
         {
           "kind": "custom-element-definition",
           "name": "aem-sidekick",
