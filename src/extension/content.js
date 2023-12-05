@@ -29,12 +29,14 @@
         const [config] = configMatches;
         // console.log('single match', config);
         await import('./lib/polyfills.min.js');
-        await import('./index.js');
-        sidekick = document.createElement('aem-sidekick');
-        sidekick.dataset.config = JSON.stringify(config);
-        sidekick.setAttribute('open', display);
-        document.body.prepend(sidekick);
-        window.hlx.sidekick = sidekick;
+
+        if (!sidekick) {
+          const { AEMSidekick } = await import('./index.js');
+          sidekick = new AEMSidekick(config);
+          sidekick.setAttribute('open', display);
+          document.body.prepend(sidekick);
+          window.hlx.sidekick = sidekick;
+        }
       } else {
         // todo: multiple matches, project picker?
         // console.log('multiple matches', configMatches);

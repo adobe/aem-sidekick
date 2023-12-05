@@ -9,11 +9,11 @@
         {
           "kind": "class",
           "description": "",
-          "name": "AemSidekick",
+          "name": "AEMSidekick",
           "members": [
             {
               "kind": "method",
-              "name": "getTheme"
+              "name": "_getTheme"
             },
             {
               "kind": "field",
@@ -24,6 +24,11 @@
               "default": "'light'",
               "privacy": "public",
               "attribute": "theme"
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "default": "config"
             }
           ],
           "attributes": [
@@ -42,10 +47,18 @@
       ],
       "exports": [
         {
+          "kind": "js",
+          "name": "AEMSidekick",
+          "declaration": {
+            "name": "AEMSidekick",
+            "module": "src/extension/app/aem-sidekick.js"
+          }
+        },
+        {
           "kind": "custom-element-definition",
           "name": "aem-sidekick",
           "declaration": {
-            "name": "AemSidekick",
+            "name": "AEMSidekick",
             "module": "src/extension/app/aem-sidekick.js"
           }
         }

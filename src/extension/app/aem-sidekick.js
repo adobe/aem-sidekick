@@ -12,7 +12,7 @@
 
 import { LitElement, html, css } from 'lit';
 
-class AemSidekick extends LitElement {
+export class AEMSidekick extends LitElement {
   static properties = {
     theme: { type: String },
   };
@@ -20,16 +20,33 @@ class AemSidekick extends LitElement {
   static styles = css`
     :host {
       position: fixed;
+      height: 100%;
+      width: 100%;
+      pointer-events: none;
       z-index: 9999;
+    }
+
+    :host([open='true']) {
+      display: block;
+    }
+
+    :host([open='false']) {
+      display: none;
+    }
+
+    action-bar {
+      position: absolute;
       left: 50%;
       transform: translate(-50%, 0px);
       bottom: 150px;
+      pointer-events: auto;
     }
   `;
 
-  constructor() {
+  constructor(config) {
     super();
     this.theme = 'light';
+    this.config = config;
   }
 
   async connectedCallback() {
@@ -57,11 +74,14 @@ class AemSidekick extends LitElement {
         theme="express"
         color=${this.theme === 'dark' ? 'dark' : 'light'}
         scale="medium"
+        class="hidden"
       >
-        <action-bar></action-bar>
+        <main>
+          <action-bar></action-bar>
+        </main>
       </sp-theme>
     `;
   }
 }
 
-window.customElements.define('aem-sidekick', AemSidekick);
+window.customElements.define('aem-sidekick', AEMSidekick);
