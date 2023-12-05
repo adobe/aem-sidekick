@@ -31,8 +31,8 @@
         await import('./lib/polyfills.min.js');
 
         if (!sidekick) {
-          const { AemSidekick } = await import('./index.js');
-          sidekick = new AemSidekick(config);
+          const { AEMSidekick } = await import('./index.js');
+          sidekick = new AEMSidekick(config);
           sidekick.setAttribute('open', display);
           document.body.prepend(sidekick);
           window.hlx.sidekick = sidekick;

@@ -12,10 +12,9 @@
 
 import { LitElement, html, css } from 'lit';
 
-export class AemSidekick extends LitElement {
+export class AEMSidekick extends LitElement {
   static properties = {
     theme: { type: String },
-    config: { type: Object },
   };
 
   static styles = css`
@@ -85,4 +84,4 @@ export class AemSidekick extends LitElement {
   }
 }
 
-window.customElements.define('aem-sidekick', AemSidekick);
+window.customElements.define('aem-sidekick', AEMSidekick);
