@@ -106,7 +106,7 @@ export async function updateProject(project) {
 /**
  * Assembles a project configuration based on a GitHub URL and/or existing settings.
  * @param {Object} obj The project settings
- * @returns {Object>} The assembled project configuration
+ * @returns {Object} The assembled project configuration
  */
 export function assembleProject({
   giturl,
@@ -235,7 +235,7 @@ export async function addProject(input) {
 /**
  * Deletes a project configuration.
  * @param {Object|string} project The project settings or handle
- * @returns {Promise<void>}
+ * @returns {Promise<Boolean>}
  */
 export async function deleteProject(project) {
   let owner;

@@ -28,6 +28,7 @@
         // load sidekick
         const [config] = configMatches;
         // console.log('single match', config);
+        // @ts-ignore
         await import('./lib/polyfills.min.js');
 
         if (!sidekick) {

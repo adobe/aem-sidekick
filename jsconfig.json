@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "typeRoots": ["src/extension/types/"],
+  },
+  "exclude": [
+    "test/*",
+    "src/extension/lib/*"
+  ]
+}

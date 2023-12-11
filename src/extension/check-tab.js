@@ -29,7 +29,7 @@ async function getProxyUrl({ id, url: tabUrl }) {
       func: () => {
         let proxyUrl = null;
         const meta = document.head.querySelector('meta[property="hlx:proxyUrl"]');
-        if (meta && meta.content) {
+        if (meta && meta instanceof HTMLMetaElement && meta.content) {
           proxyUrl = meta.content;
         }
         chrome.runtime.sendMessage({ proxyUrl });
