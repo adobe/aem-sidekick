@@ -16,7 +16,6 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
 import esbuild from 'rollup-plugin-esbuild';
 import copy from 'rollup-plugin-copy';
-import sourcemaps from 'rollup-plugin-sourcemaps';
 import replace from '@rollup/plugin-replace';
 import sidekickManifestBuildPlugin from './build/build.js';
 
@@ -45,8 +44,6 @@ function plugins(browser) {
       minify: true,
       target: ['chrome64', 'firefox67', 'safari11.1'],
     }),
-    /** Generate sourcemaps */
-    sourcemaps(),
     /** Bundle assets references via import.meta.url */
     importMetaAssets(),
     /** Copy static assets */
