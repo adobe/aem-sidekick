@@ -13,5 +13,6 @@
 declare global {
   interface Window {
     hlx: any;
+    chrome: any;
   }
 }

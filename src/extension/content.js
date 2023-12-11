@@ -19,7 +19,7 @@
   let { sidekick } = window.hlx;
   if (!sidekick) {
     // wait for config matches
-    chrome.runtime.onMessage.addListener(async ({ configMatches = [] }, { tab }) => {
+    window.chrome.runtime.onMessage.addListener(async ({ configMatches = [] }, { tab }) => {
       // only accept message from background script
       if (tab) {
         return;
