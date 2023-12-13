@@ -22,9 +22,12 @@
  * governing permissions and limitations under the License.
  */
 
+import { observable } from 'mobx';
 import { UserStore } from './user.js';
 
 class AppStore {
+  @observable accessor title = '';
+
   constructor() {
     this.userStore = new UserStore(this);
   }

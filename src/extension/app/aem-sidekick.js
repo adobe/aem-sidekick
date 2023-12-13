@@ -10,9 +10,15 @@
  * governing permissions and limitations under the License.
  */
 
-import { LitElement, html, css } from 'lit';
+/* eslint-disable wc/no-constructor-params, wc/guard-super-call */
 
-export class AEMSidekick extends LitElement {
+import { html, css } from 'lit';
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { customElement } from 'lit/decorators.js';
+import { appStore } from './store/app.js';
+
+@customElement('aem-sidekick')
+export class AEMSidekick extends MobxLitElement {
   static properties = {
     theme: { type: String },
   };
@@ -39,6 +45,10 @@ export class AEMSidekick extends LitElement {
       left: 50%;
       transform: translate(-50%, 0px);
       bottom: 150px;
+      pointer-events: auto;
+    }
+
+    sp-button {
       pointer-events: auto;
     }
   `;
@@ -68,6 +78,10 @@ export class AEMSidekick extends LitElement {
       : 'light';
   }
 
+  setTitleExample() {
+    appStore.title = 'Hello World!';
+  }
+
   render() {
     return html`
       <sp-theme
@@ -77,11 +91,11 @@ export class AEMSidekick extends LitElement {
         class="hidden"
       >
         <main>
+          ${appStore.title}
+          <sp-button @click=${this.setTitleExample}>Click Me</sp-button>
           <action-bar></action-bar>
         </main>
       </sp-theme>
     `;
   }
 }
-
-window.customElements.define('aem-sidekick', AEMSidekick);
