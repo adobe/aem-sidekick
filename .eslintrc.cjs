@@ -46,6 +46,5 @@ module.exports = {
     'import/prefer-default-export': 0,
     'class-methods-use-this': 0,
     'mobx/missing-make-observable': 0,
-    'no-undef': 'off',
   },
 };

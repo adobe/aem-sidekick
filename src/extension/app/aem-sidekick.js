@@ -56,7 +56,12 @@ export class AEMSidekick extends MobxLitElement {
   constructor(config) {
     super();
     this.theme = 'light';
-    this.config = config;
+    appStore.loadContext(this, config);
+
+    this.addEventListener('contextloaded', (data) => {
+      // eslint-disable-next-line no-console
+      console.log('console was loaded', data);
+    });
   }
 
   async connectedCallback() {
@@ -91,8 +96,6 @@ export class AEMSidekick extends MobxLitElement {
         class="hidden"
       >
         <main>
-          ${appStore.title}
-          <sp-button @click=${this.setTitleExample}>Click Me</sp-button>
           <action-bar></action-bar>
         </main>
       </sp-theme>
