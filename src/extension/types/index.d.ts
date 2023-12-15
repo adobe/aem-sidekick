@@ -10,6 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
+export {};
+
 declare global {
   interface Window {
     hlx: any;
