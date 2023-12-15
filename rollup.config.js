@@ -61,10 +61,6 @@ function plugins(browser) {
 
 function extensionBuild(browser) {
   return {
-    watch: {
-      include: './src/**',
-      clearScreen: true,
-    },
     ...shared(browser),
     plugins: [...plugins(browser)],
   };
