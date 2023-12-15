@@ -10,17 +10,30 @@
  * governing permissions and limitations under the License.
  */
 
-import { makeAutoObservable } from 'mobx';
+import { css } from 'lit';
 
-export class UserStore {
-  value = 0;
-
-  constructor(appStore) {
-    this.appStore = appStore;
-    makeAutoObservable(this);
+export const style = css`
+  :host {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    z-index: 9999;
   }
 
-  increment() {
-    this.value += 1;
+  :host([open='true']) {
+    display: block;
   }
-}
+
+  :host([open='false']) {
+    display: none;
+  }
+
+  action-bar {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0px);
+    bottom: 150px;
+    pointer-events: auto;
+  }
+`;

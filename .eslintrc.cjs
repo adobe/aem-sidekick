@@ -35,6 +35,7 @@ module.exports = {
     'dist/*',
     'src/extension/lib/*.js',
     'src/safari/*',
+    'src/lib/*',
   ],
   rules: {
     // allow reassigning param
