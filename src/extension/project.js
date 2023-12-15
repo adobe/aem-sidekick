@@ -32,11 +32,7 @@ export async function getProject(project = {}) {
   }
   if (owner && repo) {
     const handle = `${owner}/${repo}`;
-    const projectConfig = await getConfig('sync', handle);
-    if (projectConfig) {
-      // check session storage for auth token
-      return { ...projectConfig, ...(await getConfig('session', handle) || {}) };
-    }
+    return getConfig('sync', handle);
   }
   return undefined;
 }

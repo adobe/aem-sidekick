@@ -54,7 +54,7 @@ describe('Test checkTab', () => {
     expect(executeScriptSpy.calledTwice).to.be.true;
     // error handling
     executeScriptSpy.restore();
-    const error = new Error('testing error handling');
+    const error = new Error('this error is just a test');
     const consoleSpy = sandbox.spy(console, 'log');
     sandbox.stub(chrome.scripting, 'executeScript').throws(error);
     await checkTab(1);
