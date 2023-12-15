@@ -15,19 +15,19 @@ import {
 } from './utils.js';
 import checkTab from './check-tab.js';
 
-chrome.action.onClicked.addListener(async ({ id }) => {
+window.chrome.action.onClicked.addListener(async ({ id }) => {
   // toggle the sidekick when the action is clicked
   await toggleDisplay();
   checkTab(id);
 });
 
-chrome.tabs.onUpdated.addListener(async (id, info) => {
+window.chrome.tabs.onUpdated.addListener(async (id, info) => {
   if (info.status === 'complete') {
     checkTab(id);
   }
 });
 
-chrome.tabs.onActivated.addListener(({ tabId: id }) => {
+window.chrome.tabs.onActivated.addListener(({ tabId: id }) => {
   checkTab(id);
 });
 
