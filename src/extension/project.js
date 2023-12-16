@@ -52,13 +52,7 @@ export async function getProjects() {
  * @returns {Promise<Object>} The project configuration
  */
 export async function updateProject(project) {
-  let owner;
-  let repo;
-  if (typeof project === 'string' && project.includes('/')) {
-    [owner, repo] = project.split('/');
-  } else {
-    ({ owner, repo } = project);
-  }
+  const { owner, repo } = project;
   if (owner && repo) {
     // sanitize input
     Object.keys(project).forEach((key) => {
@@ -67,22 +61,6 @@ export async function updateProject(project) {
       }
     });
     const handle = `${owner}/${repo}`;
-    // put auth token to session storage
-    const { authToken, authTokenExpiry } = project;
-    if (authToken !== undefined) {
-      delete project.authToken;
-      delete project.authTokenExpiry;
-      await setConfig('session', {
-        [handle]: {
-          owner,
-          repo,
-          authToken,
-          authTokenExpiry,
-        },
-      });
-    } else {
-      await removeConfig('session', handle);
-    }
     // update project config
     await setConfig('sync', {
       [handle]: project,
@@ -94,6 +72,7 @@ export async function updateProject(project) {
       await setConfig('sync', { hlxSidekickProjects: projects });
     }
     // console.log('updated project', project);
+    // todo: alert
     return project;
   }
   return null;
@@ -178,7 +157,7 @@ export async function getProjectEnv({
     if (contentSourceUrl) {
       env.mountpoints = [contentSourceUrl];
     }
-  } else if (res.status === 401) {
+  } else if (res && res.status === 401) {
     env.unauthorized = true;
   }
   return env;
@@ -247,22 +226,16 @@ export async function deleteProject(project) {
   const projects = await getConfig('sync', 'hlxSidekickProjects') || [];
   const i = projects.indexOf(handle);
   if (i >= 0) {
-    try {
-      // delete admin auth header rule
-      chrome.runtime.sendMessage({ deleteAuthToken: { owner, repo } });
-      // delete the project entry
-      await removeConfig('sync', handle);
-      // remove project entry from index
-      projects.splice(i, 1);
-      await setConfig('sync', { hlxSidekickProjects: projects });
-      // console.log('project deleted', handle);
-      // todo: alert
-      return true;
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log('project deletion failed', handle, e);
-      // todo: alert
-    }
+    // delete admin auth header rule
+    window.chrome.runtime.sendMessage({ deleteAuthToken: { owner, repo } });
+    // delete the project entry
+    await removeConfig('sync', handle);
+    // remove project entry from index
+    projects.splice(i, 1);
+    await setConfig('sync', { hlxSidekickProjects: projects });
+    // console.log('project deleted', handle);
+    // todo: alert
+    return true;
   } else {
     // console.log('project to delete not found', handle);
     // todo: alert
