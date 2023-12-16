@@ -27,6 +27,7 @@ import {
   getDisplay,
   setDisplay,
   toggleDisplay,
+  getGitHubSettings,
 } from '../../src/extension/utils.js';
 
 const CONFIGS = [
@@ -176,5 +177,16 @@ describe('Test utils', () => {
       hlxSidekickDisplay: false,
     })).to.be.true;
     expect(display).to.be.false;
+  });
+
+  it('getGitHubSettings', async () => {
+    const settings = getGitHubSettings('https://github.com/adobe/blog/tree/stage');
+    expect(settings).to.eql({
+      owner: 'adobe',
+      repo: 'blog',
+      ref: 'stage',
+    });
+    const invalid = getGitHubSettings('https://www.example.com');
+    expect(invalid).to.eql({});
   });
 });
