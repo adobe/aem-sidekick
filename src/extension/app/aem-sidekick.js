@@ -12,9 +12,10 @@
 
 /* eslint-disable wc/no-constructor-params, wc/guard-super-call */
 
-import { html, css } from 'lit';
+import { html } from 'lit';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { customElement } from 'lit/decorators.js';
+import { style } from './aem-sidekick.css.js';
 import { appStore } from './store/app.js';
 
 @customElement('aem-sidekick')
@@ -23,35 +24,9 @@ export class AEMSidekick extends MobxLitElement {
     theme: { type: String },
   };
 
-  static styles = css`
-    :host {
-      position: fixed;
-      height: 100%;
-      width: 100%;
-      pointer-events: none;
-      z-index: 9999;
-    }
-
-    :host([open='true']) {
-      display: block;
-    }
-
-    :host([open='false']) {
-      display: none;
-    }
-
-    action-bar {
-      position: absolute;
-      left: 50%;
-      transform: translate(-50%, 0px);
-      bottom: 150px;
-      pointer-events: auto;
-    }
-
-    sp-button {
-      pointer-events: auto;
-    }
-  `;
+  static get styles() {
+    return [style];
+  }
 
   constructor(config) {
     super();
@@ -93,7 +68,6 @@ export class AEMSidekick extends MobxLitElement {
         theme="express"
         color=${this.theme === 'dark' ? 'dark' : 'light'}
         scale="medium"
-        class="hidden"
       >
         <main>
           <action-bar></action-bar>

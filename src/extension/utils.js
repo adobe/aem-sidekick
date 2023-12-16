@@ -20,7 +20,7 @@ export const GH_URL = 'https://github.com/';
  */
 export async function loadScript(path) {
   return new Promise((resolve) => {
-    const src = chrome.runtime.getURL(path);
+    const src = window.chrome.runtime.getURL(path);
     if (!document.querySelector(`script[src="${src}"]`)) {
       const script = document.createElement('script');
       script.type = 'module';
@@ -84,7 +84,7 @@ export async function getConfigMatches(configs, tabUrl) {
  * @returns {Promise<*>} The configuration
  */
 export async function getConfig(area, prop) {
-  const cfg = await chrome.storage[area].get(prop);
+  const cfg = await window.chrome.storage[area].get(prop);
   return cfg?.[prop];
 }
 
@@ -95,7 +95,7 @@ export async function getConfig(area, prop) {
  * @returns {Promise<void>}
  */
 export async function setConfig(area, obj) {
-  return chrome.storage[area].set(obj);
+  return window.chrome.storage[area].set(obj);
 }
 
 /**
@@ -105,7 +105,7 @@ export async function setConfig(area, obj) {
  * @returns {Promise<void>}
  */
 export async function removeConfig(area, prop) {
-  return chrome.storage[area].remove(prop);
+  return window.chrome.storage[area].remove(prop);
 }
 
 /**
@@ -114,7 +114,7 @@ export async function removeConfig(area, prop) {
  * @returns {Promise<void>}
  */
 export async function clearConfig(area) {
-  return chrome.storage[area].clear();
+  return window.chrome.storage[area].clear();
 }
 
 /**
@@ -151,7 +151,7 @@ export async function toggleDisplay() {
 /**
  * Extracts settings from a GitHub URL.
  * @param {string} giturl The GitHub URL
- * @returns {Objct} The GitHub settings
+ * @returns {Object} The GitHub settings
  */
 export function getGitHubSettings(giturl) {
   if (typeof giturl === 'string' && giturl.startsWith(GH_URL)) {
