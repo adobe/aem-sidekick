@@ -24,29 +24,29 @@ import { getProjects } from './project.js';
 async function getProxyUrl({ id, url: tabUrl }) {
   return new Promise((resolve) => {
     // inject proxy url retriever
-    chrome.scripting.executeScript({
+    window.chrome.scripting.executeScript({
       target: { tabId: id },
       func: () => {
         let proxyUrl = null;
         const meta = document.head.querySelector('meta[property="hlx:proxyUrl"]');
-        if (meta && meta.content) {
+        if (meta && meta instanceof HTMLMetaElement && meta.content) {
           proxyUrl = meta.content;
         }
-        chrome.runtime.sendMessage({ proxyUrl });
+        window.chrome.runtime.sendMessage({ proxyUrl });
       },
     });
     // listen for proxy url from tab
     const listener = ({ proxyUrl: proxyUrlFromTab }, { tab }) => {
       // check if message contains proxy url and is sent from right tab
       if (proxyUrlFromTab && tab && tab.url === tabUrl && tab.id === id) {
-        chrome.runtime.onMessage.removeListener(listener);
+        window.chrome.runtime.onMessage.removeListener(listener);
         resolve(proxyUrlFromTab);
       } else {
         // fall back to tab url
         resolve(tabUrl);
       }
     };
-    chrome.runtime.onMessage.addListener(listener);
+    window.chrome.runtime.onMessage.addListener(listener);
   });
 }
 
@@ -58,11 +58,11 @@ async function getProxyUrl({ id, url: tabUrl }) {
 async function injectContentScript(tabId, matches) {
   // execute content script
   try {
-    await chrome.scripting.executeScript({
+    await window.chrome.scripting.executeScript({
       target: { tabId },
       files: ['./content.js'],
     });
-    await chrome.tabs.sendMessage(tabId, {
+    await window.chrome.tabs.sendMessage(tabId, {
       configMatches: matches,
     });
   } catch (e) {
@@ -78,7 +78,7 @@ async function injectContentScript(tabId, matches) {
  */
 export default async function checkTab(id) {
   const projects = await getProjects();
-  const tab = await chrome.tabs.get(id);
+  const tab = await window.chrome.tabs.get(id);
   let { url: checkUrl } = tab;
   if (projects.length === 0 || !checkUrl) return;
 

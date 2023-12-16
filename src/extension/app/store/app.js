@@ -22,11 +22,34 @@
  * governing permissions and limitations under the License.
  */
 
-import { UserStore } from './user.js';
+import { makeAutoObservable } from 'mobx';
+
+/**
+ * The configuration object for the active site
+ * @typedef {Object} SiteConfig
+ * @property {string} giturl - The url to github repository
+ * @property {string[]} mountpoints - The mountpoints for the site
+ * @property {string} owner - The organization or user
+ * @property {string} ref - The branch
+ * @property {string} repo - The repository
+ */
 
 class AppStore {
+  /**
+   * @type {SiteConfig}
+   */
+  siteConfig;
+
   constructor() {
-    this.userStore = new UserStore(this);
+    makeAutoObservable(this);
+  }
+
+  /**
+   * Sets the site config
+   * @param {SiteConfig} config
+   */
+  setSiteConfig(config) {
+    this.siteConfig = config;
   }
 }
 

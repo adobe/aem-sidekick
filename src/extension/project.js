@@ -81,7 +81,7 @@ export async function updateProject(project) {
 /**
  * Assembles a project configuration based on a GitHub URL and/or existing settings.
  * @param {Object} obj The project settings
- * @returns {Object>} The assembled project configuration
+ * @returns {Object} The assembled project configuration
  */
 export function assembleProject({
   giturl,
@@ -174,8 +174,8 @@ export async function addProject(input) {
   const env = await getProjectEnv(config);
   if (env.unauthorized && !input.authToken) {
     // defer adding project and have user sign in
-    const { id: loginTabId } = await chrome.tabs.create({
-      url: `https://admin.hlx.page/login/${owner}/${repo}/${ref}?extensionId=${chrome.runtime.id}`,
+    const { id: loginTabId } = await window.chrome.tabs.create({
+      url: `https://admin.hlx.page/login/${owner}/${repo}/${ref}?extensionId=${window.chrome.runtime.id}`,
       active: true,
     });
     return new Promise((resolve) => {
@@ -183,15 +183,15 @@ export async function addProject(input) {
       const retryAddProjectListener = async (message = {}) => {
         let added = false;
         if (message.authToken && owner === message.owner && repo === message.repo) {
-          await chrome.tabs.remove(loginTabId);
+          await window.chrome.tabs.remove(loginTabId);
           config.authToken = message.authToken;
           added = await addProject(config);
         }
         // clean up
-        chrome.runtime.onMessageExternal.removeListener(retryAddProjectListener);
+        window.chrome.runtime.onMessageExternal.removeListener(retryAddProjectListener);
         resolve(added);
       };
-      chrome.runtime.onMessageExternal.addListener(retryAddProjectListener);
+      window.chrome.runtime.onMessageExternal.addListener(retryAddProjectListener);
     });
   }
   let project = await getProject(config);
@@ -210,7 +210,7 @@ export async function addProject(input) {
 /**
  * Deletes a project configuration.
  * @param {Object|string} project The project settings or handle
- * @returns {Promise<void>}
+ * @returns {Promise<Boolean>}
  */
 export async function deleteProject(project) {
   let owner;

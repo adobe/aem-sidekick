@@ -10,43 +10,23 @@
  * governing permissions and limitations under the License.
  */
 
-import { LitElement, html, css } from 'lit';
+import { LitElement, html } from 'lit';
+import { style } from './aem-sidekick.css.js';
+import { appStore } from './store/app.js';
 
 export class AEMSidekick extends LitElement {
   static properties = {
     theme: { type: String },
   };
 
-  static styles = css`
-    :host {
-      position: fixed;
-      height: 100%;
-      width: 100%;
-      pointer-events: none;
-      z-index: 9999;
-    }
-
-    :host([open='true']) {
-      display: block;
-    }
-
-    :host([open='false']) {
-      display: none;
-    }
-
-    action-bar {
-      position: absolute;
-      left: 50%;
-      transform: translate(-50%, 0px);
-      bottom: 150px;
-      pointer-events: auto;
-    }
-  `;
+  static get styles() {
+    return [style];
+  }
 
   constructor(config) {
     super();
     this.theme = 'light';
-    this.config = config;
+    appStore.setSiteConfig(config);
   }
 
   async connectedCallback() {
@@ -74,7 +54,6 @@ export class AEMSidekick extends LitElement {
         theme="express"
         color=${this.theme === 'dark' ? 'dark' : 'light'}
         scale="medium"
-        class="hidden"
       >
         <main>
           <action-bar></action-bar>
