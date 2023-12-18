@@ -125,6 +125,9 @@ export async function getProjectEnv({
   const env = {};
   let res;
   try {
+    /**
+     * @type {RequestInit}
+     */
     const options = {
       cache: 'no-store',
       credentials: 'include',
