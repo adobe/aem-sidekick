@@ -14,7 +14,7 @@
   // ensure hlx namespace
   window.hlx = window.hlx || {};
 
-  const { getDisplay } = await import('./utils.js');
+  const { getDisplay, getExtensionURL } = await import('./utils.js');
   const display = await getDisplay();
   let { sidekick } = window.hlx;
   if (!sidekick) {
@@ -28,12 +28,31 @@
         // load sidekick
         const [config] = configMatches;
         // console.log('single match', config);
-        // @ts-ignore
         await import('./lib/polyfills.min.js');
 
         if (!sidekick) {
           const { AEMSidekick } = await import('./index.js');
-          sidekick = new AEMSidekick(config);
+
+          // reduce config to only include properties relevant for sidekick
+          const curatedConfig = Object.fromEntries(Object.entries(config)
+            .filter(([k]) => [
+              'owner',
+              'repo',
+              'ref',
+              'previewHost',
+              'liveHost',
+              'host',
+              'devMode',
+              'devOrigin',
+              'pushDown',
+              'adminVersion',
+              'authTokenExpiry',
+              'hlx5',
+            ].includes(k)));
+          curatedConfig.scriptUrl = getExtensionURL('module.js');
+          [curatedConfig.mountpoint] = config.mountpoints || [];
+
+          sidekick = new AEMSidekick(curatedConfig);
           sidekick.setAttribute('open', display);
           document.body.prepend(sidekick);
           window.hlx.sidekick = sidekick;

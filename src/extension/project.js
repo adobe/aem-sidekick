@@ -155,6 +155,7 @@ export async function getProjectEnv({
       credentials: 'include',
       headers: authToken ? { 'x-auth-token': authToken } : {},
     };
+
     res = await fetch(`https://admin.hlx.page/sidekick/${owner}/${repo}/${ref}/env.json`, options);
   } catch (e) {
     // console.log(`unable to retrieve project config: ${e}`);

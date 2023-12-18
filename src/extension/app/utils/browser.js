@@ -12,8 +12,9 @@
 
 /**
  * Returns the location of the current document.
+ * @param {URL} url The url
  * @private
- * @returns {Location} The location object
+ * @returns {URL} The location object
  */
 export function getResourceURL(url) {
   const { origin, search } = url;
@@ -29,14 +30,14 @@ export function getResourceURL(url) {
 /**
  * Returns the location of the current document.
  * @private
- * @returns {Location} The location object
+ * @returns {URL} The location object
  */
 export function getLocation() {
   // use window location by default
-  let url = new URL(window.location);
+  let url = new URL(window.location.href);
   // first check if there is a test location
   const $test = document.getElementById('sidekick_test_location');
-  if ($test) {
+  if ($test && $test instanceof HTMLInputElement) {
     try {
       url = new URL($test.value);
     } catch (e) {

@@ -58,10 +58,6 @@ export class AEMSidekick extends MobxLitElement {
       : 'light';
   }
 
-  setTitleExample() {
-    appStore.title = 'Hello World!';
-  }
-
   render() {
     return html`
       <sp-theme

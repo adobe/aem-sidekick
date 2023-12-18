@@ -10,10 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-/* eslint-disable no-undef */
-
 import { observable } from 'mobx';
-import { UserStore } from './user.js';
 import { SiteStore } from './site.js';
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import sampleRUM from '../utils/rum.js';
@@ -21,28 +18,12 @@ import { fetchLanguageDict } from '../utils/i18n.js';
 import { getLocation, matchProjectHost, isSupportedFileExtension } from '../utils/browser.js';
 
 /**
- * @typedef {Object} Plugin
- * @description The plugin configuration.
- * @prop {string} id The plugin ID (mandatory)
- * @prop {string} title The button text
- * @prop {Object} titleI18n={} A map of translated button texts
- * @prop {string} url The URL to open when the button is clicked
- * @prop {boolean} passConfig Append additional sk info to the url as query parameters:
- *                          ref, repo, owner, host, project
- * @prop {boolean} passReferrer Append the referrer URL as a query param on new URL button click
- * @prop {string} event The name of a custom event to fire when the button is clicked.
- *                      Note: Plugin events get a custom: prefix, e.g. "foo" becomes "custom:foo".
- * @prop {string} containerId The ID of a dropdown to add this plugin to (optional)
- * @prop {boolean} isContainer Determines whether to turn this plugin into a dropdown
- * @prop {boolean} isPalette Determines whether a URL is opened in a palette instead of a new tab
- * @prop {string} paletteRect The dimensions and position of a palette (optional)
- * @prop {string[]} environments Specifies when to show this plugin
- *                               (admin, edit, dev, preview, live, prod)
- * @prop {string[]} excludePaths Exclude the plugin from these paths (glob patterns supported)
- * @prop {string[]} includePaths Include the plugin on these paths (glob patterns supported)
+ * The plugins
+ * @typedef {import('@Types').Plugin} Plugin
  */
 
 class AppStore {
+  // eslint-disable-next-line no-undef
   @observable accessor initialized = false;
 
   /**
@@ -76,16 +57,14 @@ class AppStore {
   plugins;
 
   constructor() {
-    this.userStore = new UserStore(this);
     this.siteStore = new SiteStore(this);
   }
 
   /**
    * Loads the sidekick configuration and language dictionary,
    * and retrieves the location of the current document.
-   * @param {SidekickConfig} cfg The sidekick config
+   * @param {SiteStore} cfg The sidekick config
    * @fires Sidekick#contextloaded
-   * @returns {Sidekick} The sidekick
    */
   async loadContext(sidekick, cfg) {
     this.sidekick = sidekick;
@@ -303,7 +282,7 @@ class AppStore {
       } = this;
       data = data || {
         // turn complex into simple objects for event listener
-        config: JSON.parse(siteStore.toJSON()),
+        config: siteStore.toJSON(),
         location: {
           hash: location.hash,
           host: location.host,
@@ -351,8 +330,7 @@ class AppStore {
   /**
      * Fetches the status for the current resource.
      * @fires Sidekick#statusfetched
-     * @param {boolean} refreshLocation Refresh the sidekick's location (optional)
-     * @returns {Sidekick} The sidekick
+     * @param {boolean} [refreshLocation] Refresh the sidekick's location (optional)
      */
   async fetchStatus(refreshLocation) {
     if (refreshLocation) {

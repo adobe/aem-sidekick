@@ -13,6 +13,10 @@
 /* c8 ignore start */
 
 /**
+ * @typedef {Object} sampleRUM
+ */
+
+/**
  * Log RUM for sidekick telemetry.
  * @private
  * @param {string} checkpoint identifies the checkpoint in funnel

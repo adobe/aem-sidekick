@@ -24,7 +24,7 @@ import { getProjects } from './project.js';
 async function getProxyUrl({ id, url: tabUrl }) {
   return new Promise((resolve) => {
     // inject proxy url retriever
-    window.chrome.scripting.executeScript({
+    chrome.scripting.executeScript({
       target: { tabId: id },
       func: () => {
         let proxyUrl = null;

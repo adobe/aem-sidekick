@@ -13,13 +13,6 @@
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import { getLanguage, i18n } from '../utils/i18n.js';
 
-/**
- * @typedef {Object} ViewConfig
- * @description A custom view configuration.
- * @prop {string} path The path or globbing pattern where to apply this view
- * @prop {string} viewer The URL to render this view
- */
-
 export class SiteStore {
   /**
    * The GitHub owner or organization (mandatory)
@@ -41,7 +34,7 @@ export class SiteStore {
 
   /**
    * The content source URL (optional)
-   * @type {string[]}
+   * @type {string}
    */
   mountpoint;
 
@@ -64,10 +57,34 @@ export class SiteStore {
   previewHost;
 
   /**
+   * Inner CDN host name (custom or std)
+   * @type {string}
+   */
+  innerHost;
+
+  /**
+   * Standard Inner CDN host name
+   * @type {string}
+   */
+  stdInnerHost;
+
+  /**
    * The host name of a custom live CDN (optional)
    * @type {string}
    */
   liveHost;
+
+  /**
+   * Inner CDN host name (custom or std)
+   * @type {string}
+   */
+  outerHost;
+
+  /**
+   * Standard Outer CDN host name
+   * @type {string}
+   */
+  stdOuterHost;
 
   /**
    * If the production host is a 3rd party CDN
@@ -94,30 +111,6 @@ export class SiteStore {
   adminVersion;
 
   /**
-   * Inner CDN host name (custom or std)
-   * @type {string}
-   */
-  innerHost;
-
-  /**
-   * Standard Inner CDN host name
-   * @type {string}
-   */
-  stdInnerHost;
-
-  /**
-   * Inner CDN host name (custom or std)
-   * @type {string}
-   */
-  outerHost;
-
-  /**
-   * Standard Outer CDN host name
-   * @type {string}
-   */
-  stdOuterHost;
-
-  /**
    * Extension script root
    * @type {string}
    */
@@ -131,7 +124,7 @@ export class SiteStore {
 
   /**
    * Custom views
-   * @type {ViewConfig[]}
+   * @type {import('@Types').ViewConfig[]}
    */
   views;
 
@@ -220,7 +213,6 @@ export class SiteStore {
 
     this.previewHost = previewHost;
     this.liveHost = liveHost;
-    this.specialViews = specialViews;
     this.hlx5 = hlx5;
     this.scriptUrl = scriptUrl;
 
@@ -244,14 +236,20 @@ export class SiteStore {
       ref: this.ref,
       mountpoint: this.mountpoint,
       project: this.project,
-      previewHost: this.previewHost,
-      liveHost: this.liveHost,
       host: this.host,
+      previewHost: this.previewHost,
+      innerHost: this.innerHost,
+      stdInnerHost: this.stdInnerHost,
+      liveHost: this.liveHost,
+      outerHost: this.outerHost,
+      stdOuterHost: this.stdOuterHost,
       byocdn: this.byocdn,
       devMode: this.devMode,
       devOrigin: this.devOrigin,
-      specialViews: this.specialViews,
       adminVersion: this.adminVersion,
+      scriptRoot: this.scriptRoot,
+      lang: this.lang,
+      views: this.views,
     };
   }
 }

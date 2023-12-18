@@ -16,10 +16,6 @@
               "name": "getTheme"
             },
             {
-              "kind": "method",
-              "name": "setTitleExample"
-            },
-            {
               "kind": "field",
               "name": "theme",
               "privacy": "public",

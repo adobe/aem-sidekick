@@ -168,3 +168,12 @@ export function getGitHubSettings(giturl) {
   }
   return {};
 }
+
+/**
+ * Converts a relative path within an app/extension install directory to a fully-qualified URL.
+ * @param {string} path
+ * @returns {string} The fully-qualified URL to the resource.
+ */
+export function getExtensionURL(path) {
+  return window.chrome.runtime.getURL(path);
+}
