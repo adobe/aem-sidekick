@@ -78,7 +78,7 @@ const CONFIGS = [
   },
 ];
 
-window.chrome = chromeMock;
+chrome = chromeMock;
 
 describe('Test utils', () => {
   const sandbox = sinon.createSandbox();
@@ -132,38 +132,38 @@ describe('Test utils', () => {
   });
 
   it('getConfig', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'get');
+    const spy = sandbox.spy(chrome.storage.local, 'get');
     await getConfig('local', 'test');
     expect(spy.calledWith('test')).to.be.true;
   });
 
   it('setConfig', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'set');
+    const spy = sandbox.spy(chrome.storage.local, 'set');
     const obj = { foo: 'bar' };
     await setConfig('local', obj);
     expect(spy.calledWith(obj)).to.be.true;
   });
 
   it('removeConfig', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'remove');
+    const spy = sandbox.spy(chrome.storage.local, 'remove');
     await removeConfig('local', 'foo');
     expect(spy.calledWith('foo')).to.be.true;
   });
 
   it('clearConfig', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'clear');
+    const spy = sandbox.spy(chrome.storage.local, 'clear');
     await clearConfig('local');
     expect(spy.called).to.be.true;
   });
 
   it('getDisplay', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'get');
+    const spy = sandbox.spy(chrome.storage.local, 'get');
     await getDisplay();
     expect(spy.calledWith('hlxSidekickDisplay')).to.be.true;
   });
 
   it('setDisplay', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'set');
+    const spy = sandbox.spy(chrome.storage.local, 'set');
     await setDisplay(true);
     expect(spy.calledWith({
       hlxSidekickDisplay: true,
@@ -171,7 +171,7 @@ describe('Test utils', () => {
   });
 
   it('toggleDisplay', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'set');
+    const spy = sandbox.spy(chrome.storage.local, 'set');
     const display = await toggleDisplay();
     expect(spy.calledWith({
       hlxSidekickDisplay: false,
