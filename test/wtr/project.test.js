@@ -27,7 +27,7 @@ import {
   deleteProject,
 } from '../../src/extension/project.js';
 
-chrome = chromeMock;
+window.chrome = chromeMock;
 window.fetch = fetchMock;
 
 describe('Test utils', () => {

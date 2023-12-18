@@ -78,7 +78,7 @@ const CONFIGS = [
   },
 ];
 
-chrome = chromeMock;
+window.chrome = chromeMock;
 
 describe('Test utils', () => {
   const sandbox = sinon.createSandbox();

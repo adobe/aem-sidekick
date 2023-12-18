@@ -18,7 +18,7 @@ import sinon from 'sinon';
 import chromeMock from './mocks/chrome.js';
 import checkTab from '../../src/extension/check-tab.js';
 
-chrome = chromeMock;
+window.chrome = chromeMock;
 
 describe('Test checkTab', () => {
   const sandbox = sinon.createSandbox();
