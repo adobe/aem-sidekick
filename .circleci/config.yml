@@ -28,7 +28,8 @@ jobs:
       - run:
           name: Lint
           command: npm run lint
-      - browser-tools/install-chrome
+      - browser-tools/install-chrome:
+          replace-existing: true
       - run:
           name: Test
           command: |
