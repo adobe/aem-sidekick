@@ -130,6 +130,7 @@ export async function getProjectEnv({
       credentials: 'include',
       headers: authToken ? { 'x-auth-token': authToken } : {},
     };
+    // @ts-ignore
     res = await fetch(`https://admin.hlx.page/sidekick/${owner}/${repo}/${ref}/env.json`, options);
   } catch (e) {
     // eslint-disable-next-line no-console
