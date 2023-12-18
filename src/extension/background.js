@@ -14,6 +14,11 @@ import {
   toggleDisplay,
 } from './utils.js';
 import checkTab from './check-tab.js';
+import {
+  externalActions,
+  internalActions,
+} from './actions.js';
+import { addAuthTokenHeaders } from './auth.js';
 
 window.chrome.action.onClicked.addListener(async ({ id }) => {
   // toggle the sidekick when the action is clicked
@@ -31,7 +36,30 @@ window.chrome.tabs.onActivated.addListener(({ tabId: id }) => {
   checkTab(id);
 });
 
-// todo: auth header handling
+// external messaging API to execute actions
+window.chrome.runtime.onMessageExternal.addListener(async (message, sender, sendResponse) => {
+  const { action } = message;
+  let resp = null;
+  if (typeof externalActions[action] === 'function') {
+    resp = await externalActions[action](message, sender);
+  }
+  sendResponse(resp);
+});
 
-// todo: listen for external messages and implement listeners:
-// updateAuthToken, deleteAuthToken, closePalette, loadSidekick
+// internal messaging API to execute actions
+window.chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+  const { action: actionFromTab } = message;
+  const { tab } = sender;
+  let resp = null;
+  // check if message contains action and is sent from tab
+  if (tab && tab.url && typeof internalActions[actionFromTab] === 'function') {
+    resp = await internalActions[actionFromTab](message, sender);
+  }
+  sendResponse(resp);
+});
+
+// add existing auth token headers
+addAuthTokenHeaders();
+
+// eslint-disable-next-line no-console
+console.log('sidekick initialized');
