@@ -20,8 +20,8 @@ import { getConfig, removeConfig, setConfig } from './utils.js';
 export async function addAuthTokenHeaders() {
   try {
     // remove all rules first
-    await window.chrome.declarativeNetRequest.updateSessionRules({
-      removeRuleIds: (await window.chrome.declarativeNetRequest.getSessionRules())
+    await chrome.declarativeNetRequest.updateSessionRules({
+      removeRuleIds: (await chrome.declarativeNetRequest.getSessionRules())
         .map((rule) => rule.id),
     });
     // find projects with auth tokens and add rules for each
@@ -56,7 +56,7 @@ export async function addAuthTokenHeaders() {
       }
     });
     if (addRules.length > 0) {
-      await window.chrome.declarativeNetRequest.updateSessionRules({
+      await chrome.declarativeNetRequest.updateSessionRules({
         addRules,
       });
     }

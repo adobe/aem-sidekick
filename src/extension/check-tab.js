@@ -24,7 +24,7 @@ import { getProjects } from './project.js';
 async function getProxyUrl({ id, url: tabUrl }) {
   return new Promise((resolve) => {
     // inject proxy url retriever
-    window.chrome.scripting.executeScript({
+    chrome.scripting.executeScript({
       target: { tabId: id },
       func: () => {
         let proxyUrl = null;
@@ -32,21 +32,21 @@ async function getProxyUrl({ id, url: tabUrl }) {
         if (meta && meta instanceof HTMLMetaElement && meta.content) {
           proxyUrl = meta.content;
         }
-        window.chrome.runtime.sendMessage({ proxyUrl });
+        chrome.runtime.sendMessage({ proxyUrl });
       },
     });
     // listen for proxy url from tab
     const listener = ({ proxyUrl: proxyUrlFromTab }, { tab }) => {
       // check if message contains proxy url and is sent from right tab
       if (proxyUrlFromTab && tab && tab.url === tabUrl && tab.id === id) {
-        window.chrome.runtime.onMessage.removeListener(listener);
+        chrome.runtime.onMessage.removeListener(listener);
         resolve(proxyUrlFromTab);
       } else {
         // fall back to tab url
         resolve(tabUrl);
       }
     };
-    window.chrome.runtime.onMessage.addListener(listener);
+    chrome.runtime.onMessage.addListener(listener);
   });
 }
 
@@ -58,11 +58,11 @@ async function getProxyUrl({ id, url: tabUrl }) {
 async function injectContentScript(tabId, matches) {
   // execute content script
   try {
-    await window.chrome.scripting.executeScript({
+    await chrome.scripting.executeScript({
       target: { tabId },
       files: ['./content.js'],
     });
-    await window.chrome.tabs.sendMessage(tabId, {
+    await chrome.tabs.sendMessage(tabId, {
       configMatches: matches,
     });
   } catch (e) {
@@ -78,7 +78,7 @@ async function injectContentScript(tabId, matches) {
  */
 export default async function checkTab(id) {
   const projects = await getProjects();
-  const tab = await window.chrome.tabs.get(id);
+  const tab = await chrome.tabs.get(id);
   let { url: checkUrl } = tab;
   if (projects.length === 0 || !checkUrl) return;
 

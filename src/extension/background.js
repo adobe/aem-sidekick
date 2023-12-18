@@ -37,7 +37,7 @@ chrome.tabs.onActivated.addListener(({ tabId: id }) => {
 });
 
 // external messaging API to execute actions
-window.chrome.runtime.onMessageExternal.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessageExternal.addListener(async (message, sender, sendResponse) => {
   const { action } = message;
   let resp = null;
   if (typeof externalActions[action] === 'function') {
@@ -47,7 +47,7 @@ window.chrome.runtime.onMessageExternal.addListener(async (message, sender, send
 });
 
 // internal messaging API to execute actions
-window.chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   const { action: actionFromTab } = message;
   const { tab } = sender;
   let resp = null;
