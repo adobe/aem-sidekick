@@ -42,7 +42,7 @@ describe('Test utils', () => {
   });
 
   it('getProject', async () => {
-    const spy = sandbox.spy(window.chrome.storage.sync, 'get');
+    const spy = sandbox.spy(chrome.storage.sync, 'get');
     // get project without handle
     let project = await getProject();
     expect(project).to.be.undefined;
@@ -57,7 +57,7 @@ describe('Test utils', () => {
   }).timeout(5000);
 
   it('getProjects', async () => {
-    const spy = sandbox.spy(window.chrome.storage.sync, 'get');
+    const spy = sandbox.spy(chrome.storage.sync, 'get');
     await getProjects();
     expect(spy.calledWith('hlxSidekickProjects')).to.be.true;
     expect(spy.calledWith('adobe/blog')).to.be.true;
@@ -73,6 +73,10 @@ describe('Test utils', () => {
     expect(host).to.equal('business.adobe.com');
     expect(project).to.equal('Adobe Business Website');
     expect(mountpoints[0]).to.equal('https://adobe.sharepoint.com/:f:/s/Dummy/Alk9MSH25LpBuUWA_N6DOL8BuI6Vrdyrr87gne56dz3QeQ');
+    // error handling
+    sandbox.stub(window, 'fetch').throws();
+    const error = await getProjectEnv({});
+    expect(error).to.eql({});
   });
 
   it('assembleProject with giturl', async () => {
@@ -98,7 +102,7 @@ describe('Test utils', () => {
   });
 
   it('addProject', async () => {
-    const spy = sandbox.spy(window.chrome.storage.sync, 'set');
+    const spy = sandbox.spy(chrome.storage.sync, 'set');
     // add project
     const added = await addProject({
       giturl: 'https://github.com/test/project',
@@ -123,23 +127,26 @@ describe('Test utils', () => {
   });
 
   it('updateProject', async () => {
-    const spy = sandbox.spy(window.chrome.storage.sync, 'set');
-    // set project
+    const spy = sandbox.spy(chrome.storage.sync, 'set');
     const project = {
       owner: 'test',
       repo: 'project',
       ref: 'main',
       project: 'Test',
+      dummy: undefined, // ignore this
     };
-    const updated = await updateProject(project);
-    expect(updated).to.equal(project);
+    const updated = await updateProject({ ...project });
+    delete project.dummy;
+    expect(updated).to.eql(project);
     expect(spy.calledWith({
       'test/project': project,
     })).to.be.true;
+    const invalid = await updateProject({ foo: 'bar' });
+    expect(invalid).to.equal(null);
   });
 
   it('deleteProject', async () => {
-    const spy = sandbox.spy(window.chrome.storage.sync, 'set');
+    const spy = sandbox.spy(chrome.storage.sync, 'set');
     // delete project without handle
     let deleted = await deleteProject({ owner: 'adobe', repo: 'blog' });
     expect(deleted).to.be.true;

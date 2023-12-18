@@ -19,7 +19,7 @@ import chromeMock from './mocks/chrome.js';
 import {
   loadScript,
   getConfigMatches,
-  isValidProjectHost,
+  isValidHost,
   getConfig,
   setConfig,
   removeConfig,
@@ -27,6 +27,7 @@ import {
   getDisplay,
   setDisplay,
   toggleDisplay,
+  getGitHubSettings,
 } from '../../src/extension/utils.js';
 
 const CONFIGS = [
@@ -96,13 +97,15 @@ describe('Test utils', () => {
     expect(spy.calledWith('.foo')).to.be.true;
   });
 
-  it('isValidProjectHost', () => {
-    expect(isValidProjectHost('https://main--bar--foo.hlx.page', 'foo', 'bar')).to.be.true;
-    expect(isValidProjectHost('https://main--bar--foo.hlx.live', 'foo', 'bar')).to.be.true;
-    expect(isValidProjectHost('https://main--bar--foo.aem.page', 'foo', 'bar')).to.be.true;
-    expect(isValidProjectHost('https://main--bar--foo.aem.live', 'foo', 'bar')).to.be.true;
-    expect(isValidProjectHost('https://main--bar--fake.hlx.live', 'foo', 'bar')).to.be.false;
-    expect(isValidProjectHost('https://main--bar--foo.hlx.random', 'foo', 'bar')).to.be.false;
+  it('isValidHost', () => {
+    expect(isValidHost('https://main--bar--foo.hlx.page', 'foo', 'bar')).to.be.true;
+    expect(isValidHost('https://main--bar--foo.hlx.live', 'foo', 'bar')).to.be.true;
+    expect(isValidHost('https://main--bar--foo.aem.page', 'foo', 'bar')).to.be.true;
+    expect(isValidHost('https://main--bar--foo.aem.live', 'foo', 'bar')).to.be.true;
+    expect(isValidHost('https://main--bar--fake.hlx.live', 'foo', 'bar')).to.be.false;
+    expect(isValidHost('https://main--bar--foo.hlx.random', 'foo', 'bar')).to.be.false;
+    // check without owner & repo
+    expect(isValidHost('https://main--bar--foo.hlx.page')).to.be.true;
   });
 
   it('getConfigMatches', async () => {
@@ -120,6 +123,8 @@ describe('Test utils', () => {
     expect((await getConfigMatches(CONFIGS, 'https://1.foo.bar/')).length).to.equal(1);
     // ignore disabled config
     expect((await getConfigMatches(CONFIGS, 'https://main--bar2--foo.hlx.live/')).length).to.equal(0);
+    // match transient URL
+    expect((await getConfigMatches(CONFIGS, 'https://main--bar0--foo.hlx.live/')).length).to.equal(1);
     // todo: match sharepoint URL (docx)
     // expect((await getConfigMatches(CONFIGS, 'https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true')).length).to.equal(1);
     // todo: match gdrive URL
@@ -127,38 +132,38 @@ describe('Test utils', () => {
   });
 
   it('getConfig', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'get');
+    const spy = sandbox.spy(chrome.storage.local, 'get');
     await getConfig('local', 'test');
     expect(spy.calledWith('test')).to.be.true;
   });
 
   it('setConfig', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'set');
+    const spy = sandbox.spy(chrome.storage.local, 'set');
     const obj = { foo: 'bar' };
     await setConfig('local', obj);
     expect(spy.calledWith(obj)).to.be.true;
   });
 
   it('removeConfig', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'remove');
+    const spy = sandbox.spy(chrome.storage.local, 'remove');
     await removeConfig('local', 'foo');
     expect(spy.calledWith('foo')).to.be.true;
   });
 
   it('clearConfig', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'clear');
+    const spy = sandbox.spy(chrome.storage.local, 'clear');
     await clearConfig('local');
     expect(spy.called).to.be.true;
   });
 
   it('getDisplay', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'get');
+    const spy = sandbox.spy(chrome.storage.local, 'get');
     await getDisplay();
     expect(spy.calledWith('hlxSidekickDisplay')).to.be.true;
   });
 
   it('setDisplay', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'set');
+    const spy = sandbox.spy(chrome.storage.local, 'set');
     await setDisplay(true);
     expect(spy.calledWith({
       hlxSidekickDisplay: true,
@@ -166,11 +171,22 @@ describe('Test utils', () => {
   });
 
   it('toggleDisplay', async () => {
-    const spy = sandbox.spy(window.chrome.storage.local, 'set');
+    const spy = sandbox.spy(chrome.storage.local, 'set');
     const display = await toggleDisplay();
     expect(spy.calledWith({
       hlxSidekickDisplay: false,
     })).to.be.true;
     expect(display).to.be.false;
+  });
+
+  it('getGitHubSettings', async () => {
+    const settings = getGitHubSettings('https://github.com/adobe/blog/tree/stage');
+    expect(settings).to.eql({
+      owner: 'adobe',
+      repo: 'blog',
+      ref: 'stage',
+    });
+    const invalid = getGitHubSettings('https://www.example.com');
+    expect(invalid).to.eql({});
   });
 });

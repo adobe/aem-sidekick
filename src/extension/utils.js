@@ -20,7 +20,7 @@ export const GH_URL = 'https://github.com/';
  */
 export async function loadScript(path) {
   return new Promise((resolve) => {
-    const src = window.chrome.runtime.getURL(path);
+    const src = chrome.runtime.getURL(path);
     if (!document.querySelector(`script[src="${src}"]`)) {
       const script = document.createElement('script');
       script.type = 'module';
@@ -35,16 +35,33 @@ export async function loadScript(path) {
  * Checks if a host is a valid project host.
  * @private
  * @param {string} host The base host
- * @param {string} owner The owner
- * @param {string} host The repo
+ * @param {string} owner The owner (optional)
+ * @param {string} host The repo (optional)
  * @returns {boolean} <code>true</code> if project host, else <code>false</code>
  */
-export function isValidProjectHost(host, owner, repo) {
+export function isValidHost(host, owner, repo) {
   const [third, second, first] = host.split('.');
+  const any = '([0-9a-z-]+)';
   return host.endsWith(first)
     && ['page', 'live'].includes(first)
     && ['aem', 'hlx'].includes(second)
-    && third.endsWith(`--${repo}--${owner}`);
+    && new RegExp(`--${repo || any}--${owner || any}$`, 'i').test(third);
+}
+
+/**
+ * Retrieves project details from a host name.
+ * @private
+ * @param {string} host The host name
+ * @returns {string[]} The project details as <code>[ref, repo, owner]</code>
+ */
+function getConfigDetails(host) {
+  if (isValidHost(host)) {
+    const details = host.split('.')[0].split('--');
+    if (details.length >= 2) {
+      return details;
+    }
+  }
+  return [];
 }
 
 /**
@@ -71,10 +88,26 @@ export async function getConfigMatches(configs, tabUrl) {
       return checkHost === prodHost // production host
         || checkHost === previewHost // custom inner
         || checkHost === liveHost // custom outer
-        || isValidProjectHost(checkHost, owner, repo); // inner or outer
+        || isValidHost(checkHost, owner, repo); // inner or outer
     });
   // todo: check url cache if no matches
-  return matches;
+  // check if transient match can be derived from url or url cache
+  if (matches.length === 0) {
+    const [ref, repo, owner] = getConfigDetails(checkHost);
+    if (owner && repo && ref) {
+      matches.push({
+        owner,
+        repo,
+        ref,
+        transient: true,
+      });
+    }
+  }
+  // todo: check url cache for transient match
+  return matches
+    // exclude disabled configs
+    .filter(({ owner, repo }) => !configs
+      .find((cfg) => cfg.owner === owner && cfg.repo === repo && cfg.disabled));
 }
 
 /**
@@ -84,7 +117,7 @@ export async function getConfigMatches(configs, tabUrl) {
  * @returns {Promise<*>} The configuration
  */
 export async function getConfig(area, prop) {
-  const cfg = await window.chrome.storage[area].get(prop);
+  const cfg = await chrome.storage[area].get(prop);
   return cfg?.[prop];
 }
 
@@ -95,7 +128,7 @@ export async function getConfig(area, prop) {
  * @returns {Promise<void>}
  */
 export async function setConfig(area, obj) {
-  return window.chrome.storage[area].set(obj);
+  return chrome.storage[area].set(obj);
 }
 
 /**
@@ -105,7 +138,7 @@ export async function setConfig(area, obj) {
  * @returns {Promise<void>}
  */
 export async function removeConfig(area, prop) {
-  return window.chrome.storage[area].remove(prop);
+  return chrome.storage[area].remove(prop);
 }
 
 /**
@@ -114,7 +147,7 @@ export async function removeConfig(area, prop) {
  * @returns {Promise<void>}
  */
 export async function clearConfig(area) {
-  return window.chrome.storage[area].clear();
+  return chrome.storage[area].clear();
 }
 
 /**

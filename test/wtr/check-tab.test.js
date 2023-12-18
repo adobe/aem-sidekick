@@ -17,7 +17,6 @@ import sinon from 'sinon';
 
 import chromeMock from './mocks/chrome.js';
 import checkTab from '../../src/extension/check-tab.js';
-import { sleep } from './test-utils.js';
 
 window.chrome = chromeMock;
 
@@ -47,14 +46,20 @@ describe('Test checkTab', () => {
     expect(sendMessageSpy.called).to.be.true;
     // check tab with unknown URL
     await checkTab(2);
-    expect(executeScriptSpy.calledOnce).to.be.true;
+    expect(executeScriptSpy.callCount).to.equal(1);
     // check tab with dev URL
-    checkTab(3); // don't await checkTab here, getProxyUrl will timeout
-    await sleep(500);
-    expect(executeScriptSpy.calledTwice).to.be.true;
+    const proxyUrl = document.createElement('meta');
+    proxyUrl.setAttribute('property', 'hlx:proxyUrl');
+    proxyUrl.setAttribute('content', 'https://main--bar--foo.hlx.page/');
+    window.document.head.append(proxyUrl);
+    await checkTab(3);
+    expect(executeScriptSpy.callCount).to.equal(3);
+    proxyUrl.remove();
+    await checkTab(3);
+    expect(executeScriptSpy.callCount).to.equal(4);
     // error handling
     executeScriptSpy.restore();
-    const error = new Error('testing error handling');
+    const error = new Error('this error is just a test');
     const consoleSpy = sandbox.spy(console, 'log');
     sandbox.stub(chrome.scripting, 'executeScript').throws(error);
     await checkTab(1);
