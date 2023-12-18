@@ -13,7 +13,7 @@
 /* eslint-disable max-len */
 
 /**
- * @typedef {Object} SidekickOptionsConfig
+ * @typedef {Object} SidekickOptionsUserConfig
  * @prop {string} [project] The name of the project used in the sharing link (optional)
  * @prop {string} [giturl] The url to the repository (optional)
  * @prop {string} [mountpoint] The content source URL (optional)
@@ -29,7 +29,7 @@
 
 /**
  * @private
- * @typedef {Object} SidekickDerivedOptionsConfig
+ * @typedef {Object} SidekickOptionsDerivedConfig
  * @prop {string} id The project id
  * @prop {string} owner The GitHub owner or organization
  * @prop {string} repo The GitHub owner or organization
@@ -38,7 +38,11 @@
  */
 
 /**
- * @typedef {Object} SidekickConfigJSON
+ * @typedef {SidekickOptionsUserConfig & SidekickOptionsDerivedConfig } SidekickOptionsConfig
+ */
+
+/**
+ * @typedef {Object} SidekickRepositoryConfig
  * @prop {string} [project] The name of the project used in the sharing link (optional)
  * @prop {string} [host] The production host name to publish content to (optional)
  * @prop {Plugin[]} [plugins] An array of {@link Plugin|plugin configurations} (optional)
@@ -60,7 +64,7 @@
  */
 
 /**
- * @typedef {SidekickOptionsConfig & SidekickDerivedOptionsConfig & SidekickConfigJSON & SidekickDerivedConfig} SidekickConfig
+ * @typedef {SidekickOptionsConfig & SidekickRepositoryConfig & SidekickDerivedConfig} SidekickConfig
  */
 
 /**
