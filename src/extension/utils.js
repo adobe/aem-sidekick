@@ -35,8 +35,8 @@ export async function loadScript(path) {
  * Checks if a host is a valid project host.
  * @private
  * @param {string} host The base host
- * @param {string} owner The owner (optional)
- * @param {string} host The repo (optional)
+ * @param {string} [owner] The owner
+ * @param {string} [repo] The repo
  * @returns {boolean} <code>true</code> if project host, else <code>false</code>
  */
 export function isValidHost(host, owner, repo) {

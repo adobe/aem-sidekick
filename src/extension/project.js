@@ -125,6 +125,9 @@ export async function getProjectEnv({
   const env = {};
   let res;
   try {
+    /**
+     * @type {RequestInit}
+     */
     const options = {
       cache: 'no-store',
       credentials: 'include',
@@ -133,7 +136,8 @@ export async function getProjectEnv({
 
     res = await fetch(`https://admin.hlx.page/sidekick/${owner}/${repo}/${ref}/env.json`, options);
   } catch (e) {
-    // console.log(`unable to retrieve project config: ${e}`);
+    // eslint-disable-next-line no-console
+    console.log(`getProjectEnv: unable to retrieve project config: ${e}`);
   }
   if (res && res.ok) {
     const {
