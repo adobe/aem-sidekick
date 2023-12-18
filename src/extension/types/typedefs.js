@@ -24,16 +24,17 @@
  * @prop {boolean} [devOrigin] URL of the local development environment
  * @prop {boolean} [hlx5] Using helix 5?
  * @prop {boolean} [disabled] Is the project disabled?
- * @description The sidekick configuration from the user via the options window
+ * @description The sidekick configuration from the user via the options view
  */
 
 /**
+ * @private
  * @typedef {Object} SidekickDerivedOptionsConfig
  * @prop {string} id The project id
  * @prop {string} owner The GitHub owner or organization
  * @prop {string} repo The GitHub owner or organization
  * @prop {string} ref The Git reference or branch
- * @description The sidekick derived sidekick configuration.
+ * @description The derived sidekick configuration from options.
  */
 
 /**
@@ -42,10 +43,11 @@
  * @prop {string} [host] The production host name to publish content to (optional)
  * @prop {Plugin[]} [plugins] An array of {@link Plugin|plugin configurations} (optional)
  * @prop {ViewConfig[]} [specialViews] An array of custom {@link ViewConfig|view configurations}
- * @description The sidekick configuration.
+ * @description The sidekick configuration JSON.
  */
 
 /**
+ * @private
  * @typedef {Object} SidekickDerivedConfig
  * @prop {string} [innerHost] The host name of a custom preview CDN (optional)
  * @prop {string} [stdInnerHost] The host name of a custom live CDN (optional)
@@ -54,7 +56,7 @@
  * @prop {string} [scriptRoot] URL of the local development environment
  * @prop {string} [lang] URL of the local development environment
  * @prop {ViewConfig[]} [views] An array of custom {@link ViewConfig|view configurations}
- * @description The sidekick configuration.
+ * @description The derived sidekick configuration after loadContext.
  */
 
 /**
