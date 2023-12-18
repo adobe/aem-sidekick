@@ -42,7 +42,7 @@ describe('Test utils', () => {
   });
 
   it('getProject', async () => {
-    const spy = sandbox.spy(window.chrome.storage.sync, 'get');
+    const spy = sandbox.spy(chrome.storage.sync, 'get');
     // get project without handle
     let project = await getProject();
     expect(project).to.be.undefined;
@@ -57,7 +57,7 @@ describe('Test utils', () => {
   }).timeout(5000);
 
   it('getProjects', async () => {
-    const spy = sandbox.spy(window.chrome.storage.sync, 'get');
+    const spy = sandbox.spy(chrome.storage.sync, 'get');
     await getProjects();
     expect(spy.calledWith('hlxSidekickProjects')).to.be.true;
     expect(spy.calledWith('adobe/blog')).to.be.true;
@@ -104,7 +104,7 @@ describe('Test utils', () => {
   });
 
   it('addProject', async () => {
-    const spy = sandbox.spy(window.chrome.storage.sync, 'set');
+    const spy = sandbox.spy(chrome.storage.sync, 'set');
     // add project
     const added = await addProject({
       giturl: 'https://github.com/test/project',
@@ -129,7 +129,7 @@ describe('Test utils', () => {
   });
 
   it('updateProject', async () => {
-    const spy = sandbox.spy(window.chrome.storage.sync, 'set');
+    const spy = sandbox.spy(chrome.storage.sync, 'set');
     const project = {
       owner: 'test',
       repo: 'project',
@@ -148,7 +148,7 @@ describe('Test utils', () => {
   });
 
   it('deleteProject', async () => {
-    const spy = sandbox.spy(window.chrome.storage.sync, 'set');
+    const spy = sandbox.spy(chrome.storage.sync, 'set');
     // delete project without handle
     let deleted = await deleteProject({ owner: 'adobe', repo: 'blog' });
     expect(deleted).to.be.true;

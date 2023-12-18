@@ -20,19 +20,19 @@ import {
 } from './actions.js';
 import { addAuthTokenHeaders } from './auth.js';
 
-window.chrome.action.onClicked.addListener(async ({ id }) => {
+chrome.action.onClicked.addListener(async ({ id }) => {
   // toggle the sidekick when the action is clicked
   await toggleDisplay();
   checkTab(id);
 });
 
-window.chrome.tabs.onUpdated.addListener(async (id, info) => {
+chrome.tabs.onUpdated.addListener(async (id, info) => {
   if (info.status === 'complete') {
     checkTab(id);
   }
 });
 
-window.chrome.tabs.onActivated.addListener(({ tabId: id }) => {
+chrome.tabs.onActivated.addListener(({ tabId: id }) => {
   checkTab(id);
 });
 
