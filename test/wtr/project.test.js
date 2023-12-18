@@ -74,8 +74,10 @@ describe('Test utils', () => {
     expect(project).to.equal('Adobe Business Website');
     expect(mountpoints[0]).to.equal('https://adobe.sharepoint.com/:f:/s/Dummy/Alk9MSH25LpBuUWA_N6DOL8BuI6Vrdyrr87gne56dz3QeQ');
     // error handling
-    sandbox.stub(window, 'fetch').throws();
+    sandbox.stub(window, 'fetch').throws(new Error('this is just a test'));
+    const spy = sandbox.spy(console, 'log');
     const error = await getProjectEnv({});
+    expect(spy.called).to.be.true;
     expect(error).to.eql({});
   });
 

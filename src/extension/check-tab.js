@@ -67,7 +67,7 @@ async function injectContentScript(tabId, matches) {
     });
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.log('unable to inject content script', tabId, e);
+    console.log('injectContentScript: unable to inject content script', tabId, e);
   }
 }
 
