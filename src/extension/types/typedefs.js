@@ -16,7 +16,7 @@
  * @typedef {Object} OptionsConfig
  * @prop {string} [project] The name of the project
  * @prop {string} giturl The url to the repository
- * @prop {string[]} mountpoints The content source URL
+ * @prop {string} mountpoint The content source URL
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
@@ -31,7 +31,7 @@
 /**
  * @private
  * @typedef {Object} OptionsDerivedConfig
- * @prop {string} [id] The project id
+ * @prop {string[]} mountpoints The content source URL
  * @prop {string} owner The GitHub owner or organization
  * @prop {string} repo The GitHub repo
  * @prop {string} ref The Git reference or branch
