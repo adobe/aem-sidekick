@@ -14,9 +14,9 @@
 
 /**
  * @typedef {Object} OptionsConfig
- * @prop {string} [project] The name of the project used in the sharing link
- * @prop {string} [giturl] The url to the repository
- * @prop {string[]} [mountpoints] The content source URL
+ * @prop {string} [project] The name of the project
+ * @prop {string} giturl The url to the repository
+ * @prop {string[]} mountpoints The content source URL
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
@@ -35,7 +35,6 @@
  * @prop {string} owner The GitHub owner or organization
  * @prop {string} repo The GitHub repo
  * @prop {string} ref The Git reference or branch
- * @prop {string} [authToken] The Git reference or branch
  * @description The derived sidekick configuration from options.
  */
 
@@ -44,18 +43,41 @@
  */
 
 /**
- * @typedef {Object} RepositoryConfig
- * @prop {string} [project] The name of the project used in the sharing link (optional)
- * @prop {string} [host] The production host name to publish content to (optional)
- * @prop {Plugin[]} [plugins] An array of {@link Plugin|plugin configurations} (optional)
+ * @typedef {Object} ServerConfig
+ * @prop {string} contentSourceUrl The content source URL
+ * @prop {string} [preview.host] The host name of a custom preview CDN
+ * @prop {string} [live.host] The host name of a custom live CDN
+ * @prop {string} [prod.host] The production host name to publish content to
+ * @description Represents the sidekick configuration from the server-side configuration (`env.json`)
+ */
+
+/**
+ * @private
+ * @typedef {Object} ServerDerivedConfig
+ * @prop {string[]} mountpoints The content source URL
+ * @prop {string} [previewHost] The host name of a custom preview CDN
+ * @prop {string} [liveHost] The host name of a custom live CDN
+ * @prop {string} [host] The production host name to publish content to
+ * @description The derived sidekick configuration from the from the server-side configuration
+ */
+
+/**
+ * @typedef {Object} ClientConfig
+ * @prop {string} [extends] Extend another project's sidekick configuration?
+ * @prop {string} [redirect] Loads the sidekick configuration from a different URL?
+ * @prop {string} [project] The name of the project
+ * @prop {string} [previewHost] The host name of a custom preview CDN
+ * @prop {string} [liveHost] The host name of a custom live CDN
+ * @prop {string} [host] The production host name to publish content to
+ * @prop {Plugin[]} [plugins] An array of {@link Plugin|plugin configurations}
  * @prop {ViewConfig[]} [specialViews] An array of custom {@link ViewConfig|view configurations}
- * @description The configuration file from the respository `config.json`.
+ * @description The configuration file from the project's respository (`config.json`).
+ * @link https://github.com/adobe/helix-sidekick-extension/blob/main/docs/config.schema.json
  */
 
 /**
  * @private
  * @typedef {Object} SidekickDerivedConfig
- * @prop {string} [mountpoint] The content source URL
  * @prop {string} [innerHost] The host name of a custom preview CDN (optional)
  * @prop {string} [stdInnerHost] The host name of a custom live CDN (optional)
  * @prop {string} [outerHost] Loads configuration and plugins from the development environment
@@ -67,7 +89,7 @@
  */
 
 /**
- * @typedef {SidekickOptionsConfig & SidekickDerivedConfig} SidekickConfig
+ * @typedef {ServerDerivedConfig & SidekickOptionsConfig & ClientConfig & SidekickDerivedConfig} SidekickConfig
  */
 
 /**
