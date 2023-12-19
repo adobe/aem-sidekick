@@ -18,11 +18,16 @@ import { fetchLanguageDict } from '../utils/i18n.js';
 import { getLocation, matchProjectHost, isSupportedFileExtension } from '../utils/browser.js';
 
 /**
- * The plugins
+ * The sidekick configuration object type
+ * @typedef {import('@Types').SidekickOptionsConfig} SidekickOptionsConfig
+ */
+
+/**
+ * The plugin object type
  * @typedef {import('@Types').Plugin} Plugin
  */
 
-class AppStore {
+export class AppStore {
   // eslint-disable-next-line no-undef
   @observable accessor initialized = false;
 
@@ -63,14 +68,14 @@ class AppStore {
   /**
    * Loads the sidekick configuration and language dictionary,
    * and retrieves the location of the current document.
-   * @param {SiteStore} cfg The sidekick config
+   * @param {SidekickOptionsConfig} inputConfig The sidekick config
    * @fires Sidekick#contextloaded
    */
-  async loadContext(sidekick, cfg) {
+  async loadContext(sidekick, inputConfig) {
     this.sidekick = sidekick;
     this.location = getLocation();
 
-    await this.siteStore.initStore(cfg);
+    await this.siteStore.initStore(inputConfig);
 
     // load dictionary based on user language
     this.languageDict = await fetchLanguageDict(this.siteStore);

@@ -7,7 +7,7 @@
     "analyze": "cem analyze --litelement",
     "lint": "eslint .",
     "test:mocha": "c8 mocha",
-    "test:wtr": "wtr \"./test/wtr/*.test.js\"",
+    "test:wtr": "wtr \"./test/wtr/**/*.test.js\"",
     "test:wtr:watch": "npm run test:wtr -- --watch",
     "test": "npm run test:mocha && npm run test:wtr",
     "docs": "npx jsdoc2md -c .jsdoc.json --files './src/*.js'  > docs/API.md",

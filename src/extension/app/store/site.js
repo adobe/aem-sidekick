@@ -13,6 +13,20 @@
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import { getLanguage, i18n } from '../utils/i18n.js';
 
+/**
+ * The sidekick options configuration object type
+ * @typedef {import('@Types').SidekickOptionsConfig} SidekickOptionsConfig
+ */
+
+/**
+ * The sidekick configuration object type
+ * @typedef {import('@Types').SidekickConfig} SidekickConfig
+ */
+
+/**
+ * @typedef {import('./app.js').AppStore} AppStore
+ */
+
 export class SiteStore {
   /**
    * The GitHub owner or organization (mandatory)
@@ -87,12 +101,6 @@ export class SiteStore {
   stdOuterHost;
 
   /**
-   * If the production host is a 3rd party CDN
-   * @type {boolean}
-   */
-  byocdn;
-
-  /**
    * Loads configuration and plugins from the development environment
    * @type {boolean}
    */
@@ -128,17 +136,24 @@ export class SiteStore {
    */
   views;
 
+  /**
+   * @param {AppStore} appStore
+   */
   constructor(appStore) {
     this.appStore = appStore;
   }
 
+  /**
+   * Initializes the site store
+   * @param {SidekickOptionsConfig} cfg
+   */
   async initStore(cfg) {
     let config = cfg || (window.hlx && window.hlx.sidekickConfig) || {};
     const {
       owner,
       repo,
       ref = 'main',
-      mountpoint,
+      mountpoints,
       devMode,
       adminVersion,
       _extended,
@@ -206,7 +221,7 @@ export class SiteStore {
     this.owner = owner;
     this.repo = repo;
     this.ref = ref;
-    this.mountpoint = mountpoint;
+    [this.mountpoint] = mountpoints || [];
     this.devMode = devMode;
     this.adminVersion = adminVersion;
     this._extended = _extended;
@@ -229,6 +244,10 @@ export class SiteStore {
     this.appStore.initialized = true;
   }
 
+  /**
+   * Serializes the store to JSON
+   * @returns { SidekickConfig }
+   */
   toJSON() {
     return {
       owner: this.owner,
@@ -243,7 +262,6 @@ export class SiteStore {
       liveHost: this.liveHost,
       outerHost: this.outerHost,
       stdOuterHost: this.stdOuterHost,
-      byocdn: this.byocdn,
       devMode: this.devMode,
       devOrigin: this.devOrigin,
       adminVersion: this.adminVersion,

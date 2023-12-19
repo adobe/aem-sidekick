@@ -44,13 +44,11 @@
               'host',
               'devMode',
               'devOrigin',
-              'pushDown',
               'adminVersion',
               'authTokenExpiry',
               'hlx5',
             ].includes(k)));
-          curatedConfig.scriptUrl = getExtensionURL('module.js');
-          [curatedConfig.mountpoint] = config.mountpoints || [];
+          curatedConfig.scriptUrl = getExtensionURL('index.js');
 
           sidekick = new AEMSidekick(curatedConfig);
           sidekick.setAttribute('open', display);

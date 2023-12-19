@@ -78,6 +78,7 @@ const CONFIGS = [
   },
 ];
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Test utils', () => {

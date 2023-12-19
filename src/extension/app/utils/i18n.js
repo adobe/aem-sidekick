@@ -11,7 +11,7 @@
  */
 
 /**
- * @typedef {import('@SiteStore').SiteStore} SiteStore
+ * @typedef {import('@Types').SidekickConfig} SidekickConfig
  */
 
 /**
@@ -64,13 +64,13 @@ export function getLanguage() {
 /**
  * Fetches the dictionary for a language.
  * @private
- * @param {SiteStore} siteStore The site config
+ * @param {SidekickConfig} sidekickConfig The site config
  * @param {string} [lang] The language
  * @returns {Promise<object>} The dictionary
  */
-export async function fetchLanguageDict(siteStore, lang) {
+export async function fetchLanguageDict(sidekickConfig, lang) {
   const dict = {};
-  const dictPath = `${siteStore.scriptRoot}/_locales/${lang || siteStore.lang}/messages.json`;
+  const dictPath = `${sidekickConfig.scriptRoot}/_locales/${lang || sidekickConfig.lang}/messages.json`;
   try {
     const res = await fetch(dictPath);
     const messages = await res.json();

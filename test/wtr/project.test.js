@@ -9,6 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+
 /* eslint-disable no-unused-expressions */
 
 import { expect } from '@esm-bundle/chai';
@@ -27,7 +28,10 @@ import {
   deleteProject,
 } from '../../src/extension/project.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
+
+// @ts-ignore
 window.fetch = fetchMock;
 
 describe('Test utils', () => {
@@ -76,6 +80,7 @@ describe('Test utils', () => {
     // error handling
     sandbox.stub(window, 'fetch').throws(new Error('this is just a test'));
     const spy = sandbox.spy(console, 'log');
+    // @ts-ignore
     const error = await getProjectEnv({});
     expect(spy.called).to.be.true;
     expect(error).to.eql({});

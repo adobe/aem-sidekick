@@ -73,6 +73,7 @@ export default function sampleRUM(checkpoint, data = {}) {
           return true;
         },
       };
+      // @ts-ignore
       sendPing(data);
       if (sampleRUM.cases[checkpoint]) {
         sampleRUM.cases[checkpoint]();

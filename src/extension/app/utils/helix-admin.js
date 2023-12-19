@@ -11,13 +11,13 @@
  */
 
 /**
- * @typedef {import('../store/site.js').SiteStore} SiteStore
+ * @typedef {import('@Types').SidekickConfig} SidekickConfig
  */
 
 /**
  * Creates an Admin URL for an API and path.
  * @private
- * @param {SiteStore} siteStore The site store
+ * @param {SidekickConfig} sidekickConfig The sidekick config object
  * @param {string} api The API endpoint to call
  * @param {string} path The current path
  * @returns {URL} The admin URL
