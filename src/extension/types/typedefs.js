@@ -13,15 +13,34 @@
 /* eslint-disable max-len */
 
 /**
- * @typedef {Object} OptionsConfig
- * @prop {string} [project] The name of the project used in the sharing link
- * @prop {string} [giturl] The url to the repository
- * @prop {string[]} [mountpoints] The content source URL
+ * @typedef {Object} ServerConfig
+ * @prop {string} contentSourceUrl The content source URL
+ * @prop {string} [preview.host] The host name of a custom preview CDN
+ * @prop {string} [live.host] The host name of a custom live CDN
+ * @prop {string} [prod.host] The production host name to publish content to
+ * @description Represents the sidekick configuration from the server-side configuration (`env.json`)
+ */
+
+/**
+ * @private
+ * @typedef {Object} ServerDerivedConfig
+ * @prop {string[]} mountpoints The content source URL
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
- * @prop {boolean} [devMode] Loads configuration and plugins from the development environment
- * @prop {string} [devOrigin] URL of the local development environment
+ * @description The derived sidekick configuration from the from the server-side configuration
+ */
+
+/**
+ * @typedef {Object} OptionsConfig
+ * @prop {string} [project] The name of the project
+ * @prop {string} giturl The url to the repository
+ * @prop {string} mountpoint The content source URL
+ * @prop {string} [previewHost] The host name of a custom preview CDN
+ * @prop {string} [liveHost] The host name of a custom live CDN
+ * @prop {string} [host] The production host name to publish content to
+ * @prop {boolean} [devMode] Loads client configuration and plugins from the development environment
+ * @prop {string} [devOrigin] The origin of the local development environment
  * @prop {string} [adminVersion] The specific version of admin service to use
  * @prop {boolean} [hlx5] Using helix 5?
  * @prop {boolean} [disabled] Is the project disabled?
@@ -31,43 +50,46 @@
 /**
  * @private
  * @typedef {Object} OptionsDerivedConfig
- * @prop {string} [id] The project id
+ * @prop {string[]} mountpoints The content source URL
  * @prop {string} owner The GitHub owner or organization
  * @prop {string} repo The GitHub repo
  * @prop {string} ref The Git reference or branch
- * @prop {string} [authToken] The Git reference or branch
  * @description The derived sidekick configuration from options.
  */
 
 /**
- * @typedef {OptionsConfig & OptionsDerivedConfig } SidekickOptionsConfig
+ * @typedef {ServerDerivedConfig & OptionsConfig & OptionsDerivedConfig } SidekickOptionsConfig
  */
 
 /**
- * @typedef {Object} RepositoryConfig
- * @prop {string} [project] The name of the project used in the sharing link (optional)
- * @prop {string} [host] The production host name to publish content to (optional)
- * @prop {Plugin[]} [plugins] An array of {@link Plugin|plugin configurations} (optional)
+ * @typedef {Object} ClientConfig
+ * @prop {string} [extends] Extend another project's sidekick configuration?
+ * @prop {string} [redirect] Loads the sidekick configuration from a different URL?
+ * @prop {string} [project] The name of the project
+ * @prop {string} [previewHost] The host name of a custom preview CDN
+ * @prop {string} [liveHost] The host name of a custom live CDN
+ * @prop {string} [host] The production host name to publish content to
+ * @prop {Plugin[]} [plugins] An array of {@link Plugin|plugin configurations}
  * @prop {ViewConfig[]} [specialViews] An array of custom {@link ViewConfig|view configurations}
- * @description The configuration file from the respository `config.json`.
+ * @description The configuration file from the project's respository (`config.json`).
+ * @link https://github.com/adobe/helix-sidekick-extension/blob/main/docs/config.schema.json
  */
 
 /**
  * @private
  * @typedef {Object} SidekickDerivedConfig
- * @prop {string} [mountpoint] The content source URL
- * @prop {string} [innerHost] The host name of a custom preview CDN (optional)
- * @prop {string} [stdInnerHost] The host name of a custom live CDN (optional)
- * @prop {string} [outerHost] Loads configuration and plugins from the development environment
- * @prop {string} [stdOuterHost] URL of the local development environment
- * @prop {string} [scriptRoot] URL of the local development environment
- * @prop {string} [lang] URL of the local development environment
+ * @prop {string} innerHost The host name of the preview origin (standard or custom)
+ * @prop {string} stdInnerHost The standard host name of the preview origin
+ * @prop {string} outerHost The host name of the live origin (standard or custom)
+ * @prop {string} stdOuterHost The standard host name of the live origin
+ * @prop {string} devUrl The URL of the local development environment
+ * @prop {string} [lang] The UI language to use
  * @prop {ViewConfig[]} [views] An array of custom {@link ViewConfig|view configurations}
  * @description The derived sidekick configuration after loadContext.
  */
 
 /**
- * @typedef {SidekickOptionsConfig & SidekickDerivedConfig} SidekickConfig
+ * @typedef {SidekickOptionsConfig & ClientConfig & SidekickDerivedConfig} SidekickConfig
  */
 
 /**
