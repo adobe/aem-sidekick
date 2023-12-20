@@ -47,10 +47,22 @@ export class SiteStore {
   ref;
 
   /**
+   * The url to the repository
+   * @type {string}
+   */
+  giturl;
+
+  /**
    * The content source URL (optional)
    * @type {string}
    */
   mountpoint;
+
+  /**
+   * An arround of content source URLs (optional)
+   * @type {string[]}
+   */
+  mountpoints;
 
   /**
    * The name of the project used in the sharing link (optional)
@@ -119,12 +131,6 @@ export class SiteStore {
   adminVersion;
 
   /**
-   * Extension script root
-   * @type {string}
-   */
-  scriptRoot;
-
-  /**
    * User language preference
    * @type {string}
    */
@@ -135,6 +141,12 @@ export class SiteStore {
    * @type {import('@Types').ViewConfig[]}
    */
   views;
+
+  /**
+   * Custom views
+   * @type {import('@Types').Plugin[]}
+   */
+  plugins;
 
   /**
    * @param {AppStore} appStore
@@ -153,6 +165,7 @@ export class SiteStore {
       owner,
       repo,
       ref = 'main',
+      giturl,
       mountpoints,
       devMode,
       adminVersion,
@@ -183,6 +196,7 @@ export class SiteStore {
           };
         }
       } catch (e) {
+        /* istanbul ignore next 2 */
         // eslint-disable-next-line no-console
         console.log('error retrieving custom sidekick config', e);
       }
@@ -198,7 +212,6 @@ export class SiteStore {
       specialViews,
       hlx5,
       scriptUrl = 'https://www.hlx.live/tools/sidekick/module.js',
-      scriptRoot = scriptUrl.split('/').filter((_, i, arr) => i < arr.length - 1).join('/'),
     } = config;
     const publicHost = host && host.startsWith('http') ? new URL(host).host : host;
     const hostPrefix = owner && repo ? `${ref}--${repo}--${owner}` : null;
@@ -211,17 +224,20 @@ export class SiteStore {
     this.views = [
       {
         path: '**.json',
-        viewer: `${scriptRoot}/view/json/json.html`,
-        title: (sk) => i18n(sk, 'json_view_description'),
+        viewer: chrome.runtime.getURL('view/json/json.html'),
+        title: () => i18n(this.appStore.languageDict, 'json_view_description'),
       },
     ];
     // prepend custom views
     this.views = (specialViews || []).concat(this.views);
+    this.plugins = config.plugins || [];
 
     this.owner = owner;
     this.repo = repo;
     this.ref = ref;
-    [this.mountpoint] = mountpoints || [];
+    this.giturl = giturl;
+    this.mountpoints = mountpoints || [];
+    [this.mountpoint] = this.mountpoints;
     this.devMode = devMode;
     this.adminVersion = adminVersion;
     this._extended = _extended;
@@ -235,7 +251,6 @@ export class SiteStore {
     this.outerHost = liveHost || legacyLiveHost || stdOuterHost;
     this.stdInnerHost = stdInnerHost;
     this.stdOuterHost = stdOuterHost;
-    this.scriptRoot = scriptRoot;
     this.host = publicHost;
     this.project = project;
     this.devUrl = devUrl;
@@ -253,7 +268,10 @@ export class SiteStore {
       owner: this.owner,
       repo: this.repo,
       ref: this.ref,
+      giturl: this.giturl,
+      devUrl: this.devUrl.href,
       mountpoint: this.mountpoint,
+      mountpoints: this.mountpoints,
       project: this.project,
       host: this.host,
       previewHost: this.previewHost,
@@ -265,7 +283,6 @@ export class SiteStore {
       devMode: this.devMode,
       devOrigin: this.devOrigin,
       adminVersion: this.adminVersion,
-      scriptRoot: this.scriptRoot,
       lang: this.lang,
       views: this.views,
     };

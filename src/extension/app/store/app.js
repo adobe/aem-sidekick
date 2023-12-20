@@ -55,12 +55,6 @@ export class AppStore {
    */
   languageDict;
 
-  /**
-   * The plugins
-   * @type {Plugin[]}
-   */
-  plugins;
-
   constructor() {
     this.siteStore = new SiteStore(this);
   }
@@ -68,6 +62,7 @@ export class AppStore {
   /**
    * Loads the sidekick configuration and language dictionary,
    * and retrieves the location of the current document.
+   * @param {HTMLElement} sidekick The sidekick HTMLElement
    * @param {SidekickOptionsConfig} inputConfig The sidekick config
    * @fires Sidekick#contextloaded
    */
@@ -83,6 +78,7 @@ export class AppStore {
       // unsupported language, default to english
       this.languageDict = await fetchLanguageDict(this.siteStore, 'en');
     }
+
     this.fireEvent('contextloaded', {
       config: this.siteStore.toJSON(),
       location: this.location,
@@ -156,7 +152,7 @@ export class AppStore {
    * @returns {boolean} <code>true</code> if editor URL, else <code>false</code>
    */
   isEditor() {
-    const { siteStore, location } = this;
+    const { location } = this;
     const { host } = location;
     if (this.isSharePointEditor(location) || this.isSharePointViewer(location)) {
       return true;
@@ -164,9 +160,7 @@ export class AppStore {
     if (host === 'docs.google.com') {
       return true;
     }
-    if (siteStore.mountpoint && new URL(siteStore.mountpoint).host === host && !this.isAdmin()) {
-      return true;
-    }
+
     return false;
   }
 
@@ -255,7 +249,7 @@ export class AppStore {
   isSharePointEditor(url) {
     const { pathname, search } = url;
     return this.isSharePoint(url)
-      && pathname.match(/\/_layouts\/15\/[\w]+.aspx$/)
+      && pathname.match(/\/_layouts\/15\/[\w]+.aspx/)
       && search.includes('sourcedoc=');
   }
 
@@ -321,12 +315,14 @@ export class AppStore {
         'helpoptedout',
       ];
       if (name.startsWith('custom:') || userEvents.includes(name)) {
+        /* istanbul ignore next */
         sampleRUM(`sidekick:${name}`, {
           source: data?.sourceUrl || this.location.href,
           target: data?.targetUrl || this.status.webPath,
         });
       }
     } catch (e) {
+      /* istanbul ignore next 2 */
       // eslint-disable-next-line no-console
       console.warn('failed to fire event', name, e);
     }
@@ -337,13 +333,13 @@ export class AppStore {
      * @fires Sidekick#statusfetched
      * @param {boolean} [refreshLocation] Refresh the sidekick's location (optional)
      */
-  async fetchStatus(refreshLocation) {
+  fetchStatus(refreshLocation) {
     if (refreshLocation) {
       this.location = getLocation();
     }
     const { owner, repo, ref } = this.siteStore;
     if (!owner || !repo || !ref) {
-      return this;
+      return;
     }
     if (!this.status.apiUrl || refreshLocation) {
       const { href, pathname } = this.location;
@@ -353,7 +349,6 @@ export class AppStore {
         'status',
         isDM ? '' : pathname,
       );
-
       apiUrl.searchParams.append('editUrl', isDM ? href : 'auto');
       this.status.apiUrl = apiUrl;
     }
@@ -389,6 +384,7 @@ export class AppStore {
         try {
           return resp.json();
         } catch (e) {
+          /* istanbul ignore next */
           throw new Error('error_status_invalid');
         }
       })
@@ -399,6 +395,7 @@ export class AppStore {
       .then((json) => this.fireEvent('statusfetched', json))
       .catch(({ message }) => {
         this.status.error = message;
+        // TODO: Setup modals
         // const modal = {
         //   message: message.startsWith('error_') ? i18n(this, message) : [
         //     i18n(this, 'error_status_fatal'),
@@ -417,7 +414,6 @@ export class AppStore {
         // };
         // this.showModal(modal);
       });
-    return this;
   }
 }
 

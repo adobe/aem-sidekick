@@ -14,6 +14,7 @@
 import { fromRollup } from '@web/dev-server-rollup';
 import rollupBabel from '@rollup/plugin-babel';
 
+// @ts-ignore
 const babel = fromRollup(rollupBabel);
 
 export default {
@@ -21,7 +22,7 @@ export default {
   port: 2000,
   coverage: true,
   coverageConfig: {
-    include: ['./src/**'],
+    include: ['./src/**/*'],
     report: true,
     reportDir: 'coverage-wtr',
   },
@@ -29,6 +30,8 @@ export default {
     babel({
       include: ['src/**/*.js'],
       babelHelpers: 'bundled',
+      plugins: ['babel-plugin-istanbul'],
+      sourceMaps: 'inline',
     }),
   ],
   testRunnerHtml: (testFramework) => `

@@ -11,8 +11,17 @@
  */
 
 /**
- * @typedef {import('@Types').SidekickConfig} SidekickConfig
+ * @typedef {import('../store/site.js').SiteStore} SiteStore
  */
+
+/**
+ * Wraps the navigator.languages API.
+ * Used for testing.
+ */
+export const languagesService = {
+  getNavigatorLanguages: () => navigator.languages,
+  // other location-related methods...
+};
 
 /**
  * Supported sidekick languages.
@@ -44,7 +53,7 @@ export function i18n(languageDict, key) {
 }
 
 export function getLanguage() {
-  for (const navLang of navigator.languages) {
+  for (const navLang of languagesService.getNavigatorLanguages()) {
     const prefLang = navLang.replace('-', '_');
     const exactMatch = LANGS.includes(prefLang);
     if (exactMatch) {
@@ -64,13 +73,13 @@ export function getLanguage() {
 /**
  * Fetches the dictionary for a language.
  * @private
- * @param {SidekickConfig} sidekickConfig The site config
+ * @param {SiteStore} siteStore The site config
  * @param {string} [lang] The language
  * @returns {Promise<object>} The dictionary
  */
-export async function fetchLanguageDict(sidekickConfig, lang) {
+export async function fetchLanguageDict(siteStore, lang) {
   const dict = {};
-  const dictPath = `${sidekickConfig.scriptRoot}/_locales/${lang || sidekickConfig.lang}/messages.json`;
+  const dictPath = chrome.runtime.getURL(`_locales/${lang || siteStore.lang}/messages.json`);
   try {
     const res = await fetch(dictPath);
     const messages = await res.json();
@@ -78,6 +87,7 @@ export async function fetchLanguageDict(sidekickConfig, lang) {
       dict[key] = messages[key].message;
     });
   } catch (e) {
+    /* istanbul ignore next 2 */
     // eslint-disable-next-line no-console
     console.error(`failed to fetch dictionary from ${dictPath}`);
   }

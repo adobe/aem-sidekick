@@ -92,15 +92,11 @@ export function matchProjectHost(baseHost, host) {
   if (!isPreview && !isLive) {
     return false;
   }
+
   // project details
-  try {
-    const [baseHostRepo, baseHostOwner] = getProjectDetails(baseHost);
-    const [hostRepo, hostOwner] = getProjectDetails(host);
-    return baseHostOwner === hostOwner && baseHostRepo === hostRepo;
-  } catch (e) {
-    // ignore if no project host
-  }
-  return false;
+  const [baseHostRepo, baseHostOwner] = getProjectDetails(baseHost);
+  const [hostRepo, hostOwner] = getProjectDetails(host);
+  return baseHostOwner === hostOwner && baseHostRepo === hostRepo;
 }
 
 /**

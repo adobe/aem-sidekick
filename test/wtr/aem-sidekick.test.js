@@ -9,18 +9,31 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
+// @ts-ignore
+import fetchMock from 'fetch-mock/esm/client.js';
 import { html } from 'lit';
 import { fixture, expect } from '@open-wc/testing';
+import { emulateMedia } from '@web/test-runner-commands';
 import { recursiveQuery } from './test-utils.js';
+import chromeMock from './mocks/chrome.js';
 
 import '../../src/extension/app/aem-sidekick.js';
+import { mockFetchEnglishMessagesSuccess } from './fixtures/i18n.js';
+
+// @ts-ignore
+window.chrome = chromeMock;
 
 describe('AEM Sidekick', () => {
   let element;
   beforeEach(async () => {
+    mockFetchEnglishMessagesSuccess();
     element = await fixture(html`<aem-sidekick></aem-sidekick>`);
+  });
+
+  afterEach(() => {
+    fetchMock.restore();
   });
 
   it('renders theme and action-bar', () => {
@@ -29,6 +42,29 @@ describe('AEM Sidekick', () => {
 
     const actionBar = recursiveQuery(theme, 'action-bar');
     expect(actionBar).to.exist;
+  });
+
+  describe('color themes', () => {
+    it('renders light theme', async () => {
+      await emulateMedia({ colorScheme: 'light' });
+      element = await fixture(html`<aem-sidekick></aem-sidekick>`);
+
+      const theme = element.shadowRoot.querySelector('sp-theme');
+      expect(theme).to.exist;
+
+      expect(theme.getAttribute('color')).to.equal('light');
+    });
+
+    it('renders dark theme', async () => {
+      await emulateMedia({ colorScheme: 'dark' });
+      element = await fixture(html`<aem-sidekick></aem-sidekick>`);
+
+      const theme = element.shadowRoot.querySelector('sp-theme');
+      expect(theme).to.exist;
+
+      // todo: check if color scheme change is getting picked up
+      expect(theme.getAttribute('color')).to.equal('dark');
+    });
   });
 
   it('passes the a11y audit', async () => {

@@ -18,6 +18,7 @@ import sinon from 'sinon';
 import { externalActions } from '../../src/extension/actions.js';
 import chromeMock from './mocks/chrome.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Test actions', () => {

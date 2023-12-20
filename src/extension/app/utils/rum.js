@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-/* c8 ignore start */
+/* istanbul ignore file */
 
 /**
  * @typedef {Object} sampleRUM
@@ -83,4 +83,3 @@ export default function sampleRUM(checkpoint, data = {}) {
     // something went wrong
   }
 }
-/* c8 ignore end */

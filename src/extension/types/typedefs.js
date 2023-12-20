@@ -96,17 +96,17 @@
  * @typedef {Object} Plugin
  * @prop {string} id The plugin ID (mandatory)
  * @prop {string} title The button text
- * @prop {Object} titleI18n A map of translated button texts (default: {})
- * @prop {string} url The URL to open when the button is clicked
- * @prop {boolean} passConfig Append additional sk info to the url as query parameters: ref, repo, owner, host, project
- * @prop {boolean} passReferrer Append the referrer URL as a query param on new URL button click. Note: Plugin events get a custom: prefix, e.g. "foo" becomes "custom:foo".
- * @prop {string} containerId The ID of a dropdown to add this plugin to (optional)
- * @prop {boolean} isContainer Determines whether to turn this plugin into a dropdown
- * @prop {boolean} isPalette Determines whether a URL is opened in a palette instead of a new tab
- * @prop {string} paletteRect The dimensions and position of a palette (optional)
- * @prop {string[]} environments Specifies when to show this plugin (admin, edit, dev, preview, live, prod)
- * @prop {string[]} excludePaths Exclude the plugin from these paths (glob patterns supported)
- * @prop {string[]} includePaths Include the plugin on these paths (glob patterns supported)
+ * @prop {Object} [titleI18n] A map of translated button texts (default: {})
+ * @prop {string} [url] The URL to open when the button is clicked
+ * @prop {boolean} [passConfig] Append additional sk info to the url as query parameters: ref, repo, owner, host, project
+ * @prop {boolean} [passReferrer] Append the referrer URL as a query param on new URL button click. Note: Plugin events get a custom: prefix, e.g. "foo" becomes "custom:foo".
+ * @prop {string} [containerId] The ID of a dropdown to add this plugin to (optional)
+ * @prop {boolean} [isContainer] Determines whether to turn this plugin into a dropdown
+ * @prop {boolean} [isPalette] Determines whether a URL is opened in a palette instead of a new tab
+ * @prop {string} [paletteRect] The dimensions and position of a palette (optional)
+ * @prop {string[]} [environments] Specifies when to show this plugin (admin, edit, dev, preview, live, prod)
+ * @prop {string[]} [excludePaths] Exclude the plugin from these paths (glob patterns supported)
+ * @prop {string[]} [includePaths] Include the plugin on these paths (glob patterns supported)
  * @description The plugin configuration.
  */
 
