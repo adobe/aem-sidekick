@@ -20,7 +20,7 @@ import checkTab from '../../src/extension/check-tab.js';
 
 window.chrome = chromeMock;
 
-describe('Test checkTab', () => {
+describe('Test check-tab', () => {
   const sandbox = sinon.createSandbox();
 
   before(async () => {

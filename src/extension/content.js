@@ -14,7 +14,7 @@
   // ensure hlx namespace
   window.hlx = window.hlx || {};
 
-  const { getDisplay } = await import('./utils.js');
+  const { getDisplay } = await import('./display.js');
   const display = await getDisplay();
   let { sidekick } = window.hlx;
   if (!sidekick) {

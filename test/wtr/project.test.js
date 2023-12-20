@@ -25,12 +25,64 @@ import {
   addProject,
   updateProject,
   deleteProject,
+  isValidHost,
+  getProjectMatches,
+  getGitHubSettings,
 } from '../../src/extension/project.js';
+import { urlCache } from '../../src/extension/url-cache.js';
+
+const CONFIGS = [
+  {
+    owner: 'foo',
+    repo: 'bar1',
+    ref: 'main',
+    host: '1.foo.bar',
+    mountpoints: ['https://foo.sharepoint.com/sites/foo/Shared%20Documents/root1'],
+  },
+  {
+    owner: 'foo',
+    repo: 'bar2',
+    ref: 'main',
+    host: '2.foo.bar',
+    mountpoints: ['https://foo.sharepoint.com/sites/foo/Shared%20Documents/root2'],
+    disabled: true,
+  },
+  {
+    owner: 'foo',
+    repo: 'bar3',
+    ref: 'main',
+    host: '3.foo.bar',
+    mountpoints: ['https://foo.sharepoint.com/something/boo/Shared%20Documents/root3'],
+  },
+  {
+    owner: 'foo',
+    repo: 'bar4',
+    ref: 'main',
+    host: '4.foo.bar',
+    mountpoints: ['https://drive.google.com/drive/folders/1234567890'],
+  },
+  {
+    owner: 'foo',
+    repo: 'bar5',
+    ref: 'main',
+    host: '5.foo.bar',
+    mountpoints: ['https://foo.custom/sites/foo/Shared%20Documents/root1'],
+  },
+  {
+    owner: 'foo',
+    repo: 'bar6',
+    ref: 'main',
+    previewHost: '6-preview.foo.bar',
+    liveHost: '6-live.foo.bar',
+    host: '6.foo.bar',
+    mountpoints: ['https://foo.sharepoint.com/sites/foo/Shared%20Documents/root1'],
+  },
+];
 
 window.chrome = chromeMock;
 window.fetch = fetchMock;
 
-describe('Test utils', () => {
+describe('Test project', () => {
   const sandbox = sinon.createSandbox();
 
   before(async () => {
@@ -164,5 +216,52 @@ describe('Test utils', () => {
     // delete inexistent project
     deleted = await deleteProject('test/project');
     expect(deleted).to.be.false;
+  });
+
+  it('isValidHost', () => {
+    expect(isValidHost('https://main--bar--foo.hlx.page', 'foo', 'bar')).to.be.true;
+    expect(isValidHost('https://main--bar--foo.hlx.live', 'foo', 'bar')).to.be.true;
+    expect(isValidHost('https://main--bar--foo.aem.page', 'foo', 'bar')).to.be.true;
+    expect(isValidHost('https://main--bar--foo.aem.live', 'foo', 'bar')).to.be.true;
+    expect(isValidHost('https://main--bar--fake.hlx.live', 'foo', 'bar')).to.be.false;
+    expect(isValidHost('https://main--bar--foo.hlx.random', 'foo', 'bar')).to.be.false;
+    // check without owner & repo
+    expect(isValidHost('https://main--bar--foo.hlx.page')).to.be.true;
+  });
+
+  it('getProjectMatches', async () => {
+    // match preview URL
+    expect((await getProjectMatches(CONFIGS, 'https://main--bar1--foo.hlx.page/')).length).to.equal(1);
+    // match preview URL with any ref
+    expect((await getProjectMatches(CONFIGS, 'https://baz--bar1--foo.hlx.page/')).length).to.equal(1);
+    // match custom preview URL
+    expect((await getProjectMatches(CONFIGS, 'https://6-preview.foo.bar/')).length).to.equal(1);
+    // match live URL
+    expect((await getProjectMatches(CONFIGS, 'https://main--bar1--foo.hlx.live/')).length).to.equal(1);
+    // match custom live URL
+    expect((await getProjectMatches(CONFIGS, 'https://6-live.foo.bar/')).length).to.equal(1);
+    // match production host
+    expect((await getProjectMatches(CONFIGS, 'https://1.foo.bar/')).length).to.equal(1);
+    // ignore disabled config
+    expect((await getProjectMatches(CONFIGS, 'https://main--bar2--foo.hlx.live/')).length).to.equal(0);
+    // match transient URL
+    expect((await getProjectMatches(CONFIGS, 'https://main--bar0--foo.hlx.live/')).length).to.equal(1);
+    // todo: match sharepoint URL (docx)
+    await urlCache.set('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true');
+    expect((await getProjectMatches(CONFIGS, 'https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true')).length).to.equal(1);
+    // todo: match gdrive URL
+    await urlCache.set('https://docs.google.com/document/d/1234567890/edit');
+    expect((await getProjectMatches(CONFIGS, 'https://docs.google.com/document/d/1234567890/edit')).length).to.equal(1);
+  });
+
+  it('getGitHubSettings', async () => {
+    const settings = getGitHubSettings('https://github.com/adobe/blog/tree/stage');
+    expect(settings).to.eql({
+      owner: 'adobe',
+      repo: 'blog',
+      ref: 'stage',
+    });
+    const invalid = getGitHubSettings('https://www.example.com');
+    expect(invalid).to.eql({});
   });
 });
