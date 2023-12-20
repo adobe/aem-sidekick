@@ -13,9 +13,13 @@
 
 import { html } from 'lit';
 import { fixture, expect } from '@open-wc/testing';
+import { emulateMedia } from '@web/test-runner-commands';
 import { recursiveQuery } from './test-utils.js';
 
-import '../../src/extension/app/aem-sidekick.js';
+// set dark color scheme
+await emulateMedia({ colorScheme: 'dark' });
+
+await import('../../src/extension/app/aem-sidekick.js');
 
 describe('AEM Sidekick', () => {
   let element;
@@ -23,9 +27,13 @@ describe('AEM Sidekick', () => {
     element = await fixture(html`<aem-sidekick></aem-sidekick>`);
   });
 
-  it('renders theme and action-bar', () => {
+  it('renders theme and action-bar', async () => {
     const theme = element.shadowRoot.querySelector('sp-theme');
     expect(theme).to.exist;
+
+    // detect color scheme change
+    await emulateMedia({ colorScheme: 'light' });
+    expect(theme.getAttribute('color')).to.equal('light');
 
     const actionBar = recursiveQuery(theme, 'action-bar');
     expect(actionBar).to.exist;
