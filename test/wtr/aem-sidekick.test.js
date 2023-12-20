@@ -18,7 +18,6 @@ import { fixture, expect } from '@open-wc/testing';
 import { emulateMedia } from '@web/test-runner-commands';
 import { recursiveQuery } from './test-utils.js';
 import chromeMock from './mocks/chrome.js';
-
 import '../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from './fixtures/i18n.js';
 
@@ -36,9 +35,14 @@ describe('AEM Sidekick', () => {
     fetchMock.restore();
   });
 
-  it('renders theme and action-bar', () => {
+  it('renders theme and action-bar', async () => {
     const theme = element.shadowRoot.querySelector('sp-theme');
     expect(theme).to.exist;
+
+    // detect color scheme change
+    await emulateMedia({ colorScheme: 'light' });
+    // todo: check if color scheme change is getting picked up
+    // expect(theme.getAttribute('color')).to.equal('light');
 
     const actionBar = recursiveQuery(theme, 'action-bar');
     expect(actionBar).to.exist;

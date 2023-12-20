@@ -43,12 +43,14 @@
         "resources": [
           "_locales/*",
           "check-tab.js",
+          "config.js",
+          "display.js",
           "index.js",
           "lib/polyfills.min.js",
           "module.js",
           "project.js",
           "rum.js",
-          "utils.js",
+          "url-cache.js",
           "view/json/json.html",
           "view-doc-source/js/content.js"
         ],

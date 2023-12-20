@@ -11,11 +11,13 @@
  */
 
 import {
-  getGitHubSettings,
   getConfig,
   removeConfig,
   setConfig,
-} from './utils.js';
+} from './config.js';
+import { urlCache } from './url-cache.js';
+
+export const GH_URL = 'https://github.com/';
 
 /**
  * Returns an existing project configuration.
@@ -76,6 +78,27 @@ export async function updateProject(project) {
     return project;
   }
   return null;
+}
+
+/**
+ * Extracts settings from a GitHub URL.
+ * @param {string} giturl The GitHub URL
+ * @returns {Object} The GitHub settings
+ */
+export function getGitHubSettings(giturl) {
+  if (typeof giturl === 'string' && giturl.startsWith(GH_URL)) {
+    const [owner, repository,, ref = 'main'] = new URL(giturl).pathname.toLowerCase()
+      .substring(1).split('/');
+    if (owner && repository) {
+      const repo = repository.endsWith('.git') ? repository.split('.git')[0] : repository;
+      return {
+        owner,
+        repo,
+        ref,
+      };
+    }
+  }
+  return {};
 }
 
 /**
@@ -246,4 +269,98 @@ export async function deleteProject(project) {
     // todo: alert
   }
   return false;
+}
+
+/**
+ * Checks if a host is a valid project host.
+ * @private
+ * @param {string} host The base host
+ * @param {string} [owner] The owner
+ * @param {string} [repo] The repo
+ * @returns {boolean} <code>true</code> if project host, else <code>false</code>
+ */
+export function isValidHost(host, owner, repo) {
+  const [third, second, first] = host.split('.');
+  const any = '([0-9a-z-]+)';
+  return host.endsWith(first)
+    && ['page', 'live'].includes(first)
+    && ['aem', 'hlx'].includes(second)
+    && new RegExp(`--${repo || any}--${owner || any}$`, 'i').test(third);
+}
+
+/**
+ * Retrieves project details from a host name.
+ * @private
+ * @param {string} host The host name
+ * @returns {string[]} The project details as <code>[ref, repo, owner]</code>
+ */
+function getConfigDetails(host) {
+  if (isValidHost(host)) {
+    const details = host.split('.')[0].split('--');
+    if (details.length >= 2) {
+      return details;
+    }
+  }
+  return [];
+}
+
+/**
+ * Returns matches from configured projects for a given tab URL.
+ * @param {Object[]} configs The project configurations
+ * @param {string} tabUrl The tab URL
+ * @returns {Promise<Object[]>} The matches
+ */
+export async function getProjectMatches(configs, tabUrl) {
+  const {
+    host: checkHost,
+  } = new URL(tabUrl);
+  // exclude disabled configs
+  const matches = configs
+    .filter((cfg) => !cfg.disabled)
+    .filter((cfg) => {
+      const {
+        owner,
+        repo,
+        host: prodHost,
+        previewHost,
+        liveHost,
+      } = cfg;
+      return checkHost === prodHost // production host
+        || checkHost === previewHost // custom inner
+        || checkHost === liveHost // custom outer
+        || isValidHost(checkHost, owner, repo); // inner or outer
+    });
+  // check url cache if no matches
+  if (matches.length === 0) {
+    (await urlCache.get(tabUrl)).forEach((e) => {
+      // add non-duplicate matches from url cache
+      const filteredByUrlCache = configs.filter(({ owner, repo }) => {
+        if (e.owner === owner && e.repo === repo) {
+          // avoid duplicates
+          if (!matches.find((m) => m.owner === owner && m.repo === repo)) {
+            return true;
+          }
+        }
+        return false;
+      });
+      matches.push(...filteredByUrlCache);
+    });
+  }
+  // check if transient match can be derived from url or url cache
+  if (matches.length === 0) {
+    const [ref, repo, owner] = getConfigDetails(checkHost);
+    if (owner && repo && ref) {
+      matches.push({
+        owner,
+        repo,
+        ref,
+        transient: true,
+      });
+    }
+  }
+  // todo: check url cache for transient match
+  return matches
+    // exclude disabled configs
+    .filter(({ owner, repo }) => !configs
+      .find((cfg) => cfg.owner === owner && cfg.repo === repo && cfg.disabled));
 }

@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { getConfig, removeConfig, setConfig } from './utils.js';
+import { getConfig, removeConfig, setConfig } from './config.js';
 
 /**
  * Sets the x-auth-token header for all requests to admin.hlx.page if project config
