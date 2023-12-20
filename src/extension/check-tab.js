@@ -11,10 +11,12 @@
  */
 
 import {
-  DEV_URL,
-  getConfigMatches,
-} from './utils.js';
-import { getProjects } from './project.js';
+  getProjects,
+  getProjectMatches,
+} from './project.js';
+import { urlCache } from './url-cache.js';
+
+export const DEV_URL = 'http://localhost:3000';
 
 /**
  * Retrieves the proxy URL from a local dev tab.
@@ -93,11 +95,12 @@ export default async function checkTab(id) {
     // retrieve proxy url
     checkUrl = await getProxyUrl(tab);
   }
-  // todo: fill url cache
+  // fill url cache
+  await urlCache.set(checkUrl, projects);
   // todo: if tab.active, populate context menu
   // todo: if share url, inject install helper
 
-  const matches = await getConfigMatches(projects, checkUrl);
+  const matches = await getProjectMatches(projects, checkUrl);
   // send matches to tab
   if (matches.length > 0) {
     await injectContentScript(id, matches);

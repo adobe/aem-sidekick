@@ -19,13 +19,13 @@ import { setAuthToken } from './auth.js';
  * @param {string} message.repo The project repository
  * @param {string} message.authToken The auth token
  * @param {number} message.exp The token expiry in seconds since epoch
- * @param {Object} sender The sender object
- * @param {string} sender.url The URL the message originated from
+ * @param {chrome.runtime.MessageSender} sender The sender
  * @returns {Promise<string>} The action's response
  */
 async function updateAuthToken({
   owner, repo, authToken, exp,
-}, { url } = { url: undefined }) {
+}, sender) {
+  const { url } = sender;
   if (owner && repo) {
     try {
       if (!url || new URL(url).origin !== 'https://admin.hlx.page') {

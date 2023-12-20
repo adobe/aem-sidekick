@@ -12,7 +12,7 @@
 
 import {
   toggleDisplay,
-} from './utils.js';
+} from './display.js';
 import checkTab from './check-tab.js';
 import {
   externalActions,
@@ -22,7 +22,9 @@ import { addAuthTokenHeaders } from './auth.js';
 
 chrome.action.onClicked.addListener(async ({ id }) => {
   // toggle the sidekick when the action is clicked
-  await toggleDisplay();
+  const display = await toggleDisplay();
+  // eslint-disable-next-line no-console
+  console.log(`sidekick is now ${display ? 'shown' : 'hidden'}`);
   checkTab(id);
 });
 
