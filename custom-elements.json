@@ -13,33 +13,32 @@
           "members": [
             {
               "kind": "method",
-              "name": "_getTheme"
+              "name": "getTheme"
             },
             {
               "kind": "field",
               "name": "theme",
+              "privacy": "public",
               "type": {
                 "text": "string"
               },
               "default": "'light'",
-              "privacy": "public",
               "attribute": "theme"
-            },
-            {
-              "kind": "field",
-              "name": "config",
-              "default": "config"
             }
           ],
           "attributes": [
             {
               "name": "theme",
+              "type": {
+                "text": "string"
+              },
+              "default": "'light'",
               "fieldName": "theme"
             }
           ],
           "superclass": {
-            "name": "LitElement",
-            "package": "lit"
+            "name": "MobxLitElement",
+            "package": "@adobe/lit-mobx"
           },
           "tagName": "aem-sidekick",
           "customElement": true
