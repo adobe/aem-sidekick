@@ -44,6 +44,7 @@ export class AEMSidekick extends MobxLitElement {
     this.getTheme();
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      // istanbul ignore next
       this.getTheme();
     });
   }
