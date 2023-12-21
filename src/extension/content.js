@@ -14,7 +14,7 @@
   // ensure hlx namespace
   window.hlx = window.hlx || {};
 
-  const { getDisplay, getExtensionURL } = await import('./display.js');
+  const { getDisplay } = await import('./display.js');
   const display = await getDisplay();
   let { sidekick } = window.hlx;
   if (!sidekick) {
@@ -48,7 +48,7 @@
               'authTokenExpiry',
               'hlx5',
             ].includes(k)));
-          curatedConfig.scriptUrl = getExtensionURL('index.js');
+          curatedConfig.scriptUrl = chrome.runtime.getURL('index.js');
 
           sidekick = new AEMSidekick(curatedConfig);
           sidekick.setAttribute('open', display);
