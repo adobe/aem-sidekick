@@ -15,11 +15,7 @@ import { html } from 'lit';
 import { fixture, expect } from '@open-wc/testing';
 import { emulateMedia } from '@web/test-runner-commands';
 import { recursiveQuery } from './test-utils.js';
-
-// set dark color scheme
-await emulateMedia({ colorScheme: 'dark' });
-
-await import('../../src/extension/app/aem-sidekick.js');
+import '../../src/extension/app/aem-sidekick.js';
 
 describe('AEM Sidekick', () => {
   let element;

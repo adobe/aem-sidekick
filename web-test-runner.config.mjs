@@ -9,7 +9,15 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-module.exports = {
+
+/* eslint-disable import/no-extraneous-dependencies */
+import { fromRollup } from '@web/dev-server-rollup';
+import rollupBabel from '@rollup/plugin-babel';
+
+// @ts-ignore
+const babel = fromRollup(rollupBabel);
+
+export default {
   nodeResolve: true,
   port: 2000,
   coverage: true,
@@ -18,7 +26,15 @@ module.exports = {
     report: true,
     reportDir: 'coverage-wtr',
   },
-  testRunnerHtml: testFramework => `
+  plugins: [
+    babel({
+      include: ['src/**/*.js'],
+      babelHelpers: 'bundled',
+      plugins: ['babel-plugin-istanbul'],
+      sourceMaps: 'inline',
+    }),
+  ],
+  testRunnerHtml: (testFramework) => `
   <html>
     <body>
       <script>window.process = { env: { NODE_ENV: "development" } }</script>

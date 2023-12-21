@@ -11,7 +11,9 @@
  */
 
 import { LitElement, html, css } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
+@customElement('action-bar')
 export class ActionBar extends LitElement {
   static styles = css`
     .action-bar {
@@ -61,5 +63,3 @@ export class ActionBar extends LitElement {
     `;
   }
 }
-
-window.customElements.define('action-bar', ActionBar);

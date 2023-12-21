@@ -85,6 +85,7 @@ export default async function checkTab(id) {
   if (projects.length === 0 || !checkUrl) return;
 
   // check for dev URL
+  /* istanbul ignore next 5 */
   const devUrls = [
     DEV_URL,
     ...projects

@@ -17,6 +17,7 @@ import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
 import esbuild from 'rollup-plugin-esbuild';
 import copy from 'rollup-plugin-copy';
 import replace from '@rollup/plugin-replace';
+import { babel } from '@rollup/plugin-babel';
 import sidekickManifestBuildPlugin from './build/build.js';
 
 function shared(browser) {
@@ -39,6 +40,8 @@ function plugins(browser) {
   return [
     /** Resolve bare module imports */
     nodeResolve(),
+    /** Transform decorators with babel */
+    babel({ babelHelpers: 'bundled' }),
     /** Minify JS, compile JS to a lower language target */
     esbuild({
       minify: true,

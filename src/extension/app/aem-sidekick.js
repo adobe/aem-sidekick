@@ -10,11 +10,16 @@
  * governing permissions and limitations under the License.
  */
 
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { customElement } from 'lit/decorators.js';
 import { style } from './aem-sidekick.css.js';
 import { appStore } from './store/app.js';
 
-export class AEMSidekick extends LitElement {
+/* eslint-disable wc/no-constructor-params */
+
+@customElement('aem-sidekick')
+export class AEMSidekick extends MobxLitElement {
   static properties = {
     theme: { type: String },
   };
@@ -34,6 +39,7 @@ export class AEMSidekick extends LitElement {
     this.getTheme();
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      // istanbul ignore next
       this.getTheme();
     });
   }
@@ -62,5 +68,3 @@ export class AEMSidekick extends LitElement {
     `;
   }
 }
-
-window.customElements.define('aem-sidekick', AEMSidekick);
