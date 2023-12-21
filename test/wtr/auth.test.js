@@ -32,7 +32,8 @@ describe('Test auth', () => {
   });
 
   it('addAuthTokenHeaders', async () => {
-    const getSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'getSessionRules');
+    const getSessionRules = sandbox.stub(chrome.declarativeNetRequest, 'getSessionRules')
+      .returns([{ id: 1 }]);
     const updateSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'updateSessionRules');
     await addAuthTokenHeaders();
     expect(getSessionRules.called).to.be.true;
