@@ -97,6 +97,23 @@ describe('Test App Store', () => {
     expect(appStore.siteStore.project).to.eq('AEM Boilerplate');
   });
 
+  it('loadContext - unsupported lang, default to en', async () => {
+    mockFetchConfigJSONSuccess();
+    const contextLoadedSpy = sinon.spy();
+    sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
+
+    const config = {
+      ...defaultSidekickConfig,
+      lang: 'abc',
+    };
+
+    await appStore.loadContext(sidekickElement, config);
+    expect(contextLoadedSpy.calledOnce).to.be.true;
+    await testDefaultConfig();
+
+    expect(appStore.languageDict.title).to.eq('AEM Sidekick - NextGen');
+  });
+
   it('isInner()', async () => {
     await appStore.loadContext(sidekickElement, defaultSidekickConfig);
     appStore.location.port = '';
