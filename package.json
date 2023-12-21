@@ -48,6 +48,7 @@
     "@spectrum-web-components/icons-workflow": "0.40.1",
     "@spectrum-web-components/theme": "0.40.1",
     "@spectrum-web-components/toast": "0.40.1",
+    "@adobe/lit-mobx": "2.2.1",
     "lit": "3.1.0",
     "mobx": "6.12.0"
   },
@@ -73,7 +74,7 @@
     "@web/test-runner-commands": "0.9.0",
     "ajv": "8.12.0",
     "archiver": "6.0.1",
-    "babel-plugin-istanbul": "^6.1.1",
+    "babel-plugin-istanbul": "6.1.1",
     "c8": "8.0.1",
     "chokidar": "3.5.3",
     "codecov": "3.8.3",
