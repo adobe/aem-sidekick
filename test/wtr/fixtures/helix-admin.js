@@ -23,7 +23,7 @@ export const mockFetchConfigJSONSuccess = (overrides = {}) => fetchMock.get(defa
     ...defaultConfigJSONWithPlugins,
     ...overrides,
   },
-});
+}, { overwriteRoutes: true });
 
 export const mockFetchConfigJSONNotFound = () => fetchMock.get(defaultConfigJSONUrl, {
   status: 404,

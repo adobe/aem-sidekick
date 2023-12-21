@@ -211,7 +211,7 @@ export class SiteStore {
       project = '',
       specialViews,
       hlx5,
-      scriptUrl = 'https://www.hlx.live/tools/sidekick/module.js',
+      scriptUrl = 'https://www.hlx.live/tools/sidekick/index.js',
     } = config;
     const publicHost = host && host.startsWith('http') ? new URL(host).host : host;
     const hostPrefix = owner && repo ? `${ref}--${repo}--${owner}` : null;

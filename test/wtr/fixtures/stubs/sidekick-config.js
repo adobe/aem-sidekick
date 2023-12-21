@@ -10,23 +10,19 @@
  * governing permissions and limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/**
+ * The plugins
+ * @typedef {import('@Types').SidekickOptionsConfig} SidekickOptionsConfig
+ */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
-
-export const englishMessagesUrl = '/test/wtr/fixtures/_locales/en/messages.json';
-export const mockFetchEnglishMessagesSuccess = () => fetchMock.get(englishMessagesUrl, {
-  status: 200,
-  body: {
-    title: {
-      message: 'AEM Sidekick - NextGen',
-    },
-    add: {
-      message: 'Add',
-    },
-    json_view_description: {
-      message: 'View JSON',
-    },
-  },
-}, { overwriteRoutes: true });
+/**
+ * @type {SidekickOptionsConfig}
+ */
+export const defaultSidekickConfig = {
+  owner: 'adobe',
+  ref: 'main',
+  repo: 'aem-boilerplate',
+  giturl: 'https://github.com/adobe/aem-boilerplate',
+  mountpoint: 'https://drive.google.com/drive/folders/folder-id',
+  mountpoints: ['https://drive.google.com/drive/folders/folder-id'],
+};

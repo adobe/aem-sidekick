@@ -19,6 +19,7 @@ import { AppStore } from '../../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
 import {
   mockFetchConfigJSONNotFound,
+  mockFetchConfigJSONSuccess,
   mockFetchStatusEditURLSuccess,
   mockFetchStatusNotFound,
   mockFetchStatusServerError,
@@ -26,14 +27,10 @@ import {
   mockFetchStatusUnauthorized,
 } from '../../fixtures/helix-admin.js';
 import { mockFetchEnglishMessagesSuccess } from '../../fixtures/i18n.js';
+import { defaultSidekickConfig } from '../../fixtures/stubs/sidekick-config.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
-
-/**
- * The plugins
- * @typedef {import('@Types').SidekickOptionsConfig} SidekickOptionsConfig
- */
 
 /**
  * The plugins
@@ -46,18 +43,6 @@ window.chrome = chromeMock;
  */
 
 describe('Test App Store', () => {
-  /**
-   * @type {SidekickOptionsConfig}
-   */
-  const defaultConfig = {
-    owner: 'adobe',
-    ref: 'main',
-    repo: 'aem-boilerplate',
-    giturl: 'https://github.com/adobe/aem-boilerplate',
-    mountpoint: 'https://drive.google.com/drive/folders/folder-id',
-    mountpoints: ['https://drive.google.com/drive/folders/folder-id'],
-  };
-
   let sidekickElement;
 
   let appStore;
@@ -74,20 +59,46 @@ describe('Test App Store', () => {
     fetchMock.restore();
   });
 
-  it('loadContext', async () => {
-    const contextLoadedSpy = sinon.spy();
-    sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
-
-    await appStore.loadContext(sidekickElement, defaultConfig);
-
+  async function testDefaultConfig() {
     expect(appStore.languageDict.add).to.equal('Add');
     expect(appStore.location.hostname).to.equal('localhost');
     expect(appStore.status.apiUrl.href).to.equal('https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=auto');
+    expect(appStore.languageDict.title).to.equal('AEM Sidekick - NextGen');
+
+    await waitUntil(() => appStore.status.webPath, 'Status never loaded');
+    expect(appStore.status.webPath).to.equal('/');
+    expect(appStore.status.edit.status).to.equal(200);
+    expect(appStore.status.live.status).to.equal(200);
+  }
+
+  it('loadContext - no config.json', async () => {
+    const contextLoadedSpy = sinon.spy();
+    sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
+
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
     expect(contextLoadedSpy.calledOnce).to.be.true;
+    await testDefaultConfig();
+  });
+
+  it('loadContext - with config.json', async () => {
+    mockFetchConfigJSONSuccess();
+    const contextLoadedSpy = sinon.spy();
+    sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
+
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+    expect(contextLoadedSpy.calledOnce).to.be.true;
+    await testDefaultConfig();
+
+    expect(appStore.siteStore.plugins.length).to.eq(1);
+    expect(appStore.siteStore.scriptUrl).to.eq('https://www.hlx.live/tools/sidekick/index.js');
+    expect(appStore.siteStore.host).to.eq('custom-host.com');
+    expect(appStore.siteStore.innerHost).to.eq('https://custom-preview-host.com');
+    expect(appStore.siteStore.liveHost).to.eq('https://custom-live-host.com');
+    expect(appStore.siteStore.project).to.eq('AEM Boilerplate');
   });
 
   it('isInner()', async () => {
-    await appStore.loadContext(sidekickElement, defaultConfig);
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
     appStore.location.port = '';
 
     appStore.location.host = 'main--aem-boilerplate--adobe.hlx.page';
@@ -108,7 +119,7 @@ describe('Test App Store', () => {
 
   it('isProd()', async () => {
     const config = {
-      ...defaultConfig,
+      ...defaultSidekickConfig,
       host: 'aem-boilerplate.com',
     };
 
@@ -123,7 +134,7 @@ describe('Test App Store', () => {
   });
 
   it('isAdmin()', async () => {
-    await appStore.loadContext(sidekickElement, defaultConfig);
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
     appStore.location.port = '';
 
     appStore.location.host = 'main--aem-boilerplate--adobe.aem.live';
@@ -140,7 +151,7 @@ describe('Test App Store', () => {
 
   it('isProject()', async () => {
     const config = {
-      ...defaultConfig,
+      ...defaultSidekickConfig,
       host: 'aem-boilerplate.com',
     };
 
@@ -166,7 +177,7 @@ describe('Test App Store', () => {
 
   it('isEditor()', async () => {
     const config = {
-      ...defaultConfig,
+      ...defaultSidekickConfig,
       mountpoint: 'https://docs.google.com/document/d/doc-id/edit',
       host: 'aem-boilerplate.com',
     };
@@ -186,7 +197,7 @@ describe('Test App Store', () => {
   });
 
   it('isSharePointViewer()', async () => {
-    await appStore.loadContext(sidekickElement, defaultConfig);
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
     appStore.location.port = '';
 
     const url = new URL('https://adobe-my.sharepoint.com/personal/directory/_layouts/15/onedrive.aspx?id=%2Ffoobar%2Ejpg');
@@ -195,7 +206,7 @@ describe('Test App Store', () => {
 
   describe('isAuthenticated()', () => {
     it('not authenticated', async () => {
-      await appStore.loadContext(sidekickElement, defaultConfig);
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => appStore.status.webPath,
         'Status never loaded',
@@ -206,7 +217,7 @@ describe('Test App Store', () => {
 
     it('authenticated', async () => {
       mockFetchStatusSuccess({ profile: { name: 'foo' } });
-      await appStore.loadContext(sidekickElement, defaultConfig);
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => appStore.status.webPath,
         'Status never loaded',
@@ -217,7 +228,7 @@ describe('Test App Store', () => {
   });
 
   it('isAuthorized()', async () => {
-    await appStore.loadContext(sidekickElement, defaultConfig);
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
     await waitUntil(
       () => appStore.status.webPath,
       'Status never loaded',
@@ -230,7 +241,7 @@ describe('Test App Store', () => {
   });
 
   it('isContent()', async () => {
-    await appStore.loadContext(sidekickElement, defaultConfig);
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
     appStore.location.pathname = '/test.png';
     expect(appStore.isContent()).to.be.true;
 
@@ -241,7 +252,7 @@ describe('Test App Store', () => {
   describe('fetchStatus()', async () => {
     it('success', async () => {
       mockFetchStatusSuccess();
-      await appStore.loadContext(sidekickElement, defaultConfig);
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await appStore.fetchStatus(true);
       await waitUntil(
         () => appStore.status.webPath,
@@ -253,7 +264,7 @@ describe('Test App Store', () => {
     it('success - editor', async () => {
       mockFetchStatusEditURLSuccess();
       sinon.stub(appStore, 'isEditor').returns(true);
-      await appStore.loadContext(sidekickElement, defaultConfig);
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await appStore.fetchStatus();
       await waitUntil(
         () => appStore.status.webPath,
@@ -264,7 +275,7 @@ describe('Test App Store', () => {
 
     it('unauthorized', async () => {
       mockFetchStatusUnauthorized();
-      await appStore.loadContext(sidekickElement, defaultConfig);
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => appStore.status.status,
         'Status never loaded',
@@ -274,7 +285,7 @@ describe('Test App Store', () => {
 
     it('not found', async () => {
       mockFetchStatusNotFound();
-      await appStore.loadContext(sidekickElement, defaultConfig);
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => appStore.status.error,
         'Status never loaded',
@@ -284,7 +295,7 @@ describe('Test App Store', () => {
 
     it('not found - editor', async () => {
       mockFetchStatusNotFound();
-      await appStore.loadContext(sidekickElement, defaultConfig);
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
 
       appStore.location.href = 'https://adobe-my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx';
       await appStore.fetchStatus();
@@ -297,7 +308,7 @@ describe('Test App Store', () => {
 
     it('server error', async () => {
       mockFetchStatusServerError();
-      await appStore.loadContext(sidekickElement, defaultConfig);
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => appStore.status.error,
         'Status never loaded',
