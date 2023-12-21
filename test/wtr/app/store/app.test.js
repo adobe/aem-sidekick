@@ -175,8 +175,8 @@ describe('Test App Store', () => {
     appStore.location.port = '';
 
     appStore.location.host = 'adobe-my.sharepoint.com';
-    appStore.location.pathname = '/:w:/r/personal/dyland_adobe_com/_layouts/15/Doc.aspx?sourcedoc=%7BB1499010-143F-42F1-B9B6-95B749E2B07F%7D&file=aem-sites.docx&action=default&mobileredirect=true';
-    appStore.location.search = '?sourcedoc=%7BB1499010-143F-42F1-B9B6-95B749E2B07F%7D&file=aem-sites.docx&action=default&mobileredirect=true';
+    appStore.location.pathname = '/:w:/r/personal/directory/_layouts/15/Doc.aspx';
+    appStore.location.search = '?sourcedoc=AABBCC&file=about.docx&action=default&mobileredirect=true';
     expect(appStore.isEditor()).to.be.true;
 
     appStore.location.pathname = '';
@@ -189,7 +189,7 @@ describe('Test App Store', () => {
     await appStore.loadContext(sidekickElement, defaultConfig);
     appStore.location.port = '';
 
-    const url = new URL('https://adobe-my.sharepoint.com/personal/dyland_adobe_com/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fdyland%5Fadobe%5Fcom%2FDocuments%2Fhelix%2Dplayground%2Fdelete%2Dtest%2Ejpg&parent=%2Fpersonal%2Fdyland%5Fadobe%5Fcom%2FDocuments%2Fhelix%2Dplayground');
+    const url = new URL('https://adobe-my.sharepoint.com/personal/directory/_layouts/15/onedrive.aspx?id=%2Ffoobar%2Ejpg');
     expect(appStore.isSharePointViewer(url)).to.be.true;
   });
 
@@ -286,7 +286,7 @@ describe('Test App Store', () => {
       mockFetchStatusNotFound();
       await appStore.loadContext(sidekickElement, defaultConfig);
 
-      appStore.location.href = 'https://adobe-my.sharepoint.com/:w:/r/personal/dyland_adobe_com/_layouts/15/Doc.aspx?sourcedoc=%7BB1499010-143F-42F1-B9B6-95B749E2B07F%7D&file=aem-sites.docx&action=default&mobileredirect=true';
+      appStore.location.href = 'https://adobe-my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx';
       await appStore.fetchStatus();
       await waitUntil(
         () => appStore.status.error,
