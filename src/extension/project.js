@@ -280,7 +280,6 @@ export async function addProject(input) {
   const config = assembleProject(input);
   const { owner, repo, ref } = config;
   const env = await getProjectEnv(config);
-  console.log('project env', env, input);
   if (env.unauthorized && !input.authToken) {
     // defer adding project and have user sign in
     const { id: loginTabId } = await chrome.tabs.create({
