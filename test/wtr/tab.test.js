@@ -16,7 +16,8 @@ import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
 import chromeMock from './mocks/chrome.js';
-import checkTab from '../../src/extension/check-tab.js';
+import checkTab from '../../src/extension/tab.js';
+import { error } from './test-utils.js';
 
 window.chrome = chromeMock;
 
@@ -59,7 +60,6 @@ describe('Test check-tab', () => {
     expect(executeScriptSpy.callCount).to.equal(4);
     // error handling
     executeScriptSpy.restore();
-    const error = new Error('this error is just a test');
     const consoleSpy = sandbox.spy(console, 'log');
     sandbox.stub(chrome.scripting, 'executeScript').throws(error);
     await checkTab(1);

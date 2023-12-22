@@ -17,6 +17,7 @@ import sinon from 'sinon';
 
 import { addAuthTokenHeaders, setAuthToken } from '../../src/extension/auth.js';
 import chromeMock from './mocks/chrome.js';
+import { error } from './test-utils.js';
 
 window.chrome = chromeMock;
 
@@ -41,7 +42,7 @@ describe('Test auth', () => {
     // error handling
     updateSessionRules.restore();
     sandbox.stub(chrome.declarativeNetRequest, 'updateSessionRules')
-      .throws(new Error('this is just a test'));
+      .throws(error);
     const spy = sandbox.spy(console, 'log');
     await addAuthTokenHeaders();
     expect(spy.called).to.be.true;
@@ -58,10 +59,24 @@ describe('Test auth', () => {
 
     // set auth token
     await setAuthToken(owner, repo, authToken, authTokenExpiry);
-    expect(getConfig.called).to.be.true;
-    expect(setConfig.called).to.be.true;
+    expect(getConfig.callCount).to.equal(3);
+    expect(setConfig.callCount).to.be.equal(2);
+    // update auth token without expiry
+    await setAuthToken(owner, repo, authToken);
+    expect(getConfig.callCount).to.equal(6);
+    expect(setConfig.callCount).to.be.equal(4);
     // remove auth token
     await setAuthToken(owner, repo, '');
     expect(removeConfig.calledWith('test/project')).to.be.true;
+    expect(removeConfig.callCount).to.equal(1);
+    // remove auth token again
+    await setAuthToken(owner, repo, '');
+    expect(removeConfig.callCount).to.equal(1);
+    // testing else paths
+    getConfig.resetHistory();
+    setConfig.resetHistory();
+    await setAuthToken();
+    expect(getConfig.notCalled).to.be.true;
+    expect(setConfig.notCalled).to.be.true;
   });
 });

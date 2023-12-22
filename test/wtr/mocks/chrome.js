@@ -24,8 +24,12 @@ const TABS = {
     url: 'https://www.example.com/',
   },
   3: {
-    id: 2,
+    id: 3,
     url: 'http://localhost:3000/',
+  },
+  4: {
+    id: 4,
+    url: 'http://github.com/foo/bar',
   },
 };
 
@@ -74,28 +78,14 @@ export default {
       removeListener: () => {},
     },
     onMessageExternal: {
-      // simulate external message from admin API with authToken
-      addListener: (func) => func({ owner: 'test', repo: 'auth-project', authToken: 'foo' }),
+      addListener: () => {},
       removeListener: () => {},
     },
   },
   storage: {
-    sync: new StorageMock({
-      hlxSidekickProjects: ['adobe/blog'],
-      'adobe/blog': {
-        giturl: 'https://github.com/adobe/blog',
-        owner: 'adobe',
-        repo: 'blog',
-        ref: 'main',
-      },
-    }),
-    local: new StorageMock({
-      hlxSidekickDisplay: true,
-      test: 'test',
-    }),
-    session: new StorageMock({
-      hlxSidekickUrlCache: [],
-    }),
+    sync: new StorageMock(),
+    local: new StorageMock(),
+    session: new StorageMock(),
   },
   declarativeNetRequest: {
     getSessionRules: async () => ([]),
@@ -106,12 +96,21 @@ export default {
     get: async (id) => (id ? TABS[id] : {}),
     sendMessage: async () => {},
     remove: async () => {},
+    reload: async () => {},
   },
   scripting: {
     executeScript: ({ func }) => {
       if (typeof func === 'function') {
         func();
       }
+    },
+  },
+  contextMenus: {
+    create: () => {},
+    removeAll: () => {},
+    onClicked: {
+      // simulate click on context menu item
+      addListener: (func) => func({ menuItemId: 'openPreview' }, TABS[1]),
     },
   },
 };
