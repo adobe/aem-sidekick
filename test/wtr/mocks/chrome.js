@@ -72,7 +72,7 @@ export default {
     onMessage: {
       // simulate internal message from tab
       addListener: (func) => func(
-        { proxyUrl: document.head.querySelector('meta[property="hlx:proxyUrl"]')?.content },
+        { proxyUrl: document.head.querySelector('meta[property="hlx:proxyUrl"]')?.getAttribute('content') },
         { tab: TABS[3] },
       ),
       removeListener: () => {},

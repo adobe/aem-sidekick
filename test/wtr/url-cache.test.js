@@ -21,7 +21,10 @@ import {
   urlCache,
 } from '../../src/extension/url-cache.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
+
+// @ts-ignore
 window.fetch = fetchMock;
 
 describe('Test url-cache', () => {

@@ -18,6 +18,8 @@ import sinon from 'sinon';
 
 import chromeMock from './mocks/chrome.js';
 import fetchMock from './mocks/fetch.js';
+import { urlCache } from '../../src/extension/url-cache.js';
+import { error } from './test-utils.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -39,8 +41,6 @@ const {
   getGitHubSettings,
   getProjectFromUrl,
 } = await import('../../src/extension/project.js');
-const { urlCache } = await import('../../src/extension/url-cache.js');
-const { error } = await import('./test-utils.js');
 
 const CONFIGS = [
   {
@@ -162,9 +162,6 @@ describe('Test project', () => {
   });
 
   it('getProjectEnv', async () => {
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
     sinon.stub(window, 'fetch')
       .onFirstCall()
       .resolves(new Response(JSON.stringify(ENV_JSON)))
@@ -189,7 +186,6 @@ describe('Test project', () => {
     expect(empty).to.eql({});
     // error handling
     const spy = sinon.spy(console, 'log');
-    // @ts-ignore
     const failure = await getProjectEnv({});
     expect(spy.called).to.be.true;
     expect(failure).to.eql({});
@@ -302,8 +298,7 @@ describe('Test project', () => {
     projectsStub.restore();
     projectsStub = sinon.stub(chrome.storage.sync, 'get')
       .withArgs('hlxSidekickProjects')
-      // @ts-ignore
-      .returns([]);
+      .resolves([]);
     deleted = await deleteProject('test/project');
     expect(deleted).to.be.false;
   });
@@ -328,9 +323,6 @@ describe('Test project', () => {
 
   it('getProjectMatches', async () => {
     // match preview URL
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
     expect((await getProjectMatches(CONFIGS, 'https://main--bar1--foo.hlx.page/')).length).to.equal(1);
     // match preview URL with any ref
     expect((await getProjectMatches(CONFIGS, 'https://baz--bar1--foo.hlx.page/')).length).to.equal(1);

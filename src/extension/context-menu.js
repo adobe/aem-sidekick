@@ -23,9 +23,9 @@ let updateInProgress = false;
 
 /**
  * @typedef {Object} Context
- * @prop {Object} config The project config
- * @prop {string} url The URL
  * @prop {number} id The tab ID
+ * @prop {string} url The URL
+ * @prop {Object} [config] The project config
  * @description The context object
  */
 

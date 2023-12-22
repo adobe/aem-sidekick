@@ -18,6 +18,7 @@ import sinon from 'sinon';
 import chromeMock from './mocks/chrome.js';
 import { addProject, getProject, updateProject } from '../../src/extension/project.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 const { updateContextMenu } = await import('../../src/extension/context-menu.js');
@@ -61,6 +62,7 @@ describe('Test context-menu', () => {
     // not implemented
     removeAll.resetHistory();
     delete chrome.contextMenus;
+    // @ts-ignore
     await updateContextMenu({});
     expect(removeAll.called).to.be.false;
   });

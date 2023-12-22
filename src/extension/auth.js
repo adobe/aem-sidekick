@@ -69,7 +69,7 @@ export async function addAuthTokenHeaders() {
  * @param {string} owner The project owner
  * @param {string} repo The project repository
  * @param {string} token The auth token
- * @param {number} exp The token expiry in seconds since epoch
+ * @param {number} [exp] The token expiry in seconds since epoch
  * @returns {Promise<void>}
  */
 export async function setAuthToken(owner, repo, token, exp) {
