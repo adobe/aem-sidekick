@@ -9,6 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+
 /* eslint-disable no-unused-expressions */
 
 import { expect } from '@esm-bundle/chai';
@@ -18,7 +19,10 @@ import sinon from 'sinon';
 import chromeMock from './mocks/chrome.js';
 import fetchMock from './mocks/fetch.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
+
+// @ts-ignore
 window.fetch = fetchMock;
 
 const {
@@ -158,6 +162,9 @@ describe('Test project', () => {
   });
 
   it('getProjectEnv', async () => {
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
     sinon.stub(window, 'fetch')
       .onFirstCall()
       .resolves(new Response(JSON.stringify(ENV_JSON)))
@@ -182,6 +189,7 @@ describe('Test project', () => {
     expect(empty).to.eql({});
     // error handling
     const spy = sinon.spy(console, 'log');
+    // @ts-ignore
     const failure = await getProjectEnv({});
     expect(spy.called).to.be.true;
     expect(failure).to.eql({});
@@ -231,7 +239,6 @@ describe('Test project', () => {
     })).to.be.true;
     // add project with auth, callback without auth token
     const fake = sinon.fake((func) => {
-      console.log('addListener', func);
       func({ owner: 'test', repo: 'auth-project', authToken: 'foo' });
     });
     sinon.replace(chrome.runtime.onMessageExternal, 'addListener', fake);
@@ -295,6 +302,7 @@ describe('Test project', () => {
     projectsStub.restore();
     projectsStub = sinon.stub(chrome.storage.sync, 'get')
       .withArgs('hlxSidekickProjects')
+      // @ts-ignore
       .returns([]);
     deleted = await deleteProject('test/project');
     expect(deleted).to.be.false;
@@ -320,6 +328,9 @@ describe('Test project', () => {
 
   it('getProjectMatches', async () => {
     // match preview URL
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
     expect((await getProjectMatches(CONFIGS, 'https://main--bar1--foo.hlx.page/')).length).to.equal(1);
     // match preview URL with any ref
     expect((await getProjectMatches(CONFIGS, 'https://baz--bar1--foo.hlx.page/')).length).to.equal(1);
@@ -385,6 +396,7 @@ describe('Test project', () => {
     expect(sharenogiturl).to.eql({});
     const shareinvalidgiturl = await getProjectFromUrl('https://www.aem.live/tools/sidekick/?giturl=https://www.example.com');
     expect(shareinvalidgiturl).to.eql({});
+    // @ts-ignore
     const none = await getProjectFromUrl();
     expect(none).to.eql({});
   });

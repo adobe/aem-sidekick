@@ -1,8 +1,16 @@
 {
   "compilerOptions": {
-    "checkJs": true
+    "checkJs": true,
+    "target": "es6",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "paths": {
+      "@Types": ["./src/extension/types/typedefs.js"],
+      "@SiteStore": ["./src/extension/app/store/site.js"]
+    }
   },
   "exclude": [
-    "test/*"
-  ]
+    "node_modules",
+    "dist"
+  ],
 }

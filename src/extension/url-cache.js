@@ -167,6 +167,7 @@ class UrlCache {
       return entry;
     };
     const urlCache = await getConfig('session', 'urlCache') || [];
+    const urlIndex = urlCache.findIndex((e) => e.url === url);
     if (owner && repo) {
       // static entry
       const entry = createCacheEntry(
@@ -177,11 +178,10 @@ class UrlCache {
           originalRepository: true,
         }],
       );
-      const existingIndex = urlCache.findIndex((e) => e.url === url);
-      if (existingIndex >= 0) {
+      if (urlIndex >= 0) {
         // update existing entry
         // console.log(`updating static loaded entry for ${url}`, entry);
-        urlCache.splice(existingIndex, 1, entry);
+        urlCache.splice(urlIndex, 1, entry);
       } else {
         // add new entry
         // console.log(`adding static entry for ${url}`, entry);
@@ -213,11 +213,11 @@ class UrlCache {
             // otherwise cache for 2h.
             const ttl = info ? DISCOVERY_CACHE_TTL : 0;
             const entry = createCacheEntry(url, results, Date.now() + ttl);
-            const existingIndex = urlCache.findIndex((e) => e.url === entry.url);
-            if (existingIndex >= 0) {
+            const entryIndex = urlCache.findIndex((e) => e.url === entry.url);
+            if (entryIndex >= 0) {
               // update expired cache entry
               // console.log('updating discovery cache', entry);
-              urlCache.splice(existingIndex, 1, entry);
+              urlCache.splice(entryIndex, 1, entry);
             } else {
               // add cache entry
               // console.log('extending discovery cache', entry);
@@ -233,6 +233,7 @@ class UrlCache {
     await setConfig('session', {
       urlCache,
     });
+    // console.log('URL Cache', urlCache);
   }
 }
 

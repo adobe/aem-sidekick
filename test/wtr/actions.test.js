@@ -19,6 +19,7 @@ import { externalActions, internalActions } from '../../src/extension/actions.js
 import chromeMock from './mocks/chrome.js';
 import { error } from './test-utils.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Test actions', () => {

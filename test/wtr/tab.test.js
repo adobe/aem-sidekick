@@ -19,6 +19,7 @@ import chromeMock from './mocks/chrome.js';
 import checkTab from '../../src/extension/tab.js';
 import { error } from './test-utils.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Test check-tab', () => {
@@ -36,6 +37,7 @@ describe('Test check-tab', () => {
     const executeScriptSpy = sandbox.spy(chrome.scripting, 'executeScript');
     const sendMessageSpy = sandbox.spy(chrome.tabs, 'sendMessage');
     // check tab with invalid URL
+    // @ts-ignore
     await checkTab();
     expect(executeScriptSpy.callCount).to.equal(0);
     // check tab with URL from configured project

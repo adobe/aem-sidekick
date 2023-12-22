@@ -217,7 +217,7 @@ export function assembleProject({
  * @param {string} config.owner The owner
  * @param {string} config.repo The repository
  * @param {string} [config.ref] The ref or branch (default: main)
- * @param {string} config.authToken The auth token
+ * @param {string} [config.authToken] The auth token
  * @returns {Promise<Object>} The project environment
  */
 export async function getProjectEnv({
@@ -237,6 +237,7 @@ export async function getProjectEnv({
       credentials: 'include',
       headers: authToken ? { 'x-auth-token': authToken } : {},
     };
+
     res = await fetch(`https://admin.hlx.page/sidekick/${owner}/${repo}/${ref}/env.json`, options);
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -426,12 +427,11 @@ export async function getProjectMatches(configs, tabUrl) {
         || isValidHost(checkHost, owner, repo); // inner or outer
     });
   // check url cache if no matches
-  if (matches.length === 0) {
-    (await urlCache.get(tabUrl)).forEach((e) => {
-      // add matches from url cache
-      matches.push(...configs.filter(({ owner, repo }) => e.owner === owner && e.repo === repo));
-    });
-  }
+  const cachedResults = await urlCache.get(tabUrl);
+  cachedResults.forEach((e) => {
+    // add matches from url cache
+    matches.push(...configs.filter(({ owner, repo }) => e.owner === owner && e.repo === repo));
+  });
   // check if transient match can be derived from url or url cache
   if (matches.length === 0) {
     const [ref, repo, owner] = getConfigDetails(checkHost);
@@ -444,7 +444,17 @@ export async function getProjectMatches(configs, tabUrl) {
       });
     }
   }
-  // todo: check url cache for transient match
+  if (matches.length === 0) {
+    const { owner, repo } = cachedResults.find((r) => r.originalRepository) || {};
+    if (owner && repo) {
+      matches.push({
+        owner,
+        repo,
+        ref: 'main',
+        transient: true,
+      });
+    }
+  }
   return matches
     // exclude disabled configs
     .filter(({ owner, repo }) => !configs
