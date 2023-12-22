@@ -331,21 +331,20 @@ export async function getProjectMatches(configs, tabUrl) {
         || isValidHost(checkHost, owner, repo); // inner or outer
     });
   // check url cache if no matches
-  if (matches.length === 0) {
-    (await urlCache.get(tabUrl)).forEach((e) => {
-      // add non-duplicate matches from url cache
-      const filteredByUrlCache = configs.filter(({ owner, repo }) => {
-        if (e.owner === owner && e.repo === repo) {
-          // avoid duplicates
-          if (!matches.find((m) => m.owner === owner && m.repo === repo)) {
-            return true;
-          }
+  const cachedResults = await urlCache.get(tabUrl);
+  cachedResults.forEach((e) => {
+    // add non-duplicate matches from url cache
+    const filteredByUrlCache = configs.filter(({ owner, repo }) => {
+      if (e.owner === owner && e.repo === repo) {
+        // avoid duplicates
+        if (!matches.find((m) => m.owner === owner && m.repo === repo)) {
+          return true;
         }
-        return false;
-      });
-      matches.push(...filteredByUrlCache);
+      }
+      return false;
     });
-  }
+    matches.push(...filteredByUrlCache);
+  });
   // check if transient match can be derived from url or url cache
   if (matches.length === 0) {
     const [ref, repo, owner] = getConfigDetails(checkHost);
@@ -358,7 +357,18 @@ export async function getProjectMatches(configs, tabUrl) {
       });
     }
   }
-  // todo: check url cache for transient match
+  if (matches.length === 0) {
+    const { owner, repo } = cachedResults.find((r) => r.originalRepository) || {};
+    if (owner && repo) {
+      matches.push({
+        owner,
+        repo,
+        ref: 'main',
+        transient: true,
+      });
+    }
+  }
+  console.log('project matches', matches);
   return matches
     // exclude disabled configs
     .filter(({ owner, repo }) => !configs
