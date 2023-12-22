@@ -32,28 +32,26 @@ export async function addAuthTokenHeaders() {
       .map((handle) => getConfig('session', handle))))
       .filter((cfg) => !!cfg);
     projectConfigs.forEach(({ owner, repo, authToken }) => {
-      if (authToken) {
-        addRules.push({
-          id,
-          priority: 1,
-          action: {
-            type: 'modifyHeaders',
-            requestHeaders: [{
-              operation: 'set',
-              header: 'x-auth-token',
-              value: authToken,
-            }],
-          },
-          condition: {
-            regexFilter: `^https://admin.hlx.page/[a-z]+/${owner}/${repo}/.*`,
-            requestDomains: ['admin.hlx.page'],
-            requestMethods: ['get', 'post', 'delete'],
-            resourceTypes: ['xmlhttprequest'],
-          },
-        });
-        id += 1;
-        // console.log('added admin auth header rule for ', owner, repo);
-      }
+      addRules.push({
+        id,
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          requestHeaders: [{
+            operation: 'set',
+            header: 'x-auth-token',
+            value: authToken,
+          }],
+        },
+        condition: {
+          regexFilter: `^https://admin.hlx.page/[a-z]+/${owner}/${repo}/.*`,
+          requestDomains: ['admin.hlx.page'],
+          requestMethods: ['get', 'post', 'delete'],
+          resourceTypes: ['xmlhttprequest'],
+        },
+      });
+      id += 1;
+      // console.log('added admin auth header rule for ', owner, repo);
     });
     if (addRules.length > 0) {
       await chrome.declarativeNetRequest.updateSessionRules({
@@ -92,12 +90,10 @@ export async function setAuthToken(owner, repo, token, exp) {
       if (projectIndex < 0) {
         projects.push(handle);
       }
-    } else {
+    } else if (projectIndex >= 0) {
       // remove auth token from session storage
       await removeConfig('session', handle);
-      if (projectIndex >= 0) {
-        projects.splice(projectIndex, 1);
-      }
+      projects.splice(projectIndex, 1);
     }
     await setConfig('session', { hlxSidekickProjects: projects });
     await addAuthTokenHeaders();

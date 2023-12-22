@@ -44,6 +44,7 @@
           "_locales/*",
           "check-tab.js",
           "config.js",
+          "context-menu.js",
           "display.js",
           "index.js",
           "lib/polyfills.min.js",

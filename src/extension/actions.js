@@ -11,9 +11,18 @@
  */
 
 import { setAuthToken } from './auth.js';
+import {
+  addProject,
+  getProjects,
+  getProjectFromUrl,
+  toggleProject,
+  deleteProject,
+  isValidProject,
+  getGitHubSettings,
+} from './project.js';
 
 /**
- * Action to update the auth token via external messaging API (admin only).
+ * Updates the auth token via external messaging API (admin only).
  * @param {Object} message The message object
  * @param {string} message.owner The project owner
  * @param {string} message.repo The project repository
@@ -28,9 +37,8 @@ async function updateAuthToken({
   const { url } = sender;
   if (owner && repo) {
     try {
-      if (!url || new URL(url).origin !== 'https://admin.hlx.page') {
-        return 'unauthorized sender url';
-      } else if (authToken !== undefined && owner && repo) {
+      if (new URL(url).origin === 'https://admin.hlx.page'
+        && authToken !== undefined) {
         await setAuthToken(owner, repo, authToken, exp);
         return 'close';
       }
@@ -42,14 +50,59 @@ async function updateAuthToken({
 }
 
 /**
+ * Adds or removes a project based on the tab's URL
+ * @param {chrome.tabs.Tab} tab The tab
+ */
+async function addRemoveProject({ id, url }) {
+  const projects = await getProjects();
+  const project = await getProjectFromUrl(url);
+  if (isValidProject(project)) {
+    const { owner, repo } = project;
+    const reload = () => chrome.tabs.reload(id, { bypassCache: true });
+    const projectExists = !!projects.find((p) => p.owner === owner && p.repo === repo);
+    if (!projectExists) {
+      await addProject(project);
+      reload();
+    } else {
+      await deleteProject(`${owner}/${repo}`);
+      reload();
+    }
+  }
+}
+
+/**
+ * Enables or disables a project based on the tab's URL
+ * @param {chrome.tabs.Tab} tab The tab
+ */
+async function enableDisableProject({ id, url }) {
+  const cfg = await getProjectFromUrl(url);
+  if (await toggleProject(cfg)) {
+    chrome.tabs.reload(id, { bypassCache: true });
+  }
+}
+
+/**
+ * Opens the preview URL of a project based on a GitHub URL
+ * @param {chrome.tabs.Tab} tab The tab
+ */
+async function openPreview({ url }) {
+  const { owner, repo, ref = 'main' } = getGitHubSettings(url);
+  if (owner && repo) {
+    chrome.tabs.create({
+      url: `https://${ref}--${repo}--${owner}.hlx.page/`,
+    });
+  }
+}
+
+/**
  * Actions which can be executed via internal messaging API.
  * @type {Object} The internal actions
  */
 export const internalActions = {
-  // todo: addRemoveProject
-  // todo: enableDisableProject
-  // todo: openViewDocSource
-  // todo: openPreview
+  addRemoveProject,
+  enableDisableProject,
+  openPreview,
+  // todo: open view doc source
 };
 
 /**

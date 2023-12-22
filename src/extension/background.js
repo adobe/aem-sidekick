@@ -13,7 +13,7 @@
 import {
   toggleDisplay,
 } from './display.js';
-import checkTab from './check-tab.js';
+import checkTab from './tab.js';
 import {
   externalActions,
   internalActions,
@@ -28,8 +28,8 @@ chrome.action.onClicked.addListener(async ({ id }) => {
   checkTab(id);
 });
 
-chrome.tabs.onUpdated.addListener(async (id, info) => {
-  if (info.status === 'complete') {
+chrome.tabs.onUpdated.addListener(async (id, info, tab) => {
+  if (tab.active && info.status === 'complete') {
     checkTab(id);
   }
 });
