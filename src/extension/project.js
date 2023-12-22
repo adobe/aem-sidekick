@@ -135,8 +135,8 @@ export function assembleProject({
  * @param {Object} config The config
  * @param {string} config.owner The owner
  * @param {string} config.repo The repository
- * @param {string} config.ref=main The ref or branch
- * @param {string} config.authToken The auth token
+ * @param {string} [config.ref] The ref or branch (default: 'main')
+ * @param {string} [config.authToken] The auth token
  * @returns {Promise<Object>} The project environment
  */
 export async function getProjectEnv({
@@ -156,6 +156,7 @@ export async function getProjectEnv({
       credentials: 'include',
       headers: authToken ? { 'x-auth-token': authToken } : {},
     };
+
     res = await fetch(`https://admin.hlx.page/sidekick/${owner}/${repo}/${ref}/env.json`, options);
   } catch (e) {
     // eslint-disable-next-line no-console

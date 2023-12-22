@@ -10,13 +10,13 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-disable wc/no-constructor-params, wc/guard-super-call */
+
 import { html } from 'lit';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { customElement } from 'lit/decorators.js';
 import { style } from './aem-sidekick.css.js';
 import { appStore } from './store/app.js';
-
-/* eslint-disable wc/no-constructor-params */
 
 @customElement('aem-sidekick')
 export class AEMSidekick extends MobxLitElement {
@@ -31,7 +31,12 @@ export class AEMSidekick extends MobxLitElement {
   constructor(config) {
     super();
     this.theme = 'light';
-    appStore.setSiteConfig(config);
+    appStore.loadContext(this, config);
+
+    this.addEventListener('contextloaded', (data) => {
+      // eslint-disable-next-line no-console
+      console.log('console was loaded', data);
+    });
   }
 
   async connectedCallback() {

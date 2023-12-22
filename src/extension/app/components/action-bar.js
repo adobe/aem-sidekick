@@ -29,10 +29,6 @@ export class ActionBar extends LitElement {
     }
   `;
 
-  connectedCallback() {
-    super.connectedCallback();
-  }
-
   render() {
     return html`
       <div class="action-bar">

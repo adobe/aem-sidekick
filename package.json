@@ -7,7 +7,7 @@
     "analyze": "cem analyze --litelement",
     "lint": "eslint .",
     "test:mocha": "c8 mocha",
-    "test:wtr": "wtr \"./test/wtr/*.test.js\"",
+    "test:wtr": "wtr \"./test/wtr/**/*.test.js\"",
     "test:wtr:watch": "npm run test:wtr -- --watch",
     "test": "npm run test:mocha && npm run test:wtr",
     "docs": "npx jsdoc2md -c .jsdoc.json --files './src/*.js'  > docs/API.md",
@@ -38,6 +38,7 @@
     "reporter-options": "configFile=.mocha-multi.json"
   },
   "dependencies": {
+    "@adobe/lit-mobx": "2.2.1",
     "@spectrum-web-components/action-button": "0.40.1",
     "@spectrum-web-components/action-group": "0.40.1",
     "@spectrum-web-components/button": "0.40.1",
@@ -79,6 +80,7 @@
     "codecov": "3.8.3",
     "eslint": "8.56.0",
     "eslint-plugin-mobx": "0.0.9",
+    "fetch-mock": "9.11.0",
     "fs-extra": "11.2.0",
     "husky": "8.0.3",
     "jsdoc-to-markdown": "8.0.0",
