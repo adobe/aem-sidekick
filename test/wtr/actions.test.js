@@ -91,7 +91,7 @@ describe('Test actions', () => {
       url: 'https://main--bar--foo.hlx.page/',
     });
     expect(set.calledWith({
-      hlxSidekickProjects: ['adobe/blog', 'foo/bar'],
+      hlxSidekickProjects: ['foo/bar'],
     })).to.be.true;
     expect(set.calledWith({
       'foo/bar': {
@@ -105,14 +105,14 @@ describe('Test actions', () => {
     expect(reload.calledWith(1)).to.be.true;
     // remove project
     await internalActions.addRemoveProject({
-      id: 1,
+      id: 2,
       url: 'https://main--bar--foo.hlx.page/',
     });
     expect(set.calledWith(
-      { hlxSidekickProjects: ['adobe/blog'] },
+      { hlxSidekickProjects: [] },
     )).to.be.true;
     expect(remove.calledWith('foo/bar')).to.be.true;
-    expect(reload.called).to.be.true;
+    expect(reload.calledWith(2)).to.be.true;
     // testing noop
     set.resetHistory();
     await internalActions.addRemoveProject({
@@ -125,22 +125,42 @@ describe('Test actions', () => {
   it('internal: enableDisableProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const reload = sandbox.spy(chrome.tabs, 'reload');
+    // add project first
+    await internalActions.addRemoveProject({
+      id: 1,
+      url: 'https://main--bar--foo.hlx.page/',
+    });
     // disable project
     await internalActions.enableDisableProject({
       id: 1,
-      url: 'https://main--blog--adobe.hlx.page/',
+      url: 'https://main--bar--foo.hlx.page/',
     });
     expect(set.calledWith({
-      'adobe/blog': {
-        giturl: 'https://github.com/adobe/blog',
-        owner: 'adobe',
-        repo: 'blog',
+      'foo/bar': {
+        id: 'foo/bar/main',
+        giturl: 'https://github.com/foo/bar/tree/main',
+        owner: 'foo',
+        repo: 'bar',
         ref: 'main',
-        devOrigin: 'http://localhost:2001',
         disabled: true,
       },
     })).to.be.true;
     expect(reload.calledWith(1)).to.be.true;
+    // enable project
+    await internalActions.enableDisableProject({
+      id: 2,
+      url: 'https://main--bar--foo.hlx.page/',
+    });
+    expect(set.calledWith({
+      'foo/bar': {
+        id: 'foo/bar/main',
+        giturl: 'https://github.com/foo/bar/tree/main',
+        owner: 'foo',
+        repo: 'bar',
+        ref: 'main',
+      },
+    })).to.be.true;
+    expect(reload.calledWith(2)).to.be.true;
     // testing noop
     set.resetHistory();
     await internalActions.enableDisableProject({

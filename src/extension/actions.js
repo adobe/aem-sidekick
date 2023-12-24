@@ -13,12 +13,12 @@
 import { setAuthToken } from './auth.js';
 import {
   addProject,
-  getProjects,
   getProjectFromUrl,
   toggleProject,
   deleteProject,
   isValidProject,
   getGitHubSettings,
+  getProject,
 } from './project.js';
 
 /**
@@ -54,19 +54,16 @@ async function updateAuthToken({
  * @param {chrome.tabs.Tab} tab The tab
  */
 async function addRemoveProject({ id, url }) {
-  const projects = await getProjects();
-  const project = await getProjectFromUrl(url);
-  if (isValidProject(project)) {
-    const { owner, repo } = project;
-    const reload = () => chrome.tabs.reload(id, { bypassCache: true });
-    const projectExists = !!projects.find((p) => p.owner === owner && p.repo === repo);
-    if (!projectExists) {
-      await addProject(project);
-      reload();
+  const config = await getProjectFromUrl(url);
+  if (isValidProject(config)) {
+    const { owner, repo } = config;
+    const project = await getProject(config);
+    if (!project) {
+      await addProject(config);
     } else {
       await deleteProject(`${owner}/${repo}`);
-      reload();
     }
+    await chrome.tabs.reload(id, { bypassCache: true });
   }
 }
 
@@ -77,7 +74,7 @@ async function addRemoveProject({ id, url }) {
 async function enableDisableProject({ id, url }) {
   const cfg = await getProjectFromUrl(url);
   if (await toggleProject(cfg)) {
-    chrome.tabs.reload(id, { bypassCache: true });
+    await chrome.tabs.reload(id, { bypassCache: true });
   }
 }
 
@@ -88,7 +85,7 @@ async function enableDisableProject({ id, url }) {
 async function openPreview({ url }) {
   const { owner, repo, ref = 'main' } = getGitHubSettings(url);
   if (owner && repo) {
-    chrome.tabs.create({
+    await chrome.tabs.create({
       url: `https://${ref}--${repo}--${owner}.hlx.page/`,
     });
   }
