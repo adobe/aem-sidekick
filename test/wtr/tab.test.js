@@ -22,11 +22,34 @@ import { error } from './test-utils.js';
 // @ts-ignore
 window.chrome = chromeMock;
 
+const TABS = {
+  1: {
+    id: 1,
+    url: 'https://main--blog--adobe.hlx.page/',
+  },
+  2: {
+    id: 2,
+    url: 'https://www.example.com/',
+  },
+  3: {
+    id: 3,
+    url: 'http://localhost:2001/',
+  },
+  4: {
+    id: 4,
+    url: 'http://github.com/foo/bar',
+  },
+};
+
 describe('Test check-tab', () => {
   const sandbox = sinon.createSandbox();
 
   before(async () => {
     await setUserAgent('HeadlessChrome');
+  });
+
+  beforeEach(async () => {
+    sinon.stub(chrome.tabs, 'get').callsFake(async (id) => (id ? TABS[id] : {}));
   });
 
   afterEach(() => {
@@ -51,6 +74,34 @@ describe('Test check-tab', () => {
     await checkTab(2);
     expect(executeScriptSpy.callCount).to.equal(1);
     // check tab with dev URL
+    sinon.stub(chrome.storage.sync, 'get')
+      .callsFake(async (prop) => new Promise((resolve) => {
+        if (prop === 'hlxSidekickProjects') {
+          resolve({
+            // @ts-ignore
+            hlxSidekickProjects: [
+              'foo/bar',
+            ],
+          });
+        }
+        if (prop === 'foo/bar') {
+          resolve({
+            // @ts-ignore
+            'foo/bar': {
+              owner: 'foo',
+              repo: 'bar',
+              ref: 'main',
+              devOrigin: 'http://localhost:2001',
+            },
+          });
+        }
+        resolve();
+      }));
+    sinon.stub(chrome.runtime.onMessage, 'addListener')
+      .callsFake((func, _) => func(
+        { proxyUrl: document.head.querySelector('meta[property="hlx:proxyUrl"]')?.getAttribute('content') },
+        { tab: TABS[3] },
+      ));
     const proxyUrl = document.createElement('meta');
     proxyUrl.setAttribute('property', 'hlx:proxyUrl');
     proxyUrl.setAttribute('content', 'https://main--bar--foo.hlx.page/');

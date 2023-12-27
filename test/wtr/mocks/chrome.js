@@ -14,25 +14,6 @@ import { readFile } from '@web/test-runner-commands';
 
 const ID = 'dummy';
 
-const TABS = {
-  1: {
-    id: 1,
-    url: 'https://main--blog--adobe.hlx.page/',
-  },
-  2: {
-    id: 2,
-    url: 'https://www.example.com/',
-  },
-  3: {
-    id: 3,
-    url: 'http://localhost:3000/',
-  },
-  4: {
-    id: 4,
-    url: 'http://github.com/foo/bar',
-  },
-};
-
 class StorageMock {
   constructor(state = {}) {
     this.state = state;
@@ -70,11 +51,7 @@ export default {
     lastError: null,
     sendMessage: () => {},
     onMessage: {
-      // simulate internal message from tab
-      addListener: (func) => func(
-        { proxyUrl: document.head.querySelector('meta[property="hlx:proxyUrl"]')?.getAttribute('content') },
-        { tab: TABS[3] },
-      ),
+      addListener: () => {},
       removeListener: () => {},
     },
     onMessageExternal: {
@@ -93,7 +70,7 @@ export default {
   },
   tabs: {
     create: async ({ url }) => ({ url, id: 7 }),
-    get: async (id) => (id ? TABS[id] : {}),
+    get: async () => {},
     sendMessage: async () => {},
     remove: async () => {},
     reload: async () => {},
