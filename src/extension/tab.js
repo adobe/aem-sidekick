@@ -84,6 +84,7 @@ async function injectContentScript(tabId, matches) {
 export default async function checkTab(id) {
   const projects = await getProjects();
   const tab = await chrome.tabs.get(id);
+  if (!tab) return;
   let { url: checkUrl } = tab;
   if (!checkUrl) return;
 

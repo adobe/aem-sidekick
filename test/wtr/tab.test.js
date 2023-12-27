@@ -59,10 +59,12 @@ describe('Test check-tab', () => {
   it('checkTab', async () => {
     const executeScriptSpy = sandbox.spy(chrome.scripting, 'executeScript');
     const sendMessageSpy = sandbox.spy(chrome.tabs, 'sendMessage');
+
     // check tab with invalid URL
     // @ts-ignore
     await checkTab();
     expect(executeScriptSpy.callCount).to.equal(0);
+
     // check tab with URL from configured project
     await checkTab(1);
     expect(executeScriptSpy.calledWith({
@@ -70,9 +72,11 @@ describe('Test check-tab', () => {
       files: ['./content.js'],
     })).to.be.true;
     expect(sendMessageSpy.called).to.be.true;
+
     // check tab with unknown URL
     await checkTab(2);
     expect(executeScriptSpy.callCount).to.equal(1);
+
     // check tab with dev URL
     sinon.stub(chrome.storage.sync, 'get')
       .callsFake(async (prop) => new Promise((resolve) => {
@@ -111,11 +115,14 @@ describe('Test check-tab', () => {
     proxyUrl.remove();
     await checkTab(3);
     expect(executeScriptSpy.callCount).to.equal(4);
+
     // error handling
     executeScriptSpy.restore();
     const consoleSpy = sandbox.spy(console, 'log');
     sandbox.stub(chrome.scripting, 'executeScript').throws(error);
     await checkTab(1);
     expect(consoleSpy.called).to.be.true;
+    sinon.restore();
+    await checkTab(1);
   });
 });

@@ -42,7 +42,6 @@
       {
         "resources": [
           "_locales/*",
-          "check-tab.js",
           "config.js",
           "context-menu.js",
           "display.js",
@@ -51,6 +50,7 @@
           "module.js",
           "project.js",
           "rum.js",
+          "tab.js",
           "url-cache.js",
           "view/json/json.html",
           "view-doc-source/js/content.js"
