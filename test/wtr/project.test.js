@@ -216,6 +216,17 @@ describe('Test project', () => {
 
   it('addProject', async () => {
     const spy = sinon.spy(chrome.storage.sync, 'set');
+    sinon.stub(window, 'fetch')
+      .onCall(1)
+      .resolves(new Response(JSON.stringify(ENV_JSON)))
+      .onCall(2)
+      .resolves(new Response('', { status: 401 }))
+      .onCall(3)
+      .resolves(new Response(JSON.stringify(ENV_JSON)))
+      .onCall(4)
+      .resolves(new Response('', { status: 401 }))
+      .resolves(new Response(JSON.stringify(ENV_JSON)));
+
     // add project
     const added = await addProject({
       giturl: 'https://github.com/test/project',
@@ -224,9 +235,16 @@ describe('Test project', () => {
     expect(spy.calledWith({
       hlxSidekickProjects: ['test/project'],
     })).to.be.true;
+
     // add project with auth enabled
-    sinon.stub(window, 'fetch')
-      .resolves(new Response('', { status: 401 }));
+    const callback = sinon.stub(chrome.runtime.onMessageExternal, 'addListener');
+    callback
+      .onFirstCall()
+      .callsFake(async (func, _) => {
+        func({ owner: 'test', repo: 'auth-project', authToken: 'foo' });
+      })
+      .onSecondCall()
+      .callsFake((async (func, _) => func()));
     const addedWithAuth = await addProject({
       giturl: 'https://github.com/test/auth-project',
     });
@@ -234,21 +252,15 @@ describe('Test project', () => {
     expect(spy.calledWith({
       hlxSidekickProjects: ['test/project', 'test/auth-project'],
     })).to.be.true;
-    // add project with auth, callback without auth token
-    const fake = sinon.fake((func) => {
-      func({ owner: 'test', repo: 'auth-project', authToken: 'foo' });
+    // try again with emtpy callback message
+    const addedWithoutAuth = await addProject({
+      giturl: 'https://github.com/test/auth-project',
     });
-    sinon.replace(chrome.runtime.onMessageExternal, 'addListener', fake);
-    // const addListener = sandbox.stub(chrome.runtime.onMessageExternal, 'addListener');
-    // addListener.callsFake((func) => func({ owner: 'test', repo: 'auth-project' }));
-    // const failed1 = await addProject({
-    //   giturl: 'https://github.com/test/auth-project',
-    // });
-    // expect(failed1).to.be.false;
-    // addListener.restore();
+    expect(addedWithoutAuth).to.be.false;
+
     // add existing
     const addedExisting = await addProject({
-      giturl: 'https://github.com/test/project',
+      giturl: 'https://github.com/test/auth-project',
     });
     expect(addedExisting).to.be.false;
   });
@@ -283,17 +295,24 @@ describe('Test project', () => {
 
   it('deleteProject', async () => {
     const spy = sinon.spy(chrome.storage.sync, 'set');
-    // delete project without handle
-    let projectsStub = sinon.stub(chrome.storage.sync, 'get')
+    let projectsStub = sinon.stub(chrome.storage.sync, 'get');
+    projectsStub
       .withArgs('hlxSidekickProjects')
-      .resolves(CONFIGS);
+      .resolves({
+        hlxSidekickProjects: ['foo/bar1', 'foo/bar2'],
+      });
+
+    // delete project with config object
     let deleted = await deleteProject({ owner: 'foo', repo: 'bar1' });
     expect(deleted).to.be.true;
+    expect(spy.calledWith({
+      hlxSidekickProjects: ['foo/bar2'],
+    })).to.be.true;
     // delete project with handle
-    deleted = await deleteProject('test/project');
+    deleted = await deleteProject('foo/bar2');
     expect(deleted).to.be.true;
     expect(spy.calledWith({
-      hlxSidekickProjects: ['test/auth-project'],
+      hlxSidekickProjects: [],
     })).to.be.true;
     // delete inexistent project
     projectsStub.restore();
@@ -346,8 +365,8 @@ describe('Test project', () => {
     // match sharepoint URL (docx)
     await urlCache.set('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true');
     expect((await getProjectMatches(CONFIGS, 'https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true')).length).to.equal(1);
-    // match gdrive URL
-    await urlCache.set('https://docs.google.com/document/d/1234567890/edit');
+    // match transient gdrive URL
+    await urlCache.set('https://docs.google.com/document/d/1234567890/edit', { owner: 'foo', repo: 'bar0' });
     expect((await getProjectMatches(CONFIGS, 'https://docs.google.com/document/d/1234567890/edit')).length).to.equal(1);
   });
 

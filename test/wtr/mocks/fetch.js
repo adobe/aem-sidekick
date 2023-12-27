@@ -12,27 +12,6 @@
 
 import { readFile } from '@web/test-runner-commands';
 
-const HELIX_ENV_JSON = {
-  version: 1,
-  prod: {
-    host: 'business.adobe.com',
-    routes: [],
-  },
-  preview: {
-    host: 'preview.example.com',
-  },
-  live: {
-    host: 'live.example.com',
-  },
-  project: 'Adobe Business Website',
-  contentSourceUrl: 'https://adobe.sharepoint.com/:f:/s/Dummy/Alk9MSH25LpBuUWA_N6DOL8BuI6Vrdyrr87gne56dz3QeQ',
-  contentSourceType: 'onedrive',
-};
-
-const FSTAB_YAML = `mountpoints:
-  /: https://drive.google.com/drive/u/0/folders/1MGzOt7ubUh3gu7zhZIPb7R7dyRzG371j
-`;
-
 const DISCOVER_JSON = [
   { owner: 'foo', repo: 'bar1' },
 ];
@@ -89,25 +68,15 @@ class ResponseMock {
   }
 }
 
-export default async function fetchMock(url, options = {}) {
+export default async function fetchMock(url) {
+  if (!url) throw new Error('1 argument required, but only 0 present');
   calls += 1;
   if ([11, 13].includes(calls)) {
     // test error handling
     return new ResponseMock({ body: '', status: 404 });
   }
   const path = new URL(url).pathname;
-  if (path.endsWith('/fstab.yaml')) {
-    return new ResponseMock(FSTAB_YAML);
-  } else if (path.endsWith('/env.json')) {
-    if (path.includes('/test/auth-project/')) {
-      if (options.headers && options.headers['x-auth-token']) {
-        return new ResponseMock(JSON.stringify(HELIX_ENV_JSON));
-      } else {
-        return new ResponseMock({ status: 401 });
-      }
-    }
-    return new ResponseMock(JSON.stringify(HELIX_ENV_JSON));
-  } else if (path.startsWith('/discover')) {
+  if (path.startsWith('/discover')) {
     return new ResponseMock(JSON.stringify(DISCOVER_JSON));
   } else if (path.startsWith('/_api/v2.0/shares/')) {
     if (path.includes('MTA1OTI1OA')) {
