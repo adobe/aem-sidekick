@@ -83,7 +83,7 @@ async function enableDisableProject({ id, url }) {
  * @param {chrome.tabs.Tab} tab The tab
  */
 async function openPreview({ url }) {
-  const { owner, repo, ref = 'main' } = getGitHubSettings(url);
+  const { owner, repo, ref } = getGitHubSettings(url);
   if (owner && repo) {
     await chrome.tabs.create({
       url: `https://${ref}--${repo}--${owner}.hlx.page/`,

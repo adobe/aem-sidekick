@@ -109,8 +109,7 @@ export default {
     create: () => {},
     removeAll: () => {},
     onClicked: {
-      // simulate click on context menu item
-      addListener: (func) => func({ menuItemId: 'openPreview' }, TABS[1]),
+      addListener: () => {},
     },
   },
 };

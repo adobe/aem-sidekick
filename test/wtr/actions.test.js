@@ -179,5 +179,12 @@ describe('Test actions', () => {
     expect(create.calledWith({
       url: 'https://main--blog--adobe.hlx.page/',
     })).to.be.true;
+    // open preview with unsupported url
+    create.resetHistory();
+    await internalActions.openPreview({
+      id: 1,
+      url: 'https://www.example.com',
+    });
+    expect(create.called).to.be.false;
   });
 });
