@@ -20,6 +20,7 @@ import chromeMock from './mocks/chrome.js';
 import fetchMock from './mocks/fetch.js';
 import { urlCache } from '../../src/extension/url-cache.js';
 import { error } from './test-utils.js';
+import { mockDiscoveryCalls } from './fixtures/discover.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -363,6 +364,7 @@ describe('Test project', () => {
     await urlCache.set('https://7.foo.bar/', { owner: 'foo', repo: 'bar6' });
     expect((await getProjectMatches(CONFIGS, 'https://7.foo.bar/')).length).to.equal(1);
     // match sharepoint URL (docx)
+    mockDiscoveryCalls();
     await urlCache.set('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true');
     expect((await getProjectMatches(CONFIGS, 'https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true')).length).to.equal(1);
     // match transient gdrive URL
