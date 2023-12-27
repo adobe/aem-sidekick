@@ -18,17 +18,7 @@ import sinon from 'sinon';
 
 import chromeMock from './mocks/chrome.js';
 import fetchMock from './mocks/fetch.js';
-import { urlCache } from '../../src/extension/url-cache.js';
-import { error } from './test-utils.js';
-import { mockDiscoveryCalls } from './fixtures/discover.js';
-
-// @ts-ignore
-window.chrome = chromeMock;
-
-// @ts-ignore
-window.fetch = fetchMock;
-
-const {
+import {
   getProject,
   getProjects,
   getProjectEnv,
@@ -41,7 +31,16 @@ const {
   getProjectMatches,
   getGitHubSettings,
   getProjectFromUrl,
-} = await import('../../src/extension/project.js');
+} from '../../src/extension/project.js';
+import { urlCache } from '../../src/extension/url-cache.js';
+import { error } from './test-utils.js';
+import { mockDiscoveryCalls } from './fixtures/discover.js';
+
+// @ts-ignore
+window.chrome = chromeMock;
+
+// @ts-ignore
+window.fetch = fetchMock;
 
 const CONFIGS = [
   {
