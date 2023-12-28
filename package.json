@@ -94,7 +94,7 @@
     "puppeteer-to-istanbul": "1.4.0",
     "request": "2.88.2",
     "rimraf": "5.0.5",
-    "rollup": "4.9.0",
+    "rollup": "4.9.1",
     "rollup-plugin-copy": "3.5.0",
     "rollup-plugin-esbuild": "6.1.0",
     "semantic-release": "22.0.12",
