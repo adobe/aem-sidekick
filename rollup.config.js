@@ -52,7 +52,21 @@ function plugins(browser) {
     /** Copy static assets */
     copy({
       targets: [
-        { src: 'src/extension/*', ignore: ['src/extension/app'], dest: `./dist/${browser}` },
+        {
+          src: 'src/extension/*',
+          ignore: [
+            'src/extension/app',
+            'src/extension/lib',
+            'src/extension/types',
+            // 'src/extension/actions.js',
+            // 'src/extension/auth.js',
+            // 'src/extension/check-tab.js',
+            // 'src/extension/url-cache.js',
+            // 'src/extension/display.js',
+            // 'src/extension/config.js',
+          ],
+          dest: `./dist/${browser}`,
+        },
       ],
     }),
     replace({
@@ -71,11 +85,15 @@ function extensionBuild(browser) {
 
 export default [
   {
-    input: 'src/extension/index.js',
+    input: {
+      index: 'src/extension/index.js', // aem-sidekick
+      // background: 'src/extension/background.js', // service worker
+      content: 'src/extension/content.js', // content script
+    },
     ...extensionBuild('chrome'),
   },
-  {
-    input: 'src/extension/index.js',
-    ...extensionBuild('safari'),
-  },
+  // {
+  //   input: 'src/extension/index.js',
+  //   ...extensionBuild('safari'),
+  // },
 ];

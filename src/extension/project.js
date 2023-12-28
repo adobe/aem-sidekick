@@ -368,7 +368,6 @@ export async function getProjectMatches(configs, tabUrl) {
       });
     }
   }
-  console.log('project matches', matches);
   return matches
     // exclude disabled configs
     .filter(({ owner, repo }) => !configs

@@ -10,11 +10,13 @@
  * governing permissions and limitations under the License.
  */
 
+import {} from './lib/polyfills.min.js';
+import { getDisplay } from './display.js';
+
 (async () => {
   // ensure hlx namespace
   window.hlx = window.hlx || {};
 
-  const { getDisplay } = await import('./display.js');
   const display = await getDisplay();
   let { sidekick } = window.hlx;
   if (!sidekick) {
@@ -28,7 +30,6 @@
         // load sidekick
         const [config] = configMatches;
         // console.log('single match', config);
-        await import('./lib/polyfills.min.js');
 
         if (!sidekick) {
           const { AEMSidekick } = await import('./index.js');

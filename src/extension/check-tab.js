@@ -82,7 +82,7 @@ export default async function checkTab(id) {
   const projects = await getProjects();
   const tab = await chrome.tabs.get(id);
   let { url: checkUrl } = tab;
-  if (projects.length === 0 || !checkUrl) return;
+  if (!checkUrl) return;
 
   // check for dev URL
   /* istanbul ignore next 5 */
