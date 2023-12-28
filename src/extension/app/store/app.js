@@ -16,6 +16,8 @@ import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import sampleRUM from '../utils/rum.js';
 import { fetchLanguageDict } from '../utils/i18n.js';
 import { getLocation, matchProjectHost, isSupportedFileExtension } from '../utils/browser.js';
+import { EventBus } from '../utils/event-bus.js';
+import { EVENTS, MODALS } from '../constants.js';
 
 /**
  * The sidekick configuration object type
@@ -25,6 +27,11 @@ import { getLocation, matchProjectHost, isSupportedFileExtension } from '../util
 /**
  * The plugin object type
  * @typedef {import('@Types').Plugin} Plugin
+ */
+
+/**
+ * The plugin object type
+ * @typedef {import('../aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
 export class AppStore {
@@ -39,7 +46,7 @@ export class AppStore {
 
   /**
    * The sidekick element
-   * @type {HTMLElement}
+   * @type {AEMSidekick}
    */
   sidekick;
 
@@ -62,7 +69,7 @@ export class AppStore {
   /**
    * Loads the sidekick configuration and language dictionary,
    * and retrieves the location of the current document.
-   * @param {HTMLElement} sidekick The sidekick HTMLElement
+   * @param {AEMSidekick} sidekick The sidekick HTMLElement
    * @param {SidekickOptionsConfig} inputConfig The sidekick config
    * @fires Sidekick#contextloaded
    */
@@ -269,6 +276,26 @@ export class AppStore {
   }
 
   /**
+   * Displays a wait modal
+   * @param {string} message The message to display
+   */
+  showWait(message) {
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
+      detail: {
+        type: MODALS.WAIT,
+        data: { message },
+      },
+    }));
+  }
+
+  /**
+   * Hides the modal
+   */
+  hideWait() {
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_MODAL));
+  }
+
+  /**
    * Fires an event with the given name.
    * @private
    * @param {string} name The name of the event
@@ -326,6 +353,22 @@ export class AppStore {
       // eslint-disable-next-line no-console
       console.warn('failed to fire event', name, e);
     }
+  }
+
+  /**
+   * Displays a toast message
+   * @param {string} message The message to display
+   * @param {string} [variant] The variant of the toast (optional)
+   * @param {number} [timeout] The timeout in milliseconds (optional)
+   */
+  showToast(message, variant = 'info', timeout = 2000) {
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.SHOW_TOAST, {
+      detail: {
+        message,
+        variant,
+        timeout,
+      },
+    }));
   }
 
   /**

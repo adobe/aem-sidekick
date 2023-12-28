@@ -16,9 +16,10 @@ import '@spectrum-web-components/theme/express/theme-light.js';
 import '@spectrum-web-components/theme/sp-theme.js';
 import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
-import '@spectrum-web-components/button/sp-button.js';
 import '@spectrum-web-components/divider/sp-divider.js';
 import '@spectrum-web-components/toast/sp-toast.js';
+import '@spectrum-web-components/dialog/sp-dialog-wrapper.js';
+import '@spectrum-web-components/progress-circle/sp-progress-circle.js';
 
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-play.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-edit.js';
@@ -27,6 +28,9 @@ import '@spectrum-web-components/icons-workflow/icons/sp-icon-share.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-real-time-customer-profile.js';
 
 import { AEMSidekick } from './app/aem-sidekick.js';
-import './app/components/action-bar.js';
+import './app/components/action-bar/action-bar.js';
+import './app/components/modal/modal-container.js';
+import './app/components/toast/toast-container.js';
+import './app/components/dialog/dialog.js';
 
 export { AEMSidekick };
