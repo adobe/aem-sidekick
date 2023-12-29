@@ -17,12 +17,17 @@ import { EventBus } from '../../utils/event-bus.js';
 import { EVENTS } from '../../constants.js';
 
 /**
- * The plugin object type
+ * The Toast object type
  * @typedef {import('@Types').Toast} Toast
  */
 
+/**
+ * Toast container component
+ * @element toast-container
+ * @class ToastContainer
+ */
 @customElement('toast-container')
-export class ModalContainer extends LitElement {
+export class ToastContainer extends LitElement {
     /**
      * The toast container HTMLElement
      * @type {HTMLElement}

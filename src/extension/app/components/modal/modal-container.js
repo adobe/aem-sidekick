@@ -10,8 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-/* eslint-disable max-len */
-
 import { customElement, property } from 'lit/decorators.js';
 import { html, LitElement } from 'lit';
 import { style } from './modal-container.css.js';
@@ -28,9 +26,15 @@ import { EVENTS, MODALS } from '../../constants.js';
  * @typedef {import('lit').TemplateResult} TemplateResult
  */
 
+/**
+ * Modal container component
+ * @element modal-container
+ * @class ModalContainer
+ */
 @customElement('modal-container')
 export class ModalContainer extends LitElement {
   /**
+   * Active modal object
    * @type {Modal}
    */
   @property({ type: Object })
@@ -54,6 +58,9 @@ export class ModalContainer extends LitElement {
     });
   }
 
+  /**
+   * Called when the modal is closed
+   */
   closed() {
     // allow animation to complete and then remove
     setTimeout(() => {
