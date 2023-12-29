@@ -82,7 +82,7 @@ export async function updateProject(project) {
 /**
  * Validates a project config.
  * @param {Object} config The project config
- * @returns {boolean} <code>true</code> if valid project, else <code>false</code>
+ * @returns {boolean} true if valid project config, else false
  */
 export function isValidProject({ owner, repo, ref } = {}) {
   return !!(owner && repo && ref);
@@ -355,8 +355,7 @@ export async function deleteProject(project) {
 /**
  * Toggles a project configuration.
  * @param {Object|string} project The project settings or handle
- * else <code>false</code>
- * @returns {Promise<Boolean>}
+ * @returns {Promise<Boolean>} true if project exists, else false
  */
 export async function toggleProject(project) {
   const config = await getProject(project);
@@ -376,7 +375,7 @@ export async function toggleProject(project) {
  * @param {string} host The base host
  * @param {string} [owner] The owner
  * @param {string} [repo] The repo
- * @returns {boolean} <code>true</code> if project host, else <code>false</code>
+ * @returns {boolean} true if valid project host, else false
  */
 export function isValidHost(host, owner, repo) {
   const [third, second, first] = host.split('.');

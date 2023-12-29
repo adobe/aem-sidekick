@@ -16,8 +16,7 @@ import { GH_URL, getProject } from './project.js';
 /**
  * @private
  * @type {boolean}
- * @description <code>true</code> if the context menu is currently being updated,
- * else <code>false</code>
+ * @description true if context menu is currently being updated, else false
  */
 let updateInProgress = false;
 
