@@ -17,7 +17,6 @@ import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
 import chromeMock from './mocks/chrome.js';
-import fetchMock from './mocks/fetch.js';
 import {
   getProject,
   getProjects,
@@ -38,9 +37,6 @@ import { mockDiscoveryCalls } from './fixtures/discover.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
-
-// @ts-ignore
-window.fetch = fetchMock;
 
 const CONFIGS = [
   {

@@ -16,7 +16,6 @@ import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
 import chromeMock from './mocks/chrome.js';
-import fetchMock from './mocks/fetch.js';
 import {
   isSharePointHost,
   urlCache,
@@ -27,9 +26,6 @@ import {
 
 // @ts-ignore
 window.chrome = chromeMock;
-
-// @ts-ignore
-window.fetch = fetchMock;
 
 describe('Test url-cache', () => {
   const sandbox = sinon.createSandbox();
