@@ -15,8 +15,9 @@ import { expect } from '@esm-bundle/chai';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
-import { externalActions } from '../../src/extension/actions.js';
+import { externalActions, internalActions } from '../../src/extension/actions.js';
 import chromeMock from './mocks/chrome.js';
+import { error } from './test-utils.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -33,7 +34,7 @@ describe('Test actions', () => {
   });
 
   it('external: updateAuthToken', async () => {
-    const setConfig = sandbox.spy(chrome.storage.session, 'set');
+    const set = sandbox.spy(chrome.storage.session, 'set');
     const owner = 'test';
     const repo = 'project';
     const authToken = '1234567890';
@@ -45,7 +46,7 @@ describe('Test actions', () => {
       },
       { url: 'https://admin.hlx.page/auth/test/project/main' },
     );
-    expect(setConfig.called).to.be.true;
+    expect(set.called).to.be.true;
     expect(resp).to.equal('close');
     // from unauthorized url
     resp = await externalActions.updateAuthToken(
@@ -54,13 +55,9 @@ describe('Test actions', () => {
       },
       { url: 'https://admin.hlx.fake/' },
     );
-    expect(resp).to.equal('unauthorized sender url');
+    expect(resp).to.equal('invalid message');
     // error handling
-    window.URL = class URLMock {
-      constructor() {
-        throw new Error('this is just a test');
-      }
-    };
+    sandbox.stub(window, 'URL').throws(error);
     resp = await externalActions.updateAuthToken(
       {
         owner, repo, authToken, exp,
@@ -68,5 +65,126 @@ describe('Test actions', () => {
       { url: 'https://admin.hlx.page/auth/test/project/main' },
     );
     expect(resp).to.equal('invalid message');
+    // testing noops
+    set.resetHistory();
+    await externalActions.updateAuthToken(
+      { owner, repo },
+      { url: 'https://admin.hlx.page/auth/test/project/main' },
+    );
+    await externalActions.updateAuthToken(
+      {
+        owner, repo, authToken, exp,
+      },
+      { url: 'https://some.malicious.actor/' },
+    );
+    await externalActions.updateAuthToken({}, {});
+    expect(set.notCalled).to.be.true;
+  });
+
+  it('internal: addRemoveProject', async () => {
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+    const remove = sandbox.spy(chrome.storage.sync, 'remove');
+    const reload = sandbox.spy(chrome.tabs, 'reload');
+    // add project
+    await internalActions.addRemoveProject({
+      id: 1,
+      url: 'https://main--bar--foo.hlx.page/',
+    });
+    expect(set.calledWith({
+      hlxSidekickProjects: ['foo/bar'],
+    })).to.be.true;
+    expect(set.calledWith({
+      'foo/bar': {
+        id: 'foo/bar/main',
+        giturl: 'https://github.com/foo/bar/tree/main',
+        owner: 'foo',
+        repo: 'bar',
+        ref: 'main',
+      },
+    })).to.be.true;
+    expect(reload.calledWith(1)).to.be.true;
+    // remove project
+    await internalActions.addRemoveProject({
+      id: 2,
+      url: 'https://main--bar--foo.hlx.page/',
+    });
+    expect(set.calledWith(
+      { hlxSidekickProjects: [] },
+    )).to.be.true;
+    expect(remove.calledWith('foo/bar')).to.be.true;
+    expect(reload.calledWith(2)).to.be.true;
+    // testing noop
+    set.resetHistory();
+    await internalActions.addRemoveProject({
+      id: 1,
+      url: 'https://www.example.com/',
+    });
+    expect(set.notCalled).to.be.true;
+  });
+
+  it('internal: enableDisableProject', async () => {
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+    const reload = sandbox.spy(chrome.tabs, 'reload');
+    // add project first
+    await internalActions.addRemoveProject({
+      id: 1,
+      url: 'https://main--bar--foo.hlx.page/',
+    });
+    // disable project
+    await internalActions.enableDisableProject({
+      id: 1,
+      url: 'https://main--bar--foo.hlx.page/',
+    });
+    expect(set.calledWith({
+      'foo/bar': {
+        id: 'foo/bar/main',
+        giturl: 'https://github.com/foo/bar/tree/main',
+        owner: 'foo',
+        repo: 'bar',
+        ref: 'main',
+        disabled: true,
+      },
+    })).to.be.true;
+    expect(reload.calledWith(1)).to.be.true;
+    // enable project
+    await internalActions.enableDisableProject({
+      id: 2,
+      url: 'https://main--bar--foo.hlx.page/',
+    });
+    expect(set.calledWith({
+      'foo/bar': {
+        id: 'foo/bar/main',
+        giturl: 'https://github.com/foo/bar/tree/main',
+        owner: 'foo',
+        repo: 'bar',
+        ref: 'main',
+      },
+    })).to.be.true;
+    expect(reload.calledWith(2)).to.be.true;
+    // testing noop
+    set.resetHistory();
+    await internalActions.enableDisableProject({
+      id: 1,
+      url: 'https://www.example.com/',
+    });
+    expect(set.notCalled).to.be.true;
+  });
+
+  it('internal: openPreview', async () => {
+    const create = sandbox.spy(chrome.tabs, 'create');
+    await internalActions.openPreview({
+      id: 1,
+      url: 'https://github.com/adobe/blog',
+    });
+    expect(create.calledWith({
+      url: 'https://main--blog--adobe.hlx.page/',
+    })).to.be.true;
+    // open preview with unsupported url
+    create.resetHistory();
+    await internalActions.openPreview({
+      id: 1,
+      url: 'https://www.example.com',
+    });
+    expect(create.called).to.be.false;
   });
 });

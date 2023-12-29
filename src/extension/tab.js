@@ -13,8 +13,11 @@
 import {
   getProjects,
   getProjectMatches,
+  getProjectFromUrl,
+  isValidProject,
 } from './project.js';
 import { urlCache } from './url-cache.js';
+import { updateContextMenu } from './context-menu.js';
 
 export const DEV_URL = 'http://localhost:3000';
 
@@ -81,11 +84,11 @@ async function injectContentScript(tabId, matches) {
 export default async function checkTab(id) {
   const projects = await getProjects();
   const tab = await chrome.tabs.get(id);
+  if (!tab) return;
   let { url: checkUrl } = tab;
-  if (projects.length === 0 || !checkUrl) return;
+  if (!checkUrl) return;
 
   // check for dev URL
-  /* istanbul ignore next 5 */
   const devUrls = [
     DEV_URL,
     ...projects
@@ -98,12 +101,23 @@ export default async function checkTab(id) {
   }
   // fill url cache
   await urlCache.set(checkUrl, projects);
-  // todo: if tab.active, populate context menu
+
   // todo: if share url, inject install helper
 
   const matches = await getProjectMatches(projects, checkUrl);
-  // send matches to tab
+
+  // update context menu if single match or project can be derived from url
+  const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(checkUrl);
+  if (isValidProject(config)) {
+    await updateContextMenu({
+      config,
+      url: checkUrl,
+      id,
+    });
+  }
+
   if (matches.length > 0) {
+    // inject content script and send matches to tab
     await injectContentScript(id, matches);
   }
 }

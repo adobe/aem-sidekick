@@ -33,8 +33,7 @@ export async function getProject(project = {}) {
     ({ owner, repo } = project);
   }
   if (owner && repo) {
-    const handle = `${owner}/${repo}`;
-    return getConfig('sync', handle);
+    return getConfig('sync', `${owner}/${repo}`);
   }
   return undefined;
 }
@@ -81,6 +80,15 @@ export async function updateProject(project) {
 }
 
 /**
+ * Validates a project config.
+ * @param {Object} config The project config
+ * @returns {boolean} true if valid project config, else false
+ */
+export function isValidProject({ owner, repo, ref } = {}) {
+  return !!(owner && repo && ref);
+}
+
+/**
  * Extracts settings from a GitHub URL.
  * @param {string} giturl The GitHub URL
  * @returns {Object} The GitHub settings
@@ -96,6 +104,79 @@ export function getGitHubSettings(giturl) {
         repo,
         ref,
       };
+    }
+  }
+  return {};
+}
+
+/**
+ * Extracts settings from a share URL.
+ * @param {string} shareurl The share URL
+ * @returns {Object} The share settings
+ */
+function getShareSettings(shareurl) {
+  try {
+    const { host, pathname, searchParams } = new URL(shareurl);
+    if (host === 'www.aem.live' && pathname === '/tools/sidekick/') {
+      const giturl = searchParams.get('giturl');
+      const project = searchParams.get('project');
+      if (giturl && isValidProject(getGitHubSettings(giturl))) {
+        return {
+          giturl,
+          project,
+        };
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+  return {};
+}
+
+/**
+ * Tries to retrieve a project config from a URL.
+ * @param {string} url The URL of the tab
+ * @returns {Promise<Object>} The project config
+ */
+export async function getProjectFromUrl(url) {
+  if (!url) {
+    return {};
+  }
+  const shareSettings = getShareSettings(url);
+  if (shareSettings.giturl) {
+    // share url
+    return getGitHubSettings(shareSettings.giturl);
+  } else {
+    // github url
+    const ghSettings = getGitHubSettings(url);
+    if (isValidProject(ghSettings)) {
+      return ghSettings;
+    }
+    try {
+      // check if hlx.page, hlx.live, aem.page or aem.live url
+      const { host } = new URL(url);
+      const res = /(.*)--(.*)--(.*)\.(aem|hlx)\.(page|live)/.exec(host);
+      const [, urlRef, urlRepo, urlOwner] = res || [];
+      if (urlOwner && urlRepo && urlRef) {
+        return {
+          owner: urlOwner,
+          repo: urlRepo,
+          ref: urlRef,
+        };
+      } else {
+        // check if url is known in url cache
+        const { owner, repo } = (await urlCache.get(url))
+          .find((r) => r.originalRepository) || {};
+        if (owner && repo) {
+          return {
+            owner,
+            repo,
+            ref: 'main',
+          };
+        }
+      }
+    } catch (e) {
+      // ignore invalid url
     }
   }
   return {};
@@ -135,7 +216,7 @@ export function assembleProject({
  * @param {Object} config The config
  * @param {string} config.owner The owner
  * @param {string} config.repo The repository
- * @param {string} [config.ref] The ref or branch (default: 'main')
+ * @param {string} [config.ref] The ref or branch (default: main)
  * @param {string} [config.authToken] The auth token
  * @returns {Promise<Object>} The project environment
  */
@@ -272,12 +353,29 @@ export async function deleteProject(project) {
 }
 
 /**
+ * Toggles a project configuration.
+ * @param {Object|string} project The project settings or handle
+ * @returns {Promise<Boolean>} true if project exists, else false
+ */
+export async function toggleProject(project) {
+  const config = await getProject(project);
+  if (config) {
+    await updateProject({
+      ...config,
+      disabled: !config.disabled,
+    });
+    return true;
+  }
+  return false;
+}
+
+/**
  * Checks if a host is a valid project host.
  * @private
  * @param {string} host The base host
  * @param {string} [owner] The owner
  * @param {string} [repo] The repo
- * @returns {boolean} <code>true</code> if project host, else <code>false</code>
+ * @returns {boolean} true if valid project host, else false
  */
 export function isValidHost(host, owner, repo) {
   const [third, second, first] = host.split('.');
@@ -296,10 +394,7 @@ export function isValidHost(host, owner, repo) {
  */
 function getConfigDetails(host) {
   if (isValidHost(host)) {
-    const details = host.split('.')[0].split('--');
-    if (details.length >= 2) {
-      return details;
-    }
+    return host.split('.')[0].split('--');
   }
   return [];
 }
@@ -333,17 +428,8 @@ export async function getProjectMatches(configs, tabUrl) {
   // check url cache if no matches
   const cachedResults = await urlCache.get(tabUrl);
   cachedResults.forEach((e) => {
-    // add non-duplicate matches from url cache
-    const filteredByUrlCache = configs.filter(({ owner, repo }) => {
-      if (e.owner === owner && e.repo === repo) {
-        // avoid duplicates
-        if (!matches.find((m) => m.owner === owner && m.repo === repo)) {
-          return true;
-        }
-      }
-      return false;
-    });
-    matches.push(...filteredByUrlCache);
+    // add matches from url cache
+    matches.push(...configs.filter(({ owner, repo }) => e.owner === owner && e.repo === repo));
   });
   // check if transient match can be derived from url or url cache
   if (matches.length === 0) {
@@ -368,7 +454,6 @@ export async function getProjectMatches(configs, tabUrl) {
       });
     }
   }
-  console.log('project matches', matches);
   return matches
     // exclude disabled configs
     .filter(({ owner, repo }) => !configs

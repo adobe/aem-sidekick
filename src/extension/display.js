@@ -23,7 +23,7 @@ export async function getDisplay() {
 
 /**
  * Sets the display status.
- * @param {boolean} display <code>true</code> if sidekick should be shown, else <code>false</code>
+ * @param {boolean} display true if sidekick should be shown, false if it should be hidden
  * @returns {Promise<boolean>} The new display status
  */
 export async function setDisplay(display) {

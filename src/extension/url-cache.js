@@ -159,7 +159,7 @@ class UrlCache {
   async set(url, config = {}) {
     // @ts-ignore
     const { owner, repo } = config;
-    const createCacheEntry = (cacheUrl, results = [], expiry = 0) => {
+    const createCacheEntry = (cacheUrl, results, expiry = 0) => {
       const entry = { url: cacheUrl, results };
       if (expiry) {
         entry.expiry = expiry;
@@ -206,7 +206,7 @@ class UrlCache {
         const resp = await fetch(discoveryUrl);
         if (resp.ok) {
           results = await resp.json();
-          if (results.length > 0) {
+          if (Array.isArray(results) && results.length > 0) {
             // when switching back to a sharepoint tab it can happen that the fetch call to the
             // sharepoint API is no longer authenticated, thus the info returned is null.
             // in this case, we don't want to cache a potentially incomplete discovery response.

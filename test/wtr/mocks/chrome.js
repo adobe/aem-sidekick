@@ -14,21 +14,6 @@ import { readFile } from '@web/test-runner-commands';
 
 const ID = 'dummy';
 
-const TABS = {
-  1: {
-    id: 1,
-    url: 'https://main--blog--adobe.hlx.page/',
-  },
-  2: {
-    id: 2,
-    url: 'https://www.example.com/',
-  },
-  3: {
-    id: 2,
-    url: 'http://localhost:3000/',
-  },
-};
-
 class StorageMock {
   constructor(state = {}) {
     this.state = state;
@@ -66,36 +51,18 @@ export default {
     lastError: null,
     sendMessage: () => {},
     onMessage: {
-      // simulate internal message from tab
-      addListener: (func) => func(
-        { proxyUrl: document.head.querySelector('meta[property="hlx:proxyUrl"]')?.content },
-        { tab: TABS[3] },
-      ),
+      addListener: () => {},
       removeListener: () => {},
     },
     onMessageExternal: {
-      // simulate external message from admin API with authToken
-      addListener: (func) => func({ owner: 'test', repo: 'auth-project', authToken: 'foo' }),
+      addListener: () => {},
       removeListener: () => {},
     },
   },
   storage: {
-    sync: new StorageMock({
-      hlxSidekickProjects: ['adobe/blog'],
-      'adobe/blog': {
-        giturl: 'https://github.com/adobe/blog',
-        owner: 'adobe',
-        repo: 'blog',
-        ref: 'main',
-      },
-    }),
-    local: new StorageMock({
-      hlxSidekickDisplay: true,
-      test: 'test',
-    }),
-    session: new StorageMock({
-      hlxSidekickUrlCache: [],
-    }),
+    sync: new StorageMock(),
+    local: new StorageMock(),
+    session: new StorageMock(),
   },
   declarativeNetRequest: {
     getSessionRules: async () => ([]),
@@ -103,15 +70,23 @@ export default {
   },
   tabs: {
     create: async ({ url }) => ({ url, id: 7 }),
-    get: async (id) => (id ? TABS[id] : {}),
+    get: async () => {},
     sendMessage: async () => {},
     remove: async () => {},
+    reload: async () => {},
   },
   scripting: {
     executeScript: ({ func }) => {
       if (typeof func === 'function') {
         func();
       }
+    },
+  },
+  contextMenus: {
+    create: () => {},
+    removeAll: () => {},
+    onClicked: {
+      addListener: () => {},
     },
   },
 };
