@@ -111,45 +111,6 @@
  */
 
 /**
- * @typedef {Object} _Plugin
- * @prop {string} id The plugin ID (mandatory)
- * @prop {PluginButton} [button] A button configuration object (optional)
- * @prop {string} [container] The ID of a dropdown to add this plugin to (optional)
- * @prop {boolean} [feature] Determines whether to group this plugin with the features (default: false)
- * @prop {boolean} [override] Determines whether to replace an existing plugin (default: false)
- * @prop {ElemConfig[]} [elements]  An array of elements to add (optional)
- * @prop {Function} [condition] Determines whether to show this plugin (optional).
- * This function is expected to return a boolean when called with the sidekick as argument.
- * @prop {Function} [advanced] Show this plugin only in advanced mode (optional).
- * This function is expected to return a boolean when called with the sidekick as argument.
- * @prop {Function} [callback] A function called after adding the plugin (optional).
- * This function is called with the sidekick and the newly added plugin as arguments.
- * @description The internal plugin configuration.
- */
-
-/**
- * @typedef {Object} ElemConfig
- * @private
- * @prop {string} tag The tag name (mandatory)
- * @prop {string} text The text content (optional)
- * @prop {Object[]} attrs The attributes (optional)
- * @prop {Object[]} lstnrs The event listeners (optional)
- * @description The configuration of an element to add.
- */
-
-/**
- * @typedef {Object} PluginButton
- * @private
- * @prop {string} text The button text
- * @prop {Function} action The click listener
- * @prop {Function} isPressed=false Determines whether the button is pressed
- * @prop {Function} isEnabled=true Determines whether to enable the button
- * @prop {boolean} isDropdown=false Determines whether to turn this button into a dropdown
- * @description The configuration for a plugin button. This can be used as
- * a shorthand for {@link elemConfig}.
- */
-
-/**
  * @typedef {Object} ViewConfig
  * @prop {string} [id] The unique view ID
  * @prop {string} path The path or globbing pattern where to apply this view
