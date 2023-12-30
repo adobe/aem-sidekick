@@ -68,6 +68,8 @@ export class AEMSidekick extends MobxLitElement {
       >
         <main>
           <action-bar></action-bar>
+          <toast-container></toast-container>
+          <modal-container></modal-container>
         </main>
       </sp-theme>
     `;

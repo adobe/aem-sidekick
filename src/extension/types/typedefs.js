@@ -119,4 +119,22 @@
  * @description A custom view configuration.
  */
 
+/**
+ * @typedef {Object} Modal
+ * @prop {string} type The modal type
+ * @prop {ModalData} [data] The modal data
+ */
+
+/**
+ * @typedef {Object} ModalData
+ * @prop {string} [message] The modal message
+ */
+
+/**
+ * @typedef {Object} Toast
+ * @prop {string} message The toast message
+ * @prop {string} variant The toast variant
+ * @prop {string} timeout The time the toast is shown (default: 2000)
+ */
+
 export const Types = {};

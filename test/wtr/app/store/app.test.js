@@ -28,6 +28,8 @@ import {
 } from '../../fixtures/helix-admin.js';
 import { mockFetchEnglishMessagesSuccess } from '../../fixtures/i18n.js';
 import { defaultSidekickConfig } from '../../fixtures/stubs/sidekick-config.js';
+import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
+import { EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -331,6 +333,43 @@ describe('Test App Store', () => {
         'Status never loaded',
       );
       expect(appStore.status.error).to.equal('error_status_500');
+    });
+  });
+
+  describe('wait dialog', async () => {
+    it('showWait()', async () => {
+      const callback = sinon.spy();
+      const eventBus = EventBus.instance;
+      eventBus.addEventListener(EVENTS.OPEN_MODAL, callback);
+      appStore.showWait('test');
+      expect(callback.calledOnce).to.be.true;
+      expect(callback.args[0][0].detail).to.deep.equal({
+        type: MODALS.WAIT,
+        data: { message: 'test' },
+      });
+    });
+
+    it('hideWait()', async () => {
+      const callback = sinon.spy();
+      const eventBus = EventBus.instance;
+      eventBus.addEventListener(EVENTS.CLOSE_MODAL, callback);
+      appStore.hideWait();
+      expect(callback.calledOnce).to.be.true;
+    });
+  });
+
+  describe('show toast', async () => {
+    it('showWait()', async () => {
+      const callback = sinon.spy();
+      const eventBus = EventBus.instance;
+      eventBus.addEventListener(EVENTS.SHOW_TOAST, callback);
+      appStore.showToast('test');
+      expect(callback.calledOnce).to.be.true;
+      expect(callback.args[0][0].detail).to.deep.equal({
+        message: 'test',
+        variant: 'info',
+        timeout: 2000,
+      });
     });
   });
 });
