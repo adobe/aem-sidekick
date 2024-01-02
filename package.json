@@ -38,7 +38,7 @@
     "reporter-options": "configFile=.mocha-multi.json"
   },
   "dependencies": {
-    "@adobe/lit-mobx": "2.2.1",
+    "@adobe/lit-mobx": "2.2.2",
     "@spectrum-web-components/action-button": "0.40.2",
     "@spectrum-web-components/action-group": "0.40.2",
     "@spectrum-web-components/button": "0.40.2",
