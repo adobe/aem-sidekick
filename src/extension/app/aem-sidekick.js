@@ -33,9 +33,9 @@ export class AEMSidekick extends MobxLitElement {
     this.theme = 'light';
     appStore.loadContext(this, config);
 
+    // eslint-disable-next-line no-unused-vars
     this.addEventListener('contextloaded', (data) => {
-      // eslint-disable-next-line no-console
-      console.log('console was loaded', data);
+      // context was loaded
     });
   }
 
@@ -62,7 +62,7 @@ export class AEMSidekick extends MobxLitElement {
   render() {
     return html`
       <sp-theme
-        theme="express"
+        theme="spectrum"
         color=${this.theme === 'dark' ? 'dark' : 'light'}
         scale="medium"
       >

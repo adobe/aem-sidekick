@@ -570,5 +570,32 @@
     },
     "yesterday_at": {
       "message": "Yesterday at $1"
+    },
+    "navigate_to": {
+      "message": "Navigate to"
+    },
+    "preview_last_updated": {
+      "message": "Last updated $1"
+    },
+    "edit_last_updated": {
+      "message": "Last edited $1"
+    },
+    "live_last_updated": {
+      "message": "Last published $1"
+    },
+    "prod_last_updated": {
+      "message": "Last published $1"
+    },
+    "edit_never_updated": {
+      "message": "Never saved"
+    },
+    "preview_never_updated": {
+      "message": "Never previewed"
+    },
+    "live_never_updated": {
+      "message": "Never published"
+    },
+    "prod_never_updated": {
+      "message": "Never published"
     }
   }

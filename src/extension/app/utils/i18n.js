@@ -93,3 +93,56 @@ export async function fetchLanguageDict(siteStore, lang) {
   }
   return dict;
 }
+
+/**
+ * Generates a localized time-ago string based on the given date
+ * @param {Object} languageDict The language dictionary
+ * @param {(Date|string)} dateParam The date from which to calculate the time-ago
+ * @returns A localized time-ago string
+ */
+export function getTimeAgo(languageDict, dateParam) {
+  if (!dateParam) {
+    return i18n(languageDict, 'never');
+  }
+  const date = typeof dateParam === 'object' ? dateParam : new Date(dateParam);
+
+  const today = new Date();
+  const yesterday = new Date(today.getTime() - 86400000); // 86400000 = ms in a day
+  const seconds = Math.round((today.getTime() - date.getTime()) / 1000);
+  const minutes = Math.round(seconds / 60);
+  const isToday = today.toDateString() === date.toDateString();
+  const isYesterday = yesterday.toDateString() === date.toDateString();
+  const isThisYear = today.getFullYear() === date.getFullYear();
+  const timeToday = date.toLocaleTimeString([], {
+    timeStyle: 'short',
+  });
+  const dateThisYear = date.toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  });
+  const fullDate = date.toLocaleString([], {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  });
+
+  if (seconds < 30) {
+    return i18n(languageDict, 'now');
+  } else if (seconds < 120) {
+    return i18n(languageDict, 'seconds_ago').replace('$1', seconds.toString());
+  } else if (minutes < 60) {
+    return i18n(languageDict, 'minutes_ago').replace('$1', minutes.toString());
+  } else if (isToday) {
+    return i18n(languageDict, 'today_at').replace('$1', timeToday);
+  } else if (isYesterday) {
+    return i18n(languageDict, 'yesterday_at').replace('$1', timeToday);
+  } else if (isThisYear) {
+    return dateThisYear;
+  }
+
+  return fullDate;
+}

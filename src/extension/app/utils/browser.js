@@ -11,6 +11,10 @@
  */
 
 /**
+ * @typedef {import('@Types').ElemConfig} ElemConfig
+ */
+
+/**
  * Returns the location of the current document.
  * @param {URL} url The url
  * @private
@@ -120,4 +124,54 @@ export function isSupportedFileExtension(path) {
       'svg',
     ].includes(extension.toLowerCase());
   }
+}
+
+/**
+ * Extends a tag.
+ * @private
+ * @param {HTMLElement} tag The tag to extend
+ * @param {ElemConfig}  config The tag configuration object
+ * @returns {HTMLElement} The extended tag
+ */
+function extendTag(tag, config) {
+  if (typeof config.attrs === 'object') {
+    for (const [key, value] of Object.entries(config.attrs)) {
+      tag.setAttribute(key, value);
+    }
+  }
+  if (typeof config.lstnrs === 'object') {
+    for (const [name, fn] of Object.entries(config.lstnrs)) {
+      if (typeof fn === 'function') {
+        tag.addEventListener(name, fn);
+      }
+    }
+  }
+  if (typeof config.text === 'string') {
+    tag.textContent = config.text;
+  }
+  return tag;
+}
+
+/**
+ * Creates a tag.
+ * @private
+ * @param {ElemConfig} config The tag configuration
+ * @returns {HTMLElement} The new tag
+ */
+export function createTag(config) {
+  if (typeof config.tag !== 'string') {
+    return null;
+  }
+  const el = document.createElement(config.tag);
+  return extendTag(el, config);
+}
+
+/**
+ * Determines whether to open a new tab or reuse the existing window.
+ * @private
+ * @param {KeyboardEvent} evt The event
+ * @returns {boolean} true if a new tab should be opened, else false
+ */
+export function newTab(evt) {
+  return evt.metaKey || evt.shiftKey || evt.which === 2;
 }
