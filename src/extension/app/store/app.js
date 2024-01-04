@@ -10,14 +10,19 @@
  * governing permissions and limitations under the License.
  */
 
-import { observable } from 'mobx';
+/* eslint-disable no-restricted-globals */
+
+import { observable, action } from 'mobx';
 import { SiteStore } from './site.js';
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import sampleRUM from '../utils/rum.js';
-import { fetchLanguageDict } from '../utils/i18n.js';
+import { fetchLanguageDict, i18n } from '../utils/i18n.js';
 import { getLocation, matchProjectHost, isSupportedFileExtension } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
-import { EVENTS, MODALS } from '../constants.js';
+import {
+  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS,
+} from '../constants.js';
+import { pluginFactory } from '../components/plugin/plugin-factory.js';
 
 /**
  * The sidekick configuration object type
@@ -32,6 +37,14 @@ import { EVENTS, MODALS } from '../constants.js';
 /**
  * The plugin object type
  * @typedef {import('../aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
+
+/**
+ * @typedef {import('@Types')._Plugin} _Plugin
+ */
+
+/**
+ * @typedef {import('@Types').AdminResponse} AdminResponse
  */
 
 export class AppStore {
@@ -52,15 +65,21 @@ export class AppStore {
 
   /**
    * Status of the current document
-   * @type {object}
+   * @type {Object}
    */
-  status = {};
+  @observable accessor status = {};
 
   /**
    * Dictionary of language keys
-   * @type {object}
+   * @type {Object}
    */
   languageDict;
+
+  /**
+   * Dictionary of language keys
+   * @type {_Plugin[]}
+   */
+  @observable accessor corePlugins;
 
   constructor() {
     this.siteStore = new SiteStore(this);
@@ -86,12 +105,38 @@ export class AppStore {
       this.languageDict = await fetchLanguageDict(this.siteStore, 'en');
     }
 
-    this.fireEvent('contextloaded', {
+    this.fireEvent(EXTERNAL_EVENTS.CONTEXT_LOADED, {
       config: this.siteStore.toJSON(),
       location: this.location,
     });
 
+    this.setupCorePlugins();
+
     this.fetchStatus();
+
+    this.setInitialized();
+  }
+
+  /**
+   * Sets the initialized flag.
+   */
+  @action
+  setInitialized() {
+    this.initialized = true;
+  }
+
+  /**
+   * Sets up the core plugins.
+   */
+  @action
+  setupCorePlugins() {
+    this.corePlugins = [];
+    this.corePlugins.push(
+      pluginFactory.createEnvPlugin(),
+      pluginFactory.createEditPlugin(this),
+      pluginFactory.createPreviewPlugin(this),
+      pluginFactory.createPublishPlugin(this),
+    );
   }
 
   /**
@@ -277,9 +322,12 @@ export class AppStore {
 
   /**
    * Displays a wait modal
-   * @param {string} message The message to display
+   * @param {string} [message] The message to display
    */
   showWait(message) {
+    if (!message) {
+      message = i18n(this.languageDict, 'please_wait');
+    }
     EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
       detail: {
         type: MODALS.WAIT,
@@ -297,7 +345,6 @@ export class AppStore {
 
   /**
    * Fires an event with the given name.
-   * @private
    * @param {string} name The name of the event
    * @param {Object} data The data to pass to event listeners (optional)
    */
@@ -432,10 +479,10 @@ export class AppStore {
         }
       })
       .then((json) => {
-        this.status = json;
+        this.updateStatus(json);
         return json;
       })
-      .then((json) => this.fireEvent('statusfetched', json))
+      .then((json) => this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, json))
       .catch(({ message }) => {
         this.status.error = message;
         // TODO: Setup modals
@@ -457,6 +504,219 @@ export class AppStore {
         // };
         // this.showModal(modal);
       });
+  }
+
+  /**
+   * Updates the observable status of the current resource.
+   * @param {Object} status The status object
+   */
+  @action
+  updateStatus(status) {
+    this.status = status;
+  }
+
+  /**
+   * Updates the preview or code of the current resource.
+   * @fires Sidekick#updated
+   * @fires Sidekick#previewed
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async update(path) {
+    const { siteStore, status } = this;
+    path = path || status.webPath;
+    let resp;
+    let respPath;
+    try {
+      // update preview
+      resp = await fetch(
+        getAdminUrl(siteStore, this.isContent() ? 'preview' : 'code', path),
+        {
+          method: 'POST',
+          ...getAdminFetchOptions(),
+        },
+      );
+      if (resp.ok) {
+        if (this.isEditor() || this.isInner() || this.isDev()) {
+          // bust client cache
+          await fetch(`https://${siteStore.innerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
+        }
+        respPath = (await resp.json()).webPath;
+
+        // @deprecated for content, use for code only
+        this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UPDATED, respPath);
+        if (this.isContent()) {
+          this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED, respPath);
+        }
+      }
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('failed to update', path, e);
+    }
+    return {
+      ok: (resp && resp.ok) || false,
+      status: (resp && resp.status) || 0,
+      error: (resp && resp.headers.get('x-error')) || '',
+      path: respPath || path,
+    };
+  }
+
+  async updatePreview(ranBefore) {
+    this.showWait();
+    const { status } = this;
+    const resp = await this.update();
+    if (!resp.ok) {
+      if (!ranBefore) {
+        // assume document has been renamed, re-fetch status and try again
+        this.sidekick.addEventListener('statusfetched', async () => {
+          this.updatePreview(true);
+        }, { once: true });
+        this.fetchStatus();
+      } else if (status.webPath.startsWith('/.helix/') && resp.error) {
+        // show detail message only in config update mode
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
+          detail: {
+            type: MODALS.ERROR,
+            data: {
+              message: `${i18n(this.languageDict, 'error_config_failure')}${resp.error}`,
+            },
+          },
+        }));
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(resp);
+
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
+          detail: {
+            type: MODALS.ERROR,
+            data: {
+              message: i18n(this.languageDict, 'error_preview_failure'),
+            },
+          },
+        }));
+      }
+      return;
+    }
+    // handle special case /.helix/*
+    if (status.webPath.startsWith('/.helix/')) {
+      this.showToast(i18n(this.languageDict, 'preview_config_success'), 'positive');
+      return;
+    }
+    this.hideWait();
+    this.switchEnv('preview');
+  }
+
+  /**
+   * Publishes the page at the specified path if <code>config.host</code> is defined.
+   * @param {string} path The path of the page to publish
+   * @fires Sidekick#published
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async publish(path) {
+    const { siteStore, location } = this;
+
+    // publish content only
+    if (!this.isContent()) {
+      return null;
+    }
+
+    const purgeURL = new URL(path, this.isEditor()
+      ? `https://${siteStore.innerHost}/`
+      : location.href);
+
+    // eslint-disable-next-line no-console
+    console.log(`publishing ${purgeURL.pathname}`);
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
+    try {
+      resp = await fetch(
+        getAdminUrl(siteStore, 'live', purgeURL.pathname),
+        {
+          method: 'POST',
+          ...getAdminFetchOptions(),
+        },
+      );
+      // bust client cache for live and production
+      if (siteStore.outerHost) {
+        // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
+        await fetch(`https://${siteStore.outerHost}${purgeURL.pathname}`, { cache: 'reload', mode: 'no-cors' });
+      }
+      if (siteStore.host) {
+        // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
+        await fetch(`https://${siteStore.host}${purgeURL.pathname}`, { cache: 'reload', mode: 'no-cors' });
+      }
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('failed to publish', path, e);
+    }
+    resp.path = path;
+    resp.error = (resp.headers && resp.headers.get('x-error')) || '';
+    return resp;
+  }
+
+  /**
+   * Switches to (or opens) a given environment.
+   * @param {string} targetEnv One of the following environments:
+   *        edit, dev, preview, live or prod
+   * @param {boolean} [open] true if environment should be opened in new tab
+   * @fires Sidekick#envswitched
+   */
+  async switchEnv(targetEnv, open = false) {
+    this.showWait();
+    const hostType = ENVS[targetEnv];
+    if (!hostType) {
+      // eslint-disable-next-line no-console
+      console.error('invalid environment', targetEnv);
+      return;
+    }
+    if (this.status.error) {
+      return;
+    }
+    const { siteStore, location: { href, search, hash }, status } = this;
+    let envHost = siteStore[hostType];
+    if (targetEnv === 'prod' && !envHost) {
+      // no production host defined yet, use live instead
+      envHost = siteStore.outerHost;
+    }
+    if (!status.webPath) {
+      // eslint-disable-next-line no-console
+      console.log('not ready yet, trying again in a second ...');
+      window.setTimeout(() => this.switchEnv(targetEnv, open), 1000);
+      return;
+    }
+    const envOrigin = targetEnv === 'dev' ? siteStore.devUrl.origin : `https://${envHost}`;
+    let envUrl = `${envOrigin}${status.webPath}`;
+    if (!this.isEditor()) {
+      envUrl += `${search}${hash}`;
+    }
+
+    if (targetEnv === 'edit') {
+      envUrl = status.edit && status.edit.url;
+    }
+
+    // TODO: Setup custom views
+    // const [customView] = findViews(this, VIEWS.CUSTOM);
+    // if (customView) {
+    //   const customViewUrl = new URL(customView.viewer, envUrl);
+    //   customViewUrl.searchParams.set('path', status.webPath);
+    //   envUrl = customViewUrl;
+    // }
+
+    // switch or open env
+    if (open || this.isEditor()) {
+      window.open(envUrl, open
+        ? '' : `hlx-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
+      this.hideWait();
+    } else {
+      window.location.href = envUrl;
+    }
+    this.fireEvent(EXTERNAL_EVENTS.EVIRONMENT_SWITCHED, {
+      sourceUrl: href,
+      targetUrl: envUrl,
+    });
   }
 }
 

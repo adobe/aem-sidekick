@@ -50,6 +50,7 @@
           "module.js",
           "project.js",
           "rum.js",
+          "sp-popover.js",
           "tab.js",
           "url-cache.js",
           "view/json/json.html",

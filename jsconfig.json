@@ -6,6 +6,7 @@
     "moduleResolution": "nodenext",
     "paths": {
       "@Types": ["./src/extension/types/typedefs.js"],
+      "@AppStore": ["./src/extension/app/store/app.js"],
       "@SiteStore": ["./src/extension/app/store/site.js"]
     }
   },

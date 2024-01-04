@@ -10,65 +10,72 @@
  * governing permissions and limitations under the License.
  */
 
-import { LitElement, html, css } from 'lit';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import { MobxLitElement } from '@adobe/lit-mobx';
 import { appStore } from '../../store/app.js';
+import { style } from './action-bar.css.js';
+import { EXTERNAL_EVENTS } from '../../constants.js';
+
+/**
+ * @typedef {import('@Types')._Plugin} _Plugin
+ */
 
 @customElement('action-bar')
-export class ActionBar extends LitElement {
-  static styles = css`
-    .action-bar {
-      display: flex;
-      border-radius: 8px;
-      color: var(--spectrum-global-color-gray-800);
-      background-color: var(--spectrum-global-color-gray-200);
-      border: 1px solid var(--spectrum-global-color-gray-300);
-    }
-
-    .action-bar sp-action-group {
-      padding: 8px;
-    }
-  `;
-
-  openModal() {
-    appStore.showWait('Previewing...');
+export class ActionBar extends MobxLitElement {
+  static get styles() {
+    return [style];
   }
 
-  closeModal() {
-    appStore.hideWait();
+  /**
+   *
+   * @param {_Plugin} plugin
+   * @returns
+   */
+  createActionPluginButton(plugin) {
+    if (typeof plugin.callback === 'function') {
+      plugin.callback(appStore, plugin);
+    }
+
+    if (plugin.id === 'env-switcher') {
+      return html`
+        <env-switcher></env-switcher>
+      `;
+    }
+
+    return html`
+      <sp-action-button quiet @click=${() => this.onPluginButtonClick(plugin)}>
+          ${plugin.button.text}
+      </sp-action-button>
+    `;
   }
 
-  showToast() {
-    appStore.showToast('This is a toast message');
+  onPluginButtonClick(plugin) {
+    appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, {
+      id: plugin.id,
+    });
+    plugin.button.action();
   }
 
   render() {
-    return html`
+    return appStore.initialized ? html`
       <div class="action-bar">
         <sp-action-group>
-            <sp-action-button quiet @click=${this.openModal}>
-                <sp-icon-play slot="icon"></sp-icon-play>
-            </sp-action-button>
-            <sp-action-button quiet @click=${this.closeModal}>
-                <sp-icon-edit slot="icon"></sp-icon-edit>
-            </sp-action-button>
-            <sp-action-button quiet @click=${this.showToast}>
-                <sp-icon-refresh slot="icon"></sp-icon-refresh>
-            </sp-action-button>
+          ${appStore.corePlugins?.map((plugin) => (plugin.condition(appStore) ? this.createActionPluginButton(plugin) : ''))}
         </sp-action-group>
         <sp-divider size="s" vertical></sp-divider>
         <sp-action-group>
-            <sp-action-button quiet>
-                <sp-icon-share slot="icon"></sp-icon-share>
-            </sp-action-button>
+          <sp-action-button quiet>
+            <sp-icon-share slot="icon"></sp-icon-share>
+          </sp-action-button>
         </sp-action-group>
         <sp-divider size="s" vertical></sp-divider>
         <sp-action-group>
-            <sp-action-button quiet>
-                <sp-icon-real-time-customer-profile slot="icon"></sp-icon-real-time-customer-profile>
-            </sp-action-button>
+          <sp-action-button quiet>
+            <sp-icon-real-time-customer-profile slot="icon"></sp-icon-real-time-customer-profile>
+          </sp-action-button>
         </sp-action-group>
       </div>
-    `;
+    ` : '';
   }
 }
