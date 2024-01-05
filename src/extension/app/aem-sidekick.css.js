@@ -29,7 +29,7 @@ export const style = css`
     display: none;
   }
 
-  action-bar {
+  plugin-action-bar {
     position: absolute;
     left: 50%;
     transform: translate(-50%, 0px);

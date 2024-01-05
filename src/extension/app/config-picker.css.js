@@ -10,26 +10,42 @@
  * governing permissions and limitations under the License.
  */
 
-import { LitElement, html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { css } from 'lit';
 
-@customElement('action-bar')
-export class ActionBar extends LitElement {
-  static styles = css`
-    .action-bar {
-      display: flex;
-      border-radius: 8px;
-      color: var(--spectrum-global-color-gray-800);
-      background-color: var(--spectrum-global-color-gray-200);
-      border: 1px solid var(--spectrum-global-color-gray-300);
-    }
-  `;
-
-  render() {
-    return html`
-      <div class="action-bar">
-        <slot></slot>
-      </div>
-    `;
+export const style = css`
+  :host {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    z-index: 9999;
   }
-}
+
+  :host([open='true']) {
+    display: block;
+  }
+
+  :host([open='false']) {
+    display: none;
+  }
+
+  action-bar {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0px);
+    bottom: 150px;
+    pointer-events: auto;
+  }
+
+  action-bar sp-action-group {
+    padding: 8px;
+  }
+
+  action-bar sp-action-group span {
+    padding-bottom: 3px;
+    padding-left: 8px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+`;

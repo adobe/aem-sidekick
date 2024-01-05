@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-/* eslint-disable wc/no-constructor-params, wc/guard-super-call */
+/* eslint-disable wc/no-constructor-params */
 
 import { html } from 'lit';
 import { MobxLitElement } from '@adobe/lit-mobx';
@@ -20,17 +20,12 @@ import { appStore } from './store/app.js';
 
 @customElement('aem-sidekick')
 export class AEMSidekick extends MobxLitElement {
-  static properties = {
-    theme: { type: String },
-  };
-
   static get styles() {
     return [style];
   }
 
   constructor(config) {
     super();
-    this.theme = 'light';
     appStore.loadContext(this, config);
 
     this.addEventListener('contextloaded', (data) => {
@@ -39,39 +34,13 @@ export class AEMSidekick extends MobxLitElement {
     });
   }
 
-  async connectedCallback() {
-    super.connectedCallback();
-    this.getTheme();
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      // istanbul ignore next
-      this.getTheme();
-    });
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-  }
-
-  getTheme() {
-    this.theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
-  }
-
   render() {
     return html`
-      <sp-theme
-        theme="express"
-        color=${this.theme === 'dark' ? 'dark' : 'light'}
-        scale="medium"
-      >
-        <main>
-          <action-bar></action-bar>
-          <toast-container></toast-container>
-          <modal-container></modal-container>
-        </main>
-      </sp-theme>
+      <theme-wrapper>
+        <plugin-action-bar></plugin-action-bar>
+        <toast-container></toast-container>
+        <modal-container></modal-container>
+      </theme-wrapper>
     `;
   }
 }
