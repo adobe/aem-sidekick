@@ -27,10 +27,14 @@ import '@spectrum-web-components/icons-workflow/icons/sp-icon-refresh.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-share.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-real-time-customer-profile.js';
 
-import { AEMSidekick } from './app/aem-sidekick.js';
+import './app/components/theme/theme.js';
 import './app/components/action-bar/action-bar.js';
+import './app/components/plugin/plugin-action-bar.js';
 import './app/components/modal/modal-container.js';
 import './app/components/toast/toast-container.js';
 import './app/components/dialog/dialog.js';
 
-export { AEMSidekick };
+import { AEMSidekick } from './app/aem-sidekick.js';
+import { AEMConfigPicker } from './app/config-picker.js';
+
+export { AEMSidekick, AEMConfigPicker };

@@ -33,9 +33,10 @@
 
 /**
  * @typedef {Object} OptionsConfig
+ * @prop {string} id The id of the config
  * @prop {string} [project] The name of the project
  * @prop {string} giturl The url to the repository
- * @prop {string} mountpoint The content source URL
+ * @prop {string[]} mountpoints The content source URL
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to

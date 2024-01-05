@@ -10,32 +10,7 @@
           "kind": "class",
           "description": "",
           "name": "AEMSidekick",
-          "members": [
-            {
-              "kind": "method",
-              "name": "getTheme"
-            },
-            {
-              "kind": "field",
-              "name": "theme",
-              "privacy": "public",
-              "type": {
-                "text": "string"
-              },
-              "default": "'light'",
-              "attribute": "theme"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "theme",
-              "type": {
-                "text": "string"
-              },
-              "default": "'light'",
-              "fieldName": "theme"
-            }
-          ],
+          "members": [],
           "superclass": {
             "name": "MobxLitElement",
             "package": "@adobe/lit-mobx"
