@@ -210,12 +210,11 @@ export class SiteStore {
       host,
       project = '',
       specialViews,
-      hlx5,
       scriptUrl = 'https://www.hlx.live/tools/sidekick/index.js',
     } = config;
     const publicHost = host && host.startsWith('http') ? new URL(host).host : host;
     const hostPrefix = owner && repo ? `${ref}--${repo}--${owner}` : null;
-    const domain = hlx5 ? 'aem' : 'hlx';
+    const domain = previewHost?.endsWith('.aem.page') ? 'aem' : 'hlx';
     const stdInnerHost = hostPrefix ? `${hostPrefix}.${domain}.page` : null;
     const stdOuterHost = hostPrefix ? `${hostPrefix}.${domain}.live` : null;
     const devUrl = new URL(devOrigin);
@@ -244,7 +243,6 @@ export class SiteStore {
 
     this.previewHost = previewHost;
     this.liveHost = liveHost;
-    this.hlx5 = hlx5;
     this.scriptUrl = scriptUrl;
 
     this.innerHost = previewHost || stdInnerHost;
