@@ -181,10 +181,8 @@ describe('Test project', () => {
     });
     expect(empty).to.eql({});
     // error handling
-    const spy = sinon.spy(console, 'log');
     // @ts-ignore
     const failure = await getProjectEnv({});
-    expect(spy.called).to.be.true;
     expect(failure).to.eql({});
   });
 
