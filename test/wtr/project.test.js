@@ -129,7 +129,8 @@ describe('Test project', () => {
     const fake = sinon.fake(async (prop) => {
       let value;
       switch (prop) {
-        case 'hlxSidekickProjects':
+        case 'projects':
+        case 'hlxSidekickProjects': // legacy
           value = ['foo/bar1'];
           break;
         case 'foo/bar1':
@@ -151,10 +152,23 @@ describe('Test project', () => {
     // no projects yet
     sinon.restore();
     sinon.stub(chrome.storage.sync, 'get')
+      .withArgs('projects')
+      .resolves({})
       .withArgs('hlxSidekickProjects')
       .resolves({});
     projects = await getProjects();
     expect(projects.length).to.equal(0);
+    // legacy projects
+    sinon.restore();
+    sinon.stub(chrome.storage.sync, 'get')
+      .withArgs('projects')
+      .resolves({})
+      .withArgs('hlxSidekickProjects')
+      .resolves({
+        hlxSidekickProjects: ['foo/bar1'],
+      });
+    projects = await getProjects();
+    expect(projects.length).to.equal(1);
   });
 
   it('getProjectEnv', async () => {
@@ -229,7 +243,7 @@ describe('Test project', () => {
     });
     expect(added).to.be.true;
     expect(spy.calledWith({
-      hlxSidekickProjects: ['test/project'],
+      projects: ['test/project'],
     })).to.be.true;
 
     // add project with auth enabled
@@ -246,7 +260,7 @@ describe('Test project', () => {
     });
     expect(addedWithAuth).to.be.true;
     expect(spy.calledWith({
-      hlxSidekickProjects: ['test/project', 'test/auth-project'],
+      projects: ['test/project', 'test/auth-project'],
     })).to.be.true;
     // try again with emtpy callback message
     const addedWithoutAuth = await addProject({
@@ -281,7 +295,7 @@ describe('Test project', () => {
     // no projects yet
     set.resetHistory();
     sinon.stub(chrome.storage.sync, 'get')
-      .withArgs('hlxSidekickProjects')
+      .withArgs('projects')
       .resolves({});
     await updateProject({ ...project });
     expect(set.calledWith({
@@ -293,27 +307,27 @@ describe('Test project', () => {
     const spy = sinon.spy(chrome.storage.sync, 'set');
     let projectsStub = sinon.stub(chrome.storage.sync, 'get');
     projectsStub
-      .withArgs('hlxSidekickProjects')
+      .withArgs('projects')
       .resolves({
-        hlxSidekickProjects: ['foo/bar1', 'foo/bar2'],
+        projects: ['foo/bar1', 'foo/bar2'],
       });
 
     // delete project with config object
     let deleted = await deleteProject({ owner: 'foo', repo: 'bar1' });
     expect(deleted).to.be.true;
     expect(spy.calledWith({
-      hlxSidekickProjects: ['foo/bar2'],
+      projects: ['foo/bar2'],
     })).to.be.true;
     // delete project with handle
     deleted = await deleteProject('foo/bar2');
     expect(deleted).to.be.true;
     expect(spy.calledWith({
-      hlxSidekickProjects: [],
+      projects: [],
     })).to.be.true;
     // delete inexistent project
     projectsStub.restore();
     projectsStub = sinon.stub(chrome.storage.sync, 'get')
-      .withArgs('hlxSidekickProjects')
+      .withArgs('projects')
       .resolves([]);
     deleted = await deleteProject('test/project');
     expect(deleted).to.be.false;

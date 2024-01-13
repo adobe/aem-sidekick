@@ -91,7 +91,7 @@ describe('Test actions', () => {
       url: 'https://main--bar--foo.hlx.page/',
     });
     expect(set.calledWith({
-      hlxSidekickProjects: ['foo/bar'],
+      projects: ['foo/bar'],
     })).to.be.true;
     expect(set.calledWith({
       'foo/bar': {
@@ -109,7 +109,7 @@ describe('Test actions', () => {
       url: 'https://main--bar--foo.hlx.page/',
     });
     expect(set.calledWith(
-      { hlxSidekickProjects: [] },
+      { projects: [] },
     )).to.be.true;
     expect(remove.calledWith('foo/bar')).to.be.true;
     expect(reload.calledWith(2)).to.be.true;
