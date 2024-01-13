@@ -97,7 +97,7 @@
     "rollup": "4.9.4",
     "rollup-plugin-copy": "3.5.0",
     "rollup-plugin-esbuild": "6.1.0",
-    "semantic-release": "22.0.12",
+    "semantic-release": "23.0.0",
     "semantic-release-react-native": "1.8.2",
     "sinon": "17.0.1"
   },
