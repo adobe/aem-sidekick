@@ -2,13 +2,14 @@ module.exports = {
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
-    ['semantic-release-react-native', {
-      'versionStrategy': {
-        'ios': { 'buildNumber': 'semantic' },
-      },
-      'iosPath': 'src/safari',
-      'skipAndroid': true,
-    }],
+    // todo: add back when we have a safari project
+    // ['semantic-release-react-native', {
+    //   'versionStrategy': {
+    //     'ios': { 'buildNumber': 'semantic' },
+    //   },
+    //   'iosPath': 'src/safari',
+    //   'skipAndroid': true,
+    // }],
     ['@semantic-release/changelog', {
       'changelogFile': 'CHANGELOG.md',
     }],
