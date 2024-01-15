@@ -123,6 +123,18 @@ describe('Test check-tab', () => {
     await checkTab(1);
     expect(consoleSpy.called).to.be.true;
     sinon.restore();
+    let counter = 0;
+    sandbox.stub(chrome.tabs, 'get').callsFake(async (id) => {
+      counter += 1;
+      if (counter === 1) {
+        return TABS[id];
+      } else {
+        return null;
+      }
+    });
+    // tab still exists at first, but not at second call
+    await checkTab(1);
+    // tab no longer exist
     await checkTab(1);
   });
 });

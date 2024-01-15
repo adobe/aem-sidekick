@@ -22,7 +22,7 @@ import { internalActions } from '../../src/extension/actions.js';
 // @ts-ignore
 window.chrome = chromeMock;
 
-// prep listener test before importing context-menu.js
+// prep listener test before importing ui.js
 const openPreview = sinon.spy(internalActions, 'openPreview');
 sinon.replace(chrome.contextMenus.onClicked, 'addListener', async (func) => {
   // @ts-ignore
@@ -34,7 +34,7 @@ sinon.replace(chrome.contextMenus.onClicked, 'addListener', async (func) => {
   });
 });
 
-const { updateContextMenu } = await import('../../src/extension/context-menu.js');
+const { updateContextMenu } = await import('../../src/extension/ui.js');
 
 describe('Test context-menu', () => {
   const sandbox = sinon.createSandbox();
@@ -57,11 +57,11 @@ describe('Test context-menu', () => {
     const config = {
       owner: 'foo',
       repo: 'bar',
+      ref: 'main',
     };
 
     // project not added yet (remove all and add 1)
     await updateContextMenu({
-      id: 0,
       url: 'https://main--bar--foo.hlx.page/',
       config,
     });
@@ -72,7 +72,6 @@ describe('Test context-menu', () => {
     await addProject(config);
     const project = await getProject(config);
     await updateContextMenu({
-      id: 0,
       url: 'https://main--bar--foo.hlx.page/',
       config,
     });
@@ -82,7 +81,6 @@ describe('Test context-menu', () => {
     // project disabled (remove all and add 3)
     await updateProject({ ...project, disabled: true });
     await updateContextMenu({
-      id: 0,
       url: 'https://main--bar--foo.hlx.page/',
       config,
     });
@@ -91,7 +89,6 @@ describe('Test context-menu', () => {
 
     // no config (remove all and add 0)
     await updateContextMenu({
-      id: 0,
       url: 'https://main--bar--foo.hlx.page/',
     });
     expect(removeAll.callCount).to.equal(4);
