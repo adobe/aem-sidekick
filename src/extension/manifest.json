@@ -47,6 +47,7 @@
           "display.js",
           "index.js",
           "lib/polyfills.min.js",
+          "log.js",
           "module.js",
           "project.js",
           "rum.js",
