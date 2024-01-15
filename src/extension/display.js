@@ -17,7 +17,7 @@ import { getConfig, setConfig } from './config.js';
  * @returns {Promise<boolean>} The current display status
  */
 export async function getDisplay() {
-  const display = await getConfig('local', 'hlxSidekickDisplay') || false;
+  const display = await getConfig('local', 'display') || false;
   return display;
 }
 
@@ -28,7 +28,7 @@ export async function getDisplay() {
  */
 export async function setDisplay(display) {
   await setConfig('local', {
-    hlxSidekickDisplay: display,
+    display,
   });
   return display;
 }
@@ -39,6 +39,5 @@ export async function setDisplay(display) {
  */
 export async function toggleDisplay() {
   const display = await getDisplay();
-  // console.log(`toggleDisplay from ${display} to ${!display}`);
   return setDisplay(!display);
 }

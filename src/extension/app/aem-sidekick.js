@@ -15,6 +15,7 @@
 import { html } from 'lit';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { customElement } from 'lit/decorators.js';
+import { log } from '../log.js';
 import { style } from './aem-sidekick.css.js';
 import { appStore } from './store/app.js';
 
@@ -34,8 +35,7 @@ export class AEMSidekick extends MobxLitElement {
     appStore.loadContext(this, config);
 
     this.addEventListener('contextloaded', (data) => {
-      // eslint-disable-next-line no-console
-      console.log('console was loaded', data);
+      log.debug('console was loaded', data);
     });
   }
 

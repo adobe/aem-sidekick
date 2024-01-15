@@ -10,6 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from './log.js';
+
 (async () => {
   // ensure hlx namespace
   window.hlx = window.hlx || {};
@@ -27,7 +29,8 @@
       if (configMatches.length === 1) {
         // load sidekick
         const [config] = configMatches;
-        // console.log('single match', config);
+        log.debug('single match', config);
+
         await import('./lib/polyfills.min.js');
 
         const { AEMSidekick } = await import('./index.js');
@@ -54,7 +57,7 @@
         window.hlx.sidekick = sidekick;
       } else {
         // todo: multiple matches, project picker?
-        // console.log('multiple matches', configMatches);
+        log.debug('multiple matches', configMatches);
       }
     });
   } else {

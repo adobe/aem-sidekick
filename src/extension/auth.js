@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from './log.js';
 import { getConfig, removeConfig, setConfig } from './config.js';
 
 /**
@@ -26,7 +27,7 @@ export async function addAuthTokenHeaders() {
     });
     // find projects with auth tokens and add rules for each
     let id = 2;
-    const projects = await getConfig('session', 'hlxSidekickProjects') || [];
+    const projects = await getConfig('session', 'projects') || [];
     const addRules = [];
     const projectConfigs = (await Promise.all(projects
       .map((handle) => getConfig('session', handle))))
@@ -51,7 +52,7 @@ export async function addAuthTokenHeaders() {
         },
       });
       id += 1;
-      // console.log('added admin auth header rule for ', owner, repo);
+      log.debug(`addAuthTokensHeaders: added admin auth header rule for ${owner}/${repo}`);
     });
     if (addRules.length > 0) {
       await chrome.declarativeNetRequest.updateSessionRules({
@@ -59,8 +60,7 @@ export async function addAuthTokenHeaders() {
       });
     }
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log('addAuthTokensHeaders: unable to set auth token headers', e);
+    log.error('addAuthTokensHeaders: unable to set auth token headers', e);
   }
 }
 
@@ -75,7 +75,7 @@ export async function addAuthTokenHeaders() {
 export async function setAuthToken(owner, repo, token, exp) {
   if (owner && repo) {
     const handle = `${owner}/${repo}`;
-    const projects = await getConfig('session', 'hlxSidekickProjects') || [];
+    const projects = await getConfig('session', 'projects') || [];
     const projectIndex = projects.indexOf(handle);
     if (token) {
       // store auth token in session storage
@@ -95,7 +95,7 @@ export async function setAuthToken(owner, repo, token, exp) {
       await removeConfig('session', handle);
       projects.splice(projectIndex, 1);
     }
-    await setConfig('session', { hlxSidekickProjects: projects });
+    await setConfig('session', { projects });
     await addAuthTokenHeaders();
   }
 }

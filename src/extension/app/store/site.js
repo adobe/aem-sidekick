@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from '../../log.js';
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import { getLanguage, i18n } from '../utils/i18n.js';
 
@@ -196,9 +197,8 @@ export class SiteStore {
           };
         }
       } catch (e) {
-        /* istanbul ignore next 2 */
-        // eslint-disable-next-line no-console
-        console.log('error retrieving custom sidekick config', e);
+        /* istanbul ignore next */
+        log.debug('error retrieving custom sidekick config', e);
       }
     }
 
