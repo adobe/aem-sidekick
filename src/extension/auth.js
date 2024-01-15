@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from './log.js';
 import { getConfig, removeConfig, setConfig } from './config.js';
 
 /**
@@ -51,7 +52,7 @@ export async function addAuthTokenHeaders() {
         },
       });
       id += 1;
-      // console.log('added admin auth header rule for ', owner, repo);
+      log.debug(`addAuthTokensHeaders: added admin auth header rule for ${owner}/${repo}`);
     });
     if (addRules.length > 0) {
       await chrome.declarativeNetRequest.updateSessionRules({
@@ -59,8 +60,7 @@ export async function addAuthTokenHeaders() {
       });
     }
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log('addAuthTokensHeaders: unable to set auth token headers', e);
+    log.error('addAuthTokensHeaders: unable to set auth token headers', e);
   }
 }
 

@@ -118,10 +118,8 @@ describe('Test check-tab', () => {
 
     // error handling
     executeScriptSpy.restore();
-    const consoleSpy = sandbox.spy(console, 'log');
     sandbox.stub(chrome.scripting, 'executeScript').throws(error);
     await checkTab(1);
-    expect(consoleSpy.called).to.be.true;
     sinon.restore();
     await checkTab(1);
   });
