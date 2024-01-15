@@ -115,6 +115,6 @@ export default async function checkTab(id) {
     await injectContentScript(id, matches);
   }
 
-  // update icon
+  // update UI
   return updateUI({ url, config, matches });
 }
