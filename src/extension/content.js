@@ -12,12 +12,12 @@
 
 import {} from './lib/polyfills.min.js';
 import { getDisplay } from './display.js';
-import { log } from './log.js';
 
 (async () => {
   // ensure hlx namespace
   window.hlx = window.hlx || {};
 
+  const { log } = await import('./log.js');
   const display = await getDisplay();
   let sidekick = document.querySelector('aem-sidekick');
   if (!sidekick) {
