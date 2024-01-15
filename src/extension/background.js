@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from './log.js';
 import {
   toggleDisplay,
 } from './display.js';
@@ -23,8 +24,7 @@ import { addAuthTokenHeaders } from './auth.js';
 chrome.action.onClicked.addListener(async ({ id }) => {
   // toggle the sidekick when the action is clicked
   const display = await toggleDisplay();
-  // eslint-disable-next-line no-console
-  console.log(`sidekick is now ${display ? 'shown' : 'hidden'}`);
+  log.info(`sidekick is now ${display ? 'shown' : 'hidden'}`);
   checkTab(id);
 });
 
@@ -63,5 +63,4 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 // add existing auth token headers
 addAuthTokenHeaders();
 
-// eslint-disable-next-line no-console
-console.log('sidekick initialized');
+log.info('sidekick initialized');

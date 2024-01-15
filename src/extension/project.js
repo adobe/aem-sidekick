@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from './log.js';
 import {
   getConfig,
   removeConfig,
@@ -73,7 +74,7 @@ export async function updateProject(project) {
       projects.push(handle);
       await setConfig('sync', { projects });
     }
-    // console.log('updated project', project);
+    log.info('updated project', project);
     // todo: alert
     return project;
   }
@@ -241,8 +242,7 @@ export async function getProjectEnv({
 
     res = await fetch(`https://admin.hlx.page/sidekick/${owner}/${repo}/${ref}/env.json`, options);
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(`getProjectEnv: unable to retrieve project config: ${e}`);
+    log.warn(`getProjectEnv: unable to retrieve project config: ${e}`);
   }
   if (res && res.ok) {
     const {
@@ -307,11 +307,11 @@ export async function addProject(input) {
   let project = await getProject(config);
   if (!project) {
     project = await updateProject({ ...config, ...env });
-    // console.log('added project', config);
+    log.info('added project', config);
     // todo: alert(i18n('config_add_success'));
     return true;
   } else {
-    // console.log(('project already exists', project);
+    log.warn('project already exists', project);
     // todo: alert(i18n('config_project_exists'));
     return false;
   }
@@ -344,11 +344,11 @@ export async function deleteProject(project) {
     // remove project entry from index
     projects.splice(i, 1);
     await setConfig('sync', { projects });
-    // console.log('project deleted', handle);
+    log.info('project deleted', handle);
     // todo: alert
     return true;
   } else {
-    // console.log('project to delete not found', handle);
+    log.warn('project to delete not found', handle);
     // todo: alert
   }
   return false;

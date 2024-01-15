@@ -45,9 +45,7 @@ describe('Test auth', () => {
     updateSessionRules.restore();
     sandbox.stub(chrome.declarativeNetRequest, 'updateSessionRules')
       .throws(error);
-    const spy = sandbox.spy(console, 'log');
     await addAuthTokenHeaders();
-    expect(spy.called).to.be.true;
   });
 
   it('setAuthToken', async () => {

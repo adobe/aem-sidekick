@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from './log.js';
 import {
   getProjects,
   getProjectMatches,
@@ -71,8 +72,7 @@ async function injectContentScript(tabId, matches) {
       configMatches: matches,
     });
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log('injectContentScript: unable to inject content script', tabId, e);
+    log.error('injectContentScript: unable to inject content script', tabId, e);
   }
 }
 

@@ -39,6 +39,5 @@ export async function setDisplay(display) {
  */
 export async function toggleDisplay() {
   const display = await getDisplay();
-  // console.log(`toggleDisplay from ${display} to ${!display}`);
   return setDisplay(!display);
 }
