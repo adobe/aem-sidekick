@@ -12,13 +12,14 @@
 
 import {} from './lib/polyfills.min.js';
 import { getDisplay } from './display.js';
+import { log } from './log.js';
 
 (async () => {
   // ensure hlx namespace
   window.hlx = window.hlx || {};
 
   const display = await getDisplay();
-  let { sidekick } = window.hlx;
+  let sidekick = document.querySelector('aem-sidekick');
   if (!sidekick) {
     // wait for config matches
     chrome.runtime.onMessage.addListener(async ({ configMatches = [] }, { tab }) => {
@@ -29,39 +30,38 @@ import { getDisplay } from './display.js';
       if (configMatches.length === 1) {
         // load sidekick
         const [config] = configMatches;
-        // console.log('single match', config);
+        log.debug('single match', config);
 
-        if (!sidekick) {
-          const { AEMSidekick } = await import('./index.js');
+        await import('./lib/polyfills.min.js');
 
-          // reduce config to only include properties relevant for sidekick
-          const curatedConfig = Object.fromEntries(Object.entries(config)
-            .filter(([k]) => [
-              'owner',
-              'repo',
-              'ref',
-              'previewHost',
-              'liveHost',
-              'host',
-              'devMode',
-              'devOrigin',
-              'adminVersion',
-              'authTokenExpiry',
-              'hlx5',
-            ].includes(k)));
-          curatedConfig.scriptUrl = chrome.runtime.getURL('index.js');
+        const { AEMSidekick } = await import('./index.js');
 
-          sidekick = new AEMSidekick(curatedConfig);
-          sidekick.setAttribute('open', display);
-          document.body.prepend(sidekick);
-          window.hlx.sidekick = sidekick;
-        }
+        // reduce config to only include properties relevant for sidekick
+        const curatedConfig = Object.fromEntries(Object.entries(config)
+          .filter(([k]) => [
+            'owner',
+            'repo',
+            'ref',
+            'previewHost',
+            'liveHost',
+            'host',
+            'devMode',
+            'devOrigin',
+            'adminVersion',
+            'authTokenExpiry',
+          ].includes(k)));
+        curatedConfig.scriptUrl = chrome.runtime.getURL('index.js');
+
+        sidekick = new AEMSidekick(curatedConfig);
+        sidekick.setAttribute('open', `${display}`);
+        document.body.prepend(sidekick);
+        window.hlx.sidekick = sidekick;
       } else {
         // todo: multiple matches, project picker?
-        // console.log('multiple matches', configMatches);
+        log.debug('multiple matches', configMatches);
       }
     });
   } else {
-    sidekick.setAttribute('open', display);
+    sidekick.setAttribute('open', `${display}`);
   }
 })();

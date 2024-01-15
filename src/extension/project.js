@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from './log.js';
 import {
   getConfig,
   removeConfig,
@@ -33,8 +34,7 @@ export async function getProject(project = {}) {
     ({ owner, repo } = project);
   }
   if (owner && repo) {
-    const handle = `${owner}/${repo}`;
-    return getConfig('sync', handle);
+    return getConfig('sync', `${owner}/${repo}`);
   }
   return undefined;
 }
@@ -44,7 +44,8 @@ export async function getProject(project = {}) {
  * @returns {Promise<Object[]>} The project configurations
  */
 export async function getProjects() {
-  return Promise.all((await getConfig('sync', 'hlxSidekickProjects') || [])
+  return Promise.all((await getConfig('sync', 'projects')
+    || await getConfig('sync', 'hlxSidekickProjects') || []) // legacy
     .map((handle) => getProject(handle)));
 }
 
@@ -68,16 +69,25 @@ export async function updateProject(project) {
       [handle]: project,
     });
     // update project index
-    const projects = await getConfig('sync', 'hlxSidekickProjects') || [];
+    const projects = await getConfig('sync', 'projects') || [];
     if (!projects.includes(handle)) {
       projects.push(handle);
-      await setConfig('sync', { hlxSidekickProjects: projects });
+      await setConfig('sync', { projects });
     }
-    // console.log('updated project', project);
+    log.info('updated project', project);
     // todo: alert
     return project;
   }
   return null;
+}
+
+/**
+ * Validates a project config.
+ * @param {Object} config The project config
+ * @returns {boolean} true if valid project config, else false
+ */
+export function isValidProject({ owner, repo, ref } = {}) {
+  return !!(owner && repo && ref);
 }
 
 /**
@@ -96,6 +106,79 @@ export function getGitHubSettings(giturl) {
         repo,
         ref,
       };
+    }
+  }
+  return {};
+}
+
+/**
+ * Extracts settings from a share URL.
+ * @param {string} shareurl The share URL
+ * @returns {Object} The share settings
+ */
+function getShareSettings(shareurl) {
+  try {
+    const { host, pathname, searchParams } = new URL(shareurl);
+    if (host === 'www.aem.live' && pathname === '/tools/sidekick/') {
+      const giturl = searchParams.get('giturl');
+      const project = searchParams.get('project');
+      if (giturl && isValidProject(getGitHubSettings(giturl))) {
+        return {
+          giturl,
+          project,
+        };
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+  return {};
+}
+
+/**
+ * Tries to retrieve a project config from a URL.
+ * @param {string} url The URL of the tab
+ * @returns {Promise<Object>} The project config
+ */
+export async function getProjectFromUrl(url) {
+  if (!url) {
+    return {};
+  }
+  const shareSettings = getShareSettings(url);
+  if (shareSettings.giturl) {
+    // share url
+    return getGitHubSettings(shareSettings.giturl);
+  } else {
+    // github url
+    const ghSettings = getGitHubSettings(url);
+    if (isValidProject(ghSettings)) {
+      return ghSettings;
+    }
+    try {
+      // check if hlx.page, hlx.live, aem.page or aem.live url
+      const { host } = new URL(url);
+      const res = /(.*)--(.*)--(.*)\.(aem|hlx)\.(page|live)/.exec(host);
+      const [, urlRef, urlRepo, urlOwner] = res || [];
+      if (urlOwner && urlRepo && urlRef) {
+        return {
+          owner: urlOwner,
+          repo: urlRepo,
+          ref: urlRef,
+        };
+      } else {
+        // check if url is known in url cache
+        const { owner, repo } = (await urlCache.get(url))
+          .find((r) => r.originalRepository) || {};
+        if (owner && repo) {
+          return {
+            owner,
+            repo,
+            ref: 'main',
+          };
+        }
+      }
+    } catch (e) {
+      // ignore invalid url
     }
   }
   return {};
@@ -135,7 +218,7 @@ export function assembleProject({
  * @param {Object} config The config
  * @param {string} config.owner The owner
  * @param {string} config.repo The repository
- * @param {string} [config.ref] The ref or branch (default: 'main')
+ * @param {string} [config.ref] The ref or branch (default: main)
  * @param {string} [config.authToken] The auth token
  * @returns {Promise<Object>} The project environment
  */
@@ -159,8 +242,7 @@ export async function getProjectEnv({
 
     res = await fetch(`https://admin.hlx.page/sidekick/${owner}/${repo}/${ref}/env.json`, options);
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(`getProjectEnv: unable to retrieve project config: ${e}`);
+    log.warn(`getProjectEnv: unable to retrieve project config: ${e}`);
   }
   if (res && res.ok) {
     const {
@@ -225,11 +307,11 @@ export async function addProject(input) {
   let project = await getProject(config);
   if (!project) {
     project = await updateProject({ ...config, ...env });
-    // console.log('added project', config);
+    log.info('added project', config);
     // todo: alert(i18n('config_add_success'));
     return true;
   } else {
-    // console.log(('project already exists', project);
+    log.warn('project already exists', project);
     // todo: alert(i18n('config_project_exists'));
     return false;
   }
@@ -251,7 +333,8 @@ export async function deleteProject(project) {
     ({ owner, repo } = project);
     handle = `${owner}/${repo}`;
   }
-  const projects = await getConfig('sync', 'hlxSidekickProjects') || [];
+  const projects = await getConfig('sync', 'projects')
+    || await getConfig('sync', 'hlxSidekickProjects') || []; // legacy
   const i = projects.indexOf(handle);
   if (i >= 0) {
     // delete admin auth header rule
@@ -260,13 +343,30 @@ export async function deleteProject(project) {
     await removeConfig('sync', handle);
     // remove project entry from index
     projects.splice(i, 1);
-    await setConfig('sync', { hlxSidekickProjects: projects });
-    // console.log('project deleted', handle);
+    await setConfig('sync', { projects });
+    log.info('project deleted', handle);
     // todo: alert
     return true;
   } else {
-    // console.log('project to delete not found', handle);
+    log.warn('project to delete not found', handle);
     // todo: alert
+  }
+  return false;
+}
+
+/**
+ * Toggles a project configuration.
+ * @param {Object|string} project The project settings or handle
+ * @returns {Promise<Boolean>} true if project exists, else false
+ */
+export async function toggleProject(project) {
+  const config = await getProject(project);
+  if (config) {
+    await updateProject({
+      ...config,
+      disabled: !config.disabled,
+    });
+    return true;
   }
   return false;
 }
@@ -277,7 +377,7 @@ export async function deleteProject(project) {
  * @param {string} host The base host
  * @param {string} [owner] The owner
  * @param {string} [repo] The repo
- * @returns {boolean} <code>true</code> if project host, else <code>false</code>
+ * @returns {boolean} true if valid project host, else false
  */
 export function isValidHost(host, owner, repo) {
   const [third, second, first] = host.split('.');
@@ -296,10 +396,7 @@ export function isValidHost(host, owner, repo) {
  */
 function getConfigDetails(host) {
   if (isValidHost(host)) {
-    const details = host.split('.')[0].split('--');
-    if (details.length >= 2) {
-      return details;
-    }
+    return host.split('.')[0].split('--');
   }
   return [];
 }
@@ -333,17 +430,8 @@ export async function getProjectMatches(configs, tabUrl) {
   // check url cache if no matches
   const cachedResults = await urlCache.get(tabUrl);
   cachedResults.forEach((e) => {
-    // add non-duplicate matches from url cache
-    const filteredByUrlCache = configs.filter(({ owner, repo }) => {
-      if (e.owner === owner && e.repo === repo) {
-        // avoid duplicates
-        if (!matches.find((m) => m.owner === owner && m.repo === repo)) {
-          return true;
-        }
-      }
-      return false;
-    });
-    matches.push(...filteredByUrlCache);
+    // add matches from url cache
+    matches.push(...configs.filter(({ owner, repo }) => e.owner === owner && e.repo === repo));
   });
   // check if transient match can be derived from url or url cache
   if (matches.length === 0) {

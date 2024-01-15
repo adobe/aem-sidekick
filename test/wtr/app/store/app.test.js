@@ -28,6 +28,8 @@ import {
 } from '../../fixtures/helix-admin.js';
 import { mockFetchEnglishMessagesSuccess } from '../../fixtures/i18n.js';
 import { defaultSidekickConfig } from '../../fixtures/stubs/sidekick-config.js';
+import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
+import { EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -213,6 +215,18 @@ describe('Test App Store', () => {
     expect(appStore.isEditor()).to.be.true;
   });
 
+  it('isSharePointFolder()', async () => {
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+    appStore.location.port = '';
+
+    // test with id param
+    let url = new URL('https://foo.sharepoint.com/sites/foo/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2Ffoo%2FShared%20Documents%2Fsite&viewid=87cb4d37%2D30e2%2D4762%2D87ef%2D5cd0e1059250');
+    expect(appStore.isSharePointFolder(url)).to.be.true;
+    // test with RootFolder param
+    url = new URL('https://foo.sharepoint.com/sites/foo/Shared%20Documents/Forms/AllItems.aspx?RootFolder=%2Fsites%2Ffoo%2FShared%20Documents%2Fsite&viewid=87cb4d37%2D30e2%2D4762%2D87ef%2D5cd0e1059250');
+    expect(appStore.isSharePointFolder(url)).to.be.true;
+  });
+
   it('isSharePointViewer()', async () => {
     await appStore.loadContext(sidekickElement, defaultSidekickConfig);
     appStore.location.port = '';
@@ -331,6 +345,43 @@ describe('Test App Store', () => {
         'Status never loaded',
       );
       expect(appStore.status.error).to.equal('error_status_500');
+    });
+  });
+
+  describe('wait dialog', async () => {
+    it('showWait()', async () => {
+      const callback = sinon.spy();
+      const eventBus = EventBus.instance;
+      eventBus.addEventListener(EVENTS.OPEN_MODAL, callback);
+      appStore.showWait('test');
+      expect(callback.calledOnce).to.be.true;
+      expect(callback.args[0][0].detail).to.deep.equal({
+        type: MODALS.WAIT,
+        data: { message: 'test' },
+      });
+    });
+
+    it('hideWait()', async () => {
+      const callback = sinon.spy();
+      const eventBus = EventBus.instance;
+      eventBus.addEventListener(EVENTS.CLOSE_MODAL, callback);
+      appStore.hideWait();
+      expect(callback.calledOnce).to.be.true;
+    });
+  });
+
+  describe('show toast', async () => {
+    it('showWait()', async () => {
+      const callback = sinon.spy();
+      const eventBus = EventBus.instance;
+      eventBus.addEventListener(EVENTS.SHOW_TOAST, callback);
+      appStore.showToast('test');
+      expect(callback.calledOnce).to.be.true;
+      expect(callback.args[0][0].detail).to.deep.equal({
+        message: 'test',
+        variant: 'info',
+        timeout: 2000,
+      });
     });
   });
 });

@@ -42,9 +42,7 @@
       {
         "resources": [
           "_locales/*",
-          "index.js",
-          "rum.js",
-          "view-doc-source/js/content.js"
+          "index.js"
         ],
         "matches": [
           "<all_urls>"

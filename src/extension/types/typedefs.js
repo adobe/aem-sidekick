@@ -42,7 +42,6 @@
  * @prop {boolean} [devMode] Loads client configuration and plugins from the development environment
  * @prop {string} [devOrigin] The origin of the local development environment
  * @prop {string} [adminVersion] The specific version of admin service to use
- * @prop {boolean} [hlx5] Using helix 5?
  * @prop {boolean} [disabled] Is the project disabled?
  * @description Represents the sidekick configuration from the user via the options view
  */
@@ -117,6 +116,24 @@
  * @prop {string} viewer The URL to render this view
  * @prop {string | function} [title] The title of the view
  * @description A custom view configuration.
+ */
+
+/**
+ * @typedef {Object} Modal
+ * @prop {string} type The modal type
+ * @prop {ModalData} [data] The modal data
+ */
+
+/**
+ * @typedef {Object} ModalData
+ * @prop {string} [message] The modal message
+ */
+
+/**
+ * @typedef {Object} Toast
+ * @prop {string} message The toast message
+ * @prop {string} variant The toast variant
+ * @prop {string} timeout The time the toast is shown (default: 2000)
  */
 
 export const Types = {};

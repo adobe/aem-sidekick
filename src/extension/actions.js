@@ -11,9 +11,18 @@
  */
 
 import { setAuthToken } from './auth.js';
+import {
+  addProject,
+  getProjectFromUrl,
+  toggleProject,
+  deleteProject,
+  isValidProject,
+  getGitHubSettings,
+  getProject,
+} from './project.js';
 
 /**
- * Action to update the auth token via external messaging API (admin only).
+ * Updates the auth token via external messaging API (admin only).
  * @param {Object} message The message object
  * @param {string} message.owner The project owner
  * @param {string} message.repo The project repository
@@ -28,9 +37,8 @@ async function updateAuthToken({
   const { url } = sender;
   if (owner && repo) {
     try {
-      if (!url || new URL(url).origin !== 'https://admin.hlx.page') {
-        return 'unauthorized sender url';
-      } else if (authToken !== undefined && owner && repo) {
+      if (new URL(url).origin === 'https://admin.hlx.page'
+        && authToken !== undefined) {
         await setAuthToken(owner, repo, authToken, exp);
         return 'close';
       }
@@ -42,14 +50,56 @@ async function updateAuthToken({
 }
 
 /**
+ * Adds or removes a project based on the tab's URL
+ * @param {chrome.tabs.Tab} tab The tab
+ */
+async function addRemoveProject({ id, url }) {
+  const config = await getProjectFromUrl(url);
+  if (isValidProject(config)) {
+    const { owner, repo } = config;
+    const project = await getProject(config);
+    if (!project) {
+      await addProject(config);
+    } else {
+      await deleteProject(`${owner}/${repo}`);
+    }
+    await chrome.tabs.reload(id, { bypassCache: true });
+  }
+}
+
+/**
+ * Enables or disables a project based on the tab's URL
+ * @param {chrome.tabs.Tab} tab The tab
+ */
+async function enableDisableProject({ id, url }) {
+  const cfg = await getProjectFromUrl(url);
+  if (await toggleProject(cfg)) {
+    await chrome.tabs.reload(id, { bypassCache: true });
+  }
+}
+
+/**
+ * Opens the preview URL of a project based on a GitHub URL
+ * @param {chrome.tabs.Tab} tab The tab
+ */
+async function openPreview({ url }) {
+  const { owner, repo, ref } = getGitHubSettings(url);
+  if (owner && repo) {
+    await chrome.tabs.create({
+      url: `https://${ref}--${repo}--${owner}.hlx.page/`,
+    });
+  }
+}
+
+/**
  * Actions which can be executed via internal messaging API.
  * @type {Object} The internal actions
  */
 export const internalActions = {
-  // todo: addRemoveProject
-  // todo: enableDisableProject
-  // todo: openViewDocSource
-  // todo: openPreview
+  addRemoveProject,
+  enableDisableProject,
+  openPreview,
+  // todo: open view doc source
 };
 
 /**

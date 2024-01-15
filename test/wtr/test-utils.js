@@ -52,3 +52,5 @@ export const recursiveQueryAll = (element, selector) => findAllDeep(
 export const sleep = (ms = 0) => new Promise((resolve) => {
   setTimeout(resolve, ms);
 });
+
+export const error = new Error('this is just a test');

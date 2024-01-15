@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from './log.js';
 import { getConfig, removeConfig, setConfig } from './config.js';
 
 /**
@@ -26,34 +27,32 @@ export async function addAuthTokenHeaders() {
     });
     // find projects with auth tokens and add rules for each
     let id = 2;
-    const projects = await getConfig('session', 'hlxSidekickProjects') || [];
+    const projects = await getConfig('session', 'projects') || [];
     const addRules = [];
     const projectConfigs = (await Promise.all(projects
       .map((handle) => getConfig('session', handle))))
       .filter((cfg) => !!cfg);
     projectConfigs.forEach(({ owner, repo, authToken }) => {
-      if (authToken) {
-        addRules.push({
-          id,
-          priority: 1,
-          action: {
-            type: 'modifyHeaders',
-            requestHeaders: [{
-              operation: 'set',
-              header: 'x-auth-token',
-              value: authToken,
-            }],
-          },
-          condition: {
-            regexFilter: `^https://admin.hlx.page/[a-z]+/${owner}/${repo}/.*`,
-            requestDomains: ['admin.hlx.page'],
-            requestMethods: ['get', 'post', 'delete'],
-            resourceTypes: ['xmlhttprequest'],
-          },
-        });
-        id += 1;
-        // console.log('added admin auth header rule for ', owner, repo);
-      }
+      addRules.push({
+        id,
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          requestHeaders: [{
+            operation: 'set',
+            header: 'x-auth-token',
+            value: authToken,
+          }],
+        },
+        condition: {
+          regexFilter: `^https://admin.hlx.page/[a-z]+/${owner}/${repo}/.*`,
+          requestDomains: ['admin.hlx.page'],
+          requestMethods: ['get', 'post', 'delete'],
+          resourceTypes: ['xmlhttprequest'],
+        },
+      });
+      id += 1;
+      log.debug(`addAuthTokensHeaders: added admin auth header rule for ${owner}/${repo}`);
     });
     if (addRules.length > 0) {
       await chrome.declarativeNetRequest.updateSessionRules({
@@ -61,8 +60,7 @@ export async function addAuthTokenHeaders() {
       });
     }
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log('addAuthTokensHeaders: unable to set auth token headers', e);
+    log.error('addAuthTokensHeaders: unable to set auth token headers', e);
   }
 }
 
@@ -71,13 +69,13 @@ export async function addAuthTokenHeaders() {
  * @param {string} owner The project owner
  * @param {string} repo The project repository
  * @param {string} token The auth token
- * @param {number} exp The token expiry in seconds since epoch
+ * @param {number} [exp] The token expiry in seconds since epoch
  * @returns {Promise<void>}
  */
 export async function setAuthToken(owner, repo, token, exp) {
   if (owner && repo) {
     const handle = `${owner}/${repo}`;
-    const projects = await getConfig('session', 'hlxSidekickProjects') || [];
+    const projects = await getConfig('session', 'projects') || [];
     const projectIndex = projects.indexOf(handle);
     if (token) {
       // store auth token in session storage
@@ -92,14 +90,12 @@ export async function setAuthToken(owner, repo, token, exp) {
       if (projectIndex < 0) {
         projects.push(handle);
       }
-    } else {
+    } else if (projectIndex >= 0) {
       // remove auth token from session storage
       await removeConfig('session', handle);
-      if (projectIndex >= 0) {
-        projects.splice(projectIndex, 1);
-      }
+      projects.splice(projectIndex, 1);
     }
-    await setConfig('session', { hlxSidekickProjects: projects });
+    await setConfig('session', { projects });
     await addAuthTokenHeaders();
   }
 }

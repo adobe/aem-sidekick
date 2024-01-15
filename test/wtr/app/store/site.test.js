@@ -98,7 +98,7 @@ describe('Test Site Store', () => {
       mockFetchConfigJSONNotFound();
       const config = {
         ...defaultConfig,
-        hlx5: true,
+        previewHost: 'main--aem-boilerplate--adobe.aem.page',
       };
       await appStore.loadContext(sidekickElement, config);
       expect(appStore.siteStore.innerHost).to.equal('main--aem-boilerplate--adobe.aem.page');

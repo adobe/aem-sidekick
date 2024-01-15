@@ -48,5 +48,9 @@ module.exports = {
     'class-methods-use-this': 0,
     'mobx/missing-make-observable': 0,
     'wc/guard-super-call': 0,
+    indent: ['error', 2, { ignoredNodes: ['TemplateLiteral *'], SwitchCase: 1 }],
+    'function-paren-newline': 'off',
+    'lit/no-classfield-shadowing': 'off',
+    'no-undef': 'off',
   },
 };
