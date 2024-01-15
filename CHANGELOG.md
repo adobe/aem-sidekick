@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/adobe/aem-sidekick/compare/v1.0.0...v1.1.0) (2024-1-15)
+
+
+### Bug Fixes
+
+* detect sharepoint folder URL with RootFolder param ([d4f62e5](https://github.com/adobe/aem-sidekick/commit/d4f62e501a09beae6da9f43d717cedf99b95f8c5))
+
+
+### Features
+
+* logging ([4cde398](https://github.com/adobe/aem-sidekick/commit/4cde398f7dd34f231d957544d16ab3209adbd981))
+
 # 1.0.0 (2024-1-13)
 
 
