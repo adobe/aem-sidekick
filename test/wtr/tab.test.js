@@ -80,10 +80,10 @@ describe('Test check-tab', () => {
     // check tab with dev URL
     sinon.stub(chrome.storage.sync, 'get')
       .callsFake(async (prop) => new Promise((resolve) => {
-        if (prop === 'hlxSidekickProjects') {
+        if (prop === 'projects') {
           resolve({
             // @ts-ignore
-            hlxSidekickProjects: [
+            projects: [
               'foo/bar',
             ],
           });

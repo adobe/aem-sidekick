@@ -27,7 +27,7 @@ export async function addAuthTokenHeaders() {
     });
     // find projects with auth tokens and add rules for each
     let id = 2;
-    const projects = await getConfig('session', 'hlxSidekickProjects') || [];
+    const projects = await getConfig('session', 'projects') || [];
     const addRules = [];
     const projectConfigs = (await Promise.all(projects
       .map((handle) => getConfig('session', handle))))
@@ -75,7 +75,7 @@ export async function addAuthTokenHeaders() {
 export async function setAuthToken(owner, repo, token, exp) {
   if (owner && repo) {
     const handle = `${owner}/${repo}`;
-    const projects = await getConfig('session', 'hlxSidekickProjects') || [];
+    const projects = await getConfig('session', 'projects') || [];
     const projectIndex = projects.indexOf(handle);
     if (token) {
       // store auth token in session storage
@@ -95,7 +95,7 @@ export async function setAuthToken(owner, repo, token, exp) {
       await removeConfig('session', handle);
       projects.splice(projectIndex, 1);
     }
-    await setConfig('session', { hlxSidekickProjects: projects });
+    await setConfig('session', { projects });
     await addAuthTokenHeaders();
   }
 }

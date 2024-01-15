@@ -39,14 +39,14 @@ describe('Test display', () => {
   it('getDisplay', async () => {
     const spy = sandbox.spy(chrome.storage.local, 'get');
     await getDisplay();
-    expect(spy.calledWith('hlxSidekickDisplay')).to.be.true;
+    expect(spy.calledWith('display')).to.be.true;
   });
 
   it('setDisplay', async () => {
     const spy = sandbox.spy(chrome.storage.local, 'set');
     await setDisplay(true);
     expect(spy.calledWith({
-      hlxSidekickDisplay: true,
+      display: true,
     })).to.be.true;
   });
 
@@ -54,7 +54,7 @@ describe('Test display', () => {
     const spy = sandbox.spy(chrome.storage.local, 'set');
     const display = await toggleDisplay();
     expect(spy.calledWith({
-      hlxSidekickDisplay: false,
+      display: false,
     })).to.be.true;
     expect(display).to.be.false;
   });

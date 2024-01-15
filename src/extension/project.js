@@ -44,7 +44,8 @@ export async function getProject(project = {}) {
  * @returns {Promise<Object[]>} The project configurations
  */
 export async function getProjects() {
-  return Promise.all((await getConfig('sync', 'hlxSidekickProjects') || [])
+  return Promise.all((await getConfig('sync', 'projects')
+    || await getConfig('sync', 'hlxSidekickProjects') || []) // legacy
     .map((handle) => getProject(handle)));
 }
 
@@ -68,10 +69,10 @@ export async function updateProject(project) {
       [handle]: project,
     });
     // update project index
-    const projects = await getConfig('sync', 'hlxSidekickProjects') || [];
+    const projects = await getConfig('sync', 'projects') || [];
     if (!projects.includes(handle)) {
       projects.push(handle);
-      await setConfig('sync', { hlxSidekickProjects: projects });
+      await setConfig('sync', { projects });
     }
     log.info('updated project', project);
     // todo: alert
@@ -332,7 +333,8 @@ export async function deleteProject(project) {
     ({ owner, repo } = project);
     handle = `${owner}/${repo}`;
   }
-  const projects = await getConfig('sync', 'hlxSidekickProjects') || [];
+  const projects = await getConfig('sync', 'projects')
+    || await getConfig('sync', 'hlxSidekickProjects') || []; // legacy
   const i = projects.indexOf(handle);
   if (i >= 0) {
     // delete admin auth header rule
@@ -341,7 +343,7 @@ export async function deleteProject(project) {
     await removeConfig('sync', handle);
     // remove project entry from index
     projects.splice(i, 1);
-    await setConfig('sync', { hlxSidekickProjects: projects });
+    await setConfig('sync', { projects });
     log.info('project deleted', handle);
     // todo: alert
     return true;
