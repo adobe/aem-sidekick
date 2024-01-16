@@ -1,3 +1,18 @@
+# [1.3.0](https://github.com/adobe/aem-sidekick/compare/v1.2.0...v1.3.0) (2024-1-16)
+
+
+### Bug Fixes
+
+* add test coverage ([69f4722](https://github.com/adobe/aem-sidekick/commit/69f472237cf9b01d9af1ce6017c206bf91f6ce1f))
+* ignore theme change in coverage ([1550a5b](https://github.com/adobe/aem-sidekick/commit/1550a5b81bf2e8c2d48468c1b26d418d232ca43c))
+* remove log and query ([f20e374](https://github.com/adobe/aem-sidekick/commit/f20e374dfd26f90f3b27be8ed4037982b9edc0c0))
+* remove used log ([9e1bedd](https://github.com/adobe/aem-sidekick/commit/9e1bedd5063a6290938f8281928b3328b0e60088))
+
+
+### Features
+
+* initial project-picker ([37b53a1](https://github.com/adobe/aem-sidekick/commit/37b53a1ab203c2a0f907db2fc760d4f5d0db946c))
+
 # [1.2.0](https://github.com/adobe/aem-sidekick/compare/v1.1.0...v1.2.0) (2024-1-16)
 
 
