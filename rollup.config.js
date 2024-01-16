@@ -31,8 +31,10 @@ function shared(browser) {
       format: 'es',
       dir: `dist/${browser}`,
       sourcemap: true,
+      /** Exclude 3rd party libs from sourcemaps */
+      sourcemapIgnoreList: (path) => ['/node_modules/', '/lib/']
+        .some((pattern) => path.includes(pattern)),
     },
-
     preserveEntrySignatures: true,
   };
 }
@@ -53,7 +55,15 @@ function plugins(browser) {
     /** Copy static assets */
     copy({
       targets: [
-        { src: 'src/extension/*', ignore: ['src/extension/app'], dest: `./dist/${browser}` },
+        {
+          src: 'src/extension/*',
+          ignore: [
+            'src/extension/app',
+            'src/extension/lib',
+            'src/extension/types',
+          ],
+          dest: `./dist/${browser}`,
+        },
       ],
     }),
     replace({
@@ -72,11 +82,11 @@ function extensionBuild(browser) {
 
 export default [
   {
-    input: 'src/extension/index.js',
+    input: {
+      index: 'src/extension/index.js', // aem-sidekick
+      content: 'src/extension/content.js', // content script
+      log: 'src/extension/log.js', // log script
+    },
     ...extensionBuild('chrome'),
-  },
-  {
-    input: 'src/extension/index.js',
-    ...extensionBuild('safari'),
   },
 ];

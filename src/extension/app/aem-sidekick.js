@@ -15,9 +15,9 @@
 import { html } from 'lit';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { customElement } from 'lit/decorators.js';
-import { log } from '../log.js';
 import { style } from './aem-sidekick.css.js';
 import { appStore } from './store/app.js';
+import { log } from '../log.js';
 
 @customElement('aem-sidekick')
 export class AEMSidekick extends MobxLitElement {
