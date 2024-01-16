@@ -43,7 +43,6 @@
         'devOrigin',
         'adminVersion',
         'authTokenExpiry',
-        'hlx5',
       ].includes(k)));
     curatedConfig.scriptUrl = chrome.runtime.getURL('index.js');
 
