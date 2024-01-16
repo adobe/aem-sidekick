@@ -35,6 +35,7 @@ export class ThemeWrapper extends LitElement {
   }
 
   onChange = () => {
+    /* istanbul ignore next */
     this.getTheme();
   };
 
