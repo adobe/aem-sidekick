@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/adobe/aem-sidekick/compare/v1.1.0...v1.2.0) (2024-1-16)
+
+
+### Bug Fixes
+
+* runtime error ([f550b8c](https://github.com/adobe/aem-sidekick/commit/f550b8ccdd2247b32ddf2e4d441b172c808dec9f))
+
+
+### Features
+
+* update icon based on state ([7a051ce](https://github.com/adobe/aem-sidekick/commit/7a051ced57920173cb1891ed9fc27a5130a11044))
+
 # [1.1.0](https://github.com/adobe/aem-sidekick/compare/v1.0.0...v1.1.0) (2024-1-15)
 
 
