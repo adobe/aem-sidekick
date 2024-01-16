@@ -85,6 +85,7 @@ export default [
     input: {
       index: 'src/extension/index.js', // aem-sidekick
       content: 'src/extension/content.js', // content script
+      log: 'src/extension/log.js', // log script
     },
     ...extensionBuild('chrome'),
   },
