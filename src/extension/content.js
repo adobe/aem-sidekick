@@ -20,7 +20,6 @@
   window.hlx = window.hlx || {};
 
   const { getDisplay } = await import('./display.js');
-  const { log } = await import('./log.js');
   const display = await getDisplay();
   let { sidekick } = window.hlx;
 
