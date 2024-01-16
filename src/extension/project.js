@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from './log.js';
 import {
   getConfig,
   removeConfig,
@@ -43,7 +44,8 @@ export async function getProject(project = {}) {
  * @returns {Promise<Object[]>} The project configurations
  */
 export async function getProjects() {
-  return Promise.all((await getConfig('sync', 'hlxSidekickProjects') || [])
+  return Promise.all((await getConfig('sync', 'projects')
+    || await getConfig('sync', 'hlxSidekickProjects') || []) // legacy
     .map((handle) => getProject(handle)));
 }
 
@@ -67,12 +69,12 @@ export async function updateProject(project) {
       [handle]: project,
     });
     // update project index
-    const projects = await getConfig('sync', 'hlxSidekickProjects') || [];
+    const projects = await getConfig('sync', 'projects') || [];
     if (!projects.includes(handle)) {
       projects.push(handle);
-      await setConfig('sync', { hlxSidekickProjects: projects });
+      await setConfig('sync', { projects });
     }
-    // console.log('updated project', project);
+    log.info('updated project', project);
     // todo: alert
     return project;
   }
@@ -240,8 +242,7 @@ export async function getProjectEnv({
 
     res = await fetch(`https://admin.hlx.page/sidekick/${owner}/${repo}/${ref}/env.json`, options);
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(`getProjectEnv: unable to retrieve project config: ${e}`);
+    log.warn(`getProjectEnv: unable to retrieve project config: ${e}`);
   }
   if (res && res.ok) {
     const {
@@ -306,11 +307,11 @@ export async function addProject(input) {
   let project = await getProject(config);
   if (!project) {
     project = await updateProject({ ...config, ...env });
-    // console.log('added project', config);
+    log.info('added project', config);
     // todo: alert(i18n('config_add_success'));
     return true;
   } else {
-    // console.log(('project already exists', project);
+    log.warn('project already exists', project);
     // todo: alert(i18n('config_project_exists'));
     return false;
   }
@@ -332,7 +333,8 @@ export async function deleteProject(project) {
     ({ owner, repo } = project);
     handle = `${owner}/${repo}`;
   }
-  const projects = await getConfig('sync', 'hlxSidekickProjects') || [];
+  const projects = await getConfig('sync', 'projects')
+    || await getConfig('sync', 'hlxSidekickProjects') || []; // legacy
   const i = projects.indexOf(handle);
   if (i >= 0) {
     // delete admin auth header rule
@@ -341,12 +343,12 @@ export async function deleteProject(project) {
     await removeConfig('sync', handle);
     // remove project entry from index
     projects.splice(i, 1);
-    await setConfig('sync', { hlxSidekickProjects: projects });
-    // console.log('project deleted', handle);
+    await setConfig('sync', { projects });
+    log.info('project deleted', handle);
     // todo: alert
     return true;
   } else {
-    // console.log('project to delete not found', handle);
+    log.warn('project to delete not found', handle);
     // todo: alert
   }
   return false;
