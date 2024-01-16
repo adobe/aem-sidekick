@@ -75,7 +75,7 @@ class Logger {
       const prefix = `%c[${method.toUpperCase()}]`;
       this[method] = this.LEVEL > this.config[method].level
         // eslint-disable-next-line no-console
-        ? console[method].bind(console, prefix, color)
+        ? console.log.bind(console, prefix, color)
         : () => {};
     });
   }
