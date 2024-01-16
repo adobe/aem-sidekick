@@ -43,9 +43,8 @@
         "resources": [
           "_locales/*",
           "index.js",
-          "index.js.map",
-          "content.js.map",
-          "log.js"
+          "log.js",
+          "*.js.map"
         ],
         "matches": [
           "<all_urls>"
