@@ -14,7 +14,6 @@
  * The modal type
  * @typedef {import('@Types').OptionsConfig} OptionsConfig
  */
-import { log } from './log.js';
 
 (async () => {
   // ensure hlx namespace
@@ -82,8 +81,6 @@ import { log } from './log.js';
     window.hlx.sidekick = configPicker;
   }
 
-  // Only setup listener if sidekick is not already loaded
-  let sidekick = document.querySelector('aem-sidekick');
   if (!sidekick) {
     // wait for config matches
     chrome.runtime.onMessage.addListener(async ({ configMatches = [] }, { tab }) => {
