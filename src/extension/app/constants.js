@@ -26,4 +26,5 @@ export const EVENTS = {
  */
 export const MODALS = {
   WAIT: 'wait-modal',
+  ERROR: 'error-modal',
 };

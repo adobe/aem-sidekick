@@ -15,6 +15,8 @@ import { html, LitElement } from 'lit';
 import { style } from './modal-container.css.js';
 import { EventBus } from '../../utils/event-bus.js';
 import { EVENTS, MODALS } from '../../constants.js';
+import { appStore } from '../../store/app.js';
+import { i18n } from '../../utils/i18n.js';
 
 /**
  * The modal type
@@ -48,9 +50,7 @@ export class ModalContainer extends LitElement {
     super.connectedCallback();
 
     EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, (e) => {
-      if (e.detail) {
-        this.modal = e.detail;
-      }
+      this.modal = e.detail;
     });
 
     EventBus.instance.addEventListener(EVENTS.CLOSE_MODAL, () => {
@@ -62,10 +62,7 @@ export class ModalContainer extends LitElement {
    * Called when the modal is closed
    */
   closed() {
-    // allow animation to complete and then remove
-    setTimeout(() => {
-      this.modal = undefined;
-    }, 1000);
+    this.modal = undefined;
   }
 
   /**
@@ -90,16 +87,26 @@ export class ModalContainer extends LitElement {
           </div>
         `;
         break;
-      default:
+      case MODALS.ERROR:
+        options.dismissable = false;
+        options.headline = data.headline || i18n(appStore.languageDict, 'error');
+        options.confirmLabel = data.confirmLabel || i18n(appStore.languageDict, 'ok');
+        options.content = html`
+          ${data.message}
+        `;
         break;
+      default:
+        return html``;
     }
 
     return html`
           <dialog-view
               headline=${options.headline}
-              ?dismissable=${options.dismissable}
+              .dismissable=${options.dismissable}
               ?underlay=${options.underlay}
+              confirm-label=${options.confirmLabel}
               @close=${this.closed}
+              @confirm=${this.closed}
           >
               ${options.content}
           </dialog-view>

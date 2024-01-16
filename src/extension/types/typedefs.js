@@ -128,7 +128,9 @@
 
 /**
  * @typedef {Object} ModalData
+ * @prop {string} [headline] The modal headline
  * @prop {string} [message] The modal message
+ * @prop {string} [confirmLabel] The confirm button label
  */
 
 /**

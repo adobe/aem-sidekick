@@ -37,6 +37,12 @@ export class DialogView extends LitElement {
   accessor dismissable;
 
   /**
+   * Confirmation button label
+   */
+  @property({ attribute: 'confirm-label' })
+  accessor confirmLabel;
+
+  /**
    * The dialog wrapper
    * @type {DialogWrapper}
    */
@@ -47,19 +53,17 @@ export class DialogView extends LitElement {
     return [style];
   }
 
-  close() {
-    this.dialogWrapper.close();
-  }
-
   render() {
     return html`
       <sp-dialog-wrapper
           headline=${this.headline}
-          ?dismissable=${this.dismissable}
+          confirm-label=${this.confirmLabel}
+          .dismissable=${this.dismissable}
           underlay
           open
-          @close=${() => {
-            const event = new Event('close');
+          error
+          @confirm=${() => {
+            const event = new Event('confirm');
             this.dispatchEvent(event);
           }}>
           <slot></slot>
