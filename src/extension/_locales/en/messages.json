@@ -570,5 +570,11 @@
     },
     "yesterday_at": {
       "message": "Yesterday at $1"
+    },
+    "ok": {
+      "message": "OK"
+    },
+    "error": {
+      "message": "Error"
     }
   }

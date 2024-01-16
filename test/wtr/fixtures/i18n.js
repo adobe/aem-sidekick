@@ -28,5 +28,14 @@ export const mockFetchEnglishMessagesSuccess = () => fetchMock.get(englishMessag
     json_view_description: {
       message: 'View JSON',
     },
+    config_project_pick: {
+      message: 'Pick a project',
+    },
+    ok: {
+      message: 'OK',
+    },
+    error: {
+      message: 'Error',
+    },
   },
 }, { overwriteRoutes: true });

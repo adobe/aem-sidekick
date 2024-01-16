@@ -10,21 +10,42 @@
  * governing permissions and limitations under the License.
  */
 
-/**
- * Event types
- * @enum {string}
- */
-export const EVENTS = {
-  OPEN_MODAL: 'open-modal',
-  CLOSE_MODAL: 'close-modal',
-  SHOW_TOAST: 'show-toast',
-};
+import { css } from 'lit';
 
-/**
- * Modal types
- * @enum {string}
- */
-export const MODALS = {
-  WAIT: 'wait-modal',
-  ERROR: 'error-modal',
-};
+export const style = css`
+  :host {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  :host([open='true']) {
+    display: block;
+  }
+
+  :host([open='false']) {
+    display: none;
+  }
+
+  action-bar {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0px);
+    bottom: 150px;
+    pointer-events: auto;
+  }
+
+  action-bar sp-action-group {
+    padding: 8px;
+  }
+
+  action-bar sp-action-group span {
+    padding-bottom: 3px;
+    padding-left: 8px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+`;

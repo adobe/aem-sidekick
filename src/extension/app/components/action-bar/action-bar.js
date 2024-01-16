@@ -12,7 +12,6 @@
 
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { appStore } from '../../store/app.js';
 
 @customElement('action-bar')
 export class ActionBar extends LitElement {
@@ -24,50 +23,12 @@ export class ActionBar extends LitElement {
       background-color: var(--spectrum-global-color-gray-200);
       border: 1px solid var(--spectrum-global-color-gray-300);
     }
-
-    .action-bar sp-action-group {
-      padding: 8px;
-    }
   `;
-
-  openModal() {
-    appStore.showWait('Previewing...');
-  }
-
-  closeModal() {
-    appStore.hideWait();
-  }
-
-  showToast() {
-    appStore.showToast('This is a toast message');
-  }
 
   render() {
     return html`
       <div class="action-bar">
-        <sp-action-group>
-            <sp-action-button quiet @click=${this.openModal}>
-                <sp-icon-play slot="icon"></sp-icon-play>
-            </sp-action-button>
-            <sp-action-button quiet @click=${this.closeModal}>
-                <sp-icon-edit slot="icon"></sp-icon-edit>
-            </sp-action-button>
-            <sp-action-button quiet @click=${this.showToast}>
-                <sp-icon-refresh slot="icon"></sp-icon-refresh>
-            </sp-action-button>
-        </sp-action-group>
-        <sp-divider size="s" vertical></sp-divider>
-        <sp-action-group>
-            <sp-action-button quiet>
-                <sp-icon-share slot="icon"></sp-icon-share>
-            </sp-action-button>
-        </sp-action-group>
-        <sp-divider size="s" vertical></sp-divider>
-        <sp-action-group>
-            <sp-action-button quiet>
-                <sp-icon-real-time-customer-profile slot="icon"></sp-icon-real-time-customer-profile>
-            </sp-action-button>
-        </sp-action-group>
+        <slot></slot>
       </div>
     `;
   }
