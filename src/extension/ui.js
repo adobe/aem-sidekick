@@ -10,10 +10,28 @@
  * governing permissions and limitations under the License.
  */
 
-// import log from './log.js';
+import { log } from './log.js';
 import { internalActions } from './actions.js';
 import { getDisplay } from './display.js';
 import { GH_URL, getProject, isValidProject } from './project.js';
+
+/**
+ * @typedef {Object} Context
+ * @prop {string} [url] The URL
+ * @prop {Object} [config] The project config
+ * @prop {OptionsConfig[]} [matches] The config matches
+ * @description The context object
+ */
+
+/**
+ * The configuration object type
+ * @typedef {import('@Types').OptionsConfig} OptionsConfig
+ */
+
+/**
+ * @type {number[]} The supported icon sizes
+ */
+const ICON_SIZES = [16, 32, 48, 128, 512];
 
 /**
  * @private
@@ -21,19 +39,6 @@ import { GH_URL, getProject, isValidProject } from './project.js';
  * @description true if context menu is currently being updated, else false
  */
 let updateInProgress = false;
-
-/**
- * @typedef {Object} Context
- * @prop {string} [url] The URL
- * @prop {Object} [config] The project config
- * @prop {Object[]} [matches] The config matches
- * @description The context object
- */
-
-/**
- * @type {number[]} The supported icon sizes
- */
-const ICON_SIZES = [16, 32, 48, 128, 512];
 
 /**
  * Returns an icon path object.
@@ -62,8 +67,8 @@ export async function updateIcon({ matches = [] }) {
       iconType = 'hidden';
     }
   }
-  // log.debug(`updateIcon: using icon type ${iconType}`);
   // update icon
+  log.debug(`updateIcon: using icon type ${iconType}`);
   await chrome.action.setIcon({
     path: getPaths(iconType),
   });
