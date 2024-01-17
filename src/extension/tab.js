@@ -15,10 +15,9 @@ import {
   getProjects,
   getProjectMatches,
   getProjectFromUrl,
-  isValidProject,
 } from './project.js';
 import { urlCache } from './url-cache.js';
-import { updateContextMenu } from './context-menu.js';
+import { updateUI } from './ui.js';
 
 export const DEV_URL = 'http://localhost:3000';
 
@@ -62,6 +61,9 @@ async function getProxyUrl({ id, url: tabUrl }) {
  * @param {Object[]} matches The config matches
  */
 async function injectContentScript(tabId, matches) {
+  if (!await chrome.tabs.get(tabId)) {
+    return;
+  }
   // execute content script
   try {
     await chrome.scripting.executeScript({
@@ -84,9 +86,9 @@ async function injectContentScript(tabId, matches) {
 export default async function checkTab(id) {
   const projects = await getProjects();
   const tab = await chrome.tabs.get(id);
-  if (!tab) return;
-  let { url: checkUrl } = tab;
-  if (!checkUrl) return;
+  if (!tab) return updateUI();
+  let { url } = tab;
+  if (!url) return updateUI();
 
   // check for dev URL
   const devUrls = [
@@ -95,29 +97,24 @@ export default async function checkTab(id) {
       .filter((p) => !!p.devOrigin)
       .map((p) => p.devOrigin),
   ];
-  if (devUrls.find((devUrl) => checkUrl.startsWith(devUrl))) {
+  if (devUrls.find((devUrl) => url.startsWith(devUrl))) {
     // retrieve proxy url
-    checkUrl = await getProxyUrl(tab);
+    url = await getProxyUrl(tab);
   }
   // fill url cache
-  await urlCache.set(checkUrl, projects);
+  await urlCache.set(url, projects);
 
   // todo: if share url, inject install helper
 
-  const matches = await getProjectMatches(projects, checkUrl);
+  const matches = await getProjectMatches(projects, url);
 
-  // update context menu if single match or project can be derived from url
-  const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(checkUrl);
-  if (isValidProject(config)) {
-    await updateContextMenu({
-      config,
-      url: checkUrl,
-      id,
-    });
-  }
+  const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(url);
 
   if (matches.length > 0) {
     // inject content script and send matches to tab
     await injectContentScript(id, matches);
   }
+
+  // update UI
+  return updateUI({ url, config, matches });
 }

@@ -41,6 +41,9 @@ class StorageMock {
 }
 
 export default {
+  action: {
+    setIcon: () => {},
+  },
   i18n: {
     getMessage: () => {},
   },

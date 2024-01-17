@@ -19,10 +19,28 @@
  * @type {SidekickOptionsConfig}
  */
 export const defaultSidekickConfig = {
+  id: 'adobe/aem-boilerplate/main',
   owner: 'adobe',
   ref: 'main',
   repo: 'aem-boilerplate',
   giturl: 'https://github.com/adobe/aem-boilerplate',
-  mountpoint: 'https://drive.google.com/drive/folders/folder-id',
   mountpoints: ['https://drive.google.com/drive/folders/folder-id'],
 };
+
+export const matchingConfigs = [
+  {
+    ...defaultSidekickConfig,
+  },
+  {
+    ...defaultSidekickConfig,
+    id: 'foo/aem-boilerplate/main',
+    owner: 'foo',
+    giturl: 'https://github.com/foo/aem-boilerplate',
+  },
+  {
+    ...defaultSidekickConfig,
+    id: 'bar/aem-boilerplate/main',
+    owner: 'bar',
+    giturl: 'https://github.com/bar/aem-boilerplate',
+  },
+];

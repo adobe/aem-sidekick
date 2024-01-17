@@ -22,6 +22,7 @@ import { AEMSidekick } from '../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from './fixtures/i18n.js';
 import { defaultSidekickConfig } from './fixtures/stubs/sidekick-config.js';
 import { mockFetchConfigJSONNotFound, mockFetchStatusSuccess } from './fixtures/helix-admin.js';
+import '../../src/extension/index.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -37,7 +38,7 @@ describe('AEM Sidekick', () => {
 
   it('renders theme and action-bar', async () => {
     const element = await fixture(html`<aem-sidekick></aem-sidekick>`);
-    const theme = element.shadowRoot.querySelector('sp-theme');
+    const theme = element.shadowRoot.querySelector('theme-wrapper');
     expect(theme).to.exist;
 
     // detect color scheme change
@@ -45,30 +46,32 @@ describe('AEM Sidekick', () => {
     // todo: check if color scheme change is getting picked up
     // expect(theme.getAttribute('color')).to.equal('light');
 
-    const actionBar = recursiveQuery(theme, 'action-bar');
-    expect(actionBar).to.exist;
+    const spTheme = recursiveQuery(theme, 'sp-theme');
+    expect(spTheme).to.exist;
   });
 
   describe('color themes', () => {
     it('renders light theme', async () => {
       await emulateMedia({ colorScheme: 'light' });
       const element = await fixture(html`<aem-sidekick></aem-sidekick>`);
+      const themeWrapper = element.shadowRoot.querySelector('theme-wrapper');
 
-      const theme = element.shadowRoot.querySelector('sp-theme');
-      expect(theme).to.exist;
+      const spTheme = themeWrapper.shadowRoot.querySelector('sp-theme');
+      expect(spTheme).to.exist;
 
-      expect(theme.getAttribute('color')).to.equal('light');
+      expect(spTheme.getAttribute('color')).to.equal('light');
     });
 
     it('renders dark theme', async () => {
       await emulateMedia({ colorScheme: 'dark' });
       const element = await fixture(html`<aem-sidekick></aem-sidekick>`);
+      const themeWrapper = element.shadowRoot.querySelector('theme-wrapper');
 
-      const theme = element.shadowRoot.querySelector('sp-theme');
-      expect(theme).to.exist;
+      const spTheme = themeWrapper.shadowRoot.querySelector('sp-theme');
+      expect(spTheme).to.exist;
 
       // todo: check if color scheme change is getting picked up
-      expect(theme.getAttribute('color')).to.equal('dark');
+      expect(spTheme.getAttribute('color')).to.equal('dark');
     });
   });
 
