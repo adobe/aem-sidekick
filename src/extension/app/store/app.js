@@ -285,7 +285,8 @@ export class AppStore {
    */
   isSharePointFolder(url) {
     if (this.isSharePointDM(url)) {
-      const docPath = new URLSearchParams(url.search).get('id');
+      const sp = new URLSearchParams(url.search);
+      const docPath = sp.get('id') || sp.get('RootFolder');
       const dotIndex = docPath?.split('/').pop().indexOf('.');
       return [-1, 0].includes(dotIndex); // dot only allowed as first char
     }

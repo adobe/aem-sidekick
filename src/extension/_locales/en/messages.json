@@ -597,5 +597,11 @@
     },
     "prod_never_updated": {
       "message": "Never published"
+    },
+    "ok": {
+      "message": "OK"
+    },
+    "error": {
+      "message": "Error"
     }
-  }
+}

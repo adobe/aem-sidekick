@@ -18,11 +18,12 @@ import sinon from 'sinon';
 import chromeMock from './mocks/chrome.js';
 import { addProject, getProject, updateProject } from '../../src/extension/project.js';
 import { internalActions } from '../../src/extension/actions.js';
+import { setDisplay } from '../../src/extension/display.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
 
-// prep listener test before importing context-menu.js
+// prep listener test before importing ui.js
 const openPreview = sinon.spy(internalActions, 'openPreview');
 sinon.replace(chrome.contextMenus.onClicked, 'addListener', async (func) => {
   // @ts-ignore
@@ -34,7 +35,7 @@ sinon.replace(chrome.contextMenus.onClicked, 'addListener', async (func) => {
   });
 });
 
-const { updateContextMenu } = await import('../../src/extension/context-menu.js');
+const { updateContextMenu, updateIcon } = await import('../../src/extension/ui.js');
 
 describe('Test context-menu', () => {
   const sandbox = sinon.createSandbox();
@@ -57,11 +58,11 @@ describe('Test context-menu', () => {
     const config = {
       owner: 'foo',
       repo: 'bar',
+      ref: 'main',
     };
 
     // project not added yet (remove all and add 1)
     await updateContextMenu({
-      id: 0,
       url: 'https://main--bar--foo.hlx.page/',
       config,
     });
@@ -72,7 +73,6 @@ describe('Test context-menu', () => {
     await addProject(config);
     const project = await getProject(config);
     await updateContextMenu({
-      id: 0,
       url: 'https://main--bar--foo.hlx.page/',
       config,
     });
@@ -82,7 +82,6 @@ describe('Test context-menu', () => {
     // project disabled (remove all and add 3)
     await updateProject({ ...project, disabled: true });
     await updateContextMenu({
-      id: 0,
       url: 'https://main--bar--foo.hlx.page/',
       config,
     });
@@ -91,7 +90,6 @@ describe('Test context-menu', () => {
 
     // no config (remove all and add 0)
     await updateContextMenu({
-      id: 0,
       url: 'https://main--bar--foo.hlx.page/',
     });
     expect(removeAll.callCount).to.equal(4);
@@ -105,5 +103,56 @@ describe('Test context-menu', () => {
     await updateContextMenu({});
     expect(removeAll.called).to.be.false;
     chrome.contextMenus = originalContextMenus;
+  });
+
+  it('updateIcon', async () => {
+    const setIcon = sandbox.spy(chrome.action, 'setIcon');
+    // disabled
+    await updateIcon({});
+    expect(setIcon.calledWith({
+      path: {
+        16: 'icons/disabled/icon-16x16.png',
+        32: 'icons/disabled/icon-32x32.png',
+        48: 'icons/disabled/icon-48x48.png',
+        128: 'icons/disabled/icon-128x128.png',
+        512: 'icons/disabled/icon-512x512.png',
+      },
+    })).to.be.true;
+    // default
+    await setDisplay(true);
+    await updateIcon({
+      matches: [{
+        owner: 'foo',
+        repo: 'bar',
+        ref: 'main',
+      }],
+    });
+    expect(setIcon.calledWith({
+      path: {
+        16: 'icons/default/icon-16x16.png',
+        32: 'icons/default/icon-32x32.png',
+        48: 'icons/default/icon-48x48.png',
+        128: 'icons/default/icon-128x128.png',
+        512: 'icons/default/icon-512x512.png',
+      },
+    })).to.be.true;
+    // hidden
+    await setDisplay(false);
+    await updateIcon({
+      matches: [{
+        owner: 'foo',
+        repo: 'bar',
+        ref: 'main',
+      }],
+    });
+    expect(setIcon.calledWith({
+      path: {
+        16: 'icons/default/icon-16x16.png',
+        32: 'icons/default/icon-32x32.png',
+        48: 'icons/default/icon-48x48.png',
+        128: 'icons/default/icon-128x128.png',
+        512: 'icons/default/icon-512x512.png',
+      },
+    })).to.be.true;
   });
 });

@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from './log.js';
 import { getConfig, setConfig } from './config.js';
 
 /**
@@ -75,7 +76,7 @@ async function fetchSharePointEditInfo(url) {
   spUrl.search = '';
   let resp = await fetch(spUrl);
   if (!resp.ok) {
-    // console.log('unable to resolve edit url ', resp.status, await resp.text());
+    log.debug('unable to resolve edit url ', resp.status, await resp.text());
     return null;
   }
   const data = await resp.json();
@@ -84,7 +85,7 @@ async function fetchSharePointEditInfo(url) {
   spUrl.pathname = `/_api/v2.0/drives/${data.parentReference.driveId}`;
   resp = await fetch(spUrl);
   if (!resp.ok) {
-    // console.log('unable to load root url: ', resp.status, await resp.text());
+    log.debug('unable to load root url: ', resp.status, await resp.text());
     return null;
   }
   const rootData = await resp.json();
@@ -144,7 +145,7 @@ class UrlCache {
     const entry = urlCache.find((e) => e.url === url);
     if (entry && (!entry.expiry || entry.expiry > Date.now())) {
       // return results from fresh cache entry
-      // console.log(`url cache entry found for ${url}`, entry);
+      log.info(`url cache entry found for ${url}`, entry);
       return entry.results;
     }
     return [];
@@ -180,11 +181,11 @@ class UrlCache {
       );
       if (urlIndex >= 0) {
         // update existing entry
-        // console.log(`updating static loaded entry for ${url}`, entry);
+        log.info(`updating static loaded entry for ${url}`, entry);
         urlCache.splice(urlIndex, 1, entry);
       } else {
         // add new entry
-        // console.log(`adding static entry for ${url}`, entry);
+        log.info(`adding static entry for ${url}`, entry);
         urlCache.push(entry);
       }
     } else {
@@ -197,7 +198,7 @@ class UrlCache {
         const info = isSPHost
           ? await fetchSharePointEditInfo(url)
           : await fetchGoogleDriveEditInfo(url);
-        // console.log('resource edit info', info);
+        log.debug('resource edit info', info);
 
         let results = [];
         // discover project details from edit url
@@ -216,11 +217,11 @@ class UrlCache {
             const entryIndex = urlCache.findIndex((e) => e.url === entry.url);
             if (entryIndex >= 0) {
               // update expired cache entry
-              // console.log('updating discovery cache', entry);
+              log.info('updating discovery cache', entry);
               urlCache.splice(entryIndex, 1, entry);
             } else {
               // add cache entry
-              // console.log('extending discovery cache', entry);
+              log.info('extending discovery cache', entry);
               urlCache.push(entry);
             }
           }
@@ -233,7 +234,6 @@ class UrlCache {
     await setConfig('session', {
       urlCache,
     });
-    // console.log('URL Cache', urlCache);
   }
 }
 

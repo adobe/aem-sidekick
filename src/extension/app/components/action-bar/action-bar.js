@@ -44,17 +44,17 @@ export class ActionBar extends MobxLitElement {
     }
 
     return html`
-      <sp-action-button quiet @click=${() => this.onPluginButtonClick(plugin)}>
+      <sp-action-button quiet @click=${() => this.onPluginButtonClick(evt, plugin)}>
           ${plugin.button.text}
       </sp-action-button>
     `;
   }
 
-  onPluginButtonClick(plugin) {
+  onPluginButtonClick(evt, plugin) {
     appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, {
       id: plugin.id,
     });
-    plugin.button.action();
+    plugin.button.action(evt);
   }
 
   render() {

@@ -80,10 +80,10 @@ describe('Test check-tab', () => {
     // check tab with dev URL
     sinon.stub(chrome.storage.sync, 'get')
       .callsFake(async (prop) => new Promise((resolve) => {
-        if (prop === 'hlxSidekickProjects') {
+        if (prop === 'projects') {
           resolve({
             // @ts-ignore
-            hlxSidekickProjects: [
+            projects: [
               'foo/bar',
             ],
           });
@@ -118,11 +118,21 @@ describe('Test check-tab', () => {
 
     // error handling
     executeScriptSpy.restore();
-    const consoleSpy = sandbox.spy(console, 'log');
     sandbox.stub(chrome.scripting, 'executeScript').throws(error);
     await checkTab(1);
-    expect(consoleSpy.called).to.be.true;
     sinon.restore();
+    let counter = 0;
+    sandbox.stub(chrome.tabs, 'get').callsFake(async (id) => {
+      counter += 1;
+      if (counter === 1) {
+        return TABS[id];
+      } else {
+        return null;
+      }
+    });
+    // tab still exists at first, but not at second call
+    await checkTab(1);
+    // tab no longer exist
     await checkTab(1);
   });
 });

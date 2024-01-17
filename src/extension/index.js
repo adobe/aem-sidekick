@@ -36,11 +36,14 @@ import '@spectrum-web-components/icons-workflow/icons/sp-icon-real-time-customer
 import './app/components/action-bar/action-bar.js';
 import './app/components/action-bar/picker/picker.js';
 import './app/components/action-bar/menu-item/menu-item.js';
+import './app/components/theme/theme.js';
+import './app/components/plugin/plugin-action-bar.js';
 import './app/components/modal/modal-container.js';
 import './app/components/toast/toast-container.js';
 import './app/components/plugin/env-switcher/env-switcher.js';
 import './app/components/dialog/dialog.js';
 
 import { AEMSidekick } from './app/aem-sidekick.js';
+import { AEMConfigPicker } from './app/config-picker.js';
 
-export { AEMSidekick };
+export { AEMSidekick, AEMConfigPicker };

@@ -33,16 +33,16 @@
 
 /**
  * @typedef {Object} OptionsConfig
+ * @prop {string} id The id of the config
  * @prop {string} [project] The name of the project
  * @prop {string} giturl The url to the repository
- * @prop {string} mountpoint The content source URL
+ * @prop {string[]} mountpoints The content source URL
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
  * @prop {boolean} [devMode] Loads client configuration and plugins from the development environment
  * @prop {string} [devOrigin] The origin of the local development environment
  * @prop {string} [adminVersion] The specific version of admin service to use
- * @prop {boolean} [hlx5] Using helix 5?
  * @prop {boolean} [disabled] Is the project disabled?
  * @description Represents the sidekick configuration from the user via the options view
  */
@@ -166,7 +166,9 @@
 
 /**
  * @typedef {Object} ModalData
+ * @prop {string} [headline] The modal headline
  * @prop {string} [message] The modal message
+ * @prop {string} [confirmLabel] The confirm button label
  */
 
 /**

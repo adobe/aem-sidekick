@@ -29,11 +29,23 @@ export const style = css`
     display: none;
   }
 
-  plugin-action-bar {
+  action-bar {
     position: absolute;
     left: 50%;
     transform: translate(-50%, 0px);
     bottom: 150px;
     pointer-events: auto;
+  }
+
+  action-bar sp-action-group {
+    padding: 8px;
+  }
+
+  action-bar sp-action-group span {
+    padding-bottom: 3px;
+    padding-left: 8px;
+    margin: 0;
+    display: flex;
+    align-items: center;
   }
 `;
