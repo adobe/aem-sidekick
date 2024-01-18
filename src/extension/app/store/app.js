@@ -17,12 +17,14 @@ import { SiteStore } from './site.js';
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import sampleRUM from '../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
-import { getLocation, matchProjectHost, isSupportedFileExtension } from '../utils/browser.js';
+import {
+  getLocation, matchProjectHost, isSupportedFileExtension, globToRegExp,
+} from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
   ENVS, EVENTS, EXTERNAL_EVENTS, MODALS,
 } from '../constants.js';
-import { pluginFactory } from '../components/plugin/plugin-factory.js';
+import { pluginFactory } from '../plugins/plugin-factory.js';
 
 /**
  * The sidekick configuration object type
@@ -30,17 +32,18 @@ import { pluginFactory } from '../components/plugin/plugin-factory.js';
  */
 
 /**
- * The plugin object type
- * @typedef {import('@Types').Plugin} Plugin
+ * The CustomPlugin object type
+ * @typedef {import('@Types').CustomPlugin} CustomPlugin
  */
 
 /**
- * The plugin object type
+ * The AEMSidekick object type
  * @typedef {import('../aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
 /**
- * @typedef {import('@Types')._Plugin} _Plugin
+ * The core plugin object type
+ * @typedef {import('@Types').CorePlugin} CorePlugin
  */
 
 /**
@@ -77,9 +80,15 @@ export class AppStore {
 
   /**
    * Dictionary of language keys
-   * @type {_Plugin[]}
+   * @type {Object.<string, CorePlugin>}
    */
   @observable accessor corePlugins;
+
+  /**
+   * Dictionary of language keys
+   * @type {Object.<string, CustomPlugin>}
+   */
+  @observable accessor customPlugins;
 
   constructor() {
     this.siteStore = new SiteStore(this);
@@ -111,6 +120,7 @@ export class AppStore {
     });
 
     this.setupCorePlugins();
+    this.setupCustomPlugins();
 
     this.fetchStatus();
 
@@ -130,13 +140,130 @@ export class AppStore {
    */
   @action
   setupCorePlugins() {
-    this.corePlugins = [];
-    this.corePlugins.push(
-      pluginFactory.createEnvPlugin(),
-      pluginFactory.createEditPlugin(this),
-      pluginFactory.createPreviewPlugin(this),
-      pluginFactory.createPublishPlugin(this),
-    );
+    this.corePlugins = {};
+
+    const envPlugin = pluginFactory.createEnvPlugin();
+    const editPlugin = pluginFactory.createEditPlugin(this);
+    const previewPlugin = pluginFactory.createPreviewPlugin(this);
+    const publishPlugin = pluginFactory.createPublishPlugin(this);
+
+    this.corePlugins[envPlugin.id] = envPlugin;
+    this.corePlugins[editPlugin.id] = editPlugin;
+    this.corePlugins[previewPlugin.id] = previewPlugin;
+    this.corePlugins[publishPlugin.id] = publishPlugin;
+  }
+
+  /**
+   * Sets up the core plugins.
+   */
+  @action
+  setupCustomPlugins() {
+    this.customPlugins = {};
+
+    const { location, siteStore: { lang, plugins, innerHost } = {} } = this;
+    if (plugins && Array.isArray(plugins)) {
+      plugins.forEach((cfg, i) => {
+        const {
+          id,
+          title,
+          titleI18n,
+          url,
+          passConfig,
+          passReferrer,
+          isPalette,
+          event: eventName,
+          environments,
+          excludePaths,
+          includePaths,
+          isContainer,
+          containerId,
+        } = cfg;
+        const condition = (appStore) => {
+          let excluded = false;
+          const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
+          if (excludePaths && Array.isArray(excludePaths)
+              && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+            excluded = true;
+          }
+          if (includePaths && Array.isArray(includePaths)
+              && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+            excluded = false;
+          }
+          if (excluded) {
+            // excluding plugin
+            return false;
+          }
+          if (!environments || environments.includes('any')) {
+            return true;
+          }
+          const envChecks = {
+            dev: appStore.isDev,
+            edit: appStore.isEditor,
+            preview: appStore.isInner,
+            live: appStore.isOuter,
+            prod: appStore.isProd,
+          };
+          return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
+        };
+          // assemble plugin config
+        const plugin = {
+          custom: true,
+          id: id || `custom-plugin-${i}`,
+          condition,
+          button: {
+            text: (titleI18n && titleI18n[lang]) || title || '',
+            action: () => {
+              if (url) {
+                const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
+                if (passConfig) {
+                  target.searchParams.append('ref', this.siteStore.ref);
+                  target.searchParams.append('repo', this.siteStore.repo);
+                  target.searchParams.append('owner', this.siteStore.owner);
+                  if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
+                  if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+                }
+                if (passReferrer) {
+                  target.searchParams.append('referrer', location.href);
+                }
+                if (isPalette) {
+                  EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_PALETTE, {
+                    detail: {
+                      plugin: cfg,
+                    },
+                  }));
+                } else {
+                  // open url in new window
+                  window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
+                }
+              }
+              // fire custom event
+              this.fireEvent(`custom:${eventName || id}`);
+            },
+            isDropdown: isContainer,
+          },
+          container: containerId,
+        };
+        // check default plugin
+        const defaultPlugin = this.corePlugins[plugin.id];
+        if (defaultPlugin) {
+          // extend default condition
+          const { condition: defaultCondition } = defaultPlugin;
+          defaultPlugin.condition = (s) => defaultCondition(s) && condition(s);
+        } else {
+          // add custom plugin
+          this.customPlugins[plugin.id] = plugin;
+        }
+      });
+    }
+  }
+
+  /**
+   * Returns the sidekick plugin with the specified ID.
+   * @param {string} id The plugin ID
+   * @returns {HTMLElement} The plugin
+   */
+  get(id) {
+    return this.sidekick.renderRoot.querySelector(`:scope div.plugin.${id}`);
   }
 
   /**

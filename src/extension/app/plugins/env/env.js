@@ -10,30 +10,17 @@
  * governing permissions and limitations under the License.
  */
 
-import { css } from 'lit';
+/**
+ * @typedef {import('@Types').CorePlugin} CorePlugin
+ */
 
-export const style = css`
-  :host {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    pointer-events: none;
-    z-index: 999999999999;
-  }
-
-  :host([open='true']) {
-    display: block;
-  }
-
-  :host([open='false']) {
-    display: none;
-  }
-
-  plugin-action-bar {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0px);
-    bottom: 150px;
-    pointer-events: auto;
-  }
-`;
+/**
+ * Creates the env plugin
+ * @returns {CorePlugin} The env plugin
+ */
+export function createEnvPlugin() {
+  return {
+    id: 'env-switcher',
+    condition: () => true,
+  };
+}

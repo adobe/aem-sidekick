@@ -46,6 +46,7 @@
           "context-menu.js",
           "display.js",
           "index.js",
+          "index.js.map",
           "lib/polyfills.min.js",
           "log.js",
           "module.js",

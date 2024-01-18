@@ -25,6 +25,10 @@ export const style = css`
     padding: 8px;
   }
 
+  .action-bar .plugin-container {
+    width: auto;
+  }
+
   @media (prefers-color-scheme: light) {
     .action-bar {
       background-color: var(--spectrum-global-color-gray-100);

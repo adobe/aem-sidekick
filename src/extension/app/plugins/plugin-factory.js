@@ -10,30 +10,14 @@
  * governing permissions and limitations under the License.
  */
 
-import { css } from 'lit';
+import { createEnvPlugin } from './env/env.js';
+import { createEditPlugin } from './edit/edit.js';
+import { createPreviewPlugin } from './preview/preview.js';
+import { createPublishPlugin } from './publish/publish.js';
 
-export const style = css`
-  :host {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    pointer-events: none;
-    z-index: 999999999999;
-  }
-
-  :host([open='true']) {
-    display: block;
-  }
-
-  :host([open='false']) {
-    display: none;
-  }
-
-  plugin-action-bar {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0px);
-    bottom: 150px;
-    pointer-events: auto;
-  }
-`;
+export const pluginFactory = (() => ({
+  createEnvPlugin,
+  createEditPlugin,
+  createPreviewPlugin,
+  createPublishPlugin,
+}))();

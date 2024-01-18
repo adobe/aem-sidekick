@@ -10,42 +10,22 @@
  * governing permissions and limitations under the License.
  */
 
+// @ts-nocheck
+
 import { css } from 'lit';
+import { Dialog } from '@spectrum-web-components/dialog';
 
-export const style = css`
-  :host {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    pointer-events: none;
-    z-index: 999999999999;
+export class PaletteDialog extends Dialog {
+  static get styles() {
+    return [
+      ...super.styles,
+      css`
+        .grid .content {
+          overflow: hidden;
+        }
+      `,
+    ];
   }
+}
 
-  :host([open='true']) {
-    display: block;
-  }
-
-  :host([open='false']) {
-    display: none;
-  }
-
-  action-bar {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0px);
-    bottom: 150px;
-    pointer-events: auto;
-  }
-
-  action-bar sp-action-group {
-    padding: 8px;
-  }
-
-  action-bar sp-action-group span {
-    padding-bottom: 3px;
-    padding-left: 8px;
-    margin: 0;
-    display: flex;
-    align-items: center;
-  }
-`;
+customElements.define('palette-dialog', PaletteDialog);

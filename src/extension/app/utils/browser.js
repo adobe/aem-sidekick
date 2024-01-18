@@ -175,3 +175,21 @@ export function createTag(config) {
 export function newTab(evt) {
   return evt.metaKey || evt.shiftKey || evt.which === 2;
 }
+
+/**
+   * Turns a globbing into a regular expression.
+   * @private
+   * @param {string} glob The globbing
+   * @returns The regular expression
+   */
+export function globToRegExp(glob) {
+  if (!glob) {
+    glob = '**';
+  }
+  const reString = glob
+    .replace('.', '\\.') // don't match every char, just real dots
+    .replace(/\*\*/g, '_')
+    .replace(/\*/g, '[0-9a-z-.]*')
+    .replace(/_/g, '.*');
+  return new RegExp(`^${reString}$`);
+}

@@ -41,6 +41,7 @@ export class AEMSidekick extends MobxLitElement {
         <plugin-action-bar></plugin-action-bar>
         <toast-container></toast-container>
         <modal-container></modal-container>
+        <palette-container></palette-container>
       </theme-wrapper>
     `;
   }

@@ -18,7 +18,16 @@ import { style } from './action-bar.css.js';
 import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**
- * @typedef {import('@Types')._Plugin} _Plugin
+ * @typedef {import('@Types').CorePlugin} CorePlugin
+ */
+
+/**
+ * @typedef {import('../action-bar/picker/picker.js').Picker} Picker
+ */
+
+/**
+ * @typedef ContainerPlugin
+ * @property {Record<string, CorePlugin>} [children] The child plugins of the container
  */
 
 @customElement('action-bar')
@@ -29,7 +38,7 @@ export class ActionBar extends MobxLitElement {
 
   /**
    *
-   * @param {_Plugin} plugin
+   * @param {CorePlugin} plugin
    * @returns
    */
   createActionPluginButton(plugin) {
@@ -44,7 +53,7 @@ export class ActionBar extends MobxLitElement {
     }
 
     return html`
-      <sp-action-button quiet @click=${() => this.onPluginButtonClick(evt, plugin)}>
+      <sp-action-button quiet @click=${(evt) => this.onPluginButtonClick(evt, plugin)}>
           ${plugin.button.text}
       </sp-action-button>
     `;
@@ -57,17 +66,74 @@ export class ActionBar extends MobxLitElement {
     plugin.button.action(evt);
   }
 
+  /**
+   * Handles the environment switcher change event
+   * @param {Event & { target: Picker }} event - The event object with target typed as Picker
+   */
+  onChange(event, plugin) {
+    const { target } = event;
+
+    const selectedPlugin = plugin.children[target.value];
+    selectedPlugin.button.action(event);
+
+    // Prevent the picker from showing the selected item
+    target.value = '';
+    target.selectedItem = undefined;
+  }
+
+  renderPlugins() {
+    if (appStore.corePlugins) {
+      const corePlugins = Object.values(appStore.corePlugins)?.map((plugin) => (plugin.condition(appStore) ? this.createActionPluginButton(plugin) : ''));
+
+      /**
+       * @type {Record<string, CorePlugin & ContainerPlugin>}
+       * */
+      const customPlugins = {};
+      if (appStore.customPlugins) {
+        Object.values(appStore.customPlugins).forEach((plugin) => {
+          if (plugin.button.isDropdown) {
+            customPlugins[plugin.id] = plugin;
+          } else if (plugin.container) {
+            const container = customPlugins[plugin.container];
+            if (!container.children) {
+              container.children = {};
+            }
+            container.children[plugin.id] = plugin;
+          } else {
+            customPlugins[plugin.id] = plugin;
+          }
+        });
+      }
+
+      const userPlugins = Object.values(customPlugins).map((plugin) => {
+        if (plugin.children) {
+          return html`
+            <action-bar-picker class="plugin-container" label=${plugin.button.text} @change=${(e) => this.onChange(e, plugin)}>
+              ${Object.values(plugin.children).map((childPlugin) => (childPlugin.condition(appStore)
+                  ? html`<sp-menu-item value=${childPlugin.id}>${childPlugin.button.text}</sp-menu-item>`
+                  : ''))}
+            </action-bar-picker>
+          `;
+        }
+
+        return plugin.condition(appStore) ? html`
+                <sp-action-button quiet @click=${(evt) => this.onPluginButtonClick(evt, plugin)}>
+                  ${plugin.button.text || plugin.id}
+                </sp-action-button>
+              ` : '';
+      });
+
+      return [...corePlugins, ...userPlugins];
+    }
+
+    return '';
+  }
+
   render() {
     return appStore.initialized ? html`
       <div class="action-bar">
         <sp-action-group>
-          ${appStore.corePlugins?.map((plugin) => (plugin.condition(appStore) ? this.createActionPluginButton(plugin) : ''))}
-        </sp-action-group>
-        <sp-divider size="s" vertical></sp-divider>
-        <sp-action-group>
-          <sp-action-button quiet>
-            <sp-icon-share slot="icon"></sp-icon-share>
-          </sp-action-button>
+          ${this.renderPlugins()}
         </sp-action-group>
         <sp-divider size="s" vertical></sp-divider>
         <sp-action-group>

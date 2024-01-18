@@ -39,6 +39,14 @@ export const style = css`
     border: 1px solid var(--spectrum-gray-400);
   }
 
+  :host(.plugin-container) #button {
+    background-color: transparent;
+  }
+
+  :host(.plugin-container) #button[aria-expanded="true"] {
+    background-color: var(--spectrum-gray-400);
+  }
+
   sp-menu {
     padding: 8px;
     gap: 4px;

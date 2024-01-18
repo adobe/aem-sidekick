@@ -32,10 +32,12 @@ export const EVENTS = {
   OPEN_MODAL: 'open-modal',
   CLOSE_MODAL: 'close-modal',
   SHOW_TOAST: 'show-toast',
+  OPEN_PALETTE: 'open-palette',
+  CLOSE_PALETTE: 'close-palette',
 };
 
 /**
- * Internal event types
+ * External event types
  * @enum {string}
  */
 export const EXTERNAL_EVENTS = {

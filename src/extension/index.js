@@ -18,6 +18,7 @@ import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/divider/sp-divider.js';
 import '@spectrum-web-components/toast/sp-toast.js';
+import '@spectrum-web-components/dialog/sp-dialog-base.js';
 import '@spectrum-web-components/dialog/sp-dialog-wrapper.js';
 import '@spectrum-web-components/progress-circle/sp-progress-circle.js';
 import '@spectrum-web-components/action-menu/sp-action-menu.js';
@@ -40,6 +41,9 @@ import './app/components/theme/theme.js';
 import './app/components/plugin/plugin-action-bar.js';
 import './app/components/modal/modal-container.js';
 import './app/components/toast/toast-container.js';
+import './app/components/plugin/palette-container.js';
+import './app/components/plugin/palette-dialog/palette-dialog-wrapper.js';
+import './app/components/plugin/palette-dialog/palette-dialog.js';
 import './app/components/plugin/env-switcher/env-switcher.js';
 import './app/components/dialog/dialog.js';
 

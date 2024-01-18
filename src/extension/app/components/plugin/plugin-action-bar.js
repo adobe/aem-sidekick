@@ -23,31 +23,7 @@ export class PluginActionBar extends LitElement {
 
   render() {
     return html`
-      <action-bar>
-        <sp-action-group>
-            <sp-action-button quiet aria-label="preview">
-                <sp-icon-play slot="icon"></sp-icon-play>
-            </sp-action-button>
-            <sp-action-button quiet aria-label="edit">
-                <sp-icon-edit slot="icon"></sp-icon-edit>
-            </sp-action-button>
-            <sp-action-button quiet aria-label="refresh">
-                <sp-icon-refresh slot="icon"></sp-icon-refresh>
-            </sp-action-button>
-        </sp-action-group>
-        <sp-divider size="s" vertical></sp-divider>
-        <sp-action-group>
-            <sp-action-button quiet aria-label="share">
-                <sp-icon-share slot="icon"></sp-icon-share>
-            </sp-action-button>
-        </sp-action-group>
-        <sp-divider size="s" vertical></sp-divider>
-        <sp-action-group>
-            <sp-action-button quiet aria-label="profile">
-                <sp-icon-real-time-customer-profile slot="icon"></sp-icon-real-time-customer-profile>
-            </sp-action-button>
-        </sp-action-group>
-      </action-bar>
+      <action-bar></action-bar>
     `;
   }
 }

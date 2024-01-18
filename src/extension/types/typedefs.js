@@ -93,9 +93,9 @@
  */
 
 /**
- * @typedef {Object} Plugin
+ * @typedef {Object} SitePlugin
  * @prop {string} id The plugin ID (mandatory)
- * @prop {string} title The button text
+ * @prop {string} [title] The button text
  * @prop {Object} [titleI18n] A map of translated button texts (default: {})
  * @prop {string} [url] The URL to open when the button is clicked
  * @prop {boolean} [passConfig] Append additional sk info to the url as query parameters: ref, repo, owner, host, project
@@ -107,11 +107,11 @@
  * @prop {string[]} [environments] Specifies when to show this plugin (admin, edit, dev, preview, live, prod)
  * @prop {string[]} [excludePaths] Exclude the plugin from these paths (glob patterns supported)
  * @prop {string[]} [includePaths] Include the plugin on these paths (glob patterns supported)
- * @description The plugin configuration.
+ * @description The custom plugin configuration.
  */
 
 /**
- * @typedef {Object} _Plugin
+ * @typedef {Object} CorePlugin
  * @prop {string} id The plugin ID (mandatory)
  * @prop {PluginButton} [button] A button configuration object (optional)
  * @prop {string} [container] The ID of a dropdown to add this plugin to (optional)
@@ -128,6 +128,10 @@
  */
 
 /**
+ * @typedef {SitePlugin & CorePlugin } CustomPlugin
+ */
+
+/**
  * @typedef {Object} ElemConfig
  * @private
  * @prop {string} tag The tag name (mandatory)
@@ -139,12 +143,11 @@
 
 /**
  * @typedef {Object} PluginButton
- * @private
  * @prop {string} text The button text
  * @prop {Function} action The click listener
- * @prop {Function} isPressed=false Determines whether the button is pressed
- * @prop {Function} isEnabled=true Determines whether to enable the button
- * @prop {boolean} isDropdown=false Determines whether to turn this button into a dropdown
+ * @prop {Function} [isPressed] Determines whether the button is pressed. Default false.
+ * @prop {Function} [isEnabled] Determines whether to enable the button. Default true.
+ * @prop {boolean} [isDropdown] Determines whether to turn this button into a dropdown. Default false.
  * @description The configuration for a plugin button. This can be used as
  * a shorthand for {@link elemConfig}.
  */
