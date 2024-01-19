@@ -1,3 +1,24 @@
+# [1.4.0](https://github.com/adobe/aem-sidekick/compare/v1.3.0...v1.4.0) (2024-1-19)
+
+
+### Bug Fixes
+
+* a11y issues ([d0cd59c](https://github.com/adobe/aem-sidekick/commit/d0cd59c907925e1251ac53fa45705ea15692a1a2))
+* a11y issues ([daa20a1](https://github.com/adobe/aem-sidekick/commit/daa20a1cdd7289faef7ed0f006450bac4807ca7c))
+* add condition to firing custom events ([880159b](https://github.com/adobe/aem-sidekick/commit/880159b9cee5c5a78f43f5cd756aab81f4156f13))
+* ignore .vscode directory ([37cfc99](https://github.com/adobe/aem-sidekick/commit/37cfc990a719d7fd93c3b299bff1bb856de9f65f))
+* move to inline styles for components with few styles ([69e7711](https://github.com/adobe/aem-sidekick/commit/69e7711268db327e8337f982c6d3f353a3dc09b1))
+* remove some unused types ([91054ee](https://github.com/adobe/aem-sidekick/commit/91054ee154d194a3a24db7b542c8017d550ed020))
+* shared action bar ([c8b5914](https://github.com/adobe/aem-sidekick/commit/c8b591468337f727023052106e6f3968fa8c62eb))
+* types and unused code ([033d196](https://github.com/adobe/aem-sidekick/commit/033d19620a60d47da62af5048c7fb30aa17e67da))
+* update package.lock ([5eba585](https://github.com/adobe/aem-sidekick/commit/5eba585b9ecbb55af91f110ff8fd13e46e46b1c9))
+
+
+### Features
+
+* core plugin support ([70bbf5f](https://github.com/adobe/aem-sidekick/commit/70bbf5f7ca28b125d6cb5153c28cb2a9d427ca1f))
+* custom plugins and palette support ([39592e6](https://github.com/adobe/aem-sidekick/commit/39592e6a09987bf58dee7ce9324127a5f7b86ae2))
+
 # [1.3.0](https://github.com/adobe/aem-sidekick/compare/v1.2.0...v1.3.0) (2024-1-16)
 
 
