@@ -10,14 +10,21 @@
  * governing permissions and limitations under the License.
  */
 
-import { observable } from 'mobx';
+/* eslint-disable no-restricted-globals */
+
+import { observable, action } from 'mobx';
 import { SiteStore } from './site.js';
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import sampleRUM from '../utils/rum.js';
-import { fetchLanguageDict } from '../utils/i18n.js';
-import { getLocation, matchProjectHost, isSupportedFileExtension } from '../utils/browser.js';
+import { fetchLanguageDict, i18n } from '../utils/i18n.js';
+import {
+  getLocation, matchProjectHost, isSupportedFileExtension, globToRegExp,
+} from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
-import { EVENTS, MODALS } from '../constants.js';
+import {
+  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS,
+} from '../constants.js';
+import { pluginFactory } from '../plugins/plugin-factory.js';
 
 /**
  * The sidekick configuration object type
@@ -25,13 +32,22 @@ import { EVENTS, MODALS } from '../constants.js';
  */
 
 /**
- * The plugin object type
- * @typedef {import('@Types').Plugin} Plugin
+ * The CustomPlugin object type
+ * @typedef {import('@Types').CustomPlugin} CustomPlugin
  */
 
 /**
- * The plugin object type
+ * The AEMSidekick object type
  * @typedef {import('../aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
+
+/**
+ * The core plugin object type
+ * @typedef {import('@Types').CorePlugin} CorePlugin
+ */
+
+/**
+ * @typedef {import('@Types').AdminResponse} AdminResponse
  */
 
 export class AppStore {
@@ -52,15 +68,27 @@ export class AppStore {
 
   /**
    * Status of the current document
-   * @type {object}
+   * @type {Object}
    */
-  status = {};
+  @observable accessor status = {};
 
   /**
    * Dictionary of language keys
-   * @type {object}
+   * @type {Object}
    */
   languageDict;
+
+  /**
+   * Dictionary of language keys
+   * @type {Object.<string, CorePlugin>}
+   */
+  @observable accessor corePlugins;
+
+  /**
+   * Dictionary of language keys
+   * @type {Object.<string, CustomPlugin>}
+   */
+  @observable accessor customPlugins;
 
   constructor() {
     this.siteStore = new SiteStore(this);
@@ -86,12 +114,155 @@ export class AppStore {
       this.languageDict = await fetchLanguageDict(this.siteStore, 'en');
     }
 
-    this.fireEvent('contextloaded', {
+    this.fireEvent(EXTERNAL_EVENTS.CONTEXT_LOADED, {
       config: this.siteStore.toJSON(),
       location: this.location,
     });
 
+    this.setupCorePlugins();
+    this.setupCustomPlugins();
+
     this.fetchStatus();
+
+    this.setInitialized();
+  }
+
+  /**
+   * Sets the initialized flag.
+   */
+  @action
+  setInitialized() {
+    this.initialized = true;
+  }
+
+  /**
+   * Sets up the core plugins.
+   */
+  @action
+  setupCorePlugins() {
+    this.corePlugins = {};
+
+    const envPlugin = pluginFactory.createEnvPlugin();
+    const previewPlugin = pluginFactory.createPreviewPlugin(this);
+    const publishPlugin = pluginFactory.createPublishPlugin(this);
+
+    this.corePlugins[envPlugin.id] = envPlugin;
+    this.corePlugins[previewPlugin.id] = previewPlugin;
+    this.corePlugins[publishPlugin.id] = publishPlugin;
+  }
+
+  /**
+   * Sets up the core plugins.
+   */
+  @action
+  setupCustomPlugins() {
+    this.customPlugins = {};
+
+    const { location, siteStore: { lang, plugins, innerHost } = {} } = this;
+    if (plugins && Array.isArray(plugins)) {
+      plugins.forEach((cfg, i) => {
+        const {
+          id,
+          title,
+          titleI18n,
+          url,
+          passConfig,
+          passReferrer,
+          isPalette,
+          event: eventName,
+          environments,
+          excludePaths,
+          includePaths,
+          isContainer,
+          containerId,
+        } = cfg;
+        const condition = (appStore) => {
+          let excluded = false;
+          const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
+          if (excludePaths && Array.isArray(excludePaths)
+              && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+            excluded = true;
+          }
+          if (includePaths && Array.isArray(includePaths)
+              && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+            excluded = false;
+          }
+          if (excluded) {
+            // excluding plugin
+            return false;
+          }
+          if (!environments || environments.includes('any')) {
+            return true;
+          }
+          const envChecks = {
+            dev: appStore.isDev,
+            edit: appStore.isEditor,
+            preview: appStore.isInner,
+            live: appStore.isOuter,
+            prod: appStore.isProd,
+          };
+          return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
+        };
+          // assemble plugin config
+        const plugin = {
+          custom: true,
+          id: id || `custom-plugin-${i}`,
+          condition,
+          button: {
+            text: (titleI18n && titleI18n[lang]) || title || '',
+            action: () => {
+              if (url) {
+                const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
+                if (passConfig) {
+                  target.searchParams.append('ref', this.siteStore.ref);
+                  target.searchParams.append('repo', this.siteStore.repo);
+                  target.searchParams.append('owner', this.siteStore.owner);
+                  if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
+                  if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+                }
+                if (passReferrer) {
+                  target.searchParams.append('referrer', location.href);
+                }
+                if (isPalette) {
+                  EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_PALETTE, {
+                    detail: {
+                      plugin: cfg,
+                    },
+                  }));
+                } else {
+                  // open url in new window
+                  window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
+                }
+              } else if (eventName) {
+                // fire custom event
+                this.fireEvent(`custom:${eventName}`);
+              }
+            },
+            isDropdown: isContainer,
+          },
+          container: containerId,
+        };
+        // check default plugin
+        const defaultPlugin = this.corePlugins[plugin.id];
+        if (defaultPlugin) {
+          // extend default condition
+          const { condition: defaultCondition } = defaultPlugin;
+          defaultPlugin.condition = (s) => defaultCondition(s) && condition(s);
+        } else {
+          // add custom plugin
+          this.customPlugins[plugin.id] = plugin;
+        }
+      });
+    }
+  }
+
+  /**
+   * Returns the sidekick plugin with the specified ID.
+   * @param {string} id The plugin ID
+   * @returns {HTMLElement} The plugin
+   */
+  get(id) {
+    return this.sidekick.renderRoot.querySelector(`:scope div.plugin.${id}`);
   }
 
   /**
@@ -278,9 +449,12 @@ export class AppStore {
 
   /**
    * Displays a wait modal
-   * @param {string} message The message to display
+   * @param {string} [message] The message to display
    */
   showWait(message) {
+    if (!message) {
+      message = i18n(this.languageDict, 'please_wait');
+    }
     EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
       detail: {
         type: MODALS.WAIT,
@@ -298,7 +472,6 @@ export class AppStore {
 
   /**
    * Fires an event with the given name.
-   * @private
    * @param {string} name The name of the event
    * @param {Object} data The data to pass to event listeners (optional)
    */
@@ -433,10 +606,10 @@ export class AppStore {
         }
       })
       .then((json) => {
-        this.status = json;
+        this.updateStatus(json);
         return json;
       })
-      .then((json) => this.fireEvent('statusfetched', json))
+      .then((json) => this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, json))
       .catch(({ message }) => {
         this.status.error = message;
         // TODO: Setup modals
@@ -458,6 +631,219 @@ export class AppStore {
         // };
         // this.showModal(modal);
       });
+  }
+
+  /**
+   * Updates the observable status of the current resource.
+   * @param {Object} status The status object
+   */
+  @action
+  updateStatus(status) {
+    this.status = status;
+  }
+
+  /**
+   * Updates the preview or code of the current resource.
+   * @fires Sidekick#updated
+   * @fires Sidekick#previewed
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async update(path) {
+    const { siteStore, status } = this;
+    path = path || status.webPath;
+    let resp;
+    let respPath;
+    try {
+      // update preview
+      resp = await fetch(
+        getAdminUrl(siteStore, this.isContent() ? 'preview' : 'code', path),
+        {
+          method: 'POST',
+          ...getAdminFetchOptions(),
+        },
+      );
+      if (resp.ok) {
+        if (this.isEditor() || this.isInner() || this.isDev()) {
+          // bust client cache
+          await fetch(`https://${siteStore.innerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
+        }
+        respPath = (await resp.json()).webPath;
+
+        // @deprecated for content, use for code only
+        this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UPDATED, respPath);
+        if (this.isContent()) {
+          this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED, respPath);
+        }
+      }
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('failed to update', path, e);
+    }
+    return {
+      ok: (resp && resp.ok) || false,
+      status: (resp && resp.status) || 0,
+      error: (resp && resp.headers.get('x-error')) || '',
+      path: respPath || path,
+    };
+  }
+
+  async updatePreview(ranBefore) {
+    this.showWait();
+    const { status } = this;
+    const resp = await this.update();
+    if (!resp.ok) {
+      if (!ranBefore) {
+        // assume document has been renamed, re-fetch status and try again
+        this.sidekick.addEventListener('statusfetched', async () => {
+          this.updatePreview(true);
+        }, { once: true });
+        this.fetchStatus();
+      } else if (status.webPath.startsWith('/.helix/') && resp.error) {
+        // show detail message only in config update mode
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
+          detail: {
+            type: MODALS.ERROR,
+            data: {
+              message: `${i18n(this.languageDict, 'error_config_failure')}${resp.error}`,
+            },
+          },
+        }));
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(resp);
+
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
+          detail: {
+            type: MODALS.ERROR,
+            data: {
+              message: i18n(this.languageDict, 'error_preview_failure'),
+            },
+          },
+        }));
+      }
+      return;
+    }
+    // handle special case /.helix/*
+    if (status.webPath.startsWith('/.helix/')) {
+      this.showToast(i18n(this.languageDict, 'preview_config_success'), 'positive');
+      return;
+    }
+    this.hideWait();
+    this.switchEnv('preview');
+  }
+
+  /**
+   * Publishes the page at the specified path if <code>config.host</code> is defined.
+   * @param {string} path The path of the page to publish
+   * @fires Sidekick#published
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async publish(path) {
+    const { siteStore, location } = this;
+
+    // publish content only
+    if (!this.isContent()) {
+      return null;
+    }
+
+    const purgeURL = new URL(path, this.isEditor()
+      ? `https://${siteStore.innerHost}/`
+      : location.href);
+
+    // eslint-disable-next-line no-console
+    console.log(`publishing ${purgeURL.pathname}`);
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
+    try {
+      resp = await fetch(
+        getAdminUrl(siteStore, 'live', purgeURL.pathname),
+        {
+          method: 'POST',
+          ...getAdminFetchOptions(),
+        },
+      );
+      // bust client cache for live and production
+      if (siteStore.outerHost) {
+        // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
+        await fetch(`https://${siteStore.outerHost}${purgeURL.pathname}`, { cache: 'reload', mode: 'no-cors' });
+      }
+      if (siteStore.host) {
+        // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
+        await fetch(`https://${siteStore.host}${purgeURL.pathname}`, { cache: 'reload', mode: 'no-cors' });
+      }
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('failed to publish', path, e);
+    }
+    resp.path = path;
+    resp.error = (resp.headers && resp.headers.get('x-error')) || '';
+    return resp;
+  }
+
+  /**
+   * Switches to (or opens) a given environment.
+   * @param {string} targetEnv One of the following environments:
+   *        edit, dev, preview, live or prod
+   * @param {boolean} [open] true if environment should be opened in new tab
+   * @fires Sidekick#envswitched
+   */
+  async switchEnv(targetEnv, open = false) {
+    this.showWait();
+    const hostType = ENVS[targetEnv];
+    if (!hostType) {
+      // eslint-disable-next-line no-console
+      console.error('invalid environment', targetEnv);
+      return;
+    }
+    if (this.status.error) {
+      return;
+    }
+    const { siteStore, location: { href, search, hash }, status } = this;
+    let envHost = siteStore[hostType];
+    if (targetEnv === 'prod' && !envHost) {
+      // no production host defined yet, use live instead
+      envHost = siteStore.outerHost;
+    }
+    if (!status.webPath) {
+      // eslint-disable-next-line no-console
+      console.log('not ready yet, trying again in a second ...');
+      window.setTimeout(() => this.switchEnv(targetEnv, open), 1000);
+      return;
+    }
+    const envOrigin = targetEnv === 'dev' ? siteStore.devUrl.origin : `https://${envHost}`;
+    let envUrl = `${envOrigin}${status.webPath}`;
+    if (!this.isEditor()) {
+      envUrl += `${search}${hash}`;
+    }
+
+    if (targetEnv === 'edit') {
+      envUrl = status.edit && status.edit.url;
+    }
+
+    // TODO: Setup custom views
+    // const [customView] = findViews(this, VIEWS.CUSTOM);
+    // if (customView) {
+    //   const customViewUrl = new URL(customView.viewer, envUrl);
+    //   customViewUrl.searchParams.set('path', status.webPath);
+    //   envUrl = customViewUrl;
+    // }
+
+    // switch or open env
+    if (open || this.isEditor()) {
+      window.open(envUrl, open
+        ? '' : `hlx-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
+      this.hideWait();
+    } else {
+      window.location.href = envUrl;
+    }
+    this.fireEvent(EXTERNAL_EVENTS.EVIRONMENT_SWITCHED, {
+      sourceUrl: href,
+      targetUrl: envUrl,
+    });
   }
 }
 

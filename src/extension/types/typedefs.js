@@ -93,10 +93,11 @@
  */
 
 /**
- * @typedef {Object} Plugin
+ * @typedef {Object} SitePlugin
  * @prop {string} id The plugin ID (mandatory)
- * @prop {string} title The button text
+ * @prop {string} [title] The button text
  * @prop {Object} [titleI18n] A map of translated button texts (default: {})
+ * @prop {string} [event] The name of a custom event to fire when the button is clicked (defaults to id)
  * @prop {string} [url] The URL to open when the button is clicked
  * @prop {boolean} [passConfig] Append additional sk info to the url as query parameters: ref, repo, owner, host, project
  * @prop {boolean} [passReferrer] Append the referrer URL as a query param on new URL button click. Note: Plugin events get a custom: prefix, e.g. "foo" becomes "custom:foo".
@@ -107,7 +108,46 @@
  * @prop {string[]} [environments] Specifies when to show this plugin (admin, edit, dev, preview, live, prod)
  * @prop {string[]} [excludePaths] Exclude the plugin from these paths (glob patterns supported)
  * @prop {string[]} [includePaths] Include the plugin on these paths (glob patterns supported)
- * @description The plugin configuration.
+ * @description The custom plugin configuration.
+ */
+
+/**
+ * @typedef {Object} CorePlugin
+ * @prop {string} id The plugin ID (mandatory)
+ * @prop {PluginButton} [button] A button configuration object (optional)
+ * @prop {string} [container] The ID of a dropdown to add this plugin to (optional)
+ * @prop {boolean} [override] Determines whether to replace an existing plugin (default: false)
+ * @prop {ElemConfig[]} [elements]  An array of elements to add (optional)
+ * @prop {Function} [condition] Determines whether to show this plugin (optional).
+ * This function is expected to return a boolean when called with the sidekick as argument.
+ * @prop {Function} [callback] A function called after adding the plugin (optional).
+ * This function is called with the sidekick and the newly added plugin as arguments.
+ * @description The internal plugin configuration.
+ */
+
+/**
+ * @typedef {SitePlugin & CorePlugin } CustomPlugin
+ */
+
+/**
+ * @typedef {Object} ElemConfig
+ * @private
+ * @prop {string} tag The tag name (mandatory)
+ * @prop {string} text The text content (optional)
+ * @prop {Object[]} attrs The attributes (optional)
+ * @prop {Object[]} lstnrs The event listeners (optional)
+ * @description The configuration of an element to add.
+ */
+
+/**
+ * @typedef {Object} PluginButton
+ * @prop {string} text The button text
+ * @prop {Function} action The click listener
+ * @prop {Function} [isPressed] Determines whether the button is pressed. Default false.
+ * @prop {Function} [isEnabled] Determines whether to enable the button. Default true.
+ * @prop {boolean} [isDropdown] Determines whether to turn this button into a dropdown. Default false.
+ * @description The configuration for a plugin button. This can be used as
+ * a shorthand for {@link elemConfig}.
  */
 
 /**
@@ -137,6 +177,15 @@
  * @prop {string} message The toast message
  * @prop {string} variant The toast variant
  * @prop {string} timeout The time the toast is shown (default: 2000)
+ */
+
+/**
+ * @typedef {Object} AdminResponse
+ * @property {boolean} ok Is the response ok?
+ * @property {number} status The HTTP status code
+ * @property {Headers} [headers] The response headers
+ * @property {string} [error] The error message
+ * @property {string} [path] The path of the response
  */
 
 export const Types = {};

@@ -23,6 +23,12 @@ export class ActionBar extends LitElement {
       background-color: var(--spectrum-global-color-gray-200);
       border: 1px solid var(--spectrum-global-color-gray-300);
     }
+
+    @media (prefers-color-scheme: light) {
+      .action-bar {
+        background-color: var(--spectrum-global-color-gray-100);
+      }
+    }
   `;
 
   render() {

@@ -54,7 +54,7 @@ export class ThemeWrapper extends LitElement {
   render() {
     return html`
       <sp-theme
-        theme="express"
+        theme="spectrum"
         color=${this.theme === 'dark' ? 'dark' : 'light'}
         scale="medium"
       >

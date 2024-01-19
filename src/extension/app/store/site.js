@@ -28,6 +28,11 @@ import { getLanguage, i18n } from '../utils/i18n.js';
  * @typedef {import('./app.js').AppStore} AppStore
  */
 
+/**
+ * The CustomPlugin type
+ * @typedef {import('@Types').CustomPlugin} CustomPlugin
+ */
+
 export class SiteStore {
   /**
    * The GitHub owner or organization (mandatory)
@@ -145,7 +150,7 @@ export class SiteStore {
 
   /**
    * Custom views
-   * @type {import('@Types').Plugin[]}
+   * @type {CustomPlugin[]}
    */
   plugins;
 

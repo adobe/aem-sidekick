@@ -13,39 +13,30 @@
 import { css } from 'lit';
 
 export const style = css`
-  :host {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    pointer-events: none;
-    z-index: 999999999999;
+  @media (prefers-color-scheme: light) {
+    :host(:not(.edit)[class]),
+    :host(:not(.edit)[class]) #label,
+    :host(:not(.edit)[class]) [name="description"]::slotted(*) {
+      color: var(--spectrum-white);
+    }
   }
 
-  :host([open='true']) {
-    display: block;
+  :host(.preview){
+    background-color: #1379F3;
+    border-radius: 4px;
+    font-weight: 700;
   }
 
-  :host([open='false']) {
-    display: none;
+  :host(.live),
+  :host(.prod) {
+    background-color: #009112;
+    border-radius: 4px;
+    font-weight: 700;
   }
 
-  action-bar {
+  sp-status-light {
     position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0px);
-    bottom: 150px;
-    pointer-events: auto;
-  }
-
-  action-bar sp-action-group {
-    padding: 8px;
-  }
-
-  action-bar sp-action-group span {
-    padding-bottom: 3px;
-    padding-left: 8px;
-    margin: 0;
-    display: flex;
-    align-items: center;
+    top: 0;
+    right: 0;
   }
 `;

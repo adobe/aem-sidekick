@@ -43,6 +43,12 @@ export class DialogView extends LitElement {
   accessor confirmLabel;
 
   /**
+   * Should an error icon be shown?
+   */
+  @property({ reflect: true, type: Boolean })
+  accessor error;
+
+  /**
    * The dialog wrapper
    * @type {DialogWrapper}
    */
@@ -61,7 +67,7 @@ export class DialogView extends LitElement {
           .dismissable=${this.dismissable}
           underlay
           open
-          error
+          ?error=${this.error}
           @confirm=${() => {
             const event = new Event('confirm');
             this.dispatchEvent(event);

@@ -29,6 +29,7 @@ export class AEMSidekick extends MobxLitElement {
     super();
     appStore.loadContext(this, config);
 
+    // eslint-disable-next-line no-unused-vars
     this.addEventListener('contextloaded', (data) => {
       log.debug('console was loaded', data);
     });
@@ -40,6 +41,7 @@ export class AEMSidekick extends MobxLitElement {
         <plugin-action-bar></plugin-action-bar>
         <toast-container></toast-container>
         <modal-container></modal-container>
+        <palette-container></palette-container>
       </theme-wrapper>
     `;
   }

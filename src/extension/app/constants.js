@@ -11,13 +11,43 @@
  */
 
 /**
- * Event types
+ * Mapping between the plugin IDs that will be treated as environments
+ * and their corresponding host properties in the config.
+ * @private
+ * @type {Object}
+ */
+export const ENVS = {
+  edit: 'edit',
+  dev: 'localhost',
+  preview: 'innerHost',
+  live: 'outerHost',
+  prod: 'host',
+};
+
+/**
+ * Internal event types
  * @enum {string}
  */
 export const EVENTS = {
   OPEN_MODAL: 'open-modal',
   CLOSE_MODAL: 'close-modal',
   SHOW_TOAST: 'show-toast',
+  OPEN_PALETTE: 'open-palette',
+  CLOSE_PALETTE: 'close-palette',
+};
+
+/**
+ * External event types
+ * @enum {string}
+ */
+export const EXTERNAL_EVENTS = {
+  CONTEXT_LOADED: 'contextloaded',
+  STATUS_FETCHED: 'statusfetched',
+  RESOURCE_UPDATED: 'updated',
+  RESOURCE_PREVIEWED: 'previewed',
+  RESOURCE_PUBLISHED: 'published',
+  EVIRONMENT_SWITCHED: 'envswitched',
+  PLUGIN_USED: 'pluginused',
 };
 
 /**
@@ -25,6 +55,6 @@ export const EVENTS = {
  * @enum {string}
  */
 export const MODALS = {
-  WAIT: 'wait-modal',
-  ERROR: 'error-modal',
+  WAIT: 'wait',
+  ERROR: 'error',
 };

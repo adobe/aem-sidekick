@@ -13,39 +13,23 @@
 import { css } from 'lit';
 
 export const style = css`
-  :host {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    pointer-events: none;
-    z-index: 999999999999;
+  action-bar-picker {
+    width: auto;
   }
 
-  :host([open='true']) {
-    display: block;
+  action-bar-picker .heading {
+    color: var(--spectrum-menu-item-description-color-default);
+    font-size: 12px;
+    line-height: 130%;
+    padding-left: 12px;
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
 
-  :host([open='false']) {
-    display: none;
-  }
-
-  action-bar {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0px);
-    bottom: 150px;
-    pointer-events: auto;
-  }
-
-  action-bar sp-action-group {
-    padding: 8px;
-  }
-
-  action-bar sp-action-group span {
-    padding-bottom: 3px;
-    padding-left: 8px;
-    margin: 0;
-    display: flex;
-    align-items: center;
+  action-bar-picker sp-menu-divider {
+    margin-top: 6px;
+    margin-bottom: 4px;
+    margin-left: -8px;
+    margin-right: -8px;
   }
 `;
