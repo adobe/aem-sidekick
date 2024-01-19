@@ -115,12 +115,9 @@
  * @prop {string} id The plugin ID (mandatory)
  * @prop {PluginButton} [button] A button configuration object (optional)
  * @prop {string} [container] The ID of a dropdown to add this plugin to (optional)
- * @prop {boolean} [feature] Determines whether to group this plugin with the features (default: false)
  * @prop {boolean} [override] Determines whether to replace an existing plugin (default: false)
  * @prop {ElemConfig[]} [elements]  An array of elements to add (optional)
  * @prop {Function} [condition] Determines whether to show this plugin (optional).
- * This function is expected to return a boolean when called with the sidekick as argument.
- * @prop {Function} [advanced] Show this plugin only in advanced mode (optional).
  * This function is expected to return a boolean when called with the sidekick as argument.
  * @prop {Function} [callback] A function called after adding the plugin (optional).
  * This function is called with the sidekick and the newly added plugin as arguments.
