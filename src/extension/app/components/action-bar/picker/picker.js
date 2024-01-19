@@ -50,6 +50,42 @@ export class Picker extends SPPicker {
     }
     return menu;
   }
+
+  render() {
+    if (this.tooltipEl) {
+      this.tooltipEl.disabled = this.open;
+    }
+    return html`
+      <span
+        id="focus-helper"
+        tabindex="${this.focused || this.open ? '-1' : '0'}"
+        @focus=${this.handleHelperFocus}
+        aria-describedby=${DESCRIPTION_ID}
+      ></span>
+      <button
+        aria-controls=${ifDefined(this.open ? 'menu' : undefined)}
+        aria-describedby="tooltip"
+        aria-expanded=${this.open ? 'true' : 'false'}
+        aria-haspopup="true"
+        aria-labelledby="icon label applied-label"
+        aria-label=${this.label}
+        id="button"
+        class="button"
+        @blur=${this.handleButtonBlur}
+        @pointerdown=${this.handleButtonPointerdown}
+        @focus=${this.handleButtonFocus}
+        @keydown=${{
+            handleEvent: this.handleEnterKeydown,
+            capture: true,
+        }}
+        ?disabled=${this.disabled}
+        tabindex="-1"
+      >
+        ${this.buttonContent}
+      </button>
+      ${this.renderMenu} ${this.renderDescriptionSlot}
+    `;
+  }
 }
 
 customElements.define('action-bar-picker', Picker);

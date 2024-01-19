@@ -142,7 +142,7 @@ export class PluginActionBar extends MobxLitElement {
         </sp-action-group>
         <sp-divider size="s" vertical></sp-divider>
         <sp-action-group>
-          <sp-action-button quiet>
+          <sp-action-button quiet aria-label="profile">
             <sp-icon-real-time-customer-profile slot="icon"></sp-icon-real-time-customer-profile>
           </sp-action-button>
         </sp-action-group>

@@ -75,7 +75,7 @@ export class AEMConfigPicker extends LitElement {
             <sp-action-group>
               <span>${this.ctaLabel}</span>
               ${this.matchedConfigs.map((config) => html`
-                <sp-action-button @click=${() => this.configSelected(config)} quiet>
+                <sp-action-button aria-label=${config.id} @click=${() => this.configSelected(config)} quiet>
                   ${config.project || config.id}
                 </sp-action-button>
               `)}
