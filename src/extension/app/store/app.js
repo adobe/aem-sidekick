@@ -235,9 +235,10 @@ export class AppStore {
                   // open url in new window
                   window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
                 }
+              } else if (eventName) {
+                // fire custom event
+                this.fireEvent(`custom:${eventName}`);
               }
-              // fire custom event
-              this.fireEvent(`custom:${eventName || id}`);
             },
             isDropdown: isContainer,
           },
