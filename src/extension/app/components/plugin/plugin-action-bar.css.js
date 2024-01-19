@@ -13,17 +13,11 @@
 import { css } from 'lit';
 
 export const style = css`
-  .action-bar {
-    display: flex;
-    border-radius: 8px;
-    color: var(--spectrum-global-color-gray-800);
-    background-color: var(--spectrum-global-color-gray-200);
-    border: 1px solid var(--spectrum-global-color-gray-300);
+  action-bar sp-action-group {
+    padding: 8px;
   }
 
-  @media (prefers-color-scheme: light) {
-    .action-bar {
-      background-color: var(--spectrum-global-color-gray-100);
-    }
+  action-bar .plugin-container {
+    width: auto;
   }
 `;
