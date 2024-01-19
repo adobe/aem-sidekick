@@ -143,12 +143,10 @@ export class AppStore {
     this.corePlugins = {};
 
     const envPlugin = pluginFactory.createEnvPlugin();
-    const editPlugin = pluginFactory.createEditPlugin(this);
     const previewPlugin = pluginFactory.createPreviewPlugin(this);
     const publishPlugin = pluginFactory.createPublishPlugin(this);
 
     this.corePlugins[envPlugin.id] = envPlugin;
-    this.corePlugins[editPlugin.id] = editPlugin;
     this.corePlugins[previewPlugin.id] = previewPlugin;
     this.corePlugins[publishPlugin.id] = publishPlugin;
   }

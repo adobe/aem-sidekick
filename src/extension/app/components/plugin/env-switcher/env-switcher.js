@@ -173,6 +173,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
 
     const navToHeader = this.createNavigateToHeader();
     const divider = this.createDivider();
+    const editMenuItem = this.createMenuItem('edit', {}, editLastMod);
     const previewMenuItem = this.createMenuItem('preview', {}, previewLastMod);
     const liveMenuItem = this.createMenuItem('live', {}, liveLastMod);
     const prodMenuItem = this.createMenuItem('prod', {}, liveLastMod);
@@ -210,6 +211,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
           previewMenuItem,
           divider,
           navToHeader,
+          editMenuItem,
           liveMenuItem,
         );
         break;
@@ -219,6 +221,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
           liveMenuItem,
           divider,
           navToHeader,
+          editMenuItem,
           previewMenuItem,
         );
         break;
@@ -228,6 +231,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
           prodMenuItem,
           divider,
           navToHeader,
+          editMenuItem,
           previewMenuItem,
           liveMenuItem,
         );

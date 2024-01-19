@@ -102,7 +102,13 @@ describe('AEM Sidekick', () => {
   });
 
   it('passes the a11y audit', async () => {
-    const element = await fixture(html`<aem-sidekick></aem-sidekick>`);
-    await expect(element).shadowDom.to.be.accessible();
+    mockFetchStatusSuccess();
+    mockFetchConfigJSONNotFound();
+    const sidekick = new AEMSidekick(defaultSidekickConfig);
+    document.body.appendChild(sidekick);
+
+    sidekick.addEventListener('contextloaded', async () => {
+      await expect(sidekick).shadowDom.to.be.accessible();
+    });
   });
 });

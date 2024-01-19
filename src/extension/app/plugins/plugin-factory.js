@@ -11,13 +11,11 @@
  */
 
 import { createEnvPlugin } from './env/env.js';
-import { createEditPlugin } from './edit/edit.js';
 import { createPreviewPlugin } from './preview/preview.js';
 import { createPublishPlugin } from './publish/publish.js';
 
 export const pluginFactory = (() => ({
   createEnvPlugin,
-  createEditPlugin,
   createPreviewPlugin,
   createPublishPlugin,
 }))();
