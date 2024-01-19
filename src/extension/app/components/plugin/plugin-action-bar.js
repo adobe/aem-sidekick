@@ -10,11 +10,10 @@
  * governing permissions and limitations under the License.
  */
 
-import { html } from 'lit';
+import { html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { appStore } from '../../store/app.js';
-import { style } from './plugin-action-bar.css.js';
 import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**
@@ -32,9 +31,15 @@ import { EXTERNAL_EVENTS } from '../../constants.js';
 
 @customElement('plugin-action-bar')
 export class PluginActionBar extends MobxLitElement {
-  static get styles() {
-    return [style];
-  }
+  static styles = css`
+    action-bar sp-action-group {
+      padding: 8px;
+    }
+
+    action-bar .plugin-container {
+      width: auto;
+    }
+  `;
 
   /**
    *

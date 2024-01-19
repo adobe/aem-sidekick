@@ -11,8 +11,7 @@
  */
 
 import { customElement, property } from 'lit/decorators.js';
-import { html, LitElement } from 'lit';
-import { style } from './palette-container.css.js';
+import { html, LitElement, css } from 'lit';
 import { EventBus } from '../../utils/event-bus.js';
 import { EVENTS } from '../../constants.js';
 import { appStore } from '../../store/app.js';
@@ -42,9 +41,11 @@ export class PaletteContainer extends LitElement {
   @property({ type: Object })
   accessor plugin;
 
-  static get styles() {
-    return [style];
-  }
+  static styles = css`
+    palette-dialog-wrapper iframe {
+      border: 0;
+    }
+  `;
 
   async connectedCallback() {
     super.connectedCallback();
