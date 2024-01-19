@@ -29,7 +29,8 @@ import { getLanguage, i18n } from '../utils/i18n.js';
  */
 
 /**
- * @typedef {import('../models/custom-plugin.js').CustomPlugin} CustomPlugin
+ * The CustomPlugin type
+ * @typedef {import('@Types').CustomPlugin} CustomPlugin
  */
 
 export class SiteStore {

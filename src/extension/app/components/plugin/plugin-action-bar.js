@@ -10,6 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-disable max-len */
+
 import { html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
@@ -27,6 +29,11 @@ import { EXTERNAL_EVENTS } from '../../constants.js';
 /**
  * @typedef ContainerPlugin
  * @property {Record<string, CorePlugin>} [children] The child plugins of the container
+ */
+
+/**
+ * The lit template result type
+ * @typedef {import('lit').TemplateResult} TemplateResult
  */
 
 @customElement('plugin-action-bar')
@@ -86,6 +93,10 @@ export class PluginActionBar extends MobxLitElement {
     target.selectedItem = undefined;
   }
 
+  /**
+   * Render the core and custom plugins
+   * @returns {(TemplateResult|string)[]|string} An array of Lit-html templates or strings, or a single empty string.
+   */
   renderPlugins() {
     if (appStore.corePlugins) {
       const corePlugins = Object.values(appStore.corePlugins)?.map((plugin) => (plugin.condition(appStore) ? this.createActionPluginButton(plugin) : ''));

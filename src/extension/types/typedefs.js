@@ -97,6 +97,7 @@
  * @prop {string} id The plugin ID (mandatory)
  * @prop {string} [title] The button text
  * @prop {Object} [titleI18n] A map of translated button texts (default: {})
+ * @prop {string} [event] The name of a custom event to fire when the button is clicked (defaults to id)
  * @prop {string} [url] The URL to open when the button is clicked
  * @prop {boolean} [passConfig] Append additional sk info to the url as query parameters: ref, repo, owner, host, project
  * @prop {boolean} [passReferrer] Append the referrer URL as a query param on new URL button click. Note: Plugin events get a custom: prefix, e.g. "foo" becomes "custom:foo".
