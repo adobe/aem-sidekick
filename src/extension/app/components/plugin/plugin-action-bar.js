@@ -18,6 +18,8 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 import { appStore } from '../../store/app.js';
 import { EXTERNAL_EVENTS } from '../../constants.js';
 
+const logo = new URL('../../../icons/default/icon-32x32.png', import.meta.url).href;
+
 /**
  * @typedef {import('@Types').CorePlugin} CorePlugin
  */
@@ -149,6 +151,8 @@ export class PluginActionBar extends MobxLitElement {
     return appStore.initialized ? html`
       <action-bar>
         <sp-action-group>
+          <img alt="adobe logo" src=${logo} />
+          <sp-divider size="s" vertical></sp-divider>
           ${this.renderPlugins()}
         </sp-action-group>
         <sp-divider size="s" vertical></sp-divider>
