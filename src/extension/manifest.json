@@ -42,6 +42,7 @@
       {
         "resources": [
           "_locales/*",
+          "adobe-logo.svg",
           "config.js",
           "context-menu.js",
           "display.js",
@@ -56,8 +57,7 @@
           "tab.js",
           "url-cache.js",
           "view/json/json.html",
-          "view-doc-source/js/content.js",
-          "icon-32x32.png"
+          "view-doc-source/js/content.js"
         ],
         "matches": [
           "<all_urls>"
