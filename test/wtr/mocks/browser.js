@@ -10,15 +10,21 @@
  * governing permissions and limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+function stubLocation(document, location) {
+  const input = document.createElement('input');
+  input.id = 'sidekick_test_location';
+  input.value = location;
+  document.body.appendChild(input);
+}
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
+export function resetLocation(document) {
+  const input = document.getElementById('sidekick_test_location');
+  if (input) {
+    input.remove();
+  }
+}
 
-import enMessages from '../../../src/extension/_locales/en/messages.json' assert { type: 'json' };
-
-export const englishMessagesUrl = '/test/wtr/fixtures/_locales/en/messages.json';
-export const mockFetchEnglishMessagesSuccess = () => fetchMock.get(englishMessagesUrl, {
-  status: 200,
-  body: enMessages,
-}, { overwriteRoutes: true });
+export const sharepointEditorUrl = 'https://adobe.sharepoint.com/:w:/r/sites/HelixProjects/_layouts/15/Doc.aspx?sourcedoc=ID';
+export function stubSharepointEditorLocation(document, location = sharepointEditorUrl) {
+  stubLocation(document, location);
+}

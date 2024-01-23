@@ -53,7 +53,7 @@ export class PluginActionBar extends MobxLitElement {
    * @param {CorePlugin} plugin
    * @returns
    */
-  createActionPluginButton(plugin) {
+  createCorePlugin(plugin) {
     if (typeof plugin.callback === 'function') {
       plugin.callback(appStore, plugin);
     }
@@ -65,7 +65,7 @@ export class PluginActionBar extends MobxLitElement {
     }
 
     return html`
-      <sp-action-button quiet @click=${(evt) => this.onPluginButtonClick(evt, plugin)}>
+      <sp-action-button class=${plugin.id} quiet @click=${(evt) => this.onPluginButtonClick(evt, plugin)}>
           ${plugin.button.text}
       </sp-action-button>
     `;
@@ -99,7 +99,7 @@ export class PluginActionBar extends MobxLitElement {
    */
   renderPlugins() {
     if (appStore.corePlugins) {
-      const corePlugins = Object.values(appStore.corePlugins)?.map((plugin) => (plugin.condition(appStore) ? this.createActionPluginButton(plugin) : ''));
+      const corePlugins = Object.values(appStore.corePlugins)?.map((plugin) => (plugin.condition(appStore) ? this.createCorePlugin(plugin) : ''));
 
       /**
        * @type {Record<string, CorePlugin & ContainerPlugin>}

@@ -13,29 +13,29 @@
 import { css } from 'lit';
 
 export const style = css`
-  :host(:not(.edit)[class]) #button {
+  :host(:not(.env-edit)[class]) #button {
     border: 0;
   }
 
-  :host(.preview) #button{
+  :host(.env-preview) #button{
     background-color: var(--spectrum-blue-600);
   }
 
-  :host(.preview) #button[aria-expanded="true"] {
+  :host(.env-preview) #button[aria-expanded="true"] {
     background-color: var(--spectrum-blue-500);
   }
 
-  :host(.live) #button,
-  :host(.prod) #button {
+  :host(.env-live) #button,
+  :host(.env-prod) #button {
     background-color: var(--spectrum-celery-700);
   }
 
-  :host(.live) #button[aria-expanded="true"],
-  :host(.prod) #button[aria-expanded="true"] {
+  :host(.env-live) #button[aria-expanded="true"],
+  :host(.env-prod) #button[aria-expanded="true"] {
     background-color: var(--spectrum-celery-600);
   }
 
-  :host(.edit) #button{
+  :host(.env-edit) #button{
     border: 1px solid var(--spectrum-gray-400);
   }
 
@@ -53,31 +53,31 @@ export const style = css`
   }
 
   @media (prefers-color-scheme: light) {
-    :host(:not(.edit)[class]) #button #label,
-    :host(:not(.edit)[class]) #button sp-icon-chevron100,
-    :host(:not(.edit)[class]) #button:hover sp-icon-chevron100  {
+    :host(:not(.env-edit)[class]) #button #label,
+    :host(:not(.env-edit)[class]) #button sp-icon-chevron100,
+    :host(:not(.env-edit)[class]) #button:hover sp-icon-chevron100  {
       color: var(--spectrum-white);
     }
 
-    :host(.preview) #button{
+    :host(.env-preview) #button{
       background-color: var(--spectrum-blue-900);
     }
 
-    :host(.preview) #button[aria-expanded="true"] {
+    :host(.env-preview) #button[aria-expanded="true"] {
       background-color: var(--spectrum-blue-1000);
     }
 
-    :host(.live) #button,
-    :host(.prod) #button {
+    :host(.env-live) #button,
+    :host(.env-prod) #button {
       background-color: var(--spectrum-celery-800);
     }
 
-    :host(.live) #button[aria-expanded="true"],
-    :host(.prod) #button[aria-expanded="true"] {
+    :host(.env-live) #button[aria-expanded="true"],
+    :host(.env-prod) #button[aria-expanded="true"] {
       background-color: var(--spectrum-celery-900);
     }
 
-    :host(.edit) #button{
+    :host(.env-edit) #button{
       border: 1px solid var(--spectrum-gray-200);
     }
   }

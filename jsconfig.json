@@ -4,6 +4,7 @@
     "target": "es2017",
     "module": "nodenext",
     "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
     "paths": {
       "@Types": ["./src/extension/types/typedefs.js"],
       "@AppStore": ["./src/extension/app/store/app.js"],

@@ -114,17 +114,17 @@ export class AppStore {
       this.languageDict = await fetchLanguageDict(this.siteStore, 'en');
     }
 
-    this.fireEvent(EXTERNAL_EVENTS.CONTEXT_LOADED, {
-      config: this.siteStore.toJSON(),
-      location: this.location,
-    });
-
     this.setupCorePlugins();
     this.setupCustomPlugins();
 
     this.fetchStatus();
 
     this.setInitialized();
+
+    this.fireEvent(EXTERNAL_EVENTS.CONTEXT_LOADED, {
+      config: this.siteStore.toJSON(),
+      location: this.location,
+    });
   }
 
   /**
