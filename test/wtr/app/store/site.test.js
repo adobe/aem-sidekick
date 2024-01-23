@@ -143,7 +143,7 @@ describe('Test Site Store', () => {
 
       expect(appStore.siteStore.views[1].path).to.equal('**.json');
       expect(appStore.siteStore.views[1].viewer).to.equal('/test/wtr/fixtures/view/json/json.html');
-      expect(appStore.siteStore.views[1].title()).to.equal('View JSON');
+      expect(appStore.siteStore.views[1].title()).to.equal('User-friendly data rendition.');
     });
 
     it('using ClientConfig (config.json)', async () => {

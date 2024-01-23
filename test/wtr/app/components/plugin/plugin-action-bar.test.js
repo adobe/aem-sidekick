@@ -20,10 +20,15 @@ import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../fixtures/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/stubs/sidekick-config.js';
-import { mockEditorFetchStatusSuccess, mockFetchConfigJSONNotFound, mockFetchStatusSuccess } from '../../../fixtures/helix-admin.js';
+import {
+  mockDirectoryFetchStatusSuccess,
+  mockEditorFetchStatusSuccess,
+  mockFetchConfigJSONNotFound,
+  mockFetchStatusSuccess,
+} from '../../../fixtures/helix-admin.js';
 import '../../../../../src/extension/index.js';
 import { appStore } from '../../../../../src/extension/app/store/app.js';
-import { stubSharepointEditorLocation, resetLocation } from '../../../mocks/browser.js';
+import { stubSharepointEditorLocation, stubSharepointDirectoryLocation, resetLocation } from '../../../mocks/browser.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -81,7 +86,7 @@ describe('AEM Sidekick', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      // expectPluginCount(2);
+      expectPluginCount(2);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
 
@@ -169,10 +174,10 @@ describe('AEM Sidekick', () => {
       editorStub.restore();
     });
 
-    // TODO: Expand tests when bulk plugin is added
     it('isAdmin', async () => {
-      mockFetchStatusSuccess();
+      mockDirectoryFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
+      stubSharepointDirectoryLocation(document);
 
       const innerStub = sinon.stub(appStore, 'isInner').returns(false);
       const outerStub = sinon.stub(appStore, 'isOuter').returns(false);
@@ -184,6 +189,7 @@ describe('AEM Sidekick', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
+      // TODO: Expand tests when bulk plugin is added
       expectPluginCount(1);
 
       expectEnvPlugin([]);

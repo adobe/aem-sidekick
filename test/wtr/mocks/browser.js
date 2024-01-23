@@ -28,3 +28,13 @@ export const sharepointEditorUrl = 'https://adobe.sharepoint.com/:w:/r/sites/Hel
 export function stubSharepointEditorLocation(document, location = sharepointEditorUrl) {
   stubLocation(document, location);
 }
+
+export const sharepointDirectoryUrl = 'https://adobe-my.sharepoint.com/personal/user_name/_layouts/15/onedrive.aspx?id=%2Fsites%2Fadobe%2FShared%20Documents%2Faem-boilerplate&listurl=https%3A%2F%2Fadobe%2Esharepoint%2Ecom%2Fsites%2Fadobe%2FShared%20Documents&viewid=d776cf70%2D9b7e%2D4ab7%2Db9da%2D9e0f8e03a7d2&view=0D';
+export function stubSharepointDirectoryLocation(document, location = sharepointDirectoryUrl) {
+  stubLocation(document, location);
+}
+
+export const prodUrl = 'https://www.aemboilerplate.com';
+export function stubProdLocation(document, location = prodUrl) {
+  stubLocation(document, location);
+}

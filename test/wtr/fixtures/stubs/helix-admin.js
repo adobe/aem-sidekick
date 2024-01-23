@@ -61,7 +61,7 @@ export const defaultStatusResponse = {
   live: {
     url: 'https://main--aem-boilerplate--adobe.hlx.live/',
     status: 200,
-    contentBusId: 'helix-content-bus/context-bus-id/live/index.md',
+    contentBusId: 'helix-content-bus/content-bus-id/live/index.md',
     contentType: 'text/plain; charset=utf-8',
     lastModified: 'Tue, 19 Dec 2023 15:42:45 GMT',
     sourceLocation: 'gdrive:drive-id',
@@ -74,7 +74,7 @@ export const defaultStatusResponse = {
   preview: {
     url: 'https://main--aem-boilerplate--adobe.hlx.page/',
     status: 200,
-    contentBusId: 'helix-content-bus/context-bus-id/preview/index.md',
+    contentBusId: 'helix-content-bus/content-bus-id/preview/index.md',
     contentType: 'text/plain; charset=utf-8',
     lastModified: 'Tue, 19 Dec 2023 15:42:34 GMT',
     sourceLocation: 'gdrive:drive-id',
@@ -133,5 +133,51 @@ export const statusResponseWithProfile = {
     exp: 222,
     ttl: 333,
     hlx_hash: 'J9y9hUNu5vJS9_38ck_POjo2FgQ',
+  },
+};
+
+export const defaultDirectoryStatusResponse = {
+  webPath: '/',
+  resourcePath: '/',
+  live: {
+    url: 'https://main--aem-boilerplate--adobe.hlx.live/',
+    status: 404,
+    contentBusId: 'helix-content-bus/content-bus-id/live/',
+    permissions: [
+      'read',
+      'write',
+    ],
+  },
+  preview: {
+    url: 'https://main--aem-boilerplate--adobe.hlx.page/',
+    status: 404,
+    contentBusId: 'helix-content-bus/content-bus-id/preview/',
+    permissions: [
+      'read',
+      'write',
+    ],
+  },
+  edit: {
+    url: 'https://adobe-my.sharepoint.com/personal/user_adobe_com/_layouts/15/onedrive.aspx?id=%2Fpersonal%5Fadobe%5Fcom%2FDocuments%2Faem%2Dboilerplate&view=0',
+    name: 'aem-boilerplate',
+    contentType: 'application/folder',
+    folders: [],
+    lastModified: 'Mon, 14 Feb 2022 16:39:24 GMT',
+    sourceLocation: 'gdrive:drive-id',
+    status: 200,
+  },
+  code: {
+    status: 400,
+    permissions: [
+      'delete',
+      'read',
+      'write',
+    ],
+  },
+  links: {
+    status: 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/',
+    preview: 'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/',
+    live: 'https://admin.hlx.page/live/adobe/aem-boilerplate/main/',
+    code: 'https://admin.hlx.page/code/adobe/aem-boilerplate/main/',
   },
 };
