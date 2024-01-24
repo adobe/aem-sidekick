@@ -10,9 +10,19 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-disable no-unused-expressions */
+
 import { expect } from '@open-wc/testing';
+import sinon from 'sinon';
 import {
-  getLocation, getProjectDetails, getResourceURL, isSupportedFileExtension, matchProjectHost,
+  getLocation,
+  getProjectDetails,
+  getResourceURL,
+  isSupportedFileExtension,
+  matchProjectHost,
+  createTag,
+  extendTag,
+  globToRegExp,
 } from '../../../../src/extension/app/utils/browser.js';
 
 describe('browser utils', () => {
@@ -66,6 +76,12 @@ describe('browser utils', () => {
     it('throws an error for a host with less than two parts', () => {
       const host = 'invalidhost';
       expect(() => getProjectDetails(host)).to.throw('not a project host');
+    });
+
+    it('no ref', () => {
+      const host = 'aem-boilerplate--adobe.hlx.page';
+      const result = getProjectDetails(host);
+      expect(result).to.deep.equal(['aem-boilerplate', 'adobe']);
     });
   });
 
@@ -127,6 +143,156 @@ describe('browser utils', () => {
     it('handles edge cases', () => {
       expect(isSupportedFileExtension('')).to.eq(true); // Empty string
       expect(isSupportedFileExtension('file.name.with.multiple.dots.jpg')).to.eq(true); // Multiple periods
+    });
+  });
+
+  describe('createTag', () => {
+    let config;
+    let clickListener;
+
+    beforeEach(() => {
+      clickListener = sinon.fake();
+      config = {
+        tag: 'div',
+        attrs: { id: 'test-id', class: 'test-class' },
+        lstnrs: { click: clickListener },
+        text: 'Test Content',
+      };
+    });
+
+    it('should create an element with the specified tag', () => {
+      const element = createTag(config);
+      expect(element.tagName.toLowerCase()).to.equal('div');
+    });
+
+    it('should apply attributes, listeners, and text to the element', () => {
+      const element = createTag(config);
+
+      expect(element.getAttribute('id')).to.equal('test-id');
+      expect(element.getAttribute('class')).to.equal('test-class');
+      expect(element.textContent).to.equal('Test Content');
+
+      element.click();
+      expect(clickListener.called).to.be.true;
+    });
+
+    it('should return null if tag name is not a string', () => {
+      const invalidConfig = { ...config, tag: null };
+      const element = createTag(invalidConfig);
+      expect(element).to.be.null;
+    });
+
+    it('should handle different types of tags', () => {
+      config.tag = 'span';
+      const spanElement = createTag(config);
+      expect(spanElement.tagName.toLowerCase()).to.equal('span');
+
+      config.tag = 'p';
+      const pElement = createTag(config);
+      expect(pElement.tagName.toLowerCase()).to.equal('p');
+    });
+
+    // Additional test cases for other scenarios can be added as needed
+  });
+
+  describe('extendTag', () => {
+    let element;
+    let config;
+    let clickListener;
+
+    beforeEach(() => {
+      element = document.createElement('div');
+      clickListener = sinon.fake();
+      config = {
+        attrs: { id: 'test-id', class: 'test-class' },
+        lstnrs: { click: clickListener },
+        text: 'Test Text',
+      };
+    });
+
+    it('should apply attributes to the element', () => {
+      const extendedElement = extendTag(element, config);
+      expect(extendedElement.getAttribute('id')).to.equal('test-id');
+      expect(extendedElement.getAttribute('class')).to.equal('test-class');
+    });
+
+    it('should add event listeners to the element', () => {
+      const extendedElement = extendTag(element, config);
+      extendedElement.click();
+      expect(clickListener.called).to.be.true;
+    });
+
+    it('should not add a listener if it is not a function', () => {
+      const invalidListener = { notAFunction: true };
+      config = {
+        ...config,
+        lstnrs: { click: invalidListener },
+      };
+
+      const spy = sinon.spy(element, 'addEventListener');
+      extendTag(element, config);
+      expect(spy.notCalled).to.be.true;
+      spy.restore();
+    });
+
+    it('should set text content of the element', () => {
+      const extendedElement = extendTag(element, config);
+      expect(extendedElement.textContent).to.equal('Test Text');
+    });
+
+    it('should handle empty or missing configuration parts', () => {
+      const emptyConfig = {};
+      const extendedElement = extendTag(element, emptyConfig);
+      expect(extendedElement.getAttribute('id')).to.be.null;
+      expect(extendedElement.getAttribute('class')).to.be.null;
+      expect(extendedElement.textContent).to.equal('');
+    });
+
+    it('should ignore non-object config attributes and listeners', () => {
+      const invalidConfig = { attrs: null, lstnrs: 'not-an-object', text: 'Still valid text' };
+      const extendedElement = extendTag(element, invalidConfig);
+      expect(extendedElement.textContent).to.equal('Still valid text');
+    });
+  });
+
+  describe('globToRegExp', () => {
+    it('should convert a simple glob to a RegExp', () => {
+      const glob = '*.js';
+      const regex = globToRegExp(glob);
+      expect(regex.test('file.js')).to.be.true;
+      expect(regex.test('file.txt')).to.be.false;
+    });
+
+    it('should correctly handle glob with **', () => {
+      const glob = '**/*.js';
+      const regex = globToRegExp(glob);
+      expect(regex.test('dir/file.js')).to.be.true;
+      expect(regex.test('dir/subdir/file.js')).to.be.true;
+      expect(regex.test('file.js')).to.be.false;
+    });
+
+    it('should handle empty or undefined glob by using **', () => {
+      let glob;
+      let regex = globToRegExp(glob);
+      expect(regex.test('anything')).to.be.true;
+
+      glob = '';
+      regex = globToRegExp(glob);
+      expect(regex.test('anything')).to.be.true;
+    });
+
+    it('should escape dots in the glob pattern', () => {
+      const glob = 'file.*.js';
+      const regex = globToRegExp(glob);
+      expect(regex.test('file.123.js')).to.be.true;
+      expect(regex.test('file123js')).to.be.false;
+    });
+
+    it('should handle complex glob patterns', () => {
+      const glob = 'dir/*/file-*.js';
+      const regex = globToRegExp(glob);
+      expect(regex.test('dir/subdir/file-123.js')).to.be.true;
+      expect(regex.test('dir/subdir/extra/file-123.js')).to.be.false;
     });
   });
 });
