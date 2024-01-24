@@ -1,3 +1,18 @@
+# [1.5.0](https://github.com/adobe/aem-sidekick/compare/v1.4.0...v1.5.0) (2024-1-24)
+
+
+### Bug Fixes
+
+* initial plugin-action-bar tests ([71ff365](https://github.com/adobe/aem-sidekick/commit/71ff3652b826a7842ba0643837551d43a793231a))
+* more coverage ([5835863](https://github.com/adobe/aem-sidekick/commit/5835863fe5afc2b186fa9ea517c051c603664220))
+* more test coverage ([fd8ce0e](https://github.com/adobe/aem-sidekick/commit/fd8ce0e53831a30c58aff75b0401c918189c8203))
+* switch to svg ([255fc88](https://github.com/adobe/aem-sidekick/commit/255fc88f954f56a4fbf18432a64a08e76eb80fa6))
+
+
+### Features
+
+* add adobe logo to action-bar ([31ec55f](https://github.com/adobe/aem-sidekick/commit/31ec55fa9edc9e94b2657ee0ca4e208e45587add))
+
 # [1.4.0](https://github.com/adobe/aem-sidekick/compare/v1.3.0...v1.4.0) (2024-1-19)
 
 
