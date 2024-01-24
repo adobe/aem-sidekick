@@ -37,7 +37,6 @@ export const defaultConfigJSONWithPlugins = {
   plugins: [
     {
       id: 'asset-library',
-      title: 'My Assets',
       environments: [
         'edit',
       ],
@@ -48,13 +47,68 @@ export const defaultConfigJSONWithPlugins = {
       ],
       paletteRect: 'top: 50px;',
     },
+    {
+      id: 'library',
+      title: 'Library',
+      environments: ['edit'],
+      url: 'https://main--aem-boilerplate--adobe.hlx.live/tools/sidekick/library.html',
+      includePaths: ['**.docx**'],
+    },
+    {
+      id: 'tools',
+      title: 'Tools',
+      isContainer: true,
+    },
+    {
+      containerId: 'tools',
+      title: 'Tag Selector',
+      id: 'tag-selector',
+      environments: ['edit'],
+      url: 'https://main--aem-boilerplate--adobe.hlx.live/tools/tagger',
+      isPalette: true,
+      paletteRect: 'top: 150px; left: 7%; height: 675px; width: 85vw;',
+    },
+    {
+      containerId: 'tools',
+      title: 'Check Schema',
+      id: 'checkschema',
+      environments: ['prod'],
+      event: 'check-schema',
+      excludePaths: ['/tools**', '*.json'],
+    },
+    {
+      containerId: 'tools',
+      title: 'Preflight',
+      id: 'preflight',
+      environments: ['dev', 'preview', 'live'],
+      event: 'preflight',
+    },
+    {
+      containerId: 'tools',
+      id: 'predicted-url',
+      title: 'Predicted URL',
+      environments: ['dev', 'preview'],
+      event: 'predicted-url',
+      excludePaths: ['/**'],
+      includePaths: ['**/drafts/**'],
+    },
+    {
+      containerId: 'tools',
+      id: 'localize',
+      title: 'Localize project',
+      environments: ['edit'],
+      passConfig: true,
+      url: 'https://main--aem-boilerplate--adobe.hlx.page/tools/loc',
+      passReferrer: true,
+      excludePaths: ['/**'],
+      includePaths: ['**/:x**'],
+    },
   ],
 };
 
 /**
  * status request stubs
  */
-
 export const defaultStatusResponse = {
   webPath: '/',
   resourcePath: '/index.md',

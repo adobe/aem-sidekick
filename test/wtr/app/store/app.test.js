@@ -19,7 +19,7 @@ import { AppStore } from '../../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
 import {
   mockFetchConfigJSONNotFound,
-  mockFetchConfigJSONSuccess,
+  mockFetchConfigWithPluginsJSONSuccess,
   mockFetchStatusEditURLSuccess,
   mockFetchStatusNotFound,
   mockFetchStatusServerError,
@@ -82,8 +82,8 @@ describe('Test App Store', () => {
     await testDefaultConfig();
   });
 
-  it('loadContext - with config.json', async () => {
-    mockFetchConfigJSONSuccess();
+  it('loadContext - with config.json and custom plugins', async () => {
+    mockFetchConfigWithPluginsJSONSuccess();
     const contextLoadedSpy = sinon.spy();
     sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
 
@@ -91,7 +91,7 @@ describe('Test App Store', () => {
     expect(contextLoadedSpy.calledOnce).to.be.true;
     await testDefaultConfig();
 
-    expect(appStore.siteStore.plugins.length).to.eq(1);
+    expect(appStore.siteStore.plugins.length).to.eq(8);
     expect(appStore.siteStore.scriptUrl).to.eq('https://www.hlx.live/tools/sidekick/index.js');
     expect(appStore.siteStore.host).to.eq('custom-host.com');
     expect(appStore.siteStore.innerHost).to.eq('https://custom-preview-host.com');
@@ -100,7 +100,7 @@ describe('Test App Store', () => {
   });
 
   it('loadContext - unsupported lang, default to en', async () => {
-    mockFetchConfigJSONSuccess();
+    mockFetchConfigWithPluginsJSONSuccess();
     const contextLoadedSpy = sinon.spy();
     sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
 

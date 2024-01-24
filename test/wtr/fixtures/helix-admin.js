@@ -14,11 +14,21 @@
 
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
-import { defaultConfigJSONWithPlugins, defaultStatusResponse, defaultDirectoryStatusResponse } from './stubs/helix-admin.js';
-import { sharepointDirectoryUrl, sharepointEditorUrl } from '../mocks/browser.js';
+import {
+  defaultConfigJSON, defaultConfigJSONWithPlugins, defaultStatusResponse, defaultDirectoryStatusResponse,
+} from './stubs/helix-admin.js';
+import { sharepointDirectoryUrl, sharepointEditorUrl } from '../mocks/environment.js';
 
 export const defaultConfigJSONUrl = 'https://admin.hlx.page/sidekick/adobe/aem-boilerplate/main/config.json';
-export const mockFetchConfigJSONSuccess = (overrides = {}) => fetchMock.get(defaultConfigJSONUrl, {
+export const mockFetchConfigWithoutPluginsJSONSuccess = (overrides = {}) => fetchMock.get(defaultConfigJSONUrl, {
+  status: 200,
+  body: {
+    ...defaultConfigJSON,
+    ...overrides,
+  },
+}, { overwriteRoutes: true });
+
+export const mockFetchConfigWithPluginsJSONSuccess = (overrides = {}) => fetchMock.get(defaultConfigJSONUrl, {
   status: 200,
   body: {
     ...defaultConfigJSONWithPlugins,

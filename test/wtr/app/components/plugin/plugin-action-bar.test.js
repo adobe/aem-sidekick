@@ -13,8 +13,8 @@
 
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
-import sinon from 'sinon';
 import { expect, waitUntil } from '@open-wc/testing';
+import sinon from 'sinon';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../../src/extension/app/aem-sidekick.js';
@@ -24,16 +24,18 @@ import {
   mockDirectoryFetchStatusSuccess,
   mockEditorFetchStatusSuccess,
   mockFetchConfigJSONNotFound,
+  mockFetchConfigWithPluginsJSONSuccess,
+  mockFetchConfigWithoutPluginsJSONSuccess,
   mockFetchStatusSuccess,
 } from '../../../fixtures/helix-admin.js';
 import '../../../../../src/extension/index.js';
-import { appStore } from '../../../../../src/extension/app/store/app.js';
-import { stubSharepointEditorLocation, stubSharepointDirectoryLocation, resetLocation } from '../../../mocks/browser.js';
+import { mockEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import { EXTERNAL_EVENTS } from '../../../../../src/extension/app/constants.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
 
-describe('AEM Sidekick', () => {
+describe('Plugin action bar', () => {
   let sidekick;
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
@@ -42,7 +44,7 @@ describe('AEM Sidekick', () => {
   afterEach(() => {
     document.body.removeChild(sidekick);
     fetchMock.reset();
-    resetLocation(document);
+    restoreEnvironment(document);
   });
 
   function expectEnvPlugin(environments) {
@@ -78,8 +80,7 @@ describe('AEM Sidekick', () => {
     it('isInner', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-
-      const envStub = sinon.stub(appStore, 'isInner').returns(true);
+      mockEnvironment(document, 'inner');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -92,16 +93,37 @@ describe('AEM Sidekick', () => {
 
       expectPlugin('env-switcher');
       expectPlugin('.publish');
+    });
 
-      envStub.restore();
+    it('isInner - w/custom plugins', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithPluginsJSONSuccess();
+      mockEnvironment(document, 'editor');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expectPluginCount(5);
+
+      expectEnvPlugin(['preview', 'live']);
+
+      expectPlugin('env-switcher');
+      expectPlugin('.edit-preview');
+      expectPlugin('.asset-library');
+      expectPlugin('.library');
+      expectPlugin('.tools');
+
+      // Should fallback to id for label if title not provided
+      const assetLibraryPlugin = recursiveQuery(sidekick, '.asset-library');
+      expect(assetLibraryPlugin.textContent.trim()).to.equal('asset-library');
     });
 
     it('isOuter', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-
-      const innerStub = sinon.stub(appStore, 'isInner').returns(false);
-      const outerStub = sinon.stub(appStore, 'isOuter').returns(true);
+      mockEnvironment(document, 'outer');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -114,18 +136,12 @@ describe('AEM Sidekick', () => {
 
       expectPlugin('env-switcher');
       expectPlugin('.publish');
-
-      innerStub.restore();
-      outerStub.restore();
     });
 
     it('isProd', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-
-      const innerStub = sinon.stub(appStore, 'isInner').returns(false);
-      const outerStub = sinon.stub(appStore, 'isOuter').returns(false);
-      const prodStub = sinon.stub(appStore, 'isProd').returns(true);
+      mockEnvironment(document, 'prod');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -138,21 +154,12 @@ describe('AEM Sidekick', () => {
 
       expectPlugin('env-switcher');
       expectPlugin('.publish');
-
-      innerStub.restore();
-      outerStub.restore();
-      prodStub.restore();
     });
 
     it('isEditor', async () => {
       mockEditorFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-      stubSharepointEditorLocation(document);
-
-      const innerStub = sinon.stub(appStore, 'isInner').returns(false);
-      const outerStub = sinon.stub(appStore, 'isOuter').returns(false);
-      const prodStub = sinon.stub(appStore, 'isProd').returns(false);
-      const editorStub = sinon.stub(appStore, 'isEditor').returns(true);
+      mockEnvironment(document, 'editor');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -167,22 +174,72 @@ describe('AEM Sidekick', () => {
 
       expectPlugin('env-switcher');
       expectPlugin('.edit-preview');
+    });
 
-      innerStub.restore();
-      outerStub.restore();
-      prodStub.restore();
-      editorStub.restore();
+    it('isEditor - custom config with prod host', async () => {
+      mockEditorFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockEnvironment(document, 'editor');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      sidekick.appendChild(document.createElement('div'));
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expectPluginCount(2);
+
+      expectEnvPlugin(['preview', 'live', 'prod']);
+
+      expectPlugin('env-switcher');
+      expectPlugin('.edit-preview');
+    });
+
+    it('isInner - custom config with prod host', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockEnvironment(document, 'inner');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      sidekick.appendChild(document.createElement('div'));
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expectPluginCount(2);
+      expectEnvPlugin(['preview', 'edit', 'live', 'prod']);
+      expectPlugin('env-switcher');
+      expectPlugin('.publish');
+    });
+
+    it('core plugin clicked', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockEnvironment(document, 'inner');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      sidekick.appendChild(document.createElement('div'));
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expectPluginCount(2);
+
+      const publishButton = recursiveQuery(sidekick, '.publish');
+      publishButton.dispatchEvent(new Event('click'));
+      await waitUntil(() => recursiveQuery(sidekick, 'dialog-view'));
+
+      const dialogView = recursiveQuery(sidekick, 'dialog-view');
+      expect(dialogView).to.exist;
     });
 
     it('isAdmin', async () => {
       mockDirectoryFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-      stubSharepointDirectoryLocation(document);
-
-      const innerStub = sinon.stub(appStore, 'isInner').returns(false);
-      const outerStub = sinon.stub(appStore, 'isOuter').returns(false);
-      const prodStub = sinon.stub(appStore, 'isProd').returns(false);
-      const adminStub = sinon.stub(appStore, 'isAdmin').returns(true);
+      mockEnvironment(document, 'admin');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -195,11 +252,87 @@ describe('AEM Sidekick', () => {
       expectEnvPlugin([]);
 
       expectPlugin('env-switcher');
+    });
 
-      innerStub.restore();
-      outerStub.restore();
-      prodStub.restore();
-      adminStub.restore();
+    it('custom container plugin', async () => {
+      mockEditorFetchStatusSuccess();
+      mockFetchConfigWithPluginsJSONSuccess();
+      mockEnvironment(document, 'editor');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expectPluginCount(5);
+      expectPlugin('.tools');
+
+      const toolsPlugin = recursiveQuery(sidekick, 'action-bar-picker.tools');
+      const plugins = recursiveQueryAll(toolsPlugin, 'sp-menu-item');
+
+      expect([...plugins].length).to.equal(1);
+      expect(plugins.values().next().value.textContent).to.equal('Tag Selector');
+    });
+
+    it('clicks custom plugin', async () => {
+      mockEditorFetchStatusSuccess();
+      mockFetchConfigWithPluginsJSONSuccess();
+      mockEnvironment(document, 'editor');
+
+      const openStub = sinon.stub(window, 'open');
+      const pluginUsedEventSpy = sinon.spy();
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      sidekick.addEventListener(EXTERNAL_EVENTS.PLUGIN_USED, pluginUsedEventSpy);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expectPluginCount(5);
+
+      const libraryPlugin = recursiveQuery(sidekick, '.library');
+      libraryPlugin.dispatchEvent(new Event('click'));
+
+      expect(openStub.calledOnce).to.be.true;
+      expect(pluginUsedEventSpy.calledOnce).to.be.true;
+
+      openStub.restore();
+    });
+
+    it('opens palette plugin', async () => {
+      mockEditorFetchStatusSuccess();
+      mockFetchConfigWithPluginsJSONSuccess();
+      mockEnvironment(document, 'editor');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expectPluginCount(5);
+      expectPlugin('.tools');
+
+      const toolsPlugin = recursiveQuery(sidekick, 'action-bar-picker.tools');
+      const plugins = recursiveQueryAll(toolsPlugin, 'sp-menu-item');
+
+      expect([...plugins].length).to.equal(1);
+
+      const tagSelectorPlugin = plugins.values().next().value;
+      expect(tagSelectorPlugin).to.exist;
+      expect(tagSelectorPlugin.textContent).to.equal('Tag Selector');
+
+      toolsPlugin.value = 'tag-selector';
+      toolsPlugin.dispatchEvent(new Event('change'));
+
+      // Picker label should not change on selection
+      const toolsPickerPluginLabel = recursiveQuery(toolsPlugin, '#label');
+      expect(toolsPickerPluginLabel.textContent.trim()).to.equal('Tools');
+
+      await waitUntil(() => recursiveQuery(sidekick, 'palette-dialog'));
+
+      const paletteDialog = recursiveQuery(sidekick, 'palette-dialog');
+      expect(paletteDialog).to.exist;
     });
   });
 });

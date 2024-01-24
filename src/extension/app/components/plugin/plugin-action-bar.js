@@ -105,26 +105,24 @@ export class PluginActionBar extends MobxLitElement {
        * @type {Record<string, CorePlugin & ContainerPlugin>}
        * */
       const customPlugins = {};
-      if (appStore.customPlugins) {
-        Object.values(appStore.customPlugins).forEach((plugin) => {
-          if (plugin.button.isDropdown) {
-            customPlugins[plugin.id] = plugin;
-          } else if (plugin.container) {
-            const container = customPlugins[plugin.container];
-            if (!container.children) {
-              container.children = {};
-            }
-            container.children[plugin.id] = plugin;
-          } else {
-            customPlugins[plugin.id] = plugin;
+      Object.values(appStore.customPlugins).forEach((plugin) => {
+        if (plugin.button.isDropdown) {
+          customPlugins[plugin.id] = plugin;
+        } else if (plugin.container) {
+          const container = customPlugins[plugin.container];
+          if (!container.children) {
+            container.children = {};
           }
-        });
-      }
+          container.children[plugin.id] = plugin;
+        } else {
+          customPlugins[plugin.id] = plugin;
+        }
+      });
 
       const userPlugins = Object.values(customPlugins).map((plugin) => {
         if (plugin.children) {
           return html`
-            <action-bar-picker class="plugin-container" label=${plugin.button.text} @change=${(e) => this.onChange(e, plugin)}>
+            <action-bar-picker class=${`plugin-container ${plugin.id}`} label=${plugin.button.text} @change=${(e) => this.onChange(e, plugin)}>
               ${Object.values(plugin.children).map((childPlugin) => (childPlugin.condition(appStore)
                   ? html`<sp-menu-item value=${childPlugin.id}>${childPlugin.button.text}</sp-menu-item>`
                   : ''))}
@@ -133,7 +131,7 @@ export class PluginActionBar extends MobxLitElement {
         }
 
         return plugin.condition(appStore) ? html`
-                <sp-action-button quiet @click=${(evt) => this.onPluginButtonClick(evt, plugin)}>
+                <sp-action-button class=${plugin.id} quiet @click=${(evt) => this.onPluginButtonClick(evt, plugin)}>
                   ${plugin.button.text || plugin.id}
                 </sp-action-button>
               ` : '';
