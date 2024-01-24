@@ -54,10 +54,6 @@ export class PaletteContainer extends LitElement {
       this.plugin = e.detail.plugin;
     });
 
-    EventBus.instance.addEventListener(EVENTS.CLOSE_MODAL, () => {
-      this.modal = undefined;
-    });
-
     this.addEventListener('keydown', this.onKeyDown);
   }
 
