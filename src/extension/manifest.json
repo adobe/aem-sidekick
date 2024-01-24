@@ -42,6 +42,7 @@
       {
         "resources": [
           "_locales/*",
+          "adobe-logo.svg",
           "config.js",
           "context-menu.js",
           "display.js",
