@@ -191,8 +191,6 @@ describe('browser utils', () => {
       const pElement = createTag(config);
       expect(pElement.tagName.toLowerCase()).to.equal('p');
     });
-
-    // Additional test cases for other scenarios can be added as needed
   });
 
   describe('extendTag', () => {
