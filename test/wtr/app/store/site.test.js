@@ -18,7 +18,7 @@ import { AppStore } from '../../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
 import {
   mockFetchConfigJSONNotFound,
-  mockFetchConfigJSONSuccess,
+  mockFetchConfigWithPluginsJSONSuccess,
   mockFetchLocalConfigJSONSuccess,
   mockFetchStatusSuccess,
 } from '../../fixtures/helix-admin.js';
@@ -143,22 +143,21 @@ describe('Test Site Store', () => {
 
       expect(appStore.siteStore.views[1].path).to.equal('**.json');
       expect(appStore.siteStore.views[1].viewer).to.equal('/test/wtr/fixtures/view/json/json.html');
-      expect(appStore.siteStore.views[1].title()).to.equal('View JSON');
+      expect(appStore.siteStore.views[1].title()).to.equal('User-friendly data rendition.');
     });
 
     it('using ClientConfig (config.json)', async () => {
-      mockFetchConfigJSONSuccess();
+      mockFetchConfigWithPluginsJSONSuccess();
       await appStore.loadContext(sidekickElement, defaultConfig);
       expect(appStore.siteStore.project).to.equal('AEM Boilerplate');
       expect(appStore.siteStore.innerHost).to.equal('https://custom-preview-host.com');
       expect(appStore.siteStore.liveHost).to.equal('https://custom-live-host.com');
       expect(appStore.siteStore.host).to.equal('custom-host.com');
 
-      expect(appStore.siteStore.plugins.length).to.equal(1);
+      expect(appStore.siteStore.plugins.length).to.equal(8);
       const firstPlugin = appStore.siteStore.plugins[0];
       expect(firstPlugin).to.deep.equal({
         id: 'asset-library',
-        title: 'My Assets',
         environments: [
           'edit',
         ],

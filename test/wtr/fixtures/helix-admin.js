@@ -14,10 +14,21 @@
 
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
-import { defaultConfigJSONWithPlugins, defaultStatusResponse } from './stubs/helix-admin.js';
+import {
+  defaultConfigJSON, defaultConfigJSONWithPlugins, defaultStatusResponse, defaultDirectoryStatusResponse,
+} from './stubs/helix-admin.js';
+import { sharepointDirectoryUrl, sharepointEditorUrl } from '../mocks/environment.js';
 
 export const defaultConfigJSONUrl = 'https://admin.hlx.page/sidekick/adobe/aem-boilerplate/main/config.json';
-export const mockFetchConfigJSONSuccess = (overrides = {}) => fetchMock.get(defaultConfigJSONUrl, {
+export const mockFetchConfigWithoutPluginsJSONSuccess = (overrides = {}) => fetchMock.get(defaultConfigJSONUrl, {
+  status: 200,
+  body: {
+    ...defaultConfigJSON,
+    ...overrides,
+  },
+}, { overwriteRoutes: true });
+
+export const mockFetchConfigWithPluginsJSONSuccess = (overrides = {}) => fetchMock.get(defaultConfigJSONUrl, {
   status: 200,
   body: {
     ...defaultConfigJSONWithPlugins,
@@ -27,7 +38,7 @@ export const mockFetchConfigJSONSuccess = (overrides = {}) => fetchMock.get(defa
 
 export const mockFetchConfigJSONNotFound = () => fetchMock.get(defaultConfigJSONUrl, {
   status: 404,
-});
+}, { overwriteRoutes: true });
 
 export const defaultLocalConfigJSONUrl = 'http://localhost:3000/tools/sidekick/config.json';
 export const mockFetchLocalConfigJSONSuccess = (overrides = {}) => fetchMock.get(defaultLocalConfigJSONUrl, {
@@ -43,6 +54,24 @@ export const mockFetchStatusSuccess = (overrides = {}) => fetchMock.get(defaultS
   status: 200,
   body: {
     ...defaultStatusResponse,
+    ...overrides,
+  },
+}, { overwriteRoutes: true });
+
+export const editorStatusUrl = `https://admin.hlx.page/status/adobe/aem-boilerplate/main?editUrl=${encodeURIComponent(sharepointEditorUrl)}`;
+export const mockEditorFetchStatusSuccess = (overrides = {}) => fetchMock.get(editorStatusUrl, {
+  status: 200,
+  body: {
+    ...defaultStatusResponse,
+    ...overrides,
+  },
+}, { overwriteRoutes: true });
+
+export const directoryStatusUrl = `https://admin.hlx.page/status/adobe/aem-boilerplate/main?editUrl=${encodeURIComponent(sharepointDirectoryUrl)}`;
+export const mockDirectoryFetchStatusSuccess = (overrides = {}) => fetchMock.get(directoryStatusUrl, {
+  status: 200,
+  body: {
+    ...defaultDirectoryStatusResponse,
     ...overrides,
   },
 }, { overwriteRoutes: true });

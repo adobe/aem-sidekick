@@ -15,27 +15,10 @@
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 
+import enMessages from '../../../src/extension/_locales/en/messages.json' assert { type: 'json' };
+
 export const englishMessagesUrl = '/test/wtr/fixtures/_locales/en/messages.json';
 export const mockFetchEnglishMessagesSuccess = () => fetchMock.get(englishMessagesUrl, {
   status: 200,
-  body: {
-    title: {
-      message: 'AEM Sidekick - NextGen',
-    },
-    add: {
-      message: 'Add',
-    },
-    json_view_description: {
-      message: 'View JSON',
-    },
-    config_project_pick: {
-      message: 'Pick a project',
-    },
-    ok: {
-      message: 'OK',
-    },
-    error: {
-      message: 'Error',
-    },
-  },
+  body: enMessages,
 }, { overwriteRoutes: true });

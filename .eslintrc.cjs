@@ -43,6 +43,7 @@ module.exports = {
     'no-param-reassign': 0,
     'import/extensions': ['error', {
       js: 'always',
+      json: 'always',
     }],
     'import/prefer-default-export': 0,
     'class-methods-use-this': 0,

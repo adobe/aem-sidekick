@@ -88,7 +88,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
     }
 
     this.picker.label = this.envNames[this.currentEnv];
-    this.picker.classList.add(this.currentEnv);
+    this.picker.classList.add(`env-${this.currentEnv}`);
 
     this.renderMenu();
   }
@@ -108,6 +108,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
       text: label,
       attrs: {
         value: id,
+        class: `env-${id}`,
         ...attrs,
       },
     });
@@ -206,7 +207,6 @@ export class EnvironmentSwitcher extends MobxLitElement {
         );
         break;
       case 'preview':
-        previewMenuItem.classList.add('preview');
         picker.append(
           previewMenuItem,
           divider,
@@ -216,7 +216,6 @@ export class EnvironmentSwitcher extends MobxLitElement {
         );
         break;
       case 'live':
-        liveMenuItem.classList.add('live');
         picker.append(
           liveMenuItem,
           divider,
@@ -226,7 +225,6 @@ export class EnvironmentSwitcher extends MobxLitElement {
         );
         break;
       case 'prod':
-        prodMenuItem.classList.add('prod');
         picker.append(
           prodMenuItem,
           divider,
