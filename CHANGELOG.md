@@ -1,3 +1,13 @@
+## [1.5.1](https://github.com/adobe/aem-sidekick/compare/v1.5.0...v1.5.1) (2024-1-25)
+
+
+### Bug Fixes
+
+* add coverage for pallette container ([ebdca74](https://github.com/adobe/aem-sidekick/commit/ebdca74a0afe8961dedfebe5ac668e5a4bb1c0d8))
+* cleanup ([71c6c93](https://github.com/adobe/aem-sidekick/commit/71c6c930d15c4ab0d5faee6b463966a8ea6a2287))
+* remove overridden SWC from coverage ([6c4e977](https://github.com/adobe/aem-sidekick/commit/6c4e9771d3797008492a93e43f44952be2ad3cc1))
+* utils coverage ([9e60cfe](https://github.com/adobe/aem-sidekick/commit/9e60cfe9b4ab53addcf75c238baceb5a16a57752))
+
 # [1.5.0](https://github.com/adobe/aem-sidekick/compare/v1.4.0...v1.5.0) (2024-1-24)
 
 
