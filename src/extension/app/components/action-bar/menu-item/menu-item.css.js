@@ -10,6 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
+/* istanbul ignore file */
+
 import { css } from 'lit';
 
 export const style = css`

@@ -133,13 +133,13 @@ export function isSupportedFileExtension(path) {
  * @param {ElemConfig}  config The tag configuration object
  * @returns {HTMLElement} The extended tag
  */
-function extendTag(tag, config) {
-  if (typeof config.attrs === 'object') {
+export function extendTag(tag, config) {
+  if (config.attrs && typeof config.attrs === 'object') {
     for (const [key, value] of Object.entries(config.attrs)) {
       tag.setAttribute(key, value);
     }
   }
-  if (typeof config.lstnrs === 'object') {
+  if (config.lstnrs && typeof config.lstnrs === 'object') {
     for (const [name, fn] of Object.entries(config.lstnrs)) {
       if (typeof fn === 'function') {
         tag.addEventListener(name, fn);

@@ -21,6 +21,20 @@ describe('EventBus', () => {
     eventBus = EventBus.instance;
   });
 
+  it('should return the existing instance if already created', () => {
+    const firstInstance = new EventBus();
+    const secondInstance = new EventBus();
+
+    expect(firstInstance).to.equal(secondInstance);
+  });
+
+  it('should not create a new instance if one already exists', () => {
+    const firstInstance = EventBus.instance;
+    const secondInstance = new EventBus();
+
+    expect(firstInstance).to.equal(secondInstance);
+  });
+
   it('should be a singleton', () => {
     const anotherInstance = EventBus.instance;
     expect(eventBus).to.equal(anotherInstance);
@@ -60,6 +74,19 @@ describe('EventBus', () => {
     eventBus.addEventListener('no-call-event', callback);
     eventBus.dispatchEvent(new CustomEvent('other-event'));
     sinon.assert.notCalled(callback);
+  });
+
+  it('should not remove a listener if it is not in the listeners array', () => {
+    const listener1 = eventBus.addEventListener('test-event', () => {});
+    const listener2 = { type: 'test-event', callback: () => {} };
+    const initialListenersCount = eventBus.listeners.length;
+
+    eventBus.removeEventListener(listener2);
+
+    expect(eventBus.listeners.length).to.equal(initialListenersCount);
+
+    eventBus.removeEventListener(listener1);
+    expect(eventBus.listeners).to.not.include(listener1);
   });
 
   afterEach(() => {

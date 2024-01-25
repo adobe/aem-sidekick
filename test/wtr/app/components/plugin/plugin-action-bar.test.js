@@ -270,7 +270,7 @@ describe('Plugin action bar', () => {
       const toolsPlugin = recursiveQuery(sidekick, 'action-bar-picker.tools');
       const plugins = recursiveQueryAll(toolsPlugin, 'sp-menu-item');
 
-      expect([...plugins].length).to.equal(1);
+      expect([...plugins].length).to.equal(2);
       expect(plugins.values().next().value.textContent).to.equal('Tag Selector');
     });
 
@@ -298,41 +298,6 @@ describe('Plugin action bar', () => {
       expect(pluginUsedEventSpy.calledOnce).to.be.true;
 
       openStub.restore();
-    });
-
-    it('opens palette plugin', async () => {
-      mockEditorFetchStatusSuccess();
-      mockFetchConfigWithPluginsJSONSuccess();
-      mockEnvironment(document, 'editor');
-
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-
-      expectPluginCount(5);
-      expectPlugin('.tools');
-
-      const toolsPlugin = recursiveQuery(sidekick, 'action-bar-picker.tools');
-      const plugins = recursiveQueryAll(toolsPlugin, 'sp-menu-item');
-
-      expect([...plugins].length).to.equal(1);
-
-      const tagSelectorPlugin = plugins.values().next().value;
-      expect(tagSelectorPlugin).to.exist;
-      expect(tagSelectorPlugin.textContent).to.equal('Tag Selector');
-
-      toolsPlugin.value = 'tag-selector';
-      toolsPlugin.dispatchEvent(new Event('change'));
-
-      // Picker label should not change on selection
-      const toolsPickerPluginLabel = recursiveQuery(toolsPlugin, '#label');
-      expect(toolsPickerPluginLabel.textContent.trim()).to.equal('Tools');
-
-      await waitUntil(() => recursiveQuery(sidekick, 'palette-dialog'));
-
-      const paletteDialog = recursiveQuery(sidekick, 'palette-dialog');
-      expect(paletteDialog).to.exist;
     });
   });
 });

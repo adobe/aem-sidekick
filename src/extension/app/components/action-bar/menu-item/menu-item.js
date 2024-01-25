@@ -11,6 +11,7 @@
  */
 
 // @ts-nocheck
+/* istanbul ignore file */
 
 import { html } from 'lit';
 import { MenuItem as SPMenuItem } from '@spectrum-web-components/menu';

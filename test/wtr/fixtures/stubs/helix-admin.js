@@ -95,13 +95,12 @@ export const defaultConfigJSONWithPlugins = {
     {
       containerId: 'tools',
       id: 'localize',
-      title: 'Localize project',
+      titleI18n: {
+        en: 'Localize project',
+      },
       environments: ['edit'],
-      passConfig: true,
       url: 'https://main--aem-boilerplate--adobe.hlx.page/tools/loc',
-      passReferrer: true,
-      excludePaths: ['/**'],
-      includePaths: ['**/:x**'],
+      isPalette: true,
     },
   ],
 };

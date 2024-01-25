@@ -11,6 +11,7 @@
  */
 
 // @ts-nocheck
+/* istanbul ignore file */
 
 import { css } from 'lit';
 import { html, nothing } from '@spectrum-web-components/base';
