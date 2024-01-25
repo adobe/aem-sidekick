@@ -18,7 +18,7 @@ import { appStore } from '../../../src/extension/app/store/app.js';
 let stubs = [];
 
 /**
- * Mock helix environments
+ * Mock content types
  * @enum {string}
  */
 const HelixMockContentType = {
@@ -50,7 +50,7 @@ const HelixMockEnvironments = {
 };
 
 /**
- * Mock helix environments
+ * Mock editor environments
  * @enum {string}
  */
 const EditorMockEnvironments = {
@@ -63,7 +63,7 @@ const EditorMockEnvironments = {
  */
 
 /**
- * Mock helix environments
+ * Mock content sources
  * @enum {string}
  */
 const HelixMockContentSources = {
@@ -117,7 +117,7 @@ export function getDefaultHelixEnviromentLocations(contentType, sld) {
 }
 
 /**
- * Given a content type and second level domain, returns the default environment locations
+ * Given a content source and content type, returns the default environment locations
  * @prop {HelixMockContentSources} contentSource The content source (Default: sharepoint)
  * @param {HelixMockContentType} contentType The content type for the default environment location
  * @returns {string | undefined}
