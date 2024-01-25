@@ -22,7 +22,7 @@ import { EVENTS, MODALS } from '../../../../../src/extension/app/constants.js';
 import chromeMock from '../../../mocks/chrome.js';
 import '../../../../../src/extension/index.js';
 import { recursiveQuery } from '../../../test-utils.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../fixtures/i18n.js';
+import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { appStore } from '../../../../../src/extension/app/store/app.js';
 import { fetchLanguageDict } from '../../../../../src/extension/app/utils/i18n.js';
 

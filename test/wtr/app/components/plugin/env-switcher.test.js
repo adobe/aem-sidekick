@@ -18,15 +18,15 @@ import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../fixtures/i18n.js';
-import { defaultSidekickConfig } from '../../../fixtures/stubs/sidekick-config.js';
+import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
+import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
   mockFetchConfigJSONNotFound,
   mockFetchStatusSuccess,
-} from '../../../fixtures/helix-admin.js';
+} from '../../../mocks/helix-admin.js';
 import '../../../../../src/extension/index.js';
 import { appStore } from '../../../../../src/extension/app/store/app.js';
-import { mockEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import { mockHelixEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -47,7 +47,7 @@ describe('Environment Switcher', () => {
     it('change environment - inner -> live', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-      mockEnvironment(document, 'inner');
+      mockHelixEnvironment(document, 'inner');
 
       const switchEnvStub = sinon.stub(appStore, 'switchEnv').resolves();
 

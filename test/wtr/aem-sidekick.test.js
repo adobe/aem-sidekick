@@ -19,10 +19,11 @@ import { emulateMedia } from '@web/test-runner-commands';
 import { recursiveQuery } from './test-utils.js';
 import chromeMock from './mocks/chrome.js';
 import { AEMSidekick } from '../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from './fixtures/i18n.js';
-import { defaultSidekickConfig } from './fixtures/stubs/sidekick-config.js';
-import { mockFetchConfigJSONNotFound, mockFetchStatusSuccess } from './fixtures/helix-admin.js';
+import { mockFetchEnglishMessagesSuccess } from './mocks/i18n.js';
+import { defaultSidekickConfig } from './fixtures/sidekick-config.js';
+import { mockFetchConfigJSONNotFound, mockFetchStatusSuccess } from './mocks/helix-admin.js';
 import '../../src/extension/index.js';
+import { mockHelixEnvironment, restoreEnvironment } from './mocks/environment.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -30,10 +31,13 @@ window.chrome = chromeMock;
 describe('AEM Sidekick', () => {
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
+    mockFetchStatusSuccess();
+    mockHelixEnvironment(document, 'inner');
   });
 
   afterEach(() => {
     fetchMock.restore();
+    restoreEnvironment(document);
   });
 
   it('renders theme and action-bar', async () => {
@@ -77,7 +81,6 @@ describe('AEM Sidekick', () => {
 
   describe('configuration loading', () => {
     it('default config', async () => {
-      mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
       const sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -96,13 +99,12 @@ describe('AEM Sidekick', () => {
         expect(data.config.views.length).to.eq(1);
 
         expect(data.location).to.exist;
-        expect(data.location.host).to.eq('localhost:2000');
+        expect(data.location.host).to.eq('main--aem-boilerplate--adobe.hlx.page');
       });
     });
   });
 
   it('passes the a11y audit', async () => {
-    mockFetchStatusSuccess();
     mockFetchConfigJSONNotFound();
     const sidekick = new AEMSidekick(defaultSidekickConfig);
     document.body.appendChild(sidekick);

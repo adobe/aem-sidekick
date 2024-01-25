@@ -16,14 +16,14 @@ import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../fixtures/i18n.js';
-import { defaultSidekickConfig } from '../../../fixtures/stubs/sidekick-config.js';
+import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
+import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
-  mockEditorFetchStatusSuccess,
+  mockSharepointEditorFetchStatusSuccess,
   mockFetchConfigWithPluginsJSONSuccess,
-} from '../../../fixtures/helix-admin.js';
+} from '../../../mocks/helix-admin.js';
 import '../../../../../src/extension/index.js';
-import { mockEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import { mockEditorAdminEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -63,9 +63,9 @@ describe('Palette container', () => {
   }
 
   it('closes palette plugin via close button', async () => {
-    mockEditorFetchStatusSuccess();
+    mockSharepointEditorFetchStatusSuccess();
     mockFetchConfigWithPluginsJSONSuccess();
-    mockEnvironment(document, 'editor');
+    mockEditorAdminEnvironment(document, 'editor');
 
     await openPallete();
 
@@ -80,9 +80,9 @@ describe('Palette container', () => {
   });
 
   it('closes palette plugin via esc key', async () => {
-    mockEditorFetchStatusSuccess();
+    mockSharepointEditorFetchStatusSuccess();
     mockFetchConfigWithPluginsJSONSuccess();
-    mockEnvironment(document, 'editor');
+    mockEditorAdminEnvironment(document, 'editor');
 
     await openPallete();
 
@@ -99,9 +99,9 @@ describe('Palette container', () => {
   });
 
   it('palette renders titleI18n', async () => {
-    mockEditorFetchStatusSuccess();
+    mockSharepointEditorFetchStatusSuccess();
     mockFetchConfigWithPluginsJSONSuccess();
-    mockEnvironment(document, 'editor');
+    mockEditorAdminEnvironment(document, 'editor');
 
     await openPallete('localize');
 

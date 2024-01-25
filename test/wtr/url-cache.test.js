@@ -22,7 +22,7 @@ import {
 } from '../../src/extension/url-cache.js';
 import {
   mockDiscoveryCalls,
-} from './fixtures/discover.js';
+} from './mocks/discover.js';
 
 // @ts-ignore
 window.chrome = chromeMock;

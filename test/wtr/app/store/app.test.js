@@ -25,9 +25,9 @@ import {
   mockFetchStatusServerError,
   mockFetchStatusSuccess,
   mockFetchStatusUnauthorized,
-} from '../../fixtures/helix-admin.js';
-import { mockFetchEnglishMessagesSuccess } from '../../fixtures/i18n.js';
-import { defaultSidekickConfig } from '../../fixtures/stubs/sidekick-config.js';
+} from '../../mocks/helix-admin.js';
+import { mockFetchEnglishMessagesSuccess } from '../../mocks/i18n.js';
+import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
 import { EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
 
