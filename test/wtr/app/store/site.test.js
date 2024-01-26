@@ -21,8 +21,8 @@ import {
   mockFetchConfigWithPluginsJSONSuccess,
   mockFetchLocalConfigJSONSuccess,
   mockFetchStatusSuccess,
-} from '../../fixtures/helix-admin.js';
-import { mockFetchEnglishMessagesSuccess } from '../../fixtures/i18n.js';
+} from '../../mocks/helix-admin.js';
+import { mockFetchEnglishMessagesSuccess } from '../../mocks/i18n.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
