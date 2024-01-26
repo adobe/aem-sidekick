@@ -199,8 +199,8 @@ export class AppStore {
           const envChecks = {
             dev: appStore.isDev,
             edit: appStore.isEditor,
-            preview: appStore.isInner,
-            live: appStore.isOuter,
+            preview: appStore.isPreview,
+            live: appStore.isLive,
             prod: appStore.isProd,
           };
           return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
@@ -283,7 +283,7 @@ export class AppStore {
    * Checks if the current location is an inner CDN URL.
    * @returns {boolean} <code>true</code> if inner CDN URL, else <code>false</code>
    */
-  isInner() {
+  isPreview() {
     const { siteStore, location } = this;
     return matchProjectHost(siteStore.innerHost, location.host)
        || matchProjectHost(siteStore.stdInnerHost, location.host);
@@ -293,7 +293,7 @@ export class AppStore {
    * Checks if the current location is an outer CDN URL.
    * @returns {boolean} <code>true</code> if outer CDN URL, else <code>false</code>
    */
-  isOuter() {
+  isLive() {
     const { siteStore, location } = this;
     return matchProjectHost(siteStore.outerHost, location.host)
         || matchProjectHost(siteStore.stdOuterHost, location.host);
@@ -324,7 +324,7 @@ export class AppStore {
   isProject() {
     const { siteStore } = this;
     return siteStore.owner && siteStore.repo
-        && (this.isDev() || this.isInner() || this.isOuter() || this.isProd());
+        && (this.isDev() || this.isPreview() || this.isLive() || this.isProd());
   }
 
   /**
@@ -665,7 +665,7 @@ export class AppStore {
         },
       );
       if (resp.ok) {
-        if (this.isEditor() || this.isInner() || this.isDev()) {
+        if (this.isEditor() || this.isPreview() || this.isDev()) {
           // bust client cache
           await fetch(`https://${siteStore.innerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
         }

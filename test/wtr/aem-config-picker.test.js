@@ -16,9 +16,9 @@ import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import { expect, waitUntil } from '@open-wc/testing';
 import chromeMock from './mocks/chrome.js';
-import { mockFetchEnglishMessagesSuccess } from './fixtures/i18n.js';
+import { mockFetchEnglishMessagesSuccess } from './mocks/i18n.js';
 import { AEMConfigPicker } from '../../src/extension/app/config-picker.js';
-import { matchingConfigs } from './fixtures/stubs/sidekick-config.js';
+import { matchingConfigs } from './fixtures/sidekick-config.js';
 import '../../src/extension/index.js';
 import { recursiveQuery, recursiveQueryAll } from './test-utils.js';
 

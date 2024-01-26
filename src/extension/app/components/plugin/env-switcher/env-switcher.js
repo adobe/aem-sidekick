@@ -49,6 +49,13 @@ export class EnvironmentSwitcher extends MobxLitElement {
   @property({ type: Object })
   accessor envNames;
 
+  /**
+   * Are we ready to enable?
+   * @type {Boolean}
+   */
+  @property({ type: Boolean })
+  accessor ready = false;
+
   static get styles() {
     return [style];
   }
@@ -79,9 +86,9 @@ export class EnvironmentSwitcher extends MobxLitElement {
     // Determine the current environment
     if (appStore.isEditor()) {
       this.currentEnv = 'edit';
-    } else if (appStore.isInner()) {
+    } else if (appStore.isPreview()) {
       this.currentEnv = 'preview';
-    } else if (appStore.isOuter()) {
+    } else if (appStore.isLive()) {
       this.currentEnv = 'live';
     } else if (appStore.isProd()) {
       this.currentEnv = 'prod';
@@ -207,6 +214,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
         );
         break;
       case 'preview':
+        previewMenuItem.classList.add('current-env');
         picker.append(
           previewMenuItem,
           divider,
@@ -216,6 +224,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
         );
         break;
       case 'live':
+        liveMenuItem.classList.add('current-env');
         picker.append(
           liveMenuItem,
           divider,
@@ -225,6 +234,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
         );
         break;
       case 'prod':
+        prodMenuItem.classList.add('current-env');
         picker.append(
           prodMenuItem,
           divider,
@@ -240,6 +250,10 @@ export class EnvironmentSwitcher extends MobxLitElement {
 
     if (showProd) {
       picker.append(prodMenuItem);
+    }
+
+    if (appStore.status?.webPath) {
+      this.ready = true;
     }
   }
 
@@ -258,6 +272,6 @@ export class EnvironmentSwitcher extends MobxLitElement {
   }
 
   render() {
-    return html`<action-bar-picker icons="none" @change=${this.onChange}></action-bar-picker>`;
+    return html`<action-bar-picker icons="none" @change=${this.onChange} .disabled=${!this.ready}></action-bar-picker>`;
   }
 }

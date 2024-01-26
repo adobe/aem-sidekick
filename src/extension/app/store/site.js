@@ -258,8 +258,6 @@ export class SiteStore {
     this.project = project;
     this.devUrl = devUrl;
     this.lang = lang || getLanguage();
-
-    this.appStore.initialized = true;
   }
 
   /**

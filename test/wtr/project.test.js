@@ -33,7 +33,7 @@ import {
 } from '../../src/extension/project.js';
 import { urlCache } from '../../src/extension/url-cache.js';
 import { error } from './test-utils.js';
-import { mockDiscoveryCalls } from './fixtures/discover.js';
+import { mockDiscoveryCalls } from './mocks/discover.js';
 
 // @ts-ignore
 window.chrome = chromeMock;

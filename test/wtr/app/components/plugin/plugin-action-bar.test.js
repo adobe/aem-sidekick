@@ -18,19 +18,20 @@ import sinon from 'sinon';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../fixtures/i18n.js';
-import { defaultSidekickConfig } from '../../../fixtures/stubs/sidekick-config.js';
+import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
+import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
-  mockDirectoryFetchStatusSuccess,
-  mockEditorFetchStatusSuccess,
+  mockSharepointDirectoryFetchStatusSuccess,
+  mockSharepointEditorFetchStatusSuccess,
   mockFetchConfigJSONNotFound,
   mockFetchConfigWithPluginsJSONSuccess,
   mockFetchConfigWithoutPluginsJSONSuccess,
   mockFetchStatusSuccess,
-} from '../../../fixtures/helix-admin.js';
+} from '../../../mocks/helix-admin.js';
 import '../../../../../src/extension/index.js';
-import { mockEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import { mockHelixEnvironment, mockEditorAdminEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
 import { EXTERNAL_EVENTS } from '../../../../../src/extension/app/constants.js';
+import { pluginFactory } from '../../../../../src/extension/app/plugins/plugin-factory.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -77,10 +78,10 @@ describe('Plugin action bar', () => {
   }
 
   describe('renders correct default plugins in action bar', () => {
-    it('isInner', async () => {
+    it('isPreview', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-      mockEnvironment(document, 'inner');
+      mockHelixEnvironment(document, 'preview');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -95,10 +96,11 @@ describe('Plugin action bar', () => {
       expectPlugin('.publish');
     });
 
-    it('isInner - w/custom plugins', async () => {
+    it('editor - w/custom plugins', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithPluginsJSONSuccess();
-      mockEnvironment(document, 'editor');
+      mockSharepointEditorFetchStatusSuccess();
+      mockEditorAdminEnvironment(document, 'editor');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -107,7 +109,7 @@ describe('Plugin action bar', () => {
 
       expectPluginCount(5);
 
-      expectEnvPlugin(['preview', 'live']);
+      expectEnvPlugin(['preview', 'live', 'prod']);
 
       expectPlugin('env-switcher');
       expectPlugin('.edit-preview');
@@ -120,10 +122,10 @@ describe('Plugin action bar', () => {
       expect(assetLibraryPlugin.textContent.trim()).to.equal('asset-library');
     });
 
-    it('isOuter', async () => {
+    it('isLive', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-      mockEnvironment(document, 'outer');
+      mockHelixEnvironment(document, 'live');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -141,7 +143,7 @@ describe('Plugin action bar', () => {
     it('isProd', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-      mockEnvironment(document, 'prod');
+      mockHelixEnvironment(document, 'prod');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -157,9 +159,9 @@ describe('Plugin action bar', () => {
     });
 
     it('isEditor', async () => {
-      mockEditorFetchStatusSuccess();
+      mockSharepointEditorFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-      mockEnvironment(document, 'editor');
+      mockEditorAdminEnvironment(document, 'editor');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -177,9 +179,9 @@ describe('Plugin action bar', () => {
     });
 
     it('isEditor - custom config with prod host', async () => {
-      mockEditorFetchStatusSuccess();
+      mockSharepointEditorFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();
-      mockEnvironment(document, 'editor');
+      mockEditorAdminEnvironment(document, 'editor');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -196,10 +198,10 @@ describe('Plugin action bar', () => {
       expectPlugin('.edit-preview');
     });
 
-    it('isInner - custom config with prod host', async () => {
+    it('isPreview - custom config with prod host', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();
-      mockEnvironment(document, 'inner');
+      mockHelixEnvironment(document, 'preview');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -215,9 +217,25 @@ describe('Plugin action bar', () => {
     });
 
     it('core plugin clicked', async () => {
+      window.hlx = {};
+
+      const actionFunction = async () => {};
+
+      // Create a spy for the action function
+      const actionSpy = sinon.spy(actionFunction);
+
+      const stub = sinon.stub(pluginFactory, 'createPublishPlugin').returns({
+        id: 'publish',
+        condition: () => true,
+        button: {
+          text: 'Publish',
+          action: actionSpy,
+        },
+      });
+
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();
-      mockEnvironment(document, 'inner');
+      mockHelixEnvironment(document, 'preview');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -230,16 +248,16 @@ describe('Plugin action bar', () => {
 
       const publishButton = recursiveQuery(sidekick, '.publish');
       publishButton.dispatchEvent(new Event('click'));
-      await waitUntil(() => recursiveQuery(sidekick, 'dialog-view'));
 
-      const dialogView = recursiveQuery(sidekick, 'dialog-view');
-      expect(dialogView).to.exist;
+      expect(actionSpy.calledOnce).to.be.true;
+
+      stub.restore();
     });
 
-    it('isAdmin', async () => {
-      mockDirectoryFetchStatusSuccess();
+    it('isAdmin - loads correct plugins', async () => {
+      mockSharepointEditorFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-      mockEnvironment(document, 'admin');
+      mockEditorAdminEnvironment(document, 'admin');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -255,9 +273,10 @@ describe('Plugin action bar', () => {
     });
 
     it('custom container plugin', async () => {
-      mockEditorFetchStatusSuccess();
+      mockSharepointEditorFetchStatusSuccess();
+      mockSharepointDirectoryFetchStatusSuccess();
       mockFetchConfigWithPluginsJSONSuccess();
-      mockEnvironment(document, 'editor');
+      mockEditorAdminEnvironment(document, 'editor');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -275,9 +294,10 @@ describe('Plugin action bar', () => {
     });
 
     it('clicks custom plugin', async () => {
-      mockEditorFetchStatusSuccess();
+      mockSharepointEditorFetchStatusSuccess();
+      mockSharepointDirectoryFetchStatusSuccess();
       mockFetchConfigWithPluginsJSONSuccess();
-      mockEnvironment(document, 'editor');
+      mockEditorAdminEnvironment(document, 'editor');
 
       const openStub = sinon.stub(window, 'open');
       const pluginUsedEventSpy = sinon.spy();

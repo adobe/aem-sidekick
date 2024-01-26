@@ -1,3 +1,13 @@
+## [1.5.2](https://github.com/adobe/aem-sidekick/compare/v1.5.1...v1.5.2) (2024-1-26)
+
+
+### Bug Fixes
+
+* clean up comments ([abd2c3e](https://github.com/adobe/aem-sidekick/commit/abd2c3e650d33630ed0e777cf961b6adbcfff882))
+* env switcher styling ([f5f8bdd](https://github.com/adobe/aem-sidekick/commit/f5f8bdd208d7511430267da19d78ae2f00edee02))
+* rename inner, isInner, outer and isOuter ([f7be854](https://github.com/adobe/aem-sidekick/commit/f7be85459cecf0fa0ec04b3fea592e344fe137bd))
+* rework environment mocks, organize fixtures and mocks ([5ccd9d8](https://github.com/adobe/aem-sidekick/commit/5ccd9d8797a69fd153926cd891d2e8a29daa6d77))
+
 ## [1.5.1](https://github.com/adobe/aem-sidekick/compare/v1.5.0...v1.5.1) (2024-1-25)
 
 

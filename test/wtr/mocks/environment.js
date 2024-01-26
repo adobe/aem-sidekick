@@ -10,15 +10,72 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-disable no-unused-vars */
+
 import sinon from 'sinon';
 import { appStore } from '../../../src/extension/app/store/app.js';
 
-let innerStub;
-let outerStub;
-let prodStub;
-let editorStub;
-let adminStub;
+let stubs = [];
 
+/**
+ * Mock content types
+ * @enum {string}
+ */
+const HelixMockContentType = {
+  DOC: 'doc',
+  SHEET: 'sheet',
+  IMAGE: 'image',
+  VIDEO: 'video',
+  ADMIN: 'admin',
+};
+
+/**
+ * Mock second level domains
+ * @enum {string}
+ */
+const HelixSecondLevelDomains = {
+  HLX: 'hlx',
+  AEM: 'aem',
+};
+
+/**
+ * Mock helix environments
+ * @enum {string}
+ */
+// eslint-disable-next-line no-unused-vars
+const HelixMockEnvironments = {
+  PREVIEW: 'preview',
+  LIVE: 'live',
+  PROD: 'prod',
+};
+
+/**
+ * Mock editor environments
+ * @enum {string}
+ */
+const EditorMockEnvironments = {
+  EDITOR: 'editor',
+  ADMIN: 'admin',
+};
+
+/**
+ * @typedef {HelixMockEnvironments | EditorMockEnvironments} AllEnvironments
+ */
+
+/**
+ * Mock content sources
+ * @enum {string}
+ */
+const HelixMockContentSources = {
+  SHAREPOINT: 'sharepoint',
+  GDRIVE: 'gdrive',
+};
+
+/**
+ * Mocks the browsers location
+ * @param {Document} document The HTML document used to mock the environment
+ * @param {string} location The location to mock
+ */
 function mockLocation(document, location) {
   const input = document.createElement('input');
   input.id = 'sidekick_test_location';
@@ -26,91 +83,150 @@ function mockLocation(document, location) {
   document.body.appendChild(input);
 }
 
-export function resetLocation(document) {
+/**
+ * Given a content type and second level domain, returns the default environment locations
+ * @param {HelixMockContentType} contentType The content type for the default environment location
+ * @param {HelixSecondLevelDomains} sld The second level domain to use in the environment
+ * @returns {Object | undefined}
+ */
+export function getDefaultHelixEnviromentLocations(contentType, sld) {
+  switch (contentType) {
+    case HelixMockContentType.DOC:
+      return {
+        preview: `https://main--aem-boilerplate--adobe.${sld}.page`,
+        live: `https://main--aem-boilerplate--adobe.${sld}.live`,
+        prod: 'https://www.aemboilerplate.com',
+      };
+    case HelixMockContentType.SHEET:
+      return {
+        preview: `https://main--aem-boilerplate--adobe.${sld}.page/placeholders.json`,
+        live: `https://main--aem-boilerplate--adobe.${sld}.live/placeholders.json`,
+        prod: 'https://www.aemboilerplate.com/placeholders.json',
+      };
+    case HelixMockContentType.IMAGE:
+      return {
+        preview: `https://main--aem-boilerplate--adobe.${sld}.page/media_foobar.png?width=750&format=png&optimize=medium`,
+        live: `https://main--aem-boilerplate--adobe.${sld}.live/media_foobar.png?width=750&format=png&optimize=medium`,
+        prod: 'https://www.aemboilerplate.com/media_foobar.png?width=750&format=png&optimize=medium',
+      };
+    default:
+      // eslint-disable-next-line no-console
+      console.error('Invalid environment');
+      return undefined;
+  }
+}
+
+/**
+ * Given a content source and content type, returns the default environment locations
+ * @prop {HelixMockContentSources} contentSource The content source (Default: sharepoint)
+ * @param {HelixMockContentType} contentType The content type for the default environment location
+ * @returns {string | undefined}
+ */
+export function getDefaultEditorEnviromentLocations(contentSource, contentType) {
+  switch (contentType) {
+    case HelixMockContentType.DOC:
+      return contentSource === HelixMockContentSources.SHAREPOINT
+        ? 'https://adobe.sharepoint.com/:w:/r/sites/HelixProjects/_layouts/15/Doc.aspx?sourcedoc=ID'
+        : 'https://docs.google.com/document/d/foobar/edit';
+    case HelixMockContentType.SHEET:
+      return contentSource === HelixMockContentSources.SHAREPOINT
+        ? 'https://adobe.sharepoint.com/:x:/r/sites/HelixProjects/_layouts/15/Doc.aspx?sourcedoc=ID'
+        : 'https://docs.google.com/spreadsheets/d/foobar/edit';
+    case HelixMockContentType.ADMIN:
+      return contentSource === HelixMockContentSources.SHAREPOINT
+        ? 'https://adobe.sharepoint.com/sites/adobecom/Shared%20Documents/Forms/AllItems.aspx?cid=foobar&RootFolder=%2Fsites%2Fadobe%2FShared%20Documents%2Faem-boilerplate&FolderCTID=0x012000F36D5B4C46F81741BCAC9F03FA9F93D1'
+        : 'https://drive.google.com/drive/u/0/folders/folder-id';
+    default:
+      // eslint-disable-next-line no-console
+      console.error('Invalid content type');
+      return undefined;
+  }
+}
+
+/**
+ * Given a helix environment, stubs the appropriate methods in appStore
+ * @param {AllEnvironments} environment
+ */
+function stubEnvironment(environment) {
+  const environments = ['preview', 'live', 'prod', 'editor', 'admin'];
+  environments.forEach((env) => {
+    const method = `is${env.charAt(0).toUpperCase() + env.slice(1)}`;
+    if (env === environment) {
+      // @ts-ignore
+      stubs.push(sinon.stub(appStore, method).returns(true));
+    } else {
+      // @ts-ignore
+      stubs.push(sinon.stub(appStore, method).returns(false));
+    }
+  });
+}
+
+/**
+ * Mocks a helix environment
+ * @param {Document} document The HTML document used to mock the environment
+ * @param {HelixMockEnvironments} environment The helix environment
+ * @param {HelixMockContentType} contentType The active content type for the environment
+ * @param {string} [location] Location override (Optional)
+ * @param {string} [sld] Second level domain override (Optional) (Default: hlx)
+ */
+export function mockHelixEnvironment(
+  document,
+  environment = EditorMockEnvironments.EDITOR,
+  contentType = HelixMockContentType.DOC,
+  location = undefined,
+  sld = 'hlx') {
+  if (!environment) {
+    throw new Error('environment is required');
+  }
+
+  // Given the environment, mock the appropriate methods in appStore
+  stubEnvironment(environment);
+
+  // Mock the browsers location
+  mockLocation(
+    document,
+    location ?? getDefaultHelixEnviromentLocations(contentType, sld)[environment],
+  );
+}
+
+/**
+ * Mocks an editor/admin environment
+ * @param {Document} document The HTML document used to mock the environment
+ * @param {EditorMockEnvironments} [environment] The editor/admin environment (Default: editor)
+ * @param {HelixMockContentType} [contentType] The document type (Default: doc)
+ * @param {HelixMockContentSources} [contentSource] The content source (Default: sharepoint)
+ * @param {string} [location] Location override (Optional)
+ */
+export function mockEditorAdminEnvironment(
+  document,
+  environment = EditorMockEnvironments.EDITOR,
+  contentType = HelixMockContentType.DOC,
+  contentSource = HelixMockContentSources.SHAREPOINT,
+  location = undefined) {
+  if (!environment) {
+    throw new Error('environment is required');
+  }
+
+  // Given the environment, mock the appropriate methods in appStore
+  stubEnvironment(environment);
+
+  // Mock the browsers location
+  mockLocation(document,
+    location ?? getDefaultEditorEnviromentLocations(contentSource, contentType),
+  );
+}
+
+/**
+ * Restores the default environment
+ * @param {Document} document The HTML document used to mock the environment
+ */
+export function restoreEnvironment(document) {
+  stubs.forEach((stub) => stub.restore());
+  stubs = [];
+
+  // Reset location
   const input = document.getElementById('sidekick_test_location');
   if (input) {
     input.remove();
   }
-}
-
-export const sharepointEditorUrl = 'https://adobe.sharepoint.com/:w:/r/sites/HelixProjects/_layouts/15/Doc.aspx?sourcedoc=ID';
-export function mockSharepointEditorLocation(document, location = sharepointEditorUrl) {
-  mockLocation(document, location);
-}
-
-export const sharepointDirectoryUrl = 'https://adobe-my.sharepoint.com/personal/user_name/_layouts/15/onedrive.aspx?id=%2Fsites%2Fadobe%2FShared%20Documents%2Faem-boilerplate&listurl=https%3A%2F%2Fadobe%2Esharepoint%2Ecom%2Fsites%2Fadobe%2FShared%20Documents&viewid=d776cf70%2D9b7e%2D4ab7%2Db9da%2D9e0f8e03a7d2&view=0D';
-export function mockSharepointDirectoryLocation(document, location = sharepointDirectoryUrl) {
-  mockLocation(document, location);
-}
-
-export const prodUrl = 'https://www.aemboilerplate.com';
-export function mockProdLocation(document, location = prodUrl) {
-  mockLocation(document, location);
-}
-
-export const innerUrl = 'https://main--aem-boilerplate--adobe.hlx.page';
-export function mockInnerLocation(document, location = innerUrl) {
-  mockLocation(document, location);
-}
-
-export const outerUrl = 'https://main--aem-boilerplate--adobe.hlx.live';
-export function mockOuterLocation(document, location = outerUrl) {
-  mockLocation(document, location);
-}
-
-export function mockEnvironment(document, environment) {
-  switch (environment) {
-    case 'inner':
-      innerStub = sinon.stub(appStore, 'isInner').returns(true);
-      outerStub = sinon.stub(appStore, 'isOuter').returns(false);
-      prodStub = sinon.stub(appStore, 'isProd').returns(false);
-      editorStub = sinon.stub(appStore, 'isEditor').returns(false);
-      adminStub = sinon.stub(appStore, 'isAdmin').returns(false);
-      mockInnerLocation(document);
-      break;
-    case 'outer':
-      innerStub = sinon.stub(appStore, 'isInner').returns(false);
-      outerStub = sinon.stub(appStore, 'isOuter').returns(true);
-      prodStub = sinon.stub(appStore, 'isProd').returns(false);
-      editorStub = sinon.stub(appStore, 'isEditor').returns(false);
-      adminStub = sinon.stub(appStore, 'isAdmin').returns(false);
-      mockOuterLocation(document);
-      break;
-    case 'prod':
-      innerStub = sinon.stub(appStore, 'isInner').returns(false);
-      outerStub = sinon.stub(appStore, 'isOuter').returns(false);
-      prodStub = sinon.stub(appStore, 'isProd').returns(true);
-      editorStub = sinon.stub(appStore, 'isEditor').returns(false);
-      adminStub = sinon.stub(appStore, 'isAdmin').returns(false);
-      mockProdLocation(document);
-      break;
-    case 'editor':
-      innerStub = sinon.stub(appStore, 'isInner').returns(false);
-      outerStub = sinon.stub(appStore, 'isOuter').returns(false);
-      prodStub = sinon.stub(appStore, 'isProd').returns(false);
-      editorStub = sinon.stub(appStore, 'isEditor').returns(true);
-      adminStub = sinon.stub(appStore, 'isAdmin').returns(false);
-      mockSharepointEditorLocation(document);
-      break;
-    case 'admin':
-      innerStub = sinon.stub(appStore, 'isInner').returns(false);
-      outerStub = sinon.stub(appStore, 'isOuter').returns(false);
-      prodStub = sinon.stub(appStore, 'isProd').returns(false);
-      editorStub = sinon.stub(appStore, 'isEditor').returns(false);
-      adminStub = sinon.stub(appStore, 'isAdmin').returns(true);
-      mockSharepointDirectoryLocation(document);
-      break;
-    default:
-      // eslint-disable-next-line no-console
-      console.error('Invalid environment');
-  }
-}
-
-export function restoreEnvironment(document) {
-  innerStub.restore();
-  outerStub.restore();
-  prodStub.restore();
-  editorStub.restore();
-  adminStub.restore();
-  resetLocation(document);
 }
