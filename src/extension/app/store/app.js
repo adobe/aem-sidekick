@@ -453,7 +453,7 @@ export class AppStore {
    */
   showWait(message) {
     if (!message) {
-      message = i18n(this.languageDict, 'please_wait');
+      message = this.i18n('please_wait');
     }
     EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
       detail: {
@@ -634,6 +634,15 @@ export class AppStore {
   }
 
   /**
+   * Helper i18n function
+   * @param {string} key Dictionary key
+   * @returns {string} The translated string
+   */
+  i18n(key) {
+    return i18n(this.languageDict, key);
+  }
+
+  /**
    * Updates the observable status of the current resource.
    * @param {Object} status The status object
    */
@@ -704,7 +713,7 @@ export class AppStore {
           detail: {
             type: MODALS.ERROR,
             data: {
-              message: `${i18n(this.languageDict, 'error_config_failure')}${resp.error}`,
+              message: `${this.i18n('error_config_failure')}${resp.error}`,
             },
           },
         }));
@@ -716,7 +725,7 @@ export class AppStore {
           detail: {
             type: MODALS.ERROR,
             data: {
-              message: i18n(this.languageDict, 'error_preview_failure'),
+              message: this.i18n('error_preview_failure'),
             },
           },
         }));
@@ -725,7 +734,7 @@ export class AppStore {
     }
     // handle special case /.helix/*
     if (status.webPath.startsWith('/.helix/')) {
-      this.showToast(i18n(this.languageDict, 'preview_config_success'), 'positive');
+      this.showToast(this.i18n('preview_config_success'), 'positive');
       return;
     }
     this.hideWait();
