@@ -35,27 +35,15 @@ export function createPublishPlugin(appStore) {
     button: {
       text: i18n(appStore.languageDict, 'publish'),
       action: async (evt) => {
-        const { siteStore, location } = appStore;
+        const { location } = appStore;
         const path = location.pathname;
         appStore.showWait();
-        let urls = [path];
-        // purge dependencies
-        if (Array.isArray(window.hlx.dependencies)) {
-          urls = urls.concat(window.hlx.dependencies);
-        }
-        const results = await Promise.all(urls.map((url) => appStore.publish(url)));
-        if (results.every((res) => res && res.ok)) {
-          // fetch and redirect to production
-          const redirectHost = siteStore.host || siteStore.outerHost;
-          const prodURL = `https://${redirectHost}${path}`;
-
-          // eslint-disable-next-line no-console
-          console.log(`redirecting to ${prodURL}`);
-
+        const res = await appStore.publish(path);
+        if (res.ok) {
           appStore.switchEnv('prod', newTab(evt));
         } else {
           // eslint-disable-next-line no-console
-          console.error(results);
+          console.error(res);
 
           EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
             detail: {
@@ -67,8 +55,8 @@ export function createPublishPlugin(appStore) {
           }));
         }
       },
-      isEnabled: (sidekick) => sidekick.isAuthorized('live', 'write') && sidekick.status.edit
-          && sidekick.status.edit.url, // enable only if edit url exists
+      isEnabled: (store) => store.isAuthorized('live', 'write') && store.status.edit
+          && store.status.edit.url, // enable only if edit url exists
     },
   };
 }
