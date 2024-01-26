@@ -44,10 +44,10 @@ describe('Environment Switcher', () => {
   });
 
   describe('switching between environments', () => {
-    it('change environment - inner -> live', async () => {
+    it('change environment - preview -> live', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-      mockHelixEnvironment(document, 'inner');
+      mockHelixEnvironment(document, 'preview');
 
       const switchEnvStub = sinon.stub(appStore, 'switchEnv').resolves();
 

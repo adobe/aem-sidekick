@@ -78,10 +78,10 @@ describe('Plugin action bar', () => {
   }
 
   describe('renders correct default plugins in action bar', () => {
-    it('isInner', async () => {
+    it('isPreview', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-      mockHelixEnvironment(document, 'inner');
+      mockHelixEnvironment(document, 'preview');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -122,10 +122,10 @@ describe('Plugin action bar', () => {
       expect(assetLibraryPlugin.textContent.trim()).to.equal('asset-library');
     });
 
-    it('isOuter', async () => {
+    it('isLive', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
-      mockHelixEnvironment(document, 'outer');
+      mockHelixEnvironment(document, 'live');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -198,10 +198,10 @@ describe('Plugin action bar', () => {
       expectPlugin('.edit-preview');
     });
 
-    it('isInner - custom config with prod host', async () => {
+    it('isPreview - custom config with prod host', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'inner');
+      mockHelixEnvironment(document, 'preview');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -235,7 +235,7 @@ describe('Plugin action bar', () => {
 
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'inner');
+      mockHelixEnvironment(document, 'preview');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);

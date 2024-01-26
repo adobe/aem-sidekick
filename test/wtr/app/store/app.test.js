@@ -116,24 +116,24 @@ describe('Test App Store', () => {
     expect(appStore.languageDict.title).to.eq('AEM Sidekick - NextGen');
   });
 
-  it('isInner()', async () => {
+  it('isPreview()', async () => {
     await appStore.loadContext(sidekickElement, defaultSidekickConfig);
     appStore.location.port = '';
 
     appStore.location.host = 'main--aem-boilerplate--adobe.hlx.page';
-    expect(appStore.isInner()).to.be.true;
+    expect(appStore.isPreview()).to.be.true;
 
     appStore.location.host = 'main--aem-boilerplate--adobe.hlx.live';
-    expect(appStore.isInner()).to.be.false;
+    expect(appStore.isPreview()).to.be.false;
 
     appStore.location.host = 'main--aem-boilerplate--adobe.aem.page';
-    expect(appStore.isInner()).to.be.true;
+    expect(appStore.isPreview()).to.be.true;
 
     appStore.location.host = 'main--aem-boilerplate--adobe.aem.live';
-    expect(appStore.isInner()).to.be.false;
+    expect(appStore.isPreview()).to.be.false;
 
     appStore.location.host = 'foobar.com';
-    expect(appStore.isInner()).to.be.false;
+    expect(appStore.isPreview()).to.be.false;
   });
 
   it('isProd()', async () => {

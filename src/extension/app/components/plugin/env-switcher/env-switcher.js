@@ -79,9 +79,9 @@ export class EnvironmentSwitcher extends MobxLitElement {
     // Determine the current environment
     if (appStore.isEditor()) {
       this.currentEnv = 'edit';
-    } else if (appStore.isInner()) {
+    } else if (appStore.isPreview()) {
       this.currentEnv = 'preview';
-    } else if (appStore.isOuter()) {
+    } else if (appStore.isLive()) {
       this.currentEnv = 'live';
     } else if (appStore.isProd()) {
       this.currentEnv = 'prod';

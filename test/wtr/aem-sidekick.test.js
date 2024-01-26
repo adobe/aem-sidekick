@@ -32,7 +32,7 @@ describe('AEM Sidekick', () => {
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
     mockFetchStatusSuccess();
-    mockHelixEnvironment(document, 'inner');
+    mockHelixEnvironment(document, 'preview');
   });
 
   afterEach(() => {
