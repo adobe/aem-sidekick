@@ -15,22 +15,32 @@
 import { css } from 'lit';
 
 export const style = css`
-  @media (prefers-color-scheme: light) {
-    :host(:not(.edit)[class]),
-    :host(:not(.edit)[class]) #label,
-    :host(:not(.edit)[class]) [name="description"]::slotted(*) {
-      color: var(--spectrum-white);
-    }
+  :host(:not(.env-edit)[class]),
+  :host(:not(.env-edit)[class]) #label {
+    color: var(--spectrum-white);
   }
 
-  :host(.preview){
-    background-color: #1379F3;
-    border-radius: 4px;
+  :host(.current-env) #label {
     font-weight: 700;
   }
 
-  :host(.live),
-  :host(.prod) {
+  :host(.current-env.env-preview){
+    background-color: #1379F3;
+    border-radius: 4px;
+  }
+
+  :host(.current-env.env-preview) #label {
+    color: var(--spectrum-white);
+    font-weight: 700;
+  }
+
+  :host(.current-env) [name="description"]::slotted(*){
+    color: var(--spectrum-gray-800);
+    font-weight: 400;
+  }
+
+  :host(.current-env.env-live),
+  :host(.current-env.env-prod) {
     background-color: #009112;
     border-radius: 4px;
     font-weight: 700;
@@ -40,5 +50,18 @@ export const style = css`
     position: absolute;
     top: 0;
     right: 0;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :host(.current-env) #label,
+    :host(.current-env) [name="description"]::slotted(*){
+      color: var(--spectrum-white);
+    }
+
+    :host(:not(.env-edit, .current-env)[class]),
+    :host(:not(.env-edit, .current-env)[class]) #label,
+    :host(:not(.env-edit, .current-env)[class]) [name="description"]::slotted(*) {
+      color: var(--spectrum-gray-800);
+    }
   }
 `;
