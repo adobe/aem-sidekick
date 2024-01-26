@@ -31,7 +31,7 @@ import { i18n } from '../../utils/i18n.js';
 export function createReloadPlugin(appStore) {
   return {
     id: 'reload',
-    condition: (store) => store.isInner() || store.isDev(),
+    condition: (store) => store.isPreview() || store.isDev(),
     button: {
       text: i18n(appStore.languageDict, 'reload'),
       action: async (evt) => {
