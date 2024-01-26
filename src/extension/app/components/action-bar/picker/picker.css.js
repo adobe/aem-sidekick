@@ -21,6 +21,10 @@ export const style = css`
     background-color: var(--spectrum-blue-600);
   }
 
+  :host(.env-preview[disabled]) #button{
+    background-color: var(--spectrum-blue-300);
+  }
+
   :host(.env-preview) #button[aria-expanded="true"] {
     background-color: var(--spectrum-blue-500);
   }
@@ -28,6 +32,11 @@ export const style = css`
   :host(.env-live) #button,
   :host(.env-prod) #button {
     background-color: var(--spectrum-celery-700);
+  }
+
+  :host(.env-live[disabled]) #button,
+  :host(.env-prod[disabled]) #button {
+    background-color: var(--spectrum-celery-300);
   }
 
   :host(.env-live) #button[aria-expanded="true"],
@@ -59,8 +68,18 @@ export const style = css`
       color: var(--spectrum-white);
     }
 
+    :host(:not(.env-edit)[disabled]) #button #label,
+    :host(:not(.env-edit)[disabled]) #button sp-icon-chevron100,
+    :host(:not(.env-edit)[disabled]) #button:hover sp-icon-chevron100  {
+      color: var(--spectrum-gray-400);
+    }
+
     :host(.env-preview) #button{
       background-color: var(--spectrum-blue-900);
+    }
+
+    :host(.env-preview[disabled]) #button{
+      background-color: var(--spectrum-blue-1100);
     }
 
     :host(.env-preview) #button[aria-expanded="true"] {
@@ -70,6 +89,11 @@ export const style = css`
     :host(.env-live) #button,
     :host(.env-prod) #button {
       background-color: var(--spectrum-celery-800);
+    }
+
+    :host(.env-live[disabled]) #button,
+    :host(.env-prod[disabled]) #button {
+      background-color: var(--spectrum-celery-1000);
     }
 
     :host(.env-live) #button[aria-expanded="true"],
