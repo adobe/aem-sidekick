@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/adobe/aem-sidekick/compare/v1.5.2...v1.5.3) (2024-1-27)
+
+
+### Bug Fixes
+
+* add and use i18n helper function on appStore ([06bb150](https://github.com/adobe/aem-sidekick/commit/06bb150cb7ae2f21758fcbcbfb40e58d2ee572c6))
+
 ## [1.5.2](https://github.com/adobe/aem-sidekick/compare/v1.5.1...v1.5.2) (2024-1-26)
 
 
