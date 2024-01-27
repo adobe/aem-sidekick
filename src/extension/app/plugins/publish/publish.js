@@ -40,6 +40,7 @@ export function createPublishPlugin(appStore) {
         appStore.showWait();
         const res = await appStore.publish(path);
         if (res.ok) {
+          appStore.hideWait();
           appStore.switchEnv('prod', newTab(evt));
         } else {
           // eslint-disable-next-line no-console
