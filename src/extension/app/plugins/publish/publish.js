@@ -13,7 +13,6 @@
 import { EVENTS, MODALS } from '../../constants.js';
 import { newTab } from '../../utils/browser.js';
 import { EventBus } from '../../utils/event-bus.js';
-import { i18n } from '../../utils/i18n.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -33,7 +32,7 @@ export function createPublishPlugin(appStore) {
     id: 'publish',
     condition: (store) => store.isProject() && store.isContent(),
     button: {
-      text: i18n(appStore.languageDict, 'publish'),
+      text: appStore.i18n('publish'),
       action: async (evt) => {
         const { siteStore, location } = appStore;
         const path = location.pathname;
@@ -61,7 +60,7 @@ export function createPublishPlugin(appStore) {
             detail: {
               type: MODALS.ERROR,
               data: {
-                message: i18n(appStore.languageDict, 'publish_failure'),
+                message: appStore.i18n('publish_failure'),
               },
             },
           }));

@@ -23,7 +23,6 @@
 
 import { EVENTS, MODALS } from '../../constants.js';
 import { EventBus } from '../../utils/event-bus.js';
-import { i18n } from '../../utils/i18n.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -43,7 +42,7 @@ export function createPreviewPlugin(appStore) {
     id: 'edit-preview',
     condition: (store) => store.isEditor(),
     button: {
-      text: i18n(appStore.languageDict, 'preview'),
+      text: appStore.i18n('preview'),
       action: async () => {
         const { status, location } = appStore;
         if (status.edit && status.edit.sourceLocation
@@ -51,7 +50,7 @@ export function createPreviewPlugin(appStore) {
             && !location.pathname.startsWith('/:x:/')) {
           // show ctrl/cmd + s hint on onedrive docs
           const mac = navigator.platform.toLowerCase().includes('mac') ? '_mac' : '';
-          appStore.showToast(i18n(appStore.languageDict, `preview_onedrive${mac}`));
+          appStore.showToast(appStore.i18n(`preview_onedrive${mac}`));
         } else if (status.edit.sourceLocation?.startsWith('gdrive:')) {
           const { contentType } = status.edit;
 
@@ -73,7 +72,7 @@ export function createPreviewPlugin(appStore) {
               detail: {
                 type: MODALS.ERROR,
                 data: {
-                  message: i18n(appStore.languageDict, errorKey),
+                  message: appStore.i18n(errorKey),
                 },
               },
             }));
