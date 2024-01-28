@@ -254,8 +254,12 @@ export class EnvironmentSwitcher extends MobxLitElement {
     }
 
     if (showProd) {
-      picker.replaceChild(prodMenuItem, liveMenuItem);
+      picker.append(prodMenuItem);
+    }
+
+    if (this.currentEnv !== 'live' && (showProd || this.currentEnv === 'prod')) {
       // TODO: show/hide live based on alt/option key
+      liveMenuItem.remove();
     }
 
     if (appStore.status?.webPath) {
