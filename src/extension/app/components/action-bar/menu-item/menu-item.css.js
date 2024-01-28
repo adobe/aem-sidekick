@@ -24,6 +24,13 @@ export const style = css`
     font-weight: 700;
   }
 
+  :host(.current-env.env-edit[aria-disabled="true"]) #label,
+  :host(.current-env.env-edit[disabled]) #label,
+  :host(.current-env.env-edit[aria-disabled="true"]) [name="description"]::slotted(*),
+  :host(.current-env.env-edit[disabled]) [name="description"]::slotted(*) {
+    color: var(--mod-menu-item-label-content-color-default);
+  }
+
   :host(.current-env.env-preview){
     background-color: #1379F3;
     border-radius: 4px;

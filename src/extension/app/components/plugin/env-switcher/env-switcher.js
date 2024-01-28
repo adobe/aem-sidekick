@@ -109,6 +109,9 @@ export class EnvironmentSwitcher extends MobxLitElement {
    * @returns {HTMLElement} - The created menu item
    */
   createMenuItem(id, attrs, lastModified) {
+    if (this.currentEnv === id) {
+      attrs.disabled = '';
+    }
     const label = this.envNames[id];
     const menuItem = createTag({
       tag: 'sp-menu-item',
@@ -207,7 +210,9 @@ export class EnvironmentSwitcher extends MobxLitElement {
 
     switch (this.currentEnv) {
       case 'edit':
+        editMenuItem.classList.add('current-env');
         picker.append(
+          editMenuItem,
           navToHeader,
           previewMenuItem,
           liveMenuItem,
@@ -249,7 +254,8 @@ export class EnvironmentSwitcher extends MobxLitElement {
     }
 
     if (showProd) {
-      picker.append(prodMenuItem);
+      picker.replaceChild(prodMenuItem, liveMenuItem);
+      // TODO: show/hide live based on alt/option key
     }
 
     if (appStore.status?.webPath) {
