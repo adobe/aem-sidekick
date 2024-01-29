@@ -16,7 +16,6 @@ import { style } from './modal-container.css.js';
 import { EventBus } from '../../utils/event-bus.js';
 import { EVENTS, MODALS } from '../../constants.js';
 import { appStore } from '../../store/app.js';
-import { i18n } from '../../utils/i18n.js';
 
 /**
  * The modal type
@@ -89,8 +88,8 @@ export class ModalContainer extends LitElement {
         break;
       case MODALS.ERROR:
         options.dismissable = false;
-        options.headline = data.headline || i18n(appStore.languageDict, 'error');
-        options.confirmLabel = data.confirmLabel || i18n(appStore.languageDict, 'ok');
+        options.headline = data.headline || appStore.i18n('error');
+        options.confirmLabel = data.confirmLabel || appStore.i18n('ok');
         options.content = html`
           ${data.message}
         `;

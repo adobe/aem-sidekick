@@ -12,7 +12,7 @@
 
 import { log } from '../../log.js';
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
-import { getLanguage, i18n } from '../utils/i18n.js';
+import { getLanguage } from '../utils/i18n.js';
 
 /**
  * The sidekick options configuration object type
@@ -229,7 +229,7 @@ export class SiteStore {
       {
         path: '**.json',
         viewer: chrome.runtime.getURL('view/json/json.html'),
-        title: () => i18n(this.appStore.languageDict, 'json_view_description'),
+        title: () => this.appStore.i18n('json_view_description'),
       },
     ];
     // prepend custom views
