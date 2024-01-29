@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/adobe/aem-sidekick/compare/v1.5.3...v1.6.0) (2024-1-29)
+
+
+### Features
+
+* tweak env switcher ([aad88ee](https://github.com/adobe/aem-sidekick/commit/aad88eed0ed4c5d36cad2e7025f68c5a0072126c))
+
 ## [1.5.3](https://github.com/adobe/aem-sidekick/compare/v1.5.2...v1.5.3) (2024-1-27)
 
 
