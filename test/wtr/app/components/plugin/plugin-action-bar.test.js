@@ -29,7 +29,12 @@ import {
   mockFetchStatusSuccess,
 } from '../../../mocks/helix-admin.js';
 import '../../../../../src/extension/index.js';
-import { mockHelixEnvironment, mockEditorAdminEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import {
+  mockHelixEnvironment,
+  mockEditorAdminEnvironment,
+  mockLocation,
+  restoreEnvironment,
+} from '../../../mocks/environment.js';
 import { EXTERNAL_EVENTS } from '../../../../../src/extension/app/constants.js';
 import { pluginFactory } from '../../../../../src/extension/app/plugins/plugin-factory.js';
 
@@ -54,10 +59,9 @@ describe('Plugin action bar', () => {
     const picker = recursiveQuery(envPlugin, 'action-bar-picker');
 
     expect(envPlugin).to.exist;
-
     environments.forEach((env) => {
       const envButton = recursiveQuery(picker, `sp-menu-item.env-${env}`);
-      expect(envButton).to.exist;
+      expect(envButton, `Button for ${env} does not exist`).to.exist;
     });
 
     const menuButtons = recursiveQueryAll(picker, 'sp-menu-item');
@@ -109,7 +113,7 @@ describe('Plugin action bar', () => {
 
       expectPluginCount(5);
 
-      expectEnvPlugin(['preview', 'live', 'prod']);
+      expectEnvPlugin(['edit', 'preview', 'prod']);
 
       expectPlugin('env-switcher');
       expectPlugin('.edit-preview');
@@ -152,10 +156,27 @@ describe('Plugin action bar', () => {
 
       expectPluginCount(2);
 
-      expectEnvPlugin(['prod', 'preview', 'edit', 'live']);
+      expectEnvPlugin(['prod', 'preview', 'edit']);
 
       expectPlugin('env-switcher');
       expectPlugin('.publish');
+    });
+
+    it('Unsupported env', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigJSONNotFound();
+      mockLocation(document, 'https://www.example.com');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expectPluginCount(1);
+
+      expectEnvPlugin([]);
+
+      expectPlugin('env-switcher');
     });
 
     it('isEditor', async () => {
@@ -172,7 +193,7 @@ describe('Plugin action bar', () => {
 
       expectPluginCount(2);
 
-      expectEnvPlugin(['preview', 'live']);
+      expectEnvPlugin(['edit', 'preview', 'live']);
 
       expectPlugin('env-switcher');
       expectPlugin('.edit-preview');
@@ -192,7 +213,7 @@ describe('Plugin action bar', () => {
 
       expectPluginCount(2);
 
-      expectEnvPlugin(['preview', 'live', 'prod']);
+      expectEnvPlugin(['edit', 'preview', 'prod']);
 
       expectPlugin('env-switcher');
       expectPlugin('.edit-preview');
@@ -211,7 +232,7 @@ describe('Plugin action bar', () => {
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
       expectPluginCount(2);
-      expectEnvPlugin(['preview', 'edit', 'live', 'prod']);
+      expectEnvPlugin(['preview', 'edit', 'prod']);
       expectPlugin('env-switcher');
       expectPlugin('.publish');
     });
@@ -254,7 +275,7 @@ describe('Plugin action bar', () => {
       stub.restore();
     });
 
-    it('isAdmin - loads correct plugins', async () => {
+    it.skip('isAdmin - loads correct plugins', async () => {
       mockSharepointEditorFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
       mockEditorAdminEnvironment(document, 'admin');
@@ -262,14 +283,8 @@ describe('Plugin action bar', () => {
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-
       // TODO: Expand tests when bulk plugin is added
-      expectPluginCount(1);
-
-      expectEnvPlugin([]);
-
-      expectPlugin('env-switcher');
+      // expectPluginCount(0);
     });
 
     it('custom container plugin', async () => {

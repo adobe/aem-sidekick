@@ -76,7 +76,7 @@ const HelixMockContentSources = {
  * @param {Document} document The HTML document used to mock the environment
  * @param {string} location The location to mock
  */
-function mockLocation(document, location) {
+export function mockLocation(document, location) {
   const input = document.createElement('input');
   input.id = 'sidekick_test_location';
   input.value = location;

@@ -148,7 +148,7 @@ export const defaultStatusResponse = {
         path: '/',
       },
     ],
-    lastModified: 'Wed, 01 Nov 2023 17:22:52 GMT',
+    lastModified: 'Wed, 29 Dec 2023 17:22:52 GMT',
     sourceLocation: 'gdrive:drive-id',
     status: 200,
   },

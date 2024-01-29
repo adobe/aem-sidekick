@@ -105,49 +105,45 @@ export class PluginActionBar extends MobxLitElement {
    * @returns {(TemplateResult|string)[]|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
-    if (appStore.corePlugins) {
-      const corePlugins = Object.values(appStore.corePlugins)?.map((plugin) => (plugin.condition(appStore) ? this.createCorePlugin(plugin) : ''));
+    const corePlugins = Object.values(appStore.corePlugins)?.map((plugin) => (plugin.condition(appStore) ? this.createCorePlugin(plugin) : ''));
 
-      /**
-       * @type {Record<string, CorePlugin & ContainerPlugin>}
-       * */
-      const customPlugins = {};
-      Object.values(appStore.customPlugins).forEach((plugin) => {
-        if (plugin.button.isDropdown) {
-          customPlugins[plugin.id] = plugin;
-        } else if (plugin.container) {
-          const container = customPlugins[plugin.container];
-          if (!container.children) {
-            container.children = {};
-          }
-          container.children[plugin.id] = plugin;
-        } else {
-          customPlugins[plugin.id] = plugin;
+    /**
+     * @type {Record<string, CorePlugin & ContainerPlugin>}
+     * */
+    const customPlugins = {};
+    Object.values(appStore.customPlugins).forEach((plugin) => {
+      if (plugin.button.isDropdown) {
+        customPlugins[plugin.id] = plugin;
+      } else if (plugin.container) {
+        const container = customPlugins[plugin.container];
+        if (!container.children) {
+          container.children = {};
         }
-      });
+        container.children[plugin.id] = plugin;
+      } else {
+        customPlugins[plugin.id] = plugin;
+      }
+    });
 
-      const userPlugins = Object.values(customPlugins).map((plugin) => {
-        if (plugin.children) {
-          return html`
-            <action-bar-picker class=${`plugin-container ${plugin.id}`} label=${plugin.button.text} @change=${(e) => this.onChange(e, plugin)}>
-              ${Object.values(plugin.children).map((childPlugin) => (childPlugin.condition(appStore)
-                  ? html`<sp-menu-item value=${childPlugin.id}>${childPlugin.button.text}</sp-menu-item>`
-                  : ''))}
-            </action-bar-picker>
-          `;
-        }
+    const userPlugins = Object.values(customPlugins).map((plugin) => {
+      if (plugin.children) {
+        return html`
+          <action-bar-picker class=${`plugin-container ${plugin.id}`} label=${plugin.button.text} @change=${(e) => this.onChange(e, plugin)}>
+            ${Object.values(plugin.children).map((childPlugin) => (childPlugin.condition(appStore)
+                ? html`<sp-menu-item value=${childPlugin.id}>${childPlugin.button.text}</sp-menu-item>`
+                : ''))}
+          </action-bar-picker>
+        `;
+      }
 
-        return plugin.condition(appStore) ? html`
-                <sp-action-button class=${plugin.id} quiet @click=${(evt) => this.onPluginButtonClick(evt, plugin)}>
-                  ${plugin.button.text || plugin.id}
-                </sp-action-button>
-              ` : '';
-      });
+      return plugin.condition(appStore) ? html`
+              <sp-action-button class=${plugin.id} quiet @click=${(evt) => this.onPluginButtonClick(evt, plugin)}>
+                ${plugin.button.text || plugin.id}
+              </sp-action-button>
+            ` : '';
+    });
 
-      return [...corePlugins, ...userPlugins];
-    }
-
-    return '';
+    return [...corePlugins, ...userPlugins];
   }
 
   render() {

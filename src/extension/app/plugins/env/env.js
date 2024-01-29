@@ -21,6 +21,6 @@
 export function createEnvPlugin() {
   return {
     id: 'env-switcher',
-    condition: () => true,
+    condition: (store) => !store.isAdmin(),
   };
 }
