@@ -89,7 +89,7 @@
     "eslint-plugin-mobx": "0.0.9",
     "fetch-mock": "9.11.0",
     "fs-extra": "11.2.0",
-    "husky": "8.0.3",
+    "husky": "9.0.7",
     "jsdoc-to-markdown": "8.0.0",
     "lint-staged": "15.2.0",
     "mocha": "10.2.0",
