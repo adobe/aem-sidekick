@@ -28,7 +28,7 @@ export const style = css`
   :host(.current-env.env-edit[disabled]) #label,
   :host(.current-env.env-edit[aria-disabled="true"]) [name="description"]::slotted(*),
   :host(.current-env.env-edit[disabled]) [name="description"]::slotted(*) {
-    color: var(--mod-menu-item-label-content-color-default);
+    color: var(--menu-item-label-content-color-default);
   }
 
   :host(.current-env.env-preview){
