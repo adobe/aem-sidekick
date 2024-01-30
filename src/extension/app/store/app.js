@@ -471,6 +471,13 @@ export class AppStore {
   }
 
   /**
+   * Reloads the current page. Abstracted for testing.
+   */
+  reloadPage() {
+    window.location.reload();
+  }
+
+  /**
    * Fires an event with the given name.
    * @param {string} name The name of the event
    * @param {Object} data The data to pass to event listeners (optional)
