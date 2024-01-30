@@ -108,7 +108,60 @@ export const defaultConfigJSONWithPlugins = {
 /**
  * status request stubs
  */
-export const defaultStatusResponse = {
+export const defaultSharepointStatusResponse = {
+  webPath: '/',
+  resourcePath: '/index.md',
+  live: {
+    url: 'https://main--aem-boilerplate--adobe.hlx.live/',
+    status: 200,
+    contentBusId: 'helix-content-bus/content-bus-id/live/index.md',
+    contentType: 'text/plain; charset=utf-8',
+    lastModified: 'Tue, 19 Dec 2023 15:42:45 GMT',
+    sourceLocation: 'onedrive:/drives/drive-id/items/item-id',
+    sourceLastModified: 'Wed, 01 Nov 2023 17:22:52 GMT',
+    permissions: [
+      'read',
+      'write',
+    ],
+  },
+  preview: {
+    url: 'https://main--aem-boilerplate--adobe.hlx.page/',
+    status: 200,
+    contentBusId: 'helix-content-bus/content-bus-id/preview/index.md',
+    contentType: 'text/plain; charset=utf-8',
+    lastModified: 'Tue, 19 Dec 2023 15:42:34 GMT',
+    sourceLocation: 'onedrive:/drives/drive-id/items/item-id',
+    sourceLastModified: 'Wed, 01 Nov 2023 17:22:52 GMT',
+    permissions: [
+      'read',
+      'write',
+    ],
+  },
+  edit: {
+    url: 'https://adobe-my.sharepoint.com/:w:/r/personal/user_adobe_com/_layouts/15/Doc.aspx?sourcedoc={89B9F732-7067-458B-BF05-C64013503F33}',
+    name: 'index',
+    contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    lastModified: 'Wed, 29 Dec 2023 17:22:52 GMT',
+    sourceLocation: 'onedrive:/drives/drive-id/items/item-id',
+    status: 200,
+  },
+  code: {
+    status: 400,
+    permissions: [
+      'delete',
+      'read',
+      'write',
+    ],
+  },
+  links: {
+    status: 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/',
+    preview: 'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/',
+    live: 'https://admin.hlx.page/live/adobe/aem-boilerplate/main/',
+    code: 'https://admin.hlx.page/code/adobe/aem-boilerplate/main/',
+  },
+};
+
+export const defaultGdriveStatusResponse = {
   webPath: '/',
   resourcePath: '/index.md',
   live: {
@@ -169,7 +222,7 @@ export const defaultStatusResponse = {
 };
 
 export const statusResponseWithProfile = {
-  ...defaultStatusResponse,
+  ...defaultGdriveStatusResponse,
   profile: {
     iss: 'https://accounts.google.com',
     aud: 'user-id.apps.googleusercontent.com',
@@ -189,7 +242,7 @@ export const statusResponseWithProfile = {
   },
 };
 
-export const defaultDirectoryStatusResponse = {
+export const defaultDirectorySharepointStatusResponse = {
   webPath: '/',
   resourcePath: '/',
   live: {
@@ -212,6 +265,52 @@ export const defaultDirectoryStatusResponse = {
   },
   edit: {
     url: 'https://adobe-my.sharepoint.com/personal/user_adobe_com/_layouts/15/onedrive.aspx?id=%2Fpersonal%5Fadobe%5Fcom%2FDocuments%2Faem%2Dboilerplate&view=0',
+    name: 'aem-boilerplate',
+    contentType: 'application/folder',
+    folders: [],
+    lastModified: 'Mon, 14 Feb 2022 16:39:24 GMT',
+    sourceLocation: 'gdrive:drive-id',
+    status: 200,
+  },
+  code: {
+    status: 400,
+    permissions: [
+      'delete',
+      'read',
+      'write',
+    ],
+  },
+  links: {
+    status: 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/',
+    preview: 'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/',
+    live: 'https://admin.hlx.page/live/adobe/aem-boilerplate/main/',
+    code: 'https://admin.hlx.page/code/adobe/aem-boilerplate/main/',
+  },
+};
+
+export const defaultDirectoryGdriveStatusResponse = {
+  webPath: '/',
+  resourcePath: '/',
+  live: {
+    url: 'https://main--aem-boilerplate--adobe.hlx.live/',
+    status: 404,
+    contentBusId: 'helix-content-bus/content-bus-id/live/',
+    permissions: [
+      'read',
+      'write',
+    ],
+  },
+  preview: {
+    url: 'https://main--aem-boilerplate--adobe.hlx.page/',
+    status: 404,
+    contentBusId: 'helix-content-bus/content-bus-id/preview/',
+    permissions: [
+      'read',
+      'write',
+    ],
+  },
+  edit: {
+    url: 'https://drive.google.com/drive/u/1/folders/folder-id',
     name: 'aem-boilerplate',
     contentType: 'application/folder',
     folders: [],

@@ -19,7 +19,7 @@ import { AEMSidekick } from '../../../../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
-  mockSharepointEditorFetchStatusSuccess,
+  mockSharepointEditorDocFetchStatusSuccess,
   mockFetchConfigWithPluginsJSONSuccess,
 } from '../../../mocks/helix-admin.js';
 import '../../../../../src/extension/index.js';
@@ -63,7 +63,7 @@ describe('Palette container', () => {
   }
 
   it('closes palette plugin via close button', async () => {
-    mockSharepointEditorFetchStatusSuccess();
+    mockSharepointEditorDocFetchStatusSuccess();
     mockFetchConfigWithPluginsJSONSuccess();
     mockEditorAdminEnvironment(document, 'editor');
 
@@ -80,7 +80,7 @@ describe('Palette container', () => {
   });
 
   it('closes palette plugin via esc key', async () => {
-    mockSharepointEditorFetchStatusSuccess();
+    mockSharepointEditorDocFetchStatusSuccess();
     mockFetchConfigWithPluginsJSONSuccess();
     mockEditorAdminEnvironment(document, 'editor');
 
@@ -99,7 +99,7 @@ describe('Palette container', () => {
   });
 
   it('palette renders titleI18n', async () => {
-    mockSharepointEditorFetchStatusSuccess();
+    mockSharepointEditorDocFetchStatusSuccess();
     mockFetchConfigWithPluginsJSONSuccess();
     mockEditorAdminEnvironment(document, 'editor');
 

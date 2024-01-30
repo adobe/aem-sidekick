@@ -20,7 +20,7 @@ import chromeMock from '../../mocks/chrome.js';
 import {
   mockFetchConfigJSONNotFound,
   mockFetchConfigWithPluginsJSONSuccess,
-  mockFetchStatusEditURLSuccess,
+  mockGdriveFetchStatusEditURLSuccess,
   mockFetchStatusNotFound,
   mockFetchStatusServerError,
   mockFetchStatusSuccess,
@@ -293,7 +293,7 @@ describe('Test App Store', () => {
     });
 
     it('success - editor', async () => {
-      mockFetchStatusEditURLSuccess();
+      mockGdriveFetchStatusEditURLSuccess();
       sinon.stub(appStore, 'isEditor').returns(true);
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await appStore.fetchStatus();
