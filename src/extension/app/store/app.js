@@ -474,6 +474,7 @@ export class AppStore {
    * Reloads the current page. Abstracted for testing.
    */
   reloadPage() {
+    // istanbul ignore next
     window.location.reload();
   }
 
