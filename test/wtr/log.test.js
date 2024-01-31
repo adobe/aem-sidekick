@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { expect } from '@esm-bundle/chai';
+import { expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
