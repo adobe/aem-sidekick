@@ -61,12 +61,12 @@ describe('Environment Switcher', () => {
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
       const button = recursiveQuery(picker, '#button');
 
-      button.dispatchEvent(new Event('click'));
+      button.click();
 
       await waitUntil(() => recursiveQuery(picker, 'sp-popover'));
 
       const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
-      liveButton.dispatchEvent(new Event('click'));
+      liveButton.click();
 
       picker.value = 'live';
       picker.dispatchEvent(new Event('change'));

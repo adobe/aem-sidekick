@@ -63,7 +63,7 @@ describe('Preview plugin', () => {
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
       expect(previewPlugin.textContent.trim()).to.equal('Preview');
 
-      previewPlugin.dispatchEvent(new Event('click'));
+      previewPlugin.click();
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(tipToast.calledOnce).to.be.true;
@@ -86,7 +86,7 @@ describe('Preview plugin', () => {
 
       // Click the preview the plugin
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
-      previewPlugin.dispatchEvent(new Event('click'));
+      previewPlugin.click();
 
       expect(reloadStub.calledOnce).to.be.true;
 
@@ -124,7 +124,7 @@ describe('Preview plugin', () => {
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 
-      previewPlugin.dispatchEvent(new Event('click'));
+      previewPlugin.click();
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
 
@@ -148,7 +148,7 @@ describe('Preview plugin', () => {
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 
-      previewPlugin.dispatchEvent(new Event('click'));
+      previewPlugin.click();
 
       expect(modalSpy.calledOnce).to.be.true;
       expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.ERROR);
@@ -171,7 +171,7 @@ describe('Preview plugin', () => {
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 
-      previewPlugin.dispatchEvent(new Event('click'));
+      previewPlugin.click();
 
       expect(modalSpy.calledOnce).to.be.true;
       expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.ERROR);
@@ -194,7 +194,7 @@ describe('Preview plugin', () => {
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 
-      previewPlugin.dispatchEvent(new Event('click'));
+      previewPlugin.click();
 
       expect(modalSpy.calledOnce).to.be.true;
       expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.ERROR);

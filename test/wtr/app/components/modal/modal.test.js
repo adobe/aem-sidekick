@@ -94,7 +94,7 @@ describe('Modals', () => {
 
     const okButton = recursiveQuery(dialogView, 'sp-button');
     expect(okButton).to.exist;
-    okButton.dispatchEvent(new Event('click'));
+    okButton.click();
 
     await aTimeout(100);
     expect(recursiveQuery(modal, 'dialog-view')).to.be.undefined;

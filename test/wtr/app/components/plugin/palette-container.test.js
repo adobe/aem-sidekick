@@ -72,7 +72,7 @@ describe('Palette container', () => {
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
     const paletteDialog = recursiveQuery(sidekick, 'palette-dialog');
     const closeButton = recursiveQuery(paletteDialog, 'sp-close-button');
-    closeButton.dispatchEvent(new Event('click'));
+    closeButton.click();
 
     await waitUntil(() => paletteContainer.plugin === undefined);
 

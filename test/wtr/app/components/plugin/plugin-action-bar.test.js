@@ -268,7 +268,7 @@ describe('Plugin action bar', () => {
       expectPluginCount(2);
 
       const publishButton = recursiveQuery(sidekick, '.publish');
-      publishButton.dispatchEvent(new Event('click'));
+      publishButton.click();
 
       expect(actionSpy.calledOnce).to.be.true;
 
@@ -327,7 +327,7 @@ describe('Plugin action bar', () => {
       expectPluginCount(5);
 
       const libraryPlugin = recursiveQuery(sidekick, '.library');
-      libraryPlugin.dispatchEvent(new Event('click'));
+      libraryPlugin.click();
 
       expect(openStub.calledOnce).to.be.true;
       expect(pluginUsedEventSpy.calledOnce).to.be.true;
