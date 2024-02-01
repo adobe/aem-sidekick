@@ -18,6 +18,7 @@ import checkTab from './tab.js';
 import {
   externalActions,
   internalActions,
+  checkViewDocSource,
 } from './actions.js';
 import { addAuthTokenHeaders } from './auth.js';
 
@@ -31,6 +32,7 @@ chrome.action.onClicked.addListener(async ({ id }) => {
 chrome.tabs.onUpdated.addListener(async (id, info, tab) => {
   if (tab.active && info.status === 'complete') {
     checkTab(id);
+    checkViewDocSource(id);
   }
 });
 

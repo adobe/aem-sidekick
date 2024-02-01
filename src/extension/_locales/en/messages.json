@@ -258,6 +258,9 @@
     "config_ux": {
       "message": "User experience"
     },
+    "copied": {
+      "message": "Copied"
+    },
     "copied_url": {
       "message": "URL copied to clipboard."
     },
