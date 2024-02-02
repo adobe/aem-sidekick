@@ -30,7 +30,7 @@ import { fetchLanguageDict } from '../../../../src/extension/app/utils/i18n.js';
 window.chrome = chromeMock;
 
 /**
- * @typedef {import('../../../../../src/extension/app/components/modal/modal-container.js').ModalContainer} ModalContainer
+ * @typedef {import('../../../../src/extension/app/components/modal/modal-container.js').ModalContainer} ModalContainer
  */
 
 describe('Modals', () => {
