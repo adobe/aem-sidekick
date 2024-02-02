@@ -71,8 +71,19 @@ export class PluginActionBar extends MobxLitElement {
       `;
     }
 
+    let disabled = false;
+    const isEnabled = plugin.button && plugin.button.isEnabled;
+    if (typeof isEnabled === 'function' && !isEnabled(appStore)) {
+      disabled = true;
+    }
+
     return html`
-      <sp-action-button class=${plugin.id} quiet @click=${(evt) => this.onPluginButtonClick(evt, plugin)}>
+      <sp-action-button 
+        class=${plugin.id} 
+        .disabled=${disabled} 
+        quiet 
+        @click=${(evt) => this.onPluginButtonClick(evt, plugin)}
+      >
           ${plugin.button.text}
       </sp-action-button>
     `;

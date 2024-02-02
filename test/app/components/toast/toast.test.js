@@ -54,7 +54,7 @@ describe('Toasts', () => {
 
     const closeButton = recursiveQuery(toast, 'sp-close-button');
     expect(closeButton).to.exist;
-    closeButton.dispatchEvent(new Event('click'));
+    closeButton.click();
 
     await aTimeout(1);
     expect(recursiveQuery(ToastContainer, 'sp-toast')).to.be.undefined;

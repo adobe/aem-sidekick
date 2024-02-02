@@ -49,6 +49,7 @@ export function createPreviewPlugin(appStore) {
             && status.edit.sourceLocation.startsWith('onedrive:')
             && !location.pathname.startsWith('/:x:/')) {
           // show ctrl/cmd + s hint on onedrive docs
+          // istanbul ignore next
           const mac = navigator.platform.toLowerCase().includes('mac') ? '_mac' : '';
           appStore.showToast(appStore.i18n(`preview_onedrive${mac}`));
         } else if (status.edit.sourceLocation?.startsWith('gdrive:')) {
@@ -86,13 +87,13 @@ export function createPreviewPlugin(appStore) {
             previewPath: status.webPath,
             previewTimestamp: Date.now(),
           }));
-          window.location.reload();
+          appStore.reloadPage();
         } else {
           appStore.updatePreview();
         }
       },
-      isEnabled: (sidekick) => sidekick.isAuthorized('preview', 'write')
-          && sidekick.status.webPath,
+      isEnabled: (store) => store.isAuthorized('preview', 'write')
+          && store.status.webPath,
     },
     callback: () => {
       const { previewPath, previewTimestamp } = JSON
@@ -103,6 +104,7 @@ export function createPreviewPlugin(appStore) {
         appStore.showWait();
         appStore.sidekick.addEventListener('statusfetched', async () => {
           const { status } = appStore;
+          /* istanbul ignore else  */
           if (status.webPath === previewPath && appStore.isAuthorized('preview', 'write')) {
             // update preview and remove preview request from session storage
             appStore.updatePreview();

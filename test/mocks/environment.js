@@ -21,7 +21,7 @@ let stubs = [];
  * Mock content types
  * @enum {string}
  */
-const HelixMockContentType = {
+export const HelixMockContentType = {
   DOC: 'doc',
   SHEET: 'sheet',
   IMAGE: 'image',

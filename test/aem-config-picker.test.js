@@ -51,7 +51,7 @@ describe('AEM Config Picker', () => {
     configPicker.addEventListener('configselected', configSelectedSpy);
 
     const configButton = configButtons[0];
-    configButton.dispatchEvent(new Event('click'));
+    configButton.click();
 
     expect(configSelectedSpy).to.have.been.calledOnce;
     expect(configSelectedSpy.args[0][0].detail.config).to.deep.equal(matchingConfigs[0]);
