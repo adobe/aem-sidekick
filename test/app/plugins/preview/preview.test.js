@@ -17,7 +17,7 @@ import sinon from 'sinon';
 import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../../src/extension/app/aem-sidekick.js';
+import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
@@ -26,11 +26,11 @@ import {
   mockGdriveEditorFetchStatusSuccess,
   mockSharepointEditorSheetFetchStatusSuccess,
 } from '../../../mocks/helix-admin.js';
-import '../../../../../src/extension/index.js';
-import { appStore } from '../../../../../src/extension/app/store/app.js';
+import '../../../../src/extension/index.js';
+import { appStore } from '../../../../src/extension/app/store/app.js';
 import { HelixMockContentType, mockEditorAdminEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
-import { EventBus } from '../../../../../src/extension/app/utils/event-bus.js';
-import { EVENTS, MODALS } from '../../../../../src/extension/app/constants.js';
+import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
+import { EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
