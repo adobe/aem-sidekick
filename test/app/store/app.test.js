@@ -30,6 +30,8 @@ import { mockFetchEnglishMessagesSuccess } from '../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 import { EventBus } from '../../../src/extension/app/utils/event-bus.js';
 import { EVENTS, MODALS } from '../../../src/extension/app/constants.js';
+import { mockHelixEnvironment, restoreEnvironment } from '../../mocks/environment.js';
+import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -523,6 +525,7 @@ describe('Test App Store', () => {
 
   describe('updatePreview', () => {
     let instance;
+    let sandbox;
     let updateStub;
     let showWaitStub;
     let hideWaitStub;
@@ -535,20 +538,21 @@ describe('Test App Store', () => {
 
     beforeEach(() => {
       instance = appStore;
+      sandbox = sinon.createSandbox();
       instance.sidekick = document.createElement('div');
-      updateStub = sinon.stub(instance, 'update');
-      showWaitStub = sinon.stub(instance, 'showWait');
-      hideWaitStub = sinon.stub(instance, 'hideWait');
-      fetchStatusStub = sinon.stub(instance, 'fetchStatus');
-      switchEnvStub = sinon.stub(instance, 'switchEnv');
-      showToastStub = sinon.stub(instance, 'showToast');
-      updatePreviewSpy = sinon.spy(instance, 'updatePreview');
-      addEventListenerSpy = sinon.spy(instance.sidekick, 'addEventListener');
-      dispatchEventSpy = sinon.spy(EventBus.instance, 'dispatchEvent');
+      updateStub = sandbox.stub(instance, 'update');
+      showWaitStub = sandbox.stub(instance, 'showWait');
+      hideWaitStub = sandbox.stub(instance, 'hideWait');
+      fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
+      switchEnvStub = sandbox.stub(instance, 'switchEnv');
+      showToastStub = sandbox.stub(instance, 'showToast');
+      updatePreviewSpy = sandbox.spy(instance, 'updatePreview');
+      addEventListenerSpy = sandbox.spy(instance.sidekick, 'addEventListener');
+      dispatchEventSpy = sandbox.spy(EventBus.instance, 'dispatchEvent');
     });
 
     afterEach(() => {
-      sinon.restore();
+      sandbox.restore();
     });
 
     it('should show wait, update, and handle success response', async () => {
@@ -623,6 +627,124 @@ describe('Test App Store', () => {
       expect(showWaitStub.called).is.true;
       expect(hideWaitStub.called).is.true;
       expect(switchEnvStub.calledWith('preview')).is.true;
+    });
+  });
+
+  describe('publish', () => {
+    let instance;
+    let isContentStub;
+    let isEditorStub;
+    let fetchStub;
+    let fireEventStub;
+
+    beforeEach(() => {
+      instance = appStore;
+      isContentStub = sinon.stub(instance, 'isContent');
+      isEditorStub = sinon.stub(instance, 'isEditor');
+      // @ts-ignore
+      fetchStub = sinon.stub(window, 'fetch').resolves({ headers: new Headers(), ok: true, status: 200 });
+      fireEventStub = sinon.stub(instance, 'fireEvent');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+      restoreEnvironment(document);
+    });
+
+    it('should return null if isContent is false', async () => {
+      isContentStub.returns(false);
+
+      const result = await instance.publish('/somepath');
+
+      expect(result).is.null;
+    });
+
+    it('should handle successful publish', async () => {
+      mockHelixEnvironment(document, 'preview');
+      isContentStub.returns(true);
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', outerHost: 'main--aem-boilerplate--adobe.hlx.live', host: 'host' };
+      instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
+
+      const resp = await instance.publish('/somepath');
+
+      expect(fetchStub.called).is.true;
+      expect(fireEventStub.calledWith('published', '/somepath')).is.true;
+      expect(resp.path).to.eq('/somepath');
+      expect(resp.error).to.eq('');
+    });
+
+    it('should handle fetch errors', async () => {
+      isContentStub.returns(true);
+      fetchStub.rejects(new Error());
+      instance.siteStore = { owner: 'adobe', repo: 'aem-boilerplate' };
+      instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
+
+      const resp = await instance.publish('/somepath');
+
+      expect(fetchStub.called).is.true;
+      expect(resp.path).to.eq('/somepath');
+      expect(resp.error).to.eq('');
+    });
+
+    it('should handle publish when outerHost is defined', async () => {
+      isContentStub.returns(true);
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', outerHost: 'main--aem-boilerplate--adobe.hlx.live' };
+      instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
+
+      await instance.publish('/somepath');
+
+      expect(fetchStub.calledWith('https://main--aem-boilerplate--adobe.hlx.live/somepath', sinon.match.has('cache', 'reload'))).is.true;
+    });
+
+    it('should purge host', async () => {
+      isContentStub.returns(true);
+      isEditorStub.returns(true);
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', host: 'aem-boilerplate.com' };
+      instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
+
+      await instance.publish('/somepath');
+
+      expect(fetchStub.args[1][0]).to.equal('https://aem-boilerplate.com/somepath');
+      expect(fetchStub.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
+    });
+
+    it('should handle publish when host is defined', async () => {
+      isContentStub.returns(true);
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', host: 'aem-boilerplate.com' };
+      instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
+
+      await instance.publish('/somepath');
+      expect(fetchStub.calledWith('https://aem-boilerplate.com/somepath', sinon.match.has('cache', 'reload'))).is.true;
+    });
+
+    it('should use correct parameters for fetch call', async () => {
+      isContentStub.returns(true);
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page' };
+      instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
+      const expectedUrl = getAdminUrl(instance.siteStore, 'live', '/somepath');
+      const expectedOptions = getAdminFetchOptions();
+
+      await instance.publish('/somepath');
+
+      expect(fetchStub.calledWith(expectedUrl, sinon.match(expectedOptions))).is.true;
+    });
+
+    it('should properly set error from response headers', async () => {
+      isContentStub.returns(true);
+      instance.siteStore = { owner: 'adobe', repo: 'aem-boilerplate' };
+      instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
+
+      const headers = new Headers();
+      headers.append('x-error', 'Some error');
+      const mockResponse = {
+        ok: false,
+        headers,
+      };
+      fetchStub.resolves(mockResponse);
+
+      const resp = await instance.publish('/somepath');
+
+      expect(resp.error).to.eq('Some error');
     });
   });
 });

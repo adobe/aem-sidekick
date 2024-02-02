@@ -782,6 +782,7 @@ export class AppStore {
           ...getAdminFetchOptions(),
         },
       );
+
       // bust client cache for live and production
       if (siteStore.outerHost) {
         // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
@@ -808,7 +809,7 @@ export class AppStore {
    * @param {boolean} [open] true if environment should be opened in new tab
    * @fires Sidekick#envswitched
    */
-  async switchEnv(targetEnv, open = false) {
+  switchEnv(targetEnv, open = false) {
     this.showWait();
     const hostType = ENVS[targetEnv];
     if (!hostType) {
