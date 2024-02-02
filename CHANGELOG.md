@@ -1,3 +1,16 @@
+## [1.6.2](https://github.com/adobe/aem-sidekick/compare/v1.6.1...v1.6.2) (2024-2-2)
+
+
+### Bug Fixes
+
+* add publish tests ([28a8889](https://github.com/adobe/aem-sidekick/commit/28a8889f139f7e6f5ed8db8292e800c1af252702))
+* attempt to fix restore ([446c986](https://github.com/adobe/aem-sidekick/commit/446c986e5ad45a9e671ce04c0c179e7adab78b62))
+* cleanup mocha tests ([c008c66](https://github.com/adobe/aem-sidekick/commit/c008c667f4d7e16c20c004a17777540ed3bce946))
+* move preview tests out of wtr ([feb37d1](https://github.com/adobe/aem-sidekick/commit/feb37d1164c90796970daafe69bdcb8d51b0e603))
+* move publish tests out of wtr directory ([93379ed](https://github.com/adobe/aem-sidekick/commit/93379ed27892639144cadd8356cb388a4b8dec68))
+* move tests into root test directory ([34670e5](https://github.com/adobe/aem-sidekick/commit/34670e59f1df8aeeb689709f40dc5e05a07340cc))
+* typedef import path ([9d50062](https://github.com/adobe/aem-sidekick/commit/9d500629476a84b726358fc4ce55366e44ef0074))
+
 ## [1.6.1](https://github.com/adobe/aem-sidekick/compare/v1.6.0...v1.6.1) (2024-2-2)
 
 
