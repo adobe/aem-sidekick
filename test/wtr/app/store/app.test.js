@@ -20,7 +20,7 @@ import chromeMock from '../../mocks/chrome.js';
 import {
   mockFetchConfigJSONNotFound,
   mockFetchConfigWithPluginsJSONSuccess,
-  mockFetchStatusEditURLSuccess,
+  mockGdriveFetchStatusEditURLSuccess,
   mockFetchStatusNotFound,
   mockFetchStatusServerError,
   mockFetchStatusSuccess,
@@ -293,7 +293,7 @@ describe('Test App Store', () => {
     });
 
     it('success - editor', async () => {
-      mockFetchStatusEditURLSuccess();
+      mockGdriveFetchStatusEditURLSuccess();
       sinon.stub(appStore, 'isEditor').returns(true);
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await appStore.fetchStatus();
@@ -382,6 +382,247 @@ describe('Test App Store', () => {
         variant: 'info',
         timeout: 2000,
       });
+    });
+  });
+
+  describe('update', async () => {
+    let sandbox;
+    let fakeFetch;
+    let instance;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+      fakeFetch = sandbox.stub(window, 'fetch');
+      instance = appStore;
+
+      // Mock other functions
+      sandbox.stub(instance, 'isContent');
+      sandbox.stub(instance, 'isEditor');
+      sandbox.stub(instance, 'isPreview');
+      sandbox.stub(instance, 'isDev');
+      sandbox.stub(instance, 'fireEvent');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('should handle successful update for content w/path', async () => {
+      instance.isContent.returns(true);
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({ webPath: '/somepath' }),
+      });
+
+      const response = await instance.update('/ignored-path');
+
+      expect(response).to.deep.equal({
+        ok: true,
+        status: 200,
+        error: '',
+        path: '/somepath',
+      });
+      sinon.assert.calledWith(instance.fireEvent, 'updated', '/somepath');
+      sinon.assert.calledWith(instance.fireEvent, 'previewed', '/somepath');
+    });
+
+    it('should handle successful update for content wo/path', async () => {
+      instance.isContent.returns(true);
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({ webPath: '/somepath' }),
+      });
+
+      const response = await instance.update();
+
+      expect(response).to.deep.equal({
+        ok: true,
+        status: 200,
+        error: '',
+        path: '/somepath',
+      });
+      sinon.assert.calledWith(instance.fireEvent, 'updated', '/somepath');
+      sinon.assert.calledWith(instance.fireEvent, 'previewed', '/somepath');
+    });
+
+    it('should bust client cache', async () => {
+      instance.isEditor.returns(true);
+
+      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.hlx.page';
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({ webPath: '/somepath' }),
+      });
+
+      const response = await instance.update('/testpath');
+
+      expect(response).to.deep.equal({
+        ok: true,
+        status: 200,
+        error: '',
+        path: '/somepath',
+      });
+
+      sinon.assert.calledWith(instance.fireEvent, 'updated', '/somepath');
+      expect(fakeFetch.args[1][0]).to.equal('https://main--aem-boilerplate--adobe.hlx.page/testpath');
+      expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
+    });
+
+    it('should handle successful update for code', async () => {
+      instance.isContent.returns(false);
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({ webPath: '/somepath' }),
+      });
+
+      const response = await instance.update('/ignored-path');
+
+      expect(response).to.deep.equal({
+        ok: true,
+        status: 200,
+        error: '',
+        path: '/somepath',
+      });
+      sinon.assert.calledWith(instance.fireEvent, 'updated', '/somepath');
+    });
+
+    it('should handle fetch error', async () => {
+      fakeFetch.rejects(new Error('Network failure'));
+
+      const response = await instance.update('/testpath');
+
+      expect(response).to.deep.equal({
+        ok: false,
+        status: 0,
+        error: '',
+        path: '/testpath',
+      });
+    });
+
+    it('should handle non-OK response from fetch', async () => {
+      fakeFetch.resolves({ ok: false, status: 404, headers: { get: () => 'Not Found' } });
+
+      const response = await instance.update('/testpath');
+
+      expect(response).to.deep.equal({
+        ok: false,
+        status: 404,
+        error: 'Not Found',
+        path: '/testpath',
+      });
+    });
+  });
+
+  describe('updatePreview', () => {
+    let instance;
+    let updateStub;
+    let showWaitStub;
+    let hideWaitStub;
+    let fetchStatusStub;
+    let switchEnvStub;
+    let showToastStub;
+    let updatePreviewSpy;
+    let addEventListenerSpy;
+    let dispatchEventSpy;
+
+    beforeEach(() => {
+      instance = appStore;
+      instance.sidekick = document.createElement('div');
+      updateStub = sinon.stub(instance, 'update');
+      showWaitStub = sinon.stub(instance, 'showWait');
+      hideWaitStub = sinon.stub(instance, 'hideWait');
+      fetchStatusStub = sinon.stub(instance, 'fetchStatus');
+      switchEnvStub = sinon.stub(instance, 'switchEnv');
+      showToastStub = sinon.stub(instance, 'showToast');
+      updatePreviewSpy = sinon.spy(instance, 'updatePreview');
+      addEventListenerSpy = sinon.spy(instance.sidekick, 'addEventListener');
+      dispatchEventSpy = sinon.spy(EventBus.instance, 'dispatchEvent');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should show wait, update, and handle success response', async () => {
+      updateStub.resolves({ ok: true });
+      instance.status = { webPath: '/somepath' };
+
+      await instance.updatePreview(false);
+
+      expect(showWaitStub.called).is.true;
+      expect(hideWaitStub.called).is.true;
+      expect(switchEnvStub.calledWith('preview')).is.true;
+    });
+
+    // Test when resp is not ok, ranBefore is false
+    it('should handle failure response without ranBefore', async () => {
+      updateStub.resolves({ ok: false });
+      instance.status = { webPath: '/somepath' };
+
+      await instance.updatePreview(false);
+
+      expect(showWaitStub.called).is.true;
+      expect(addEventListenerSpy.called).is.true;
+      expect(fetchStatusStub.called).is.true;
+
+      instance.sidekick.dispatchEvent(new CustomEvent('statusfetched', { detail: { status: { webPath: '/somepath' } } }));
+      await waitUntil(() => updatePreviewSpy.calledTwice);
+    });
+
+    // Test when resp is not ok, ranBefore is true, status.webPath
+    // starts with /.helix/, resp has error
+    it('should handle failure with specific path and error', async () => {
+      updateStub.resolves({ ok: false, error: 'Error message' });
+      instance.status = { webPath: '/.helix/some-path' };
+
+      await instance.updatePreview(true);
+
+      expect(showWaitStub.called).is.true;
+      expect(dispatchEventSpy.calledWith(sinon.match.has('type', EVENTS.OPEN_MODAL))).is.true;
+    });
+
+    // Test when resp is not ok, ranBefore is true, status.webPath
+    // does not start with /.helix/, or resp has no error
+    it('should handle generic failure', async () => {
+      updateStub.resolves({ ok: false });
+      instance.status = { webPath: '/not-helix/' };
+
+      await instance.updatePreview(true);
+
+      expect(showWaitStub.called).is.true;
+      expect(dispatchEventSpy.calledWith(sinon.match.has('type', EVENTS.OPEN_MODAL))).is.true;
+    });
+
+    // Test when resp is ok and status.webPath starts with /.helix/
+    it('should handle success with specific path', async () => {
+      updateStub.resolves({ ok: true });
+      instance.status = { webPath: '/.helix/some-path' };
+
+      await instance.updatePreview(false);
+
+      expect(showWaitStub.called).is.true;
+      expect(hideWaitStub.called).is.false;
+      expect(showToastStub.calledWith(sinon.match.string, 'positive')).is.true;
+    });
+
+    // Test when resp is ok and status.webPath does not start with /.helix/
+    it('should handle generic success', async () => {
+      updateStub.resolves({ ok: true });
+      instance.status = { webPath: '/not-helix/' };
+
+      await instance.updatePreview(false);
+
+      expect(showWaitStub.called).is.true;
+      expect(hideWaitStub.called).is.true;
+      expect(switchEnvStub.calledWith('preview')).is.true;
     });
   });
 });

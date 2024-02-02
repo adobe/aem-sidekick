@@ -22,7 +22,7 @@ import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
   mockSharepointDirectoryFetchStatusSuccess,
-  mockSharepointEditorFetchStatusSuccess,
+  mockSharepointEditorDocFetchStatusSuccess,
   mockFetchConfigJSONNotFound,
   mockFetchConfigWithPluginsJSONSuccess,
   mockFetchConfigWithoutPluginsJSONSuccess,
@@ -103,7 +103,7 @@ describe('Plugin action bar', () => {
     it('editor - w/custom plugins', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithPluginsJSONSuccess();
-      mockSharepointEditorFetchStatusSuccess();
+      mockSharepointEditorDocFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
@@ -180,7 +180,7 @@ describe('Plugin action bar', () => {
     });
 
     it('isEditor', async () => {
-      mockSharepointEditorFetchStatusSuccess();
+      mockSharepointEditorDocFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
       mockEditorAdminEnvironment(document, 'editor');
 
@@ -200,7 +200,7 @@ describe('Plugin action bar', () => {
     });
 
     it('isEditor - custom config with prod host', async () => {
-      mockSharepointEditorFetchStatusSuccess();
+      mockSharepointEditorDocFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();
       mockEditorAdminEnvironment(document, 'editor');
 
@@ -268,7 +268,7 @@ describe('Plugin action bar', () => {
       expectPluginCount(2);
 
       const publishButton = recursiveQuery(sidekick, '.publish');
-      publishButton.dispatchEvent(new Event('click'));
+      publishButton.click();
 
       expect(actionSpy.calledOnce).to.be.true;
 
@@ -276,7 +276,7 @@ describe('Plugin action bar', () => {
     });
 
     it.skip('isAdmin - loads correct plugins', async () => {
-      mockSharepointEditorFetchStatusSuccess();
+      mockSharepointEditorDocFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
       mockEditorAdminEnvironment(document, 'admin');
 
@@ -288,7 +288,7 @@ describe('Plugin action bar', () => {
     });
 
     it('custom container plugin', async () => {
-      mockSharepointEditorFetchStatusSuccess();
+      mockSharepointEditorDocFetchStatusSuccess();
       mockSharepointDirectoryFetchStatusSuccess();
       mockFetchConfigWithPluginsJSONSuccess();
       mockEditorAdminEnvironment(document, 'editor');
@@ -309,7 +309,7 @@ describe('Plugin action bar', () => {
     });
 
     it('clicks custom plugin', async () => {
-      mockSharepointEditorFetchStatusSuccess();
+      mockSharepointEditorDocFetchStatusSuccess();
       mockSharepointDirectoryFetchStatusSuccess();
       mockFetchConfigWithPluginsJSONSuccess();
       mockEditorAdminEnvironment(document, 'editor');
@@ -327,7 +327,7 @@ describe('Plugin action bar', () => {
       expectPluginCount(5);
 
       const libraryPlugin = recursiveQuery(sidekick, '.library');
-      libraryPlugin.dispatchEvent(new Event('click'));
+      libraryPlugin.click();
 
       expect(openStub.calledOnce).to.be.true;
       expect(pluginUsedEventSpy.calledOnce).to.be.true;
