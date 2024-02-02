@@ -1,3 +1,16 @@
+## [1.6.1](https://github.com/adobe/aem-sidekick/compare/v1.6.0...v1.6.1) (2024-2-2)
+
+
+### Bug Fixes
+
+* abstract window.location.reload for testing ([bfe873b](https://github.com/adobe/aem-sidekick/commit/bfe873b2d088b615c1303ee7f1a853b0429ce00a))
+* call click method instead of event dispatching ([3bdc760](https://github.com/adobe/aem-sidekick/commit/3bdc760a20ad98d31aba30f31801af4c98d69e51))
+* ignore window.location.reload wrapper in appstore ([61d4eb3](https://github.com/adobe/aem-sidekick/commit/61d4eb394a5586db7f6d701b582c98ae41808b42))
+* preview plugin tests ([5eb3599](https://github.com/adobe/aem-sidekick/commit/5eb3599ee0f1f49d74677f2c6380075bc868e67f))
+* support disabled state in core plugins ([7948635](https://github.com/adobe/aem-sidekick/commit/7948635a3a760e6571cc0d637c5763dec45a9c5e))
+* update and updatePreview coverage in appStore ([ed4ae28](https://github.com/adobe/aem-sidekick/commit/ed4ae287e391cfc6d3399e1d6e2b90fa08fda9b7))
+* update test fixtures to include payloads for gdrive and sharepoint ([b51fe2f](https://github.com/adobe/aem-sidekick/commit/b51fe2fd858214d10231cf7d888567f0bdcc437c))
+
 # [1.6.0](https://github.com/adobe/aem-sidekick/compare/v1.5.3...v1.6.0) (2024-1-29)
 
 
