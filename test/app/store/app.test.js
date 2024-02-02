@@ -525,6 +525,7 @@ describe('Test App Store', () => {
 
   describe('updatePreview', () => {
     let instance;
+    let sandbox;
     let updateStub;
     let showWaitStub;
     let hideWaitStub;
@@ -537,20 +538,21 @@ describe('Test App Store', () => {
 
     beforeEach(() => {
       instance = appStore;
+      sandbox = sinon.createSandbox();
       instance.sidekick = document.createElement('div');
-      updateStub = sinon.stub(instance, 'update');
-      showWaitStub = sinon.stub(instance, 'showWait');
-      hideWaitStub = sinon.stub(instance, 'hideWait');
-      fetchStatusStub = sinon.stub(instance, 'fetchStatus');
-      switchEnvStub = sinon.stub(instance, 'switchEnv');
-      showToastStub = sinon.stub(instance, 'showToast');
-      updatePreviewSpy = sinon.spy(instance, 'updatePreview');
-      addEventListenerSpy = sinon.spy(instance.sidekick, 'addEventListener');
-      dispatchEventSpy = sinon.spy(EventBus.instance, 'dispatchEvent');
+      updateStub = sandbox.stub(instance, 'update');
+      showWaitStub = sandbox.stub(instance, 'showWait');
+      hideWaitStub = sandbox.stub(instance, 'hideWait');
+      fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
+      switchEnvStub = sandbox.stub(instance, 'switchEnv');
+      showToastStub = sandbox.stub(instance, 'showToast');
+      updatePreviewSpy = sandbox.spy(instance, 'updatePreview');
+      addEventListenerSpy = sandbox.spy(instance.sidekick, 'addEventListener');
+      dispatchEventSpy = sandbox.spy(EventBus.instance, 'dispatchEvent');
     });
 
     afterEach(() => {
-      sinon.restore();
+      sandbox.restore();
     });
 
     it('should show wait, update, and handle success response', async () => {
