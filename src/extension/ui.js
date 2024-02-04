@@ -16,17 +16,17 @@ import { getDisplay } from './display.js';
 import { GH_URL, getProject, isValidProject } from './project.js';
 
 /**
+ * The configuration object type
+ * @typedef {import('@Types').OptionsDerivedConfig} OptionsDerivedConfig
+ */
+
+/**
  * @typedef {Object} Context
  * @prop {number} [id] The tab ID
  * @prop {string} [url] The tab URL
  * @prop {Object} [config] The project config
- * @prop {OptionsConfig[]} [matches] The config matches
+ * @prop {OptionsDerivedConfig[]} [matches] The config matches
  * @description The context object
- */
-
-/**
- * The configuration object type
- * @typedef {import('@Types').OptionsConfig} OptionsConfig
  */
 
 /**
@@ -92,14 +92,13 @@ async function guessAEMSite(id) {
       });
       // listen for response message from tab
       const listener = ({ isAEM }) => {
-        if (typeof isAEM === 'boolean') {
-          chrome.runtime.onMessage.removeListener(listener);
-          resolve(isAEM);
-        }
+        chrome.runtime.onMessage.removeListener(listener);
+        resolve(!!isAEM);
       };
       chrome.runtime.onMessage.addListener(listener);
     } catch (e) {
       log.debug('Error guessing AEM site', e);
+      resolve(false);
     }
   });
 }
