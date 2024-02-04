@@ -15,9 +15,14 @@ import { expect } from '@esm-bundle/chai';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
-import { externalActions, internalActions } from '../../src/extension/actions.js';
+import {
+  checkViewDocSource,
+  externalActions,
+  internalActions,
+} from '../../src/extension/actions.js';
 import chromeMock from './mocks/chrome.js';
 import { error } from './test-utils.js';
+import { log } from '../../src/extension/log.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -186,5 +191,93 @@ describe('Test actions', () => {
       url: 'https://www.example.com',
     });
     expect(create.called).to.be.false;
+  });
+
+  it('internal: openViewDocSource', async () => {
+    const { openViewDocSource } = internalActions;
+    const createSpy = sandbox.spy(chrome.windows, 'create');
+    await openViewDocSource({ id: 1 });
+    expect(createSpy.calledWithMatch({
+      url: '/test/wtr/fixtures/view-doc-source/index.html?tabId=1',
+      type: 'popup',
+      width: 740,
+    })).to.be.true;
+  });
+
+  it('internal: checkViewDocSource', async () => {
+    const createSpy = sandbox.spy(chrome.windows, 'create');
+    const logSpy = sandbox.spy(log, 'warn');
+    let counter = 0;
+    sandbox.stub(chrome.tabs, 'get')
+      // @ts-ignore
+      .callsFake(async () => {
+        counter += 1;
+        switch (counter) {
+          case 1:
+            // no tab
+            return null;
+          case 2:
+            // tab without url
+            return {
+              id: 1,
+            };
+          case 3:
+            // inactive tab
+            return {
+              id: 1,
+              url: 'https://www.example.com/',
+            };
+          case 4:
+            // tab with invalid url
+            return {
+              id: 1,
+              active: true,
+              url: 'foo',
+            };
+          case 5:
+            // tab without vds
+            return {
+              id: 1,
+              active: true,
+              url: 'https://www.example.com/',
+            };
+          case 6:
+            // tab with vds=false
+            return {
+              id: 1,
+              active: true,
+              url: 'https://www.example.com/?view-doc-source=false',
+            };
+          default:
+            // tab with vds=true
+            return {
+              id: 1,
+              active: true,
+              url: 'https://www.example.com/?view-doc-source=true',
+            };
+        }
+      });
+    // no tab
+    await checkViewDocSource(1);
+    expect(createSpy.callCount).to.equal(0);
+    // tab without url
+    await checkViewDocSource(1);
+    expect(createSpy.callCount).to.equal(0);
+    // inactive tab
+    await checkViewDocSource(1);
+    expect(createSpy.callCount).to.equal(0);
+    // tab with invalid url
+    await checkViewDocSource(1);
+    expect(createSpy.callCount).to.equal(0);
+    expect(logSpy.calledWithMatch(/Error checking/)).to.be.true;
+    // tab without vds
+    await checkViewDocSource(1);
+    expect(createSpy.callCount).to.equal(0);
+    // tab with vds=false
+    await checkViewDocSource(1);
+    expect(createSpy.callCount).to.equal(0);
+    // tab with vds param
+    await checkViewDocSource(1);
+    expect(createSpy.callCount).to.equal(1);
   });
 });
