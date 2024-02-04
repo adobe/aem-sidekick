@@ -96,7 +96,7 @@ async function openPreview({ url }) {
  * Opens the view document source popup.
  * @param {chrome.tabs.Tab} tab The tab
  */
-export function openViewDocSource({ id }) {
+async function openViewDocSource({ id }) {
   chrome.windows.create({
     url: chrome.runtime.getURL(`/view-doc-source/index.html?tabId=${id}`),
     type: 'popup',
@@ -110,13 +110,15 @@ export function openViewDocSource({ id }) {
  */
 export async function checkViewDocSource(id) {
   const tab = await chrome.tabs.get(id);
-  if (!tab || !tab.url || !tab.active) return;
+  if (!tab || !tab.url || !tab.active) {
+    return;
+  }
   try {
     const u = new URL(tab.url);
     const vds = u.searchParams.get('view-doc-source');
     if (vds && vds === 'true') {
       // @ts-ignore
-      openViewDocSource({ id });
+      await openViewDocSource({ id });
     }
   } catch (e) {
     log.warn(`Error checking view document source for url: ${tab.url}`, e);
