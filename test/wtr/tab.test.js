@@ -23,6 +23,9 @@ import { error } from './test-utils.js';
 window.chrome = chromeMock;
 
 const TABS = {
+  0: {
+    id: 0,
+  },
   1: {
     id: 1,
     url: 'https://main--blog--adobe.hlx.page/',
@@ -41,88 +44,147 @@ const TABS = {
   },
 };
 
+const PROJECTS = {
+  'foo/bar': {
+    owner: 'foo',
+    repo: 'bar',
+    ref: 'main',
+  },
+  'adobe/blog': {
+    owner: 'adobe',
+    repo: 'blog',
+    ref: 'main',
+    devOrigin: 'http://localhost:2001',
+  },
+};
+
 describe('Test check-tab', () => {
   const sandbox = sinon.createSandbox();
+  let getTabSpy;
+  let executeScriptSpy;
+  let onMessageAddListenerStub;
+
+  function fakeListenerCallback({ msg, api = chrome.runtime.onMessage, tab = TABS[1] }) {
+    const stub = sandbox.stub(api, 'addListener')
+      // @ts-ignore
+      .callsFake((func, _) => func(
+        msg,
+        {
+          tab,
+        },
+      ));
+    return stub;
+  }
+
+  function fakeGetProjects(cfg = {}) {
+    const stub = sandbox.stub(chrome.storage.sync, 'get')
+      .callsFake(async (prop) => new Promise((resolve) => {
+        if (prop === 'projects') {
+          // @ts-ignore
+          resolve({ projects: Object.keys(cfg) });
+        }
+        if (cfg[prop]) {
+          // @ts-ignore
+          resolve({ [prop]: cfg[prop] });
+        }
+        resolve();
+      }));
+    return stub;
+  }
 
   before(async () => {
     await setUserAgent('HeadlessChrome');
   });
 
   beforeEach(async () => {
-    sinon.stub(chrome.tabs, 'get').callsFake(async (id) => (id ? TABS[id] : {}));
+    fakeGetProjects(PROJECTS);
+    executeScriptSpy = sandbox.spy(chrome.scripting, 'executeScript');
+    onMessageAddListenerStub = fakeListenerCallback({ msg: { isAEM: true } });
+    getTabSpy = sandbox.stub(chrome.tabs, 'get').callsFake(async (id) => TABS[id]);
   });
 
   afterEach(() => {
     sandbox.restore();
   });
 
-  it('checkTab', async () => {
-    const executeScriptSpy = sandbox.spy(chrome.scripting, 'executeScript');
-    const sendMessageSpy = sandbox.spy(chrome.tabs, 'sendMessage');
-
-    // check tab with invalid URL
+  it('checkTab: no tab', async () => {
     // @ts-ignore
     await checkTab();
     expect(executeScriptSpy.callCount).to.equal(0);
+  });
 
-    // check tab with URL from configured project
-    await checkTab(1);
+  it('checkTab: invalid tab', async () => {
+    await checkTab(9);
+    expect(executeScriptSpy.callCount).to.equal(0);
+  });
+
+  it('checkTab: no tab url', async () => {
+    await checkTab(0);
+    expect(executeScriptSpy.callCount).to.equal(0);
+  });
+
+  it('checkTab: url from configured project', async () => {
+    const tab = TABS[1];
+    await checkTab(tab.id);
+    expect(executeScriptSpy.callCount).to.equal(2);
     expect(executeScriptSpy.calledWith({
-      target: { tabId: 1 },
+      target: { tabId: tab.id },
       files: ['./content.js'],
     })).to.be.true;
-    expect(sendMessageSpy.called).to.be.true;
+  });
 
-    // check tab with unknown URL
-    await checkTab(2);
-    expect(executeScriptSpy.callCount).to.equal(1);
+  it('checkTab: unknown url', async () => {
+    const tab = TABS[2];
+    await checkTab(tab.id);
+    expect(executeScriptSpy.callCount).to.equal(0);
+  });
 
-    // check tab with dev URL
-    sinon.stub(chrome.storage.sync, 'get')
-      .callsFake(async (prop) => new Promise((resolve) => {
-        if (prop === 'projects') {
-          resolve({
-            // @ts-ignore
-            projects: [
-              'foo/bar',
-            ],
-          });
-        }
-        if (prop === 'foo/bar') {
-          resolve({
-            // @ts-ignore
-            'foo/bar': {
-              owner: 'foo',
-              repo: 'bar',
-              ref: 'main',
-              devOrigin: 'http://localhost:2001',
-            },
-          });
-        }
-        resolve();
-      }));
-    sinon.stub(chrome.runtime.onMessage, 'addListener')
-      .callsFake((func, _) => func(
-        { proxyUrl: document.head.querySelector('meta[property="hlx:proxyUrl"]')?.getAttribute('content') },
-        { tab: TABS[3] },
-      ));
+  it('checkTab: development url', async () => {
+    const tab = TABS[3];
+    // add proxyUrl meta tag
     const proxyUrl = document.createElement('meta');
     proxyUrl.setAttribute('property', 'hlx:proxyUrl');
     proxyUrl.setAttribute('content', 'https://main--bar--foo.hlx.page/');
     window.document.head.append(proxyUrl);
-    await checkTab(3);
-    expect(executeScriptSpy.callCount).to.equal(3);
-    proxyUrl.remove();
-    await checkTab(3);
-    expect(executeScriptSpy.callCount).to.equal(4);
 
-    // error handling
+    onMessageAddListenerStub.restore();
+    onMessageAddListenerStub = fakeListenerCallback({
+      msg: {
+        proxyUrl: document.head.querySelector('meta[property="hlx:proxyUrl"]')?.getAttribute('content'),
+        isAEM: true,
+      },
+      tab,
+    });
+
+    await checkTab(tab.id);
+    expect(executeScriptSpy.callCount).to.equal(3);
+
+    // check again without proxyUrl meta tag
+    proxyUrl.remove();
     executeScriptSpy.restore();
-    sandbox.stub(chrome.scripting, 'executeScript').throws(error);
+    onMessageAddListenerStub.restore();
+    onMessageAddListenerStub = fakeListenerCallback({
+      msg: {
+        proxyUrl: null,
+        isAEM: true,
+      },
+      tab,
+    });
+
+    await checkTab(tab.id);
+    expect(executeScriptSpy.callCount).to.equal(3);
+  });
+
+  it('checkTab: script injection fails', async () => {
+    executeScriptSpy.restore();
+    executeScriptSpy = sandbox.stub(chrome.scripting, 'executeScript').throws(error);
     await checkTab(1);
-    sinon.restore();
+  });
+
+  it('checkTab: tab no longer exists upon script injection', async () => {
     let counter = 0;
-    sandbox.stub(chrome.tabs, 'get').callsFake(async (id) => {
+    getTabSpy.restore();
+    getTabSpy = sandbox.stub(chrome.tabs, 'get').callsFake(async (id) => {
       counter += 1;
       if (counter === 1) {
         return TABS[id];
@@ -130,9 +192,7 @@ describe('Test check-tab', () => {
         return null;
       }
     });
-    // tab still exists at first, but not at second call
     await checkTab(1);
-    // tab no longer exist
-    await checkTab(1);
+    expect(executeScriptSpy.callCount).to.equal(1);
   });
 });
