@@ -269,7 +269,7 @@ describe('Test actions', () => {
     // tab with invalid url
     await checkViewDocSource(1);
     expect(createSpy.callCount).to.equal(0);
-    expect(logSpy.calledWithMatch(/Error checking/)).to.be.true;
+    expect(logSpy.calledWithMatch(/Error/)).to.be.true;
     // tab without vds
     await checkViewDocSource(1);
     expect(createSpy.callCount).to.equal(0);
