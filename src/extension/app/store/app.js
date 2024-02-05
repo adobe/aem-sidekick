@@ -471,6 +471,14 @@ export class AppStore {
   }
 
   /**
+   * Reloads the current page. Abstracted for testing.
+   */
+  reloadPage() {
+    // istanbul ignore next
+    window.location.reload();
+  }
+
+  /**
    * Fires an event with the given name.
    * @param {string} name The name of the event
    * @param {Object} data The data to pass to event listeners (optional)
@@ -774,6 +782,7 @@ export class AppStore {
           ...getAdminFetchOptions(),
         },
       );
+
       // bust client cache for live and production
       if (siteStore.outerHost) {
         // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
@@ -800,7 +809,7 @@ export class AppStore {
    * @param {boolean} [open] true if environment should be opened in new tab
    * @fires Sidekick#envswitched
    */
-  async switchEnv(targetEnv, open = false) {
+  switchEnv(targetEnv, open = false) {
     this.showWait();
     const hostType = ENVS[targetEnv];
     if (!hostType) {
