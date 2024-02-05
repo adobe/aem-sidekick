@@ -276,7 +276,7 @@ describe('Test actions', () => {
     // tab with vds=false
     await checkViewDocSource(1);
     expect(createSpy.callCount).to.equal(0);
-    // tab with vds param
+    // tab with vds=true
     await checkViewDocSource(1);
     expect(createSpy.callCount).to.equal(1);
   });
