@@ -50,7 +50,7 @@ export default {
   runtime: {
     id: ID,
     getManifest: async () => readFile({ path: '../../src/extension/manifest.json' }).then((mf) => JSON.parse(mf)),
-    getURL: (path) => `/test/wtr/fixtures${path}`,
+    getURL: (path) => `/test/wtr/fixtures/${path}`.replace('//', '/'),
     lastError: null,
     sendMessage: () => {},
     onMessage: {
