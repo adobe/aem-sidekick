@@ -10,17 +10,15 @@
  * governing permissions and limitations under the License.
  */
 
-/**
- * @typedef {import('@Types').CorePlugin} CorePlugin
- */
+/* eslint-disable import/no-extraneous-dependencies */
 
-/**
- * Creates the env plugin
- * @returns {CorePlugin} The env plugin
- */
-export function createEnvPlugin() {
-  return {
-    id: 'env-switcher',
-    condition: (store) => !store.isAdmin(),
-  };
-}
+// @ts-ignore
+import fetchMock from 'fetch-mock/esm/client.js';
+
+import enMessages from '../../src/extension/_locales/en/messages.json' assert { type: 'json' };
+
+export const englishMessagesUrl = '/test/wtr/fixtures/_locales/en/messages.json';
+export const mockFetchEnglishMessagesSuccess = () => fetchMock.get(englishMessagesUrl, {
+  status: 200,
+  body: enMessages,
+}, { overwriteRoutes: true });

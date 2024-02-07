@@ -17,7 +17,7 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 import { style } from './env-switcher.css.js';
 import { appStore } from '../../../store/app.js';
 import { createTag, newTab } from '../../../utils/browser.js';
-import { i18n, getTimeAgo } from '../../../utils/i18n.js';
+import { getTimeAgo } from '../../../utils/i18n.js';
 
 /**
  * @typedef {import('../../action-bar/picker/picker.js').Picker} Picker
@@ -77,10 +77,10 @@ export class EnvironmentSwitcher extends MobxLitElement {
   firstUpdated() {
     // Set up the locale aware environment names
     this.envNames = {
-      edit: i18n(appStore.languageDict, 'edit'),
-      preview: i18n(appStore.languageDict, 'preview'),
-      live: i18n(appStore.languageDict, 'live'),
-      prod: i18n(appStore.languageDict, 'production'),
+      edit: appStore.i18n('edit'),
+      preview: appStore.i18n('preview'),
+      live: appStore.i18n('live'),
+      prod: appStore.i18n('production'),
     };
 
     // Determine the current environment
@@ -109,6 +109,9 @@ export class EnvironmentSwitcher extends MobxLitElement {
    * @returns {HTMLElement} - The created menu item
    */
   createMenuItem(id, attrs, lastModified) {
+    if (this.currentEnv === id) {
+      attrs.disabled = '';
+    }
     const label = this.envNames[id];
     const menuItem = createTag({
       tag: 'sp-menu-item',
@@ -128,8 +131,8 @@ export class EnvironmentSwitcher extends MobxLitElement {
     const description = createTag({
       tag: 'span',
       text: lastModified
-        ? i18n(appStore.languageDict, `${id}_last_updated`).replace('$1', getTimeAgo(appStore.languageDict, lastModified))
-        : i18n(appStore.languageDict, `${id}_never_updated`),
+        ? appStore.i18n(`${id}_last_updated`).replace('$1', getTimeAgo(appStore.languageDict, lastModified))
+        : appStore.i18n(`${id}_never_updated`),
       attrs: {
         slot: 'description',
       },
@@ -147,7 +150,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
   createNavigateToHeader() {
     const menuItem = createTag({
       tag: 'div',
-      text: i18n(appStore.languageDict, 'navigate_to'),
+      text: appStore.i18n('navigate_to'),
       attrs: {
         class: 'heading',
       },
@@ -207,7 +210,9 @@ export class EnvironmentSwitcher extends MobxLitElement {
 
     switch (this.currentEnv) {
       case 'edit':
+        editMenuItem.classList.add('current-env');
         picker.append(
+          editMenuItem,
           navToHeader,
           previewMenuItem,
           liveMenuItem,
@@ -250,6 +255,11 @@ export class EnvironmentSwitcher extends MobxLitElement {
 
     if (showProd) {
       picker.append(prodMenuItem);
+    }
+
+    if (this.currentEnv !== 'live' && (showProd || this.currentEnv === 'prod')) {
+      // TODO: show/hide live based on alt/option key
+      liveMenuItem.remove();
     }
 
     if (appStore.status?.webPath) {
