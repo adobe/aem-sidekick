@@ -43,9 +43,9 @@ export function createReloadPlugin(appStore) {
             console.error(resp);
             throw new Error(resp.headers['x-error'] || resp.status);
           }
+          appStore.hideWait();
           if (newTab(evt)) {
             window.open(window.location.href);
-            appStore.hideWait();
           } else {
             window.location.reload();
           }
