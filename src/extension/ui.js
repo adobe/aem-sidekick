@@ -16,16 +16,17 @@ import { getDisplay } from './display.js';
 import { GH_URL, getProject, isValidProject } from './project.js';
 
 /**
- * @typedef {Object} Context
- * @prop {string} [url] The URL
- * @prop {Object} [config] The project config
- * @prop {OptionsConfig[]} [matches] The config matches
- * @description The context object
+ * The configuration object type
+ * @typedef {import('@Types').OptionsDerivedConfig} OptionsDerivedConfig
  */
 
 /**
- * The configuration object type
- * @typedef {import('@Types').OptionsConfig} OptionsConfig
+ * @typedef {Object} Context
+ * @prop {number} [id] The tab ID
+ * @prop {string} [url] The tab URL
+ * @prop {Object} [config] The project config
+ * @prop {OptionsDerivedConfig[]} [matches] The config matches
+ * @description The context object
  */
 
 /**
@@ -75,11 +76,39 @@ export async function updateIcon({ matches = [] }) {
 }
 
 /**
+ * Tries to guess if the current tab contains an AEM site.
+ * @param {number} id The tab ID
+ * @returns {Promise<boolean>} True if the provided tab contains an AEM site
+ */
+async function guessAEMSite(id) {
+  return new Promise((resolve) => {
+    try {
+      chrome.scripting.executeScript({
+        target: { tabId: id },
+        func: () => {
+          const isAEM = document.body.querySelector(':scope > main > div') !== null;
+          chrome.runtime.sendMessage({ isAEM });
+        },
+      });
+      // listen for response message from tab
+      const listener = ({ isAEM }) => {
+        chrome.runtime.onMessage.removeListener(listener);
+        resolve(!!isAEM);
+      };
+      chrome.runtime.onMessage.addListener(listener);
+    } catch (e) {
+      log.debug('Error guessing AEM site', e);
+      resolve(false);
+    }
+  });
+}
+
+/**
  * Updates context menu items.
  * @param {Context} context The context object
  */
 export async function updateContextMenu({
-  url, config,
+  id, url, config,
 }) {
   if (chrome.contextMenus && !updateInProgress) {
     updateInProgress = true;
@@ -122,16 +151,15 @@ export async function updateContextMenu({
         });
       }
       // open view doc source
-      // if (await guessAEMSite(id)) {
-      //   // todo: implement view doc source
-      //   await chrome.contextMenus.create({
-      //     id: 'openViewDocSource',
-      //     title: chrome.i18n.getMessage('open_view_doc_source'),
-      //     contexts: [
-      //       'action',
-      //     ],
-      //   });
-      // }
+      if (await guessAEMSite(id)) {
+        await chrome.contextMenus.create({
+          id: 'openViewDocSource',
+          title: chrome.i18n.getMessage('open_view_doc_source'),
+          contexts: [
+            'action',
+          ],
+        });
+      }
     }
     updateInProgress = false;
   }

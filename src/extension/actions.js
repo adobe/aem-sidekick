@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { log } from './log.js';
 import { setAuthToken } from './auth.js';
 import {
   addProject,
@@ -92,6 +93,39 @@ async function openPreview({ url }) {
 }
 
 /**
+ * Opens the view document source popup.
+ * @param {chrome.tabs.Tab} tab The tab
+ */
+async function openViewDocSource({ id }) {
+  chrome.windows.create({
+    url: chrome.runtime.getURL(`/view-doc-source/index.html?tabId=${id}`),
+    type: 'popup',
+    width: 740,
+  });
+}
+
+/**
+ * Checks if the view document source popup needs to be opened.
+ * @param {number} id The tab ID
+ */
+export async function checkViewDocSource(id) {
+  const tab = await chrome.tabs.get(id);
+  if (!tab || !tab.url || !tab.active) {
+    return;
+  }
+  try {
+    const u = new URL(tab.url);
+    const vds = u.searchParams.get('view-doc-source');
+    if (vds && vds === 'true') {
+      // @ts-ignore
+      await openViewDocSource({ id });
+    }
+  } catch (e) {
+    log.warn(`Error checking view document source for url: ${tab.url}`, e);
+  }
+}
+
+/**
  * Actions which can be executed via internal messaging API.
  * @type {Object} The internal actions
  */
@@ -99,7 +133,7 @@ export const internalActions = {
   addRemoveProject,
   enableDisableProject,
   openPreview,
-  // todo: open view doc source
+  openViewDocSource,
 };
 
 /**

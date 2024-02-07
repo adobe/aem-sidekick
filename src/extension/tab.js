@@ -116,5 +116,7 @@ export default async function checkTab(id) {
   }
 
   // update UI
-  return updateUI({ url, config, matches });
+  return updateUI({
+    id, url, config, matches,
+  });
 }
