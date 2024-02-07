@@ -1,3 +1,15 @@
+# [1.7.0](https://github.com/adobe/aem-sidekick/compare/v1.6.2...v1.7.0) (2024-2-7)
+
+
+### Bug Fixes
+
+* backward compatibility ([f82adc4](https://github.com/adobe/aem-sidekick/commit/f82adc4c7d6d080c90cab19bdafd2389e5c45b31))
+
+
+### Features
+
+* view doc source ([dc6e545](https://github.com/adobe/aem-sidekick/commit/dc6e54522f2269a8db5d09f6ccfc26b20994e4c8))
+
 ## [1.6.2](https://github.com/adobe/aem-sidekick/compare/v1.6.1...v1.6.2) (2024-2-2)
 
 
