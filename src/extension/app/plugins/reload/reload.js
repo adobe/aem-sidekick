@@ -47,7 +47,7 @@ export function createReloadPlugin(appStore) {
           if (newTab(evt)) {
             window.open(window.location.href);
           } else {
-            window.location.reload();
+            appStore.reloadPage();
           }
         } catch (e) {
           EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {

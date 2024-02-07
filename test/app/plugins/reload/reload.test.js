@@ -42,6 +42,9 @@ describe('Reload plugin', () => {
 
   before(() => {
     sandbox = sinon.createSandbox();
+    sandbox.stub(appStore, 'reloadPage').callsFake(() => {
+      reloaded = true;
+    });
   });
 
   beforeEach(async () => {
@@ -49,11 +52,6 @@ describe('Reload plugin', () => {
     sidekick = new AEMSidekick(defaultSidekickConfig);
     document.body.appendChild(sidekick);
     reloaded = false;
-    window.onbeforeunload = (evt) => {
-      reloaded = true;
-      evt.preventDefault();
-      return false;
-    };
   });
 
   afterEach(() => {
