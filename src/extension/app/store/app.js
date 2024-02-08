@@ -475,9 +475,14 @@ export class AppStore {
   /**
    * Reloads the current page. Abstracted for testing.
    */
-  reloadPage() {
-    // istanbul ignore next
-    window.location.reload();
+  reloadPage(newTab) {
+    if (newTab) {
+      // istanbul ignore next
+      window.open(window.location.href);
+    } else {
+      // istanbul ignore next
+      window.location.reload();
+    }
   }
 
   /**

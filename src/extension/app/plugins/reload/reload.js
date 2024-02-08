@@ -44,11 +44,7 @@ export function createReloadPlugin(appStore) {
             throw new Error(resp.headers['x-error'] || resp.status);
           }
           appStore.hideWait();
-          if (newTab(evt)) {
-            window.open(window.location.href);
-          } else {
-            appStore.reloadPage();
-          }
+          appStore.reloadPage(newTab(evt));
         } catch (e) {
           EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
             detail: {
