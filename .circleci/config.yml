@@ -33,7 +33,8 @@ jobs:
           name: Test
           command: |
             npm run test
-      - codecov/upload
+      - codecov/upload:
+          token: 3cae8925-4e9f-4775-897a-dd3022e53660 
       - store_test_results:
           path: junit
       - store_artifacts:
