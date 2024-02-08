@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/adobe/aem-sidekick/compare/v1.7.0...v1.8.0) (2024-2-8)
+
+
+### Features
+
+* reload plugin ([59dac79](https://github.com/adobe/aem-sidekick/commit/59dac79d5b2f9f2e860e65d756b3f8708723a24e))
+
 # [1.7.0](https://github.com/adobe/aem-sidekick/compare/v1.6.2...v1.7.0) (2024-2-7)
 
 
