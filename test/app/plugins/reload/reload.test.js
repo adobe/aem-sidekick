@@ -49,6 +49,10 @@ describe('Reload plugin', () => {
 
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
+    mockFetchStatusSuccess();
+    mockFetchConfigJSONNotFound();
+    mockHelixEnvironment(document, 'preview');
+
     sidekick = new AEMSidekick(defaultSidekickConfig);
     document.body.appendChild(sidekick);
     reloaded = false;
@@ -61,11 +65,9 @@ describe('Reload plugin', () => {
     sandbox.restore();
   });
 
-  it('reload from preview', async () => {
-    mockFetchStatusSuccess();
-    mockFetchConfigJSONNotFound();
-    mockHelixEnvironment(document, 'preview');
-    const updateStub = sandbox.stub(appStore, 'update').resolves({ ok: true, status: 200 });
+  it('reload calls appStore.update() and reloads window', async () => {
+    const updateStub = sandbox.stub(appStore, 'update')
+      .resolves(new Response('', { status: 200, headers: {} }));
     const showWaitSpy = sandbox.spy(appStore, 'showWait');
     const hideWaitSpy = sandbox.spy(appStore, 'hideWait');
 
@@ -84,11 +86,9 @@ describe('Reload plugin', () => {
     expect(reloaded).to.be.true;
   });
 
-  it('reload from preview - failure', async () => {
-    mockFetchStatusSuccess();
-    mockFetchConfigJSONNotFound();
-    mockHelixEnvironment(document, 'preview');
-    const updateStub = sandbox.stub(appStore, 'update').resolves({ ok: false, status: 500 });
+  it('reload handles failure', async () => {
+    const updateStub = sandbox.stub(appStore, 'update')
+      .resolves(new Response('', { status: 500, headers: {} }));
     const showWaitSpy = sandbox.spy(appStore, 'showWait');
 
     const modalSpy = sandbox.spy();
