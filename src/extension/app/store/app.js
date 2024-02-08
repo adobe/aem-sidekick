@@ -802,6 +802,9 @@ export class AppStore {
     return resp;
   }
 
+  somenewfunction() {
+  }
+
   /**
    * Switches to (or opens) a given environment.
    * @param {string} targetEnv One of the following environments:
