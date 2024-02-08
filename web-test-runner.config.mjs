@@ -24,7 +24,7 @@ export default {
   coverageConfig: {
     include: ['./src/**/*'],
     report: true,
-    reportDir: 'coverage-wtr',
+    reportDir: 'coverage',
   },
   plugins: [
     babel({
