@@ -92,7 +92,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(2);
+      expectPluginCount(3);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
 
@@ -231,7 +231,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(2);
+      expectPluginCount(3);
       expectEnvPlugin(['preview', 'edit', 'prod']);
       expectPlugin('env-switcher');
       expectPlugin('.publish');
@@ -265,7 +265,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(2);
+      expectPluginCount(3);
 
       const publishButton = recursiveQuery(sidekick, '.publish');
       publishButton.click();

@@ -65,7 +65,7 @@ describe('Preview plugin', () => {
       const publishPlugin = recursiveQuery(sidekick, '.publish');
       expect(publishPlugin.textContent.trim()).to.equal('Publish');
 
-      publishPlugin.dispatchEvent(new Event('click'));
+      publishPlugin.click();
 
       await waitUntil(() => publishStub.calledOnce === true);
 
@@ -98,7 +98,7 @@ describe('Preview plugin', () => {
       const publishPlugin = recursiveQuery(sidekick, '.publish');
       expect(publishPlugin.textContent.trim()).to.equal('Publish');
 
-      publishPlugin.dispatchEvent(new Event('click'));
+      publishPlugin.click();
 
       await waitUntil(() => publishStub.calledOnce === true);
 
