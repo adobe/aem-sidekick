@@ -372,6 +372,17 @@ export class AppStore {
   }
 
   /**
+   */
+  authenticationRequired() {
+    const { status } = this.status;
+    if (status === 401) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Checks if the current location is a content URL.
    * @returns {boolean} <code>true</code> if content URL, else <code>false</code>
    */
@@ -869,6 +880,117 @@ export class AppStore {
       sourceUrl: href,
       targetUrl: envUrl,
     });
+  }
+
+  async checkProfileStatus(status) {
+    const url = getAdminUrl(this.siteStore, 'profile');
+    const opts = getAdminFetchOptions();
+    return fetch(url, opts)
+      .then((res) => res.json())
+      .then((json) => (json.status === status))
+      .catch(() => false);
+  }
+
+  /**
+   * Logs the user in.
+   * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
+   */
+  login(selectAccount) {
+    this.showWait();
+    const loginUrl = getAdminUrl(this.siteStore, 'login');
+    let extensionId = window.chrome?.runtime?.id;
+    if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
+      extensionId = 'cookie';
+    }
+    console.log('extensionId', extensionId);
+    loginUrl.searchParams.set('extensionId', extensionId);
+    if (selectAccount) {
+      loginUrl.searchParams.set('selectAccount', 'true');
+    }
+    const loginWindow = window.open(loginUrl.toString());
+
+    let attempts = 0;
+
+    async function checkLoggedIn() {
+      if (loginWindow.closed) {
+        const { siteStore, status } = this;
+        attempts += 1;
+        // try 5 times after login window has been closed
+        if (await this.checkProfileStatus(200)) {
+          // logged in, stop checking
+          delete status.status;
+          this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
+          await this.siteStore.initStore(siteStore);
+          this.siteStore.authTokenExpiry = (
+            window.hlx
+            && window.hlx.sidekickConfig
+            && window.hlx.sidekickConfig.authTokenExpiry) || 0;
+          this.setupCorePlugins();
+          // encourageLogin(sk, false);
+          this.fetchStatus();
+          this.fireEvent('loggedin');
+          this.hideWait();
+          return;
+        }
+        if (attempts >= 5) {
+          // give up after 5 attempts
+          EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
+            detail: {
+              type: MODALS.ERROR,
+              data: { message: this.i18n('error_login_timeout') },
+            },
+          }));
+          return;
+        }
+      }
+      // try again after 1s
+      window.setTimeout(checkLoggedIn.bind(this), 1000);
+    }
+    window.setTimeout(checkLoggedIn.bind(this), 1000);
+  }
+
+  /**
+   * Logs the user out.
+   */
+  logout() {
+    this.showWait();
+    const logoutUrl = getAdminUrl(this.siteStore, 'logout');
+    let extensionId = window.chrome?.runtime?.id;
+    if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
+      extensionId = 'cookie';
+    }
+    logoutUrl.searchParams.set('extensionId', extensionId);
+    const logoutWindow = window.open(logoutUrl.toString());
+
+    let attempts = 0;
+
+    async function checkLoggedOut() {
+      if (logoutWindow.closed) {
+        attempts += 1;
+        // try 5 times after login window has been closed
+        if (await this.checkProfileStatus(401)) {
+          delete this.status.profile;
+          delete this.siteStore.authTokenExpiry;
+          this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
+          this.fetchStatus();
+          this.fireEvent('loggedout');
+          return;
+        }
+        if (attempts >= 5) {
+          // give up after 5 attempts
+          EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
+            detail: {
+              type: MODALS.ERROR,
+              data: { message: this.i18n('error_logout_error') },
+            },
+          }));
+          return;
+        }
+      }
+      // try again after 1s
+      window.setTimeout(checkLoggedOut.bind(this), 1000);
+    }
+    window.setTimeout(checkLoggedOut.bind(this), 1000);
   }
 }
 

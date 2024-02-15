@@ -161,15 +161,13 @@ export class PluginActionBar extends MobxLitElement {
     return appStore.initialized ? html`
       <action-bar>
         <sp-action-group>
-          <img class="logo" alt="adobe logo" src=${logo} />
           <sp-divider size="s" vertical></sp-divider>
           ${this.renderPlugins()}
         </sp-action-group>
         <sp-divider size="s" vertical></sp-divider>
         <sp-action-group>
-          <sp-action-button quiet aria-label="profile">
-            <sp-icon-real-time-customer-profile slot="icon"></sp-icon-real-time-customer-profile>
-          </sp-action-button>
+          <login-button></login-button>
+          <img class="logo" alt="adobe logo" src=${logo} />
         </sp-action-group>
       </action-bar>
     ` : '';

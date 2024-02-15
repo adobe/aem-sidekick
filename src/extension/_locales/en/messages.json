@@ -606,5 +606,8 @@
     },
     "error": {
       "message": "Error"
+    },
+    "not_authorized": {
+      "message": "Not authorized"
     }
 }

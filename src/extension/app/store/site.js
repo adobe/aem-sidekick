@@ -155,6 +155,12 @@ export class SiteStore {
   plugins;
 
   /**
+   * Custom views
+   * @type {number}
+   */
+  authTokenExpiry;
+
+  /**
    * @param {AppStore} appStore
    */
   constructor(appStore) {

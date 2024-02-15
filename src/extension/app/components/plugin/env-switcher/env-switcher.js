@@ -101,6 +101,38 @@ export class EnvironmentSwitcher extends MobxLitElement {
   }
 
   /**
+   * Determines if the user is authorized for the specified environment
+   * @param {string} env - The environment to check
+   * @returns {boolean} - True if the user is authorized for the environment
+   */
+  authorizedForEnv(env) {
+    const environment = appStore.status[env];
+    const status = environment?.status ?? null;
+
+    if (status === 403) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Returns the last modified label for the specified environment
+   * @param {string} id - The id of the plugin
+   * @param {string} lastModified - The last modified date
+   * @returns {string} - The last modified label
+   */
+  getLastModifiedLabel(id, lastModified) {
+    if (!this.authorizedForEnv(id)) {
+      return appStore.i18n('not_authorized');
+    }
+
+    return lastModified
+      ? appStore.i18n(`${id}_last_updated`).replace('$1', getTimeAgo(appStore.languageDict, lastModified))
+      : appStore.i18n(`${id}_never_updated`);
+  }
+
+  /**
    * Creates a menu item with specified attributes and a description.
    *
    * @param {string} id - The id of the plugin
@@ -130,9 +162,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
 
     const description = createTag({
       tag: 'span',
-      text: lastModified
-        ? appStore.i18n(`${id}_last_updated`).replace('$1', getTimeAgo(appStore.languageDict, lastModified))
-        : appStore.i18n(`${id}_never_updated`),
+      text: this.getLastModifiedLabel(id, lastModified),
       attrs: {
         slot: 'description',
       },
@@ -195,8 +225,8 @@ export class EnvironmentSwitcher extends MobxLitElement {
     }
 
     // Check if preview is newer than live, if so add update flag
-    if ((!liveLastMod
-      || (liveLastMod && new Date(liveLastMod) < new Date(previewLastMod)))) {
+    if (status.live?.status === 200
+      && (!liveLastMod || (liveLastMod && new Date(liveLastMod) < new Date(previewLastMod)))) {
       liveMenuItem.setAttribute('update', 'true');
     }
 
@@ -282,6 +312,6 @@ export class EnvironmentSwitcher extends MobxLitElement {
   }
 
   render() {
-    return html`<action-bar-picker icons="none" @change=${this.onChange} .disabled=${!this.ready}></action-bar-picker>`;
+    return html`<action-bar-picker icons="none" @change=${this.onChange} .disabled=${!this.ready || appStore.authenticationRequired()}></action-bar-picker>`;
   }
 }

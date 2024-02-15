@@ -15,11 +15,6 @@
 import { css } from 'lit';
 
 export const style = css`
-  :host(:not(.env-edit)[class]),
-  :host(:not(.env-edit)[class]) #label {
-    color: var(--spectrum-white);
-  }
-
   :host(.current-env) #label {
     font-weight: 700;
   }
@@ -57,6 +52,40 @@ export const style = css`
     position: absolute;
     top: 0;
     right: 0;
+  }
+
+  :host(.user) {
+    border-bottom: 1px solid var(--spectrum-global-color-gray-300);
+  }
+
+  .user-item {
+    display: flex;
+    gap: 6px;
+  }
+
+  .user-item > slot {
+    display: flex;
+    padding-top: 3px;
+  }
+
+  .user-item .info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .user-item slot::slotted(img) {
+    width: 32px;
+    height: 32px;
+  }
+
+  .logout-item {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .logout-item > slot::slotted(sp-icon-log-out) {
+    width: 32px;
   }
 
   @media (prefers-color-scheme: light) {
