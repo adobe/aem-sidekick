@@ -20,6 +20,9 @@ import {
   defaultSharepointStatusResponse,
   defaultGdriveStatusResponse,
   defaultDirectorySharepointStatusResponse,
+  defaultGdriveProfileResponse,
+  defaultSharepointProfileResponse,
+  defaultStatusResponseWithProfile,
 } from '../fixtures/helix-admin.js';
 import {
   getDefaultEditorEnviromentLocations,
@@ -59,6 +62,22 @@ export const defaultStatusUrl = 'https://admin.hlx.page/status/adobe/aem-boilerp
 export const mockFetchStatusSuccess = (overrides = {}, contentSource = 'sharepoint') => fetchMock.get(defaultStatusUrl, {
   status: 200,
   body: contentSource === 'sharepoint' ? { ...defaultSharepointStatusResponse, ...overrides } : { ...defaultGdriveStatusResponse, ...overrides },
+}, { overwriteRoutes: true });
+
+export const mockFetchStatusWithProfileSuccess = () => fetchMock.get(defaultStatusUrl, {
+  status: 200,
+  body: defaultStatusResponseWithProfile,
+}, { overwriteRoutes: true });
+
+export const defaultProfileUrl = 'https://admin.hlx.page/profile/adobe/aem-boilerplate/main';
+export const mockFetchProfileSuccess = (overrides = {}, contentSource = 'sharepoint') => fetchMock.get(defaultProfileUrl, {
+  status: 200,
+  body: contentSource === 'sharepoint' ? { ...defaultSharepointProfileResponse, ...overrides } : { ...defaultGdriveProfileResponse, ...overrides },
+}, { overwriteRoutes: true });
+
+export const mockFetchProfileUnauthorized = () => fetchMock.get(defaultProfileUrl, {
+  status: 200,
+  body: { status: 401 },
 }, { overwriteRoutes: true });
 
 export const sharepointEditorDocStatusUrl = `https://admin.hlx.page/status/adobe/aem-boilerplate/main?editUrl=${encodeURIComponent(getDefaultEditorEnviromentLocations('sharepoint', 'doc'))}`;

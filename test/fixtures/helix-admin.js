@@ -221,7 +221,7 @@ export const defaultGdriveStatusResponse = {
   },
 };
 
-export const statusResponseWithProfile = {
+export const defaultStatusResponseWithProfile = {
   ...defaultGdriveStatusResponse,
   profile: {
     iss: 'https://accounts.google.com',
@@ -239,6 +239,59 @@ export const statusResponseWithProfile = {
     exp: 222,
     ttl: 333,
     hlx_hash: 'J9y9hUNu5vJS9_38ck_POjo2FgQ',
+  },
+};
+
+export const defaultGdriveProfileResponse = {
+  status: 200,
+  profile: {
+    iss: 'https://accounts.google.com',
+    aud: 'user-id.apps.googleusercontent.com',
+    sub: 'sub-id',
+    hd: 'example.com',
+    email: 'foo@example.com',
+    email_verified: true,
+    name: 'Dylan DePass',
+    picture: 'https://lh3.googleusercontent.com/a/ACg8ocLr6H7E_PkxRUeyyalOW2BYgEt7boQk7yzVCrVIm4g4=s96-c',
+    given_name: 'Peter',
+    family_name: 'Parker',
+    locale: 'en',
+    iat: 1708100467,
+    exp: 1708104067,
+    ttl: 3190,
+    hlx_hash: 'hash',
+  },
+  links: {
+    logout: 'https://admin.hlx.page/logout/adobe/aem-boilerplate/main',
+  },
+};
+
+export const defaultSharepointProfileResponse = {
+  status: 200,
+  profile: {
+    aud: 'aud-id',
+    iss: 'https://login.microsoftonline.com/fa7b1b5a-7b34-4387-94ae-d2c178decee1/v2.0',
+    iat: 1708104155,
+    nbf: 1708104155,
+    exp: 1708108055,
+    email: 'foo@example.com',
+    name: 'Peter Parker',
+    oid: 'oid-id',
+    preferred_username: 'foo@example.com',
+    rh: 'rh-id',
+    roles: [
+      'admin',
+    ],
+    sub: 'sub-id',
+    tid: 'tid-id',
+    uti: 'uti-id',
+    ver: '2.0',
+    ttl: 3349,
+    hlx_hash: 'hash',
+    picture: 'https://admin.hlx.page/profile/adobe/aem-boilerplate/main/user-id/picture',
+  },
+  links: {
+    logout: 'https://admin.hlx.page/logout/adobe/aem-boilerplate/main',
   },
 };
 

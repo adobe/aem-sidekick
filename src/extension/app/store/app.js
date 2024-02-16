@@ -497,6 +497,15 @@ export class AppStore {
   }
 
   /**
+   * Opens a new page. Abstracted for testing.
+   * @param {string} url The URL to open
+   * @returns {Window} The window object
+   */
+  openPage(url) {
+    return window.open(url);
+  }
+
+  /**
    * Fires an event with the given name.
    * @param {string} name The name of the event
    * @param {Object} data The data to pass to event listeners (optional)
@@ -902,12 +911,11 @@ export class AppStore {
     if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
       extensionId = 'cookie';
     }
-    console.log('extensionId', extensionId);
     loginUrl.searchParams.set('extensionId', extensionId);
     if (selectAccount) {
       loginUrl.searchParams.set('selectAccount', 'true');
     }
-    const loginWindow = window.open(loginUrl.toString());
+    const loginWindow = this.openPage(loginUrl.toString());
 
     let attempts = 0;
 
@@ -960,7 +968,7 @@ export class AppStore {
       extensionId = 'cookie';
     }
     logoutUrl.searchParams.set('extensionId', extensionId);
-    const logoutWindow = window.open(logoutUrl.toString());
+    const logoutWindow = this.openPage(logoutUrl.toString());
 
     let attempts = 0;
 

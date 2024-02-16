@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { html, LitElement, css } from 'lit';
 import { appStore } from '../../../store/app.js';
@@ -22,6 +22,13 @@ import { appStore } from '../../../store/app.js';
  */
 @customElement('login-button')
 export class LoginButton extends LitElement {
+  /**
+   * Are we ready to enable?
+   * @type {Boolean}
+   */
+  @property({ type: Boolean })
+  accessor ready = false;
+
   static styles = css`
     sp-action-menu {
       --mod-popover-content-area-spacing-vertical: 0;
@@ -49,6 +56,7 @@ export class LoginButton extends LitElement {
     reaction(
       () => appStore.status,
       () => {
+        this.ready = true;
         this.requestUpdate();
       },
     );
@@ -67,7 +75,7 @@ export class LoginButton extends LitElement {
     return html`
       ${!appStore.status.profile || !appStore.isAuthenticated()
         ? html`
-          <sp-action-button quiet class="login" @click=${this.login}>Sign in</sp-action-button>
+          <sp-action-button quiet class="login" @click=${this.login} .disabled=${!this.ready}>${appStore.i18n('user_login')}</sp-action-button>
         ` : ''
       }
       ${appStore.isAuthenticated()
@@ -79,7 +87,7 @@ export class LoginButton extends LitElement {
           >
             <sp-icon-real-time-customer-profile slot="icon"></sp-icon-real-time-customer-profile>
             <sp-menu-item class="user" value="user">
-              ${profile.picture ? `<img src=${profile.picture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon"><sp-icon-user size="xl"></sp-icon-user></div>`}
+              ${profile.picture ? html`<img src=${profile.picture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon"><sp-icon-user size="xl"></sp-icon-user></div>`}
               ${profile.name}
               <span slot="description">${profile.email}</span>
             </sp-menu-item>
