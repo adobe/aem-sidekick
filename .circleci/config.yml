@@ -5,7 +5,7 @@ executors:
       - image: cimg/node:current
 
 orbs:
-  browser-tools: circleci/browser-tools@1.4.6
+  browser-tools: circleci/browser-tools@1.4.7
   codecov: codecov/codecov@4.0.1
 
 commands:
