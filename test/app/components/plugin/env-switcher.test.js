@@ -15,7 +15,7 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import { expect, waitUntil } from '@open-wc/testing';
-import { recursiveQuery } from '../../../test-utils.js';
+import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
@@ -23,6 +23,7 @@ import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
   mockFetchConfigJSONNotFound,
   mockFetchStatusSuccess,
+  mockFetchStatusWithProfileUnauthorized,
 } from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
@@ -74,6 +75,29 @@ describe('Environment Switcher', () => {
       expect(switchEnvStub.calledOnce).to.be.true;
       expect(switchEnvStub.calledWith('live', false)).to.be.true;
 
+      switchEnvStub.restore();
+    });
+
+    it('not authorized - logged into a different account', async () => {
+      mockFetchStatusWithProfileUnauthorized();
+      mockFetchConfigJSONNotFound();
+      mockHelixEnvironment(document, 'preview');
+
+      const switchEnvStub = sinon.stub(appStore, 'switchEnv').resolves();
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+      const menuItems = [...recursiveQueryAll(picker, 'sp-menu-item')];
+      menuItems.forEach((item) => {
+        expect(item.disabled).to.eq(true);
+        expect(item.querySelector('span').textContent).to.eq('Not authorized');
+      });
       switchEnvStub.restore();
     });
   });

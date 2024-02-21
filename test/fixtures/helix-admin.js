@@ -242,6 +242,51 @@ export const defaultStatusResponseWithProfile = {
   },
 };
 
+export const defaultStatusLoggedInNotAuthorizedResponse = {
+  webPath: '/',
+  resourcePath: '/index.md',
+  live: {
+    status: 403,
+    url: 'https://main--aem-boilerplate--adobe.hlx.live/',
+    error: 'forbidden',
+  },
+  preview: {
+    status: 403,
+    url: 'https://main--aem-boilerplate--adobe.hlx.page/',
+    error: 'forbidden',
+  },
+  edit: {
+    status: 403,
+  },
+  code: {
+    status: 403,
+  },
+  links: {
+    status: 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/',
+    preview: 'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/',
+    live: 'https://admin.hlx.page/live/adobe/aem-boilerplate/main/',
+    code: 'https://admin.hlx.page/code/adobe/aem-boilerplate/main/',
+    logout: 'https://admin.hlx.page/logout/adobe/aem-boilerplate/main',
+  },
+  profile: {
+    iss: 'https://accounts.google.com',
+    aud: 'user-id.apps.googleusercontent.com',
+    sub: '1234',
+    hd: 'example.com',
+    email: 'foo@example.com',
+    email_verified: true,
+    name: 'Peter Parker',
+    picture: 'https://lh3.googleusercontent.com/a/user-id',
+    given_name: 'Peter',
+    family_name: 'Parker',
+    locale: 'en',
+    iat: 111,
+    exp: 222,
+    ttl: 333,
+    hlx_hash: 'J9y9hUNu5vJS9_38ck_POjo2FgQ',
+  },
+};
+
 export const defaultGdriveProfileResponse = {
   status: 200,
   profile: {

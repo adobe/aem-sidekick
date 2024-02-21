@@ -747,4 +747,118 @@ describe('Test App Store', () => {
       expect(resp.error).to.eq('Some error');
     });
   });
+
+  describe('login', () => {
+    let instance;
+    let clock;
+    let checkProfileStatusStub;
+    let sandbox;
+
+    beforeEach(() => {
+      instance = appStore;
+      sandbox = sinon.createSandbox();
+      clock = sandbox.useFakeTimers();
+      window.hlx = {};
+      window.hlx.sidekickConfig = {};
+
+      // window.chrome = { runtime: { id: 'test-extension-id' } };
+      // window.navigator.vendor = 'Non-Apple Vendor';
+      sandbox.stub(appStore, 'openPage').returns({ closed: true });
+      checkProfileStatusStub = sandbox.stub(appStore, 'checkProfileStatus').resolves(false);
+    });
+
+    afterEach(() => {
+      clock.restore();
+      sandbox.restore();
+    });
+
+    it('should attempt to check login status up to 5 times after login window is closed', async () => {
+      const modalSpy = sinon.spy();
+      EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
+
+      instance.login(false);
+
+      // Fast-forward time to simulate the retries
+      for (let i = 0; i < 5; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await clock.tickAsync(1000); // Fast-forward 1 second for each attempt
+      }
+
+      expect(checkProfileStatusStub.callCount).to.equal(5);
+
+      await waitUntil(() => modalSpy.called, 'Modal never opened');
+
+      expect(modalSpy.callCount).to.equal(2);
+      expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
+    }).timeout(20000);
+
+    it('handles successful login correctly', async () => {
+      instance.sidekick = document.createElement('div');
+      checkProfileStatusStub.onCall(0).resolves(false);
+      checkProfileStatusStub.onCall(4).resolves(true); // Simulate success on the 5th attempt
+
+      const loginEventSpy = sinon.spy();
+      instance.sidekick.addEventListener('loggedin', loginEventSpy);
+
+      // Mock other methods called upon successful login
+      const initStoreStub = sandbox.stub(instance.siteStore, 'initStore').resolves();
+      const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
+      const fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
+      const hideWaitStub = sandbox.stub(instance, 'hideWait');
+
+      instance.login(false); // Call without selectAccount
+
+      await clock.tickAsync(5000); // Fast-forward time
+
+      expect(initStoreStub.called).to.be.true;
+      expect(setupCorePluginsStub.called).to.be.true;
+      expect(fetchStatusStub.called).to.be.true;
+      expect(hideWaitStub.calledOnce).to.be.true;
+    }).timeout(20000);
+  });
+
+  describe('logout', () => {
+    let instance;
+    let clock;
+    let checkProfileStatusStub;
+    let sandbox;
+
+    beforeEach(() => {
+      instance = appStore;
+      sandbox = sinon.createSandbox();
+      clock = sandbox.useFakeTimers();
+      window.hlx = {};
+      window.hlx.sidekickConfig = {};
+
+      // window.chrome = { runtime: { id: 'test-extension-id' } };
+      // window.navigator.vendor = 'Non-Apple Vendor';
+      sandbox.stub(appStore, 'openPage').returns({ closed: true });
+      checkProfileStatusStub = sandbox.stub(appStore, 'checkProfileStatus').resolves(false);
+    });
+
+    afterEach(() => {
+      clock.restore();
+      sandbox.restore();
+    });
+
+    it('should attempt to check logout status up to 5 times after login window is closed', async () => {
+      const modalSpy = sinon.spy();
+      EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
+
+      instance.logout();
+
+      // Fast-forward time to simulate the retries
+      for (let i = 0; i < 5; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await clock.tickAsync(1000); // Fast-forward 1 second for each attempt
+      }
+
+      expect(checkProfileStatusStub.callCount).to.equal(5);
+
+      await waitUntil(() => modalSpy.called, 'Modal never opened');
+
+      expect(modalSpy.callCount).to.equal(2);
+      expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
+    }).timeout(20000);
+  });
 });

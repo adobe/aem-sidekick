@@ -23,6 +23,7 @@ import {
   defaultGdriveProfileResponse,
   defaultSharepointProfileResponse,
   defaultStatusResponseWithProfile,
+  defaultStatusLoggedInNotAuthorizedResponse,
 } from '../fixtures/helix-admin.js';
 import {
   getDefaultEditorEnviromentLocations,
@@ -67,6 +68,11 @@ export const mockFetchStatusSuccess = (overrides = {}, contentSource = 'sharepoi
 export const mockFetchStatusWithProfileSuccess = () => fetchMock.get(defaultStatusUrl, {
   status: 200,
   body: defaultStatusResponseWithProfile,
+}, { overwriteRoutes: true });
+
+export const mockFetchStatusWithProfileUnauthorized = () => fetchMock.get(defaultStatusUrl, {
+  status: 200,
+  body: defaultStatusLoggedInNotAuthorizedResponse,
 }, { overwriteRoutes: true });
 
 export const defaultProfileUrl = 'https://admin.hlx.page/profile/adobe/aem-boilerplate/main';
