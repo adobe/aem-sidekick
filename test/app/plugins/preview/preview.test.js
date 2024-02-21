@@ -65,6 +65,7 @@ describe('Preview plugin', () => {
 
       previewPlugin.click();
 
+      await waitUntil(() => updatePreviewSpy.calledOnce);
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(tipToast.calledOnce).to.be.true;
 
