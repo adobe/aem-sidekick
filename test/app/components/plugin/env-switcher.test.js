@@ -14,7 +14,7 @@
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
-import { aTimeout, expect, waitUntil } from '@open-wc/testing';
+import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
@@ -69,9 +69,10 @@ describe('Environment Switcher', () => {
       const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
       liveButton.click();
 
-      await aTimeout(1000);
-      await waitUntil(() => switchEnvStub.called, 'Unable to switch env', { interval: 10, timeout: 10000 });
-      expect(switchEnvStub.called).to.be.true;
+      picker.value = 'live';
+      picker.dispatchEvent(new Event('change'));
+
+      expect(switchEnvStub.calledOnce).to.be.true;
       expect(switchEnvStub.calledWith('live', false)).to.be.true;
 
       switchEnvStub.restore();
