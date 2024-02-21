@@ -80,7 +80,7 @@ describe('Environment Switcher', () => {
       mockFetchStatusWithProfileUnauthorized();
       mockHelixEnvironment(document, 'preview');
 
-      const switchEnvStub = sinon.stub(appStore, 'switchEnv').resolves();
+      const switchEnvStub = sinon.stub(appStore, 'switchEnv').returns();
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
