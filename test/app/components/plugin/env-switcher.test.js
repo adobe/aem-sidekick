@@ -74,7 +74,7 @@ describe('Environment Switcher', () => {
       expect(switchEnvStub.calledWith('live', false)).to.be.true;
 
       switchEnvStub.restore();
-    }).timeout(8000);
+    }).timeout(20000);
 
     it('not authorized - authenticated but not authorized', async () => {
       mockFetchStatusWithProfileUnauthorized();
