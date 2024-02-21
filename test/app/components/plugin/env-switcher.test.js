@@ -69,7 +69,7 @@ describe('Environment Switcher', () => {
       const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
       liveButton.click();
 
-      await waitUntil(() => switchEnvStub.calledOnce);
+      await waitUntil(() => switchEnvStub.calledOnce, 'Unable to switch env', { timeout: 5000 });
       expect(switchEnvStub.calledOnce).to.be.true;
       expect(switchEnvStub.calledWith('live', false)).to.be.true;
 
