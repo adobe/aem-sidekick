@@ -76,11 +76,9 @@ describe('Environment Switcher', () => {
       switchEnvStub.restore();
     }).timeout(8000);
 
-    it('not authorized - logged into a different account', async () => {
+    it('not authorized - authenticated but not authorized', async () => {
       mockFetchStatusWithProfileUnauthorized();
       mockHelixEnvironment(document, 'preview');
-
-      const switchEnvStub = sinon.stub(appStore, 'switchEnv').returns();
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -91,11 +89,11 @@ describe('Environment Switcher', () => {
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
       const menuItems = [...recursiveQueryAll(picker, 'sp-menu-item')];
+
       menuItems.forEach((item) => {
         expect(item.disabled).to.eq(true);
         expect(item.querySelector('span').textContent).to.eq('Not authorized');
       });
-      switchEnvStub.restore();
     });
   });
 });
