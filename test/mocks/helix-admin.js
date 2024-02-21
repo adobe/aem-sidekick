@@ -16,6 +16,7 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import {
   defaultConfigJSON,
+  defaultConfigJSONWithHost,
   defaultConfigJSONWithPlugins,
   defaultSharepointStatusResponse,
   defaultGdriveStatusResponse,
@@ -30,10 +31,19 @@ import {
 } from './environment.js';
 
 export const defaultConfigJSONUrl = 'https://admin.hlx.page/sidekick/adobe/aem-boilerplate/main/config.json';
-export const mockFetchConfigWithoutPluginsJSONSuccess = (overrides = {}) => fetchMock.get(defaultConfigJSONUrl, {
+
+export const mockFetchConfigWithoutPluginsOrHostJSONSuccess = (overrides = {}) => fetchMock.get(defaultConfigJSONUrl, {
   status: 200,
   body: {
     ...defaultConfigJSON,
+    ...overrides,
+  },
+}, { overwriteRoutes: true });
+
+export const mockFetchConfigWithoutPluginsJSONSuccess = (overrides = {}) => fetchMock.get(defaultConfigJSONUrl, {
+  status: 200,
+  body: {
+    ...defaultConfigJSONWithHost,
     ...overrides,
   },
 }, { overwriteRoutes: true });

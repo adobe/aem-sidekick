@@ -22,9 +22,9 @@ import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
   mockSharepointEditorDocFetchStatusSuccess,
-  mockFetchConfigJSONNotFound,
   mockGdriveEditorFetchStatusSuccess,
   mockSharepointEditorSheetFetchStatusSuccess,
+  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
 } from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
@@ -39,6 +39,7 @@ describe('Preview plugin', () => {
   let sidekick;
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
+    mockFetchConfigWithoutPluginsOrHostJSONSuccess();
   });
 
   afterEach(() => {
@@ -50,7 +51,6 @@ describe('Preview plugin', () => {
   describe('switching between environments', () => {
     it('previewing from sharepoint editor - docx', async () => {
       mockSharepointEditorDocFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
       mockEditorAdminEnvironment(document, 'editor');
       const updatePreviewSpy = sinon.stub(appStore, 'updatePreview').resolves();
       const tipToast = sinon.stub(appStore, 'showToast').returns();
@@ -74,7 +74,6 @@ describe('Preview plugin', () => {
 
     it('previewing from sharepoint editor - sheet', async () => {
       mockSharepointEditorSheetFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
       mockEditorAdminEnvironment(document, 'editor', HelixMockContentType.SHEET);
       const updatePreviewSpy = sinon.stub(appStore, 'updatePreview').resolves();
       const reloadStub = sinon.stub(appStore, 'reloadPage').returns();
@@ -113,7 +112,6 @@ describe('Preview plugin', () => {
 
     it('previewing from gdrive editor - doc', async () => {
       mockGdriveEditorFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
       const updatePreviewSpy = sinon.stub(appStore, 'updatePreview').resolves();
 
@@ -133,7 +131,6 @@ describe('Preview plugin', () => {
 
     it('previewing from gdrive editor - not a valid content type', async () => {
       mockGdriveEditorFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
 
       const modalSpy = sinon.spy();
@@ -156,7 +153,6 @@ describe('Preview plugin', () => {
 
     it('previewing from gdrive editor - not a gdoc type', async () => {
       mockGdriveEditorFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
 
       const modalSpy = sinon.spy();
@@ -179,7 +175,6 @@ describe('Preview plugin', () => {
 
     it('previewing from gdrive editor - not a gsheet type', async () => {
       mockGdriveEditorFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
 
       const modalSpy = sinon.spy();

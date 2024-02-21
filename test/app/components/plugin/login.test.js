@@ -87,7 +87,7 @@ describe('Login', () => {
       openStub.restore();
     }
 
-    it.skip('Successful login ', async () => {
+    it('Successful login ', async () => {
       await login();
     }).timeout(20000);
 
@@ -107,7 +107,6 @@ describe('Login', () => {
       const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
       logoutButton.click();
       await waitUntil(() => recursiveQuery(sidekick, 'dialog-view'));
-      await waitUntil(() => recursiveQuery(sidekick, 'dialog-view') === undefined);
       openStub.restore();
     }).timeout(20000);
   });

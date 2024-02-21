@@ -45,6 +45,10 @@ export class PluginActionBar extends MobxLitElement {
       padding: 8px;
     }
 
+    action-bar sp-action-group.not-authorized {
+      padding: 0px;
+    }
+
     action-bar .plugin-container {
       width: auto;
     }
@@ -158,15 +162,20 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   render() {
+    const authorized = appStore.corePlugins ? Object.keys(appStore?.corePlugins).length > 0 : false;
+    const authStatus = !authorized ? 'not-authorized' : '';
+
     return appStore.initialized ? html`
       <action-bar>
-        <sp-action-group>
-          <sp-divider size="s" vertical></sp-divider>
+        <sp-action-group class=${authStatus}>
           ${this.renderPlugins()}
         </sp-action-group>
-        <sp-divider size="s" vertical></sp-divider>
+        ${authorized
+          ? html`<sp-divider size="s" vertical></sp-divider>`
+          : ''
+        }
         <sp-action-group>
-          <login-button></login-button>
+          <login-button class=${authStatus}></login-button>
           <img class="logo" alt="adobe logo" src=${logo} />
         </sp-action-group>
       </action-bar>

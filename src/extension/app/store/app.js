@@ -73,6 +73,12 @@ export class AppStore {
   @observable accessor status = {};
 
   /**
+   * Profile of the current user
+   * @type {Object}
+   */
+  @observable accessor profile;
+
+  /**
    * Dictionary of language keys
    * @type {Object}
    */
@@ -114,8 +120,7 @@ export class AppStore {
       this.languageDict = await fetchLanguageDict(this.siteStore, 'en');
     }
 
-    this.setupCorePlugins();
-    this.setupCustomPlugins();
+    this.setupPlugins();
 
     this.fetchStatus();
 
@@ -136,21 +141,31 @@ export class AppStore {
   }
 
   /**
+   * Sets up the plugins in a single call
+   */
+  setupPlugins() {
+    this.setupCorePlugins();
+    this.setupCustomPlugins();
+  }
+
+  /**
    * Sets up the core plugins.
    */
   @action
   setupCorePlugins() {
     this.corePlugins = {};
 
-    const envPlugin = pluginFactory.createEnvPlugin();
-    const previewPlugin = pluginFactory.createPreviewPlugin(this);
-    const reloadPlugin = pluginFactory.createReloadPlugin(this);
-    const publishPlugin = pluginFactory.createPublishPlugin(this);
+    if (this.siteStore.authorized) {
+      const envPlugin = pluginFactory.createEnvPlugin();
+      const previewPlugin = pluginFactory.createPreviewPlugin(this);
+      const reloadPlugin = pluginFactory.createReloadPlugin(this);
+      const publishPlugin = pluginFactory.createPublishPlugin(this);
 
-    this.corePlugins[envPlugin.id] = envPlugin;
-    this.corePlugins[previewPlugin.id] = previewPlugin;
-    this.corePlugins[reloadPlugin.id] = reloadPlugin;
-    this.corePlugins[publishPlugin.id] = publishPlugin;
+      this.corePlugins[envPlugin.id] = envPlugin;
+      this.corePlugins[previewPlugin.id] = previewPlugin;
+      this.corePlugins[reloadPlugin.id] = reloadPlugin;
+      this.corePlugins[publishPlugin.id] = publishPlugin;
+    }
   }
 
   /**
@@ -160,101 +175,103 @@ export class AppStore {
   setupCustomPlugins() {
     this.customPlugins = {};
 
-    const { location, siteStore: { lang, plugins, innerHost } = {} } = this;
-    if (plugins && Array.isArray(plugins)) {
-      plugins.forEach((cfg, i) => {
-        const {
-          id,
-          title,
-          titleI18n,
-          url,
-          passConfig,
-          passReferrer,
-          isPalette,
-          event: eventName,
-          environments,
-          excludePaths,
-          includePaths,
-          isContainer,
-          containerId,
-        } = cfg;
-        const condition = (appStore) => {
-          let excluded = false;
-          const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
-          if (excludePaths && Array.isArray(excludePaths)
-              && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
-            excluded = true;
-          }
-          if (includePaths && Array.isArray(includePaths)
-              && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
-            excluded = false;
-          }
-          if (excluded) {
-            // excluding plugin
-            return false;
-          }
-          if (!environments || environments.includes('any')) {
-            return true;
-          }
-          const envChecks = {
-            dev: appStore.isDev,
-            edit: appStore.isEditor,
-            preview: appStore.isPreview,
-            live: appStore.isLive,
-            prod: appStore.isProd,
+    if (this.siteStore.authorized) {
+      const { location, siteStore: { lang, plugins, innerHost } = {} } = this;
+      if (plugins && Array.isArray(plugins)) {
+        plugins.forEach((cfg, i) => {
+          const {
+            id,
+            title,
+            titleI18n,
+            url,
+            passConfig,
+            passReferrer,
+            isPalette,
+            event: eventName,
+            environments,
+            excludePaths,
+            includePaths,
+            isContainer,
+            containerId,
+          } = cfg;
+          const condition = (appStore) => {
+            let excluded = false;
+            const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
+            if (excludePaths && Array.isArray(excludePaths)
+                && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              excluded = true;
+            }
+            if (includePaths && Array.isArray(includePaths)
+                && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              excluded = false;
+            }
+            if (excluded) {
+              // excluding plugin
+              return false;
+            }
+            if (!environments || environments.includes('any')) {
+              return true;
+            }
+            const envChecks = {
+              dev: appStore.isDev,
+              edit: appStore.isEditor,
+              preview: appStore.isPreview,
+              live: appStore.isLive,
+              prod: appStore.isProd,
+            };
+            return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
           };
-          return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
-        };
-          // assemble plugin config
-        const plugin = {
-          custom: true,
-          id: id || `custom-plugin-${i}`,
-          condition,
-          button: {
-            text: (titleI18n && titleI18n[lang]) || title || '',
-            action: () => {
-              if (url) {
-                const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
-                if (passConfig) {
-                  target.searchParams.append('ref', this.siteStore.ref);
-                  target.searchParams.append('repo', this.siteStore.repo);
-                  target.searchParams.append('owner', this.siteStore.owner);
-                  if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
-                  if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+            // assemble plugin config
+          const plugin = {
+            custom: true,
+            id: id || `custom-plugin-${i}`,
+            condition,
+            button: {
+              text: (titleI18n && titleI18n[lang]) || title || '',
+              action: () => {
+                if (url) {
+                  const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
+                  if (passConfig) {
+                    target.searchParams.append('ref', this.siteStore.ref);
+                    target.searchParams.append('repo', this.siteStore.repo);
+                    target.searchParams.append('owner', this.siteStore.owner);
+                    if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
+                    if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+                  }
+                  if (passReferrer) {
+                    target.searchParams.append('referrer', location.href);
+                  }
+                  if (isPalette) {
+                    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_PALETTE, {
+                      detail: {
+                        plugin: cfg,
+                      },
+                    }));
+                  } else {
+                    // open url in new window
+                    window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
+                  }
+                } else if (eventName) {
+                  // fire custom event
+                  this.fireEvent(`custom:${eventName}`);
                 }
-                if (passReferrer) {
-                  target.searchParams.append('referrer', location.href);
-                }
-                if (isPalette) {
-                  EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_PALETTE, {
-                    detail: {
-                      plugin: cfg,
-                    },
-                  }));
-                } else {
-                  // open url in new window
-                  window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
-                }
-              } else if (eventName) {
-                // fire custom event
-                this.fireEvent(`custom:${eventName}`);
-              }
+              },
+              isDropdown: isContainer,
             },
-            isDropdown: isContainer,
-          },
-          container: containerId,
-        };
-        // check default plugin
-        const defaultPlugin = this.corePlugins[plugin.id];
-        if (defaultPlugin) {
-          // extend default condition
-          const { condition: defaultCondition } = defaultPlugin;
-          defaultPlugin.condition = (s) => defaultCondition(s) && condition(s);
-        } else {
-          // add custom plugin
-          this.customPlugins[plugin.id] = plugin;
-        }
-      });
+            container: containerId,
+          };
+          // check default plugin
+          const defaultPlugin = this.corePlugins[plugin.id];
+          if (defaultPlugin) {
+            // extend default condition
+            const { condition: defaultCondition } = defaultPlugin;
+            defaultPlugin.condition = (s) => defaultCondition(s) && condition(s);
+          } else {
+            // add custom plugin
+            this.customPlugins[plugin.id] = plugin;
+          }
+        });
+      }
     }
   }
 
@@ -891,13 +908,19 @@ export class AppStore {
     });
   }
 
-  async checkProfileStatus(status) {
+  /**
+   * Retrieves the profile of the current user.
+   * @returns {Promise<Object | false>} The response object
+   */
+  async getProfile() {
     const url = getAdminUrl(this.siteStore, 'profile');
     const opts = getAdminFetchOptions();
-    return fetch(url, opts)
-      .then((res) => res.json())
-      .then((json) => (json.status === status))
-      .catch(() => false);
+    const res = await fetch(url, opts);
+    const response = await res.json();
+    if (res.ok && response.status === 200) {
+      return response.profile;
+    }
+    return false;
   }
 
   /**
@@ -909,6 +932,7 @@ export class AppStore {
     const loginUrl = getAdminUrl(this.siteStore, 'login');
     let extensionId = window.chrome?.runtime?.id;
     if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
+      // istanbul ignore next
       extensionId = 'cookie';
     }
     loginUrl.searchParams.set('extensionId', extensionId);
@@ -924,7 +948,8 @@ export class AppStore {
         const { siteStore, status } = this;
         attempts += 1;
         // try 5 times after login window has been closed
-        if (await this.checkProfileStatus(200)) {
+        this.status.profile = await this.getProfile();
+        if (this.status.profile) {
           // logged in, stop checking
           delete status.status;
           this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
@@ -933,7 +958,7 @@ export class AppStore {
             window.hlx
             && window.hlx.sidekickConfig
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
-          this.setupCorePlugins();
+          this.setupPlugins();
           // encourageLogin(sk, false);
           this.fetchStatus();
           this.fireEvent('loggedin');
@@ -965,6 +990,7 @@ export class AppStore {
     const logoutUrl = getAdminUrl(this.siteStore, 'logout');
     let extensionId = window.chrome?.runtime?.id;
     if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
+      // istanbul ignore next
       extensionId = 'cookie';
     }
     logoutUrl.searchParams.set('extensionId', extensionId);
@@ -976,10 +1002,13 @@ export class AppStore {
       if (logoutWindow.closed) {
         attempts += 1;
         // try 5 times after login window has been closed
-        if (await this.checkProfileStatus(401)) {
+        this.status.profile = await this.getProfile();
+        if (!this.status.profile) {
           delete this.status.profile;
           delete this.siteStore.authTokenExpiry;
           this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
+          this.siteStore.authorized = false;
+          this.setupPlugins();
           this.fetchStatus();
           this.fireEvent('loggedout');
           return;

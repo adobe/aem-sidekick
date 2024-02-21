@@ -751,7 +751,7 @@ describe('Test App Store', () => {
   describe('login', () => {
     let instance;
     let clock;
-    let checkProfileStatusStub;
+    let getProfileStub;
     let sandbox;
 
     beforeEach(() => {
@@ -762,7 +762,7 @@ describe('Test App Store', () => {
       window.hlx.sidekickConfig = {};
 
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
-      checkProfileStatusStub = sandbox.stub(appStore, 'checkProfileStatus').resolves(false);
+      getProfileStub = sandbox.stub(appStore, 'getProfile').resolves(false);
     });
 
     afterEach(() => {
@@ -782,7 +782,7 @@ describe('Test App Store', () => {
         await clock.tickAsync(1000); // Fast-forward 1 second for each attempt
       }
 
-      expect(checkProfileStatusStub.callCount).to.equal(5);
+      expect(getProfileStub.callCount).to.equal(5);
 
       await waitUntil(() => modalSpy.called, 'Modal never opened');
 
@@ -792,8 +792,8 @@ describe('Test App Store', () => {
 
     it('handles successful login correctly', async () => {
       instance.sidekick = document.createElement('div');
-      checkProfileStatusStub.onCall(0).resolves(false);
-      checkProfileStatusStub.onCall(4).resolves(true); // Simulate success on the 5th attempt
+      getProfileStub.onCall(0).resolves(false);
+      getProfileStub.onCall(4).resolves({ name: 'foo' }); // Simulate success on the 5th attempt
 
       const loginEventSpy = sinon.spy();
       instance.sidekick.addEventListener('loggedin', loginEventSpy);
@@ -818,7 +818,7 @@ describe('Test App Store', () => {
   describe('logout', () => {
     let instance;
     let clock;
-    let checkProfileStatusStub;
+    let getProfileStub;
     let sandbox;
 
     beforeEach(() => {
@@ -827,11 +827,7 @@ describe('Test App Store', () => {
       clock = sandbox.useFakeTimers();
       window.hlx = {};
       window.hlx.sidekickConfig = {};
-
-      // window.chrome = { runtime: { id: 'test-extension-id' } };
-      // window.navigator.vendor = 'Non-Apple Vendor';
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
-      checkProfileStatusStub = sandbox.stub(appStore, 'checkProfileStatus').resolves(false);
     });
 
     afterEach(() => {
@@ -841,9 +837,37 @@ describe('Test App Store', () => {
 
     it('should attempt to check logout status up to 5 times after login window is closed', async () => {
       const modalSpy = sinon.spy();
+      getProfileStub = sinon.stub(appStore, 'getProfile');
+      getProfileStub.resolves({ name: 'foo' });
       EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
 
       instance.logout();
+
+      // Fast-forward time to simulate the retries
+      await clock.tickAsync(5000);
+
+      expect(getProfileStub.callCount).to.equal(5);
+
+      await waitUntil(() => modalSpy.called, 'Modal never opened');
+
+      expect(modalSpy.callCount).to.equal(2);
+      expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
+    }).timeout(20000);
+
+    it('handles successful logout correctly', async () => {
+      instance.sidekick = document.createElement('div');
+      getProfileStub = sinon.stub(appStore, 'getProfile');
+      getProfileStub.onCall(0).resolves({ name: 'foo' });
+      getProfileStub.onCall(4).resolves(false); // Simulate success on the 5th attempt
+
+      const loginEventSpy = sinon.spy();
+      instance.sidekick.addEventListener('loggedout', loginEventSpy);
+
+      // Mock other methods called upon successful login
+      const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
+      const fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
+
+      instance.logout(); // Call without selectAccount
 
       // Fast-forward time to simulate the retries
       for (let i = 0; i < 5; i += 1) {
@@ -851,12 +875,8 @@ describe('Test App Store', () => {
         await clock.tickAsync(1000); // Fast-forward 1 second for each attempt
       }
 
-      expect(checkProfileStatusStub.callCount).to.equal(5);
-
-      await waitUntil(() => modalSpy.called, 'Modal never opened');
-
-      expect(modalSpy.callCount).to.equal(2);
-      expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
+      expect(setupCorePluginsStub.called).to.be.true;
+      expect(fetchStatusStub.called).to.be.true;
     }).timeout(20000);
   });
 });

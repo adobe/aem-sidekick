@@ -27,13 +27,17 @@
 
 export const defaultConfigJSON = {
   project: 'AEM Boilerplate',
+};
+
+export const defaultConfigJSONWithHost = {
+  ...defaultConfigJSON,
   previewHost: 'https://custom-preview-host.com',
   liveHost: 'https://custom-live-host.com',
   host: 'https://custom-host.com',
 };
 
 export const defaultConfigJSONWithPlugins = {
-  ...defaultConfigJSON,
+  ...defaultConfigJSONWithHost,
   plugins: [
     {
       id: 'asset-library',

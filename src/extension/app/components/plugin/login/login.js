@@ -48,6 +48,17 @@ export class LoginButton extends LitElement {
       align-items: center;
       justify-content: center;
     }
+
+    :host(.not-authorized) sp-action-button.login {
+      background-color: var(--spectrum-blue-600);
+      color: #fff;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :host(.not-authorized) sp-action-button.login {
+        background-color: var(--spectrum-blue-900);
+      }
+    }
   `;
 
   connectedCallback() {
@@ -57,6 +68,14 @@ export class LoginButton extends LitElement {
       () => appStore.status,
       () => {
         this.ready = true;
+        this.requestUpdate();
+      },
+    );
+
+    // As soon as there is any change to the profile we want to be notified
+    reaction(
+      () => appStore.status.profile,
+      () => {
         this.requestUpdate();
       },
     );
@@ -73,7 +92,7 @@ export class LoginButton extends LitElement {
   renderLogin() {
     const { profile } = appStore.status;
     return html`
-      ${!appStore.status.profile || !appStore.isAuthenticated()
+      ${!profile && !appStore.siteStore.authorized
         ? html`
           <sp-action-button quiet class="login" @click=${this.login} .disabled=${!this.ready}>${appStore.i18n('user_login')}</sp-action-button>
         ` : ''

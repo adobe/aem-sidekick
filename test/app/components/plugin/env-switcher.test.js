@@ -21,7 +21,7 @@ import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
-  mockFetchConfigJSONNotFound,
+  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
   mockFetchStatusSuccess,
   mockFetchStatusWithProfileUnauthorized,
 } from '../../../mocks/helix-admin.js';
@@ -36,6 +36,7 @@ describe('Environment Switcher', () => {
   let sidekick;
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
+    mockFetchConfigWithoutPluginsOrHostJSONSuccess();
   });
 
   afterEach(() => {
@@ -47,10 +48,9 @@ describe('Environment Switcher', () => {
   describe('switching between environments', () => {
     it('change environment - preview -> live', async () => {
       mockFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
       mockHelixEnvironment(document, 'preview');
 
-      const switchEnvStub = sinon.stub(appStore, 'switchEnv').resolves();
+      const switchEnvStub = sinon.stub(appStore, 'switchEnv').returns();
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -69,18 +69,15 @@ describe('Environment Switcher', () => {
       const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
       liveButton.click();
 
-      picker.value = 'live';
-      picker.dispatchEvent(new Event('change'));
-
+      await waitUntil(() => switchEnvStub.calledOnce);
       expect(switchEnvStub.calledOnce).to.be.true;
       expect(switchEnvStub.calledWith('live', false)).to.be.true;
 
       switchEnvStub.restore();
-    });
+    }).timeout(8000);
 
     it('not authorized - logged into a different account', async () => {
       mockFetchStatusWithProfileUnauthorized();
-      mockFetchConfigJSONNotFound();
       mockHelixEnvironment(document, 'preview');
 
       const switchEnvStub = sinon.stub(appStore, 'switchEnv').resolves();

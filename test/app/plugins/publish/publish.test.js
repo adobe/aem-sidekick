@@ -22,6 +22,7 @@ import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
   mockFetchConfigJSONNotFound,
+  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
   mockFetchStatusSuccess,
 } from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
@@ -50,7 +51,7 @@ describe('Preview plugin', () => {
   describe('switching between environments', () => {
     it('publish from preview - docx', async () => {
       mockFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
+      mockFetchConfigWithoutPluginsOrHostJSONSuccess();
       mockHelixEnvironment(document, 'preview');
       const publishStub = sinon.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
       const switchEnvStub = sinon.stub(appStore, 'switchEnv').returns();

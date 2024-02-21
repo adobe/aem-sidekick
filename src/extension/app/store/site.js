@@ -155,6 +155,14 @@ export class SiteStore {
   plugins;
 
   /**
+   * Are we currently authorized for the site?
+   * Since the config fetch is the first request, we need to track it's
+   * response status early so the UI can render appropriately.
+   * @type {boolean}
+   */
+  authorized = false;
+
+  /**
    * Custom views
    * @type {number}
    */
@@ -195,6 +203,7 @@ export class SiteStore {
       try {
         const res = await fetch(configUrl, getAdminFetchOptions(true));
         if (res.status === 200) {
+          this.authorized = true;
           config = {
             ...config,
             ...(await res.json()),
@@ -206,6 +215,8 @@ export class SiteStore {
             adminVersion,
             _extended: Date.now(),
           };
+        } else if (res.status !== 404) {
+          this.authorized = false;
         }
       } catch (e) {
         /* istanbul ignore next */

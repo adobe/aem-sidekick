@@ -27,6 +27,7 @@ import {
   mockFetchConfigWithPluginsJSONSuccess,
   mockFetchConfigWithoutPluginsJSONSuccess,
   mockFetchStatusSuccess,
+  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
 } from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
 import {
@@ -84,19 +85,19 @@ describe('Plugin action bar', () => {
   describe('renders correct default plugins in action bar', () => {
     it('isPreview', async () => {
       mockFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
+      mockFetchConfigWithoutPluginsOrHostJSONSuccess();
       mockHelixEnvironment(document, 'preview');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-
       expectPluginCount(3);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
 
       expectPlugin('env-switcher');
+      expectPlugin('.reload');
       expectPlugin('.publish');
     });
 
@@ -275,7 +276,7 @@ describe('Plugin action bar', () => {
       stub.restore();
     });
 
-    it.skip('isAdmin - loads correct plugins', async () => {
+    it('isAdmin - loads correct plugins', async () => {
       mockSharepointEditorDocFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
       mockEditorAdminEnvironment(document, 'admin');
