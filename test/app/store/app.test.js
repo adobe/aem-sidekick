@@ -761,8 +761,6 @@ describe('Test App Store', () => {
       window.hlx = {};
       window.hlx.sidekickConfig = {};
 
-      // window.chrome = { runtime: { id: 'test-extension-id' } };
-      // window.navigator.vendor = 'Non-Apple Vendor';
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       checkProfileStatusStub = sandbox.stub(appStore, 'checkProfileStatus').resolves(false);
     });
