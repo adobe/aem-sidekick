@@ -17,6 +17,7 @@ import { expect } from '@open-wc/testing';
 import { AppStore } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
 import {
+  mockFetchConfigJSONNotAuthorized,
   mockFetchConfigJSONNotFound,
   mockFetchConfigWithPluginsJSONSuccess,
   mockFetchLocalConfigJSONSuccess,
@@ -168,6 +169,12 @@ describe('Test Site Store', () => {
         ],
         paletteRect: 'top: 50px;',
       });
+    });
+
+    it('auth enabled and not logged in (401 on config.json)', async () => {
+      mockFetchConfigJSONNotAuthorized();
+      await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(appStore.siteStore.authorized).to.equal(false);
     });
 
     it('with window.hlx.sidekickConfig', async () => {

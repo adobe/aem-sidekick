@@ -60,6 +60,10 @@ export const mockFetchConfigJSONNotFound = () => fetchMock.get(defaultConfigJSON
   status: 404,
 }, { overwriteRoutes: true });
 
+export const mockFetchConfigJSONNotAuthorized = () => fetchMock.get(defaultConfigJSONUrl, {
+  status: 401,
+}, { overwriteRoutes: true });
+
 export const defaultLocalConfigJSONUrl = 'http://localhost:3000/tools/sidekick/config.json';
 export const mockFetchLocalConfigJSONSuccess = (overrides = {}) => fetchMock.get(defaultLocalConfigJSONUrl, {
   status: 200,

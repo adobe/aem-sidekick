@@ -78,6 +78,27 @@ describe('Environment Switcher', () => {
       switchEnvStub.restore();
     }).timeout(20000);
 
+    it('live out of date - should show status light', async () => {
+      mockFetchStatusSuccess({
+        preview: {
+          lastModified: 'Tue, 19 Dec 2024 15:42:34 GMT',
+          sourceLastModified: 'Wed, 01 Nov 2024 17:22:52 GMT',
+        },
+      });
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+      const liveMenuItem = recursiveQuery(picker, 'sp-menu-item.env-live');
+      expect(liveMenuItem.getAttribute('update')).to.eq('true');
+    }).timeout(20000);
+
     it('not authorized - authenticated but not authorized', async () => {
       mockFetchStatusWithProfileUnauthorized();
       mockHelixEnvironment(document, 'preview');
