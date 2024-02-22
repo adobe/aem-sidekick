@@ -43,7 +43,10 @@ describe('Preview plugin', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(sidekick);
+    const { body } = document;
+    if (body.contains(sidekick)) {
+      document.body.removeChild(sidekick);
+    }
     fetchMock.reset();
     restoreEnvironment(document);
   });
