@@ -95,6 +95,9 @@ describe('Environment Switcher', () => {
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+
+      await waitUntil(() => recursiveQuery(picker, 'sp-menu-item.env-live'));
+
       const liveMenuItem = recursiveQuery(picker, 'sp-menu-item.env-live');
       expect(liveMenuItem.getAttribute('update')).to.eq('true');
     }).timeout(20000);

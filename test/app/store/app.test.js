@@ -25,6 +25,9 @@ import {
   mockFetchStatusServerError,
   mockFetchStatusSuccess,
   mockFetchStatusUnauthorized,
+  mockFetchProfileSuccess,
+  mockFetchProfileUnauthorized,
+  mockFetchProfileError,
 } from '../../mocks/helix-admin.js';
 import { mockFetchEnglishMessagesSuccess } from '../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
@@ -32,6 +35,7 @@ import { EventBus } from '../../../src/extension/app/utils/event-bus.js';
 import { EVENTS, MODALS } from '../../../src/extension/app/constants.js';
 import { mockHelixEnvironment, restoreEnvironment } from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
+import { defaultSharepointProfileResponse } from '../../fixtures/helix-admin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -748,6 +752,42 @@ describe('Test App Store', () => {
     });
   });
 
+  describe('getProfile', () => {
+    beforeEach(async () => {
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+    });
+
+    it('should return the profile on a successful response', async () => {
+      mockFetchProfileSuccess();
+
+      const result = await appStore.getProfile();
+      expect(result).to.deep.equal(defaultSharepointProfileResponse.profile);
+    });
+
+    it('should return false if the response is not ok', async () => {
+      mockFetchProfileUnauthorized();
+
+      const result = await appStore.getProfile();
+      expect(result).to.be.false;
+    });
+
+    it('should handle fetch errors gracefully', async () => {
+      mockFetchProfileError();
+
+      const result = await appStore.getProfile();
+      expect(result).to.be.false;
+    });
+
+    it('should handle fetch throws gracefully', async () => {
+      const fetchStub = sinon.stub(window, 'fetch').throws(new Error('Network failure'));
+
+      const result = await appStore.getProfile();
+      expect(result).to.be.false;
+
+      fetchStub.restore();
+    });
+  });
+
   describe('login', () => {
     let instance;
     let clock;
@@ -837,7 +877,7 @@ describe('Test App Store', () => {
 
     it('should attempt to check logout status up to 5 times after login window is closed', async () => {
       const modalSpy = sinon.spy();
-      getProfileStub = sinon.stub(appStore, 'getProfile');
+      getProfileStub = sandbox.stub(appStore, 'getProfile');
       getProfileStub.resolves({ name: 'foo' });
       EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
 
@@ -855,28 +895,36 @@ describe('Test App Store', () => {
     }).timeout(20000);
 
     it('handles successful logout correctly', async () => {
+      mockFetchStatusSuccess();
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+
       instance.sidekick = document.createElement('div');
-      getProfileStub = sinon.stub(appStore, 'getProfile');
+      getProfileStub = sandbox.stub(appStore, 'getProfile');
       getProfileStub.onCall(0).resolves({ name: 'foo' });
       getProfileStub.onCall(4).resolves(false); // Simulate success on the 5th attempt
 
       const loginEventSpy = sinon.spy();
       instance.sidekick.addEventListener('loggedout', loginEventSpy);
 
+      const statusEventSpy = sinon.spy();
+      instance.sidekick.addEventListener('statusfetched', statusEventSpy);
+
       // Mock other methods called upon successful login
       const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
-      const fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
 
-      instance.logout(); // Call without selectAccount
+      instance.logout();
 
       // Fast-forward time to simulate the retries
       for (let i = 0; i < 5; i += 1) {
         // eslint-disable-next-line no-await-in-loop
-        await clock.tickAsync(1000); // Fast-forward 1 second for each attempt
+        await clock.tickAsync(1000);
       }
 
-      expect(setupCorePluginsStub.called).to.be.true;
-      expect(fetchStatusStub.called).to.be.true;
+      expect(setupCorePluginsStub.calledOnce).to.be.true;
+      expect(loginEventSpy.calledOnce).to.be.true;
+
+      await waitUntil(() => statusEventSpy.calledTwice, 'Status should fire twice');
+      expect(statusEventSpy.calledTwice).to.be.true;
     }).timeout(20000);
   });
 });

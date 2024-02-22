@@ -312,6 +312,6 @@ export class EnvironmentSwitcher extends MobxLitElement {
   }
 
   render() {
-    return html`<action-bar-picker icons="none" @change=${this.onChange} .disabled=${!this.ready || appStore.authenticationRequired()}></action-bar-picker>`;
+    return html`<action-bar-picker icons="none" @change=${this.onChange} .disabled=${!this.ready}></action-bar-picker>`;
   }
 }

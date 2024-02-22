@@ -100,6 +100,10 @@ export const mockFetchProfileUnauthorized = () => fetchMock.get(defaultProfileUr
   body: { status: 401 },
 }, { overwriteRoutes: true });
 
+export const mockFetchProfileError = () => fetchMock.get(defaultProfileUrl, {
+  status: 500,
+}, { overwriteRoutes: true });
+
 export const sharepointEditorDocStatusUrl = `https://admin.hlx.page/status/adobe/aem-boilerplate/main?editUrl=${encodeURIComponent(getDefaultEditorEnviromentLocations('sharepoint', 'doc'))}`;
 export const mockSharepointEditorDocFetchStatusSuccess = (overrides = {}) => fetchMock.get(sharepointEditorDocStatusUrl, {
   status: 200,

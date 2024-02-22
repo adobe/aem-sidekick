@@ -389,17 +389,6 @@ export class AppStore {
   }
 
   /**
-   */
-  authenticationRequired() {
-    const { status } = this.status;
-    if (status === 401) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
    * Checks if the current location is a content URL.
    * @returns {boolean} <code>true</code> if content URL, else <code>false</code>
    */
@@ -913,14 +902,25 @@ export class AppStore {
    * @returns {Promise<Object | false>} The response object
    */
   async getProfile() {
-    const url = getAdminUrl(this.siteStore, 'profile');
-    const opts = getAdminFetchOptions();
-    const res = await fetch(url, opts);
-    const response = await res.json();
-    if (res.ok && response.status === 200) {
-      return response.profile;
+    try {
+      const url = getAdminUrl(this.siteStore, 'profile');
+      const opts = getAdminFetchOptions();
+      const res = await fetch(url, opts);
+
+      if (!res.ok) {
+        return false;
+      }
+
+      const response = await res.json();
+      if (response.status === 200) {
+        return response.profile;
+      }
+      return false;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to fetch profile:', error);
+      return false;
     }
-    return false;
   }
 
   /**
@@ -931,8 +931,8 @@ export class AppStore {
     this.showWait();
     const loginUrl = getAdminUrl(this.siteStore, 'login');
     let extensionId = window.chrome?.runtime?.id;
+    // istanbul ignore next 3
     if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
-      // istanbul ignore next
       extensionId = 'cookie';
     }
     loginUrl.searchParams.set('extensionId', extensionId);
@@ -944,6 +944,7 @@ export class AppStore {
     let attempts = 0;
 
     async function checkLoggedIn() {
+      // istanbul ignore else
       if (loginWindow.closed) {
         const { siteStore, status } = this;
         attempts += 1;
@@ -989,8 +990,8 @@ export class AppStore {
     this.showWait();
     const logoutUrl = getAdminUrl(this.siteStore, 'logout');
     let extensionId = window.chrome?.runtime?.id;
+    // istanbul ignore next 3
     if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
-      // istanbul ignore next
       extensionId = 'cookie';
     }
     logoutUrl.searchParams.set('extensionId', extensionId);
@@ -999,6 +1000,7 @@ export class AppStore {
     let attempts = 0;
 
     async function checkLoggedOut() {
+      // istanbul ignore else
       if (logoutWindow.closed) {
         attempts += 1;
         // try 5 times after login window has been closed
