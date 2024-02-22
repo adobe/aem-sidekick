@@ -37,7 +37,9 @@ window.chrome = chromeMock;
 
 describe('Preview plugin', () => {
   let sidekick;
+  let sandbox;
   beforeEach(async () => {
+    sandbox = sinon.createSandbox();
     mockFetchEnglishMessagesSuccess();
     mockFetchConfigWithoutPluginsOrHostJSONSuccess();
   });
@@ -48,6 +50,7 @@ describe('Preview plugin', () => {
       document.body.removeChild(sidekick);
     }
     fetchMock.reset();
+    sandbox.restore();
     restoreEnvironment(document);
   });
 
@@ -55,8 +58,8 @@ describe('Preview plugin', () => {
     it('previewing from sharepoint editor - docx', async () => {
       mockSharepointEditorDocFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor');
-      const updatePreviewSpy = sinon.stub(appStore, 'updatePreview').resolves();
-      const tipToast = sinon.stub(appStore, 'showToast').returns();
+      const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
+      const tipToast = sandbox.stub(appStore, 'showToast').returns();
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -71,16 +74,13 @@ describe('Preview plugin', () => {
       await waitUntil(() => updatePreviewSpy.calledOnce);
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(tipToast.calledOnce).to.be.true;
-
-      updatePreviewSpy.restore();
-      tipToast.restore();
     });
 
     it('previewing from sharepoint editor - sheet', async () => {
       mockSharepointEditorSheetFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor', HelixMockContentType.SHEET);
-      const updatePreviewSpy = sinon.stub(appStore, 'updatePreview').resolves();
-      const reloadStub = sinon.stub(appStore, 'reloadPage').returns();
+      const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
+      const reloadStub = sandbox.stub(appStore, 'reloadPage').returns();
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -109,15 +109,12 @@ describe('Preview plugin', () => {
 
       // Make sure the hlx-sk-preview flag is unset
       expect(window.sessionStorage.getItem('hlx-sk-preview')).to.be.null;
-
-      updatePreviewSpy.restore();
-      reloadStub.restore();
     });
 
     it('previewing from gdrive editor - doc', async () => {
       mockGdriveEditorFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
-      const updatePreviewSpy = sinon.stub(appStore, 'updatePreview').resolves();
+      const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -129,8 +126,6 @@ describe('Preview plugin', () => {
       previewPlugin.click();
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
-
-      updatePreviewSpy.restore();
     });
 
     it('previewing from gdrive editor - not a valid content type', async () => {
