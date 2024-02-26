@@ -227,6 +227,9 @@ describe('Test App Store', () => {
     // test with RootFolder param
     url = new URL('https://foo.sharepoint.com/sites/foo/Shared%20Documents/Forms/AllItems.aspx?RootFolder=%2Fsites%2Ffoo%2FShared%20Documents%2Fsite&viewid=87cb4d37%2D30e2%2D4762%2D87ef%2D5cd0e1059250');
     expect(appStore.isSharePointFolder(url)).to.be.true;
+    // test with no param
+    url = new URL('https://foo.sharepoint.com/sites/foo/Shared%20Documents/Forms/AllItems.aspx');
+    expect(appStore.isSharePointFolder(url)).to.be.true;
   });
 
   it('isSharePointViewer()', async () => {
