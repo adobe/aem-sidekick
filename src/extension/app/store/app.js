@@ -50,6 +50,24 @@ import { pluginFactory } from '../plugins/plugin-factory.js';
  * @typedef {import('@Types').AdminResponse} AdminResponse
  */
 
+/**
+ * Array of restricted paths with limited sidekick functionality.
+ * @private
+ * @type {string[]}
+ */
+const RESTRICTED_PATHS = [
+  '/helix-env.json',
+];
+
+/**
+ * Enum for view types.
+ * @enum {number}
+ */
+const VIEWS = {
+  DEFAULT: 0,
+  CUSTOM: 1,
+};
+
 export class AppStore {
   // eslint-disable-next-line no-undef
   @observable accessor initialized = false;
@@ -561,6 +579,36 @@ export class AppStore {
   }
 
   /**
+   * Checks for configured views for the current resource.
+   * @private
+   * @param {number} viewType An optional view type (see {@link VIEWS})
+   * @param {string} [testPath] An optional test path (default: status.webPath)
+   * @returns {Object[]} The views
+   */
+  findViews(viewType, testPath) {
+    // find view based on resource path
+    if (!testPath) {
+      const { webPath } = this.status;
+      if (!webPath) {
+        return [];
+      }
+      testPath = webPath;
+    }
+
+    const scriptRoot = chrome.runtime.getURL('/');
+    const { views } = this.siteStore;
+    const defaultOnly = viewType === VIEWS.DEFAULT;
+    const customOnly = viewType === VIEWS.CUSTOM;
+    return views.filter(({
+      path,
+      viewer,
+    }) => globToRegExp(path).test(testPath)
+        && !RESTRICTED_PATHS.includes(testPath)
+        && (!defaultOnly || viewer.startsWith(scriptRoot))
+        && (!customOnly || !viewer.startsWith(scriptRoot)));
+  }
+
+  /**
      * Fetches the status for the current resource.
      * @fires Sidekick#statusfetched
      * @param {boolean} [refreshLocation] Refresh the sidekick's location (optional)
@@ -850,12 +898,12 @@ export class AppStore {
     }
 
     // TODO: Setup custom views
-    // const [customView] = findViews(this, VIEWS.CUSTOM);
-    // if (customView) {
-    //   const customViewUrl = new URL(customView.viewer, envUrl);
-    //   customViewUrl.searchParams.set('path', status.webPath);
-    //   envUrl = customViewUrl;
-    // }
+    const [customView] = this.findViews(VIEWS.CUSTOM);
+    if (customView) {
+      const customViewUrl = new URL(customView.viewer, envUrl);
+      customViewUrl.searchParams.set('path', status.webPath);
+      envUrl = customViewUrl.href;
+    }
 
     // switch or open env
     if (open || this.isEditor()) {

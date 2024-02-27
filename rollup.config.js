@@ -15,13 +15,14 @@
 
 import nodeResolve from '@rollup/plugin-node-resolve';
 import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
+import { rollupPluginHTML as html } from '@web/rollup-plugin-html';
 import esbuild from 'rollup-plugin-esbuild';
 import copy from 'rollup-plugin-copy';
 import replace from '@rollup/plugin-replace';
 import { babel } from '@rollup/plugin-babel';
 import sidekickManifestBuildPlugin from './build/build.js';
 
-function shared(browser) {
+function shared(browser, path = '') {
   return {
     output: {
       entryFileNames: '[name].js',
@@ -29,7 +30,7 @@ function shared(browser) {
       assetFileNames: '[name][extname]',
       exports: 'named',
       format: 'es',
-      dir: `dist/${browser}`,
+      dir: `dist/${browser}${path}`,
       sourcemap: true,
     },
 
@@ -70,6 +71,18 @@ function extensionBuild(browser) {
   };
 }
 
+function viewBuild(browser, path) {
+  return {
+    ...shared(browser, path),
+    plugins: [
+      ...plugins(browser),
+      html({
+        minify: true,
+      }),
+    ],
+  };
+}
+
 export default [
   {
     input: 'src/extension/index.js',
@@ -77,6 +90,10 @@ export default [
   },
   {
     input: 'src/extension/index.js',
-    ...extensionBuild('safari'),
+    ...extensionBuild('safari', '/custom-views/json'),
+  },
+  {
+    input: 'src/extension/custom-views/json/json.html',
+    ...viewBuild('chrome', '/custom-views/json'),
   },
 ];
