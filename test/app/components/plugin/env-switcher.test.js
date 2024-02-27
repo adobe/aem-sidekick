@@ -15,7 +15,7 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import { expect, waitUntil } from '@open-wc/testing';
-import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
+import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
@@ -23,7 +23,6 @@ import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
   mockFetchConfigWithoutPluginsOrHostJSONSuccess,
   mockFetchStatusSuccess,
-  mockFetchStatusWithProfileUnauthorized,
 } from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
@@ -89,6 +88,10 @@ describe('Environment Switcher', () => {
           lastModified: 'Tue, 19 Dec 2024 15:42:34 GMT',
           sourceLastModified: 'Wed, 01 Nov 2024 17:22:52 GMT',
         },
+        live: {
+          status: 200,
+          lastModified: 'Tue, 12 Dec 2024 15:42:34 GMT',
+        },
       });
       mockHelixEnvironment(document, 'preview');
 
@@ -105,26 +108,6 @@ describe('Environment Switcher', () => {
 
       const liveMenuItem = recursiveQuery(picker, 'sp-menu-item.env-live');
       expect(liveMenuItem.getAttribute('update')).to.eq('true');
-    }).timeout(20000);
-
-    it('not authorized - authenticated but not authorized', async () => {
-      mockFetchStatusWithProfileUnauthorized();
-      mockHelixEnvironment(document, 'preview');
-
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-
-      const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
-      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
-      const menuItems = [...recursiveQueryAll(picker, 'sp-menu-item')];
-
-      menuItems.forEach((item) => {
-        expect(item.disabled).to.eq(true);
-        expect(item.querySelector('span').textContent).to.eq('Not authorized');
-      });
     });
   });
 });

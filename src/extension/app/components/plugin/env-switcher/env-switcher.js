@@ -101,32 +101,12 @@ export class EnvironmentSwitcher extends MobxLitElement {
   }
 
   /**
-   * Determines if the user is authorized for the specified environment
-   * @param {string} env - The environment to check
-   * @returns {boolean} - True if the user is authorized for the environment
-   */
-  authorizedForEnv(env) {
-    const environment = appStore.status[env];
-    const status = environment?.status ?? null;
-
-    if (status === 403) {
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
    * Returns the last modified label for the specified environment
    * @param {string} id - The id of the plugin
    * @param {string} lastModified - The last modified date
    * @returns {string} - The last modified label
    */
   getLastModifiedLabel(id, lastModified) {
-    if (!this.authorizedForEnv(id)) {
-      return appStore.i18n('not_authorized');
-    }
-
     return lastModified
       ? appStore.i18n(`${id}_last_updated`).replace('$1', getTimeAgo(appStore.languageDict, lastModified))
       : appStore.i18n(`${id}_never_updated`);
