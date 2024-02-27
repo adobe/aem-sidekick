@@ -776,6 +776,7 @@ export class AppStore {
     // handle special case /.helix/*
     if (status.webPath.startsWith('/.helix/')) {
       this.showToast(this.i18n('preview_config_success'), 'positive');
+      this.hideWait();
       return;
     }
     this.hideWait();
@@ -928,7 +929,7 @@ export class AppStore {
    * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
    */
   login(selectAccount) {
-    this.showWait();
+    this.showWait(this.i18n('please_login'));
     const loginUrl = getAdminUrl(this.siteStore, 'login');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
@@ -1030,6 +1031,32 @@ export class AppStore {
       window.setTimeout(checkLoggedOut.bind(this), 1000);
     }
     window.setTimeout(checkLoggedOut.bind(this), 1000);
+  }
+
+  /**
+   * Validate the current session, and if the token is expired, re-login.
+   * @returns {Promise<void>}
+   */
+  async validateSession() {
+    return new Promise((resolve) => {
+      const { profile } = this.status;
+      if (!profile) {
+        resolve();
+      }
+      const now = Date.now();
+      const { exp } = profile;
+      if (exp > now) {
+        // token is expired
+        this.login(true);
+        this.sidekick.addEventListener('statusfetched', () => {
+          // wait will be hidden by login, show again
+          this.showWait();
+          resolve();
+        }, { once: true });
+      } else {
+        resolve();
+      }
+    });
   }
 }
 

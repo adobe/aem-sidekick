@@ -24,6 +24,9 @@ import {
   mockSharepointDirectoryFetchStatusSuccess,
   mockSharepointEditorDocFetchStatusSuccess,
   mockFetchConfigJSONNotFound,
+  mockFetchConfigJSONNotAuthorized,
+  mockFetchStatusWithProfileSuccess,
+  mockFetchStatusUnauthorized,
   mockFetchConfigWithPluginsJSONSuccess,
   mockFetchConfigWithoutPluginsJSONSuccess,
   mockFetchStatusSuccess,
@@ -334,6 +337,92 @@ describe('Plugin action bar', () => {
       expect(pluginUsedEventSpy.calledOnce).to.be.true;
 
       openStub.restore();
+    });
+  });
+
+  describe('login states', () => {
+    it('not logged in, site has authentication enabled', async () => {
+      mockFetchConfigJSONNotAuthorized();
+      mockFetchStatusUnauthorized();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const actionGroup = recursiveQuery(actionBar, 'sp-action-group');
+      expect(actionGroup.children.length).to.equal(3);
+
+      const propertiesButton = recursiveQuery(actionGroup, '.properties');
+      expect(propertiesButton).to.exist;
+
+      const loginButton = recursiveQuery(actionGroup, 'login-button');
+      expect(loginButton).to.exist;
+      expect(loginButton.classList.length).to.equal(1);
+      expect(loginButton.classList.contains('not-authorized')).to.be.true;
+
+      const logo = recursiveQuery(actionGroup, 'svg');
+      expect(logo).to.exist;
+    });
+
+    it('not logged in, site does not have authentication enabled', async () => {
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockFetchStatusSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroupsArray = [...actionGroups];
+      expect(actionGroupsArray.length).to.equal(2);
+
+      const systemActionGroup = actionGroupsArray[1];
+
+      const propertiesButton = recursiveQuery(systemActionGroup, '.properties');
+      expect(propertiesButton).to.exist;
+
+      const loginButton = recursiveQuery(systemActionGroup, 'login-button');
+      expect(loginButton).to.exist;
+      expect(loginButton.classList.length).to.equal(2);
+      expect(loginButton.classList.contains('not-authorized')).to.be.true;
+      expect(loginButton.classList.contains('no-login')).to.be.true;
+
+      const logo = recursiveQuery(systemActionGroup, 'svg');
+      expect(logo).to.exist;
+    });
+
+    it('logged in', async () => {
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockFetchStatusWithProfileSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroupsArray = [...actionGroups];
+      expect(actionGroupsArray.length).to.equal(2);
+
+      const systemActionGroup = actionGroupsArray[1];
+
+      const propertiesButton = recursiveQuery(systemActionGroup, '.properties');
+      expect(propertiesButton).to.exist;
+
+      const loginButton = recursiveQuery(systemActionGroup, 'login-button');
+      expect(loginButton).to.exist;
+      expect(loginButton.classList.length).to.equal(0);
+
+      const logo = recursiveQuery(systemActionGroup, 'svg');
+      expect(logo).to.exist;
     });
   });
 });

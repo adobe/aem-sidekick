@@ -620,7 +620,7 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showWaitStub.called).is.true;
-      expect(hideWaitStub.called).is.false;
+      expect(hideWaitStub.called).is.true;
       expect(showToastStub.calledWith(sinon.match.string, 'positive')).is.true;
     });
 

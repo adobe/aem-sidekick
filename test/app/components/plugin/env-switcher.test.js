@@ -66,6 +66,11 @@ describe('Environment Switcher', () => {
 
       await waitUntil(() => recursiveQuery(picker, 'sp-popover'));
 
+      const overlay = recursiveQuery(picker, 'sp-overlay');
+
+      expect(picker.getAttribute('open')).to.not.be.null;
+      expect(overlay.getAttribute('open')).to.not.be.null;
+
       const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
       liveButton.click();
 

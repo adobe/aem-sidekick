@@ -27,13 +27,9 @@ import '@spectrum-web-components/menu/sp-menu-divider.js';
 import '@spectrum-web-components/overlay/sp-overlay.js';
 import '@spectrum-web-components/picker/sp-picker.js';
 import '@spectrum-web-components/status-light/sp-status-light.js';
+import '@spectrum-web-components/icon/sp-icon.js';
 
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-user.js';
-import '@spectrum-web-components/icons-workflow/icons/sp-icon-play.js';
-import '@spectrum-web-components/icons-workflow/icons/sp-icon-edit.js';
-import '@spectrum-web-components/icons-workflow/icons/sp-icon-refresh.js';
-import '@spectrum-web-components/icons-workflow/icons/sp-icon-share.js';
-import '@spectrum-web-components/icons-workflow/icons/sp-icon-real-time-customer-profile.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-log-out.js';
 
 import './app/components/action-bar/action-bar.js';

@@ -91,6 +91,7 @@ describe('Preview plugin', () => {
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
       previewPlugin.click();
 
+      await waitUntil(() => reloadStub.calledOnce === true);
       expect(reloadStub.calledOnce).to.be.true;
 
       // Simulate a reload
@@ -124,6 +125,7 @@ describe('Preview plugin', () => {
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 
       previewPlugin.click();
+      await waitUntil(() => updatePreviewSpy.calledOnce === true);
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
     });
@@ -143,9 +145,9 @@ describe('Preview plugin', () => {
       appStore.status.edit.contentType = 'invalid';
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
-
       previewPlugin.click();
 
+      await waitUntil(() => modalSpy.calledOnce === true);
       expect(modalSpy.calledOnce).to.be.true;
       expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.ERROR);
     });
@@ -168,6 +170,7 @@ describe('Preview plugin', () => {
 
       previewPlugin.click();
 
+      await waitUntil(() => modalSpy.calledOnce === true);
       expect(modalSpy.calledOnce).to.be.true;
       expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.ERROR);
     });
@@ -190,6 +193,7 @@ describe('Preview plugin', () => {
 
       previewPlugin.click();
 
+      await waitUntil(() => modalSpy.calledOnce === true);
       expect(modalSpy.calledOnce).to.be.true;
       expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.ERROR);
     });
