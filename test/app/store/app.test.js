@@ -930,4 +930,46 @@ describe('Test App Store', () => {
       expect(statusEventSpy.calledTwice).to.be.true;
     }).timeout(20000);
   });
+
+  describe('validateSession tests', () => {
+    let instance;
+    let clock;
+    let now;
+
+    beforeEach(() => {
+      instance = appStore;
+      now = Date.now();
+      clock = sinon.useFakeTimers(now);
+      instance.login = sinon.spy();
+      instance.showWait = sinon.spy();
+      instance.sidekick = { addEventListener: sinon.stub() };
+    });
+
+    afterEach(() => {
+      clock.restore();
+    });
+
+    it('should resolve immediately if profile is not set', async () => {
+      instance.status = {};
+      await instance.validateSession();
+      expect(instance.login.called).to.be.false;
+    });
+
+    it('should re-login and show wait if token is expired', async () => {
+      const futureTime = now + 1000; // Ensure the token is considered expired
+      instance.status = { profile: { exp: futureTime } };
+      instance.sidekick.addEventListener.callsFake((event, callback) => callback());
+
+      await instance.validateSession();
+      expect(instance.login.calledOnceWith(true)).to.be.true;
+      expect(instance.showWait.calledOnce).to.be.true;
+    });
+
+    it('should resolve immediately if token is not expired', async () => {
+      const pastTime = now - 1000; // Ensure the token is not considered expired
+      instance.status = { profile: { exp: pastTime } };
+      await instance.validateSession();
+      expect(instance.login.called).to.be.false;
+    });
+  });
 });
