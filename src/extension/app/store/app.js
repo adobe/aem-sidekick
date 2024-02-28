@@ -143,6 +143,10 @@ export class AppStore {
       config: this.siteStore.toJSON(),
       location: this.location,
     });
+
+    this.sidekick.addEventListener('statusfetched', () => {
+      this.showView();
+    });
   }
 
   /**
@@ -855,6 +859,70 @@ export class AppStore {
     resp.path = path;
     resp.error = (resp.headers && resp.headers.get('x-error')) || '';
     return resp;
+  }
+
+  /**
+   * Creates and/or returns a view overlay.
+   * @private
+   * @param {boolean} create Create the view if none exists
+   * @returns {HTMLELement} The view overlay
+   */
+  getViewOverlay(create) {
+    let view = this.sidekick.shadowRoot.querySelector('.hlx-sk-special-view');
+
+    if (create && !view) {
+      view = document.createElement('div');
+      view.classList.add('hlx-sk-special-view');
+      this.sidekick.shadowRoot.appendChild(view);
+
+      const iframe = document.createElement('iframe');
+      iframe.setAttribute('class', 'container');
+      iframe.setAttribute('allow', 'clipboard-write *');
+      view.appendChild(iframe);
+    }
+    return view;
+  }
+
+  /**
+   * Shows the view.
+   * @private
+   */
+  async showView() {
+    if (!this.isProject()) {
+      return;
+    }
+    const {
+      location: {
+        origin,
+        href,
+      },
+    } = this;
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get('path')) {
+      // custom view
+      return;
+    }
+    const [view] = this.findViews(VIEWS.DEFAULT);
+    if (view && !this.getViewOverlay()) {
+      const { viewer, title } = view;
+      if (viewer) {
+        const viewUrl = new URL(viewer, origin);
+        viewUrl.searchParams.set('url', href);
+        const viewOverlay = this.getViewOverlay(true);
+        viewOverlay.setAttribute('title', title(this.sidekick));
+        viewOverlay.querySelector('.container').setAttribute('src', viewUrl.toString());
+        // hide original content
+        [...this.sidekick.parentElement.children].forEach((el) => {
+          if (el !== this.sidekick) {
+            try {
+              el.style.display = 'none';
+            } catch (e) {
+              // ignore
+            }
+          }
+        });
+      }
+    }
   }
 
   /**

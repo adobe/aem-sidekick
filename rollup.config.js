@@ -15,7 +15,6 @@
 
 import nodeResolve from '@rollup/plugin-node-resolve';
 import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
-import { rollupPluginHTML as html } from '@web/rollup-plugin-html';
 import esbuild from 'rollup-plugin-esbuild';
 import copy from 'rollup-plugin-copy';
 import replace from '@rollup/plugin-replace';
@@ -38,7 +37,7 @@ function shared(browser, path = '') {
   };
 }
 
-function plugins(browser) {
+function commonPlugins() {
   return [
     /** Resolve bare module imports */
     nodeResolve(),
@@ -48,6 +47,26 @@ function plugins(browser) {
     esbuild({
       minify: true,
       target: ['chrome64', 'firefox67', 'safari11.1'],
+    }),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+    }),
+  ];
+}
+
+function extensionPlugins(browser) {
+  return [
+    /** Resolve bare module imports */
+    nodeResolve(),
+    /** Transform decorators with babel */
+    babel({ babelHelpers: 'bundled' }),
+    /** Minify JS, compile JS to a lower language target */
+    esbuild({
+      minify: true,
+      target: ['chrome64', 'firefox67', 'safari11.1'],
+    }),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('production'),
     }),
     /** Bundle assets references via import.meta.url */
     importMetaAssets(),
@@ -67,19 +86,14 @@ function plugins(browser) {
 function extensionBuild(browser) {
   return {
     ...shared(browser),
-    plugins: [...plugins(browser)],
+    plugins: [...commonPlugins(), ...extensionPlugins(browser)],
   };
 }
 
 function viewBuild(browser, path) {
   return {
     ...shared(browser, path),
-    plugins: [
-      ...plugins(browser),
-      html({
-        minify: true,
-      }),
-    ],
+    plugins: [...commonPlugins()],
   };
 }
 
@@ -90,10 +104,10 @@ export default [
   },
   {
     input: 'src/extension/index.js',
-    ...extensionBuild('safari', '/custom-views/json'),
+    ...extensionBuild('safari'),
   },
   {
-    input: 'src/extension/custom-views/json/json.html',
+    input: 'src/extension/custom-views/json/json.js',
     ...viewBuild('chrome', '/custom-views/json'),
   },
 ];

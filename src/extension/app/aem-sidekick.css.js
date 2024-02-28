@@ -36,4 +36,19 @@ export const style = css`
     bottom: 150px;
     pointer-events: auto;
   }
+
+  .hlx-sk-special-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh; 
+  }
+  
+  .hlx-sk-special-view iframe {
+    border: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+  }
 `;
