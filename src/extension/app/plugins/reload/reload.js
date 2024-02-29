@@ -36,7 +36,6 @@ export function createReloadPlugin(appStore) {
       text: i18n(appStore.languageDict, 'reload'),
       action: async (evt) => {
         appStore.showWait();
-        await appStore.validateSession();
         try {
           const resp = await appStore.update();
           if (!resp.ok && resp.status >= 400) {

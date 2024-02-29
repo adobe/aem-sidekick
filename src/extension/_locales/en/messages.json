@@ -610,7 +610,7 @@
     "not_authorized": {
       "message": "Not authorized"
     },
-    "please_login": {
-      "message": "Please login..."
+    "login_wait": {
+      "message": "Please sign in..."
     }
 }

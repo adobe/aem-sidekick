@@ -41,6 +41,7 @@ import {
 } from '../../../mocks/environment.js';
 import { EXTERNAL_EVENTS } from '../../../../src/extension/app/constants.js';
 import { pluginFactory } from '../../../../src/extension/app/plugins/plugin-factory.js';
+import { appStore } from '../../../../src/extension/app/store/app.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -244,7 +245,7 @@ describe('Plugin action bar', () => {
     it('core plugin clicked', async () => {
       window.hlx = {};
 
-      const actionFunction = async () => {};
+      const actionFunction = async () => Promise.resolve();
 
       // Create a spy for the action function
       const actionSpy = sinon.spy(actionFunction);
@@ -274,6 +275,7 @@ describe('Plugin action bar', () => {
       const publishButton = recursiveQuery(sidekick, '.publish');
       publishButton.click();
 
+      await waitUntil(() => actionSpy.calledOnce);
       expect(actionSpy.calledOnce).to.be.true;
 
       stub.restore();
@@ -318,6 +320,7 @@ describe('Plugin action bar', () => {
       mockFetchConfigWithPluginsJSONSuccess();
       mockEditorAdminEnvironment(document, 'editor');
 
+      const validateStub = sinon.stub(appStore, 'validateSession').resolves();
       const openStub = sinon.stub(window, 'open');
       const pluginUsedEventSpy = sinon.spy();
 
@@ -333,10 +336,12 @@ describe('Plugin action bar', () => {
       const libraryPlugin = recursiveQuery(sidekick, '.library');
       libraryPlugin.click();
 
+      await waitUntil(() => openStub.calledOnce);
       expect(openStub.calledOnce).to.be.true;
       expect(pluginUsedEventSpy.calledOnce).to.be.true;
 
       openStub.restore();
+      validateStub.restore();
     });
   });
 

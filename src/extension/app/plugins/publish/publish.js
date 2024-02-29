@@ -37,7 +37,6 @@ export function createPublishPlugin(appStore) {
         const { location } = appStore;
         const path = location.pathname;
         appStore.showWait();
-        await appStore.validateSession();
         const res = await appStore.publish(path);
         if (res.ok) {
           appStore.hideWait();

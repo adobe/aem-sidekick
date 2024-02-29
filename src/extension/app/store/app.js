@@ -507,6 +507,7 @@ export class AppStore {
    * @param {string} url The URL to open
    * @returns {Window} The window object
    */
+  // istanbul ignore next 3
   openPage(url) {
     return window.open(url);
   }
@@ -929,7 +930,7 @@ export class AppStore {
    * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
    */
   login(selectAccount) {
-    this.showWait(this.i18n('please_login'));
+    this.showWait(this.i18n('login_wait'));
     const loginUrl = getAdminUrl(this.siteStore, 'login');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
