@@ -260,12 +260,12 @@ export class AppStore {
             },
             container: containerId,
           };
-          // check default plugin
-          const defaultPlugin = this.corePlugins[plugin.id];
-          if (defaultPlugin) {
+          // check if this overlaps with a core plugin, if so override the condition only
+          const corePlugin = this.corePlugins[plugin.id];
+          if (corePlugin) {
             // extend default condition
-            const { condition: defaultCondition } = defaultPlugin;
-            defaultPlugin.condition = (s) => defaultCondition(s) && condition(s);
+            const { condition: defaultCondition } = corePlugin;
+            corePlugin.condition = (s) => defaultCondition(s) && condition(s);
           } else {
             // add custom plugin
             this.customPlugins[plugin.id] = plugin;
