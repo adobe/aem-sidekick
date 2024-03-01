@@ -25,24 +25,53 @@ class MenuItem extends SPMenuItem {
     ];
   }
 
-  render() {
-    return html`
-        <slot name="icon"></slot>
-        <div id="label">
-            <slot id="slot"></slot>
+  renderMenuItem() {
+    if (this.classList.contains('user')) {
+      return html`
+        <div class="user-item">
+          <slot name="icon"></slot>
+          <div class="info">
+            <div id="label">
+              <slot id="slot"></slot>
+              </div>
+            <slot name="description"></slot>
+            <slot name="value"></slot>
+          </div>
         </div>
-        <slot name="description"></slot>
-        <slot name="value"></slot>
-        ${this.href && this.href.length > 0
-            ? super.renderAnchor({
-                  id: 'button',
-                  ariaHidden: true,
-                  className: 'button anchor hidden',
-              })
-            : ''}
-        ${this.getAttribute('update') ? html`<sp-status-light size="m" variant="notice"></sp-status-light>` : ''}
-        ${this.renderSubmenu()}
+      `;
+    } else if (this.classList.contains('logout')) {
+      return html`
+        <div class="logout-item">
+          <slot name="icon"></slot>
+          <div id="label">
+            <slot id="slot"></slot>
+          </div>
+          <slot name="value"></slot>
+        </div>`;
+    }
+
+    return html`
+      <slot name="icon"></slot>
+      <slot name="avatar"></slot>
+      <div id="label">
+          <slot id="slot"></slot>
+      </div>
+      <slot name="description"></slot>
+      <slot name="value"></slot>
+      ${this.href && this.href.length > 0
+          ? super.renderAnchor({
+                id: 'button',
+                ariaHidden: true,
+                className: 'button anchor hidden',
+            })
+          : ''}
+      ${this.getAttribute('update') ? html`<sp-status-light size="m" variant="notice"></sp-status-light>` : ''}
+      ${this.renderSubmenu()}
     `;
+  }
+
+  render() {
+    return this.renderMenuItem();
   }
 }
 

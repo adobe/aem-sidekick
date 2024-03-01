@@ -25,6 +25,9 @@ import {
   mockFetchStatusServerError,
   mockFetchStatusSuccess,
   mockFetchStatusUnauthorized,
+  mockFetchProfileSuccess,
+  mockFetchProfileUnauthorized,
+  mockFetchProfileError,
 } from '../../mocks/helix-admin.js';
 import { mockFetchEnglishMessagesSuccess } from '../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
@@ -32,6 +35,7 @@ import { EventBus } from '../../../src/extension/app/utils/event-bus.js';
 import { EVENTS, MODALS } from '../../../src/extension/app/constants.js';
 import { mockHelixEnvironment, restoreEnvironment } from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
+import { defaultSharepointProfileResponse } from '../../fixtures/helix-admin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -616,7 +620,7 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showWaitStub.called).is.true;
-      expect(hideWaitStub.called).is.false;
+      expect(hideWaitStub.called).is.true;
       expect(showToastStub.calledWith(sinon.match.string, 'positive')).is.true;
     });
 
@@ -748,6 +752,224 @@ describe('Test App Store', () => {
       const resp = await instance.publish('/somepath');
 
       expect(resp.error).to.eq('Some error');
+    });
+  });
+
+  describe('getProfile', () => {
+    beforeEach(async () => {
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+    });
+
+    it('should return the profile on a successful response', async () => {
+      mockFetchProfileSuccess();
+
+      const result = await appStore.getProfile();
+      expect(result).to.deep.equal(defaultSharepointProfileResponse.profile);
+    });
+
+    it('should return false if the response is not ok', async () => {
+      mockFetchProfileUnauthorized();
+
+      const result = await appStore.getProfile();
+      expect(result).to.be.false;
+    });
+
+    it('should handle fetch errors gracefully', async () => {
+      mockFetchProfileError();
+
+      const result = await appStore.getProfile();
+      expect(result).to.be.false;
+    });
+
+    it('should handle fetch throws gracefully', async () => {
+      const fetchStub = sinon.stub(window, 'fetch').throws(new Error('Network failure'));
+
+      const result = await appStore.getProfile();
+      expect(result).to.be.false;
+
+      fetchStub.restore();
+    });
+  });
+
+  describe('login', () => {
+    let instance;
+    let clock;
+    let getProfileStub;
+    let sandbox;
+
+    beforeEach(() => {
+      instance = appStore;
+      sandbox = sinon.createSandbox();
+      clock = sandbox.useFakeTimers();
+      window.hlx = {};
+      window.hlx.sidekickConfig = {};
+
+      sandbox.stub(appStore, 'openPage').returns({ closed: true });
+      getProfileStub = sandbox.stub(appStore, 'getProfile').resolves(false);
+    });
+
+    afterEach(() => {
+      clock.restore();
+      sandbox.restore();
+    });
+
+    it('should attempt to check login status up to 5 times after login window is closed', async () => {
+      const modalSpy = sinon.spy();
+      EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
+
+      instance.login(false);
+
+      // Fast-forward time to simulate the retries
+      for (let i = 0; i < 5; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await clock.tickAsync(1000); // Fast-forward 1 second for each attempt
+      }
+
+      expect(getProfileStub.callCount).to.equal(5);
+
+      await waitUntil(() => modalSpy.called, 'Modal never opened');
+
+      expect(modalSpy.callCount).to.equal(2);
+      expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
+    }).timeout(20000);
+
+    it('handles successful login correctly', async () => {
+      instance.sidekick = document.createElement('div');
+      getProfileStub.onCall(0).resolves(false);
+      getProfileStub.onCall(4).resolves({ name: 'foo' }); // Simulate success on the 5th attempt
+
+      const loginEventSpy = sinon.spy();
+      instance.sidekick.addEventListener('loggedin', loginEventSpy);
+
+      // Mock other methods called upon successful login
+      const initStoreStub = sandbox.stub(instance.siteStore, 'initStore').resolves();
+      const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
+      const fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
+      const hideWaitStub = sandbox.stub(instance, 'hideWait');
+
+      instance.login(false); // Call without selectAccount
+
+      await clock.tickAsync(5000); // Fast-forward time
+
+      expect(initStoreStub.called).to.be.true;
+      expect(setupCorePluginsStub.called).to.be.true;
+      expect(fetchStatusStub.called).to.be.true;
+      expect(hideWaitStub.calledOnce).to.be.true;
+    }).timeout(20000);
+  });
+
+  describe('logout', () => {
+    let instance;
+    let clock;
+    let getProfileStub;
+    let sandbox;
+
+    beforeEach(() => {
+      instance = appStore;
+      sandbox = sinon.createSandbox();
+      clock = sandbox.useFakeTimers();
+      window.hlx = {};
+      window.hlx.sidekickConfig = {};
+      sandbox.stub(appStore, 'openPage').returns({ closed: true });
+    });
+
+    afterEach(() => {
+      clock.restore();
+      sandbox.restore();
+    });
+
+    it('should attempt to check logout status up to 5 times after login window is closed', async () => {
+      const modalSpy = sinon.spy();
+      getProfileStub = sandbox.stub(appStore, 'getProfile');
+      getProfileStub.resolves({ name: 'foo' });
+      EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
+
+      instance.logout();
+
+      // Fast-forward time to simulate the retries
+      await clock.tickAsync(5000);
+
+      expect(getProfileStub.callCount).to.equal(5);
+
+      await waitUntil(() => modalSpy.called, 'Modal never opened');
+
+      expect(modalSpy.callCount).to.equal(2);
+      expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
+    }).timeout(20000);
+
+    it('handles successful logout correctly', async () => {
+      mockFetchStatusSuccess();
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+
+      instance.sidekick = document.createElement('div');
+      getProfileStub = sandbox.stub(appStore, 'getProfile');
+      getProfileStub.onCall(0).resolves({ name: 'foo' });
+      getProfileStub.onCall(4).resolves(false); // Simulate success on the 5th attempt
+
+      const loginEventSpy = sinon.spy();
+      instance.sidekick.addEventListener('loggedout', loginEventSpy);
+
+      const statusEventSpy = sinon.spy();
+      instance.sidekick.addEventListener('statusfetched', statusEventSpy);
+
+      // Mock other methods called upon successful login
+      const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
+
+      instance.logout();
+
+      // Fast-forward time to simulate the retries
+      for (let i = 0; i < 5; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await clock.tickAsync(1000);
+      }
+
+      expect(setupCorePluginsStub.calledOnce).to.be.true;
+      expect(loginEventSpy.calledOnce).to.be.true;
+
+      await waitUntil(() => statusEventSpy.calledTwice, 'Status should fire twice');
+      expect(statusEventSpy.calledTwice).to.be.true;
+    }).timeout(20000);
+  });
+
+  describe('validateSession tests', () => {
+    let instance;
+    let clock;
+    let now;
+
+    beforeEach(() => {
+      instance = appStore;
+      now = Date.now();
+      clock = sinon.useFakeTimers(now);
+      instance.login = sinon.spy();
+      instance.showWait = sinon.spy();
+      instance.sidekick = { addEventListener: sinon.stub() };
+    });
+
+    afterEach(() => {
+      clock.restore();
+    });
+
+    it('should resolve immediately if profile is not set', async () => {
+      instance.status = {};
+      await instance.validateSession();
+      expect(instance.login.called).to.be.false;
+    });
+
+    it('should re-login and show wait if token is expired', async () => {
+      const futureTime = now + 1000; // Ensure the token is considered expired
+      instance.status = { profile: { exp: futureTime } };
+      instance.sidekick.addEventListener.callsFake((event, callback) => callback());
+
+      await instance.validateSession();
+      expect(instance.login.calledOnceWith(true)).to.be.true;
+      expect(instance.showWait.calledOnce).to.be.true;
+    });
+
+    it('should resolve immediately if token is not expired', async () => {
+      const pastTime = now - 1000; // Ensure the token is not considered expired
+      instance.status = { profile: { exp: pastTime } };
+      await instance.validateSession();
+      expect(instance.login.called).to.be.false;
     });
   });
 });

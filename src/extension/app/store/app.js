@@ -73,6 +73,12 @@ export class AppStore {
   @observable accessor status = {};
 
   /**
+   * Profile of the current user
+   * @type {Object}
+   */
+  @observable accessor profile;
+
+  /**
    * Dictionary of language keys
    * @type {Object}
    */
@@ -114,8 +120,7 @@ export class AppStore {
       this.languageDict = await fetchLanguageDict(this.siteStore, 'en');
     }
 
-    this.setupCorePlugins();
-    this.setupCustomPlugins();
+    this.setupPlugins();
 
     this.fetchStatus();
 
@@ -136,21 +141,31 @@ export class AppStore {
   }
 
   /**
+   * Sets up the plugins in a single call
+   */
+  setupPlugins() {
+    this.setupCorePlugins();
+    this.setupCustomPlugins();
+  }
+
+  /**
    * Sets up the core plugins.
    */
   @action
   setupCorePlugins() {
     this.corePlugins = {};
 
-    const envPlugin = pluginFactory.createEnvPlugin();
-    const previewPlugin = pluginFactory.createPreviewPlugin(this);
-    const reloadPlugin = pluginFactory.createReloadPlugin(this);
-    const publishPlugin = pluginFactory.createPublishPlugin(this);
+    if (this.siteStore.authorized) {
+      const envPlugin = pluginFactory.createEnvPlugin();
+      const previewPlugin = pluginFactory.createPreviewPlugin(this);
+      const reloadPlugin = pluginFactory.createReloadPlugin(this);
+      const publishPlugin = pluginFactory.createPublishPlugin(this);
 
-    this.corePlugins[envPlugin.id] = envPlugin;
-    this.corePlugins[previewPlugin.id] = previewPlugin;
-    this.corePlugins[reloadPlugin.id] = reloadPlugin;
-    this.corePlugins[publishPlugin.id] = publishPlugin;
+      this.corePlugins[envPlugin.id] = envPlugin;
+      this.corePlugins[previewPlugin.id] = previewPlugin;
+      this.corePlugins[reloadPlugin.id] = reloadPlugin;
+      this.corePlugins[publishPlugin.id] = publishPlugin;
+    }
   }
 
   /**
@@ -160,101 +175,103 @@ export class AppStore {
   setupCustomPlugins() {
     this.customPlugins = {};
 
-    const { location, siteStore: { lang, plugins, innerHost } = {} } = this;
-    if (plugins && Array.isArray(plugins)) {
-      plugins.forEach((cfg, i) => {
-        const {
-          id,
-          title,
-          titleI18n,
-          url,
-          passConfig,
-          passReferrer,
-          isPalette,
-          event: eventName,
-          environments,
-          excludePaths,
-          includePaths,
-          isContainer,
-          containerId,
-        } = cfg;
-        const condition = (appStore) => {
-          let excluded = false;
-          const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
-          if (excludePaths && Array.isArray(excludePaths)
-              && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
-            excluded = true;
-          }
-          if (includePaths && Array.isArray(includePaths)
-              && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
-            excluded = false;
-          }
-          if (excluded) {
-            // excluding plugin
-            return false;
-          }
-          if (!environments || environments.includes('any')) {
-            return true;
-          }
-          const envChecks = {
-            dev: appStore.isDev,
-            edit: appStore.isEditor,
-            preview: appStore.isPreview,
-            live: appStore.isLive,
-            prod: appStore.isProd,
+    if (this.siteStore.authorized) {
+      const { location, siteStore: { lang, plugins, innerHost } = {} } = this;
+      if (plugins && Array.isArray(plugins)) {
+        plugins.forEach((cfg, i) => {
+          const {
+            id,
+            title,
+            titleI18n,
+            url,
+            passConfig,
+            passReferrer,
+            isPalette,
+            event: eventName,
+            environments,
+            excludePaths,
+            includePaths,
+            isContainer,
+            containerId,
+          } = cfg;
+          const condition = (appStore) => {
+            let excluded = false;
+            const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
+            if (excludePaths && Array.isArray(excludePaths)
+                && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              excluded = true;
+            }
+            if (includePaths && Array.isArray(includePaths)
+                && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              excluded = false;
+            }
+            if (excluded) {
+              // excluding plugin
+              return false;
+            }
+            if (!environments || environments.includes('any')) {
+              return true;
+            }
+            const envChecks = {
+              dev: appStore.isDev,
+              edit: appStore.isEditor,
+              preview: appStore.isPreview,
+              live: appStore.isLive,
+              prod: appStore.isProd,
+            };
+            return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
           };
-          return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
-        };
-          // assemble plugin config
-        const plugin = {
-          custom: true,
-          id: id || `custom-plugin-${i}`,
-          condition,
-          button: {
-            text: (titleI18n && titleI18n[lang]) || title || '',
-            action: () => {
-              if (url) {
-                const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
-                if (passConfig) {
-                  target.searchParams.append('ref', this.siteStore.ref);
-                  target.searchParams.append('repo', this.siteStore.repo);
-                  target.searchParams.append('owner', this.siteStore.owner);
-                  if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
-                  if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+            // assemble plugin config
+          const plugin = {
+            custom: true,
+            id: id || `custom-plugin-${i}`,
+            condition,
+            button: {
+              text: (titleI18n && titleI18n[lang]) || title || '',
+              action: () => {
+                if (url) {
+                  const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
+                  if (passConfig) {
+                    target.searchParams.append('ref', this.siteStore.ref);
+                    target.searchParams.append('repo', this.siteStore.repo);
+                    target.searchParams.append('owner', this.siteStore.owner);
+                    if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
+                    if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+                  }
+                  if (passReferrer) {
+                    target.searchParams.append('referrer', location.href);
+                  }
+                  if (isPalette) {
+                    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_PALETTE, {
+                      detail: {
+                        plugin: cfg,
+                      },
+                    }));
+                  } else {
+                    // open url in new window
+                    window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
+                  }
+                } else if (eventName) {
+                  // fire custom event
+                  this.fireEvent(`custom:${eventName}`);
                 }
-                if (passReferrer) {
-                  target.searchParams.append('referrer', location.href);
-                }
-                if (isPalette) {
-                  EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_PALETTE, {
-                    detail: {
-                      plugin: cfg,
-                    },
-                  }));
-                } else {
-                  // open url in new window
-                  window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
-                }
-              } else if (eventName) {
-                // fire custom event
-                this.fireEvent(`custom:${eventName}`);
-              }
+              },
+              isDropdown: isContainer,
             },
-            isDropdown: isContainer,
-          },
-          container: containerId,
-        };
-        // check default plugin
-        const defaultPlugin = this.corePlugins[plugin.id];
-        if (defaultPlugin) {
-          // extend default condition
-          const { condition: defaultCondition } = defaultPlugin;
-          defaultPlugin.condition = (s) => defaultCondition(s) && condition(s);
-        } else {
-          // add custom plugin
-          this.customPlugins[plugin.id] = plugin;
-        }
-      });
+            container: containerId,
+          };
+          // check if this overlaps with a core plugin, if so override the condition only
+          const corePlugin = this.corePlugins[plugin.id];
+          if (corePlugin) {
+            // extend default condition
+            const { condition: defaultCondition } = corePlugin;
+            corePlugin.condition = (s) => defaultCondition(s) && condition(s);
+          } else {
+            // add custom plugin
+            this.customPlugins[plugin.id] = plugin;
+          }
+        });
+      }
     }
   }
 
@@ -483,6 +500,16 @@ export class AppStore {
       // istanbul ignore next
       window.location.reload();
     }
+  }
+
+  /**
+   * Opens a new page. Abstracted for testing.
+   * @param {string} url The URL to open
+   * @returns {Window} The window object
+   */
+  // istanbul ignore next 3
+  openPage(url) {
+    return window.open(url);
   }
 
   /**
@@ -750,6 +777,7 @@ export class AppStore {
     // handle special case /.helix/*
     if (status.webPath.startsWith('/.helix/')) {
       this.showToast(this.i18n('preview_config_success'), 'positive');
+      this.hideWait();
       return;
     }
     this.hideWait();
@@ -868,6 +896,167 @@ export class AppStore {
     this.fireEvent(EXTERNAL_EVENTS.EVIRONMENT_SWITCHED, {
       sourceUrl: href,
       targetUrl: envUrl,
+    });
+  }
+
+  /**
+   * Retrieves the profile of the current user.
+   * @returns {Promise<Object | false>} The response object
+   */
+  async getProfile() {
+    try {
+      const url = getAdminUrl(this.siteStore, 'profile');
+      const opts = getAdminFetchOptions();
+      const res = await fetch(url, opts);
+
+      if (!res.ok) {
+        return false;
+      }
+
+      const response = await res.json();
+      if (response.status === 200) {
+        return response.profile;
+      }
+      return false;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to fetch profile:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Logs the user in.
+   * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
+   */
+  login(selectAccount) {
+    this.showWait(this.i18n('login_wait'));
+    const loginUrl = getAdminUrl(this.siteStore, 'login');
+    let extensionId = window.chrome?.runtime?.id;
+    // istanbul ignore next 3
+    if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
+      extensionId = 'cookie';
+    }
+    loginUrl.searchParams.set('extensionId', extensionId);
+    if (selectAccount) {
+      loginUrl.searchParams.set('selectAccount', 'true');
+    }
+    const loginWindow = this.openPage(loginUrl.toString());
+
+    let attempts = 0;
+
+    async function checkLoggedIn() {
+      // istanbul ignore else
+      if (loginWindow.closed) {
+        const { siteStore, status } = this;
+        attempts += 1;
+        // try 5 times after login window has been closed
+        this.status.profile = await this.getProfile();
+        if (this.status.profile) {
+          // logged in, stop checking
+          delete status.status;
+          this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
+          await this.siteStore.initStore(siteStore);
+          this.siteStore.authTokenExpiry = (
+            window.hlx
+            && window.hlx.sidekickConfig
+            && window.hlx.sidekickConfig.authTokenExpiry) || 0;
+          this.setupPlugins();
+          // encourageLogin(sk, false);
+          this.fetchStatus();
+          this.fireEvent('loggedin');
+          this.hideWait();
+          return;
+        }
+        if (attempts >= 5) {
+          // give up after 5 attempts
+          EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
+            detail: {
+              type: MODALS.ERROR,
+              data: { message: this.i18n('error_login_timeout') },
+            },
+          }));
+          return;
+        }
+      }
+      // try again after 1s
+      window.setTimeout(checkLoggedIn.bind(this), 1000);
+    }
+    window.setTimeout(checkLoggedIn.bind(this), 1000);
+  }
+
+  /**
+   * Logs the user out.
+   */
+  logout() {
+    this.showWait();
+    const logoutUrl = getAdminUrl(this.siteStore, 'logout');
+    let extensionId = window.chrome?.runtime?.id;
+    // istanbul ignore next 3
+    if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
+      extensionId = 'cookie';
+    }
+    logoutUrl.searchParams.set('extensionId', extensionId);
+    const logoutWindow = this.openPage(logoutUrl.toString());
+
+    let attempts = 0;
+
+    async function checkLoggedOut() {
+      // istanbul ignore else
+      if (logoutWindow.closed) {
+        attempts += 1;
+        // try 5 times after login window has been closed
+        this.status.profile = await this.getProfile();
+        if (!this.status.profile) {
+          delete this.status.profile;
+          delete this.siteStore.authTokenExpiry;
+          this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
+          this.siteStore.authorized = false;
+          this.setupPlugins();
+          this.fetchStatus();
+          this.fireEvent('loggedout');
+          return;
+        }
+        if (attempts >= 5) {
+          // give up after 5 attempts
+          EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
+            detail: {
+              type: MODALS.ERROR,
+              data: { message: this.i18n('error_logout_error') },
+            },
+          }));
+          return;
+        }
+      }
+      // try again after 1s
+      window.setTimeout(checkLoggedOut.bind(this), 1000);
+    }
+    window.setTimeout(checkLoggedOut.bind(this), 1000);
+  }
+
+  /**
+   * Validate the current session, and if the token is expired, re-login.
+   * @returns {Promise<void>}
+   */
+  async validateSession() {
+    return new Promise((resolve) => {
+      const { profile } = this.status;
+      if (!profile) {
+        resolve();
+      }
+      const now = Date.now();
+      const { exp } = profile;
+      if (exp > now) {
+        // token is expired
+        this.login(true);
+        this.sidekick.addEventListener('statusfetched', () => {
+          // wait will be hidden by login, show again
+          this.showWait();
+          resolve();
+        }, { once: true });
+      } else {
+        resolve();
+      }
     });
   }
 }

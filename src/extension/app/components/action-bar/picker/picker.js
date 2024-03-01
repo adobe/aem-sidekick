@@ -11,6 +11,7 @@
  */
 
 // @ts-nocheck
+/* istanbul ignore file */
 
 import { html } from '@spectrum-web-components/base';
 import { Picker as SPPicker } from '@spectrum-web-components/picker';

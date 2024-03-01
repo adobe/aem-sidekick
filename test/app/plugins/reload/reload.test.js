@@ -21,7 +21,7 @@ import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
-  mockFetchConfigJSONNotFound,
+  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
   mockFetchStatusSuccess,
 } from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
@@ -50,7 +50,7 @@ describe('Reload plugin', () => {
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
     mockFetchStatusSuccess();
-    mockFetchConfigJSONNotFound();
+    mockFetchConfigWithoutPluginsOrHostJSONSuccess();
     mockHelixEnvironment(document, 'preview');
 
     sidekick = new AEMSidekick(defaultSidekickConfig);

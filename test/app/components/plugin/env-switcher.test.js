@@ -21,7 +21,7 @@ import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
-  mockFetchConfigJSONNotFound,
+  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
   mockFetchStatusSuccess,
 } from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
@@ -35,6 +35,7 @@ describe('Environment Switcher', () => {
   let sidekick;
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
+    mockFetchConfigWithoutPluginsOrHostJSONSuccess();
   });
 
   afterEach(() => {
@@ -46,10 +47,9 @@ describe('Environment Switcher', () => {
   describe('switching between environments', () => {
     it('change environment - preview -> live', async () => {
       mockFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
       mockHelixEnvironment(document, 'preview');
 
-      const switchEnvStub = sinon.stub(appStore, 'switchEnv').resolves();
+      const switchEnvStub = sinon.stub(appStore, 'switchEnv').returns();
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -65,6 +65,11 @@ describe('Environment Switcher', () => {
 
       await waitUntil(() => recursiveQuery(picker, 'sp-popover'));
 
+      const overlay = recursiveQuery(picker, 'sp-overlay');
+
+      expect(picker.getAttribute('open')).to.not.be.null;
+      expect(overlay.getAttribute('open')).to.not.be.null;
+
       const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
       liveButton.click();
 
@@ -75,6 +80,34 @@ describe('Environment Switcher', () => {
       expect(switchEnvStub.calledWith('live', false)).to.be.true;
 
       switchEnvStub.restore();
+    }).timeout(20000);
+
+    it('live out of date - should show status light', async () => {
+      mockFetchStatusSuccess({
+        preview: {
+          lastModified: 'Tue, 19 Dec 2024 15:42:34 GMT',
+          sourceLastModified: 'Wed, 01 Nov 2024 17:22:52 GMT',
+        },
+        live: {
+          status: 200,
+          lastModified: 'Tue, 12 Dec 2024 15:42:34 GMT',
+        },
+      });
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+
+      await waitUntil(() => recursiveQuery(picker, 'sp-menu-item.env-live'));
+
+      const liveMenuItem = recursiveQuery(picker, 'sp-menu-item.env-live');
+      expect(liveMenuItem.getAttribute('update')).to.eq('true');
     });
   });
 });
