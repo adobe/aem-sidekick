@@ -864,8 +864,8 @@ export class AppStore {
   /**
    * Creates and/or returns a view overlay.
    * @private
-   * @param {boolean} create Create the view if none exists
-   * @returns {HTMLELement} The view overlay
+   * @param {boolean} [create] Create the view if none exists
+   * @returns {Element} The view overlay
    */
   getViewOverlay(create) {
     let view = this.sidekick.shadowRoot.querySelector('.hlx-sk-special-view');
@@ -873,12 +873,33 @@ export class AppStore {
     if (create && !view) {
       view = document.createElement('div');
       view.classList.add('hlx-sk-special-view');
-      this.sidekick.shadowRoot.appendChild(view);
+      this.sidekick.shadowRoot.append(view);
 
       const iframe = document.createElement('iframe');
       iframe.setAttribute('class', 'container');
       iframe.setAttribute('allow', 'clipboard-write *');
       view.appendChild(iframe);
+
+      // listen for messages from the view
+      window.addEventListener('message', (event) => {
+        // only accept messages from the extension
+        if (event.origin === `chrome-extension://${chrome.runtime.id}`) {
+          const { data } = event;
+          if (data.detail.event === 'hlx-close-view') {
+            view.remove();
+            [...this.sidekick.parentElement.children].forEach((el) => {
+              if (el !== this.sidekick) {
+                try {
+                  // @ts-ignore
+                  el.style.display = 'initial';
+                } catch (e) {
+                  // ignore
+                }
+              }
+            });
+          }
+        }
+      });
     }
     return view;
   }
@@ -908,13 +929,14 @@ export class AppStore {
       if (viewer) {
         const viewUrl = new URL(viewer, origin);
         viewUrl.searchParams.set('url', href);
+        viewUrl.searchParams.set('title', title(this.sidekick));
         const viewOverlay = this.getViewOverlay(true);
-        viewOverlay.setAttribute('title', title(this.sidekick));
         viewOverlay.querySelector('.container').setAttribute('src', viewUrl.toString());
         // hide original content
         [...this.sidekick.parentElement.children].forEach((el) => {
           if (el !== this.sidekick) {
             try {
+              // @ts-ignore
               el.style.display = 'none';
             } catch (e) {
               // ignore
@@ -965,7 +987,6 @@ export class AppStore {
       envUrl = status.edit && status.edit.url;
     }
 
-    // TODO: Setup custom views
     const [customView] = this.findViews(VIEWS.CUSTOM);
     if (customView) {
       const customViewUrl = new URL(customView.viewer, envUrl);

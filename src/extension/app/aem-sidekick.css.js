@@ -35,6 +35,7 @@ export const style = css`
     transform: translate(-50%, 0px);
     bottom: 150px;
     pointer-events: auto;
+    z-index: 1;
   }
 
   .hlx-sk-special-view {
