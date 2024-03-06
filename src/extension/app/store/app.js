@@ -1016,13 +1016,6 @@ export class AppStore {
       envUrl = status.edit && status.edit.url;
     }
 
-    const [customView] = this.findViews(VIEWS.CUSTOM);
-    if (customView) {
-      const customViewUrl = new URL(customView.viewer, envUrl);
-      customViewUrl.searchParams.set('path', status.webPath);
-      envUrl = customViewUrl.href;
-    }
-
     // switch or open env
     if (open || this.isEditor()) {
       window.open(envUrl, open

@@ -108,7 +108,7 @@ export class JSONView extends LitElement {
       gap: 10px;
     }
 
-    .header img {
+    .header svg {
       width: 32px;
       height: 32px;
     }
@@ -255,7 +255,10 @@ export class JSONView extends LitElement {
 
     const header = html`
       <div class="header">
-        <img src="../../icons/adobe-logo.svg" alt="adobe logo"/>
+        <svg width="250" height="245" viewBox="0 0 250 245" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M47.5 3H202.5C226 3 245 22 245 45.5V194.5C245 218 226 237 202.5 237H47.5C24 237 5 218 5 194.5V45.5C5 22 24 3 47.5 3Z" fill="black"/>
+          <path d="M192 179H163C160.3 179.2 157.9 177.5 157 175L126 103C126 102.4 125.6 102 125 102C124.4 102 124 102.4 124 103L104 149C104 150.1 104.9 151 106 151H127C128.3 150.9 129.6 151.7 130 153L139 174C139.6 176.1 138.4 178.3 136.2 178.9C136.1 178.9 136 178.9 136 179H59C56.8 178.5 55.5 176.4 55.9 174.2C55.9 174.1 55.9 174 56 174L105 57C106.1 54.7 108.4 53.1 111 53H139C141.6 53.1 143.9 54.7 145 57L195 174C195.6 176.1 194.4 178.3 192.2 178.9C192.2 179 192.1 179 192 179Z" fill="#FA0F00"/>
+        </svg>  
         <h1>${searchParams.get('title')}</h1>
         <sp-search @input=${this.onSearch}></sp-search>
         <button variant="primary" @click=${this.onCloseView}><sp-icon-close></sp-icon-close></button>
