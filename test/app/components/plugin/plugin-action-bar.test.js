@@ -24,9 +24,13 @@ import {
   mockSharepointDirectoryFetchStatusSuccess,
   mockSharepointEditorDocFetchStatusSuccess,
   mockFetchConfigJSONNotFound,
+  mockFetchConfigJSONNotAuthorized,
+  mockFetchStatusWithProfileSuccess,
+  mockFetchStatusUnauthorized,
   mockFetchConfigWithPluginsJSONSuccess,
   mockFetchConfigWithoutPluginsJSONSuccess,
   mockFetchStatusSuccess,
+  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
 } from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
 import {
@@ -37,6 +41,7 @@ import {
 } from '../../../mocks/environment.js';
 import { EXTERNAL_EVENTS } from '../../../../src/extension/app/constants.js';
 import { pluginFactory } from '../../../../src/extension/app/plugins/plugin-factory.js';
+import { appStore } from '../../../../src/extension/app/store/app.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -84,19 +89,19 @@ describe('Plugin action bar', () => {
   describe('renders correct default plugins in action bar', () => {
     it('isPreview', async () => {
       mockFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
+      mockFetchConfigWithoutPluginsOrHostJSONSuccess();
       mockHelixEnvironment(document, 'preview');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-
       expectPluginCount(3);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
 
       expectPlugin('env-switcher');
+      expectPlugin('.reload');
       expectPlugin('.publish');
     });
 
@@ -240,7 +245,7 @@ describe('Plugin action bar', () => {
     it('core plugin clicked', async () => {
       window.hlx = {};
 
-      const actionFunction = async () => {};
+      const actionFunction = async () => Promise.resolve();
 
       // Create a spy for the action function
       const actionSpy = sinon.spy(actionFunction);
@@ -270,12 +275,13 @@ describe('Plugin action bar', () => {
       const publishButton = recursiveQuery(sidekick, '.publish');
       publishButton.click();
 
+      await waitUntil(() => actionSpy.calledOnce);
       expect(actionSpy.calledOnce).to.be.true;
 
       stub.restore();
     });
 
-    it.skip('isAdmin - loads correct plugins', async () => {
+    it('isAdmin - loads correct plugins', async () => {
       mockSharepointEditorDocFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
       mockEditorAdminEnvironment(document, 'admin');
@@ -314,6 +320,7 @@ describe('Plugin action bar', () => {
       mockFetchConfigWithPluginsJSONSuccess();
       mockEditorAdminEnvironment(document, 'editor');
 
+      const validateStub = sinon.stub(appStore, 'validateSession').resolves();
       const openStub = sinon.stub(window, 'open');
       const pluginUsedEventSpy = sinon.spy();
 
@@ -329,10 +336,98 @@ describe('Plugin action bar', () => {
       const libraryPlugin = recursiveQuery(sidekick, '.library');
       libraryPlugin.click();
 
+      await waitUntil(() => openStub.calledOnce);
       expect(openStub.calledOnce).to.be.true;
       expect(pluginUsedEventSpy.calledOnce).to.be.true;
 
       openStub.restore();
+      validateStub.restore();
+    });
+  });
+
+  describe('login states', () => {
+    it('not logged in, site has authentication enabled', async () => {
+      mockFetchConfigJSONNotAuthorized();
+      mockFetchStatusUnauthorized();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const actionGroup = recursiveQuery(actionBar, 'sp-action-group');
+      expect(actionGroup.children.length).to.equal(3);
+
+      const propertiesButton = recursiveQuery(actionGroup, '.properties');
+      expect(propertiesButton).to.exist;
+
+      const loginButton = recursiveQuery(actionGroup, 'login-button');
+      expect(loginButton).to.exist;
+      expect(loginButton.classList.length).to.equal(1);
+      expect(loginButton.classList.contains('not-authorized')).to.be.true;
+
+      const logo = recursiveQuery(actionGroup, 'svg');
+      expect(logo).to.exist;
+    });
+
+    it('not logged in, site does not have authentication enabled', async () => {
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockFetchStatusSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroupsArray = [...actionGroups];
+      expect(actionGroupsArray.length).to.equal(2);
+
+      const systemActionGroup = actionGroupsArray[1];
+
+      const propertiesButton = recursiveQuery(systemActionGroup, '.properties');
+      expect(propertiesButton).to.exist;
+
+      const loginButton = recursiveQuery(systemActionGroup, 'login-button');
+      expect(loginButton).to.exist;
+      expect(loginButton.classList.length).to.equal(2);
+      expect(loginButton.classList.contains('not-authorized')).to.be.true;
+      expect(loginButton.classList.contains('no-login')).to.be.true;
+
+      const logo = recursiveQuery(systemActionGroup, 'svg');
+      expect(logo).to.exist;
+    });
+
+    it('logged in', async () => {
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockFetchStatusWithProfileSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroupsArray = [...actionGroups];
+      expect(actionGroupsArray.length).to.equal(2);
+
+      const systemActionGroup = actionGroupsArray[1];
+
+      const propertiesButton = recursiveQuery(systemActionGroup, '.properties');
+      expect(propertiesButton).to.exist;
+
+      const loginButton = recursiveQuery(systemActionGroup, 'login-button');
+      expect(loginButton).to.exist;
+      expect(loginButton.classList.length).to.equal(0);
+
+      const logo = recursiveQuery(systemActionGroup, 'svg');
+      expect(logo).to.exist;
     });
   });
 });
