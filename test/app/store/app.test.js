@@ -30,6 +30,7 @@ import {
   mockFetchProfileSuccess,
   mockFetchProfileUnauthorized,
   mockFetchProfileError,
+  mockFetchConfigWithoutPluginsJSONSuccess,
 } from '../../mocks/helix-admin.js';
 import { mockFetchEnglishMessagesSuccess } from '../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
@@ -870,6 +871,7 @@ describe('Test App Store', () => {
     });
 
     it('removes the view and resets siblings display on receiving a valid hlx-close-view message', async () => {
+      mockFetchConfigWithoutPluginsJSONSuccess();
       const addEventListenerStub = sinon.stub(window, 'addEventListener');
 
       const sidekick = new AEMSidekick(defaultSidekickConfig);
@@ -891,7 +893,7 @@ describe('Test App Store', () => {
       });
 
       // Trigger the event listener manually
-      const eventListenerCallback = addEventListenerStub.getCall(0).args[1];
+      const eventListenerCallback = addEventListenerStub.getCall(1).args[1];
       // @ts-ignore
       eventListenerCallback(messageEvent);
 
@@ -929,6 +931,7 @@ describe('Test App Store', () => {
     });
 
     it('exits early if "path" search param is present', async () => {
+      mockFetchConfigWithoutPluginsJSONSuccess();
       fetchMock.get('https://admin.hlx.page/status/adobe/aem-boilerplate/main/path/placeholders.json?editUrl=auto', {
         status: 200,
         body: {
@@ -942,13 +945,14 @@ describe('Test App Store', () => {
       const sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
 
       await instance.showView();
       expect(findViewsSpy.called).to.be.false;
     });
 
     it('sets iframe src correctly if a DEFAULT view is found and no overlay exists', async () => {
+      mockFetchConfigWithoutPluginsJSONSuccess();
       isProjectStub.returns(true);
       instance.location = new URL('https://main--aem-boilerplate--adobe.hlx.page/placeholders.json');
       findViewsStub = sinon.stub(instance, 'findViews').returns([{ viewer: 'http://viewer.com', title: () => 'Test Title' }]);
@@ -958,7 +962,7 @@ describe('Test App Store', () => {
       instance.sidekick = sidekick;
       document.body.appendChild(sidekick);
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
 
       const overlayContainer = document.createElement('div');
       overlayContainer.className = 'hlx-sk-special-view';
