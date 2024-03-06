@@ -97,7 +97,7 @@ export class JSONView extends LitElement {
       width: 100%;
       height: 100%;
       color: var(--spectrum-global-color-gray-800);
-      padding: 5px var(--spectrum-global-dimension-size-400) var(--spectrum-global-dimension-size-400) var(--spectrum-global-dimension-size-400);
+      padding: 5px var(--spectrum-global-dimension-size-400);
       box-sizing: border-box;
       margin-bottom: 40px;
     }
@@ -194,6 +194,12 @@ export class JSONView extends LitElement {
 
     sp-table-body {
       background-color: var(--spectrum-table-cell-background-color);;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 10px;
     }
   `;
 
@@ -305,7 +311,7 @@ export class JSONView extends LitElement {
 
     if (rows.length > 0) {
       const headers = rows[0];
-      const headHTML = Object.keys(headers).reduce((acc, key) => `${acc}<sp-table-head-cell>${key}</sp-table-head-cell>`, '');
+      const headHTML = Object.keys(headers).reduce((acc, key) => `${acc}<sp-table-head-cell sortable sort-direction="desc" sort-key=${key}>${key}</sp-table-head-cell>`, '');
       const head = document.createElement('sp-table-head');
       head.insertAdjacentHTML('beforeend', headHTML);
       table.appendChild(head);
@@ -313,6 +319,18 @@ export class JSONView extends LitElement {
       table.items = rows;
       // @ts-ignore
       table.renderItem = (item) => html`${Object.values(item).map((value) => this.renderValue(value, url))}`;
+
+      table.addEventListener('sorted', (event) => {
+        const { sortDirection, sortKey } = event.detail;
+        rows = rows.sort((a, b) => {
+          const first = String(a[sortKey]);
+          const second = String(b[sortKey]);
+          return sortDirection === 'asc'
+            ? first.localeCompare(second)
+            : second.localeCompare(first);
+        });
+        table.items = [...rows];
+      });
 
       tableContainer.appendChild(table);
     } else {
@@ -473,10 +491,20 @@ export class JSONView extends LitElement {
   }
 
   render() {
+    const filteredCount = this.filteredData?.data?.length
+      ?? Object.values(this.filteredData)[this.selectedTabIndex].data.length
+      ?? 0;
+
+    const total = this.originalData.total
+      ?? Object.values(this.filteredData)[this.selectedTabIndex].total;
+
     return html`
       <theme-wrapper>
         <div class="container">
           ${this.renderData()}
+          <div class="stats">
+            <p>Showing ${filteredCount} results of ${total}</p>
+          </div>
         </div>
       </theme-wrapper>
     `;
