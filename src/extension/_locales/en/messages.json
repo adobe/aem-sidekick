@@ -606,5 +606,11 @@
     },
     "error": {
       "message": "Error"
+    },
+    "not_authorized": {
+      "message": "Not authorized"
+    },
+    "login_wait": {
+      "message": "Please sign in..."
     }
 }
