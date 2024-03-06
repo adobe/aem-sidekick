@@ -305,10 +305,6 @@ export class JSONView extends LitElement {
       const headHTML = Object.keys(headers).reduce((acc, key) => `${acc}<sp-table-head-cell>${key}</sp-table-head-cell>`, '');
       const head = document.createElement('sp-table-head');
       head.insertAdjacentHTML('beforeend', headHTML);
-
-      table.addEventListener('updated', () => {
-        console.log('scrolling');
-      });
       table.appendChild(head);
 
       table.items = rows;
