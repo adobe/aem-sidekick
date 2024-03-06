@@ -14,8 +14,10 @@
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
-import { expect, waitUntil } from '@open-wc/testing';
-import { AppStore } from '../../../src/extension/app/store/app.js';
+import {
+  aTimeout, expect, waitUntil,
+} from '@open-wc/testing';
+import { AppStore, VIEWS } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
 import {
   mockFetchConfigJSONNotFound,
@@ -32,6 +34,8 @@ import { EventBus } from '../../../src/extension/app/utils/event-bus.js';
 import { EVENTS, MODALS } from '../../../src/extension/app/constants.js';
 import { mockHelixEnvironment, restoreEnvironment } from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
+import { recursiveQuery } from '../../test-utils.js';
+import { AEMSidekick } from '../../../src/extension/index.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -748,6 +752,225 @@ describe('Test App Store', () => {
       const resp = await instance.publish('/somepath');
 
       expect(resp.error).to.eq('Some error');
+    });
+  });
+
+  describe('findViews', () => {
+    let instance;
+
+    beforeEach(() => {
+      instance = appStore;
+      instance.status = { webPath: '/some.json' };
+      instance.siteStore = {
+        views: [
+          { path: '**.json', viewer: '/test/wtr/fixtures/custom-views/json/json.html' },
+        ],
+      };
+    });
+
+    afterEach(() => {
+      sinon.restore(); // Restore original functions
+    });
+
+    it('should return an empty array if testPath and webPath are not provided', () => {
+      instance.status.webPath = null;
+      const result = instance.findViews(VIEWS.CUSTOM);
+      expect(result).to.deep.equal([]);
+    });
+
+    it('should use webPath as testPath if not provided', () => {
+      const [view] = instance.findViews(VIEWS.DEFAULT);
+      expect(view.path).to.equal('**.json');
+      expect(view.viewer).to.equal('/test/wtr/fixtures/custom-views/json/json.html');
+    });
+
+    it('should use testPath', () => {
+      const [view] = instance.findViews(VIEWS.DEFAULT, '/foo.json');
+      expect(view.path).to.equal('**.json');
+      expect(view.viewer).to.equal('/test/wtr/fixtures/custom-views/json/json.html');
+    });
+
+    it('should filter views based on DEFAULT viewType', () => {
+      const [view] = instance.findViews(VIEWS.DEFAULT);
+      expect(view.path).to.equal('**.json');
+      expect(view.viewer).to.equal('/test/wtr/fixtures/custom-views/json/json.html');
+    });
+
+    it('should filter views based on CUSTOM viewType (no custom)', () => {
+      const result = instance.findViews(VIEWS.CUSTOM);
+      expect(result.length).to.equal(0);
+    });
+
+    it('should filter views based on CUSTOM viewType (with custom)', () => {
+      instance.status = { webPath: '/some.psd' };
+      instance.siteStore = {
+        views: [
+          { path: '**.json', viewer: '/test/wtr/fixtures/custom-views/json/json.html' },
+          { path: '**.psd', viewer: 'https://example.com/psd-renderer.html' },
+        ],
+      };
+      const [view] = instance.findViews(VIEWS.CUSTOM);
+      expect(view.path).to.equal('**.psd');
+      expect(view.viewer).to.equal('https://example.com/psd-renderer.html');
+    });
+
+    it('should include all matching views if viewType is neither DEFAULT nor CUSTOM', () => {
+      instance.siteStore = {
+        views: [
+          { path: '**.json', viewer: '/test/wtr/fixtures/custom-views/json/json.html' },
+          { path: '**.psd', viewer: 'https://example.com/psd-renderer.html' },
+        ],
+      };
+      const [view] = instance.findViews();
+      expect(view.path).to.equal('**.json');
+      expect(view.viewer).to.equal('/test/wtr/fixtures/custom-views/json/json.html');
+    });
+  });
+
+  describe('getViewOverlay', () => {
+    let instance;
+
+    beforeEach(() => {
+      instance = appStore;
+      const shadowRoot = sidekickElement.attachShadow({ mode: 'open' });
+      shadowRoot.appendChild(document.createElement('div'));
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns an existing view without creating a new one', async () => {
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      const existingView = document.createElement('div');
+      existingView.classList.add('hlx-sk-special-view');
+      sidekickElement.shadowRoot.appendChild(existingView);
+
+      const view = instance.getViewOverlay(false);
+      expect(view).to.equal(existingView);
+    });
+
+    it('creates and returns a new view when none exists and create is true', async () => {
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      const view = instance.getViewOverlay(true);
+      expect(view.classList.contains('hlx-sk-special-view')).to.be.true;
+      expect(instance.sidekick.shadowRoot.querySelector('.hlx-sk-special-view')).to.equal(view);
+    });
+
+    it('adds an iframe to the new view with the correct attributes', async () => {
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      const view = instance.getViewOverlay(true);
+      const iframe = view.querySelector('iframe.container');
+      expect(iframe).to.not.be.null;
+      expect(iframe.getAttribute('allow')).to.equal('clipboard-write *');
+    });
+
+    it('removes the view and resets siblings display on receiving a valid hlx-close-view message', async () => {
+      const addEventListenerStub = sinon.stub(window, 'addEventListener');
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      appStore.sidekick = sidekick;
+      appStore.getViewOverlay(true); // Create a new view
+
+      const sibling = document.createElement('div');
+      sibling.style.display = 'none';
+      instance.sidekick.parentElement.appendChild(sibling);
+
+      // Simulate receiving a valid message
+      const messageEvent = new MessageEvent('message', {
+        data: { detail: { event: 'hlx-close-view' } },
+        origin: `chrome-extension://${chrome.runtime.id}`,
+      });
+
+      // Trigger the event listener manually
+      const eventListenerCallback = addEventListenerStub.getCall(0).args[1];
+      // @ts-ignore
+      eventListenerCallback(messageEvent);
+
+      await aTimeout(1000);
+      expect(instance.sidekick.shadowRoot.querySelector('.hlx-sk-special-view')).to.be.null;
+      expect(sibling.style.display).to.equal('initial');
+    }).timeout(5000);
+  });
+
+  describe('showView', () => {
+    let instance;
+    let isProjectStub;
+    let findViewsSpy;
+    let findViewsStub;
+    let getViewOverlayStub;
+
+    beforeEach(async () => {
+      instance = appStore;
+      isProjectStub = sinon.stub(instance, 'isProject');
+      getViewOverlayStub = sinon.stub(instance, 'getViewOverlay');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+      fetchMock.restore();
+    });
+
+    it('does nothing if isProject returns false', async () => {
+      isProjectStub.returns(false);
+      findViewsSpy = sinon.spy(instance, 'findViews');
+
+      await instance.showView();
+      expect(isProjectStub.calledOnce).to.be.true;
+      expect(findViewsSpy.called).to.be.false;
+    });
+
+    it('exits early if "path" search param is present', async () => {
+      fetchMock.get('https://admin.hlx.page/status/adobe/aem-boilerplate/main/path/placeholders.json?editUrl=auto', {
+        status: 200,
+        body: {
+          body: { },
+        },
+      }, { overwriteRoutes: true });
+      findViewsSpy = sinon.spy(instance, 'findViews');
+      instance.location = new URL('https://main--aem-boilerplate--adobe.hlx.page/placeholders.json?path=/path/placeholders.json');
+      isProjectStub.returns(true);
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      await instance.showView();
+      expect(findViewsSpy.called).to.be.false;
+    });
+
+    it('sets iframe src correctly if a DEFAULT view is found and no overlay exists', async () => {
+      isProjectStub.returns(true);
+      instance.location = new URL('https://main--aem-boilerplate--adobe.hlx.page/placeholders.json');
+      findViewsStub = sinon.stub(instance, 'findViews').returns([{ viewer: 'http://viewer.com', title: () => 'Test Title' }]);
+      getViewOverlayStub.onCall(0).returns(undefined);
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      instance.sidekick = sidekick;
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      const overlayContainer = document.createElement('div');
+      overlayContainer.className = 'hlx-sk-special-view';
+
+      const frame = document.createElement('iframe');
+      frame.className = 'container';
+      overlayContainer.appendChild(frame);
+
+      getViewOverlayStub.onCall(1).returns(overlayContainer);
+      sidekick.shadowRoot.appendChild(overlayContainer);
+
+      await instance.showView();
+
+      expect(frame.src).to.equal('http://viewer.com/?url=https%3A%2F%2Fmain--aem-boilerplate--adobe.hlx.page%2Fplaceholders.json&title=Test+Title');
+      expect(findViewsStub.calledWith(VIEWS.DEFAULT)).to.be.true;
+      expect(getViewOverlayStub.calledTwice).to.be.true;
     });
   });
 });

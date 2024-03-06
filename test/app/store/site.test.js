@@ -90,7 +90,7 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.devUrl.origin).to.equal('http://localhost:3000');
       expect(appStore.siteStore.views.length).to.equal(1);
       expect(appStore.siteStore.views[0].path).to.equal('**.json');
-      expect(appStore.siteStore.views[0].viewer).to.equal('/test/wtr/fixtures/view/json/json.html');
+      expect(appStore.siteStore.views[0].viewer).to.equal('/test/wtr/fixtures/custom-views/json/json.html');
       expect(appStore.siteStore.plugins.length).to.equal(0);
     });
 
@@ -142,7 +142,7 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.views[0].viewer).to.equal('/tools/sidekick/example/index.html');
 
       expect(appStore.siteStore.views[1].path).to.equal('**.json');
-      expect(appStore.siteStore.views[1].viewer).to.equal('/test/wtr/fixtures/view/json/json.html');
+      expect(appStore.siteStore.views[1].viewer).to.equal('/test/wtr/fixtures/custom-views/json/json.html');
       expect(appStore.siteStore.views[1].title()).to.equal('User-friendly data rendition.');
     });
 

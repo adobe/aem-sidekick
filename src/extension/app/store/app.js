@@ -55,7 +55,7 @@ import { pluginFactory } from '../plugins/plugin-factory.js';
  * @private
  * @type {string[]}
  */
-const RESTRICTED_PATHS = [
+export const RESTRICTED_PATHS = [
   '/helix-env.json',
 ];
 
@@ -63,7 +63,7 @@ const RESTRICTED_PATHS = [
  * Enum for view types.
  * @enum {number}
  */
-const VIEWS = {
+export const VIEWS = {
   DEFAULT: 0,
   CUSTOM: 1,
 };
@@ -916,9 +916,10 @@ export class AppStore {
       location: {
         origin,
         href,
+        search,
       },
     } = this;
-    const searchParams = new URLSearchParams(window.location.search);
+    const searchParams = new URLSearchParams(search);
     if (searchParams.get('path')) {
       // custom view
       return;
