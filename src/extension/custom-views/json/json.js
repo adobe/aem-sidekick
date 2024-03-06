@@ -11,7 +11,7 @@
  */
 import { html, LitElement, css } from 'lit';
 import {
-  customElement, property, query, queryAsync,
+  customElement, property, queryAsync,
 } from 'lit/decorators.js';
 import '@spectrum-web-components/theme/sp-theme.js';
 import '@spectrum-web-components/theme/scale-medium.js';
@@ -77,14 +77,8 @@ export class JSONView extends LitElement {
   @property({ type: Number })
   accessor selectedTabIndex = 0;
 
-  @query('.container')
-  accessor container;
-
   @queryAsync('sp-tabs')
   accessor tabs;
-
-  @queryAsync('sp-table-head')
-  accessor head;
 
   static styles = css`
     :host {
@@ -321,6 +315,7 @@ export class JSONView extends LitElement {
       table.renderItem = (item) => html`${Object.values(item).map((value) => this.renderValue(value, url))}`;
 
       table.addEventListener('sorted', (event) => {
+        // @ts-ignore
         const { sortDirection, sortKey } = event.detail;
         rows = rows.sort((a, b) => {
           const first = String(a[sortKey]);
@@ -496,7 +491,7 @@ export class JSONView extends LitElement {
       ?? 0;
 
     const total = this.originalData.total
-      ?? Object.values(this.filteredData)[this.selectedTabIndex].total;
+      ?? Object.values(this.originalData)[this.selectedTabIndex].total;
 
     return html`
       <theme-wrapper>
