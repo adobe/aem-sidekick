@@ -977,7 +977,7 @@ describe('Test App Store', () => {
       expect(getViewOverlayStub.calledTwice).to.be.true;
     });
   });
-  
+
   describe('getProfile', () => {
     beforeEach(async () => {
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
