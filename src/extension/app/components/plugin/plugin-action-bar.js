@@ -16,7 +16,6 @@ import { html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { appStore } from '../../store/app.js';
-import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**
  * @typedef {import('@Types').CorePlugin} CorePlugin
@@ -58,117 +57,22 @@ export class PluginActionBar extends MobxLitElement {
   `;
 
   /**
-   *
-   * @param {CorePlugin} plugin
-   * @returns
-   */
-  createCorePlugin(plugin) {
-    if (typeof plugin.callback === 'function') {
-      plugin.callback(appStore, plugin);
-    }
-
-    if (plugin.id === 'env-switcher') {
-      return html`
-        <env-switcher></env-switcher>
-      `;
-    }
-
-    let disabled = false;
-    const isEnabled = plugin.button && plugin.button.isEnabled;
-    if (typeof isEnabled === 'function' && !isEnabled(appStore)) {
-      disabled = true;
-    }
-
-    return html`
-      <sp-action-button 
-        class=${plugin.id} 
-        .disabled=${disabled} 
-        quiet 
-        @click=${(evt) => this.onPluginButtonClick(evt, plugin)}
-      >
-          ${plugin.button.text}
-      </sp-action-button>
-    `;
-  }
-
-  async onPluginButtonClick(evt, plugin) {
-    await appStore.validateSession();
-    appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, {
-      id: plugin.id,
-    });
-    plugin.button.action(evt);
-  }
-
-  /**
-   * Handles the environment switcher change event
-   * @param {Event & { target: Picker }} event - The event object with target typed as Picker
-   */
-  onChange(event, plugin) {
-    const { target } = event;
-
-    const selectedPlugin = plugin.children[target.value];
-    selectedPlugin.button.action(event);
-
-    // Prevent the picker from showing the selected item
-    target.value = '';
-    target.selectedItem = undefined;
-  }
-
-  /**
    * Render the core and custom plugins
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
-    const corePlugins = Object.values(appStore.corePlugins)?.map((plugin) => (plugin.condition(appStore) ? this.createCorePlugin(plugin) : ''));
+    const corePlugins = Object.values(appStore.corePlugins);
+    const customPlugins = Object.values(appStore.customPlugins);
+    const renderedPlugins = [
+      ...corePlugins,
+      ...customPlugins,
+    ]
+      .filter((plugin) => plugin.checkCondition(appStore) && plugin.isPinned())
+      .map((plugin) => plugin.render());
 
-    /**
-     * @type {Record<string, CorePlugin & ContainerPlugin>}
-     * */
-    const customPlugins = {};
-    Object.values(appStore.customPlugins).forEach((plugin) => {
-      if (plugin.button.isDropdown) {
-        customPlugins[plugin.id] = plugin;
-      } else if (plugin.container) {
-        const container = customPlugins[plugin.container];
-        if (!container.children) {
-          container.children = {};
-        }
-        container.children[plugin.id] = plugin;
-      } else {
-        customPlugins[plugin.id] = plugin;
-      }
-    });
-
-    const userPlugins = Object.values(customPlugins).map((plugin) => {
-      if (plugin.children) {
-        return html`
-          <action-bar-picker 
-            class=${`plugin-container ${plugin.id}`} 
-            label=${plugin.button.text} 
-            @change=${(e) => this.onChange(e, plugin)} 
-            placement="top"
-          >
-              ${Object.values(plugin.children).map((childPlugin) => (childPlugin.condition(appStore)
-                ? html`<sp-menu-item value=${childPlugin.id}>${childPlugin.button.text}</sp-menu-item>`
-                : ''))}
-          </action-bar-picker>
-        `;
-      }
-
-      return plugin.condition(appStore) ? html`
-              <sp-action-button 
-                class=${plugin.id} 
-                quiet 
-                @click=${(evt) => this.onPluginButtonClick(evt, plugin)}
-                >
-                ${plugin.button.text || plugin.id}
-              </sp-action-button>
-            ` : '';
-    });
-
-    const actionGroup = html`<sp-action-group>${[...corePlugins, ...userPlugins]}</sp-action-group>`;
-
-    return corePlugins.length > 0 ? actionGroup : '';
+    return renderedPlugins.length > 0
+      ? html`<sp-action-group>${[...renderedPlugins]}</sp-action-group>`
+      : '';
   }
 
   renderSystemPlugins() {

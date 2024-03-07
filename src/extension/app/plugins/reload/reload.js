@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { SidekickPlugin } from '../../components/plugin/plugin.js';
 import { EVENTS, MODALS } from '../../constants.js';
 import { newTab } from '../../utils/browser.js';
 import { EventBus } from '../../utils/event-bus.js';
@@ -26,10 +27,10 @@ import { i18n } from '../../utils/i18n.js';
 /**
  * Creates the reload plugin
  * @param {AppStore} appStore The app store
- * @returns {CorePlugin} The reload plugin
+ * @returns {SidekickPlugin} The reload plugin
  */
 export function createReloadPlugin(appStore) {
-  return {
+  return new SidekickPlugin({
     id: 'reload',
     condition: (store) => store.isPreview() || store.isDev(),
     button: {
@@ -59,5 +60,6 @@ export function createReloadPlugin(appStore) {
       isEnabled: (store) => store.isAuthorized('preview', 'write')
         && store.status.edit && store.status.edit.url, // enable only if edit url exists
     },
-  };
+    appStore,
+  });
 }

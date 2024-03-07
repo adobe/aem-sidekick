@@ -25,6 +25,7 @@ import {
   ENVS, EVENTS, EXTERNAL_EVENTS, MODALS,
 } from '../constants.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
+import { SidekickPlugin } from '../components/plugin/plugin.js';
 
 /**
  * The sidekick configuration object type
@@ -86,13 +87,13 @@ export class AppStore {
 
   /**
    * Dictionary of language keys
-   * @type {Object.<string, CorePlugin>}
+   * @type {Object.<string, SidekickPlugin>}
    */
   @observable accessor corePlugins;
 
   /**
    * Dictionary of language keys
-   * @type {Object.<string, CustomPlugin>}
+   * @type {Object.<string, SidekickPlugin>}
    */
   @observable accessor customPlugins;
 
@@ -156,12 +157,12 @@ export class AppStore {
     this.corePlugins = {};
 
     if (this.siteStore.authorized) {
-      const envPlugin = pluginFactory.createEnvPlugin();
+      const envPlugin = pluginFactory.createEnvPlugin(this);
       const previewPlugin = pluginFactory.createPreviewPlugin(this);
       const reloadPlugin = pluginFactory.createReloadPlugin(this);
       const publishPlugin = pluginFactory.createPublishPlugin(this);
 
-      this.corePlugins[envPlugin.id] = envPlugin;
+      this.corePlugins[envPlugin.config.id] = envPlugin;
       this.corePlugins[previewPlugin.id] = previewPlugin;
       this.corePlugins[reloadPlugin.id] = reloadPlugin;
       this.corePlugins[publishPlugin.id] = publishPlugin;
@@ -259,16 +260,22 @@ export class AppStore {
               isDropdown: isContainer,
             },
             container: containerId,
+            appStore: this,
           };
           // check if this overlaps with a core plugin, if so override the condition only
           const corePlugin = this.corePlugins[plugin.id];
           if (corePlugin) {
             // extend default condition
-            const { condition: defaultCondition } = corePlugin;
-            corePlugin.condition = (s) => defaultCondition(s) && condition(s);
+            const { condition: defaultCondition } = corePlugin.config;
+            corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
           } else {
             // add custom plugin
-            this.customPlugins[plugin.id] = plugin;
+            const customPlugin = new SidekickPlugin(plugin);
+            if (plugin.container) {
+              this.customPlugins[plugin.container]?.append(customPlugin);
+            } else {
+              this.customPlugins[plugin.id] = customPlugin;
+            }
           }
         });
       }
