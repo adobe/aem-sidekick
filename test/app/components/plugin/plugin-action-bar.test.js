@@ -184,6 +184,25 @@ describe('Plugin action bar', () => {
       expectPlugin('env-switcher');
     });
 
+    it('isDev', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'dev');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      sidekick.appendChild(document.createElement('div'));
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expectPluginCount(3);
+      expectEnvPlugin(['dev', 'edit', 'preview', 'prod']);
+      expectPlugin('env-switcher');
+      expectPlugin('.reload');
+      expectPlugin('.publish');
+    });
+
     it('isEditor', async () => {
       mockSharepointEditorDocFetchStatusSuccess();
       mockFetchConfigJSONNotFound();

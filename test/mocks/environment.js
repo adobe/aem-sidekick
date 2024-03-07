@@ -44,6 +44,7 @@ const HelixSecondLevelDomains = {
  */
 // eslint-disable-next-line no-unused-vars
 const HelixMockEnvironments = {
+  DEV: 'dev',
   PREVIEW: 'preview',
   LIVE: 'live',
   PROD: 'prod',
@@ -93,18 +94,21 @@ export function getDefaultHelixEnviromentLocations(contentType, sld) {
   switch (contentType) {
     case HelixMockContentType.DOC:
       return {
+        dev: 'http://localhost:3000/',
         preview: `https://main--aem-boilerplate--adobe.${sld}.page`,
         live: `https://main--aem-boilerplate--adobe.${sld}.live`,
         prod: 'https://www.aemboilerplate.com',
       };
     case HelixMockContentType.SHEET:
       return {
+        dev: 'http://localhost:3000/placeholders.json',
         preview: `https://main--aem-boilerplate--adobe.${sld}.page/placeholders.json`,
         live: `https://main--aem-boilerplate--adobe.${sld}.live/placeholders.json`,
         prod: 'https://www.aemboilerplate.com/placeholders.json',
       };
     case HelixMockContentType.IMAGE:
       return {
+        dev: 'http://localhost:3000/media_foobar.png?width=750&format=png&optimize=medium',
         preview: `https://main--aem-boilerplate--adobe.${sld}.page/media_foobar.png?width=750&format=png&optimize=medium`,
         live: `https://main--aem-boilerplate--adobe.${sld}.live/media_foobar.png?width=750&format=png&optimize=medium`,
         prod: 'https://www.aemboilerplate.com/media_foobar.png?width=750&format=png&optimize=medium',
@@ -148,7 +152,7 @@ export function getDefaultEditorEnviromentLocations(contentSource, contentType) 
  * @param {AllEnvironments} environment
  */
 function stubEnvironment(environment) {
-  const environments = ['preview', 'live', 'prod', 'editor', 'admin'];
+  const environments = ['dev', 'preview', 'live', 'prod', 'editor', 'admin'];
   environments.forEach((env) => {
     const method = `is${env.charAt(0).toUpperCase() + env.slice(1)}`;
     if (env === environment) {
@@ -171,7 +175,7 @@ function stubEnvironment(environment) {
  */
 export function mockHelixEnvironment(
   document,
-  environment = EditorMockEnvironments.EDITOR,
+  environment = HelixMockEnvironments.PREVIEW,
   contentType = HelixMockContentType.DOC,
   location = undefined,
   sld = 'hlx') {
