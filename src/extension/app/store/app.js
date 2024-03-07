@@ -900,6 +900,8 @@ export class AppStore {
     } else {
       window.location.href = envUrl;
     }
+    // make sure wait modal is hidden eventually
+    window.setTimeout(() => this.hideWait(), 2000);
     this.fireEvent(EXTERNAL_EVENTS.EVIRONMENT_SWITCHED, {
       sourceUrl: href,
       targetUrl: envUrl,
