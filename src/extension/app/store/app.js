@@ -25,10 +25,10 @@ import {
   ENVS, EVENTS, EXTERNAL_EVENTS, MODALS,
 } from '../constants.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
-import { SidekickPlugin } from '../components/plugin/plugin.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
 import { ToastContainer } from '../components/toast/toast-container.js';
+import { SidekickPlugin } from '../components/plugin/plugin.js';
 
 /**
  * The sidekick configuration object type
@@ -177,7 +177,7 @@ export class AppStore {
       const deletePlugin = pluginFactory.createDeletePlugin(this);
       const publishPlugin = pluginFactory.createPublishPlugin(this);
 
-      this.corePlugins[envPlugin.id] = envPlugin;
+      this.corePlugins[envPlugin.config.id] = envPlugin;
       this.corePlugins[previewPlugin.id] = previewPlugin;
       this.corePlugins[reloadPlugin.id] = reloadPlugin;
       this.corePlugins[deletePlugin.id] = deletePlugin;
