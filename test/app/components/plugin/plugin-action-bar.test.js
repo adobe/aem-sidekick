@@ -42,6 +42,7 @@ import {
 import { EXTERNAL_EVENTS } from '../../../../src/extension/app/constants.js';
 import { pluginFactory } from '../../../../src/extension/app/plugins/plugin-factory.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
+import { SidekickPlugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -128,7 +129,7 @@ describe('Plugin action bar', () => {
 
       // Should fallback to id for label if title not provided
       const assetLibraryPlugin = recursiveQuery(sidekick, '.asset-library');
-      expect(assetLibraryPlugin.textContent.trim()).to.equal('asset-library');
+      expect(assetLibraryPlugin.textContent.trim()).to.equal('Asset Library');
     });
 
     it('isLive', async () => {
@@ -250,14 +251,15 @@ describe('Plugin action bar', () => {
       // Create a spy for the action function
       const actionSpy = sinon.spy(actionFunction);
 
-      const stub = sinon.stub(pluginFactory, 'createPublishPlugin').returns({
+      const stub = sinon.stub(pluginFactory, 'createPublishPlugin').returns(new SidekickPlugin({
         id: 'publish',
         condition: () => true,
         button: {
           text: 'Publish',
           action: actionSpy,
         },
-      });
+        appStore,
+      }));
 
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();
