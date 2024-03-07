@@ -10,8 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-/* eslint-disable max-len */
-
 import { html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
@@ -95,7 +93,8 @@ export class PluginActionBar extends MobxLitElement {
 
   /**
    * Render the core and custom plugins
-   * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
+   * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings,
+   * or a single empty string.
    */
   renderPlugins() {
     if (!appStore.corePlugins) {
