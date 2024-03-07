@@ -31,6 +31,7 @@ import '@spectrum-web-components/tabs/sp-tab-panel.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-close.js';
 import '../../app/components/theme/theme.js';
 import '../../app/components/search/search.js';
+import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';
 
 /**
  * The lit template result type
@@ -48,6 +49,13 @@ export class JSONView extends LitElement {
    */
   @property({ type: Object, state: false })
   accessor originalData;
+
+  /**
+   * The language dictionary`
+   * @type {Object}
+   */
+  @property({ type: Object, state: false })
+  accessor languageDict;
 
   /**
    * The filtered json data
@@ -162,12 +170,15 @@ export class JSONView extends LitElement {
     }
 
     sp-table-head-cell {
-      min-width: 120px;
+      min-width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     sp-table-cell {
       word-break: break-word;
-      min-width: 120px;
+      min-width: 150px;
     }
 
     sp-table-cell ul {
@@ -199,6 +210,9 @@ export class JSONView extends LitElement {
 
   async connectedCallback() {
     super.connectedCallback();
+
+    const lang = getLanguage();
+    this.languageDict = await fetchLanguageDict(undefined, lang);
 
     try {
       const url = new URL(window.location.href).searchParams.get('url');
@@ -260,7 +274,7 @@ export class JSONView extends LitElement {
           <path d="M192 179H163C160.3 179.2 157.9 177.5 157 175L126 103C126 102.4 125.6 102 125 102C124.4 102 124 102.4 124 103L104 149C104 150.1 104.9 151 106 151H127C128.3 150.9 129.6 151.7 130 153L139 174C139.6 176.1 138.4 178.3 136.2 178.9C136.1 178.9 136 178.9 136 179H59C56.8 178.5 55.5 176.4 55.9 174.2C55.9 174.1 55.9 174 56 174L105 57C106.1 54.7 108.4 53.1 111 53H139C141.6 53.1 143.9 54.7 145 57L195 174C195.6 176.1 194.4 178.3 192.2 178.9C192.2 179 192.1 179 192 179Z" fill="#FA0F00"/>
         </svg>  
         <h1>${searchParams.get('title')}</h1>
-        <sp-search @input=${this.onSearch}></sp-search>
+        <sp-search @input=${this.onSearch} placeholder=${i18n(this.languageDict, 'search')}></sp-search>
         <button variant="primary" @click=${this.onCloseView}><sp-icon-close></sp-icon-close></button>
       </div>
     `;
@@ -331,8 +345,8 @@ export class JSONView extends LitElement {
     } else {
       const noResults = `
         <sp-illustrated-message
-            heading="No Results Found"
-            description="Try updating your search"
+            heading=${i18n(this.languageDict, 'no_results')}
+            description=${i18n(this.languageDict, 'no_results_subheading')}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="99.039" height="94.342">
             <g fill="none" strokeLinecap="round" strokeLinejoin="round" >
@@ -487,18 +501,19 @@ export class JSONView extends LitElement {
 
   render() {
     const filteredCount = this.filteredData?.data?.length
-      ?? Object.values(this.filteredData)[this.selectedTabIndex].data.length
+      ?? Object.values(this.filteredData || {})[this.selectedTabIndex]?.data.length
       ?? 0;
 
-    const total = this.originalData.total
-      ?? Object.values(this.originalData)[this.selectedTabIndex].total;
+    const total = this.originalData?.total
+      ?? Object.values(this.originalData || {})[this.selectedTabIndex]?.total
+      ?? 0;
 
     return html`
       <theme-wrapper>
         <div class="container">
           ${this.renderData()}
           <div class="stats">
-            <p>Showing ${filteredCount} results of ${total}</p>
+            <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
           </div>
         </div>
       </theme-wrapper>

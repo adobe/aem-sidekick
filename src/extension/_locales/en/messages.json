@@ -612,5 +612,17 @@
     },
     "login_wait": {
       "message": "Please sign in..."
+    },
+    "json_results_stat": {
+      "message": "Showing $1 of $2 results"
+    },
+    "search": {
+      "message": "Search"
+    },
+    "no_results": {
+      "message": "No Results Found"
+    },
+    "no_results_subheading": {
+      "message": "Try refining your search term"
     }
 }
