@@ -130,7 +130,7 @@ describe('Plugin action bar', () => {
 
       // Should fallback to id for label if title not provided
       const assetLibraryPlugin = recursiveQuery(sidekick, '.asset-library');
-      expect(assetLibraryPlugin.textContent.trim()).to.equal('asset-library');
+      expect(assetLibraryPlugin.textContent.trim()).to.equal('Asset Library');
     });
 
     it('editor - w/unpinned plugin', async () => {
