@@ -18,6 +18,7 @@ import {
   defaultConfigJSON,
   defaultConfigJSONWithHost,
   defaultConfigJSONWithPlugins,
+  defaultConfigJSONWithUnpinnedPlugin,
   defaultSharepointStatusResponse,
   defaultGdriveStatusResponse,
   defaultDirectorySharepointStatusResponse,
@@ -52,6 +53,14 @@ export const mockFetchConfigWithPluginsJSONSuccess = (overrides = {}) => fetchMo
   status: 200,
   body: {
     ...defaultConfigJSONWithPlugins,
+    ...overrides,
+  },
+}, { overwriteRoutes: true });
+
+export const mockFetchConfigWithUnpinnedPluginJSONSuccess = (overrides = {}) => fetchMock.get(defaultConfigJSONUrl, {
+  status: 200,
+  body: {
+    ...defaultConfigJSONWithUnpinnedPlugin,
     ...overrides,
   },
 }, { overwriteRoutes: true });

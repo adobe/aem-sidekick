@@ -29,6 +29,7 @@ import {
   mockFetchStatusUnauthorized,
   mockFetchConfigWithPluginsJSONSuccess,
   mockFetchConfigWithoutPluginsJSONSuccess,
+  mockFetchConfigWithUnpinnedPluginJSONSuccess,
   mockFetchStatusSuccess,
   mockFetchConfigWithoutPluginsOrHostJSONSuccess,
 } from '../../../mocks/helix-admin.js';
@@ -129,7 +130,23 @@ describe('Plugin action bar', () => {
 
       // Should fallback to id for label if title not provided
       const assetLibraryPlugin = recursiveQuery(sidekick, '.asset-library');
-      expect(assetLibraryPlugin.textContent.trim()).to.equal('Asset Library');
+      expect(assetLibraryPlugin.textContent.trim()).to.equal('asset-library');
+    });
+
+    it('editor - w/unpinned plugin', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithUnpinnedPluginJSONSuccess();
+      mockSharepointEditorDocFetchStatusSuccess();
+      mockEditorAdminEnvironment(document, 'editor');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expectPluginCount(2);
+
+      expect(recursiveQuery(sidekick, '.unpinned-plugin')).to.equal(undefined);
     });
 
     it('isLive', async () => {
