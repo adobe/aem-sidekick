@@ -514,11 +514,12 @@ export class AppStore {
   /**
    * Opens a new page. Abstracted for testing.
    * @param {string} url The URL to open
+   * @param {string} [name] The window name (optional)
    * @returns {Window} The window object
    */
   // istanbul ignore next 3
-  openPage(url) {
-    return window.open(url);
+  openPage(url, name) {
+    return window.open(url, name);
   }
 
   /**
@@ -896,7 +897,7 @@ export class AppStore {
 
     // switch or open env
     if (open || this.isEditor()) {
-      window.open(envUrl, open
+      this.openPage(envUrl, open
         ? '' : `hlx-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
       this.hideWait();
     } else {
