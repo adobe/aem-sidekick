@@ -181,10 +181,11 @@ export class AppStore {
       if (plugins && Array.isArray(plugins)) {
         plugins.forEach((cfg, i) => {
           const {
-            id,
-            title,
+            id = `custom-plugin-${i}`,
+            title = id,
             titleI18n,
             url,
+            pinned,
             passConfig,
             passReferrer,
             isPalette,
@@ -225,10 +226,10 @@ export class AppStore {
             // assemble plugin config
           const plugin = {
             custom: true,
-            id: id || `custom-plugin-${i}`,
+            id,
             condition,
             button: {
-              text: (titleI18n && titleI18n[lang]) || title || '',
+              text: (titleI18n && titleI18n[lang]) || title,
               action: () => {
                 if (url) {
                   const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
@@ -259,6 +260,7 @@ export class AppStore {
               },
               isDropdown: isContainer,
             },
+            pinned,
             container: containerId,
             appStore: this,
           };
