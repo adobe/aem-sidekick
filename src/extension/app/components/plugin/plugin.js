@@ -61,8 +61,7 @@ export class SidekickPlugin {
    * @returns {boolean} True if plugin's condition is met, else false
    */
   checkCondition(store) {
-    return typeof this.config.condition === 'function'
-      ? this.config.condition(store) : true;
+    return !!this.config.condition?.(store);
   }
 
   /**
