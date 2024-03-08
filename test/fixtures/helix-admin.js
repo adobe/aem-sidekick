@@ -41,7 +41,6 @@ export const defaultConfigJSONWithPlugins = {
   plugins: [
     {
       id: 'asset-library',
-      title: 'Asset Library',
       environments: [
         'edit',
       ],
