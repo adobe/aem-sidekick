@@ -169,6 +169,12 @@ export class SiteStore {
   authTokenExpiry;
 
   /**
+   * Keeps a list of any sidekick configs that match the current URL
+   * @type {Array}
+  */
+  configMatches = [];
+
+  /**
    * @param {AppStore} appStore
    */
   constructor(appStore) {
@@ -240,6 +246,8 @@ export class SiteStore {
     const stdInnerHost = hostPrefix ? `${hostPrefix}.${domain}.page` : null;
     const stdOuterHost = hostPrefix ? `${hostPrefix}.${domain}.live` : null;
     const devUrl = new URL(devOrigin);
+
+    this.configMatches = JSON.parse(window.sessionStorage.getItem('hlx-sk-project-matched')) || [];
 
     // default views
     this.views = [

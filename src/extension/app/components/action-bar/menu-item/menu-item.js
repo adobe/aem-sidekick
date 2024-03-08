@@ -51,6 +51,19 @@ class MenuItem extends SPMenuItem {
     }
 
     return html`
+      ${this.selected
+        ? html`
+              <sp-icon-checkmark100
+                  id="selected"
+                  class="spectrum-UIIcon-Checkmark100 
+                    icon 
+                    checkmark
+                    ${this.hasIcon
+                      ? 'checkmark--withAdjacentIcon'
+                      : ''}"
+              ></sp-icon-checkmark100>
+          `
+        : html``}
       <slot name="icon"></slot>
       <slot name="avatar"></slot>
       <div id="label">

@@ -10,12 +10,14 @@
  * governing permissions and limitations under the License.
  */
 
+import { createConfigSwitcherPlugin } from './configSwitcher/configSwitcher.js';
 import { createEnvPlugin } from './env/env.js';
 import { createPreviewPlugin } from './preview/preview.js';
 import { createReloadPlugin } from './reload/reload.js';
 import { createPublishPlugin } from './publish/publish.js';
 
 export const pluginFactory = (() => ({
+  createConfigSwitcherPlugin,
   createEnvPlugin,
   createPreviewPlugin,
   createReloadPlugin,

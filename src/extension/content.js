@@ -68,6 +68,7 @@
 
         // Store the selected config in session storage
         window.sessionStorage.setItem('hlx-sk-project', JSON.stringify(config));
+        window.sessionStorage.setItem('hlx-sk-project-matched', JSON.stringify(configMatches));
 
         loadSidekick(config);
 
@@ -98,6 +99,9 @@
 
         // First check if there is only one config match, if so load it
         if (configMatches.length === 1) {
+          // Reset any config mataches stored in session storage
+          window.sessionStorage.setItem('hlx-sk-project-matched', JSON.stringify([]));
+
           // load sidekick
           const [config] = configMatches;
           loadSidekick(config);

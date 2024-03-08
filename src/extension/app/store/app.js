@@ -156,11 +156,13 @@ export class AppStore {
     this.corePlugins = {};
 
     if (this.siteStore.authorized) {
+      const configSwitcher = pluginFactory.createConfigSwitcherPlugin();
       const envPlugin = pluginFactory.createEnvPlugin();
       const previewPlugin = pluginFactory.createPreviewPlugin(this);
       const reloadPlugin = pluginFactory.createReloadPlugin(this);
       const publishPlugin = pluginFactory.createPublishPlugin(this);
 
+      this.corePlugins[configSwitcher.id] = configSwitcher;
       this.corePlugins[envPlugin.id] = envPlugin;
       this.corePlugins[previewPlugin.id] = previewPlugin;
       this.corePlugins[reloadPlugin.id] = reloadPlugin;

@@ -34,6 +34,6 @@ export const style = css`
   }
 
   action-bar-picker sp-menu-item {
-    padding-inline-start: 12px;
+    min-width: 140px;
   }
 `;

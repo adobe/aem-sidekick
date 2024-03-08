@@ -10,30 +10,18 @@
  * governing permissions and limitations under the License.
  */
 
-import { css } from 'lit';
+/**
+ * @typedef {import('@Types').CorePlugin} CorePlugin
+ */
 
-export const style = css`
-  action-bar-picker {
-    width: auto;
-  }
-
-  action-bar-picker .heading {
-    color: var(--spectrum-menu-item-description-color-default);
-    font-size: 12px;
-    line-height: 130%;
-    padding-left: 12px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-  }
-
-  action-bar-picker sp-menu-divider {
-    margin-top: 6px;
-    margin-bottom: 4px;
-    margin-left: -8px;
-    margin-right: -8px;
-  }
-
-  action-bar-picker sp-menu-item {
-    padding-inline-start: 12px;
-  }
-`;
+/**
+ * Creates the config switcher plugin
+ * @returns {CorePlugin} The config switcher plugin
+ */
+export function createConfigSwitcherPlugin() {
+  return {
+    id: 'config-switcher',
+    condition: (store) => (store.isAdmin() || store.isEditor())
+      && store.siteStore.configMatches.length > 1,
+  };
+}
