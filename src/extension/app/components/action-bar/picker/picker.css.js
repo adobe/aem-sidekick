@@ -62,9 +62,9 @@ export const style = css`
   }
 
   @media (prefers-color-scheme: light) {
-    :host(:not(.env-edit)[class]) #button #label,
-    :host(:not(.env-edit)[class]) #button sp-icon-chevron100,
-    :host(:not(.env-edit)[class]) #button:hover sp-icon-chevron100  {
+    :host(:not(.env-edit, .config-switcher)[class]) #button #label,
+    :host(:not(.env-edit, .config-switcher)[class]) #button sp-icon-chevron100,
+    :host(:not(.env-edit, .config-switcher)[class]) #button:hover sp-icon-chevron100  {
       color: var(--spectrum-white);
     }
 
