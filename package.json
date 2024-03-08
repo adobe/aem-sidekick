@@ -78,7 +78,7 @@
     "@web/test-runner": "0.18.0",
     "@web/test-runner-commands": "0.9.0",
     "ajv": "8.12.0",
-    "archiver": "6.0.2",
+    "archiver": "7.0.0",
     "babel-plugin-istanbul": "6.1.1",
     "chokidar": "3.6.0",
     "codecov": "3.8.3",
