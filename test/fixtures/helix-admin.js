@@ -41,7 +41,6 @@ export const defaultConfigJSONWithPlugins = {
   plugins: [
     {
       id: 'asset-library',
-      title: 'Asset Library',
       environments: [
         'edit',
       ],
@@ -106,6 +105,18 @@ export const defaultConfigJSONWithPlugins = {
       environments: ['edit'],
       url: 'https://main--aem-boilerplate--adobe.hlx.page/tools/loc',
       isPalette: true,
+    },
+  ],
+};
+
+export const defaultConfigJSONWithUnpinnedPlugin = {
+  ...defaultConfigJSONWithHost,
+  plugins: [
+    {
+      id: 'not-pinned',
+      title: 'Pin me',
+      pinned: false,
+      event: 'foo',
     },
   ],
 };

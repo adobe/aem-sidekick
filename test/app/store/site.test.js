@@ -159,7 +159,6 @@ describe('Test Site Store', () => {
       const firstPlugin = appStore.siteStore.plugins[0];
       expect(firstPlugin).to.deep.equal({
         id: 'asset-library',
-        title: 'Asset Library',
         environments: [
           'edit',
         ],
