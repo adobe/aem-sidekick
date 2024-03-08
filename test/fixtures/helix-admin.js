@@ -113,10 +113,11 @@ export const defaultConfigJSONWithUnpinnedPlugin = {
   ...defaultConfigJSONWithHost,
   plugins: [
     {
-      id: 'not-pinned',
       title: 'Pin me',
       pinned: false,
       event: 'foo',
+      excludePaths: ['/**'],
+      includePaths: ['**/HelixProjects/**'],
     },
   ],
 };

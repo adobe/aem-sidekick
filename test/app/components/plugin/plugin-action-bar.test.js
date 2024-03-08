@@ -146,7 +146,7 @@ describe('Plugin action bar', () => {
 
       expectPluginCount(2);
 
-      expect(recursiveQuery(sidekick, '.unpinned-plugin')).to.equal(undefined);
+      expect(recursiveQuery(sidekick, '.custom-plugin-0')).to.equal(undefined);
     });
 
     it('isLive', async () => {
