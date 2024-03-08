@@ -251,7 +251,7 @@ export class AppStore {
                     }));
                   } else {
                     // open url in new window
-                    window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
+                    this.openPage(target.toString(), `hlx-sk-${id || `custom-plugin-${i}`}`);
                   }
                 } else if (eventName) {
                   // fire custom event
@@ -503,8 +503,7 @@ export class AppStore {
    */
   reloadPage(newTab) {
     if (newTab) {
-      // istanbul ignore next
-      window.open(window.location.href);
+      this.openPage(window.location.href);
     } else {
       // istanbul ignore next
       window.location.reload();
