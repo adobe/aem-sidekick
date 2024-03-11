@@ -38,7 +38,9 @@ window.chrome = chromeMock;
 
 describe('Preview plugin', () => {
   let sidekick;
+  let sandbox;
   beforeEach(async () => {
+    sandbox = sinon.createSandbox();
     mockFetchEnglishMessagesSuccess();
   });
 
@@ -49,6 +51,7 @@ describe('Preview plugin', () => {
     }
     fetchMock.reset();
     restoreEnvironment(document);
+    sandbox.restore();
   });
 
   describe('switching between environments', () => {
@@ -56,10 +59,10 @@ describe('Preview plugin', () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsOrHostJSONSuccess();
       mockHelixEnvironment(document, 'preview');
-      const publishStub = sinon.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
-      const switchEnvStub = sinon.stub(appStore, 'switchEnv').returns();
-      const showWaitSpy = sinon.spy(appStore, 'showWait');
-      const hideWaitSpy = sinon.spy(appStore, 'hideWait');
+      const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
+      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').returns();
+      const showWaitSpy = sandbox.spy(appStore, 'showWait');
+      const hideWaitSpy = sandbox.spy(appStore, 'hideWait');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -70,28 +73,22 @@ describe('Preview plugin', () => {
       expect(publishPlugin.textContent.trim()).to.equal('Publish');
 
       publishPlugin.click();
-
-      await waitUntil(() => publishStub.calledOnce === true);
+      await waitUntil(() => publishStub.calledOnce === true, undefined, { timeout: 2000 });
 
       expect(publishStub.calledOnce).to.be.true;
       expect(switchEnvStub.calledOnce).to.be.true;
       expect(showWaitSpy.calledOnce).to.be.true;
       expect(hideWaitSpy.calledOnce).to.be.true;
-
-      publishStub.restore();
-      switchEnvStub.restore();
-      showWaitSpy.restore();
-      hideWaitSpy.restore();
     });
 
     it('publish from preview - failure', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
       mockHelixEnvironment(document, 'preview');
-      const publishStub = sinon.stub(appStore, 'publish').resolves({ ok: false, status: 500 });
-      const showWaitSpy = sinon.spy(appStore, 'showWait');
+      const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: false, status: 500 });
+      const showWaitSpy = sandbox.spy(appStore, 'showWait');
 
-      const modalSpy = sinon.spy();
+      const modalSpy = sandbox.spy();
       EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
@@ -112,9 +109,6 @@ describe('Preview plugin', () => {
       expect(modalSpy.calledTwice).to.be.true;
       expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.WAIT);
       expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
-
-      publishStub.restore();
-      showWaitSpy.restore();
     });
   });
 });
