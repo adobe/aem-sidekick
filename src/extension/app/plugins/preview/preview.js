@@ -23,6 +23,7 @@
 
 import { SidekickPlugin } from '../../components/plugin/plugin.js';
 import { EVENTS, MODALS } from '../../constants.js';
+import { newTab } from '../../utils/browser.js';
 import { EventBus } from '../../utils/event-bus.js';
 
 /**
@@ -44,7 +45,7 @@ export function createPreviewPlugin(appStore) {
     condition: (store) => store.isEditor(),
     button: {
       text: appStore.i18n('preview'),
-      action: async () => {
+      action: async (evt) => {
         const { status, location } = appStore;
         if (status.edit && status.edit.sourceLocation
             && status.edit.sourceLocation.startsWith('onedrive:')
@@ -88,7 +89,7 @@ export function createPreviewPlugin(appStore) {
             previewPath: status.webPath,
             previewTimestamp: Date.now(),
           }));
-          appStore.reloadPage();
+          appStore.reloadPage(newTab(evt));
         } else {
           appStore.updatePreview();
         }
