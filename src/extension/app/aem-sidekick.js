@@ -31,6 +31,7 @@ export class AEMSidekick extends MobxLitElement {
 
     // eslint-disable-next-line no-unused-vars
     this.addEventListener('contextloaded', (data) => {
+      this.requestUpdate();
       log.debug('console was loaded', data);
     });
   }
