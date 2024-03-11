@@ -1,3 +1,40 @@
+# [1.9.0](https://github.com/adobe/aem-sidekick/compare/v1.8.0...v1.9.0) (2024-3-10)
+
+
+### Bug Fixes
+
+* address comments ([2b42e57](https://github.com/adobe/aem-sidekick/commit/2b42e571ee0687ace04e884f9003a9a21741c9c4))
+* adjust auth'd ux + tests ([629b926](https://github.com/adobe/aem-sidekick/commit/629b9268c24cf26952933278d177abbcaf0ebea8))
+* another attempt to fix flaky preview -> live ([0019a51](https://github.com/adobe/aem-sidekick/commit/0019a51859b0ec840831e2bced62b7058c067b41))
+* assume folder if sharepoint url without query param ([b11b91b](https://github.com/adobe/aem-sidekick/commit/b11b91b1f2fafa5a9f17c8dc190817a51c39ffba))
+* attempt to fix previewing from sharepoint editor test ([3238908](https://github.com/adobe/aem-sidekick/commit/3238908deb5a39a1f3b7be4c28146e78c21f6a48))
+* bump codecov version ([c3c9f49](https://github.com/adobe/aem-sidekick/commit/c3c9f492b08f49755ae6e231a9c7ab232b87b187))
+* cleanup ([202d843](https://github.com/adobe/aem-sidekick/commit/202d843b212c7f7a4cbc4a4dd7d5c68e9db920bc))
+* container button color in light mode ([82f5288](https://github.com/adobe/aem-sidekick/commit/82f5288339e31a05ef3f6c8dadf87955ce1537f3))
+* **deps:** update external fixes ([c7c4a4b](https://github.com/adobe/aem-sidekick/commit/c7c4a4bdc092be9b7a70c7ba4cd648a867545a59))
+* first login tests ([39ff039](https://github.com/adobe/aem-sidekick/commit/39ff039b09613a39dd08706ba65da35cae27d927))
+* fix not authorized test ([346f763](https://github.com/adobe/aem-sidekick/commit/346f7639d5f4ccfca1f4a2440f115935cd655c5c))
+* flaky test ([5ca55f8](https://github.com/adobe/aem-sidekick/commit/5ca55f8f405a9a884cfca8aa5e2b4e393a801751))
+* increase waitUntil timeout on preview -> live envSwitch ([c988925](https://github.com/adobe/aem-sidekick/commit/c988925b80a5638204ca90b08a843ab1b37979f4))
+* more tests ([a43f1c1](https://github.com/adobe/aem-sidekick/commit/a43f1c1bf3e214ed5fd3f418f60bc4aa6918b53a))
+* more tests ([8203c7a](https://github.com/adobe/aem-sidekick/commit/8203c7a7144986e0bbdc5a94f10dab322945e913))
+* newline at end ([d15571f](https://github.com/adobe/aem-sidekick/commit/d15571f08c9b93015080ba242df55612268c90c9))
+* open edit in new tab, fix keyboard hold ([17fce3f](https://github.com/adobe/aem-sidekick/commit/17fce3fa09791ff031cf24e9c078f67d41d57bee))
+* rename defaultPlugin to corePlugin ([8f5b8e8](https://github.com/adobe/aem-sidekick/commit/8f5b8e89687f93ba9061382fe82a183a8d855b00))
+* reset swc package versions and ignore in renovate ([0175877](https://github.com/adobe/aem-sidekick/commit/0175877b5d29e58a0e5509314bc51cefbb1ffc57))
+* switchEnv test ([3a367d4](https://github.com/adobe/aem-sidekick/commit/3a367d4a2878006fead7c94a91c75c1648e75565))
+* switchEnv test ([3c12ad9](https://github.com/adobe/aem-sidekick/commit/3c12ad9f5b71983d27210630debd1f24f77790f3))
+* test coverage ([2ca1e42](https://github.com/adobe/aem-sidekick/commit/2ca1e4230f1899916eea747d27d56ad1b30fddae))
+* use sinon sandbox ([879a894](https://github.com/adobe/aem-sidekick/commit/879a89473bca9be2bddf1552a8625d565198abe7))
+* validate session, other tweaks + custom icons ([cb63c54](https://github.com/adobe/aem-sidekick/commit/cb63c545a0c1f792e4ae61345f40734c62625a04))
+* validateSession test ([8865286](https://github.com/adobe/aem-sidekick/commit/886528675f40d120a872f00693a29cec4d0c8e37))
+* version update for other packages ([a33d768](https://github.com/adobe/aem-sidekick/commit/a33d768d3926ace962220d04a39380928d5f729d))
+
+
+### Features
+
+* login/logout support ([2ad3293](https://github.com/adobe/aem-sidekick/commit/2ad329394b2c29a3d818f5e5444d3d34707d115d))
+
 # [1.8.0](https://github.com/adobe/aem-sidekick/compare/v1.7.0...v1.8.0) (2024-2-8)
 
 

@@ -26,6 +26,7 @@ import {
 } from '../constants.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
 import { SidekickPlugin } from '../components/plugin/plugin.js';
+import { KeyboardListener } from '../utils/keyboard.js';
 
 /**
  * The sidekick configuration object type
@@ -97,8 +98,15 @@ export class AppStore {
    */
   @observable accessor customPlugins;
 
+  /**
+   * Keyboards listener
+   * @type {KeyboardListener}
+   */
+  keyboardListener;
+
   constructor() {
     this.siteStore = new SiteStore(this);
+    this.keyboardListener = new KeyboardListener();
   }
 
   /**
