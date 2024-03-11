@@ -16,18 +16,10 @@ import { html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { appStore } from '../../store/app.js';
+import { getConfig } from '../../../config.js';
 
 /**
- * @typedef {import('@Types').CorePlugin} CorePlugin
- */
-
-/**
- * @typedef {import('../action-bar/picker/picker.js').Picker} Picker
- */
-
-/**
- * @typedef ContainerPlugin
- * @property {Record<string, CorePlugin>} [children] The child plugins of the container
+ * @typedef {import('../plugin/plugin.js').SidekickPlugin} SidekickPlugin
  */
 
 /**
@@ -56,6 +48,17 @@ export class PluginActionBar extends MobxLitElement {
     }
   `;
 
+  #userPrefs = null;
+
+  /**
+   * Loads the user preferences for plugins in this environment.
+   */
+  async #loadUserPrefs() {
+    const pluginSettings = await getConfig('sync', 'pluginPrefs') || {};
+    this.#userPrefs = pluginSettings[appStore.getEnv()] || {};
+    this.requestUpdate();
+  }
+
   /**
    * Render the core and custom plugins
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
@@ -67,7 +70,8 @@ export class PluginActionBar extends MobxLitElement {
       ...corePlugins,
       ...customPlugins,
     ]
-      .filter((plugin) => plugin.checkCondition(appStore) && plugin.isPinned())
+      .filter((plugin) => plugin.checkCondition(appStore)
+        && plugin.isPinned(this.#userPrefs[plugin.id]))
       .map((plugin) => plugin.render());
 
     return renderedPlugins.length > 0
@@ -116,6 +120,13 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   render() {
+    if (!this.#userPrefs) {
+      // load user prefs first
+      this.#loadUserPrefs();
+      return html`
+        <action-bar></action-bar>
+      `;
+    }
     return appStore.initialized ? html`
       <action-bar>
         ${this.renderPlugins()}

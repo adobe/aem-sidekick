@@ -169,6 +169,12 @@ export class SiteStore {
   authTokenExpiry;
 
   /**
+   * Has the store been initialized?
+   * @type {boolean}
+   */
+  ready = false;
+
+  /**
    * @param {AppStore} appStore
    */
   constructor(appStore) {
@@ -275,6 +281,7 @@ export class SiteStore {
     this.project = project;
     this.devUrl = devUrl;
     this.lang = lang || getLanguage();
+    this.ready = true;
   }
 
   /**

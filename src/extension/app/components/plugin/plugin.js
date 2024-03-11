@@ -68,10 +68,20 @@ export class SidekickPlugin {
 
   /**
    * Returns the pinned state of the plugin.
+   * @param {Object} [userPrefs] The user preferences for this plugin
    * @returns {boolean} True if plugin is pinned, else false
    */
-  isPinned() {
-    return typeof this.config.pinned === 'boolean' ? this.config.pinned : true;
+  isPinned(userPrefs = {}) {
+    if (typeof userPrefs.pinned === 'boolean') {
+      // use user preference if defined
+      return userPrefs.pinned;
+    } else if (typeof this.config.pinned === 'boolean') {
+      // use default from config if defined
+      return this.config.pinned;
+    } else {
+      // assume pinned if no user preference or config default
+      return true;
+    }
   }
 
   /**

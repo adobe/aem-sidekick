@@ -484,6 +484,25 @@ export class AppStore {
   }
 
   /**
+   * Returns the currebnt environment
+   * @returns {string} the current environment
+   */
+  getEnv() {
+    return [
+      'isEditor',
+      'isPreview',
+      'isLive',
+      'isProd',
+      'isAdmin',
+      'isDev',
+    ]
+      .filter((method) => this[method]())
+      .map((method) => method.substring(2)) // cut off 'is'
+      .join('')
+      .toLowerCase();
+  }
+
+  /**
    * Displays a wait modal
    * @param {string} [message] The message to display
    */
