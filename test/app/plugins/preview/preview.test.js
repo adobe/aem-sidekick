@@ -47,7 +47,7 @@ describe('Preview plugin', () => {
   afterEach(() => {
     const { body } = document;
     if (body.contains(sidekick)) {
-      document.body.removeChild(sidekick);
+      body.removeChild(sidekick);
     }
     fetchMock.reset();
     sandbox.restore();
