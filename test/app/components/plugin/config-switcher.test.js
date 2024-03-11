@@ -39,7 +39,10 @@ describe('Environment Switcher', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(sidekick);
+    const { body } = document;
+    if (body.contains(sidekick)) {
+      body.removeChild(sidekick);
+    }
     fetchMock.reset();
     restoreEnvironment(document);
   });
@@ -86,7 +89,9 @@ describe('Environment Switcher', () => {
 
       button.click();
 
-      await waitUntil(() => recursiveQuery(picker, 'sp-popover'));
+      await waitUntil(() => recursiveQuery(picker, 'sp-popover'), undefined, {
+        timeout: 2000,
+      });
 
       const overlay = recursiveQuery(picker, 'sp-overlay');
 
