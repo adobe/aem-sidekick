@@ -35,7 +35,7 @@ import { EventBus } from '../../../src/extension/app/utils/event-bus.js';
 import { EVENTS, MODALS } from '../../../src/extension/app/constants.js';
 import { mockHelixEnvironment, restoreEnvironment } from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
-import { defaultSharepointProfileResponse } from '../../fixtures/helix-admin.js';
+import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -391,6 +391,111 @@ describe('Test App Store', () => {
         variant: 'info',
         timeout: 2000,
       });
+    });
+  });
+
+  describe('switchEnv', async () => {
+    let sandbox;
+    let openPage;
+    let loadPage;
+    let instance;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+      sandbox.stub(window, 'fetch').resolves(new Response(JSON.stringify({
+        webPath: '/somepath',
+      })));
+      instance = appStore;
+      instance.siteStore = {
+        owner: 'adobe',
+        repo: 'aem-boilerplate',
+        ref: 'main',
+        innerHost: new URL(defaultSharepointStatusResponse.preview.url).hostname,
+        outerHost: new URL(defaultSharepointStatusResponse.live.url).hostname,
+        devUrl: new URL('https://localhost:3000'),
+      };
+
+      // Mock other functions
+      sandbox.stub(instance, 'fireEvent');
+
+      openPage = sandbox.spy();
+      loadPage = sandbox.spy();
+      sandbox.stub(instance, 'openPage').callsFake(openPage);
+      sandbox.stub(instance, 'loadPage').callsFake(loadPage);
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('switches from editor to preview', async () => {
+      instance.location = new URL(defaultSharepointStatusResponse.edit.url);
+      instance.status = defaultSharepointStatusResponse;
+      await instance.switchEnv('preview');
+      expect(openPage.calledWith(defaultSharepointStatusResponse.preview.url)).to.be.true;
+    });
+
+    it('switches from preview to editor', async () => {
+      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
+      instance.status = defaultSharepointStatusResponse;
+      await instance.switchEnv('edit');
+      expect(loadPage.calledWith(defaultSharepointStatusResponse.edit.url)).to.be.true;
+    });
+
+    it('switches from live to preview', async () => {
+      instance.location = new URL(defaultSharepointStatusResponse.live.url);
+      instance.status = defaultSharepointStatusResponse;
+      await instance.switchEnv('preview');
+      expect(loadPage.calledWith(defaultSharepointStatusResponse.preview.url)).to.be.true;
+    });
+
+    it('switches from preview to live opening a new window', async () => {
+      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
+      instance.status = defaultSharepointStatusResponse;
+      await instance.switchEnv('live', true);
+      expect(openPage.calledWith(defaultSharepointStatusResponse.live.url)).to.be.true;
+    });
+
+    it('switches from preview to dev', async () => {
+      instance.location = new URL(defaultSharepointStatusResponse.live.url);
+      instance.status = defaultSharepointStatusResponse;
+      await instance.switchEnv('dev');
+      const devUrl = new URL(
+        new URL(defaultSharepointStatusResponse.preview.url).pathname,
+        'https://localhost:3000',
+      );
+      expect(loadPage.calledWith(devUrl.href)).to.be.true;
+    });
+
+    it('switches to live instead of prod', async () => {
+      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
+      instance.status = defaultSharepointStatusResponse;
+      await instance.switchEnv('prod');
+      expect(loadPage.calledWith(defaultSharepointStatusResponse.live.url)).to.be.true;
+    });
+
+    it('aborts on invaid target env', async () => {
+      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
+      instance.status = defaultSharepointStatusResponse;
+      await instance.switchEnv('foo');
+      expect(openPage.calledOnce).to.be.false;
+      expect(loadPage.calledOnce).to.be.false;
+    });
+
+    it('aborts on status error', async () => {
+      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
+      instance.status.error = 'some error occurred';
+      await instance.switchEnv('live');
+      expect(openPage.calledOnce).to.be.false;
+      expect(loadPage.calledOnce).to.be.false;
+    });
+
+    it('retries if status not ready yet', async () => {
+      const consoleSpy = sandbox.spy(console, 'log');
+      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
+      instance.status = {};
+      await instance.switchEnv('live');
+      expect(consoleSpy.calledWith('not ready yet, trying again in a second ...')).to.be.true;
     });
   });
 
