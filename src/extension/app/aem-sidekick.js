@@ -31,11 +31,16 @@ export class AEMSidekick extends MobxLitElement {
 
     // eslint-disable-next-line no-unused-vars
     this.addEventListener('contextloaded', (data) => {
+      this.requestUpdate();
       log.debug('console was loaded', data);
     });
   }
 
   render() {
+    if (!appStore.siteStore?.ready) {
+      // wait until site store is ready
+      return html``;
+    }
     return html`
       <theme-wrapper>
         <plugin-action-bar></plugin-action-bar>

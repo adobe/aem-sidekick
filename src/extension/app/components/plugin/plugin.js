@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Adobe. All rights reserved.
+ * Copyright 2024 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
 
 /* eslint-disable max-len */
 
-import { html, css } from 'lit';
+import { html } from 'lit';
 import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**
@@ -46,13 +46,15 @@ import { EXTERNAL_EVENTS } from '../../constants.js';
  * @param {CorePlugin|CustomPlugin} plugin The plugin configuration
  */
 export class SidekickPlugin {
-  static styles = css``;
+  /**
+   * @type {Object<string, SidekickPlugin>}
+   */
+  children = {};
 
   constructor(plugin) {
     this.disabled = false;
     this.config = plugin;
     this.id = plugin.id;
-    this.children = {};
   }
 
   /**
