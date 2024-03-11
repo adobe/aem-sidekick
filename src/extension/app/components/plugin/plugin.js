@@ -12,7 +12,7 @@
 
 /* eslint-disable max-len */
 
-import { html, css } from 'lit';
+import { html } from 'lit';
 import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**

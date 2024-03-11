@@ -60,6 +60,15 @@ export class PluginActionBar extends MobxLitElement {
   #userPrefs = null;
 
   /**
+   * Loads the user preferences for plugins in this environment.
+   */
+  async #loadUserPrefs() {
+    const pluginSettings = await getConfig('sync', 'pluginPrefs') || {};
+    this.#userPrefs = pluginSettings[appStore.getEnv()] || {};
+    this.requestUpdate();
+  }
+
+  /**
   * Are we ready to render?
   * @type {boolean}
   */
@@ -149,11 +158,18 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   render() {
-    return this.ready ? html`
+    if (!this.#userPrefs) {
+      // load user prefs first
+      this.#loadUserPrefs();
+      return html`
+        <action-bar></action-bar>
+      `;
+    }
+    return html`
       <action-bar>
         ${this.renderPlugins()}
         ${this.renderSystemPlugins()}
       </action-bar>
-    ` : '';
+    `;
   }
 }
