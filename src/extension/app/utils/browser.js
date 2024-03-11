@@ -15,6 +15,10 @@
  */
 
 /**
+ * @typedef {import('./keyboard.js').KeyboardListener} KeyboardListener
+ */
+
+/**
  * Returns the location of the current document.
  * @param {URL} url The url
  * @private
@@ -169,11 +173,15 @@ export function createTag(config) {
 /**
  * Determines whether to open a new tab or reuse the existing window.
  * @private
- * @param {KeyboardEvent} evt The event
+ * @param {KeyboardListener | PointerEvent} keyboard The keyboard state
  * @returns {boolean} true if a new tab should be opened, else false
  */
-export function newTab(evt) {
-  return evt.metaKey || evt.shiftKey || evt.which === 2;
+export function newTab(keyboard) {
+  if (keyboard instanceof PointerEvent) {
+    return keyboard.metaKey || keyboard.shiftKey || keyboard.which === 2;
+  }
+
+  return keyboard.keysPressed?.Meta || keyboard.keysPressed?.Shift || false;
 }
 
 /**
