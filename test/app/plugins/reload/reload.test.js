@@ -59,7 +59,10 @@ describe('Reload plugin', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(sidekick);
+    const { body } = document;
+    if (body.contains(sidekick)) {
+      body.removeChild(sidekick);
+    }
     fetchMock.reset();
     restoreEnvironment(document);
     sandbox.restore();

@@ -43,6 +43,7 @@ import './app/components/plugin/palette-container.js';
 import './app/components/plugin/palette-dialog/palette-dialog-wrapper.js';
 import './app/components/plugin/palette-dialog/palette-dialog.js';
 import './app/components/plugin/env-switcher/env-switcher.js';
+import './app/components/plugin/config-switcher/config-switcher.js';
 import './app/components/plugin/login/login.js';
 import './app/components/dialog/dialog.js';
 

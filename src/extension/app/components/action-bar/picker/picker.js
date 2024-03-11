@@ -37,6 +37,8 @@ export class Picker extends SPPicker {
           }}
           role=${this.listRole}
           size=${this.size}
+          .selects=${this.selects}
+          .selected=${this.value ? [this.value] : []}
           @sp-menu-item-added-or-updated=${this.shouldManageSelection}
         >
           <slot @slotchange=${this.shouldScheduleManageSelection}></slot>

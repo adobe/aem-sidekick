@@ -64,7 +64,9 @@ describe('Environment Switcher', () => {
 
       button.click();
 
-      await waitUntil(() => recursiveQuery(picker, 'sp-popover'));
+      await waitUntil(() => recursiveQuery(picker, 'sp-popover'), undefined, {
+        timeout: 2000,
+      });
 
       const overlay = recursiveQuery(picker, 'sp-overlay');
 

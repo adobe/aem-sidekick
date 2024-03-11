@@ -41,6 +41,7 @@ export class PluginActionBar extends MobxLitElement {
   static styles = css`
     action-bar sp-action-group {
       padding: 8px;
+      flex-wrap: nowrap;
     }
 
     action-bar sp-action-group.not-authorized {
@@ -65,6 +66,13 @@ export class PluginActionBar extends MobxLitElement {
   createCorePlugin(plugin) {
     if (typeof plugin.callback === 'function') {
       plugin.callback(appStore, plugin);
+    }
+
+    if (plugin.id === 'config-switcher' && plugin.condition(appStore)) {
+      return html`
+        <config-switcher></config-switcher>
+        <sp-divider size="s" vertical></sp-divider>
+      `;
     }
 
     if (plugin.id === 'env-switcher') {
