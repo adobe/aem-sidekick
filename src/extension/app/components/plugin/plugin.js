@@ -59,11 +59,10 @@ export class SidekickPlugin {
 
   /**
    * Checks the plugin's condition.
-   * @param {AppStore} store The app store
    * @returns {boolean} True if plugin's condition is met, else false
    */
-  checkCondition(store) {
-    return !!this.config.condition?.(store);
+  checkCondition() {
+    return !!this.config.condition?.(this.config.appStore);
   }
 
   /**
@@ -138,7 +137,7 @@ export class SidekickPlugin {
     }
 
     const childConfigs = Object.values(this.children)
-      .filter((childPlugin) => childPlugin.checkCondition(config.appStore)
+      .filter((childPlugin) => childPlugin.checkCondition()
         && childPlugin.isPinned())
       .map((childPlugin) => childPlugin.config);
 

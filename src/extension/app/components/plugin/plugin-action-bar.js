@@ -70,7 +70,7 @@ export class PluginActionBar extends MobxLitElement {
       ...corePlugins,
       ...customPlugins,
     ]
-      .filter((plugin) => plugin.checkCondition(appStore)
+      .filter((plugin) => plugin.checkCondition()
         && plugin.isPinned(this.#userPrefs[plugin.id]))
       .map((plugin) => plugin.render());
 
