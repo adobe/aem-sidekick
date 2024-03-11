@@ -499,18 +499,6 @@ export class AppStore {
   }
 
   /**
-   * Reloads the current page. Abstracted for testing.
-   */
-  reloadPage(newTab) {
-    if (newTab) {
-      this.openPage(window.location.href);
-    } else {
-      // istanbul ignore next
-      window.location.reload();
-    }
-  }
-
-  /**
    * Opens a new page. Abstracted for testing.
    * @param {string} url The URL to open
    * @param {string} [name] The window name (optional)
@@ -519,6 +507,27 @@ export class AppStore {
   // istanbul ignore next 3
   openPage(url, name) {
     return window.open(url, name);
+  }
+
+  /**
+   * Loads the provided URL in the current window. Abstracted for testing.
+   * @param {string} url The URL to load
+   */
+  // istanbul ignore next 3
+  loadPage(url) {
+    window.location.href = url;
+  }
+
+  /**
+   * Reloads the current page. Abstracted for testing.
+   * @param {boolean} [newTab] Open current page in a new tab
+   */
+  reloadPage(newTab) {
+    if (newTab) {
+      this.openPage(window.location.href);
+    } else {
+      this.loadPage(window.location.href);
+    }
   }
 
   /**
@@ -873,7 +882,10 @@ export class AppStore {
     if (!status.webPath) {
       // eslint-disable-next-line no-console
       console.log('not ready yet, trying again in a second ...');
-      window.setTimeout(() => this.switchEnv(targetEnv, open), 1000);
+      window.setTimeout(
+        // istanbul ignore next
+        () => this.switchEnv(targetEnv, open), 1000,
+      );
       return;
     }
     const envOrigin = targetEnv === 'dev' ? siteStore.devUrl.origin : `https://${envHost}`;
@@ -893,21 +905,19 @@ export class AppStore {
     //   customViewUrl.searchParams.set('path', status.webPath);
     //   envUrl = customViewUrl;
     // }
-
     // switch or open env
     if (open || this.isEditor()) {
       this.openPage(envUrl, open
         ? '' : `hlx-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
       this.hideWait();
     } else {
-      window.location.href = envUrl;
+      this.loadPage(envUrl);
     }
-    // make sure wait modal is hidden eventually
-    window.setTimeout(() => this.hideWait(), 2000);
     this.fireEvent(EXTERNAL_EVENTS.EVIRONMENT_SWITCHED, {
       sourceUrl: href,
       targetUrl: envUrl,
     });
+    this.hideWait();
   }
 
   /**
