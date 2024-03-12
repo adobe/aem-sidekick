@@ -13,7 +13,8 @@
 /* eslint-disable max-len */
 
 import { html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
+import { action } from 'mobx';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { appStore } from '../../store/app.js';
 import { getConfig } from '../../../config.js';
@@ -48,15 +49,36 @@ export class PluginActionBar extends MobxLitElement {
     }
   `;
 
+  /**
+   * The user preferences for plugins in this environment.
+   * @type {Object}
+   */
   #userPrefs = null;
+
+  /**
+  * Are we ready to render?
+  * @type {boolean}
+  */
+  @property({ type: Boolean, attribute: false })
+  accessor ready = false;
+
+  /**
+   * Set as ready to render.
+   */
+  @action
+  setReady() {
+    this.ready = true;
+  }
 
   /**
    * Loads the user preferences for plugins in this environment.
    */
-  async #loadUserPrefs() {
+  async connectedCallback() {
+    super.connectedCallback();
+
     const pluginSettings = await getConfig('sync', 'pluginPrefs') || {};
     this.#userPrefs = pluginSettings[appStore.getEnv()] || {};
-    this.requestUpdate();
+    this.setReady();
   }
 
   /**
@@ -120,14 +142,7 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   render() {
-    if (!this.#userPrefs) {
-      // load user prefs first
-      this.#loadUserPrefs();
-      return html`
-        <action-bar></action-bar>
-      `;
-    }
-    return appStore.initialized ? html`
+    return this.ready ? html`
       <action-bar>
         ${this.renderPlugins()}
         ${this.renderSystemPlugins()}
