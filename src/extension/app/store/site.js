@@ -10,6 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
+// import { property } from 'lit/decorators.js';
+import { action } from 'mobx';
 import { log } from '../../log.js';
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import { getLanguage } from '../utils/i18n.js';
@@ -172,6 +174,8 @@ export class SiteStore {
    * Has the store been initialized?
    * @type {boolean}
    */
+  // @property({ type: Boolean, attribute: false })
+  // accessor ready = false;
   ready = false;
 
   /**
@@ -179,6 +183,14 @@ export class SiteStore {
    */
   constructor(appStore) {
     this.appStore = appStore;
+  }
+
+  /**
+   * Set as initialized.
+   */
+  @action
+  setReady() {
+    this.ready = true;
   }
 
   /**
@@ -281,7 +293,7 @@ export class SiteStore {
     this.project = project;
     this.devUrl = devUrl;
     this.lang = lang || getLanguage();
-    this.ready = true;
+    this.setReady();
   }
 
   /**
@@ -295,6 +307,7 @@ export class SiteStore {
       ref: this.ref,
       giturl: this.giturl,
       devUrl: this.devUrl.href,
+      // @ts-ignore
       mountpoint: this.mountpoint,
       mountpoints: this.mountpoints,
       project: this.project,
