@@ -105,6 +105,9 @@ describe('Preview plugin', () => {
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 500);
+      });
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
 
