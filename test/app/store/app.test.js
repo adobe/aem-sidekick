@@ -36,6 +36,7 @@ import { EVENTS, MODALS } from '../../../src/extension/app/constants.js';
 import { mockHelixEnvironment, restoreEnvironment } from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
 import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
+import { error } from '../../test-utils.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -764,6 +765,92 @@ describe('Test App Store', () => {
       expect(showWaitStub.called).is.true;
       expect(hideWaitStub.called).is.true;
       expect(switchEnvStub.calledWith('preview')).is.true;
+    });
+  });
+
+  describe('delete', async () => {
+    const deletePath = '/delete-path';
+    let sandbox;
+    let fakeFetch;
+    let instance;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+      fakeFetch = sandbox.stub(window, 'fetch');
+      instance = appStore;
+
+      // Mock other functions
+      sandbox.stub(instance, 'isContent');
+      sandbox.stub(instance, 'isEditor');
+      sandbox.stub(instance, 'isPreview');
+      sandbox.stub(instance, 'isDev');
+      sandbox.stub(instance, 'fireEvent');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('deletes unpublished content from preview', async () => {
+      instance.isContent.returns(true);
+      instance.status = { webPath: deletePath };
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({}),
+      });
+
+      const response = await instance.delete();
+
+      expect(response).to.deep.equal({
+        ok: true,
+        status: 200,
+        path: deletePath,
+        error: '',
+      });
+      sinon.assert.calledWith(instance.fireEvent, 'deleted', deletePath);
+    });
+
+    it('deletes published content from preview and live', async () => {
+      const unpublishStub = sandbox.stub(instance, 'unpublish');
+      instance.isContent.returns(true);
+      instance.status = {
+        webPath: deletePath,
+        live: {
+          lastModified: '2023-01-01T00:00:00Z',
+        },
+      };
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({}),
+      });
+
+      const response = await instance.delete();
+
+      expect(response).to.deep.equal({
+        ok: true,
+        status: 200,
+        path: deletePath,
+        error: '',
+      });
+      expect(unpublishStub.calledOnce).to.be.true;
+      sinon.assert.calledWith(instance.fireEvent, 'deleted', deletePath);
+    });
+
+    it('handles server error', async () => {
+      const consoleSpy = sandbox.spy(console, 'log');
+      instance.isContent.returns(true);
+      instance.status = { webPath: deletePath };
+
+      fakeFetch.throws(error);
+
+      const response = await instance.delete();
+
+      expect(response.error).to.equal(error.message);
+      expect(consoleSpy.calledWith('failed to delete', deletePath, error)).to.be.true;
     });
   });
 
