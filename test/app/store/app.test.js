@@ -394,15 +394,39 @@ describe('Test App Store', () => {
     });
   });
 
+  describe('reloadPage', async () => {
+    const sandbox = sinon.createSandbox();
+    let openPageStub;
+    let loadPageStub;
+
+    beforeEach(() => {
+      openPageStub = sandbox.stub(appStore, 'openPage');
+      loadPageStub = sandbox.stub(appStore, 'loadPage');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('opens a new tab', async () => {
+      appStore.reloadPage(true);
+      expect(openPageStub.calledOnce).to.be.true;
+    });
+
+    it('reloads the current tab', async () => {
+      appStore.reloadPage();
+      expect(loadPageStub.calledOnce).to.be.true;
+    });
+  });
+
   describe('switchEnv', async () => {
     const mockStatus = defaultSharepointStatusResponse;
-    let sandbox;
+    const sandbox = sinon.createSandbox();
     let openPage;
     let loadPage;
     let instance;
 
     beforeEach(() => {
-      sandbox = sinon.createSandbox();
       sandbox.stub(window, 'fetch').resolves(new Response(JSON.stringify({
         webPath: '/somepath',
       })));
