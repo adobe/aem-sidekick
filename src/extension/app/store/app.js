@@ -524,7 +524,7 @@ export class AppStore {
     if (newTab) {
       this.openPage(window.location.href);
     } else {
-      this.reloadPage(window.location.href);
+      this.loadPage(window.location.href);
     }
   }
 
