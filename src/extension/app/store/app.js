@@ -808,7 +808,11 @@ export class AppStore {
   async delete() {
     const { siteStore, status } = this;
     const path = status.webPath;
-    let resp;
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
     try {
       // delete preview
       resp = await fetch(
@@ -826,10 +830,12 @@ export class AppStore {
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log('failed to delete', path, e);
+      resp.error = e.message;
     }
     return {
-      ok: (resp && resp.ok) || false,
-      status: (resp && resp.status) || 0,
+      ok: resp.ok || false,
+      status: resp.status || 0,
+      error: (resp.headers && resp.headers.get('x-error')) || resp.error || '',
       path,
     };
   }
@@ -883,7 +889,7 @@ export class AppStore {
       console.error('failed to publish', path, e);
     }
     resp.path = path;
-    resp.error = (resp.headers && resp.headers.get('x-error')) || '';
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
     return resp;
   }
 
@@ -902,7 +908,7 @@ export class AppStore {
     /**
      * @type {AdminResponse}
      */
-    let resp;
+    let resp = {};
     try {
       // delete live
       resp = await fetch(
@@ -917,6 +923,8 @@ export class AppStore {
       // eslint-disable-next-line no-console
       console.error('failed to unpublish', path, e);
     }
+    resp.path = path;
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
     return resp;
   }
 
