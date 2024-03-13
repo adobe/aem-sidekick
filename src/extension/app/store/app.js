@@ -164,15 +164,17 @@ export class AppStore {
   setupCorePlugins() {
     this.corePlugins = {};
 
-    if (this.siteStore.authorized) {
+    if (this.siteStore.ready && this.siteStore.authorized) {
       const envPlugin = pluginFactory.createEnvPlugin(this);
       const previewPlugin = pluginFactory.createPreviewPlugin(this);
       const reloadPlugin = pluginFactory.createReloadPlugin(this);
+      const deletePlugin = pluginFactory.createDeletePlugin(this);
       const publishPlugin = pluginFactory.createPublishPlugin(this);
 
       this.corePlugins[envPlugin.id] = envPlugin;
       this.corePlugins[previewPlugin.id] = previewPlugin;
       this.corePlugins[reloadPlugin.id] = reloadPlugin;
+      this.corePlugins[deletePlugin.id] = deletePlugin;
       this.corePlugins[publishPlugin.id] = publishPlugin;
     }
   }
@@ -633,6 +635,24 @@ export class AppStore {
   }
 
   /**
+   * Displays a confirm dialog
+   * @param {string} message The message to display
+   * @param {Function} exec The action to execute upon confirmation
+   * @param {string} [confirmLabel] The label of the confirm button (default: OK)
+   * @param {boolean} [destructive] Use the destructive variant (optional)
+   */
+  showConfirm(message, exec, confirmLabel, destructive) {
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.SHOW_CONFIRM, {
+      detail: {
+        message,
+        action: exec,
+        confirmLabel,
+        destructive,
+      },
+    }));
+  }
+
+  /**
      * Fetches the status for the current resource.
      * @fires Sidekick#statusfetched
      * @param {boolean} [refreshLocation] Refresh the sidekick's location (optional)
@@ -830,6 +850,40 @@ export class AppStore {
   }
 
   /**
+   * Deletes the current resource from preview and unpublishes it if published.
+   * @fires Sidekick#deleted
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async delete() {
+    const { siteStore, status } = this;
+    const path = status.webPath;
+    let resp;
+    try {
+      // delete preview
+      resp = await fetch(
+        getAdminUrl(siteStore, 'preview', path),
+        {
+          method: 'DELETE',
+          ...getAdminFetchOptions(),
+        },
+      );
+      // also unpublish if published
+      if (status.live && status.live.lastModified) {
+        await this.unpublish();
+      }
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('failed to delete', path, e);
+    }
+    return {
+      ok: (resp && resp.ok) || false,
+      status: (resp && resp.status) || 0,
+      path,
+    };
+  }
+
+  /**
    * Publishes the page at the specified path if <code>config.host</code> is defined.
    * @param {string} path The path of the page to publish
    * @fires Sidekick#published
@@ -879,6 +933,39 @@ export class AppStore {
     }
     resp.path = path;
     resp.error = (resp.headers && resp.headers.get('x-error')) || '';
+    return resp;
+  }
+
+  /**
+   * Unpublishes the current page.
+   * @fires Sidekick#unpublished
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async unpublish() {
+    if (!this.isContent()) {
+      return null;
+    }
+    const { siteStore, status } = this;
+    const path = status.webPath;
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp;
+    try {
+      // delete live
+      resp = await fetch(
+        getAdminUrl(siteStore, 'live', path),
+        {
+          method: 'DELETE',
+          ...getAdminFetchOptions(),
+        },
+      );
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('failed to unpublish', path, e);
+    }
     return resp;
   }
 

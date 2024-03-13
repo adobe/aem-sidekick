@@ -181,6 +181,14 @@
  */
 
 /**
+ * @typedef {Object} Confirm
+ * @prop {string} message The confirm message
+ * @prop {string} [variant] The variant ("confirmation" or "destructive")
+ * @prop {string} [confirmLabel] The confirm button label
+ * @prop {Function} action The action to execute on confirmation
+ */
+
+/**
  * @typedef {Object} AdminResponse
  * @property {boolean} ok Is the response ok?
  * @property {number} status The HTTP status code

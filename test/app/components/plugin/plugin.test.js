@@ -21,16 +21,6 @@ import { appStore } from '../../../../src/extension/app/store/app.js';
 window.chrome = chromeMock;
 
 describe('SidekickPlugin', () => {
-  beforeEach(async () => {
-    // mockFetchEnglishMessagesSuccess();
-  });
-
-  afterEach(() => {
-    // document.body.removeChild(sidekick);
-    // fetchMock.reset();
-    // restoreEnvironment(document);
-  });
-
   it('creates plugin from config', async () => {
     const plugin = new SidekickPlugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
@@ -48,7 +38,7 @@ describe('SidekickPlugin', () => {
       appStore,
     });
     const res = plugin.checkCondition();
-    expect(res).to.be.false;
+    expect(res).to.be.true;
   });
 
   it('appends child plugin', async () => {

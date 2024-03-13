@@ -32,6 +32,7 @@ export const EVENTS = {
   OPEN_MODAL: 'open-modal',
   CLOSE_MODAL: 'close-modal',
   SHOW_TOAST: 'show-toast',
+  SHOW_CONFIRM: 'show-confirm',
   OPEN_PALETTE: 'open-palette',
   CLOSE_PALETTE: 'close-palette',
 };
@@ -44,8 +45,10 @@ export const EXTERNAL_EVENTS = {
   CONTEXT_LOADED: 'contextloaded',
   STATUS_FETCHED: 'statusfetched',
   RESOURCE_UPDATED: 'updated',
+  RESOURCE_DELETED: 'deleted',
   RESOURCE_PREVIEWED: 'previewed',
   RESOURCE_PUBLISHED: 'published',
+  RESOURCE_UNPUBLISHED: 'unpublished',
   EVIRONMENT_SWITCHED: 'envswitched',
   PLUGIN_USED: 'pluginused',
 };
@@ -58,3 +61,12 @@ export const MODALS = {
   WAIT: 'wait',
   ERROR: 'error',
 };
+
+/**
+ * Array of restricted paths with limited sidekick functionality.
+ * @private
+ * @type {string[]}
+ */
+export const RESTRICTED_PATHS = [
+  '/helix-env.json',
+];

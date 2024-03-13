@@ -28,6 +28,7 @@ import '@spectrum-web-components/overlay/sp-overlay.js';
 import '@spectrum-web-components/picker/sp-picker.js';
 import '@spectrum-web-components/status-light/sp-status-light.js';
 import '@spectrum-web-components/icon/sp-icon.js';
+import '@spectrum-web-components/alert-dialog/sp-alert-dialog.js';
 
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-user.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-log-out.js';
@@ -39,6 +40,7 @@ import './app/components/theme/theme.js';
 import './app/components/plugin/plugin-action-bar.js';
 import './app/components/modal/modal-container.js';
 import './app/components/toast/toast-container.js';
+import './app/components/confirm/confirm-container.js';
 import './app/components/plugin/palette-container.js';
 import './app/components/plugin/palette-dialog/palette-dialog-wrapper.js';
 import './app/components/plugin/palette-dialog/palette-dialog.js';

@@ -13,31 +13,21 @@
 import { css } from 'lit';
 
 export const style = css`
-  :host {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    pointer-events: none;
-    z-index: 999999999999;
-  }
-
-  :host([open='true']) {
-    display: block;
-  }
-
-  :host([open='false']) {
-    display: none;
-  }
-
-  plugin-action-bar {
+  .confirm-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
     position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0px);
-    bottom: 150px;
-    pointer-events: auto;
+    top: 0;
+    left: 0;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    width: 100vw;
+    height: 100vh;
   }
 
-  confirm-container {
-    pointer-events: auto;
+  sp-alert-dialog {
+    background: var(--spectrum-background-base-color);
   }
 `;
