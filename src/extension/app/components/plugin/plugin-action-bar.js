@@ -14,8 +14,8 @@
 
 import { html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { action } from 'mobx';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { reaction } from 'mobx';
 import { appStore } from '../../store/app.js';
 import { getConfig } from '../../../config.js';
 
@@ -63,14 +63,6 @@ export class PluginActionBar extends MobxLitElement {
   accessor ready = false;
 
   /**
-   * Set as ready to render.
-   */
-  @action
-  setReady() {
-    this.ready = true;
-  }
-
-  /**
    * Loads the user preferences for plugins in this environment.
    */
   async connectedCallback() {
@@ -78,7 +70,14 @@ export class PluginActionBar extends MobxLitElement {
 
     const pluginSettings = await getConfig('sync', 'pluginPrefs') || {};
     this.#userPrefs = pluginSettings[appStore.getEnv()] || {};
-    this.setReady();
+    this.ready = true;
+
+    reaction(
+      () => appStore.status,
+      () => {
+        this.requestUpdate();
+      },
+    );
   }
 
   /**
@@ -86,6 +85,10 @@ export class PluginActionBar extends MobxLitElement {
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
+    if (!appStore.corePlugins) {
+      return '';
+    }
+
     const corePlugins = Object.values(appStore.corePlugins);
     const customPlugins = Object.values(appStore.customPlugins);
     const renderedPlugins = [
