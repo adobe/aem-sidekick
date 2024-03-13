@@ -93,7 +93,6 @@ export class ConfirmContainer extends LitElement {
   }
 
   onButtonClick(action) {
-    console.log('button clicked');
     this.dispatchEvent(
       new Event('close', { bubbles: true, composed: true }),
     );
