@@ -13,7 +13,6 @@
 import { MODALS } from '../../constants.js';
 import { SidekickPlugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
-import { i18n } from '../../utils/i18n.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -33,7 +32,7 @@ export function createReloadPlugin(appStore) {
     id: 'reload',
     condition: (store) => store.isPreview() || store.isDev(),
     button: {
-      text: i18n(appStore.languageDict, 'reload'),
+      text: appStore.i18n('reload'),
       action: async (evt) => {
         appStore.showWait();
         try {
