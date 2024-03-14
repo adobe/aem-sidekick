@@ -84,7 +84,15 @@ export const style = css`
     --spectrum2-live-border-hover: var(--live-border-hover-dark);
     --spectrum2-live-border-open: var(--live-border-open-dark);
 
-    --spectrum2-sidekick-border-radius: 8px;
+    --spectrum2-small-border-radius: 4px;
+    --spectrum2-default-border-radius: 8px;
+    --spectrum2-medium-border-radius: 10px;
+    --spectrum2-large-border-radius: 16px;
+
+    --spectrum2-form-input-border-radius: var(--spectrum2-medium-border-radius);
+    --spectrum2-dialog-border-radius: var(--spectrum2-large-border-radius);
+
+    --spectrum2-sidekick-border-radius: var(--spectrum2-large-border-radius);
     --spectrum2-sidekick-background: var(--sidekick-background-dark);
     --spectrum2-sidekick-border-color: var(--sidekick-border-color-dark);
     --spectrum2-sidekick-backdrop-filter: blur(12px);
@@ -92,6 +100,13 @@ export const style = css`
       0px 0px 3px 0px rgba(0, 0, 0, 0.12), 
       0px 3px 8px 0px rgba(0, 0, 0, 0.04), 
       0px 4px 16px 0px rgba(0, 0, 0, 0.08);
+
+    /** global spectrum modifiers */
+    --mod-divider-background-color: var(--spectrum2-sidekick-border-color);
+    --mod-textfield-corner-radius: var(--spectrum2-form-input-border-radius);
+    --mod-textfield-spacing-block-end: 6px;
+    --mod-textfield-border-width: 2px;
+    --mod-button-border-radius: var(--spectrum2-default-border-radius);
   }
 
   @media (prefers-color-scheme: light) {

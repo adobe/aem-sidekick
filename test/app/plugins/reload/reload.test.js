@@ -29,8 +29,7 @@ import { appStore } from '../../../../src/extension/app/store/app.js';
 import {
   mockHelixEnvironment, restoreEnvironment,
 } from '../../../mocks/environment.js';
-import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
-import { EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
+import { MODALS } from '../../../../src/extension/app/constants.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -91,8 +90,7 @@ describe('Reload plugin', () => {
       .resolves(new Response('', { status: 500, headers: {} }));
     const showWaitSpy = sandbox.spy(appStore, 'showWait');
 
-    const modalSpy = sandbox.spy();
-    EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
+    const modalSpy = sandbox.spy(appStore, 'showModal');
 
     await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
@@ -106,8 +104,8 @@ describe('Reload plugin', () => {
     expect(showWaitSpy.calledOnce).to.be.true;
 
     expect(modalSpy.calledTwice).to.be.true;
-    expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.WAIT);
-    expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
+    expect(modalSpy.args[0][0].type).to.equal(MODALS.WAIT);
+    expect(modalSpy.args[1][0].type).to.equal(MODALS.ERROR);
 
     expect(reloaded).to.be.false;
   });

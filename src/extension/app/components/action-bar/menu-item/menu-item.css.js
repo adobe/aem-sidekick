@@ -25,7 +25,7 @@ export const style = css`
 
   :host(:hover) {
     background-color: var(--spectrum2-preview-background-hover);
-    border-radius: var(--spectrum2-sidekick-border-radius);
+    border-radius: var(--spectrum2-default-border-radius);
   }
 
   :host(.current-env.env-edit[aria-disabled="true"]) #label,
@@ -38,7 +38,7 @@ export const style = css`
   :host(.current-env.env-preview){
     background-color: var(--spectrum2-preview-background-default);
     border: 1px solid var(--spectrum2-preview-border-default);
-    border-radius: var(--spectrum2-sidekick-border-radius);
+    border-radius: var(--spectrum2-default-border-radius);
     --mod-menu-item-background-color-hover: var(--spectrum2-preview-background-hover);
   }
 
@@ -58,7 +58,7 @@ export const style = css`
   :host(.current-env.env-prod) {
     background-color: var(--spectrum2-live-background-default);
     border: 1px solid var(--spectrum2-live-border-default);
-    border-radius: var(--spectrum2-sidekick-border-radius);
+    border-radius: var(--spectrum2-default-border-radius);
     font-weight: 700;
   }
 

@@ -13,4 +13,14 @@
 import { css } from 'lit';
 
 export const style = css`
+    :host {
+      --mod-modal-background-color: var(--spectrum2-sidekick-background);
+    }
+
+    .modal {
+      border-radius: var(--spectrum2-dialog-border-radius);
+      box-shadow: var(--spectrum2-sidekick-box-shadow);
+      backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
+      -webkit-backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
+    }
  `;

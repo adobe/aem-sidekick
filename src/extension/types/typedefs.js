@@ -170,13 +170,14 @@
  * @prop {string} [headline] The modal headline
  * @prop {string} [message] The modal message
  * @prop {string} [confirmLabel] The confirm button label
+ * @prop {string} [action] The action type (delete or unpublish)
  */
 
 /**
  * @typedef {Object} Toast
  * @prop {string} message The toast message
  * @prop {string} variant The toast variant
- * @prop {string} timeout The time the toast is shown (default: 2000)
+ * @prop {number} timeout The time the toast is shown (default: 2000)
  */
 
 /**

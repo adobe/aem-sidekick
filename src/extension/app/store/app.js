@@ -26,6 +26,8 @@ import {
 } from '../constants.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
 import { KeyboardListener } from '../utils/keyboard.js';
+import { ModalContainer } from '../components/modal/modal-container.js';
+import { ToastContainer } from '../components/toast/toast-container.js';
 
 /**
  * The sidekick configuration object type
@@ -49,6 +51,10 @@ import { KeyboardListener } from '../utils/keyboard.js';
 
 /**
  * @typedef {import('@Types').AdminResponse} AdminResponse
+ */
+
+/**
+ * @typedef {import('@Types').Modal} Modal
  */
 
 export class AppStore {
@@ -475,6 +481,23 @@ export class AppStore {
   }
 
   /**
+   * Creates a modal and appends it to the sidekick.
+   * If a modal is already open, it will be replaced.
+   * @param {Modal} modal The modal to display
+   */
+  showModal(modal) {
+    const existingModal = this.sidekick?.shadowRoot?.querySelector('theme-wrapper').querySelector('modal-container');
+    if (existingModal) {
+      existingModal.remove();
+    }
+
+    const modalContainer = new ModalContainer(modal);
+    this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(modalContainer);
+
+    return modalContainer;
+  }
+
+  /**
    * Displays a wait modal
    * @param {string} [message] The message to display
    */
@@ -482,12 +505,11 @@ export class AppStore {
     if (!message) {
       message = this.i18n('please_wait');
     }
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-      detail: {
-        type: MODALS.WAIT,
-        data: { message },
-      },
-    }));
+
+    return this.showModal({
+      type: MODALS.WAIT,
+      data: { message },
+    });
   }
 
   /**
@@ -586,13 +608,19 @@ export class AppStore {
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
   showToast(message, variant = 'info', timeout = 2000) {
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.SHOW_TOAST, {
-      detail: {
-        message,
-        variant,
-        timeout,
-      },
-    }));
+    const existingToast = this.sidekick?.shadowRoot?.querySelector('theme-wrapper').querySelector('toast-container');
+    if (existingToast) {
+      existingToast.remove();
+    }
+
+    const toastContainer = new ToastContainer({
+      message,
+      variant,
+      timeout,
+    });
+    this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(toastContainer);
+
+    return toastContainer;
   }
 
   /**
@@ -758,27 +786,21 @@ export class AppStore {
         }, { once: true });
         this.fetchStatus();
       } else if (status.webPath.startsWith('/.helix/') && resp.error) {
-        // show detail message only in config update mode
-        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-          detail: {
-            type: MODALS.ERROR,
-            data: {
-              message: `${this.i18n('error_config_failure')}${resp.error}`,
-            },
+        this.showModal({
+          type: MODALS.ERROR,
+          data: {
+            message: `${this.i18n('error_config_failure')}${resp.error}`,
           },
-        }));
+        });
       } else {
         // eslint-disable-next-line no-console
         console.error(resp);
-
-        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-          detail: {
-            type: MODALS.ERROR,
-            data: {
-              message: this.i18n('error_preview_failure'),
-            },
+        this.showModal({
+          type: MODALS.ERROR,
+          data: {
+            message: this.i18n('error_preview_failure'),
           },
-        }));
+        });
       }
       return;
     }
@@ -978,12 +1000,12 @@ export class AppStore {
         }
         if (attempts >= 5) {
           // give up after 5 attempts
-          EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-            detail: {
-              type: MODALS.ERROR,
-              data: { message: this.i18n('error_login_timeout') },
+          this.showModal({
+            type: MODALS.ERROR,
+            data: {
+              message: this.i18n('error_login_timeout'),
             },
-          }));
+          });
           return;
         }
       }
@@ -1026,13 +1048,12 @@ export class AppStore {
           return;
         }
         if (attempts >= 5) {
-          // give up after 5 attempts
-          EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-            detail: {
-              type: MODALS.ERROR,
-              data: { message: this.i18n('error_logout_error') },
+          this.showModal({
+            type: MODALS.ERROR,
+            data: {
+              message: this.i18n('error_logout_error'),
             },
-          }));
+          });
           return;
         }
       }

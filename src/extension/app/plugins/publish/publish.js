@@ -10,9 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
-import { EVENTS, MODALS } from '../../constants.js';
+import { MODALS } from '../../constants.js';
 import { newTab } from '../../utils/browser.js';
-import { EventBus } from '../../utils/event-bus.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -45,14 +44,12 @@ export function createPublishPlugin(appStore) {
           // eslint-disable-next-line no-console
           console.error(res);
 
-          EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-            detail: {
-              type: MODALS.ERROR,
-              data: {
-                message: appStore.i18n('publish_failure'),
-              },
+          appStore.showModal({
+            type: MODALS.ERROR,
+            data: {
+              message: appStore.i18n('publish_failure'),
             },
-          }));
+          });
         }
       },
       isEnabled: (store) => store.isAuthorized('live', 'write') && store.status.edit

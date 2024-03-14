@@ -13,18 +13,21 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, max-len */
 
 // @ts-ignore
-import { html } from 'lit';
+import sinon from 'sinon';
 import {
-  fixture, expect, waitUntil, aTimeout,
+  expect, waitUntil, aTimeout,
 } from '@open-wc/testing';
 import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
 import { EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
 import chromeMock from '../../../mocks/chrome.js';
-import '../../../../src/extension/index.js';
+import { AEMSidekick } from '../../../../src/extension/index.js';
 import { recursiveQuery } from '../../../test-utils.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
 import { fetchLanguageDict } from '../../../../src/extension/app/utils/i18n.js';
+import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
+import { mockFetchConfigWithoutPluginsJSONSuccess, mockFetchStatusSuccess } from '../../../mocks/helix-admin.js';
+import { mockHelixEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -34,31 +37,40 @@ window.chrome = chromeMock;
  */
 
 describe('Modals', () => {
+  let sidekick;
+  let sandbox;
   beforeEach(async () => {
+    sandbox = sinon.createSandbox();
     mockFetchEnglishMessagesSuccess();
+    mockFetchStatusSuccess();
+    mockFetchConfigWithoutPluginsJSONSuccess();
+    mockHelixEnvironment(document, 'preview');
     appStore.languageDict = await fetchLanguageDict(undefined, 'en');
   });
 
+  afterEach(() => {
+    if (document.body.contains(sidekick)) {
+      document.body.removeChild(sidekick);
+    }
+    restoreEnvironment(document);
+  });
+
   it('renders wait modal and closes', async () => {
-    const element = await fixture(html`<theme-wrapper><modal-container></modal-container></theme-wrapper>`);
+    sidekick = new AEMSidekick(defaultSidekickConfig);
+    document.body.appendChild(sidekick);
 
-    /**
-     * @type {ModalContainer}
-     */
-    const modal = element.querySelector('modal-container');
-
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-      detail: {
-        type: MODALS.WAIT,
-        data: {
-          message: 'test',
-        },
+    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    appStore.showModal({
+      type: MODALS.WAIT,
+      data: {
+        message: 'test',
       },
-    }));
+    });
 
-    await waitUntil(() => recursiveQuery(modal, 'dialog-view'));
-    const dialogView = recursiveQuery(modal, 'dialog-view');
-    const dialogWrapper = recursiveQuery(dialogView, 'sp-dialog-wrapper');
+    const modal = recursiveQuery(sidekick, 'modal-container');
+
+    await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+    const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
 
     expect(dialogWrapper.getAttribute('open')).to.equal('');
 
@@ -68,54 +80,160 @@ describe('Modals', () => {
   });
 
   it('displays error modal', async () => {
-    const element = await fixture(html`<theme-wrapper><modal-container></modal-container></theme-wrapper>`);
-    const modal = element.querySelector('modal-container');
+    sidekick = new AEMSidekick(defaultSidekickConfig);
+    document.body.appendChild(sidekick);
 
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-      detail: {
-        type: MODALS.ERROR,
-        data: {
-          message: 'There was an error',
-          headline: 'Oh snap',
-        },
+    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    appStore.showModal({
+      type: MODALS.ERROR,
+      data: {
+        message: 'There was an error',
+        headline: 'Oh snap',
       },
-    }));
+    });
 
-    await waitUntil(() => recursiveQuery(modal, 'dialog-view'));
-    const dialogView = recursiveQuery(modal, 'dialog-view');
-    const dialogWrapper = recursiveQuery(dialogView, 'sp-dialog-wrapper');
+    const confirmSpy = sandbox.spy();
+    const modal = recursiveQuery(sidekick, 'modal-container');
+    modal.addEventListener('confirm', confirmSpy);
+
+    await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+    const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
 
     expect(dialogWrapper.getAttribute('open')).to.equal('');
 
     const dialogHeading = recursiveQuery(dialogWrapper, 'h2');
     expect(dialogHeading.textContent.trim()).to.eq('Oh snap');
-
-    expect(dialogView.textContent.trim()).to.eq('There was an error');
-
-    const okButton = recursiveQuery(dialogView, 'sp-button');
+    expect(dialogWrapper.textContent.trim()).to.eq('There was an error');
+    const okButton = recursiveQuery(dialogWrapper, 'sp-button');
     expect(okButton).to.exist;
     okButton.click();
 
     await aTimeout(100);
-    expect(recursiveQuery(modal, 'dialog-view')).to.be.undefined;
+    expect(confirmSpy.calledOnce).to.be.true;
+    expect(recursiveQuery(modal, 'sp-dialog-wrapper')).to.be.undefined;
+  });
+
+  describe('destructive modal', () => {
+    beforeEach(async () => {
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    });
+
+    it('default text', async () => {
+      appStore.showModal({
+        type: MODALS.DELETE,
+      });
+
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+      const dialogHeading = recursiveQuery(dialogWrapper, 'h2');
+      expect(dialogHeading.textContent.trim()).to.eq('Are you sure you want to delete this?');
+      expect(dialogWrapper.querySelector('.prompt').textContent).to.eq('Type DELETE to confirm');
+    });
+
+    it('with action', async () => {
+      appStore.showModal({
+        type: MODALS.DELETE,
+        data: {
+          action: 'unpublish',
+        },
+      });
+
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+      const dialogHeading = recursiveQuery(dialogWrapper, 'h2');
+      expect(dialogHeading.textContent.trim()).to.eq('Are you sure you want to unpublish this?');
+      expect(dialogWrapper.querySelector('.prompt').textContent).to.eq('Type UNPUBLISH to confirm');
+    });
+
+    it('confirmed', async () => {
+      appStore.showModal({
+        type: MODALS.DELETE,
+      });
+
+      const confirmSpy = sandbox.spy();
+      const cancelSpy = sandbox.spy();
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      modal.addEventListener('confirm', confirmSpy);
+      modal.addEventListener('cancelled', cancelSpy);
+
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+      const confirmButton = recursiveQuery(dialogWrapper, 'sp-button[variant="negative"]');
+      expect(confirmButton).to.exist;
+
+      // To try to confirm without the correct text
+      confirmButton.click();
+
+      expect(dialogWrapper.querySelector('.delete-input.invalid')).to.exist;
+      expect(confirmSpy.calledOnce).to.be.false;
+      expect(cancelSpy.calledOnce).to.be.false;
+
+      const input = dialogWrapper.querySelector('sp-textfield');
+      input.value = 'DELETE';
+
+      // Confirm with the correct text
+      confirmButton.click();
+
+      expect(confirmSpy.calledOnce).to.be.true;
+      expect(cancelSpy.calledOnce).to.be.false;
+
+      await aTimeout(100);
+      expect(recursiveQuery(modal, 'sp-dialog-wrapper')).to.be.undefined;
+    });
+
+    it('cancelled', async () => {
+      appStore.showModal({
+        type: MODALS.DELETE,
+      });
+
+      const confirmSpy = sandbox.spy();
+      const cancelSpy = sandbox.spy();
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      modal.addEventListener('confirm', confirmSpy);
+      modal.addEventListener('cancelled', cancelSpy);
+
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+      const cancelButton = recursiveQuery(dialogWrapper, 'sp-button[variant="secondary"]');
+      expect(cancelButton).to.exist;
+      cancelButton.click();
+
+      await aTimeout(100);
+      expect(confirmSpy.calledOnce).to.be.false;
+      expect(cancelSpy.calledOnce).to.be.true;
+      expect(recursiveQuery(modal, 'sp-dialog-wrapper')).to.be.undefined;
+    });
   });
 
   it('displays error modal - default headline', async () => {
-    const element = await fixture(html`<theme-wrapper><modal-container></modal-container></theme-wrapper>`);
-    const modal = element.querySelector('modal-container');
+    sidekick = new AEMSidekick(defaultSidekickConfig);
+    document.body.appendChild(sidekick);
 
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-      detail: {
-        type: MODALS.ERROR,
-        data: {
-          message: 'There was an error',
-        },
+    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    appStore.showModal({
+      type: MODALS.ERROR,
+      data: {
+        message: 'There was an error',
       },
-    }));
+    });
 
-    await waitUntil(() => recursiveQuery(modal, 'dialog-view'));
-    const dialogView = recursiveQuery(modal, 'dialog-view');
-    const dialogWrapper = recursiveQuery(dialogView, 'sp-dialog-wrapper');
+    const modal = recursiveQuery(sidekick, 'modal-container');
+    await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+    const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
 
     expect(dialogWrapper.getAttribute('open')).to.equal('');
 
@@ -124,18 +242,18 @@ describe('Modals', () => {
   });
 
   it('ignores unknown modal type', async () => {
-    const element = await fixture(html`<theme-wrapper><modal-container></modal-container></theme-wrapper>`);
-    const modal = element.querySelector('modal-container');
+    sidekick = new AEMSidekick(defaultSidekickConfig);
+    document.body.appendChild(sidekick);
 
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-      detail: {
-        type: 'unknown-type',
-        data: {
-          message: 'test',
-        },
+    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    appStore.showModal({
+      type: 'unknown-type',
+      data: {
+        message: 'test',
       },
-    }));
+    });
 
-    expect(recursiveQuery(modal, 'dialog-view')).to.be.undefined;
+    await aTimeout(100);
+    expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
   });
 });
