@@ -1,3 +1,15 @@
+# [1.11.0](https://github.com/adobe/aem-sidekick/compare/v1.10.0...v1.11.0) (2024-3-14)
+
+
+### Bug Fixes
+
+* reentry injects a new sidekick every time ([4a56118](https://github.com/adobe/aem-sidekick/commit/4a56118b99a132aac212e330656168dd7b4d28e0))
+
+
+### Features
+
+* delete and unpublish API ([26f661b](https://github.com/adobe/aem-sidekick/commit/26f661b96a30d7a8acbf17c1c1360053c2803fe3))
+
 # [1.10.0](https://github.com/adobe/aem-sidekick/compare/v1.9.0...v1.10.0) (2024-3-13)
 
 
