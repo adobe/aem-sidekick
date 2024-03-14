@@ -21,7 +21,7 @@
 
   const { getDisplay } = await import('./display.js');
   const display = await getDisplay();
-  let { sidekick } = window.hlx;
+  let sidekick = document.querySelector('aem-sidekick');
 
   /**
    * Load the sidekick custom element and add it to the DOM
