@@ -618,5 +618,8 @@
     },
     "destructive_confirmation_prompt": {
       "message": "Type $1 to confirm"
+    },
+    "destructive_confirmation_invalid": {
+      "message": "Sorry, please enter the text exactly as displayed to confirm."
     }
 }
