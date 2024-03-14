@@ -38,7 +38,7 @@ export const style = css`
   }
 
   action-bar sp-action-group {
-    padding: 8px;
+    padding: 12px;
   }
 
   action-bar sp-action-group span {

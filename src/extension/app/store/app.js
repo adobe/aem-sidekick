@@ -25,6 +25,7 @@ import {
   ENVS, EVENTS, EXTERNAL_EVENTS, MODALS,
 } from '../constants.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
+import { KeyboardListener } from '../utils/keyboard.js';
 
 /**
  * The sidekick configuration object type
@@ -114,8 +115,15 @@ export class AppStore {
    */
   @observable accessor customPlugins;
 
+  /**
+   * Keyboards listener
+   * @type {KeyboardListener}
+   */
+  keyboardListener;
+
   constructor() {
     this.siteStore = new SiteStore(this);
+    this.keyboardListener = new KeyboardListener();
   }
 
   /**
@@ -512,26 +520,34 @@ export class AppStore {
   }
 
   /**
+   * Opens a new page. Abstracted for testing.
+   * @param {string} url The URL to open
+   * @param {string} [name] The window name (optional)
+   * @returns {Window} The window object
+   */
+  // istanbul ignore next 3
+  openPage(url, name) {
+    return window.open(url, name);
+  }
+
+  /**
+   * Navigates to the provided URL in the current window. Abstracted for testing.
+   * @param {string} url The URL to load
+   */
+  // istanbul ignore next 3
+  loadPage(url) {
+    window.location.href = url;
+  }
+
+  /**
    * Reloads the current page. Abstracted for testing.
    */
   reloadPage(newTab) {
     if (newTab) {
-      // istanbul ignore next
-      window.open(window.location.href);
+      this.openPage(window.location.href);
     } else {
-      // istanbul ignore next
-      window.location.reload();
+      this.loadPage(window.location.href);
     }
-  }
-
-  /**
-   * Opens a new page. Abstracted for testing.
-   * @param {string} url The URL to open
-   * @returns {Window} The window object
-   */
-  // istanbul ignore next 3
-  openPage(url) {
-    return window.open(url);
   }
 
   /**
@@ -837,6 +853,51 @@ export class AppStore {
   }
 
   /**
+   * Deletes the current resource from preview and unpublishes it if published.
+   * @fires Sidekick#deleted
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async delete() {
+    const { siteStore, status } = this;
+    const path = status.webPath;
+
+    // delete content only
+    if (!this.isContent()) {
+      return null;
+    }
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
+    try {
+      // delete preview
+      resp = await fetch(
+        getAdminUrl(siteStore, 'preview', path),
+        {
+          method: 'DELETE',
+          ...getAdminFetchOptions(),
+        },
+      );
+      // also unpublish if published
+      if (status.live && status.live.lastModified) {
+        await this.unpublish();
+      }
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('failed to delete', path, e);
+      resp.error = e.message;
+    }
+    return {
+      ok: resp.ok || false,
+      status: resp.status || 0,
+      error: (resp.headers && resp.headers.get('x-error')) || resp.error || '',
+      path,
+    };
+  }
+
+  /**
    * Publishes the page at the specified path if <code>config.host</code> is defined.
    * @param {string} path The path of the page to publish
    * @fires Sidekick#published
@@ -882,10 +943,48 @@ export class AppStore {
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('failed to publish', path, e);
+      console.log('failed to publish', path, e);
+      resp.error = e.message;
     }
     resp.path = path;
-    resp.error = (resp.headers && resp.headers.get('x-error')) || '';
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
+    return resp;
+  }
+
+  /**
+   * Unpublishes the current page.
+   * @fires Sidekick#unpublished
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async unpublish() {
+    // unpublish content only
+    if (!this.isContent()) {
+      return null;
+    }
+    const { siteStore, status } = this;
+    const path = status.webPath;
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
+    try {
+      // delete live
+      resp = await fetch(
+        getAdminUrl(siteStore, 'live', path),
+        {
+          method: 'DELETE',
+          ...getAdminFetchOptions(),
+        },
+      );
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('failed to unpublish', path, e);
+      resp.error = e.message;
+    }
+    resp.path = path;
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
     return resp;
   }
 
@@ -1003,7 +1102,10 @@ export class AppStore {
     if (!status.webPath) {
       // eslint-disable-next-line no-console
       console.log('not ready yet, trying again in a second ...');
-      window.setTimeout(() => this.switchEnv(targetEnv, open), 1000);
+      window.setTimeout(
+        // istanbul ignore next
+        () => this.switchEnv(targetEnv, open), 1000,
+      );
       return;
     }
     const envOrigin = targetEnv === 'dev' ? siteStore.devUrl.origin : `https://${envHost}`;
@@ -1018,16 +1120,16 @@ export class AppStore {
 
     // switch or open env
     if (open || this.isEditor()) {
-      window.open(envUrl, open
+      this.openPage(envUrl, open
         ? '' : `hlx-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
-      this.hideWait();
     } else {
-      window.location.href = envUrl;
+      this.loadPage(envUrl);
     }
     this.fireEvent(EXTERNAL_EVENTS.EVIRONMENT_SWITCHED, {
       sourceUrl: href,
       targetUrl: envUrl,
     });
+    this.hideWait();
   }
 
   /**

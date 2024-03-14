@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Adobe. All rights reserved.
+ * Copyright 2024 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,20 +10,22 @@
  * governing permissions and limitations under the License.
  */
 
-import { css } from 'lit';
+export class KeyboardListener {
+  keysPressed = {};
 
-export const style = css`
-  .action-bar {
-    display: flex;
-    border-radius: 8px;
-    color: var(--spectrum-global-color-gray-800);
-    background-color: var(--spectrum-global-color-gray-200);
-    border: 1px solid var(--spectrum-global-color-gray-300);
+  constructor() {
+    // Detect when a key is pressed down
+    document.addEventListener('keydown', this.onKeyDown.bind(this));
+
+    // Detect when a key is released
+    document.addEventListener('keyup', this.onKeyUp.bind(this));
   }
 
-  @media (prefers-color-scheme: light) {
-    .action-bar {
-      background-color: var(--spectrum-global-color-gray-100);
-    }
+  onKeyDown(event) {
+    this.keysPressed[event.key] = true;
   }
-`;
+
+  onKeyUp(event) {
+    delete this.keysPressed[event.key];
+  }
+}
