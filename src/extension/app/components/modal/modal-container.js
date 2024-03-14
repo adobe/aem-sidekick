@@ -151,8 +151,8 @@ export class ModalContainer extends LitElement {
         options.content = html`
           <div class="prompt">${appStore.i18n('destructive_confirmation_prompt').replace('$1', this.action.toUpperCase())}</div>
           <div class="delete-input">
-            <sp-textfield id="delete-confirmation"></sp-textfield>
-            <sp-help-text variant="negative">Sorry, please enter the text exactly as displayed to confirm.</sp-help-text>
+            <sp-textfield id="delete-confirmation" prompt=${this.action.toUpperCase()}></sp-textfield>
+            <sp-help-text variant="negative">${appStore.i18n('destructive_confirmation_invalid')}</sp-help-text>
           </div>
         `;
         break;
