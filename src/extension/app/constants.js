@@ -43,7 +43,9 @@ export const EXTERNAL_EVENTS = {
   STATUS_FETCHED: 'statusfetched',
   RESOURCE_UPDATED: 'updated',
   RESOURCE_PREVIEWED: 'previewed',
+  RESOURCE_DELETED: 'deleted',
   RESOURCE_PUBLISHED: 'published',
+  RESOURCE_UNPUBLISHED: 'unpublished',
   EVIRONMENT_SWITCHED: 'envswitched',
   PLUGIN_USED: 'pluginused',
 };

@@ -1,3 +1,15 @@
+# [1.10.0](https://github.com/adobe/aem-sidekick/compare/v1.9.0...v1.10.0) (2024-3-13)
+
+
+### Bug Fixes
+
+* remove commented styles ([e2b4523](https://github.com/adobe/aem-sidekick/commit/e2b452330d8e579f4f7042187301a124bc5d8f6a))
+
+
+### Features
+
+* spectrum 2 styling ([7e9f40a](https://github.com/adobe/aem-sidekick/commit/7e9f40a6718283ee9c2482c39b574ab130fa7cb4))
+
 # [1.9.0](https://github.com/adobe/aem-sidekick/compare/v1.8.0...v1.9.0) (2024-3-10)
 
 
