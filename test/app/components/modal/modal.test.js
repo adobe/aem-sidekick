@@ -193,6 +193,45 @@ describe('Modals', () => {
       expect(recursiveQuery(modal, 'sp-dialog-wrapper')).to.be.undefined;
     });
 
+    it('confirmed with enter key', async () => {
+      appStore.showModal({
+        type: MODALS.DELETE,
+      });
+
+      const confirmSpy = sandbox.spy();
+      const cancelSpy = sandbox.spy();
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      modal.addEventListener('confirm', confirmSpy);
+      modal.addEventListener('cancelled', cancelSpy);
+
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+      const event = new KeyboardEvent('keyup', {
+        key: 'Enter',
+      });
+      // To try to confirm without the correct text
+      document.dispatchEvent(event);
+
+      expect(dialogWrapper.querySelector('.delete-input.invalid')).to.exist;
+      expect(confirmSpy.calledOnce).to.be.false;
+      expect(cancelSpy.calledOnce).to.be.false;
+
+      const input = dialogWrapper.querySelector('sp-textfield');
+      input.value = 'DELETE';
+
+      // Confirm with the correct text
+      document.dispatchEvent(event);
+
+      expect(confirmSpy.calledOnce).to.be.true;
+      expect(cancelSpy.calledOnce).to.be.false;
+
+      await aTimeout(100);
+      expect(recursiveQuery(modal, 'sp-dialog-wrapper')).to.be.undefined;
+    });
+
     it('cancelled', async () => {
       appStore.showModal({
         type: MODALS.DELETE,
@@ -211,6 +250,33 @@ describe('Modals', () => {
       const cancelButton = recursiveQuery(dialogWrapper, 'sp-button[variant="secondary"]');
       expect(cancelButton).to.exist;
       cancelButton.click();
+
+      await aTimeout(100);
+      expect(confirmSpy.calledOnce).to.be.false;
+      expect(cancelSpy.calledOnce).to.be.true;
+      expect(recursiveQuery(modal, 'sp-dialog-wrapper')).to.be.undefined;
+    });
+
+    it('cancelled with esc key', async () => {
+      appStore.showModal({
+        type: MODALS.DELETE,
+      });
+
+      const confirmSpy = sandbox.spy();
+      const cancelSpy = sandbox.spy();
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      modal.addEventListener('confirm', confirmSpy);
+      modal.addEventListener('cancelled', cancelSpy);
+
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+      const event = new KeyboardEvent('keyup', {
+        key: 'Escape',
+      });
+      document.dispatchEvent(event);
 
       await aTimeout(100);
       expect(confirmSpy.calledOnce).to.be.false;

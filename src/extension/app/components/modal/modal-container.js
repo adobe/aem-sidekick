@@ -44,6 +44,12 @@ export class ModalContainer extends LitElement {
   accessor modal;
 
   /**
+   * The key handler
+   * @type {EventListener}
+   */
+  keyHandler;
+
+  /**
    * The modal Action
    * @type {string}
    */
@@ -67,10 +73,36 @@ export class ModalContainer extends LitElement {
   async connectedCallback() {
     super.connectedCallback();
 
+    // Listen for ESC or Enter key presses
+    this.keyHandler = this.createKeyHandler();
+    document.addEventListener('keyup', this.keyHandler);
+
     // Allow the modal to optionally be closed by an external close event
     EventBus.instance.addEventListener(EVENTS.CLOSE_MODAL, () => {
       this.cleanup();
     });
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener('keyup', this.keyHandler);
+  }
+
+  /**
+   * Creates an key press handler.
+   * @returns {EventListener} The key handler
+   */
+  createKeyHandler() {
+    /**
+     * @param {KeyboardEvent} e The keyboard event
+     */
+    return ({ key }) => {
+      if (key === 'Escape') {
+        this.onCancel();
+      } else if (key === 'Enter') {
+        this.onConfirm();
+      }
+    };
   }
 
   /**
