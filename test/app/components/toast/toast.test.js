@@ -13,15 +13,17 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, max-len */
 
 // @ts-ignore
-import { html } from 'lit';
 import {
-  fixture, expect, waitUntil, aTimeout,
+  expect, waitUntil, aTimeout,
 } from '@open-wc/testing';
-import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
-import { EVENTS } from '../../../../src/extension/app/constants.js';
+import { appStore } from '../../../../src/extension/app/store/app.js';
 import chromeMock from '../../../mocks/chrome.js';
-import '../../../../src/extension/index.js';
+import { AEMSidekick } from '../../../../src/extension/index.js';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
+import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
+import { mockFetchConfigWithoutPluginsJSONSuccess, mockFetchStatusSuccess } from '../../../mocks/helix-admin.js';
+import { mockHelixEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -31,23 +33,34 @@ window.chrome = chromeMock;
  */
 
 describe('Toasts', () => {
+  let sidekick;
+  beforeEach(async () => {
+    mockFetchEnglishMessagesSuccess();
+    mockFetchStatusSuccess();
+    mockFetchConfigWithoutPluginsJSONSuccess();
+    mockHelixEnvironment(document, 'preview');
+  });
+
+  afterEach(() => {
+    if (document.body.contains(sidekick)) {
+      document.body.removeChild(sidekick);
+    }
+    restoreEnvironment(document);
+  });
+
   it('renders wait modal and closes', async () => {
-    const element = await fixture(html`<theme-wrapper><toast-container></toast-container></theme-wrapper>`);
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.SHOW_TOAST, {
-      detail: {
-        message: 'Test Toast',
-        variant: 'info',
-      },
-    }));
+    sidekick = new AEMSidekick(defaultSidekickConfig);
+    document.body.appendChild(sidekick);
 
-    /**
-     * @type {ToastContainer}
-     */
-    const ToastContainer = element.querySelector('toast-container');
+    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-    await waitUntil(() => recursiveQuery(ToastContainer, 'sp-toast'));
+    appStore.showToast('Test Toast', 'info');
 
-    const toast = recursiveQuery(ToastContainer, 'sp-toast');
+    const toastContainer = recursiveQuery(sidekick, 'toast-container');
+
+    await waitUntil(() => recursiveQuery(toastContainer, 'sp-toast'));
+
+    const toast = recursiveQuery(toastContainer, 'sp-toast');
     expect(toast).to.exist;
     expect(toast.textContent).to.equal('Test Toast');
     expect(toast.getAttribute('variant')).to.equal('info');
@@ -57,33 +70,24 @@ describe('Toasts', () => {
     closeButton.click();
 
     await aTimeout(1);
-    expect(recursiveQuery(ToastContainer, 'sp-toast')).to.be.undefined;
+    expect(recursiveQuery(toastContainer, 'sp-toast')).to.be.undefined;
   });
 
   it('renders 1 toast at a time', async () => {
-    const element = await fixture(html`<theme-wrapper><toast-container></toast-container></theme-wrapper>`);
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.SHOW_TOAST, {
-      detail: {
-        message: 'Test Toast',
-        variant: 'info',
-      },
-    }));
+    sidekick = new AEMSidekick(defaultSidekickConfig);
+    document.body.appendChild(sidekick);
 
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.SHOW_TOAST, {
-      detail: {
-        message: 'Test Toast',
-        variant: 'info',
-      },
-    }));
+    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-    /**
-     * @type {ToastContainer}
-     */
-    const ToastContainer = element.querySelector('toast-container');
+    appStore.showToast('Test Toast 1', 'info');
 
-    await waitUntil(() => recursiveQuery(ToastContainer, 'sp-toast'));
+    appStore.showToast('Test Toast 2', 'info');
 
-    const toasts = [...recursiveQueryAll(ToastContainer, 'sp-toast')];
+    const toastContainer = recursiveQuery(sidekick, 'toast-container');
+
+    await waitUntil(() => recursiveQuery(toastContainer, 'sp-toast'));
+
+    const toasts = [...recursiveQueryAll(toastContainer, 'sp-toast')];
     expect(toasts.length).to.equal(1);
   });
 });

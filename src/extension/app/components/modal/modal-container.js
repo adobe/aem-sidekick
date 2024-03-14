@@ -10,11 +10,13 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-disable wc/no-constructor-params */
+
 import { customElement, property } from 'lit/decorators.js';
 import { html, LitElement } from 'lit';
 import { style } from './modal-container.css.js';
 import { EventBus } from '../../utils/event-bus.js';
-import { EVENTS, MODALS } from '../../constants.js';
+import { EVENTS, MODALS, MODAL_EVENTS } from '../../constants.js';
 import { appStore } from '../../store/app.js';
 
 /**
@@ -41,27 +43,70 @@ export class ModalContainer extends LitElement {
   @property({ type: Object })
   accessor modal;
 
+  /**
+   * The modal Action
+   * @type {string}
+   */
+  @property({ type: String })
+  accessor action;
+
   static get styles() {
     return [style];
+  }
+
+  /**
+   * Constructor
+   * @param {Modal} modal the modal details
+   */
+  constructor(modal) {
+    super();
+
+    this.modal = modal;
   }
 
   async connectedCallback() {
     super.connectedCallback();
 
-    EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, (e) => {
-      this.modal = e.detail;
-    });
-
+    // Allow the modal to optionally be closed by an external close event
     EventBus.instance.addEventListener(EVENTS.CLOSE_MODAL, () => {
-      this.modal = undefined;
+      this.cleanup();
     });
   }
 
   /**
-   * Called when the modal is closed
+   * Called when the modal is canceled
    */
-  closed() {
+  onCancel() {
+    this.dispatchEvent(new CustomEvent(MODAL_EVENTS.CANCELLED));
+    this.cleanup();
+  }
+
+  /**
+   * Called when the confirm button is clicked
+   */
+  onConfirm() {
+    if (this.modal.type === MODALS.DELETE) {
+      /**
+       * @type {HTMLInputElement}
+       */
+      const deleteConfirmation = this.shadowRoot.querySelector('#delete-confirmation');
+      if (deleteConfirmation.value !== this.action.toUpperCase()) {
+        const deleteInput = this.shadowRoot.querySelector('.delete-input');
+        deleteInput.classList.add('invalid');
+        return;
+      }
+    }
+    // Announces that the "confirm" button has been clicked.
+    this.dispatchEvent(new CustomEvent(MODAL_EVENTS.CONFIRM));
+    this.cleanup();
+  }
+
+  /**
+   * Cleanup the modal
+   */
+  cleanup() {
     this.modal = undefined;
+    this.remove();
   }
 
   /**
@@ -88,27 +133,49 @@ export class ModalContainer extends LitElement {
         break;
       case MODALS.ERROR:
         options.dismissable = false;
-        options.headline = data.headline || appStore.i18n('error');
-        options.confirmLabel = data.confirmLabel || appStore.i18n('ok');
+        options.headline = data?.headline ?? appStore.i18n('error');
+        options.confirmLabel = data?.confirmLabel ?? appStore.i18n('ok');
         options.content = html`
           ${data.message}
         `;
         break;
+      case MODALS.DELETE:
+        // eslint-disable-next-line no-case-declarations
+        this.action = data?.action ?? 'delete';
+        options.negative = true;
+        options.underlay = true;
+        options.error = true;
+        options.headline = data?.headline ?? appStore.i18n('destructive_confirmation').replace('$1', this.action);
+        options.confirmLabel = data?.confirmLabel ?? appStore.i18n('config_delete');
+        options.cancelLabel = appStore.i18n('cancel');
+        options.content = html`
+          <div class="prompt">${appStore.i18n('destructive_confirmation_prompt').replace('$1', this.action.toUpperCase())}</div>
+          <div class="delete-input">
+            <sp-textfield id="delete-confirmation"></sp-textfield>
+            <sp-help-text variant="negative">Sorry, please enter the text exactly as displayed to confirm.</sp-help-text>
+          </div>
+        `;
+        break;
       default:
+        this.cleanup();
         return html``;
     }
 
     return html`
-          <dialog-view
-              headline=${options.headline}
-              .dismissable=${options.dismissable}
-              ?underlay=${options.underlay}
-              confirm-label=${options.confirmLabel}
-              @close=${this.closed}
-              @confirm=${this.closed}
-          >
-              ${options.content}
-          </dialog-view>
+        <sp-dialog-wrapper
+            open
+            headline=${options.headline}
+            confirm-label=${options.confirmLabel}
+            cancel-label=${options.cancelLabel}
+            secondary-label=${options.secondaryLabel}
+            .dismissable=${options.dismissable}
+            .negative=${options.negative}
+            .underlay=${options.underlay}
+            .error=${options.error}
+            @confirm=${this.onConfirm}
+            @cancel=${this.onCancel}>
+            ${options.content}
+        </sp-dialog-wrapper>
       `;
   }
 

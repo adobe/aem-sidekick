@@ -32,7 +32,7 @@ import { getConfig } from '../../../config.js';
 export class PluginActionBar extends MobxLitElement {
   static styles = css`
     action-bar sp-action-group {
-      padding: 8px;
+      padding: 12px;
     }
 
     action-bar sp-action-group.not-authorized {

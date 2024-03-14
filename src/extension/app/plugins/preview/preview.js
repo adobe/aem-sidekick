@@ -22,8 +22,7 @@
  */
 
 import { SidekickPlugin } from '../../components/plugin/plugin.js';
-import { EVENTS, MODALS } from '../../constants.js';
-import { EventBus } from '../../utils/event-bus.js';
+import { MODALS } from '../../constants.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -70,14 +69,12 @@ export function createPreviewPlugin(appStore) {
               errorKey = 'error_preview_not_gsheet_ms_excel';
             }
 
-            EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-              detail: {
-                type: MODALS.ERROR,
-                data: {
-                  message: appStore.i18n(errorKey),
-                },
+            appStore.showModal({
+              type: MODALS.ERROR,
+              data: {
+                message: appStore.i18n(errorKey),
               },
-            }));
+            });
 
             return;
           }

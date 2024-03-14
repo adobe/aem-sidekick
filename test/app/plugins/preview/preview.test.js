@@ -29,8 +29,7 @@ import {
 import '../../../../src/extension/index.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
 import { HelixMockContentType, mockEditorAdminEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
-import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
-import { EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
+import { MODALS } from '../../../../src/extension/app/constants.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -137,8 +136,7 @@ describe('Preview plugin', () => {
       mockGdriveEditorFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
 
-      const modalSpy = sinon.spy();
-      EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
+      const modalSpy = sandbox.spy(appStore, 'showModal');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -152,15 +150,14 @@ describe('Preview plugin', () => {
 
       await waitUntil(() => modalSpy.calledOnce === true);
       expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.ERROR);
+      expect(modalSpy.args[0][0].type).to.equal(MODALS.ERROR);
     });
 
     it('previewing from gdrive editor - not a gdoc type', async () => {
       mockGdriveEditorFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
 
-      const modalSpy = sinon.spy();
-      EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
+      const modalSpy = sandbox.spy(appStore, 'showModal');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -175,15 +172,14 @@ describe('Preview plugin', () => {
 
       await waitUntil(() => modalSpy.calledOnce === true);
       expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.ERROR);
+      expect(modalSpy.args[0][0].type).to.equal(MODALS.ERROR);
     });
 
     it('previewing from gdrive editor - not a gsheet type', async () => {
       mockGdriveEditorFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
 
-      const modalSpy = sinon.spy();
-      EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
+      const modalSpy = sandbox.spy(appStore, 'showModal');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -198,7 +194,7 @@ describe('Preview plugin', () => {
 
       await waitUntil(() => modalSpy.calledOnce === true);
       expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.ERROR);
+      expect(modalSpy.args[0][0].type).to.equal(MODALS.ERROR);
     });
   });
 });

@@ -29,7 +29,6 @@ export const ENVS = {
  * @enum {string}
  */
 export const EVENTS = {
-  OPEN_MODAL: 'open-modal',
   CLOSE_MODAL: 'close-modal',
   SHOW_TOAST: 'show-toast',
   SHOW_CONFIRM: 'show-confirm',
@@ -60,6 +59,18 @@ export const EXTERNAL_EVENTS = {
 export const MODALS = {
   WAIT: 'wait',
   ERROR: 'error',
+  DELETE: 'delete',
+};
+
+/**
+ * Modal Events
+ * @enum {string}
+ */
+export const MODAL_EVENTS = {
+  CLOSED: 'closed',
+  CANCELLED: 'cancelled',
+  SECONDARY: 'secondary',
+  CONFIRM: 'confirm',
 };
 
 /**

@@ -19,7 +19,6 @@ export const style = css`
     --mod-popover-border-color: var(--spectrum2-sidekick-border-color);
     --mod-popover-corner-radius: var(--spectrum2-sidekick-border-radius);
     --mod-popover-filter: var(--spectrum2-sidekick-backdrop-filter);
-    --mod-divider-background-color: var(--spectrum2-sidekick-border-color);
     --mod-divider-thickness: 1px;
   }
 
