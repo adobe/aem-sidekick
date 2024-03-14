@@ -14,7 +14,7 @@
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
-import { expect, waitUntil } from '@open-wc/testing';
+import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
@@ -105,9 +105,7 @@ describe('Preview plugin', () => {
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-      await new Promise((resolve) => {
-        setTimeout(resolve, 500);
-      });
+      await aTimeout(500);
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
 
