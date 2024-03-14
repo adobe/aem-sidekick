@@ -770,6 +770,7 @@ describe('Test App Store', () => {
 
   describe('delete', async () => {
     const deletePath = '/delete-path';
+
     let sandbox;
     let fakeFetch;
     let instance;
@@ -801,14 +802,10 @@ describe('Test App Store', () => {
         ok: true, status: 200, headers, json: () => Promise.resolve({}),
       });
 
-      const response = await instance.delete();
+      const resp = await instance.delete();
 
-      expect(response).to.deep.equal({
-        ok: true,
-        status: 200,
-        path: deletePath,
-        error: '',
-      });
+      expect(resp.path).to.equal(deletePath);
+      expect(resp.error).to.equal('');
       sinon.assert.calledWith(instance.fireEvent, 'deleted', deletePath);
     });
 
@@ -828,19 +825,27 @@ describe('Test App Store', () => {
         ok: true, status: 200, headers, json: () => Promise.resolve({}),
       });
 
-      const response = await instance.delete();
+      const resp = await instance.delete();
 
-      expect(response).to.deep.equal({
-        ok: true,
-        status: 200,
-        path: deletePath,
-        error: '',
-      });
+      expect(resp.path).to.equal(deletePath);
+      expect(resp.error).to.equal('');
       expect(unpublishStub.calledOnce).to.be.true;
       sinon.assert.calledWith(instance.fireEvent, 'deleted', deletePath);
     });
 
-    it('handles server error', async () => {
+    it('only deletes content', async () => {
+      instance.isContent.returns(false);
+      instance.status = {
+        webPath: deletePath,
+      };
+
+      const resp = await instance.delete();
+
+      expect(resp).to.equal(null);
+      expect(fakeFetch.called).to.be.false;
+    });
+
+    it('handles network error', async () => {
       const consoleSpy = sandbox.spy(console, 'log');
       instance.isContent.returns(true);
       instance.status = { webPath: deletePath };
@@ -969,6 +974,72 @@ describe('Test App Store', () => {
       const resp = await instance.publish('/somepath');
 
       expect(resp.error).to.eq('Some error');
+    });
+  });
+
+  describe('unpublish', async () => {
+    const unpublishPath = '/unpublish-path';
+    let sandbox;
+    let fakeFetch;
+    let instance;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+      fakeFetch = sandbox.stub(window, 'fetch');
+      instance = appStore;
+
+      // Mock other functions
+      sandbox.stub(instance, 'isContent');
+      sandbox.stub(instance, 'isEditor');
+      sandbox.stub(instance, 'isPreview');
+      sandbox.stub(instance, 'isDev');
+      sandbox.stub(instance, 'fireEvent');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('deletes content from live', async () => {
+      instance.isContent.returns(true);
+      instance.status = { webPath: unpublishPath };
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({}),
+      });
+
+      const resp = await instance.unpublish();
+
+      expect(resp.path).to.equal(unpublishPath);
+      expect(resp.error).to.equal('');
+      sinon.assert.calledWith(instance.fireEvent, 'unpublished', unpublishPath);
+    });
+
+    it('only unpublishes content', async () => {
+      instance.isContent.returns(false);
+      instance.status = {
+        webPath: unpublishPath,
+      };
+
+      const resp = await instance.unpublish();
+
+      expect(resp).to.equal(null);
+      expect(fakeFetch.called).to.be.false;
+    });
+
+    it('handles network error', async () => {
+      const consoleSpy = sandbox.spy(console, 'log');
+      instance.isContent.returns(true);
+      instance.status = { webPath: unpublishPath };
+
+      fakeFetch.throws(error);
+
+      const resp = await instance.unpublish();
+
+      expect(resp.error).to.equal(error.message);
+      expect(consoleSpy.calledWithMatch('failed to unpublish', unpublishPath, error)).to.be.true;
     });
   });
 
