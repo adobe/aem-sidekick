@@ -809,6 +809,11 @@ export class AppStore {
     const { siteStore, status } = this;
     const path = status.webPath;
 
+    // delete content only
+    if (!this.isContent()) {
+      return null;
+    }
+
     /**
      * @type {AdminResponse}
      */
@@ -886,7 +891,8 @@ export class AppStore {
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('failed to publish', path, e);
+      console.log('failed to publish', path, e);
+      resp.error = e.message;
     }
     resp.path = path;
     resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
@@ -899,6 +905,7 @@ export class AppStore {
    * @returns {Promise<AdminResponse>} The response object
    */
   async unpublish() {
+    // unpublish content only
     if (!this.isContent()) {
       return null;
     }
@@ -921,7 +928,8 @@ export class AppStore {
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, path);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('failed to unpublish', path, e);
+      console.log('failed to unpublish', path, e);
+      resp.error = e.message;
     }
     resp.path = path;
     resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
