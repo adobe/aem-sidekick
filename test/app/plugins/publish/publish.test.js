@@ -14,7 +14,7 @@
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
-import { expect, waitUntil } from '@open-wc/testing';
+import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
@@ -72,6 +72,7 @@ describe('Preview plugin', () => {
       console.log('PUBLISH PLUGIN', publishPlugin);
       publishPlugin.click();
 
+      await aTimeout(500);
       await waitUntil(() => publishStub.calledOnce === true);
 
       expect(publishStub.calledOnce).to.be.true;
