@@ -70,7 +70,7 @@ describe('Preview plugin', () => {
       expect(previewPlugin.textContent.trim()).to.equal('Preview');
 
       console.log('PREVIEW PLUGIN', previewPlugin);
-      previewPlugin.click();
+      previewPlugin.dispatchEvent(new Event('click'));
 
       await aTimeout(500);
       console.log('PREVIEW CALLED ONCE', updatePreviewSpy.calledOnce);

@@ -76,7 +76,7 @@ describe('Reload plugin', () => {
     const reloadPlugin = recursiveQuery(sidekick, '.reload');
     expect(reloadPlugin.textContent.trim()).to.equal('Reload');
 
-    reloadPlugin.click();
+    reloadPlugin.dispatchEvent(new Event('click'));
 
     await aTimeout(500);
 

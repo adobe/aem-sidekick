@@ -70,7 +70,7 @@ describe('Preview plugin', () => {
       expect(publishPlugin.textContent.trim()).to.equal('Publish');
 
       console.log('PUBLISH PLUGIN', publishPlugin);
-      publishPlugin.click();
+      publishPlugin.dispatchEvent(new Event('click'));
 
       await aTimeout(500);
       await waitUntil(() => publishStub.calledOnce === true);
