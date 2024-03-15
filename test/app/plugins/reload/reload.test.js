@@ -75,8 +75,9 @@ describe('Reload plugin', () => {
 
     const reloadPlugin = recursiveQuery(sidekick, '.reload');
     expect(reloadPlugin.textContent.trim()).to.equal('Reload');
+    await waitUntil(() => reloadPlugin.getAttribute('disabled') === null);
 
-    reloadPlugin.dispatchEvent(new Event('click'));
+    reloadPlugin.click();
 
     await aTimeout(500);
 

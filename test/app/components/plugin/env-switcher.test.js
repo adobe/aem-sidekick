@@ -61,6 +61,7 @@ describe('Environment Switcher', () => {
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
       const button = recursiveQuery(picker, '#button');
+      await waitUntil(() => button.getAttribute('disabled') === null);
 
       button.click();
 
@@ -97,6 +98,7 @@ describe('Environment Switcher', () => {
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
       const button = recursiveQuery(picker, '#button');
+      await waitUntil(() => button.getAttribute('disabled') === null);
 
       button.click();
 
