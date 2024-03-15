@@ -60,11 +60,12 @@ describe('Preview plugin', () => {
       console.log('1');
       mockSharepointEditorDocFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor');
-      const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
-      const tipToast = sandbox.stub(appStore, 'showToast').returns();
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
+
+      const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
+      const tipToast = sandbox.stub(appStore, 'showToast').returns();
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
