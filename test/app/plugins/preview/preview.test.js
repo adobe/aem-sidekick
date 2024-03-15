@@ -55,7 +55,8 @@ describe('Preview plugin', () => {
   });
 
   describe('switching between environments', () => {
-    it('previewing from sharepoint editor - docx', async () => {
+    it('previewing from sharepoint editor - docx', async function previewSPDocx() {
+      this.timeout(2000);
       mockSharepointEditorDocFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor');
       const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
@@ -74,7 +75,7 @@ describe('Preview plugin', () => {
       await waitUntil(() => updatePreviewSpy.calledOnce);
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(tipToast.calledOnce).to.be.true;
-    }).timeout(2000);
+    });
 
     it('previewing from sharepoint editor - sheet', async () => {
       mockSharepointEditorSheetFetchStatusSuccess();
