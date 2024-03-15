@@ -70,11 +70,11 @@ describe('Preview plugin', () => {
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
       expect(previewPlugin.textContent.trim()).to.equal('Preview');
+      await aTimeout(500);
 
       console.log('PREVIEW PLUGIN', previewPlugin);
       previewPlugin.dispatchEvent(new Event('click'));
 
-      await aTimeout(500);
       console.log('PREVIEW CALLED ONCE', updatePreviewSpy.calledOnce);
       console.log('PREVIEW CALLED TWICE', updatePreviewSpy.calledTwice);
       console.log('PREVIEW CALLED THRICE', updatePreviewSpy.calledThrice);
