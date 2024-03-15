@@ -97,9 +97,11 @@ export class SidekickPlugin {
    * @param {Event} evt The event object
    */
   async onButtonClick(evt) {
+    console.log('plugin button clicked');
     const { config, id } = this;
     await config.appStore.validateSession();
     config.appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, { id });
+    console.log('firing action', config.button, config.button.action);
     config.button.action(evt);
   }
 
