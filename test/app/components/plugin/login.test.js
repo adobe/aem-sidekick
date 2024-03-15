@@ -87,13 +87,11 @@ describe('Login', () => {
       openStub.restore();
     }
 
-    it('Successful login ', async function loginTest() {
-      this.timeout(20000);
+    it('Successful login ', async () => {
       await login();
-    });
+    }).timeout(20000);
 
-    it('Successful logout ', async function logoutTest() {
-      this.timeout(20000);
+    it('Successful logout ', async () => {
       await login();
 
       // @ts-ignore
@@ -110,6 +108,6 @@ describe('Login', () => {
       logoutButton.click();
       await waitUntil(() => recursiveQuery(sidekick, 'dialog-view'));
       openStub.restore();
-    });
+    }).timeout(20000);
   });
 });

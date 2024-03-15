@@ -112,8 +112,7 @@ describe('Test project', () => {
     sinon.restore();
   });
 
-  it('getProject', async function getProjectTest() {
-    this.timeout(5000);
+  it('getProject', async () => {
     // get project without handle
     const none = await getProject();
     expect(none).to.be.undefined;
@@ -124,7 +123,7 @@ describe('Test project', () => {
     // get project with config object
     await getProject({ owner: 'foo', repo: 'bar1' });
     expect(stub.withArgs('foo/bar1').callCount).to.equal(2);
-  });
+  }).timeout(5000);
 
   it('getProjects', async () => {
     const fake = sinon.fake(async (prop) => {

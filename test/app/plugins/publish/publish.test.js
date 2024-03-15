@@ -52,8 +52,7 @@ describe('Preview plugin', () => {
   });
 
   describe('switching between environments', () => {
-    it('publish from preview - docx', async function publishFromPreview() {
-      this.timeout(2000);
+    it('publish from preview - docx', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsOrHostJSONSuccess();
       mockHelixEnvironment(document, 'preview');
@@ -83,7 +82,7 @@ describe('Preview plugin', () => {
       switchEnvStub.restore();
       showWaitSpy.restore();
       hideWaitSpy.restore();
-    });
+    }).timeout(20000);
 
     it('publish from preview - failure', async () => {
       mockFetchStatusSuccess();

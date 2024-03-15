@@ -1101,8 +1101,7 @@ describe('Test App Store', () => {
       sandbox.restore();
     });
 
-    it('should attempt to check login status up to 5 times after login window is closed', async function checkLoginStatusTest() {
-      this.timeout(20000);
+    it('should attempt to check login status up to 5 times after login window is closed', async () => {
       const modalSpy = sinon.spy();
       EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
 
@@ -1120,10 +1119,9 @@ describe('Test App Store', () => {
 
       expect(modalSpy.callCount).to.equal(2);
       expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
-    });
+    }).timeout(20000);
 
-    it('handles successful login correctly', async function handleLoginTest() {
-      this.timeout(20000);
+    it('handles successful login correctly', async () => {
       instance.sidekick = document.createElement('div');
       getProfileStub.onCall(0).resolves(false);
       getProfileStub.onCall(4).resolves({ name: 'foo' }); // Simulate success on the 5th attempt
@@ -1145,7 +1143,7 @@ describe('Test App Store', () => {
       expect(setupCorePluginsStub.called).to.be.true;
       expect(fetchStatusStub.called).to.be.true;
       expect(hideWaitStub.calledOnce).to.be.true;
-    });
+    }).timeout(20000);
   });
 
   describe('logout', () => {
@@ -1168,8 +1166,7 @@ describe('Test App Store', () => {
       sandbox.restore();
     });
 
-    it('should attempt to check logout status up to 5 times after login window is closed', async function checkLogoutStatusTest() {
-      this.timeout(20000);
+    it('should attempt to check logout status up to 5 times after login window is closed', async () => {
       const modalSpy = sinon.spy();
       getProfileStub = sandbox.stub(appStore, 'getProfile');
       getProfileStub.resolves({ name: 'foo' });
@@ -1186,10 +1183,9 @@ describe('Test App Store', () => {
 
       expect(modalSpy.callCount).to.equal(2);
       expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
-    });
+    }).timeout(20000);
 
-    it('handles successful logout correctly', async function handleLogoutTest() {
-      this.timeout(20000);
+    it('handles successful logout correctly', async () => {
       mockFetchStatusSuccess();
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
 
@@ -1220,7 +1216,7 @@ describe('Test App Store', () => {
 
       await waitUntil(() => statusEventSpy.calledTwice, 'Status should fire twice');
       expect(statusEventSpy.calledTwice).to.be.true;
-    });
+    }).timeout(20000);
   });
 
   describe('validateSession tests', () => {
