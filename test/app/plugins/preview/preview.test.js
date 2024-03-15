@@ -74,7 +74,7 @@ describe('Preview plugin', () => {
       await waitUntil(() => updatePreviewSpy.calledOnce);
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(tipToast.calledOnce).to.be.true;
-    });
+    }).timeout(2000);
 
     it('previewing from sharepoint editor - sheet', async () => {
       mockSharepointEditorSheetFetchStatusSuccess();
