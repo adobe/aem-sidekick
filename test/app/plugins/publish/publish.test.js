@@ -14,7 +14,7 @@
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
-import { aTimeout, expect, waitUntil } from '@open-wc/testing';
+import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
@@ -69,15 +69,7 @@ describe('Preview plugin', () => {
       const publishPlugin = recursiveQuery(sidekick, '.publish');
       expect(publishPlugin.textContent.trim()).to.equal('Publish');
       await waitUntil(() => publishPlugin.getAttribute('disabled') === null);
-
-      console.log('PUBLISH PLUGIN', publishPlugin);
       publishPlugin.click();
-
-      await aTimeout(500);
-
-      console.log('PUBLISH CALLED ONCE', publishStub.calledOnce);
-      console.log('PUBLISH CALLED TWICE', publishStub.calledTwice);
-      console.log('PUBLISH CALLED THRICE', publishStub.calledThrice);
 
       await waitUntil(() => publishStub.calledOnce === true);
 
@@ -90,7 +82,7 @@ describe('Preview plugin', () => {
       switchEnvStub.restore();
       showWaitSpy.restore();
       hideWaitSpy.restore();
-    }).timeout(20000);
+    });
 
     it('publish from preview - failure', async () => {
       mockFetchStatusSuccess();
