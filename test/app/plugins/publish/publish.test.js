@@ -38,6 +38,8 @@ window.chrome = chromeMock;
 
 describe('Preview plugin', () => {
   let sidekick;
+  const sandbox = sinon.createSandbox();
+
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
   });
@@ -46,6 +48,7 @@ describe('Preview plugin', () => {
     document.body.removeChild(sidekick);
     fetchMock.reset();
     restoreEnvironment(document);
+    sandbox.restore();
   });
 
   describe('switching between environments', () => {
@@ -53,10 +56,10 @@ describe('Preview plugin', () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsOrHostJSONSuccess();
       mockHelixEnvironment(document, 'preview');
-      const publishStub = sinon.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
-      const switchEnvStub = sinon.stub(appStore, 'switchEnv').returns();
-      const showWaitSpy = sinon.spy(appStore, 'showWait');
-      const hideWaitSpy = sinon.spy(appStore, 'hideWait');
+      const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
+      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').returns();
+      const showWaitSpy = sandbox.spy(appStore, 'showWait');
+      const hideWaitSpy = sandbox.spy(appStore, 'hideWait');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -79,16 +82,16 @@ describe('Preview plugin', () => {
       switchEnvStub.restore();
       showWaitSpy.restore();
       hideWaitSpy.restore();
-    });
+    }).timeout(2000);
 
     it('publish from preview - failure', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
       mockHelixEnvironment(document, 'preview');
-      const publishStub = sinon.stub(appStore, 'publish').resolves({ ok: false, status: 500 });
-      const showWaitSpy = sinon.spy(appStore, 'showWait');
+      const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: false, status: 500 });
+      const showWaitSpy = sandbox.spy(appStore, 'showWait');
 
-      const modalSpy = sinon.spy();
+      const modalSpy = sandbox.spy();
       EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
