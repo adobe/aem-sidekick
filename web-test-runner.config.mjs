@@ -41,9 +41,4 @@ export default {
       <script type="module" src="${testFramework}"></script>
     </body>
   </html>`,
-  testFramework: {
-    config: {
-      timeout: 2000,
-    },
-  },
 };
