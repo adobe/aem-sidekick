@@ -38,8 +38,10 @@ export function createPublishPlugin(appStore) {
         const { location } = appStore;
         const path = location.pathname;
         appStore.showWait();
+        console.log('publish action clicked');
         const res = await appStore.publish(path);
         if (res.ok) {
+          console.log('publish action status ok');
           appStore.hideWait();
           appStore.switchEnv('prod', newTab(evt));
         } else {

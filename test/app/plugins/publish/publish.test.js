@@ -73,6 +73,11 @@ describe('Preview plugin', () => {
       publishPlugin.dispatchEvent(new Event('click'));
 
       await aTimeout(500);
+
+      console.log('PUBLISH CALLED ONCE', publishStub.calledOnce);
+      console.log('PUBLISH CALLED TWICE', publishStub.calledTwice);
+      console.log('PUBLISH CALLED THRICE', publishStub.calledThrice);
+
       await waitUntil(() => publishStub.calledOnce === true);
 
       expect(publishStub.calledOnce).to.be.true;
