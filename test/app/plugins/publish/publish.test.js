@@ -68,9 +68,10 @@ describe('Preview plugin', () => {
 
       const publishPlugin = recursiveQuery(sidekick, '.publish');
       expect(publishPlugin.textContent.trim()).to.equal('Publish');
+      await waitUntil(() => publishPlugin.getAttribute('disabled') === null);
 
       console.log('PUBLISH PLUGIN', publishPlugin);
-      publishPlugin.dispatchEvent(new Event('click'));
+      publishPlugin.click();
 
       await aTimeout(500);
 

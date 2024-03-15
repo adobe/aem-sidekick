@@ -71,6 +71,7 @@ describe('Preview plugin', () => {
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
       expect(previewPlugin.textContent.trim()).to.equal('Preview');
+      await waitUntil(() => previewPlugin.getAttribute('disabled') === null);
 
       console.log('PREVIEW PLUGIN', previewPlugin);
       previewPlugin.click();
