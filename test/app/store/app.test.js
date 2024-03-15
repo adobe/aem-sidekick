@@ -36,6 +36,7 @@ import { EVENTS, MODALS } from '../../../src/extension/app/constants.js';
 import { mockHelixEnvironment, restoreEnvironment } from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
 import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
+import { error } from '../../test-utils.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -394,14 +395,39 @@ describe('Test App Store', () => {
     });
   });
 
+  describe('reloadPage', async () => {
+    const sandbox = sinon.createSandbox();
+    let openPageStub;
+    let loadPageStub;
+
+    beforeEach(() => {
+      openPageStub = sandbox.stub(appStore, 'openPage');
+      loadPageStub = sandbox.stub(appStore, 'loadPage');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('opens a new tab', async () => {
+      appStore.reloadPage(true);
+      expect(openPageStub.calledOnce).to.be.true;
+    });
+
+    it('reloads the current tab', async () => {
+      appStore.reloadPage();
+      expect(loadPageStub.calledOnce).to.be.true;
+    });
+  });
+
   describe('switchEnv', async () => {
-    let sandbox;
+    const mockStatus = defaultSharepointStatusResponse;
+    const sandbox = sinon.createSandbox();
     let openPage;
     let loadPage;
     let instance;
 
     beforeEach(() => {
-      sandbox = sinon.createSandbox();
       sandbox.stub(window, 'fetch').resolves(new Response(JSON.stringify({
         webPath: '/somepath',
       })));
@@ -410,8 +436,8 @@ describe('Test App Store', () => {
         owner: 'adobe',
         repo: 'aem-boilerplate',
         ref: 'main',
-        innerHost: new URL(defaultSharepointStatusResponse.preview.url).hostname,
-        outerHost: new URL(defaultSharepointStatusResponse.live.url).hostname,
+        innerHost: new URL(mockStatus.preview.url).hostname,
+        outerHost: new URL(mockStatus.live.url).hostname,
         devUrl: new URL('https://localhost:3000'),
       };
 
@@ -429,61 +455,61 @@ describe('Test App Store', () => {
     });
 
     it('switches from editor to preview', async () => {
-      instance.location = new URL(defaultSharepointStatusResponse.edit.url);
-      instance.status = defaultSharepointStatusResponse;
+      instance.location = new URL(mockStatus.edit.url);
+      instance.status = mockStatus;
       await instance.switchEnv('preview');
-      expect(openPage.calledWith(defaultSharepointStatusResponse.preview.url)).to.be.true;
+      expect(openPage.calledWith(mockStatus.preview.url)).to.be.true;
     });
 
     it('switches from preview to editor', async () => {
-      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
-      instance.status = defaultSharepointStatusResponse;
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
       await instance.switchEnv('edit');
-      expect(loadPage.calledWith(defaultSharepointStatusResponse.edit.url)).to.be.true;
+      expect(loadPage.calledWith(mockStatus.edit.url)).to.be.true;
     });
 
     it('switches from live to preview', async () => {
-      instance.location = new URL(defaultSharepointStatusResponse.live.url);
-      instance.status = defaultSharepointStatusResponse;
+      instance.location = new URL(mockStatus.live.url);
+      instance.status = mockStatus;
       await instance.switchEnv('preview');
-      expect(loadPage.calledWith(defaultSharepointStatusResponse.preview.url)).to.be.true;
+      expect(loadPage.calledWith(mockStatus.preview.url)).to.be.true;
     });
 
     it('switches from preview to live opening a new window', async () => {
-      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
-      instance.status = defaultSharepointStatusResponse;
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
       await instance.switchEnv('live', true);
-      expect(openPage.calledWith(defaultSharepointStatusResponse.live.url)).to.be.true;
+      expect(openPage.calledWith(mockStatus.live.url)).to.be.true;
     });
 
     it('switches from preview to dev', async () => {
-      instance.location = new URL(defaultSharepointStatusResponse.live.url);
-      instance.status = defaultSharepointStatusResponse;
+      instance.location = new URL(mockStatus.live.url);
+      instance.status = mockStatus;
       await instance.switchEnv('dev');
       const devUrl = new URL(
-        new URL(defaultSharepointStatusResponse.preview.url).pathname,
+        new URL(mockStatus.preview.url).pathname,
         'https://localhost:3000',
       );
       expect(loadPage.calledWith(devUrl.href)).to.be.true;
     });
 
     it('switches to live instead of prod', async () => {
-      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
-      instance.status = defaultSharepointStatusResponse;
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
       await instance.switchEnv('prod');
-      expect(loadPage.calledWith(defaultSharepointStatusResponse.live.url)).to.be.true;
+      expect(loadPage.calledWith(mockStatus.live.url)).to.be.true;
     });
 
     it('aborts on invaid target env', async () => {
-      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
-      instance.status = defaultSharepointStatusResponse;
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
       await instance.switchEnv('foo');
       expect(openPage.calledOnce).to.be.false;
       expect(loadPage.calledOnce).to.be.false;
     });
 
     it('aborts on status error', async () => {
-      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
+      instance.location = new URL(mockStatus.preview.url);
       instance.status.error = 'some error occurred';
       await instance.switchEnv('live');
       expect(openPage.calledOnce).to.be.false;
@@ -492,7 +518,7 @@ describe('Test App Store', () => {
 
     it('retries if status not ready yet', async () => {
       const consoleSpy = sandbox.spy(console, 'log');
-      instance.location = new URL(defaultSharepointStatusResponse.preview.url);
+      instance.location = new URL(mockStatus.preview.url);
       instance.status = {};
       await instance.switchEnv('live');
       expect(consoleSpy.calledWith('not ready yet, trying again in a second ...')).to.be.true;
@@ -742,6 +768,97 @@ describe('Test App Store', () => {
     });
   });
 
+  describe('delete', async () => {
+    const deletePath = '/delete-path';
+
+    let sandbox;
+    let fakeFetch;
+    let instance;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+      fakeFetch = sandbox.stub(window, 'fetch');
+      instance = appStore;
+
+      // Mock other functions
+      sandbox.stub(instance, 'isContent');
+      sandbox.stub(instance, 'isEditor');
+      sandbox.stub(instance, 'isPreview');
+      sandbox.stub(instance, 'isDev');
+      sandbox.stub(instance, 'fireEvent');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('deletes unpublished content from preview', async () => {
+      instance.isContent.returns(true);
+      instance.status = { webPath: deletePath };
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({}),
+      });
+
+      const resp = await instance.delete();
+
+      expect(resp.path).to.equal(deletePath);
+      expect(resp.error).to.equal('');
+      sinon.assert.calledWith(instance.fireEvent, 'deleted', deletePath);
+    });
+
+    it('deletes published content from preview and live', async () => {
+      const unpublishStub = sandbox.stub(instance, 'unpublish');
+      instance.isContent.returns(true);
+      instance.status = {
+        webPath: deletePath,
+        live: {
+          lastModified: '2023-01-01T00:00:00Z',
+        },
+      };
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({}),
+      });
+
+      const resp = await instance.delete();
+
+      expect(resp.path).to.equal(deletePath);
+      expect(resp.error).to.equal('');
+      expect(unpublishStub.calledOnce).to.be.true;
+      sinon.assert.calledWith(instance.fireEvent, 'deleted', deletePath);
+    });
+
+    it('only deletes content', async () => {
+      instance.isContent.returns(false);
+      instance.status = {
+        webPath: deletePath,
+      };
+
+      const resp = await instance.delete();
+
+      expect(resp).to.equal(null);
+      expect(fakeFetch.called).to.be.false;
+    });
+
+    it('handles network error', async () => {
+      const consoleSpy = sandbox.spy(console, 'log');
+      instance.isContent.returns(true);
+      instance.status = { webPath: deletePath };
+
+      fakeFetch.throws(error);
+
+      const response = await instance.delete();
+
+      expect(response.error).to.equal(error.message);
+      expect(consoleSpy.calledWith('failed to delete', deletePath, error)).to.be.true;
+    });
+  });
+
   describe('publish', () => {
     let instance;
     let isContentStub;
@@ -857,6 +974,72 @@ describe('Test App Store', () => {
       const resp = await instance.publish('/somepath');
 
       expect(resp.error).to.eq('Some error');
+    });
+  });
+
+  describe('unpublish', async () => {
+    const unpublishPath = '/unpublish-path';
+    let sandbox;
+    let fakeFetch;
+    let instance;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+      fakeFetch = sandbox.stub(window, 'fetch');
+      instance = appStore;
+
+      // Mock other functions
+      sandbox.stub(instance, 'isContent');
+      sandbox.stub(instance, 'isEditor');
+      sandbox.stub(instance, 'isPreview');
+      sandbox.stub(instance, 'isDev');
+      sandbox.stub(instance, 'fireEvent');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('deletes content from live', async () => {
+      instance.isContent.returns(true);
+      instance.status = { webPath: unpublishPath };
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({}),
+      });
+
+      const resp = await instance.unpublish();
+
+      expect(resp.path).to.equal(unpublishPath);
+      expect(resp.error).to.equal('');
+      sinon.assert.calledWith(instance.fireEvent, 'unpublished', unpublishPath);
+    });
+
+    it('only unpublishes content', async () => {
+      instance.isContent.returns(false);
+      instance.status = {
+        webPath: unpublishPath,
+      };
+
+      const resp = await instance.unpublish();
+
+      expect(resp).to.equal(null);
+      expect(fakeFetch.called).to.be.false;
+    });
+
+    it('handles network error', async () => {
+      const consoleSpy = sandbox.spy(console, 'log');
+      instance.isContent.returns(true);
+      instance.status = { webPath: unpublishPath };
+
+      fakeFetch.throws(error);
+
+      const resp = await instance.unpublish();
+
+      expect(resp.error).to.equal(error.message);
+      expect(consoleSpy.calledWithMatch('failed to unpublish', unpublishPath, error)).to.be.true;
     });
   });
 

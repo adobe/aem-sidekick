@@ -47,6 +47,10 @@ export class PluginActionBar extends MobxLitElement {
       width: 32px;
       height: 32px;
     }
+
+    sp-divider {
+      background-color: var(--spectrum2-sidekick-border-color);
+    }
   `;
 
   /**

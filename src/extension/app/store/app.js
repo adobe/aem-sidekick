@@ -537,7 +537,7 @@ export class AppStore {
   }
 
   /**
-   * Loads the provided URL in the current window. Abstracted for testing.
+   * Navigates to the provided URL in the current window. Abstracted for testing.
    * @param {string} url The URL to load
    */
   // istanbul ignore next 3
@@ -830,6 +830,51 @@ export class AppStore {
   }
 
   /**
+   * Deletes the current resource from preview and unpublishes it if published.
+   * @fires Sidekick#deleted
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async delete() {
+    const { siteStore, status } = this;
+    const path = status.webPath;
+
+    // delete content only
+    if (!this.isContent()) {
+      return null;
+    }
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
+    try {
+      // delete preview
+      resp = await fetch(
+        getAdminUrl(siteStore, 'preview', path),
+        {
+          method: 'DELETE',
+          ...getAdminFetchOptions(),
+        },
+      );
+      // also unpublish if published
+      if (status.live && status.live.lastModified) {
+        await this.unpublish();
+      }
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('failed to delete', path, e);
+      resp.error = e.message;
+    }
+    return {
+      ok: resp.ok || false,
+      status: resp.status || 0,
+      error: (resp.headers && resp.headers.get('x-error')) || resp.error || '',
+      path,
+    };
+  }
+
+  /**
    * Publishes the page at the specified path if <code>config.host</code> is defined.
    * @param {string} path The path of the page to publish
    * @fires Sidekick#published
@@ -875,10 +920,48 @@ export class AppStore {
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('failed to publish', path, e);
+      console.log('failed to publish', path, e);
+      resp.error = e.message;
     }
     resp.path = path;
-    resp.error = (resp.headers && resp.headers.get('x-error')) || '';
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
+    return resp;
+  }
+
+  /**
+   * Unpublishes the current page.
+   * @fires Sidekick#unpublished
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async unpublish() {
+    // unpublish content only
+    if (!this.isContent()) {
+      return null;
+    }
+    const { siteStore, status } = this;
+    const path = status.webPath;
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
+    try {
+      // delete live
+      resp = await fetch(
+        getAdminUrl(siteStore, 'live', path),
+        {
+          method: 'DELETE',
+          ...getAdminFetchOptions(),
+        },
+      );
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('failed to unpublish', path, e);
+      resp.error = e.message;
+    }
+    resp.path = path;
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
     return resp;
   }
 
@@ -936,7 +1019,6 @@ export class AppStore {
     if (open || this.isEditor()) {
       this.openPage(envUrl, open
         ? '' : `hlx-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
-      this.hideWait();
     } else {
       this.loadPage(envUrl);
     }
