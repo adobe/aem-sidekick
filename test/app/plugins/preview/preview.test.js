@@ -70,7 +70,6 @@ describe('Preview plugin', () => {
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
       expect(previewPlugin.textContent.trim()).to.equal('Preview');
-      await aTimeout(500);
 
       console.log('PREVIEW PLUGIN', previewPlugin);
       previewPlugin.click();
