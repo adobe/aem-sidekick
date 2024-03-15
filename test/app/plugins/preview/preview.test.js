@@ -47,7 +47,8 @@ describe('Preview plugin', () => {
   afterEach(() => {
     const { body } = document;
     if (body.contains(sidekick)) {
-      document.body.removeChild(sidekick);
+      console.log('sidekick cleaned up');
+      body.removeChild(sidekick);
     }
     fetchMock.reset();
     sandbox.restore();
@@ -56,6 +57,7 @@ describe('Preview plugin', () => {
 
   describe('switching between environments', () => {
     it('previewing from sharepoint editor - docx', async () => {
+      console.log('1');
       mockSharepointEditorDocFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor');
       const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
@@ -76,13 +78,16 @@ describe('Preview plugin', () => {
       console.log('PREVIEW CALLED ONCE', updatePreviewSpy.calledOnce);
       console.log('PREVIEW CALLED TWICE', updatePreviewSpy.calledTwice);
       console.log('PREVIEW CALLED THRICE', updatePreviewSpy.calledThrice);
+      console.log('SPY', appStore.updatePreview);
 
       await waitUntil(() => updatePreviewSpy.calledOnce, null, { timeout: 5000 });
+      console.log('PREVIEW CALLED ONCE AFTER', updatePreviewSpy.calledOnce);
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(tipToast.calledOnce).to.be.true;
     }).timeout(20000);
 
     it('previewing from sharepoint editor - sheet', async () => {
+      console.log('2');
       mockSharepointEditorSheetFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor', HelixMockContentType.SHEET);
       const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
@@ -120,6 +125,7 @@ describe('Preview plugin', () => {
     });
 
     it('previewing from gdrive editor - doc', async () => {
+      console.log('3');
       mockGdriveEditorFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
       const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
