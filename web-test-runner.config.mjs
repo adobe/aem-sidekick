@@ -21,6 +21,7 @@ export default {
   nodeResolve: true,
   port: 2000,
   coverage: true,
+  testsFinishTimeout: 20000,
   coverageConfig: {
     include: ['./src/**/*'],
     report: true,
