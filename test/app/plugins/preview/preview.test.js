@@ -73,18 +73,18 @@ describe('Preview plugin', () => {
       await aTimeout(500);
 
       console.log('PREVIEW PLUGIN', previewPlugin);
-      previewPlugin.dispatchEvent(new Event('click'));
+      previewPlugin.click();
 
       console.log('PREVIEW CALLED ONCE', updatePreviewSpy.calledOnce);
       console.log('PREVIEW CALLED TWICE', updatePreviewSpy.calledTwice);
       console.log('PREVIEW CALLED THRICE', updatePreviewSpy.calledThrice);
       console.log('SPY', appStore.updatePreview);
 
-      await waitUntil(() => updatePreviewSpy.calledOnce, null, { timeout: 5000 });
+      await waitUntil(() => updatePreviewSpy.calledOnce === true);
       console.log('PREVIEW CALLED ONCE AFTER', updatePreviewSpy.calledOnce);
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(tipToast.calledOnce).to.be.true;
-    }).timeout(20000);
+    });
 
     it('previewing from sharepoint editor - sheet', async () => {
       console.log('2');
