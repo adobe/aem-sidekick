@@ -7,7 +7,7 @@
     "analyze": "cem analyze --litelement",
     "lint": "eslint .",
     "test:watch": "npm run test -- --watch",
-    "test": "wtr \"./test/**/*.test.js\" --debug",
+    "test": "wtr \"./test/**/*.test.js\"",
     "docs": "npx jsdoc2md -c .jsdoc.json --files './src/*.js'  > docs/API.md",
     "semantic-release": "semantic-release",
     "build:watch": "rimraf dist && npm run build && node build/watch.js",
