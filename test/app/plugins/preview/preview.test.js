@@ -72,6 +72,11 @@ describe('Preview plugin', () => {
       console.log('PREVIEW PLUGIN', previewPlugin);
       previewPlugin.click();
 
+      await aTimeout(500);
+      console.log('PREVIEW CALLED ONCE', updatePreviewSpy.calledOnce);
+      console.log('PREVIEW CALLED TWICE', updatePreviewSpy.calledTwice);
+      console.log('PREVIEW CALLED THRICE', updatePreviewSpy.calledThrice);
+
       await waitUntil(() => updatePreviewSpy.calledOnce, null, { timeout: 5000 });
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(tipToast.calledOnce).to.be.true;

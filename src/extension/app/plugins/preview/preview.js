@@ -45,6 +45,7 @@ export function createPreviewPlugin(appStore) {
     button: {
       text: appStore.i18n('preview'),
       action: async () => {
+        console.log('preview action clicked');
         const { status, location } = appStore;
         if (status.edit && status.edit.sourceLocation
             && status.edit.sourceLocation.startsWith('onedrive:')
