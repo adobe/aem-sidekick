@@ -48,8 +48,7 @@ describe('Environment Switcher', () => {
   });
 
   describe('switching between environments', () => {
-    it('change environment - preview -> live', async function peviewLive() {
-      this.timeout(20000);
+    it('change environment - preview -> live', async () => {
       mockFetchStatusSuccess();
       mockHelixEnvironment(document, 'preview');
 
@@ -83,7 +82,7 @@ describe('Environment Switcher', () => {
       expect(switchEnvStub.calledWith('live', false)).to.be.true;
 
       switchEnvStub.restore();
-    });
+    }).timeout(20000);
 
     it('change environment - preview -> live (with meta key)', async () => {
       mockFetchStatusSuccess();
