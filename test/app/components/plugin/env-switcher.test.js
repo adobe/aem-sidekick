@@ -48,8 +48,7 @@ describe('Environment Switcher', () => {
   });
 
   describe('switching between environments', () => {
-    it('change environment - preview -> live', async function switchPreviewLive() {
-      this.timeout(20000);
+    it('change environment - preview -> live', async () => {
       mockFetchStatusSuccess();
       mockHelixEnvironment(document, 'preview');
 
@@ -65,7 +64,7 @@ describe('Environment Switcher', () => {
 
       button.click();
 
-      await waitUntil(() => recursiveQuery(picker, 'sp-popover'));
+      await waitUntil(() => recursiveQuery(picker, 'sp-popover'), null, { timeout: 2000 });
 
       const overlay = recursiveQuery(picker, 'sp-overlay');
 
@@ -83,10 +82,9 @@ describe('Environment Switcher', () => {
       expect(switchEnvStub.calledWith('live', false)).to.be.true;
 
       switchEnvStub.restore();
-    });
+    }).timeout(20000);
 
-    it('change environment - preview -> live (with meta key)', async function switchPreviewLiveMeta() {
-      this.timeout(20000);
+    it('change environment - preview -> live (with meta key)', async () => {
       mockFetchStatusSuccess();
       mockHelixEnvironment(document, 'preview');
 
@@ -126,7 +124,7 @@ describe('Environment Switcher', () => {
       expect(switchEnvStub.calledWith('live', true)).to.be.true;
 
       switchEnvStub.restore();
-    });
+    }).timeout(20000);
 
     it('live out of date - should show status light', async () => {
       mockFetchStatusSuccess({
