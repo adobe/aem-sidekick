@@ -14,7 +14,7 @@
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
-import { expect, waitUntil } from '@open-wc/testing';
+import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
@@ -74,8 +74,11 @@ describe('Reload plugin', () => {
 
     const reloadPlugin = recursiveQuery(sidekick, '.reload');
     expect(reloadPlugin.textContent.trim()).to.equal('Reload');
+    await waitUntil(() => reloadPlugin.getAttribute('disabled') === null);
 
     reloadPlugin.click();
+
+    await aTimeout(500);
 
     await waitUntil(() => updateStub.calledOnce === true);
 

@@ -11,6 +11,7 @@
  */
 
 import { MODALS } from '../../constants.js';
+import { SidekickPlugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 
 /**
@@ -24,10 +25,10 @@ import { newTab } from '../../utils/browser.js';
 /**
  * Creates the publish plugin
  * @param {AppStore} appStore The app store
- * @returns {CorePlugin} The publish plugin
+ * @returns {SidekickPlugin} The publish plugin
  */
 export function createPublishPlugin(appStore) {
-  return {
+  return new SidekickPlugin({
     id: 'publish',
     condition: (store) => store.isProject() && store.isContent(),
     button: {
@@ -55,5 +56,6 @@ export function createPublishPlugin(appStore) {
       isEnabled: (store) => store.isAuthorized('live', 'write') && store.status.edit
           && store.status.edit.url, // enable only if edit url exists
     },
-  };
+    appStore,
+  });
 }

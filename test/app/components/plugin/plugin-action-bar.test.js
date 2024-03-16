@@ -29,6 +29,7 @@ import {
   mockFetchStatusUnauthorized,
   mockFetchConfigWithPluginsJSONSuccess,
   mockFetchConfigWithoutPluginsJSONSuccess,
+  mockFetchConfigWithUnpinnedPluginJSONSuccess,
   mockFetchStatusSuccess,
   mockFetchConfigWithoutPluginsOrHostJSONSuccess,
 } from '../../../mocks/helix-admin.js';
@@ -42,6 +43,7 @@ import {
 import { EXTERNAL_EVENTS } from '../../../../src/extension/app/constants.js';
 import { pluginFactory } from '../../../../src/extension/app/plugins/plugin-factory.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
+import { SidekickPlugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -129,6 +131,22 @@ describe('Plugin action bar', () => {
       // Should fallback to id for label if title not provided
       const assetLibraryPlugin = recursiveQuery(sidekick, '.asset-library');
       expect(assetLibraryPlugin.textContent.trim()).to.equal('asset-library');
+    });
+
+    it('editor - w/unpinned plugin', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithUnpinnedPluginJSONSuccess();
+      mockSharepointEditorDocFetchStatusSuccess();
+      mockEditorAdminEnvironment(document, 'editor');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expectPluginCount(2);
+
+      expect(recursiveQuery(sidekick, '.custom-plugin-0')).to.equal(undefined);
     });
 
     it('isLive', async () => {
@@ -250,14 +268,15 @@ describe('Plugin action bar', () => {
       // Create a spy for the action function
       const actionSpy = sinon.spy(actionFunction);
 
-      const stub = sinon.stub(pluginFactory, 'createPublishPlugin').returns({
+      const stub = sinon.stub(pluginFactory, 'createPublishPlugin').returns(new SidekickPlugin({
         id: 'publish',
         condition: () => true,
         button: {
           text: 'Publish',
           action: actionSpy,
         },
-      });
+        appStore,
+      }));
 
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();

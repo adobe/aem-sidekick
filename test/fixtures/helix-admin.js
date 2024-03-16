@@ -109,6 +109,19 @@ export const defaultConfigJSONWithPlugins = {
   ],
 };
 
+export const defaultConfigJSONWithUnpinnedPlugin = {
+  ...defaultConfigJSONWithHost,
+  plugins: [
+    {
+      title: 'Pin me',
+      pinned: false,
+      event: 'foo',
+      excludePaths: ['/**'],
+      includePaths: ['**/HelixProjects/**'],
+    },
+  ],
+};
+
 /**
  * status request stubs
  */

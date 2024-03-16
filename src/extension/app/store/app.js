@@ -25,6 +25,7 @@ import {
   ENVS, EVENTS, EXTERNAL_EVENTS, MODALS,
 } from '../constants.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
+import { SidekickPlugin } from '../components/plugin/plugin.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
 import { ToastContainer } from '../components/toast/toast-container.js';
@@ -93,13 +94,13 @@ export class AppStore {
 
   /**
    * Dictionary of language keys
-   * @type {Object.<string, CorePlugin>}
+   * @type {Object.<string, SidekickPlugin>}
    */
   @observable accessor corePlugins;
 
   /**
    * Dictionary of language keys
-   * @type {Object.<string, CustomPlugin>}
+   * @type {Object.<string, SidekickPlugin>}
    */
   @observable accessor customPlugins;
 
@@ -170,7 +171,7 @@ export class AppStore {
     this.corePlugins = {};
 
     if (this.siteStore.authorized) {
-      const envPlugin = pluginFactory.createEnvPlugin();
+      const envPlugin = pluginFactory.createEnvPlugin(this);
       const previewPlugin = pluginFactory.createPreviewPlugin(this);
       const reloadPlugin = pluginFactory.createReloadPlugin(this);
       const publishPlugin = pluginFactory.createPublishPlugin(this);
@@ -194,10 +195,11 @@ export class AppStore {
       if (plugins && Array.isArray(plugins)) {
         plugins.forEach((cfg, i) => {
           const {
-            id,
-            title,
+            id = `custom-plugin-${i}`,
+            title = id,
             titleI18n,
             url,
+            pinned,
             passConfig,
             passReferrer,
             isPalette,
@@ -238,10 +240,10 @@ export class AppStore {
             // assemble plugin config
           const plugin = {
             custom: true,
-            id: id || `custom-plugin-${i}`,
+            id,
             condition,
             button: {
-              text: (titleI18n && titleI18n[lang]) || title || '',
+              text: (titleI18n && titleI18n[lang]) || title,
               action: () => {
                 if (url) {
                   const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
@@ -263,7 +265,7 @@ export class AppStore {
                     }));
                   } else {
                     // open url in new window
-                    window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
+                    this.openPage(target.toString(), `hlx-sk-${id || `custom-plugin-${i}`}`);
                   }
                 } else if (eventName) {
                   // fire custom event
@@ -272,17 +274,24 @@ export class AppStore {
               },
               isDropdown: isContainer,
             },
+            pinned,
             container: containerId,
+            appStore: this,
           };
           // check if this overlaps with a core plugin, if so override the condition only
           const corePlugin = this.corePlugins[plugin.id];
           if (corePlugin) {
             // extend default condition
-            const { condition: defaultCondition } = corePlugin;
-            corePlugin.condition = (s) => defaultCondition(s) && condition(s);
+            const { condition: defaultCondition } = corePlugin.config;
+            corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
           } else {
             // add custom plugin
-            this.customPlugins[plugin.id] = plugin;
+            const customPlugin = new SidekickPlugin(plugin);
+            if (plugin.container) {
+              this.customPlugins[plugin.container]?.append(customPlugin);
+            } else {
+              this.customPlugins[plugin.id] = customPlugin;
+            }
           }
         });
       }
@@ -497,6 +506,25 @@ export class AppStore {
     return modalContainer;
   }
 
+  /*
+   * Returns the currebnt environment
+   * @returns {string} the current environment
+   */
+  getEnv() {
+    return [
+      'isEditor',
+      'isPreview',
+      'isLive',
+      'isProd',
+      'isAdmin',
+      'isDev',
+    ]
+      .filter((method) => this[method]())
+      .map((method) => method.substring(2)) // cut off 'is'
+      .join('')
+      .toLowerCase();
+  }
+
   /**
    * Displays a wait modal
    * @param {string} [message] The message to display
@@ -541,6 +569,7 @@ export class AppStore {
 
   /**
    * Reloads the current page. Abstracted for testing.
+   * @param {boolean} [newTab] Open current page in a new tab
    */
   reloadPage(newTab) {
     if (newTab) {
@@ -1008,7 +1037,6 @@ export class AppStore {
     //   customViewUrl.searchParams.set('path', status.webPath);
     //   envUrl = customViewUrl;
     // }
-
     // switch or open env
     if (open || this.isEditor()) {
       this.openPage(envUrl, open

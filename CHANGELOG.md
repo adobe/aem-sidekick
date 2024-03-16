@@ -1,3 +1,27 @@
+# [1.12.0](https://github.com/adobe/aem-sidekick/compare/v1.11.0...v1.12.0) (2024-3-16)
+
+
+### Bug Fixes
+
+* url cache entry expiry always in the past ([75f4f30](https://github.com/adobe/aem-sidekick/commit/75f4f30ea50d4ab7ef068b6a52d066555bc5fba8))
+
+
+### Features
+
+* pinned plugins ([#89](https://github.com/adobe/aem-sidekick/issues/89)) ([467adad](https://github.com/adobe/aem-sidekick/commit/467adad2f67c833a1d773886879c66b1ecb22426))
+
+# [1.11.0](https://github.com/adobe/aem-sidekick/compare/v1.10.0...v1.11.0) (2024-3-14)
+
+
+### Bug Fixes
+
+* reentry injects a new sidekick every time ([4a56118](https://github.com/adobe/aem-sidekick/commit/4a56118b99a132aac212e330656168dd7b4d28e0))
+
+
+### Features
+
+* delete and unpublish API ([26f661b](https://github.com/adobe/aem-sidekick/commit/26f661b96a30d7a8acbf17c1c1360053c2803fe3))
+
 # [1.10.0](https://github.com/adobe/aem-sidekick/compare/v1.9.0...v1.10.0) (2024-3-13)
 
 
