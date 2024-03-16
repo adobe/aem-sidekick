@@ -1,3 +1,39 @@
+# [1.12.0](https://github.com/adobe/aem-sidekick/compare/v1.11.0...v1.12.0) (2024-3-16)
+
+
+### Bug Fixes
+
+* url cache entry expiry always in the past ([75f4f30](https://github.com/adobe/aem-sidekick/commit/75f4f30ea50d4ab7ef068b6a52d066555bc5fba8))
+
+
+### Features
+
+* pinned plugins ([#89](https://github.com/adobe/aem-sidekick/issues/89)) ([467adad](https://github.com/adobe/aem-sidekick/commit/467adad2f67c833a1d773886879c66b1ecb22426))
+
+# [1.11.0](https://github.com/adobe/aem-sidekick/compare/v1.10.0...v1.11.0) (2024-3-14)
+
+
+### Bug Fixes
+
+* reentry injects a new sidekick every time ([4a56118](https://github.com/adobe/aem-sidekick/commit/4a56118b99a132aac212e330656168dd7b4d28e0))
+
+
+### Features
+
+* delete and unpublish API ([26f661b](https://github.com/adobe/aem-sidekick/commit/26f661b96a30d7a8acbf17c1c1360053c2803fe3))
+
+# [1.10.0](https://github.com/adobe/aem-sidekick/compare/v1.9.0...v1.10.0) (2024-3-13)
+
+
+### Bug Fixes
+
+* remove commented styles ([e2b4523](https://github.com/adobe/aem-sidekick/commit/e2b452330d8e579f4f7042187301a124bc5d8f6a))
+
+
+### Features
+
+* spectrum 2 styling ([7e9f40a](https://github.com/adobe/aem-sidekick/commit/7e9f40a6718283ee9c2482c39b574ab130fa7cb4))
+
 # [1.9.0](https://github.com/adobe/aem-sidekick/compare/v1.8.0...v1.9.0) (2024-3-10)
 
 

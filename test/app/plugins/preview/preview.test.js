@@ -14,7 +14,7 @@
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
-import { expect, waitUntil } from '@open-wc/testing';
+import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
@@ -47,7 +47,7 @@ describe('Preview plugin', () => {
   afterEach(() => {
     const { body } = document;
     if (body.contains(sidekick)) {
-      document.body.removeChild(sidekick);
+      body.removeChild(sidekick);
     }
     fetchMock.reset();
     sandbox.restore();
@@ -58,20 +58,22 @@ describe('Preview plugin', () => {
     it('previewing from sharepoint editor - docx', async () => {
       mockSharepointEditorDocFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor');
-      const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
-      const tipToast = sandbox.stub(appStore, 'showToast').returns();
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
+
+      const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
+      const tipToast = sandbox.stub(appStore, 'showToast').returns();
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
       expect(previewPlugin.textContent.trim()).to.equal('Preview');
+      await waitUntil(() => previewPlugin.getAttribute('disabled') === null);
 
       previewPlugin.click();
 
-      await waitUntil(() => updatePreviewSpy.calledOnce);
+      await waitUntil(() => updatePreviewSpy.calledOnce === true);
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(tipToast.calledOnce).to.be.true;
     });
@@ -105,6 +107,7 @@ describe('Preview plugin', () => {
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await aTimeout(500);
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
 

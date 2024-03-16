@@ -539,7 +539,7 @@ export class AppStore {
   }
 
   /**
-   * Loads the provided URL in the current window. Abstracted for testing.
+   * Navigates to the provided URL in the current window. Abstracted for testing.
    * @param {string} url The URL to load
    */
   // istanbul ignore next 3
@@ -857,7 +857,17 @@ export class AppStore {
   async delete() {
     const { siteStore, status } = this;
     const path = status.webPath;
-    let resp;
+
+    // delete content only
+    if (!this.isContent()) {
+      return null;
+    }
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
+
     try {
       // delete preview
       resp = await fetch(
@@ -875,10 +885,12 @@ export class AppStore {
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log('failed to delete', path, e);
+      resp.error = e.message;
     }
     return {
-      ok: (resp && resp.ok) || false,
-      status: (resp && resp.status) || 0,
+      ok: resp.ok || false,
+      status: resp.status || 0,
+      error: (resp.headers && resp.headers.get('x-error')) || resp.error || '',
       path,
     };
   }
@@ -929,10 +941,11 @@ export class AppStore {
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('failed to publish', path, e);
+      console.log('failed to publish', path, e);
+      resp.error = e.message;
     }
     resp.path = path;
-    resp.error = (resp.headers && resp.headers.get('x-error')) || '';
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
     return resp;
   }
 
@@ -942,6 +955,7 @@ export class AppStore {
    * @returns {Promise<AdminResponse>} The response object
    */
   async unpublish() {
+    // unpublish content only
     if (!this.isContent()) {
       return null;
     }
@@ -951,7 +965,7 @@ export class AppStore {
     /**
      * @type {AdminResponse}
      */
-    let resp;
+    let resp = {};
     try {
       // delete live
       resp = await fetch(
@@ -964,8 +978,11 @@ export class AppStore {
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, path);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('failed to unpublish', path, e);
+      console.log('failed to unpublish', path, e);
+      resp.error = e.message;
     }
+    resp.path = path;
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
     return resp;
   }
 
@@ -1023,7 +1040,6 @@ export class AppStore {
     if (open || this.isEditor()) {
       this.openPage(envUrl, open
         ? '' : `hlx-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
-      this.hideWait();
     } else {
       this.loadPage(envUrl);
     }

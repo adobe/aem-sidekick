@@ -158,6 +158,7 @@ export class SidekickPlugin {
 
     const isEnabled = typeof config.button?.isEnabled === 'function'
       ? config.button.isEnabled : () => true;
+
     return html`
       <sp-action-button 
         class=${config.id} 

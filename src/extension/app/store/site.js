@@ -11,7 +11,7 @@
  */
 
 // import { property } from 'lit/decorators.js';
-import { action } from 'mobx';
+import { observable, action } from 'mobx';
 import { log } from '../../log.js';
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import { getLanguage } from '../utils/i18n.js';
@@ -174,9 +174,7 @@ export class SiteStore {
    * Has the store been initialized?
    * @type {boolean}
    */
-  // @property({ type: Boolean, attribute: false })
-  // accessor ready = false;
-  ready = false;
+  @observable accessor ready = false;
 
   /**
    * @param {AppStore} appStore
