@@ -21,6 +21,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { SidekickPlugin } from '../../components/plugin/plugin.js';
 import { EVENTS, MODALS } from '../../constants.js';
 import { EventBus } from '../../utils/event-bus.js';
 
@@ -35,10 +36,10 @@ import { EventBus } from '../../utils/event-bus.js';
 /**
  * Creates the preview plugin
  * @param {AppStore} appStore The app store
- * @returns {CorePlugin} The preview plugin
+ * @returns {SidekickPlugin} The preview plugin
  */
 export function createPreviewPlugin(appStore) {
-  return {
+  return new SidekickPlugin({
     id: 'edit-preview',
     condition: (store) => store.isEditor(),
     button: {
@@ -114,5 +115,6 @@ export function createPreviewPlugin(appStore) {
         }, { once: true });
       }
     },
-  };
+    appStore,
+  });
 }

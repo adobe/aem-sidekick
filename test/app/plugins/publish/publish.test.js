@@ -38,6 +38,8 @@ window.chrome = chromeMock;
 
 describe('Preview plugin', () => {
   let sidekick;
+  const sandbox = sinon.createSandbox();
+
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
   });
@@ -46,6 +48,7 @@ describe('Preview plugin', () => {
     document.body.removeChild(sidekick);
     fetchMock.reset();
     restoreEnvironment(document);
+    sandbox.restore();
   });
 
   describe('switching between environments', () => {
@@ -53,10 +56,10 @@ describe('Preview plugin', () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsOrHostJSONSuccess();
       mockHelixEnvironment(document, 'preview');
-      const publishStub = sinon.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
-      const switchEnvStub = sinon.stub(appStore, 'switchEnv').returns();
-      const showWaitSpy = sinon.spy(appStore, 'showWait');
-      const hideWaitSpy = sinon.spy(appStore, 'hideWait');
+      const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
+      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').returns();
+      const showWaitSpy = sandbox.spy(appStore, 'showWait');
+      const hideWaitSpy = sandbox.spy(appStore, 'hideWait');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -65,7 +68,7 @@ describe('Preview plugin', () => {
 
       const publishPlugin = recursiveQuery(sidekick, '.publish');
       expect(publishPlugin.textContent.trim()).to.equal('Publish');
-
+      await waitUntil(() => publishPlugin.getAttribute('disabled') === null);
       publishPlugin.click();
 
       await waitUntil(() => publishStub.calledOnce === true);
@@ -85,10 +88,10 @@ describe('Preview plugin', () => {
       mockFetchStatusSuccess();
       mockFetchConfigJSONNotFound();
       mockHelixEnvironment(document, 'preview');
-      const publishStub = sinon.stub(appStore, 'publish').resolves({ ok: false, status: 500 });
-      const showWaitSpy = sinon.spy(appStore, 'showWait');
+      const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: false, status: 500 });
+      const showWaitSpy = sandbox.spy(appStore, 'showWait');
 
-      const modalSpy = sinon.spy();
+      const modalSpy = sandbox.spy();
       EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
 
       sidekick = new AEMSidekick(defaultSidekickConfig);

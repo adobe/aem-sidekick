@@ -10,17 +10,20 @@
  * governing permissions and limitations under the License.
  */
 
+import { SidekickPlugin } from '../../components/plugin/plugin.js';
+
 /**
  * @typedef {import('@Types').CorePlugin} CorePlugin
  */
 
 /**
  * Creates the env plugin
- * @returns {CorePlugin} The env plugin
+ * @returns {SidekickPlugin} The env plugin
  */
-export function createEnvPlugin() {
-  return {
+export function createEnvPlugin(appStore) {
+  return new SidekickPlugin({
     id: 'env-switcher',
     condition: (store) => !store.isAdmin(),
-  };
+    appStore,
+  });
 }
