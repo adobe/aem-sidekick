@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/adobe/aem-sidekick/compare/v1.12.0...v1.13.0) (2024-3-16)
+
+
+### Features
+
+* rework modals and toast + destructive modal support ([#96](https://github.com/adobe/aem-sidekick/issues/96)) ([20ef535](https://github.com/adobe/aem-sidekick/commit/20ef5352dc63097d6d2217ef0ffc02648c05414a))
+
 # [1.12.0](https://github.com/adobe/aem-sidekick/compare/v1.11.0...v1.12.0) (2024-3-16)
 
 
