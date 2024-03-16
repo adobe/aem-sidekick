@@ -240,8 +240,8 @@ describe('Modals', () => {
       const confirmSpy = sandbox.spy();
       const cancelSpy = sandbox.spy();
       const modal = recursiveQuery(sidekick, 'modal-container');
-      modal.addEventListener('confirm', confirmSpy);
-      modal.addEventListener('cancelled', cancelSpy);
+      modal.addEventListener(MODAL_EVENTS.CONFIRM, confirmSpy);
+      modal.addEventListener(MODAL_EVENTS.CANCEL, cancelSpy);
 
       await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
 
