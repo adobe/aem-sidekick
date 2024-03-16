@@ -22,4 +22,23 @@ export const style = css`
   .wait-dialog span {
     font-size: 1.125rem;
   }
+
+  sp-dialog-wrapper sp-textfield {
+    width: 100%;
+  }
+
+  sp-dialog-wrapper .delete-input {
+    padding-top: 8px;
+  }
+
+  sp-dialog-wrapper .delete-input sp-help-text {
+    display: none;
+    font-size: 12px;
+    padding-top: 4px;
+    color: var(--spectrum-negative-color-900);
+  }
+
+  sp-dialog-wrapper .delete-input.invalid sp-help-text {
+    display: block;
+  }
 `;

@@ -10,10 +10,9 @@
  * governing permissions and limitations under the License.
  */
 
+import { MODALS } from '../../constants.js';
 import { SidekickPlugin } from '../../components/plugin/plugin.js';
-import { EVENTS, MODALS } from '../../constants.js';
 import { newTab } from '../../utils/browser.js';
-import { EventBus } from '../../utils/event-bus.js';
 import { i18n } from '../../utils/i18n.js';
 
 /**
@@ -47,14 +46,12 @@ export function createReloadPlugin(appStore) {
           appStore.hideWait();
           appStore.reloadPage(newTab(evt));
         } catch (e) {
-          EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-            detail: {
-              type: MODALS.ERROR,
-              data: {
-                message: i18n(appStore.languageDict, 'reload_failure'),
-              },
+          appStore.showModal({
+            type: MODALS.ERROR,
+            data: {
+              message: appStore.i18n('reload_failure'),
             },
-          }));
+          });
         }
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write')
