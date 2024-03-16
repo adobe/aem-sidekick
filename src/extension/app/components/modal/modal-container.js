@@ -16,7 +16,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { html, LitElement } from 'lit';
 import { style } from './modal-container.css.js';
 import { EventBus } from '../../utils/event-bus.js';
-import { EVENTS, MODALS, MODAL_EVENTS } from '../../constants.js';
+import { MODALS, MODAL_EVENTS } from '../../constants.js';
 import { appStore } from '../../store/app.js';
 
 /**
@@ -78,7 +78,7 @@ export class ModalContainer extends LitElement {
     document.addEventListener('keyup', this.keyHandler);
 
     // Allow the modal to optionally be closed by an external close event
-    EventBus.instance.addEventListener(EVENTS.CLOSE_MODAL, () => {
+    EventBus.instance.addEventListener(MODAL_EVENTS.CLOSE, () => {
       this.cleanup();
     });
   }
@@ -109,7 +109,7 @@ export class ModalContainer extends LitElement {
    * Called when the modal is canceled
    */
   onCancel() {
-    this.dispatchEvent(new CustomEvent(MODAL_EVENTS.CANCELLED));
+    this.dispatchEvent(new CustomEvent(MODAL_EVENTS.CANCEL));
     this.cleanup();
   }
 

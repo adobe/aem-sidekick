@@ -22,7 +22,7 @@ import {
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
-  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS,
+  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS,
 } from '../constants.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
 import { KeyboardListener } from '../utils/keyboard.js';
@@ -491,7 +491,7 @@ export class AppStore {
     return false;
   }
 
-  /**
+  /*
    * Returns the currebnt environment
    * @returns {string} the current environment
    */
@@ -546,7 +546,7 @@ export class AppStore {
    * Hides the modal
    */
   hideWait() {
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_MODAL));
+    EventBus.instance.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
   }
 
   /**
@@ -646,7 +646,7 @@ export class AppStore {
    * @param {string} [variant] The variant of the toast (optional)
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
-  showToast(message, variant = 'info', timeout = 2000) {
+  showToast(message, variant = 'info', timeout = 6000) {
     const existingToast = this.sidekick?.shadowRoot?.querySelector('theme-wrapper').querySelector('toast-container');
     if (existingToast) {
       existingToast.remove();
@@ -660,24 +660,6 @@ export class AppStore {
     this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(toastContainer);
 
     return toastContainer;
-  }
-
-  /**
-   * Displays a confirm dialog
-   * @param {string} message The message to display
-   * @param {Function} exec The action to execute upon confirmation
-   * @param {string} [confirmLabel] The label of the confirm button (default: OK)
-   * @param {boolean} [destructive] Use the destructive variant (optional)
-   */
-  showConfirm(message, exec, confirmLabel, destructive) {
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.SHOW_CONFIRM, {
-      detail: {
-        message,
-        action: exec,
-        confirmLabel,
-        destructive,
-      },
-    }));
   }
 
   /**
