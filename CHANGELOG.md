@@ -1,3 +1,15 @@
+# [1.12.0](https://github.com/adobe/aem-sidekick/compare/v1.11.0...v1.12.0) (2024-3-16)
+
+
+### Bug Fixes
+
+* url cache entry expiry always in the past ([75f4f30](https://github.com/adobe/aem-sidekick/commit/75f4f30ea50d4ab7ef068b6a52d066555bc5fba8))
+
+
+### Features
+
+* pinned plugins ([#89](https://github.com/adobe/aem-sidekick/issues/89)) ([467adad](https://github.com/adobe/aem-sidekick/commit/467adad2f67c833a1d773886879c66b1ecb22426))
+
 # [1.11.0](https://github.com/adobe/aem-sidekick/compare/v1.10.0...v1.11.0) (2024-3-14)
 
 
