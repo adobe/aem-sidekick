@@ -491,8 +491,8 @@ export class AppStore {
     return false;
   }
 
-  /*
-   * Returns the currebnt environment
+  /**
+   * Returns the current environment.
    * @returns {string} the current environment
    */
   getEnv() {
