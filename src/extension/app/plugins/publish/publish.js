@@ -11,7 +11,6 @@
  */
 
 import { MODALS } from '../../constants.js';
-import { SidekickPlugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 
 /**
