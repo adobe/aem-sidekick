@@ -37,13 +37,16 @@ window.chrome = chromeMock;
 
 describe('Login', () => {
   let sidekick;
+  let sandbox;
   beforeEach(async () => {
+    sandbox = sinon.createSandbox();
     mockFetchEnglishMessagesSuccess();
   });
 
   afterEach(() => {
     document.body.removeChild(sidekick);
     fetchMock.reset();
+    sandbox.restore();
     restoreEnvironment(document);
   });
 
@@ -55,8 +58,8 @@ describe('Login', () => {
       mockHelixEnvironment(document, 'preview');
 
       // @ts-ignore
-      const openStub = sinon.stub(appStore, 'openPage').returns({ closed: true });
-      const modalSpy = sinon.spy(appStore, 'showModal');
+      const openStub = sandbox.stub(appStore, 'openPage').returns({ closed: true });
+      const modalSpy = sandbox.spy(appStore, 'showModal');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -81,9 +84,6 @@ describe('Login', () => {
       expect(modalSpy.calledOnce).to.be.true;
       expect(modalSpy.args[0][0].type).to.equal(MODALS.WAIT);
       expect(openStub.calledOnce).to.be.true;
-
-      openStub.restore();
-      modalSpy.restore();
     }
 
     it('Successful login ', async () => {
@@ -93,8 +93,6 @@ describe('Login', () => {
     it('Successful logout ', async () => {
       await login();
 
-      // @ts-ignore
-      const openStub = sinon.stub(appStore, 'openPage').returns({ closed: true });
       const accountElement = recursiveQuery(sidekick, 'login-button');
       const accountButton = recursiveQuery(accountElement, 'sp-action-button');
       accountButton.click();
@@ -106,7 +104,6 @@ describe('Login', () => {
       const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
       logoutButton.click();
       await waitUntil(() => recursiveQuery(sidekick, 'sp-dialog-wrapper'));
-      openStub.restore();
     }).timeout(20000);
   });
 });

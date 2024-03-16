@@ -18,7 +18,7 @@ import {
   expect, waitUntil, aTimeout,
 } from '@open-wc/testing';
 import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
-import { EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
+import { MODALS, MODAL_EVENTS } from '../../../../src/extension/app/constants.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/index.js';
 import { recursiveQuery } from '../../../test-utils.js';
@@ -74,7 +74,7 @@ describe('Modals', () => {
 
     expect(dialogWrapper.getAttribute('open')).to.equal('');
 
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_MODAL));
+    EventBus.instance.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
 
     expect(modal.modal).to.be.undefined;
   });
@@ -240,8 +240,8 @@ describe('Modals', () => {
       const confirmSpy = sandbox.spy();
       const cancelSpy = sandbox.spy();
       const modal = recursiveQuery(sidekick, 'modal-container');
-      modal.addEventListener('confirm', confirmSpy);
-      modal.addEventListener('cancelled', cancelSpy);
+      modal.addEventListener(MODAL_EVENTS.CONFIRM, confirmSpy);
+      modal.addEventListener(MODAL_EVENTS.CANCEL, cancelSpy);
 
       await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
 
@@ -265,8 +265,8 @@ describe('Modals', () => {
       const confirmSpy = sandbox.spy();
       const cancelSpy = sandbox.spy();
       const modal = recursiveQuery(sidekick, 'modal-container');
-      modal.addEventListener('confirm', confirmSpy);
-      modal.addEventListener('cancelled', cancelSpy);
+      modal.addEventListener(MODAL_EVENTS.CONFIRM, confirmSpy);
+      modal.addEventListener(MODAL_EVENTS.CANCEL, cancelSpy);
 
       await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
 

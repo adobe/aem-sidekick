@@ -32,7 +32,7 @@ import {
 import { mockFetchEnglishMessagesSuccess } from '../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 import { EventBus } from '../../../src/extension/app/utils/event-bus.js';
-import { EVENTS, MODALS } from '../../../src/extension/app/constants.js';
+import { MODALS, MODAL_EVENTS } from '../../../src/extension/app/constants.js';
 import { mockHelixEnvironment, restoreEnvironment } from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
 import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
@@ -377,7 +377,7 @@ describe('Test App Store', () => {
     it('hideWait()', async () => {
       const callback = sinon.spy();
       const eventBus = EventBus.instance;
-      eventBus.addEventListener(EVENTS.CLOSE_MODAL, callback);
+      eventBus.addEventListener(MODAL_EVENTS.CLOSE, callback);
       appStore.hideWait();
       expect(callback.calledOnce).to.be.true;
     });

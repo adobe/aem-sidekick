@@ -22,7 +22,7 @@ import {
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
-  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS,
+  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS,
 } from '../constants.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
 import { SidekickPlugin } from '../components/plugin/plugin.js';
@@ -544,7 +544,7 @@ export class AppStore {
    * Hides the modal
    */
   hideWait() {
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_MODAL));
+    EventBus.instance.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
   }
 
   /**
@@ -644,7 +644,7 @@ export class AppStore {
    * @param {string} [variant] The variant of the toast (optional)
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
-  showToast(message, variant = 'info', timeout = 2000) {
+  showToast(message, variant = 'info', timeout = 6000) {
     const existingToast = this.sidekick?.shadowRoot?.querySelector('theme-wrapper').querySelector('toast-container');
     if (existingToast) {
       existingToast.remove();
