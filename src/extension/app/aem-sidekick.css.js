@@ -152,8 +152,4 @@ export const style = css`
     bottom: 150px;
     pointer-events: auto;
   }
-
-  confirm-container {
-    pointer-events: auto;
-  }
 `;
