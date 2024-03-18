@@ -18,7 +18,6 @@ import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/divider/sp-divider.js';
 import '@spectrum-web-components/toast/sp-toast.js';
-import '@spectrum-web-components/dialog/sp-dialog-base.js';
 import '@spectrum-web-components/dialog/sp-dialog-wrapper.js';
 import '@spectrum-web-components/progress-circle/sp-progress-circle.js';
 import '@spectrum-web-components/action-menu/sp-action-menu.js';

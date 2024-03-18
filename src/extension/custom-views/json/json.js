@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import { html, LitElement, css } from 'lit';
+import { html, LitElement } from 'lit';
 import {
   customElement, property, queryAsync,
 } from 'lit/decorators.js';
@@ -28,10 +28,14 @@ import '@spectrum-web-components/table/sp-table-row.js';
 import '@spectrum-web-components/tabs/sp-tabs.js';
 import '@spectrum-web-components/tabs/sp-tab.js';
 import '@spectrum-web-components/tabs/sp-tab-panel.js';
+import '@spectrum-web-components/action-button/sp-action-button.js';
+import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-close.js';
 import '../../app/components/theme/theme.js';
 import '../../app/components/search/search.js';
 import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';
+import { style } from './json.css.js';
+import { spectrum2 } from '../../app/spectrum-2.css.js';
 
 /**
  * The lit template result type
@@ -43,6 +47,10 @@ const recentPast = new Date().setUTCFullYear(new Date().getUTCFullYear() - 20);
 
 @customElement('json-view')
 export class JSONView extends LitElement {
+  static get styles() {
+    return [spectrum2, style];
+  }
+
   /**
    * The original json data
    * @type {Object}
@@ -85,128 +93,11 @@ export class JSONView extends LitElement {
   @property({ type: Number })
   accessor selectedTabIndex = 0;
 
-  @queryAsync('sp-tabs')
-  accessor tabs;
+  @queryAsync('sp-action-group')
+  accessor actionGroup;
 
-  static styles = css`
-    :host {
-      pointer-events: auto;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      height: 100%;
-      color: var(--spectrum-global-color-gray-800);
-      padding: 5px var(--spectrum-global-dimension-size-400);
-      box-sizing: border-box;
-      margin-bottom: 40px;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .header svg {
-      width: 32px;
-      height: 32px;
-    }
-
-    .header h1 {
-      font-size: var(--spectrum-global-dimension-size-200);
-      flex-grow: 1;
-    }
-
-    .header button {
-      background-color: transparent;
-      border: none;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-    }
-
-    .header button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .header button:active {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .tableContainer {
-      padding-top: 15px;
-      width: 100%;
-      height: 100%;
-    }
-
-    .tableContainer .tableHeader {
-      display: flex;
-      align-items: center;
-    }
-
-    .tableContainer .tableHeader h2 {
-      flex-grow: 1;
-    }
-
-    sp-table-row {
-      --mod-table-row-background-color-hover: rgb(29, 29, 29);
-    }
-
-    @media (prefers-color-scheme: light) {
-      sp-table-row {
-        --mod-table-row-background-color-hover: rgb(255, 255, 255);
-      }
-    }
-
-    sp-table-head {
-      overflow-x: scroll;
-    }
-
-    sp-table-head::-webkit-scrollbar {
-      display: none;
-    }
-
-    sp-table-head-cell {
-      min-width: 150px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    sp-table-cell {
-      word-break: break-word;
-      min-width: 150px;
-    }
-
-    sp-table-cell ul {
-      padding-inline-start: 10px;
-      margin-block-start: 0;
-    }
-
-    sp-table-cell > div.image,
-    sp-table-cell > div.video {
-      padding: 0;
-    }
-
-    sp-table-cell > div img,
-    sp-table-cell > div video {
-      width: 100%;
-      max-width: 240px;
-    }
-
-    sp-table-body {
-      background-color: var(--spectrum-table-cell-background-color);;
-    }
-
-    .stats {
-      display: flex;
-      justify-content: flex-end;
-      padding-top: 10px;
-    }
-  `;
+  @queryAsync('sp-table')
+  accessor table;
 
   async connectedCallback() {
     super.connectedCallback();
@@ -269,36 +160,52 @@ export class JSONView extends LitElement {
 
     const header = html`
       <div class="header">
+        <div class="left">
         <svg width="250" height="245" viewBox="0 0 250 245" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M47.5 3H202.5C226 3 245 22 245 45.5V194.5C245 218 226 237 202.5 237H47.5C24 237 5 218 5 194.5V45.5C5 22 24 3 47.5 3Z" fill="black"/>
           <path d="M192 179H163C160.3 179.2 157.9 177.5 157 175L126 103C126 102.4 125.6 102 125 102C124.4 102 124 102.4 124 103L104 149C104 150.1 104.9 151 106 151H127C128.3 150.9 129.6 151.7 130 153L139 174C139.6 176.1 138.4 178.3 136.2 178.9C136.1 178.9 136 178.9 136 179H59C56.8 178.5 55.5 176.4 55.9 174.2C55.9 174.1 55.9 174 56 174L105 57C106.1 54.7 108.4 53.1 111 53H139C141.6 53.1 143.9 54.7 145 57L195 174C195.6 176.1 194.4 178.3 192.2 178.9C192.2 179 192.1 179 192 179Z" fill="#FA0F00"/>
-        </svg>  
-        <h1>${searchParams.get('title')}</h1>
-        <sp-search @input=${this.onSearch} placeholder=${i18n(this.languageDict, 'search')}></sp-search>
-        <button variant="primary" @click=${this.onCloseView}><sp-icon-close></sp-icon-close></button>
+        </svg>
+        <h1>Adobe Experience Manager Sites <span>${searchParams.get('title')}</span></h1>
+        </div>
+        <div class="center">
+          <sp-search @input=${this.onSearch} placeholder=${i18n(this.languageDict, 'search')}></sp-search>
+        </div>
+        <div class="right">
+          <button variant="primary" @click=${this.onCloseView}><sp-icon-close></sp-icon-close></button>
+        </div>
       </div>
     `;
 
     elements.push(header);
 
-    const tabs = document.createElement('sp-tabs');
-    tabs.style.height = '100%';
-    tabs.setAttribute('selected', this.selectedTabIndex ? this.selectedTabIndex.toString() : '0');
-    tabs.addEventListener('change', this.onTabChange.bind(this));
+    const filteredCount = this.filteredData?.data?.length
+      ?? Object.values(this.filteredData || {})[this.selectedTabIndex]?.data.length
+      ?? 0;
 
-    Object.keys(sheets).forEach((name, index) => {
+    const total = this.originalData?.total
+      ?? Object.values(this.originalData || {})[this.selectedTabIndex]?.total
+      ?? 0;
+
+    const actions = html`
+      <div class="actions">
+        <sp-action-group selects="single" @change=${this.onSelectionChange}>
+          ${Object.keys(sheets).map((name, index) => html`
+            <sp-action-button value=${index.toString()} .selected=${index === this.selectedTabIndex}>${name}</sp-action-button>
+          `)}
+        </sp-action-group>
+        <div class="stats">
+          <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
+        </div>
+      </div>
+    `;
+    elements.push(actions);
+    const names = Object.keys(sheets);
+    if (names.length > 0) {
+      const name = names[this.selectedTabIndex];
       const sheet = sheets[name];
-      const tab = document.createElement('sp-tab');
-      tab.setAttribute('label', name);
-      tab.setAttribute('value', index.toString());
-      tabs.appendChild(tab);
 
-      const tabContent = document.createElement('sp-tab-panel');
-      tabContent.setAttribute('value', index.toString());
-      tabContent.appendChild(this.renderTable(sheet, url));
-      tabs.appendChild(tabContent);
-    });
-    elements.push(tabs);
+      elements.push(this.renderTable(sheet, url));
+    }
 
     return elements;
   }
@@ -319,7 +226,7 @@ export class JSONView extends LitElement {
 
     if (rows.length > 0) {
       const headers = rows[0];
-      const headHTML = Object.keys(headers).reduce((acc, key) => `${acc}<sp-table-head-cell sortable sort-direction="desc" sort-key=${key}>${key}</sp-table-head-cell>`, '');
+      const headHTML = Object.keys(headers).reduce((acc, key) => `${acc}<sp-table-head-cell sortable sort-direction="desc" sort-key=${key}>${key.charAt(0).toUpperCase() + key.slice(1)}</sp-table-head-cell>`, '');
       const head = document.createElement('sp-table-head');
       head.insertAdjacentHTML('beforeend', headHTML);
       table.appendChild(head);
@@ -345,8 +252,8 @@ export class JSONView extends LitElement {
     } else {
       const noResults = `
         <sp-illustrated-message
-            heading=${i18n(this.languageDict, 'no_results')}
-            description=${i18n(this.languageDict, 'no_results_subheading')}
+            heading="${i18n(this.languageDict, 'no_results')}"
+            description="${i18n(this.languageDict, 'no_results_subheading')}"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="99.039" height="94.342">
             <g fill="none" strokeLinecap="round" strokeLinejoin="round" >
@@ -429,20 +336,17 @@ export class JSONView extends LitElement {
    */
   async updated() {
     await this.updateComplete;
-    if (this.tabs) {
-      const tabs = await this.tabs;
-      if (tabs) {
-        const table = tabs.querySelector('sp-table');
-        const tableHead = table.querySelector('sp-table-head');
-        const tableBody = table.querySelector('sp-table-body');
-        tableHead.addEventListener('scroll', () => {
-          tableBody.scrollLeft = tableHead.scrollLeft;
-        });
+    const table = await this.table;
+    if (table) {
+      const tableHead = table.querySelector('sp-table-head');
+      const tableBody = table.querySelector('sp-table-body');
+      tableHead.addEventListener('scroll', () => {
+        tableBody.scrollLeft = tableHead.scrollLeft;
+      });
 
-        tableBody.addEventListener('scroll', () => {
-          tableHead.scrollLeft = tableBody.scrollLeft;
-        });
-      }
+      tableBody.addEventListener('scroll', () => {
+        tableHead.scrollLeft = tableBody.scrollLeft;
+      });
     }
   }
 
@@ -486,9 +390,9 @@ export class JSONView extends LitElement {
   /**
    * Handle the tab change event
    */
-  async onTabChange() {
-    const tabs = await this.tabs;
-    this.selectedTabIndex = tabs.selected;
+  async onSelectionChange() {
+    const actionGroup = await this.actionGroup;
+    this.selectedTabIndex = parseInt(actionGroup.selected[0], 10);
   }
 
   /**
@@ -500,21 +404,10 @@ export class JSONView extends LitElement {
   }
 
   render() {
-    const filteredCount = this.filteredData?.data?.length
-      ?? Object.values(this.filteredData || {})[this.selectedTabIndex]?.data.length
-      ?? 0;
-
-    const total = this.originalData?.total
-      ?? Object.values(this.originalData || {})[this.selectedTabIndex]?.total
-      ?? 0;
-
     return html`
       <theme-wrapper>
         <div class="container">
           ${this.renderData()}
-          <div class="stats">
-            <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
-          </div>
         </div>
       </theme-wrapper>
     `;
