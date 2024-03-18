@@ -294,15 +294,13 @@ export class EnvironmentSwitcher extends MobxLitElement {
 
   /**
    * Handles the environment switcher change event
-   * @param {Event} event - The change event
    */
-  onChange(event) {
+  onChange() {
     const { picker } = this;
     const { value } = picker;
 
-    // TODO: Figure out how to get keyboard state
-    // @ts-ignore
-    appStore.switchEnv(value, newTab(event));
+    const openNewTab = value === 'edit' ? true : newTab(appStore.keyboardListener);
+    appStore.switchEnv(value, openNewTab);
     picker.value = this.currentEnv;
   }
 

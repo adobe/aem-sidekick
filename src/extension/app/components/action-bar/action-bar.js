@@ -18,16 +18,13 @@ export class ActionBar extends LitElement {
   static styles = css`
     .action-bar {
       display: flex;
-      border-radius: 8px;
+      border-radius: var(--spectrum2-sidekick-border-radius);
       color: var(--spectrum-global-color-gray-800);
-      background-color: var(--spectrum-global-color-gray-200);
-      border: 1px solid var(--spectrum-global-color-gray-300);
-    }
-
-    @media (prefers-color-scheme: light) {
-      .action-bar {
-        background-color: var(--spectrum-global-color-gray-100);
-      }
+      background-color: var(--spectrum2-sidekick-background);
+      border: 1px solid var(--spectrum2-sidekick-border-color);
+      box-shadow: var(--spectrum2-sidekick-box-shadow);
+      backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
+      -webkit-backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
     }
   `;
 

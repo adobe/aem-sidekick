@@ -22,9 +22,13 @@ import {
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
-  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS,
+  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS,
 } from '../constants.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
+import { SidekickPlugin } from '../components/plugin/plugin.js';
+import { KeyboardListener } from '../utils/keyboard.js';
+import { ModalContainer } from '../components/modal/modal-container.js';
+import { ToastContainer } from '../components/toast/toast-container.js';
 
 /**
  * The sidekick configuration object type
@@ -48,6 +52,10 @@ import { pluginFactory } from '../plugins/plugin-factory.js';
 
 /**
  * @typedef {import('@Types').AdminResponse} AdminResponse
+ */
+
+/**
+ * @typedef {import('@Types').Modal} Modal
  */
 
 export class AppStore {
@@ -86,18 +94,25 @@ export class AppStore {
 
   /**
    * Dictionary of language keys
-   * @type {Object.<string, CorePlugin>}
+   * @type {Object.<string, SidekickPlugin>}
    */
   @observable accessor corePlugins;
 
   /**
    * Dictionary of language keys
-   * @type {Object.<string, CustomPlugin>}
+   * @type {Object.<string, SidekickPlugin>}
    */
   @observable accessor customPlugins;
 
+  /**
+   * Keyboards listener
+   * @type {KeyboardListener}
+   */
+  keyboardListener;
+
   constructor() {
     this.siteStore = new SiteStore(this);
+    this.keyboardListener = new KeyboardListener();
   }
 
   /**
@@ -156,7 +171,7 @@ export class AppStore {
     this.corePlugins = {};
 
     if (this.siteStore.authorized) {
-      const envPlugin = pluginFactory.createEnvPlugin();
+      const envPlugin = pluginFactory.createEnvPlugin(this);
       const previewPlugin = pluginFactory.createPreviewPlugin(this);
       const reloadPlugin = pluginFactory.createReloadPlugin(this);
       const publishPlugin = pluginFactory.createPublishPlugin(this);
@@ -180,10 +195,11 @@ export class AppStore {
       if (plugins && Array.isArray(plugins)) {
         plugins.forEach((cfg, i) => {
           const {
-            id,
-            title,
+            id = `custom-plugin-${i}`,
+            title = id,
             titleI18n,
             url,
+            pinned,
             passConfig,
             passReferrer,
             isPalette,
@@ -224,10 +240,10 @@ export class AppStore {
             // assemble plugin config
           const plugin = {
             custom: true,
-            id: id || `custom-plugin-${i}`,
+            id,
             condition,
             button: {
-              text: (titleI18n && titleI18n[lang]) || title || '',
+              text: (titleI18n && titleI18n[lang]) || title,
               action: () => {
                 if (url) {
                   const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
@@ -249,7 +265,7 @@ export class AppStore {
                     }));
                   } else {
                     // open url in new window
-                    window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
+                    this.openPage(target.toString(), `hlx-sk-${id || `custom-plugin-${i}`}`);
                   }
                 } else if (eventName) {
                   // fire custom event
@@ -258,17 +274,24 @@ export class AppStore {
               },
               isDropdown: isContainer,
             },
+            pinned,
             container: containerId,
+            appStore: this,
           };
           // check if this overlaps with a core plugin, if so override the condition only
           const corePlugin = this.corePlugins[plugin.id];
           if (corePlugin) {
             // extend default condition
-            const { condition: defaultCondition } = corePlugin;
-            corePlugin.condition = (s) => defaultCondition(s) && condition(s);
+            const { condition: defaultCondition } = corePlugin.config;
+            corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
           } else {
             // add custom plugin
-            this.customPlugins[plugin.id] = plugin;
+            const customPlugin = new SidekickPlugin(plugin);
+            if (plugin.container) {
+              this.customPlugins[plugin.container]?.append(customPlugin);
+            } else {
+              this.customPlugins[plugin.id] = customPlugin;
+            }
           }
         });
       }
@@ -467,6 +490,42 @@ export class AppStore {
   }
 
   /**
+   * Creates a modal and appends it to the sidekick.
+   * If a modal is already open, it will be replaced.
+   * @param {Modal} modal The modal to display
+   */
+  showModal(modal) {
+    const existingModal = this.sidekick?.shadowRoot?.querySelector('theme-wrapper').querySelector('modal-container');
+    if (existingModal) {
+      existingModal.remove();
+    }
+
+    const modalContainer = new ModalContainer(modal);
+    this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(modalContainer);
+
+    return modalContainer;
+  }
+
+  /*
+   * Returns the currebnt environment
+   * @returns {string} the current environment
+   */
+  getEnv() {
+    return [
+      'isEditor',
+      'isPreview',
+      'isLive',
+      'isProd',
+      'isAdmin',
+      'isDev',
+    ]
+      .filter((method) => this[method]())
+      .map((method) => method.substring(2)) // cut off 'is'
+      .join('')
+      .toLowerCase();
+  }
+
+  /**
    * Displays a wait modal
    * @param {string} [message] The message to display
    */
@@ -474,42 +533,50 @@ export class AppStore {
     if (!message) {
       message = this.i18n('please_wait');
     }
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-      detail: {
-        type: MODALS.WAIT,
-        data: { message },
-      },
-    }));
+
+    return this.showModal({
+      type: MODALS.WAIT,
+      data: { message },
+    });
   }
 
   /**
    * Hides the modal
    */
   hideWait() {
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_MODAL));
-  }
-
-  /**
-   * Reloads the current page. Abstracted for testing.
-   */
-  reloadPage(newTab) {
-    if (newTab) {
-      // istanbul ignore next
-      window.open(window.location.href);
-    } else {
-      // istanbul ignore next
-      window.location.reload();
-    }
+    EventBus.instance.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
   }
 
   /**
    * Opens a new page. Abstracted for testing.
    * @param {string} url The URL to open
+   * @param {string} [name] The window name (optional)
    * @returns {Window} The window object
    */
   // istanbul ignore next 3
-  openPage(url) {
-    return window.open(url);
+  openPage(url, name) {
+    return window.open(url, name);
+  }
+
+  /**
+   * Navigates to the provided URL in the current window. Abstracted for testing.
+   * @param {string} url The URL to load
+   */
+  // istanbul ignore next 3
+  loadPage(url) {
+    window.location.href = url;
+  }
+
+  /**
+   * Reloads the current page. Abstracted for testing.
+   * @param {boolean} [newTab] Open current page in a new tab
+   */
+  reloadPage(newTab) {
+    if (newTab) {
+      this.openPage(window.location.href);
+    } else {
+      this.loadPage(window.location.href);
+    }
   }
 
   /**
@@ -577,14 +644,20 @@ export class AppStore {
    * @param {string} [variant] The variant of the toast (optional)
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
-  showToast(message, variant = 'info', timeout = 2000) {
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.SHOW_TOAST, {
-      detail: {
-        message,
-        variant,
-        timeout,
-      },
-    }));
+  showToast(message, variant = 'info', timeout = 6000) {
+    const existingToast = this.sidekick?.shadowRoot?.querySelector('theme-wrapper').querySelector('toast-container');
+    if (existingToast) {
+      existingToast.remove();
+    }
+
+    const toastContainer = new ToastContainer({
+      message,
+      variant,
+      timeout,
+    });
+    this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(toastContainer);
+
+    return toastContainer;
   }
 
   /**
@@ -750,27 +823,21 @@ export class AppStore {
         }, { once: true });
         this.fetchStatus();
       } else if (status.webPath.startsWith('/.helix/') && resp.error) {
-        // show detail message only in config update mode
-        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-          detail: {
-            type: MODALS.ERROR,
-            data: {
-              message: `${this.i18n('error_config_failure')}${resp.error}`,
-            },
+        this.showModal({
+          type: MODALS.ERROR,
+          data: {
+            message: `${this.i18n('error_config_failure')}${resp.error}`,
           },
-        }));
+        });
       } else {
         // eslint-disable-next-line no-console
         console.error(resp);
-
-        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-          detail: {
-            type: MODALS.ERROR,
-            data: {
-              message: this.i18n('error_preview_failure'),
-            },
+        this.showModal({
+          type: MODALS.ERROR,
+          data: {
+            message: this.i18n('error_preview_failure'),
           },
-        }));
+        });
       }
       return;
     }
@@ -782,6 +849,51 @@ export class AppStore {
     }
     this.hideWait();
     this.switchEnv('preview');
+  }
+
+  /**
+   * Deletes the current resource from preview and unpublishes it if published.
+   * @fires Sidekick#deleted
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async delete() {
+    const { siteStore, status } = this;
+    const path = status.webPath;
+
+    // delete content only
+    if (!this.isContent()) {
+      return null;
+    }
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
+    try {
+      // delete preview
+      resp = await fetch(
+        getAdminUrl(siteStore, 'preview', path),
+        {
+          method: 'DELETE',
+          ...getAdminFetchOptions(),
+        },
+      );
+      // also unpublish if published
+      if (status.live && status.live.lastModified) {
+        await this.unpublish();
+      }
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('failed to delete', path, e);
+      resp.error = e.message;
+    }
+    return {
+      ok: resp.ok || false,
+      status: resp.status || 0,
+      error: (resp.headers && resp.headers.get('x-error')) || resp.error || '',
+      path,
+    };
   }
 
   /**
@@ -830,10 +942,48 @@ export class AppStore {
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('failed to publish', path, e);
+      console.log('failed to publish', path, e);
+      resp.error = e.message;
     }
     resp.path = path;
-    resp.error = (resp.headers && resp.headers.get('x-error')) || '';
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
+    return resp;
+  }
+
+  /**
+   * Unpublishes the current page.
+   * @fires Sidekick#unpublished
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async unpublish() {
+    // unpublish content only
+    if (!this.isContent()) {
+      return null;
+    }
+    const { siteStore, status } = this;
+    const path = status.webPath;
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
+    try {
+      // delete live
+      resp = await fetch(
+        getAdminUrl(siteStore, 'live', path),
+        {
+          method: 'DELETE',
+          ...getAdminFetchOptions(),
+        },
+      );
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('failed to unpublish', path, e);
+      resp.error = e.message;
+    }
+    resp.path = path;
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
     return resp;
   }
 
@@ -864,7 +1014,10 @@ export class AppStore {
     if (!status.webPath) {
       // eslint-disable-next-line no-console
       console.log('not ready yet, trying again in a second ...');
-      window.setTimeout(() => this.switchEnv(targetEnv, open), 1000);
+      window.setTimeout(
+        // istanbul ignore next
+        () => this.switchEnv(targetEnv, open), 1000,
+      );
       return;
     }
     const envOrigin = targetEnv === 'dev' ? siteStore.devUrl.origin : `https://${envHost}`;
@@ -884,19 +1037,18 @@ export class AppStore {
     //   customViewUrl.searchParams.set('path', status.webPath);
     //   envUrl = customViewUrl;
     // }
-
     // switch or open env
     if (open || this.isEditor()) {
-      window.open(envUrl, open
+      this.openPage(envUrl, open
         ? '' : `hlx-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
-      this.hideWait();
     } else {
-      window.location.href = envUrl;
+      this.loadPage(envUrl);
     }
     this.fireEvent(EXTERNAL_EVENTS.EVIRONMENT_SWITCHED, {
       sourceUrl: href,
       targetUrl: envUrl,
     });
+    this.hideWait();
   }
 
   /**
@@ -970,12 +1122,12 @@ export class AppStore {
         }
         if (attempts >= 5) {
           // give up after 5 attempts
-          EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-            detail: {
-              type: MODALS.ERROR,
-              data: { message: this.i18n('error_login_timeout') },
+          this.showModal({
+            type: MODALS.ERROR,
+            data: {
+              message: this.i18n('error_login_timeout'),
             },
-          }));
+          });
           return;
         }
       }
@@ -1018,13 +1170,12 @@ export class AppStore {
           return;
         }
         if (attempts >= 5) {
-          // give up after 5 attempts
-          EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-            detail: {
-              type: MODALS.ERROR,
-              data: { message: this.i18n('error_logout_error') },
+          this.showModal({
+            type: MODALS.ERROR,
+            data: {
+              message: this.i18n('error_logout_error'),
             },
-          }));
+          });
           return;
         }
       }

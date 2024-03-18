@@ -15,6 +15,7 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import { expect, waitUntil } from '@open-wc/testing';
+import { sendKeys } from '@web/test-runner-commands';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
@@ -39,7 +40,9 @@ describe('Environment Switcher', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(sidekick);
+    if (document.body.contains(sidekick)) {
+      document.body.removeChild(sidekick);
+    }
     fetchMock.reset();
     restoreEnvironment(document);
   });
@@ -48,8 +51,6 @@ describe('Environment Switcher', () => {
     it('change environment - preview -> live', async () => {
       mockFetchStatusSuccess();
       mockHelixEnvironment(document, 'preview');
-
-      const switchEnvStub = sinon.stub(appStore, 'switchEnv').returns();
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -60,6 +61,44 @@ describe('Environment Switcher', () => {
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
       const button = recursiveQuery(picker, '#button');
+      await waitUntil(() => button.getAttribute('disabled') === null);
+
+      button.click();
+
+      await waitUntil(() => recursiveQuery(picker, 'sp-popover'), null, { timeout: 10000 });
+
+      const overlay = recursiveQuery(picker, 'sp-overlay');
+
+      expect(picker.getAttribute('open')).to.not.be.null;
+      expect(overlay.getAttribute('open')).to.not.be.null;
+
+      const switchEnvStub = sinon.stub(appStore, 'switchEnv').returns();
+      const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
+      liveButton.click();
+
+      picker.value = 'live';
+      picker.dispatchEvent(new Event('change'));
+
+      expect(switchEnvStub.called).to.be.true;
+      expect(switchEnvStub.calledWith('live', false)).to.be.true;
+
+      switchEnvStub.restore();
+    }).timeout(20000);
+
+    it('change environment - preview -> live (with meta key)', async () => {
+      mockFetchStatusSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+      const button = recursiveQuery(picker, '#button');
+      await waitUntil(() => button.getAttribute('disabled') === null);
 
       button.click();
 
@@ -70,14 +109,21 @@ describe('Environment Switcher', () => {
       expect(picker.getAttribute('open')).to.not.be.null;
       expect(overlay.getAttribute('open')).to.not.be.null;
 
+      // Simulate pressing the key
+      await sendKeys({ down: 'Meta' });
+
+      const switchEnvStub = sinon.stub(appStore, 'switchEnv').returns();
       const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
       liveButton.click();
 
       picker.value = 'live';
       picker.dispatchEvent(new Event('change'));
 
-      expect(switchEnvStub.calledOnce).to.be.true;
-      expect(switchEnvStub.calledWith('live', false)).to.be.true;
+      // Simulate releasing the key
+      await sendKeys({ up: 'Meta' });
+
+      expect(switchEnvStub.called).to.be.true;
+      expect(switchEnvStub.calledWith('live', true)).to.be.true;
 
       switchEnvStub.restore();
     }).timeout(20000);

@@ -116,9 +116,10 @@
  * @prop {string} id The plugin ID (mandatory)
  * @prop {PluginButton} [button] A button configuration object (optional)
  * @prop {string} [container] The ID of a dropdown to add this plugin to (optional)
- * @prop {boolean} [override] Determines whether to replace an existing plugin (default: false)
+ * @prop {boolean} [override] Replace an existing plugin (optional)
  * @prop {ElemConfig[]} [elements]  An array of elements to add (optional)
- * @prop {Function} [condition] Determines whether to show this plugin (optional).
+ * @prop {Function} [condition] Show this plugin (optional).
+ * @prop {boolean} [pinned=true] Pin this plugin to the action bar (optional).
  * This function is expected to return a boolean when called with the sidekick as argument.
  * @prop {Function} [callback] A function called after adding the plugin (optional).
  * This function is called with the sidekick and the newly added plugin as arguments.
@@ -170,13 +171,14 @@
  * @prop {string} [headline] The modal headline
  * @prop {string} [message] The modal message
  * @prop {string} [confirmLabel] The confirm button label
+ * @prop {string} [action] The action type (delete or unpublish)
  */
 
 /**
  * @typedef {Object} Toast
  * @prop {string} message The toast message
  * @prop {string} variant The toast variant
- * @prop {string} timeout The time the toast is shown (default: 2000)
+ * @prop {number} timeout The time the toast is shown (default: 2000)
  */
 
 /**
