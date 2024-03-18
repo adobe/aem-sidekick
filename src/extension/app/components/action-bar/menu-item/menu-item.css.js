@@ -42,6 +42,7 @@ export const style = css`
     --mod-menu-item-background-color-hover: var(--spectrum2-preview-background-hover);
   }
 
+  :host(.current-env.env-dev) #label,
   :host(.current-env.env-preview) #label,
   :host(.current-env.env-live) #label,
   :host(.current-env.env-prod) #label {
@@ -110,6 +111,7 @@ export const style = css`
   }
 
   @media (prefers-color-scheme: light) {
+    :host(.current-env.env-dev) #label,
     :host(.current-env.env-preview) #label,
     :host(.current-env.env-live) #label,
     :host(.current-env.env-prod) #label {

@@ -110,9 +110,10 @@ export class EnvironmentSwitcher extends MobxLitElement {
    * @returns {string} - The last modified label
    */
   getLastModifiedLabel(id, lastModified) {
+    const envId = id === 'dev' ? 'preview' : id;
     return lastModified
-      ? appStore.i18n(`${id}_last_updated`).replace('$1', getTimeAgo(appStore.languageDict, lastModified))
-      : appStore.i18n(`${id}_never_updated`);
+      ? appStore.i18n(`${envId}_last_updated`).replace('$1', getTimeAgo(appStore.languageDict, lastModified))
+      : appStore.i18n(`${envId}_never_updated`);
   }
 
   /**
