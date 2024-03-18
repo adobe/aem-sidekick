@@ -33,6 +33,7 @@ import '../../app/components/search/search.js';
 import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';
 import { style } from './json.css.js';
 import { spectrum2 } from '../../app/spectrum-2.css.js';
+import sampleRUM from '../../rum.js';
 
 /**
  * The lit template result type
@@ -125,6 +126,9 @@ export class JSONView extends LitElement {
       // eslint-disable-next-line no-console
       console.error('error rendering view', e);
     }
+
+    // Wait for 3 seconds after last search input to track RUM
+    this.debouncedFilterRUM = this.debounceFilterRUM(this.trackFilterRUM.bind(this), 3000);
   }
 
   /**
@@ -348,6 +352,30 @@ export class JSONView extends LitElement {
   }
 
   /**
+   * Debounce the rum tracking
+   */
+  debounceFilterRUM(func, wait) {
+    let timeout;
+
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  /**
+   * RUM tracking for the filter
+   */
+  trackFilterRUM() {
+    sampleRUM('sidekick:jsonview:filter');
+  }
+
+  /**
    * Handle the search event
    * @param {*} event The search event
    */
@@ -382,6 +410,7 @@ export class JSONView extends LitElement {
 
       this.filteredData = filteredData;
     }
+    this.debouncedFilterRUM();
   }
 
   /**
@@ -390,6 +419,7 @@ export class JSONView extends LitElement {
   async onSelectionChange() {
     const actionGroup = await this.actionGroup;
     this.selectedTabIndex = parseInt(actionGroup.selected[0], 10);
+    sampleRUM('sidekick:jsonview:switch-tab');
   }
 
   /**
@@ -398,6 +428,7 @@ export class JSONView extends LitElement {
   onCloseView() {
     const customEventDetail = { detail: { event: 'hlx-close-view' } };
     window.parent.postMessage(customEventDetail, '*');
+    sampleRUM('sidekick:jsonview:close');
   }
 
   render() {
