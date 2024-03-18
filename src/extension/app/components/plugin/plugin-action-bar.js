@@ -13,22 +13,14 @@
 /* eslint-disable max-len */
 
 import { html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { reaction } from 'mobx';
 import { appStore } from '../../store/app.js';
-import { EXTERNAL_EVENTS } from '../../constants.js';
+import { getConfig } from '../../../config.js';
 
 /**
- * @typedef {import('@Types').CorePlugin} CorePlugin
- */
-
-/**
- * @typedef {import('../action-bar/picker/picker.js').Picker} Picker
- */
-
-/**
- * @typedef ContainerPlugin
- * @property {Record<string, CorePlugin>} [children] The child plugins of the container
+ * @typedef {import('../plugin/plugin.js').SidekickPlugin} SidekickPlugin
  */
 
 /**
@@ -40,7 +32,7 @@ import { EXTERNAL_EVENTS } from '../../constants.js';
 export class PluginActionBar extends MobxLitElement {
   static styles = css`
     action-bar sp-action-group {
-      padding: 8px;
+      padding: 12px;
     }
 
     action-bar sp-action-group.not-authorized {
@@ -62,60 +54,34 @@ export class PluginActionBar extends MobxLitElement {
   `;
 
   /**
-   *
-   * @param {CorePlugin} plugin
-   * @returns
+   * The user preferences for plugins in this environment.
+   * @type {Object}
    */
-  createCorePlugin(plugin) {
-    if (typeof plugin.callback === 'function') {
-      plugin.callback(appStore, plugin);
-    }
-
-    if (plugin.id === 'env-switcher') {
-      return html`
-        <env-switcher></env-switcher>
-      `;
-    }
-
-    let disabled = false;
-    const isEnabled = plugin.button && plugin.button.isEnabled;
-    if (typeof isEnabled === 'function' && !isEnabled(appStore)) {
-      disabled = true;
-    }
-
-    return html`
-      <sp-action-button 
-        class=${plugin.id} 
-        .disabled=${disabled} 
-        quiet 
-        @click=${(evt) => this.onPluginButtonClick(evt, plugin)}
-      >
-          ${plugin.button.text}
-      </sp-action-button>
-    `;
-  }
-
-  async onPluginButtonClick(evt, plugin) {
-    await appStore.validateSession();
-    appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, {
-      id: plugin.id,
-    });
-    plugin.button.action(evt);
-  }
+  #userPrefs = null;
 
   /**
-   * Handles the environment switcher change event
-   * @param {Event & { target: Picker }} event - The event object with target typed as Picker
+  * Are we ready to render?
+  * @type {boolean}
+  */
+  @property({ type: Boolean, attribute: false })
+  accessor ready = false;
+
+  /**
+   * Loads the user preferences for plugins in this environment.
    */
-  onChange(event, plugin) {
-    const { target } = event;
+  async connectedCallback() {
+    super.connectedCallback();
 
-    const selectedPlugin = plugin.children[target.value];
-    selectedPlugin.button.action(event);
+    const pluginSettings = await getConfig('sync', 'pluginPrefs') || {};
+    this.#userPrefs = pluginSettings[appStore.getEnv()] || {};
+    this.ready = true;
 
-    // Prevent the picker from showing the selected item
-    target.value = '';
-    target.selectedItem = undefined;
+    reaction(
+      () => appStore.status,
+      () => {
+        this.requestUpdate();
+      },
+    );
   }
 
   /**
@@ -123,56 +89,23 @@ export class PluginActionBar extends MobxLitElement {
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
-    const corePlugins = Object.values(appStore.corePlugins)?.map((plugin) => (plugin.condition(appStore) ? this.createCorePlugin(plugin) : ''));
+    if (!appStore.corePlugins) {
+      return '';
+    }
 
-    /**
-     * @type {Record<string, CorePlugin & ContainerPlugin>}
-     * */
-    const customPlugins = {};
-    Object.values(appStore.customPlugins).forEach((plugin) => {
-      if (plugin.button.isDropdown) {
-        customPlugins[plugin.id] = plugin;
-      } else if (plugin.container) {
-        const container = customPlugins[plugin.container];
-        if (!container.children) {
-          container.children = {};
-        }
-        container.children[plugin.id] = plugin;
-      } else {
-        customPlugins[plugin.id] = plugin;
-      }
-    });
+    const corePlugins = Object.values(appStore.corePlugins);
+    const customPlugins = Object.values(appStore.customPlugins);
+    const renderedPlugins = [
+      ...corePlugins,
+      ...customPlugins,
+    ]
+      .filter((plugin) => plugin.checkCondition()
+        && plugin.isPinned(this.#userPrefs[plugin.id]))
+      .map((plugin) => plugin.render());
 
-    const userPlugins = Object.values(customPlugins).map((plugin) => {
-      if (plugin.children) {
-        return html`
-          <action-bar-picker 
-            class=${`plugin-container ${plugin.id}`} 
-            label=${plugin.button.text} 
-            @change=${(e) => this.onChange(e, plugin)} 
-            placement="top"
-          >
-              ${Object.values(plugin.children).map((childPlugin) => (childPlugin.condition(appStore)
-                ? html`<sp-menu-item value=${childPlugin.id}>${childPlugin.button.text}</sp-menu-item>`
-                : ''))}
-          </action-bar-picker>
-        `;
-      }
-
-      return plugin.condition(appStore) ? html`
-              <sp-action-button 
-                class=${plugin.id} 
-                quiet 
-                @click=${(evt) => this.onPluginButtonClick(evt, plugin)}
-                >
-                ${plugin.button.text || plugin.id}
-              </sp-action-button>
-            ` : '';
-    });
-
-    const actionGroup = html`<sp-action-group>${[...corePlugins, ...userPlugins]}</sp-action-group>`;
-
-    return corePlugins.length > 0 ? actionGroup : '';
+    return renderedPlugins.length > 0
+      ? html`<sp-action-group>${[...renderedPlugins]}</sp-action-group>`
+      : '';
   }
 
   renderSystemPlugins() {
@@ -216,7 +149,7 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   render() {
-    return appStore.initialized ? html`
+    return this.ready ? html`
       <action-bar>
         ${this.renderPlugins()}
         ${this.renderSystemPlugins()}

@@ -30,21 +30,23 @@ import {
 import '../../../../src/extension/index.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
 import { mockHelixEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
-import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
-import { EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
+import { MODALS } from '../../../../src/extension/app/constants.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('Login', () => {
   let sidekick;
+  let sandbox;
   beforeEach(async () => {
+    sandbox = sinon.createSandbox();
     mockFetchEnglishMessagesSuccess();
   });
 
   afterEach(() => {
     document.body.removeChild(sidekick);
     fetchMock.reset();
+    sandbox.restore();
     restoreEnvironment(document);
   });
 
@@ -56,9 +58,8 @@ describe('Login', () => {
       mockHelixEnvironment(document, 'preview');
 
       // @ts-ignore
-      const openStub = sinon.stub(appStore, 'openPage').returns({ closed: true });
-      const modalSpy = sinon.spy();
-      EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
+      const openStub = sandbox.stub(appStore, 'openPage').returns({ closed: true });
+      const modalSpy = sandbox.spy(appStore, 'showModal');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -76,15 +77,13 @@ describe('Login', () => {
       mockFetchStatusWithProfileSuccess();
       loginActionButton.click();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'dialog-view'));
-      await waitUntil(() => recursiveQuery(sidekick, 'dialog-view') === undefined);
+      await waitUntil(() => recursiveQuery(sidekick, 'sp-dialog-wrapper'));
+      await waitUntil(() => recursiveQuery(sidekick, 'sp-dialog-wrapper') === undefined);
       await waitUntil(() => recursiveQuery(loginButton, 'sp-menu-item.user'));
 
       expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.WAIT);
+      expect(modalSpy.args[0][0].type).to.equal(MODALS.WAIT);
       expect(openStub.calledOnce).to.be.true;
-
-      openStub.restore();
     }
 
     it('Successful login ', async () => {
@@ -94,8 +93,6 @@ describe('Login', () => {
     it('Successful logout ', async () => {
       await login();
 
-      // @ts-ignore
-      const openStub = sinon.stub(appStore, 'openPage').returns({ closed: true });
       const accountElement = recursiveQuery(sidekick, 'login-button');
       const accountButton = recursiveQuery(accountElement, 'sp-action-button');
       accountButton.click();
@@ -106,8 +103,7 @@ describe('Login', () => {
       mockFetchProfileUnauthorized();
       const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
       logoutButton.click();
-      await waitUntil(() => recursiveQuery(sidekick, 'dialog-view'));
-      openStub.restore();
+      await waitUntil(() => recursiveQuery(sidekick, 'sp-dialog-wrapper'));
     }).timeout(20000);
   });
 });

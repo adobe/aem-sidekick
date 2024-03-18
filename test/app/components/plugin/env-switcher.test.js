@@ -61,10 +61,11 @@ describe('Environment Switcher', () => {
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
       const button = recursiveQuery(picker, '#button');
+      await waitUntil(() => button.getAttribute('disabled') === null);
 
       button.click();
 
-      await waitUntil(() => recursiveQuery(picker, 'sp-popover'));
+      await waitUntil(() => recursiveQuery(picker, 'sp-popover'), null, { timeout: 10000 });
 
       const overlay = recursiveQuery(picker, 'sp-overlay');
 
@@ -97,6 +98,7 @@ describe('Environment Switcher', () => {
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
       const button = recursiveQuery(picker, '#button');
+      await waitUntil(() => button.getAttribute('disabled') === null);
 
       button.click();
 

@@ -26,6 +26,7 @@ import '@spectrum-web-components/menu/sp-menu-divider.js';
 import '@spectrum-web-components/overlay/sp-overlay.js';
 import '@spectrum-web-components/picker/sp-picker.js';
 import '@spectrum-web-components/status-light/sp-status-light.js';
+import '@spectrum-web-components/textfield/sp-textfield.js';
 import '@spectrum-web-components/icon/sp-icon.js';
 
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-user.js';
@@ -43,7 +44,7 @@ import './app/components/plugin/palette-dialog/palette-dialog-wrapper.js';
 import './app/components/plugin/palette-dialog/palette-dialog.js';
 import './app/components/plugin/env-switcher/env-switcher.js';
 import './app/components/plugin/login/login.js';
-import './app/components/dialog/dialog.js';
+import './app/components/dialog-wrapper/dialog-wrapper.js';
 
 import { AEMSidekick } from './app/aem-sidekick.js';
 import { AEMConfigPicker } from './app/config-picker.js';

@@ -35,7 +35,7 @@ import {
 import { mockFetchEnglishMessagesSuccess } from '../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 import { EventBus } from '../../../src/extension/app/utils/event-bus.js';
-import { EVENTS, MODALS } from '../../../src/extension/app/constants.js';
+import { MODALS, MODAL_EVENTS } from '../../../src/extension/app/constants.js';
 import { mockHelixEnvironment, restoreEnvironment } from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
 import { recursiveQuery, error } from '../../test-utils.js';
@@ -364,12 +364,15 @@ describe('Test App Store', () => {
 
   describe('wait dialog', async () => {
     it('showWait()', async () => {
-      const callback = sinon.spy();
-      const eventBus = EventBus.instance;
-      eventBus.addEventListener(EVENTS.OPEN_MODAL, callback);
-      appStore.showWait('test');
-      expect(callback.calledOnce).to.be.true;
-      expect(callback.args[0][0].detail).to.deep.equal({
+      appStore.sidekick = document.createElement('div');
+      appStore.sidekick.attachShadow({ mode: 'open' });
+      appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
+
+      const modalSpy = sinon.spy(appStore, 'showModal');
+      const modalElement = appStore.showWait('test');
+      expect(modalElement.nodeName).to.equal('MODAL-CONTAINER');
+      expect(modalSpy.calledOnce).to.be.true;
+      expect(modalSpy.args[0][0]).to.deep.equal({
         type: MODALS.WAIT,
         data: { message: 'test' },
       });
@@ -378,24 +381,25 @@ describe('Test App Store', () => {
     it('hideWait()', async () => {
       const callback = sinon.spy();
       const eventBus = EventBus.instance;
-      eventBus.addEventListener(EVENTS.CLOSE_MODAL, callback);
+      eventBus.addEventListener(MODAL_EVENTS.CLOSE, callback);
       appStore.hideWait();
       expect(callback.calledOnce).to.be.true;
     });
   });
 
   describe('show toast', async () => {
-    it('showWait()', async () => {
-      const callback = sinon.spy();
-      const eventBus = EventBus.instance;
-      eventBus.addEventListener(EVENTS.SHOW_TOAST, callback);
-      appStore.showToast('test');
-      expect(callback.calledOnce).to.be.true;
-      expect(callback.args[0][0].detail).to.deep.equal({
-        message: 'test',
-        variant: 'info',
-        timeout: 2000,
-      });
+    it('showToast()', async () => {
+      appStore.sidekick = document.createElement('div');
+      appStore.sidekick.attachShadow({ mode: 'open' });
+      appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
+
+      const toastSpy = sinon.spy(appStore, 'showToast');
+      const toastElement = appStore.showToast('test', 'info', 2000);
+      expect(toastElement.nodeName).to.equal('TOAST-CONTAINER');
+      expect(toastSpy.calledOnce).to.be.true;
+      expect(toastSpy.args[0][0]).to.equal('test');
+      expect(toastSpy.args[0][1]).to.equal('info');
+      expect(toastSpy.args[0][2]).to.equal(2000);
     });
   });
 
@@ -676,7 +680,7 @@ describe('Test App Store', () => {
     let showToastStub;
     let updatePreviewSpy;
     let addEventListenerSpy;
-    let dispatchEventSpy;
+    let modalSpy;
 
     beforeEach(() => {
       instance = appStore;
@@ -690,7 +694,7 @@ describe('Test App Store', () => {
       showToastStub = sandbox.stub(instance, 'showToast');
       updatePreviewSpy = sandbox.spy(instance, 'updatePreview');
       addEventListenerSpy = sandbox.spy(instance.sidekick, 'addEventListener');
-      dispatchEventSpy = sandbox.spy(EventBus.instance, 'dispatchEvent');
+      modalSpy = sandbox.spy(instance, 'showModal');
     });
 
     afterEach(() => {
@@ -732,7 +736,7 @@ describe('Test App Store', () => {
       await instance.updatePreview(true);
 
       expect(showWaitStub.called).is.true;
-      expect(dispatchEventSpy.calledWith(sinon.match.has('type', EVENTS.OPEN_MODAL))).is.true;
+      expect(modalSpy.calledWith(sinon.match.has('type', MODALS.ERROR))).is.true;
     });
 
     // Test when resp is not ok, ranBefore is true, status.webPath
@@ -744,7 +748,7 @@ describe('Test App Store', () => {
       await instance.updatePreview(true);
 
       expect(showWaitStub.called).is.true;
-      expect(dispatchEventSpy.calledWith(sinon.match.has('type', EVENTS.OPEN_MODAL))).is.true;
+      expect(modalSpy.calledWith(sinon.match.has('type', MODALS.ERROR))).is.true;
     });
 
     // Test when resp is ok and status.webPath starts with /.helix/
@@ -1328,8 +1332,7 @@ describe('Test App Store', () => {
     });
 
     it('should attempt to check login status up to 5 times after login window is closed', async () => {
-      const modalSpy = sinon.spy();
-      EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
+      const modalSpy = sinon.spy(appStore, 'showModal');
 
       instance.login(false);
 
@@ -1344,7 +1347,7 @@ describe('Test App Store', () => {
       await waitUntil(() => modalSpy.called, 'Modal never opened');
 
       expect(modalSpy.callCount).to.equal(2);
-      expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
+      expect(modalSpy.args[1][0].type).to.equal(MODALS.ERROR);
     }).timeout(20000);
 
     it('handles successful login correctly', async () => {
@@ -1393,10 +1396,9 @@ describe('Test App Store', () => {
     });
 
     it('should attempt to check logout status up to 5 times after login window is closed', async () => {
-      const modalSpy = sinon.spy();
+      const modalSpy = sinon.spy(appStore, 'showModal');
       getProfileStub = sandbox.stub(appStore, 'getProfile');
       getProfileStub.resolves({ name: 'foo' });
-      EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
 
       instance.logout();
 
@@ -1408,7 +1410,7 @@ describe('Test App Store', () => {
       await waitUntil(() => modalSpy.called, 'Modal never opened');
 
       expect(modalSpy.callCount).to.equal(2);
-      expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
+      expect(modalSpy.args[1][0].type).to.equal(MODALS.ERROR);
     }).timeout(20000);
 
     it('handles successful logout correctly', async () => {

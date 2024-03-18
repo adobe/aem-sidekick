@@ -212,8 +212,8 @@ class UrlCache {
             // sharepoint API is no longer authenticated, thus the info returned is null.
             // in this case, we don't want to cache a potentially incomplete discovery response.
             // otherwise cache for 2h.
-            const ttl = info ? DISCOVERY_CACHE_TTL : 0;
-            const entry = createCacheEntry(url, results, Date.now() + ttl);
+            const expiry = info ? Date.now() + DISCOVERY_CACHE_TTL : 0;
+            const entry = createCacheEntry(url, results, expiry);
             const entryIndex = urlCache.findIndex((e) => e.url === entry.url);
             if (entryIndex >= 0) {
               // update expired cache entry
