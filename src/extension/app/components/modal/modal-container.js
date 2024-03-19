@@ -181,6 +181,7 @@ export class ModalContainer extends LitElement {
         options.confirmLabel = data?.confirmLabel ?? appStore.i18n('config_delete');
         options.cancelLabel = appStore.i18n('cancel');
         options.content = html`
+          ${data?.message || ''}
           <div class="prompt">${appStore.i18n('destructive_confirmation_prompt').replace('$1', this.action.toUpperCase())}</div>
           <div class="delete-input">
             <sp-textfield id="delete-confirmation"></sp-textfield>
