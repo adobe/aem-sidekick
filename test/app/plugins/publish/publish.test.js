@@ -35,7 +35,7 @@ import { MODALS } from '../../../../src/extension/app/constants.js';
 // @ts-ignore
 window.chrome = chromeMock;
 
-describe('Preview plugin', () => {
+describe('Publish plugin', () => {
   let sidekick;
   const sandbox = sinon.createSandbox();
 
