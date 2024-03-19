@@ -83,7 +83,11 @@ export const mockFetchLocalConfigJSONSuccess = (overrides = {}) => fetchMock.get
 });
 
 export const defaultStatusUrl = 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=auto';
-export const mockFetchStatusSuccess = (overrides = {}, contentSource = 'sharepoint') => fetchMock.get(defaultStatusUrl, {
+export const mockFetchStatusSuccess = (
+  overrides = {},
+  contentSource = 'sharepoint',
+  statusUrl = defaultStatusUrl,
+) => fetchMock.get(statusUrl, {
   status: 200,
   body: contentSource === 'sharepoint' ? { ...defaultSharepointStatusResponse, ...overrides } : { ...defaultGdriveStatusResponse, ...overrides },
 }, { overwriteRoutes: true });

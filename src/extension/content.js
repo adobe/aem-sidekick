@@ -47,7 +47,7 @@
     curatedConfig.scriptUrl = chrome.runtime.getURL('index.js');
 
     sidekick = new AEMSidekick(curatedConfig);
-    sidekick.setAttribute('open', display);
+    sidekick.setAttribute('open', `${display}`);
     document.body.prepend(sidekick);
     window.hlx.sidekick = sidekick;
   }

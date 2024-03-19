@@ -69,3 +69,20 @@ export const MODAL_EVENTS = {
   SECONDARY: 'secondary',
   CONFIRM: 'confirm',
 };
+
+/**
+ * Toast Events
+ * @enum {string}
+ */
+export const TOAST_EVENTS = {
+  CLOSE: 'close',
+};
+
+/**
+ * Array of restricted paths with limited sidekick functionality.
+ * @private
+ * @type {string[]}
+ */
+export const RESTRICTED_PATHS = [
+  '/helix-env.json',
+];

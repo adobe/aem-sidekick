@@ -75,17 +75,14 @@ describe('Plugin action bar', () => {
     expect([...menuButtons].length).to.equal(environments.length);
   }
 
-  function expectPlugin(selector) {
-    const actionBar = recursiveQuery(sidekick, 'action-bar');
-    const plugin = recursiveQuery(actionBar, selector);
-    expect(plugin).to.exist;
-  }
-
-  function expectPluginCount(count) {
+  function expectAllPlugins(pluginIds) {
     const actionGroup = recursiveQuery(sidekick, 'sp-action-group:first-of-type');
     const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, action-bar-picker');
 
-    expect([...plugins].length).to.equal(count);
+    expect(
+      [...plugins].map((plugin) => plugin.className.replace('plugin-container ', '')
+        || plugin.tagName.toLowerCase()),
+    ).to.deep.equal(pluginIds);
   }
 
   describe('renders correct default plugins in action bar', () => {
@@ -98,13 +95,14 @@ describe('Plugin action bar', () => {
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-      expectPluginCount(3);
+      expectAllPlugins([
+        'env-switcher',
+        'reload',
+        'delete',
+        'publish',
+      ]);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
-
-      expectPlugin('env-switcher');
-      expectPlugin('.reload');
-      expectPlugin('.publish');
     });
 
     it('editor - w/custom plugins', async () => {
@@ -118,15 +116,15 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(5);
+      expectAllPlugins([
+        'env-switcher',
+        'edit-preview',
+        'asset-library',
+        'library',
+        'tools',
+      ]);
 
       expectEnvPlugin(['edit', 'preview', 'prod']);
-
-      expectPlugin('env-switcher');
-      expectPlugin('.edit-preview');
-      expectPlugin('.asset-library');
-      expectPlugin('.library');
-      expectPlugin('.tools');
 
       // Should fallback to id for label if title not provided
       const assetLibraryPlugin = recursiveQuery(sidekick, '.asset-library');
@@ -144,7 +142,10 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(2);
+      expectAllPlugins([
+        'env-switcher',
+        'edit-preview',
+      ]);
 
       expect(recursiveQuery(sidekick, '.custom-plugin-0')).to.equal(undefined);
     });
@@ -159,12 +160,12 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(2);
+      expectAllPlugins([
+        'env-switcher',
+        'publish',
+      ]);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
-
-      expectPlugin('env-switcher');
-      expectPlugin('.publish');
     });
 
     it('isProd', async () => {
@@ -177,12 +178,12 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(2);
+      expectAllPlugins([
+        'env-switcher',
+        'publish',
+      ]);
 
       expectEnvPlugin(['prod', 'preview', 'edit']);
-
-      expectPlugin('env-switcher');
-      expectPlugin('.publish');
     });
 
     it('Unsupported env', async () => {
@@ -195,11 +196,11 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(1);
+      expectAllPlugins([
+        'env-switcher',
+      ]);
 
       expectEnvPlugin([]);
-
-      expectPlugin('env-switcher');
     });
 
     it('isEditor', async () => {
@@ -214,12 +215,12 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(2);
+      expectAllPlugins([
+        'env-switcher',
+        'edit-preview',
+      ]);
 
       expectEnvPlugin(['edit', 'preview', 'live']);
-
-      expectPlugin('env-switcher');
-      expectPlugin('.edit-preview');
     });
 
     it('isEditor - custom config with prod host', async () => {
@@ -234,12 +235,12 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(2);
+      expectAllPlugins([
+        'env-switcher',
+        'edit-preview',
+      ]);
 
       expectEnvPlugin(['edit', 'preview', 'prod']);
-
-      expectPlugin('env-switcher');
-      expectPlugin('.edit-preview');
     });
 
     it('isPreview - custom config with prod host', async () => {
@@ -254,10 +255,14 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(3);
+      expectAllPlugins([
+        'env-switcher',
+        'reload',
+        'delete',
+        'publish',
+      ]);
+
       expectEnvPlugin(['preview', 'edit', 'prod']);
-      expectPlugin('env-switcher');
-      expectPlugin('.publish');
     });
 
     it('core plugin clicked', async () => {
@@ -289,7 +294,12 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(3);
+      expectAllPlugins([
+        'env-switcher',
+        'reload',
+        'delete',
+        'publish',
+      ]);
 
       const publishButton = recursiveQuery(sidekick, '.publish');
       publishButton.click();
@@ -323,8 +333,13 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(5);
-      expectPlugin('.tools');
+      expectAllPlugins([
+        'env-switcher',
+        'edit-preview',
+        'asset-library',
+        'library',
+        'tools',
+      ]);
 
       const toolsPlugin = recursiveQuery(sidekick, 'action-bar-picker.tools');
       const plugins = recursiveQueryAll(toolsPlugin, 'sp-menu-item');
@@ -350,7 +365,13 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(5);
+      expectAllPlugins([
+        'env-switcher',
+        'edit-preview',
+        'asset-library',
+        'library',
+        'tools',
+      ]);
 
       const libraryPlugin = recursiveQuery(sidekick, '.library');
       libraryPlugin.click();
