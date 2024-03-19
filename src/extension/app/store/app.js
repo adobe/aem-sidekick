@@ -176,12 +176,14 @@ export class AppStore {
       const reloadPlugin = pluginFactory.createReloadPlugin(this);
       const deletePlugin = pluginFactory.createDeletePlugin(this);
       const publishPlugin = pluginFactory.createPublishPlugin(this);
+      const unpublishPlugin = pluginFactory.createUnpublishPlugin(this);
 
       this.corePlugins[envPlugin.id] = envPlugin;
       this.corePlugins[previewPlugin.id] = previewPlugin;
       this.corePlugins[reloadPlugin.id] = reloadPlugin;
       this.corePlugins[deletePlugin.id] = deletePlugin;
       this.corePlugins[publishPlugin.id] = publishPlugin;
+      this.corePlugins[unpublishPlugin.id] = unpublishPlugin;
     }
   }
 
