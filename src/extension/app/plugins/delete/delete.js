@@ -33,8 +33,7 @@ export function createDeletePlugin(appStore) {
   return new SidekickPlugin({
     id: 'delete',
     condition: (store) => store.isPreview()
-      && store.status.code?.status !== 200 // // only show if not code
-      && !RESTRICTED_PATHS.includes(store.location.pathname), // or restricted path
+      && !RESTRICTED_PATHS.includes(store.location.pathname),
     // pinned: false, // TODO: set to unpinned
     button: {
       text: appStore.i18n('delete'),
@@ -97,7 +96,8 @@ export function createDeletePlugin(appStore) {
         });
       },
       isEnabled: (store) => store.isAuthorized('preview', 'delete') // only enable if authorized
-        && store.status.preview && store.status.preview.status === 200, // and page previewed
+        && store.status.preview?.status === 200 // and page previewed
+        && store.status.code?.status !== 200, // and not code
     },
     appStore,
   });

@@ -33,9 +33,7 @@ export function createUnpublishPlugin(appStore) {
   return new SidekickPlugin({
     id: 'unpublish',
     condition: (store) => store.isProject()
-      && store.status.live?.status === 200 // only show if published
-      && store.status.code?.status !== 200 // // and not code
-      && !RESTRICTED_PATHS.includes(store.location.pathname), // or restricted path
+      && !RESTRICTED_PATHS.includes(store.location.pathname),
     // pinned: false, // TODO: set to unpinned
     button: {
       text: appStore.i18n('unpublish'),
@@ -93,7 +91,8 @@ export function createUnpublishPlugin(appStore) {
         });
       },
       isEnabled: (store) => store.isAuthorized('live', 'delete') // only enable if authorized
-        && store.status.live && store.status.live.status === 200, // and page published
+        && store.status.live?.status === 200 // and page published
+        && store.status.code?.status !== 200, // and not code
     },
     appStore,
   });
