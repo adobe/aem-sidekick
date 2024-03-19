@@ -12,7 +12,7 @@
 
 /* eslint-disable max-len */
 
-import { html, css } from 'lit';
+import { html, css, render } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
@@ -51,6 +51,12 @@ export class PluginActionBar extends MobxLitElement {
     sp-divider {
       background-color: var(--spectrum2-sidekick-border-color);
     }
+
+    action-bar .plugin-menu-popover {
+      position: absolute;
+      bottom: 0;
+      border: solid red 2px;
+    }
   `;
 
   /**
@@ -58,6 +64,12 @@ export class PluginActionBar extends MobxLitElement {
    * @type {Object}
    */
   #userPrefs = null;
+
+  /**
+   * The plugin menu
+   * @type {HTMLElement}
+   */
+  pluginMenu = null;
 
   /**
   * Are we ready to render?
@@ -82,6 +94,33 @@ export class PluginActionBar extends MobxLitElement {
         this.requestUpdate();
       },
     );
+  }
+
+  /**
+   * Renders the plugin menu.
+   */
+  renderPluginMenu() {
+    if (!this.pluginMenu) {
+      const menuItems = [
+        ...Object.values(appStore.corePlugins),
+        ...Object.values(appStore.customPlugins),
+      ]
+        .filter((plugin) => plugin.id !== 'env-switcher' && plugin.checkCondition())
+        .map((plugin) => plugin.config)
+        .map((cfg) => html`
+          <sp-menu-item value=${cfg.id} @click=${cfg.button.action}>
+            ${cfg.button.text}
+          </sp-menu-item>`);
+
+      const pluginMenu = html`
+        <sp-menu>
+          ${menuItems}
+        </sp-menu>`;
+
+      // @ts-ignore
+      this.pluginMenu = this.shadowRoot.querySelector('#plugin-menu-overlay');
+      render(pluginMenu, this.pluginMenu);
+    }
   }
 
   /**
@@ -113,6 +152,25 @@ export class PluginActionBar extends MobxLitElement {
     const { siteStore } = appStore;
 
     const systemPlugins = [];
+
+    const pluginMenu = html`
+      <sp-action-button id="plugin-menu-trigger" quiet @click=${this.renderPluginMenu}>
+        <sp-icon slot="icon" size="l">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.75 2.25H3.25C2.69772 2.25 2.25 2.69772 2.25 3.25V4.75C2.25 5.30228 2.69772 5.75 3.25 5.75H4.75C5.30228 5.75 5.75 5.30228 5.75 4.75V3.25C5.75 2.69772 5.30228 2.25 4.75 2.25Z" fill="#292929"/>
+            <path d="M10.75 2.25H9.25C8.69772 2.25 8.25 2.69772 8.25 3.25V4.75C8.25 5.30228 8.69772 5.75 9.25 5.75H10.75C11.3023 5.75 11.75 5.30228 11.75 4.75V3.25C11.75 2.69772 11.3023 2.25 10.75 2.25Z" fill="#292929"/>
+            <path d="M16.75 2.25H15.25C14.6977 2.25 14.25 2.69772 14.25 3.25V4.75C14.25 5.30228 14.6977 5.75 15.25 5.75H16.75C17.3023 5.75 17.75 5.30228 17.75 4.75V3.25C17.75 2.69772 17.3023 2.25 16.75 2.25Z" fill="#292929"/>
+            <path d="M4.75 8.25H3.25C2.69772 8.25 2.25 8.69772 2.25 9.25V10.75C2.25 11.3023 2.69772 11.75 3.25 11.75H4.75C5.30228 11.75 5.75 11.3023 5.75 10.75V9.25C5.75 8.69772 5.30228 8.25 4.75 8.25Z" fill="#292929"/>
+            <path d="M10.75 8.25H9.25C8.69772 8.25 8.25 8.69772 8.25 9.25V10.75C8.25 11.3023 8.69772 11.75 9.25 11.75H10.75C11.3023 11.75 11.75 11.3023 11.75 10.75V9.25C11.75 8.69772 11.3023 8.25 10.75 8.25Z" fill="#292929"/>
+            <path d="M16.75 8.25H15.25C14.6977 8.25 14.25 8.69772 14.25 9.25V10.75C14.25 11.3023 14.6977 11.75 15.25 11.75H16.75C17.3023 11.75 17.75 11.3023 17.75 10.75V9.25C17.75 8.69772 17.3023 8.25 16.75 8.25Z" fill="#292929"/>
+            <path d="M4.75 14.25H3.25C2.69772 14.25 2.25 14.6977 2.25 15.25V16.75C2.25 17.3023 2.69772 17.75 3.25 17.75H4.75C5.30228 17.75 5.75 17.3023 5.75 16.75V15.25C5.75 14.6977 5.30228 14.25 4.75 14.25Z" fill="#292929"/>
+            <path d="M10.75 14.25H9.25C8.69772 14.25 8.25 14.6977 8.25 15.25V16.75C8.25 17.3023 8.69772 17.75 9.25 17.75H10.75C11.3023 17.75 11.75 17.3023 11.75 16.75V15.25C11.75 14.6977 11.3023 14.25 10.75 14.25Z" fill="#292929"/>
+            <path d="M16.75 14.25H15.25C14.6977 14.25 14.25 14.6977 14.25 15.25V16.75C14.25 17.3023 14.6977 17.75 15.25 17.75H16.75C17.3023 17.75 17.75 17.3023 17.75 16.75V15.25C17.75 14.6977 17.3023 14.25 16.75 14.25Z" fill="#292929"/>
+          </svg>
+        </sp-icon>
+      </sp-action-button>
+      <sp-overlay id="plugin-menu-overlay" trigger="plugin-menu-trigger@click" placement="top" tip></sp-overlay>`;
+    systemPlugins.push(pluginMenu);
 
     const properties = html`
       <sp-action-button class="properties" quiet>
