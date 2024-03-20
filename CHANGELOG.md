@@ -1,3 +1,11 @@
+# [1.14.0](https://github.com/adobe/aem-sidekick/compare/v1.13.0...v1.14.0) (2024-3-20)
+
+
+### Features
+
+* delete plugin ([#102](https://github.com/adobe/aem-sidekick/issues/102)) ([4bde261](https://github.com/adobe/aem-sidekick/commit/4bde261c6dfd5d63c73de55bdea5ab357fff62c3))
+* unpublish plugin ([#103](https://github.com/adobe/aem-sidekick/issues/103)) ([1ea5023](https://github.com/adobe/aem-sidekick/commit/1ea502312ea69453661da445f7542c12504af11d))
+
 # [1.13.0](https://github.com/adobe/aem-sidekick/compare/v1.12.0...v1.13.0) (2024-3-16)
 
 
