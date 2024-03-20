@@ -25,56 +25,51 @@ import {
  */
 
 /**
- * Creates the delete plugin
+ * Creates the unpublish plugin
  * @param {AppStore} appStore The app store
- * @returns {SidekickPlugin} The delete plugin
+ * @returns {SidekickPlugin} The unpublish plugin
  */
-export function createDeletePlugin(appStore) {
+export function createUnpublishPlugin(appStore) {
   return new SidekickPlugin({
-    id: 'delete',
-    condition: (store) => store.isPreview()
+    id: 'unpublish',
+    condition: (store) => store.isProject()
       && !RESTRICTED_PATHS.includes(store.location.pathname),
     // pinned: false, // TODO: set to unpinned
     button: {
-      text: appStore.i18n('delete'),
+      text: appStore.i18n('unpublish'),
       action: async () => {
         const { location, status } = appStore;
-        const isPage = status.webPath.split('/').pop().indexOf('.') === -1;
         const hasSrc = status.edit?.status === 200;
 
         // double check
         if (hasSrc && !appStore.isAuthenticated()) {
-          const message = isPage
-            ? appStore.i18n('delete_page_source_exists')
-            : appStore.i18n('delete_file_source_exists');
-          appStore.showToast(message, 'negative');
+          appStore.showToast(appStore.i18n('unpublish_page_source_exists'), 'negative');
           return;
         }
 
         // get user confirmation
-        const message = isPage
-          ? appStore.i18n(hasSrc ? 'delete_page_confirm' : 'delete_page_no_source_confirm')
-          : appStore.i18n(hasSrc ? 'delete_file_confirm' : 'delete_file_no_source_confirm');
+        const message = hasSrc
+          ? appStore.i18n('unpublish_page_confirm')
+          : appStore.i18n('unpublish_page_no_source_confirm');
         const modal = appStore.showModal({
           type: MODALS.DELETE,
           data: {
-            headline: appStore.i18n('delete'),
+            headline: appStore.i18n('unpublish'),
             message,
-            confirmLabel: appStore.i18n('delete'),
+            confirmLabel: appStore.i18n('unpublish'),
+            action: 'UNPUBLISH',
           },
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
-          // perform delete
+          // perform unpublish
           appStore.showWait();
           try {
-            const resp = await appStore.delete();
+            const resp = await appStore.unpublish();
             appStore.hideWait();
             if (resp.ok) {
               // show success toast
               const toast = appStore.showToast(
-                isPage
-                  ? appStore.i18n('delete_page_success')
-                  : appStore.i18n('delete_file_success'),
+                appStore.i18n('unpublish_page_success'),
                 'positive',
               );
               toast.addEventListener(TOAST_EVENTS.CLOSE, () => {
@@ -89,14 +84,14 @@ export function createDeletePlugin(appStore) {
             appStore.showModal({
               type: MODALS.ERROR,
               data: {
-                message: appStore.i18n('delete_failure'),
+                message: appStore.i18n('unpublish_failure'),
               },
             });
           }
         });
       },
-      isEnabled: (store) => store.isAuthorized('preview', 'delete') // only enable if authorized
-        && store.status.preview?.status === 200 // and page previewed
+      isEnabled: (store) => store.isAuthorized('live', 'delete') // only enable if authorized
+        && store.status.live?.status === 200 // and page published
         && store.status.code?.status !== 200, // and not code
     },
     appStore,
