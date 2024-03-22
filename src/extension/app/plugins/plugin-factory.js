@@ -13,11 +13,15 @@
 import { createEnvPlugin } from './env/env.js';
 import { createPreviewPlugin } from './preview/preview.js';
 import { createReloadPlugin } from './reload/reload.js';
+import { createDeletePlugin } from './delete/delete.js';
 import { createPublishPlugin } from './publish/publish.js';
+import { createUnpublishPlugin } from './unpublish/unpublish.js';
 
 export const pluginFactory = (() => ({
   createEnvPlugin,
   createPreviewPlugin,
   createReloadPlugin,
+  createDeletePlugin,
   createPublishPlugin,
+  createUnpublishPlugin,
 }))();

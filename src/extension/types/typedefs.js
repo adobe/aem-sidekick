@@ -178,7 +178,7 @@
  * @typedef {Object} Toast
  * @prop {string} message The toast message
  * @prop {string} variant The toast variant
- * @prop {number} timeout The time the toast is shown (default: 2000)
+ * @prop {number} timeout The time the toast is shown (default: 6000)
  */
 
 /**

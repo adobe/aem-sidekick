@@ -192,16 +192,20 @@ export class AppStore {
   setupCorePlugins() {
     this.corePlugins = {};
 
-    if (this.siteStore.authorized) {
+    if (this.siteStore.ready && this.siteStore.authorized) {
       const envPlugin = pluginFactory.createEnvPlugin(this);
       const previewPlugin = pluginFactory.createPreviewPlugin(this);
       const reloadPlugin = pluginFactory.createReloadPlugin(this);
+      const deletePlugin = pluginFactory.createDeletePlugin(this);
       const publishPlugin = pluginFactory.createPublishPlugin(this);
+      const unpublishPlugin = pluginFactory.createUnpublishPlugin(this);
 
       this.corePlugins[envPlugin.id] = envPlugin;
       this.corePlugins[previewPlugin.id] = previewPlugin;
       this.corePlugins[reloadPlugin.id] = reloadPlugin;
+      this.corePlugins[deletePlugin.id] = deletePlugin;
       this.corePlugins[publishPlugin.id] = publishPlugin;
+      this.corePlugins[unpublishPlugin.id] = unpublishPlugin;
     }
   }
 
@@ -529,7 +533,7 @@ export class AppStore {
   }
 
   /*
-   * Returns the currebnt environment
+   * Returns the current environment or an empty string.
    * @returns {string} the current environment
    */
   getEnv() {
