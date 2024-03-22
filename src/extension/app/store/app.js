@@ -22,7 +22,7 @@ import {
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
-  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS,
+  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS, RESTRICTED_PATHS,
 } from '../constants.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
 import { SidekickPlugin } from '../components/plugin/plugin.js';
@@ -57,15 +57,6 @@ import { ToastContainer } from '../components/toast/toast-container.js';
 /**
  * @typedef {import('@Types').Modal} Modal
  */
-
-/**
- * Array of restricted paths with limited sidekick functionality.
- * @private
- * @type {string[]}
- */
-export const RESTRICTED_PATHS = [
-  '/helix-env.json',
-];
 
 /**
  * Enum for view types.
