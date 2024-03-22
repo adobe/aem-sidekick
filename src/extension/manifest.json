@@ -55,7 +55,7 @@
           "sp-popover.js",
           "tab.js",
           "url-cache.js",
-          "custom-views/json/json.html",
+          "views/json/json.html",
           "view-doc-source/js/content.js"
         ],
         "matches": [

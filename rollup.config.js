@@ -107,7 +107,7 @@ export default [
     ...extensionBuild('safari'),
   },
   {
-    input: 'src/extension/custom-views/json/json.js',
-    ...viewBuild('chrome', '/custom-views/json'),
+    input: 'src/extension/views/json/json.js',
+    ...viewBuild('chrome', '/views/json'),
   },
 ];
