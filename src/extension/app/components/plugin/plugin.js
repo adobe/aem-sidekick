@@ -51,6 +51,13 @@ export class SidekickPlugin {
    */
   children = {};
 
+  /**
+   * The plugin configuration
+   * @property
+   * @type {Object}
+   */
+  config;
+
   constructor(plugin) {
     this.disabled = false;
     this.config = plugin;
@@ -58,15 +65,41 @@ export class SidekickPlugin {
   }
 
   /**
-   * Checks the plugin's condition.
-   * @returns {boolean} True if plugin's condition is met, else false
+   * Returns the plugin ID.
+   * @returns {string} The plugin ID
    */
-  checkCondition() {
-    return !this.config.condition || !!this.config.condition(this.config.appStore);
+  getId() {
+    return this.config.id;
   }
 
   /**
-   * Returns the pinned state of the plugin.
+   * Returns the plugin's button text.
+   * @returns {string} The plugin's button text or ID
+   */
+  getButtonText() {
+    return this.config.button?.text || this.getId();
+  }
+
+  /**
+   * Is this plugin visible in the current environment?
+   * @returns {boolean} True if plugin is visible, else false
+   */
+  isVisible() {
+    return typeof this.config.condition !== 'function'
+      || !!this.config.condition(this.config.appStore);
+  }
+
+  /**
+   * Is this plugin enabled for the current resource?
+   * @returns {boolean} True if plugin is enabled, else false
+   */
+  isEnabled() {
+    return typeof this.config.button?.isEnabled !== 'function'
+      || this.config.button.isEnabled(this.config.appStore);
+  }
+
+  /**
+   * Is this plugin pinned to the sidekick's action bar?
    * @param {Object} [userPrefs] The user preferences for this plugin
    * @returns {boolean} True if plugin is pinned, else false
    */
@@ -84,6 +117,14 @@ export class SidekickPlugin {
   }
 
   /**
+   * Is this plugin a container?
+   * @returns {boolean} True if the plugin is a container, else false
+   */
+  isContainer() {
+    return Object.keys(this.children).length > 0;
+  }
+
+  /**
    * Adds a plugin to this plugin's children.
    * @param {SidekickPlugin} plugin The plugin to add
    */
@@ -93,7 +134,6 @@ export class SidekickPlugin {
 
   /**
    * Executes the plugin's button action.
-   * @private
    * @param {Event} evt The event object
    */
   async onButtonClick(evt) {
@@ -130,43 +170,45 @@ export class SidekickPlugin {
     }
 
     // special case: env-switcher
-    if (config.id === 'env-switcher') {
+    if (this.getId() === 'env-switcher') {
       return html`
         <env-switcher></env-switcher>
       `;
     }
 
-    const childConfigs = Object.values(this.children)
-      .filter((childPlugin) => childPlugin.checkCondition()
-        && childPlugin.isPinned())
-      .map((childPlugin) => childPlugin.config);
+    const childPlugins = Object.values(this.children)
+      .filter((childPlugin) => childPlugin.isVisible()
+        && childPlugin.isPinned());
 
-    if (childConfigs.length > 0) {
+    if (childPlugins.length > 0) {
       return html`
         <action-bar-picker 
-          class=${`plugin-container ${config.id}`} 
-          label=${config.button.text} 
+          class=${`plugin-container ${this.getId}`} 
+          label=${this.getButtonText()} 
           @change=${(e) => this.onChange(e)} 
           placement="top"
         >
-        ${childConfigs.map((childConfig) => html`
-            <sp-menu-item value=${childConfig.id}>${childConfig.button.text}</sp-menu-item>
+        ${childPlugins.map((child) => html`
+            <sp-menu-item
+              .disabled=${!child.isEnabled()}
+              value=${child.id}
+              @click=${(evt) => child.onButtonClick(evt)}
+            >
+              ${child.getButtonText()}
+            </sp-menu-item>
           `)}
         </action-bar-picker>
       `;
     }
 
-    const isEnabled = typeof config.button?.isEnabled === 'function'
-      ? config.button.isEnabled : () => true;
-
     return html`
       <sp-action-button 
-        class=${config.id} 
-        .disabled=${!isEnabled(config.appStore)} 
+        class=${this.getId()} 
+        .disabled=${!this.isEnabled()} 
         quiet 
         @click=${(evt) => this.onButtonClick(evt)}
       >
-          ${config.button.text}
+          ${this.getButtonText()}
       </sp-action-button>
     `;
   }

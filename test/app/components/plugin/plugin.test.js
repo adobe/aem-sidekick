@@ -37,7 +37,7 @@ describe('SidekickPlugin', () => {
       ...defaultConfigJSONWithPlugins.plugins[0],
       appStore,
     });
-    const res = plugin.checkCondition();
+    const res = plugin.isVisible();
     expect(res).to.be.true;
   });
 

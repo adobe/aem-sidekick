@@ -12,12 +12,14 @@
 
 /* eslint-disable max-len */
 
-import { html, css, render } from 'lit';
+import { html, render } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
 import { appStore } from '../../store/app.js';
-import { getConfig } from '../../../config.js';
+import { getConfig, setConfig } from '../../../config.js';
+import { ICONS } from '../../constants.js';
+import { style } from './plugin-action-bar.css.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').SidekickPlugin} SidekickPlugin
@@ -30,46 +32,36 @@ import { getConfig } from '../../../config.js';
 
 @customElement('plugin-action-bar')
 export class PluginActionBar extends MobxLitElement {
-  static styles = css`
-    action-bar sp-action-group {
-      padding: 12px;
-    }
-
-    action-bar sp-action-group.not-authorized {
-      padding: 0px;
-    }
-
-    action-bar .plugin-container {
-      width: auto;
-    }
-
-    action-bar sp-action-group > svg {
-      width: 32px;
-      height: 32px;
-    }
-
-    sp-divider {
-      background-color: var(--spectrum2-sidekick-border-color);
-    }
-
-    action-bar .plugin-menu-popover {
-      position: absolute;
-      bottom: 0;
-      border: solid red 2px;
-    }
-  `;
+  static get styles() {
+    return [
+      style,
+    ];
+  }
 
   /**
    * The user preferences for plugins in this environment.
    * @type {Object}
    */
-  #userPrefs = null;
+  @property({ type: Object, attribute: false })
+  accessor userPrefs = null;
 
   /**
-   * The plugin menu
+   * The current environment
+   * @type {string}
+   */
+  currentEnv = '';
+
+  /**
+   * The core and custom plugins allowed in the current environment.
+   * @type {Object}
+   */
+  allowedPlugins = {};
+
+  /**
+   * The plugin menu overlay
    * @type {HTMLElement}
    */
-  pluginMenu = null;
+  pluginMenuOverlay = null;
 
   /**
   * Are we ready to render?
@@ -84,8 +76,8 @@ export class PluginActionBar extends MobxLitElement {
   async connectedCallback() {
     super.connectedCallback();
 
-    const pluginSettings = await getConfig('sync', 'pluginPrefs') || {};
-    this.#userPrefs = pluginSettings[appStore.getEnv()] || {};
+    this.userPrefs = await getConfig('sync', 'pluginPrefs') || {};
+    this.currentEnv = appStore.getEnv();
     this.ready = true;
 
     reaction(
@@ -97,29 +89,182 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   /**
-   * Renders the plugin menu.
+   * Returns the user preferences for a plugin.
+   * @param {string} id The plugin ID
+   * @returns {Object} The preferences
+   */
+  getPluginPrefs(id) {
+    return this.userPrefs[this.currentEnv]?.[id];
+  }
+
+  /**
+   * Filters the plugin menu.
+   * @param {string} filter The filter term
+   */
+  filterPluginMenu(filter) {
+    // TODO: Implement filtering
+    // eslint-disable-next-line no-console
+    console.log('Filtering plugin menu', filter);
+  }
+
+  /**
+   * Toggles the pinned state of a plugin.
+   * @param {SidekickPlugin} plugin The plugin
+   * @param {Object} e The event
+   */
+  async togglePlugin(plugin, e) {
+    e.stopPropagation();
+    const button = e.target.closest('sp-button');
+    const userPrefs = await getConfig('sync', 'pluginPrefs');
+    const { id } = plugin;
+
+    let envPrefs = userPrefs[this.currentEnv];
+    if (!envPrefs) {
+      // create prefs for current environment
+      envPrefs = {};
+      userPrefs[this.currentEnv] = envPrefs;
+    }
+
+    let pluginPrefs = envPrefs[id];
+    if (!pluginPrefs) {
+      // create plugin prefs for current environment
+      pluginPrefs = {};
+      envPrefs[id] = pluginPrefs;
+    }
+
+    // flip the pinned state
+    const newPinnedState = !plugin.isPinned(pluginPrefs);
+    pluginPrefs.pinned = newPinnedState;
+
+    // toggle button state
+    button.setAttribute('title', newPinnedState
+      ? appStore.i18n('plugin_unpin')
+      : appStore.i18n('plugin_pin'));
+    const icon = button.querySelector('sp-icon');
+    icon.innerHTML = newPinnedState
+      // TODO: Use imported ICONS
+      ? `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14.4424 18.499C14.1323 18.499 13.8218 18.4092 13.5469 18.229L11.1758 16.6719C10.4629 16.2031 9.49463 16.2031 8.78076 16.6719L6.41015 18.229C5.83788 18.605 5.11083 18.5869 4.55712 18.185C4.00341 17.7832 3.76269 17.0967 3.94286 16.4365L4.90331 12.9228C5.0039 12.5557 4.87694 12.1645 4.58007 11.9268L1.7373 9.64892C1.20312 9.2207 0.995108 8.52343 1.20654 7.87255C1.41845 7.22216 1.99658 6.78075 2.67968 6.74853L6.31786 6.57617C6.69823 6.55859 7.03075 6.31689 7.16552 5.96045L8.45409 2.55322C8.69579 1.91357 9.29393 1.50049 9.97802 1.5C10.6621 1.5 11.2607 1.91357 11.5029 2.55322L12.791 5.96045C12.9258 6.3169 13.2583 6.55859 13.6387 6.57617L17.2773 6.74853C17.9604 6.78076 18.5386 7.22216 18.7505 7.87304C18.9619 8.52392 18.7534 9.2207 18.2192 9.64892L15.3769 11.9268C15.0801 12.1645 14.9531 12.5557 15.0537 12.9224L16.0141 16.437C16.1943 17.0967 15.9531 17.7832 15.3999 18.1851C15.1123 18.394 14.7778 18.499 14.4424 18.499Z" fill="currentColor"/>
+        </svg>`
+      : `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5.51465 18.624C5.15332 18.624 4.79395 18.5117 4.48438 18.2861C3.8877 17.8535 3.62793 17.1143 3.82227 16.4033L4.78223 12.8906C4.87012 12.5713 4.75977 12.2314 4.50196 12.0244L1.65919 9.7461C1.08399 9.28614 0.859388 8.53516 1.08692 7.83497C1.31446 7.1338 1.93751 6.65919 2.67383 6.62403L6.3125 6.45118C6.64258 6.43556 6.93164 6.22559 7.04883 5.91602L8.33692 2.50879C8.59766 1.81934 9.24219 1.375 9.97852 1.375C10.7148 1.375 11.3594 1.82031 11.6191 2.50879L12.9082 5.91602C13.0254 6.22657 13.3135 6.43555 13.6445 6.45118L17.2832 6.62403C18.0195 6.65919 18.6416 7.1338 18.8691 7.83399C19.0967 8.53418 18.8731 9.28516 18.2988 9.7461L15.4551 12.0244C15.1973 12.2314 15.0869 12.5713 15.1738 12.8906L16.1348 16.4033C16.3291 17.1143 16.0693 17.8535 15.4736 18.2861C14.876 18.7178 14.0938 18.7373 13.4776 18.333L11.1074 16.7764C10.4307 16.334 9.51857 16.334 8.85158 16.7754L6.47756 18.333C6.18264 18.5274 5.84766 18.624 5.51465 18.624ZM9.97852 2.87501C9.91211 2.87501 9.79395 2.89649 9.73926 3.04005L8.45117 6.44728C8.12305 7.31642 7.31055 7.90626 6.38281 7.94923L2.74414 8.12208C2.59863 8.12892 2.53906 8.22169 2.51367 8.29786C2.48926 8.37501 2.4834 8.48438 2.59668 8.57618L5.43945 10.8545C6.16406 11.4346 6.47461 12.3897 6.22949 13.2852L5.26953 16.7988C5.22851 16.9473 5.3125 17.0342 5.36523 17.0723C5.42968 17.1191 5.53027 17.1592 5.65429 17.0791L8.02734 15.5225C9.18261 14.7617 10.7607 14.7569 11.9297 15.5225L14.3008 17.0791C14.4228 17.1582 14.5264 17.1201 14.5918 17.0723C14.6562 17.0254 14.7256 16.9395 14.6875 16.7998L13.7265 13.2861C13.4814 12.3897 13.792 11.4355 14.5176 10.8545L17.3603 8.57618C17.4795 8.48048 17.4629 8.36036 17.4424 8.29786C17.418 8.22169 17.3574 8.12891 17.2129 8.12208L13.5742 7.94923C12.6445 7.90626 11.833 7.31642 11.5049 6.4463L10.2168 3.03907C10.165 2.90333 10.0586 2.87501 9.97852 2.87501Z" fill="currentColor"/>
+        </svg>`;
+
+    // persist updated preferences
+    this.userPrefs = userPrefs;
+    await setConfig('sync', { pluginPrefs: this.userPrefs });
+    await this.requestUpdate();
+  }
+
+  /**
+   * Render a plugin menu item.
+   * @param {SidekickPlugin} plugin The plugin
+   * @returns {TemplateResult} The plugin menu item
+   */
+  renderPluginMenuItem(plugin) {
+    const pinned = plugin.isPinned(this.getPluginPrefs(plugin.id));
+    const disabled = !plugin.isEnabled();
+    const pluginAction = (e) => {
+      this.pluginMenuOverlay.removeAttribute('open');
+      plugin.onButtonClick(e);
+    };
+    const toggleAction = (e) => this.togglePlugin(plugin, e);
+    const toggleIcon = html`
+      ${pinned ? ICONS.STAR_FULL : ICONS.STAR_EMPTY}
+    `;
+    const toggleTitle = pinned ? appStore.i18n('plugin_unpin') : appStore.i18n('plugin_pin');
+
+    return html`
+      <div class="menu-item-container">
+        <sp-menu-item
+          @click=${pluginAction}
+          .disabled=${disabled}>
+          <sp-icon slot="icon">
+            ${ICONS.ADOBE_LOGO}
+          </sp-icon>
+          ${plugin.getButtonText()}
+        </sp-menu-item>
+        <sp-button
+          quiet
+          icon-only
+          title="${toggleTitle}"
+          @click=${toggleAction}>
+          <sp-icon slot="icon">
+            ${toggleIcon}
+          </sp-icon>
+        </sp-button>
+      </div>`;
+  }
+
+  /**
+   * Render the plugin menu.
    */
   renderPluginMenu() {
-    if (!this.pluginMenu) {
-      const menuItems = [
-        ...Object.values(appStore.corePlugins),
-        ...Object.values(appStore.customPlugins),
-      ]
-        .filter((plugin) => plugin.id !== 'env-switcher' && plugin.checkCondition())
-        .map((plugin) => plugin.config)
-        .map((cfg) => html`
-          <sp-menu-item value=${cfg.id} @click=${cfg.button.action}>
-            ${cfg.button.text}
-          </sp-menu-item>`);
+    if (appStore.status?.webPath && !this.pluginMenuOverlay) {
+      const filterAction = (e) => this.filterPluginMenu(e.target.value);
+      const filterPlaceholder = appStore.i18n('plugins_filter');
+      const groupTitle = appStore.i18n('plugins');
 
-      const pluginMenu = html`
-        <sp-menu>
-          ${menuItems}
-        </sp-menu>`;
+      // add allowed non-container plugins
+      const pluginList = this.allowedPlugins
+        .filter((plugin) => plugin.getId() !== 'env-switcher' // special case: env-switcher
+          && !plugin.isContainer());
 
-      // @ts-ignore
-      this.pluginMenu = this.shadowRoot.querySelector('#plugin-menu-overlay');
-      render(pluginMenu, this.pluginMenu);
+      // include allowed children of container plugins
+      this.allowedPlugins
+        .filter((plugin) => plugin.isContainer())
+        .forEach((container) => {
+          Object.values(container.children)
+            .filter((child) => child.isVisible())
+            .forEach((child) => pluginList.push(child));
+        });
+
+      const menuItems = pluginList.map((plugin) => this.renderPluginMenuItem(plugin));
+
+      this.pluginMenuOverlay = this.shadowRoot.querySelector('#plugin-list-overlay');
+      render(html`
+        <sp-popover role="presentation">
+          <sp-menu id="plugin-list-menu" aria-labelledby="applied-label" role="listbox">
+            <div class="filter-container">
+              <sp-textfield
+                quiet
+                placeholder="${filterPlaceholder}"
+                size="xl"
+                @input=${filterAction}
+              >
+              </sp-textfield>
+            </div>
+            <sp-divider size="s"></sp-divider>
+            <sp-menu-group id="plugin-list-plugins" selects="single">
+              <span slot="header">${groupTitle}</span>
+              ${menuItems}
+            </sp-menu-group>
+            <sp-divider size="s"></sp-divider>
+            <div class="keyboard-hints">
+              <div>
+                <span>${appStore.i18n('plugins_navigate')}</span>
+                <sp-icon size="s" style="transform: rotate(90deg)">
+                  ${ICONS.ARROW}
+                </sp-icon>
+                <sp-icon size="s" style="transform: rotate(270deg)">
+                  ${ICONS.ARROW}
+                </sp-icon>
+              </div>
+              <div>
+                <span>${appStore.i18n('plugins_select')}</span>
+                <sp-icon size="s">
+                  ${ICONS.ARROW}
+                </sp-icon>
+              </div>
+              <div class="last">
+                <span>${appStore.i18n('back')}</span>
+                <sp-icon size="s">
+                  esc
+                </sp-icon>
+              </div>
+            </div>
+          </sp-menu>
+        </sp-popover>`, this.pluginMenuOverlay);
     }
   }
 
@@ -132,18 +277,17 @@ export class PluginActionBar extends MobxLitElement {
       return '';
     }
 
-    const corePlugins = Object.values(appStore.corePlugins);
-    const customPlugins = Object.values(appStore.customPlugins);
-    const renderedPlugins = [
-      ...corePlugins,
-      ...customPlugins,
+    this.allowedPlugins = [
+      ...Object.values(appStore.corePlugins),
+      ...Object.values(appStore.customPlugins),
     ]
-      .filter((plugin) => plugin.checkCondition()
-        && plugin.isPinned(this.#userPrefs[plugin.id]))
-      .map((plugin) => plugin.render());
+      .filter((plugin) => plugin.isVisible());
 
-    return renderedPlugins.length > 0
-      ? html`<sp-action-group>${[...renderedPlugins]}</sp-action-group>`
+    const pinnedPlugins = this.allowedPlugins
+      .filter((plugin) => plugin.isPinned(this.getPluginPrefs(plugin.id)));
+
+    return pinnedPlugins.length > 0
+      ? html`<sp-action-group>${[...pinnedPlugins.map((p) => p.render())]}</sp-action-group>`
       : '';
   }
 
@@ -153,32 +297,23 @@ export class PluginActionBar extends MobxLitElement {
 
     const systemPlugins = [];
 
-    const pluginMenu = html`
-      <sp-action-button id="plugin-menu-trigger" quiet @click=${this.renderPluginMenu}>
+    const pluginList = html`
+      <sp-action-button
+        quiet
+        id="plugin-list-trigger"
+        title="${appStore.i18n('plugins_manage')}"
+        @click=${() => this.renderPluginMenu()}>
         <sp-icon slot="icon" size="l">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4.75 2.25H3.25C2.69772 2.25 2.25 2.69772 2.25 3.25V4.75C2.25 5.30228 2.69772 5.75 3.25 5.75H4.75C5.30228 5.75 5.75 5.30228 5.75 4.75V3.25C5.75 2.69772 5.30228 2.25 4.75 2.25Z" fill="#292929"/>
-            <path d="M10.75 2.25H9.25C8.69772 2.25 8.25 2.69772 8.25 3.25V4.75C8.25 5.30228 8.69772 5.75 9.25 5.75H10.75C11.3023 5.75 11.75 5.30228 11.75 4.75V3.25C11.75 2.69772 11.3023 2.25 10.75 2.25Z" fill="#292929"/>
-            <path d="M16.75 2.25H15.25C14.6977 2.25 14.25 2.69772 14.25 3.25V4.75C14.25 5.30228 14.6977 5.75 15.25 5.75H16.75C17.3023 5.75 17.75 5.30228 17.75 4.75V3.25C17.75 2.69772 17.3023 2.25 16.75 2.25Z" fill="#292929"/>
-            <path d="M4.75 8.25H3.25C2.69772 8.25 2.25 8.69772 2.25 9.25V10.75C2.25 11.3023 2.69772 11.75 3.25 11.75H4.75C5.30228 11.75 5.75 11.3023 5.75 10.75V9.25C5.75 8.69772 5.30228 8.25 4.75 8.25Z" fill="#292929"/>
-            <path d="M10.75 8.25H9.25C8.69772 8.25 8.25 8.69772 8.25 9.25V10.75C8.25 11.3023 8.69772 11.75 9.25 11.75H10.75C11.3023 11.75 11.75 11.3023 11.75 10.75V9.25C11.75 8.69772 11.3023 8.25 10.75 8.25Z" fill="#292929"/>
-            <path d="M16.75 8.25H15.25C14.6977 8.25 14.25 8.69772 14.25 9.25V10.75C14.25 11.3023 14.6977 11.75 15.25 11.75H16.75C17.3023 11.75 17.75 11.3023 17.75 10.75V9.25C17.75 8.69772 17.3023 8.25 16.75 8.25Z" fill="#292929"/>
-            <path d="M4.75 14.25H3.25C2.69772 14.25 2.25 14.6977 2.25 15.25V16.75C2.25 17.3023 2.69772 17.75 3.25 17.75H4.75C5.30228 17.75 5.75 17.3023 5.75 16.75V15.25C5.75 14.6977 5.30228 14.25 4.75 14.25Z" fill="#292929"/>
-            <path d="M10.75 14.25H9.25C8.69772 14.25 8.25 14.6977 8.25 15.25V16.75C8.25 17.3023 8.69772 17.75 9.25 17.75H10.75C11.3023 17.75 11.75 17.3023 11.75 16.75V15.25C11.75 14.6977 11.3023 14.25 10.75 14.25Z" fill="#292929"/>
-            <path d="M16.75 14.25H15.25C14.6977 14.25 14.25 14.6977 14.25 15.25V16.75C14.25 17.3023 14.6977 17.75 15.25 17.75H16.75C17.3023 17.75 17.75 17.3023 17.75 16.75V15.25C17.75 14.6977 17.3023 14.25 16.75 14.25Z" fill="#292929"/>
-          </svg>
+          ${ICONS.PLUGINS}
         </sp-icon>
       </sp-action-button>
-      <sp-overlay id="plugin-menu-overlay" trigger="plugin-menu-trigger@click" placement="top" tip></sp-overlay>`;
-    systemPlugins.push(pluginMenu);
+      <sp-overlay id="plugin-list-overlay" trigger="plugin-list-trigger@click"></sp-overlay>`;
+    systemPlugins.push(pluginList);
 
     const properties = html`
       <sp-action-button class="properties" quiet>
         <sp-icon slot="icon" size="l">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1.5749 6.09414H3.97673C4.28331 7.3813 5.43588 8.34414 6.81538 8.34414C8.19487 8.34414 9.34746 7.3813 9.65402 6.09414H16.4249C16.7975 6.09414 17.0999 5.79179 17.0999 5.41914C17.0999 5.04649 16.7975 4.74414 16.4249 4.74414H9.65402C9.34745 3.45698 8.19487 2.49414 6.81538 2.49414C5.43588 2.49414 4.2833 3.45698 3.97673 4.74414H1.5749C1.20225 4.74414 0.899902 5.04649 0.899902 5.41914C0.899902 5.79179 1.20225 6.09414 1.5749 6.09414ZM6.81538 3.84414C7.68373 3.84414 8.39038 4.55078 8.39038 5.41914C8.39038 6.2875 7.68373 6.99414 6.81538 6.99414C5.94702 6.99414 5.24038 6.2875 5.24038 5.41914C5.24038 4.55078 5.94702 3.84414 6.81538 3.84414Z" fill="currentColor"/>
-            <path d="M16.4249 11.9443H14.154C13.8475 10.6572 12.6949 9.69434 11.3154 9.69434C9.93589 9.69434 8.78331 10.6572 8.47674 11.9443H1.5749C1.20225 11.9443 0.899902 12.2467 0.899902 12.6193C0.899902 12.992 1.20225 13.2943 1.5749 13.2943H8.47673C8.78331 14.5815 9.93588 15.5443 11.3154 15.5443C12.6949 15.5443 13.8475 14.5815 14.154 13.2943H16.4249C16.7975 13.2943 17.0999 12.992 17.0999 12.6193C17.0999 12.2467 16.7976 11.9443 16.4249 11.9443ZM11.3154 14.1943C10.447 14.1943 9.74038 13.4877 9.74038 12.6193C9.74038 11.751 10.447 11.0443 11.3154 11.0443C12.1837 11.0443 12.8904 11.751 12.8904 12.6193C12.8904 13.4877 12.1837 14.1943 11.3154 14.1943Z" fill="currentColor"/>
-          </svg>
+          ${ICONS.PROPERTIES}
         </sp-icon>
       </sp-action-button>`;
     systemPlugins.push(properties);
@@ -193,12 +328,7 @@ export class PluginActionBar extends MobxLitElement {
       `);
     }
 
-    systemPlugins.push(html`
-      <svg width="250" height="245" viewBox="0 0 250 245" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M47.5 3H202.5C226 3 245 22 245 45.5V194.5C245 218 226 237 202.5 237H47.5C24 237 5 218 5 194.5V45.5C5 22 24 3 47.5 3Z" fill="black"/>
-        <path d="M192 179H163C160.3 179.2 157.9 177.5 157 175L126 103C126 102.4 125.6 102 125 102C124.4 102 124 102.4 124 103L104 149C104 150.1 104.9 151 106 151H127C128.3 150.9 129.6 151.7 130 153L139 174C139.6 176.1 138.4 178.3 136.2 178.9C136.1 178.9 136 178.9 136 179H59C56.8 178.5 55.5 176.4 55.9 174.2C55.9 174.1 55.9 174 56 174L105 57C106.1 54.7 108.4 53.1 111 53H139C141.6 53.1 143.9 54.7 145 57L195 174C195.6 176.1 194.4 178.3 192.2 178.9C192.2 179 192.1 179 192 179Z" fill="#FA0F00"/>
-      </svg>  
-    `);
+    systemPlugins.push(ICONS.ADOBE_LOGO);
 
     const actionGroup = html`<sp-action-group>${systemPlugins}</sp-action-group>`;
     const divider = loggedIn || siteStore.authorized ? html`<sp-divider size="s" vertical></sp-divider>` : '';
