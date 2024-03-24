@@ -12,6 +12,7 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
 import { expect } from '@open-wc/testing';
+import sinon from 'sinon';
 import chromeMock from '../../../mocks/chrome.js';
 import { SidekickPlugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 import { defaultConfigJSONWithPlugins } from '../../../fixtures/helix-admin.js';
@@ -24,18 +25,15 @@ describe('SidekickPlugin', () => {
   it('creates plugin from config', async () => {
     const plugin = new SidekickPlugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
-      appStore,
     });
     expect(plugin.config).to.deep.equal({
       ...defaultConfigJSONWithPlugins.plugins[0],
-      appStore,
     });
   });
 
   it('validates plugin condition', async () => {
     const plugin = new SidekickPlugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
-      appStore,
     });
     const res = plugin.isVisible();
     expect(res).to.be.true;
@@ -44,11 +42,9 @@ describe('SidekickPlugin', () => {
   it('appends child plugin', async () => {
     const plugin = new SidekickPlugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
-      appStore,
     });
     const childPlugin = new SidekickPlugin({
       ...defaultConfigJSONWithPlugins.plugins[1],
-      appStore,
     });
     plugin.append(childPlugin);
     expect(Object.keys(plugin.children).length).to.equal(1);
@@ -57,7 +53,6 @@ describe('SidekickPlugin', () => {
   it('is pinned by default', async () => {
     const plugin = new SidekickPlugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
-      appStore,
     });
     const pinned = plugin.isPinned();
     expect(pinned).to.be.true;
@@ -67,21 +62,20 @@ describe('SidekickPlugin', () => {
     const plugin = new SidekickPlugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
       pinned: false,
-      appStore,
     });
     const pinned = plugin.isPinned();
     expect(pinned).to.be.false;
   });
 
   it('pinned state from user prefs supersedes config', async () => {
+    const sandbox = sinon.createSandbox();
     const plugin = new SidekickPlugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
       pinned: false,
-      appStore,
     });
-    const pinned = plugin.isPinned({
-      pinned: true,
-    });
+    sandbox.stub(appStore, 'getPluginPrefs').returns({ pinned: true });
+    const pinned = plugin.isPinned();
     expect(pinned).to.be.true;
+    sandbox.restore();
   });
 });

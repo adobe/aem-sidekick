@@ -280,7 +280,6 @@ describe('Plugin action bar', () => {
           text: 'Publish',
           action: actionSpy,
         },
-        appStore,
       }));
 
       mockFetchStatusSuccess();
