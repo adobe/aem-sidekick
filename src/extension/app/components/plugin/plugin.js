@@ -201,13 +201,11 @@ export class SidekickPlugin {
         if (childPlugins.length > 0) {
           return html`
             <action-bar-picker 
-              class=${`plugin-container ${this.getId}`} 
+              class=${`plugin-container ${this.getId()}`} 
               label=${this.getButtonText()} 
               @change=${(e) => this.onChange(e)} 
               placement="top"
-            >
-              ${childPlugins.map((childPlugin) => childPlugin.render())}
-            </action-bar-picker>
+            >${childPlugins.map((childPlugin) => childPlugin.render())}</action-bar-picker>
           `;
         } else {
           return '';
@@ -218,9 +216,7 @@ export class SidekickPlugin {
             .disabled=${!this.isEnabled()}
             value=${this.getId()}
             @click=${(evt) => this.onButtonClick(evt)}
-          >
-            ${this.getButtonText()}
-          </sp-menu-item>
+          >${this.getButtonText()}</sp-menu-item>
         `;
       }
 
@@ -230,9 +226,7 @@ export class SidekickPlugin {
           .disabled=${!this.isEnabled()} 
           quiet 
           @click=${(evt) => this.onButtonClick(evt)}
-        >
-            ${this.getButtonText()}
-        </sp-action-button>
+        >${this.getButtonText()}</sp-action-button>
       `;
     }
 
