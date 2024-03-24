@@ -57,6 +57,5 @@ export function createReloadPlugin(appStore) {
       isEnabled: (store) => store.isAuthorized('preview', 'write')
         && store.status.edit && store.status.edit.url, // enable only if edit url exists
     },
-    appStore,
   });
 }

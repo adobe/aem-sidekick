@@ -17,7 +17,6 @@ import { customElement, property } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
 import { appStore } from '../../store/app.js';
-import { getConfig, setConfig } from '../../../config.js';
 import { ICONS } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 
@@ -39,23 +38,10 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   /**
-   * The user preferences for plugins in this environment.
-   * @type {Object}
-   */
-  @property({ type: Object, attribute: false })
-  accessor userPrefs = null;
-
-  /**
-   * The current environment
-   * @type {string}
-   */
-  currentEnv = '';
-
-  /**
    * The core and custom plugins allowed in the current environment.
-   * @type {Object}
+   * @type {SidekickPlugin[]}
    */
-  allowedPlugins = {};
+  allowedPlugins = [];
 
   /**
    * The plugin menu overlay
@@ -76,8 +62,6 @@ export class PluginActionBar extends MobxLitElement {
   async connectedCallback() {
     super.connectedCallback();
 
-    this.userPrefs = await getConfig('sync', 'pluginPrefs') || {};
-    this.currentEnv = appStore.getEnv();
     this.ready = true;
 
     reaction(
@@ -86,15 +70,6 @@ export class PluginActionBar extends MobxLitElement {
         this.requestUpdate();
       },
     );
-  }
-
-  /**
-   * Returns the user preferences for a plugin.
-   * @param {string} id The plugin ID
-   * @returns {Object} The preferences
-   */
-  getPluginPrefs(id) {
-    return this.userPrefs[this.currentEnv]?.[id];
   }
 
   /**
@@ -115,25 +90,10 @@ export class PluginActionBar extends MobxLitElement {
   async togglePlugin(plugin, e) {
     e.stopPropagation();
     const button = e.target.closest('sp-button');
-    const userPrefs = await getConfig('sync', 'pluginPrefs');
-    const { id } = plugin;
-
-    let envPrefs = userPrefs[this.currentEnv];
-    if (!envPrefs) {
-      // create prefs for current environment
-      envPrefs = {};
-      userPrefs[this.currentEnv] = envPrefs;
-    }
-
-    let pluginPrefs = envPrefs[id];
-    if (!pluginPrefs) {
-      // create plugin prefs for current environment
-      pluginPrefs = {};
-      envPrefs[id] = pluginPrefs;
-    }
+    const pluginPrefs = appStore.getPluginPrefs(plugin.getId());
 
     // flip the pinned state
-    const newPinnedState = !plugin.isPinned(pluginPrefs);
+    const newPinnedState = !plugin.isPinned();
     pluginPrefs.pinned = newPinnedState;
 
     // toggle button state
@@ -151,9 +111,39 @@ export class PluginActionBar extends MobxLitElement {
         </svg>`;
 
     // persist updated preferences
-    this.userPrefs = userPrefs;
-    await setConfig('sync', { pluginPrefs: this.userPrefs });
-    await this.requestUpdate();
+    await appStore.setPluginPrefs(plugin.getId(), pluginPrefs);
+  }
+
+  /**
+   * Render the keyboard hints for the plugin menu.
+   * @returns {TemplateResult} The plugin menu item
+   */
+  renderPluginMenuKeyboardHints() {
+    return html`
+      <div class="keyboard-hints">
+      <div>
+        <span>${appStore.i18n('plugins_navigate')}</span>
+        <sp-icon size="s" style="transform: rotate(90deg)">
+          ${ICONS.ARROW}
+        </sp-icon>
+        <sp-icon size="s" style="transform: rotate(270deg)">
+          ${ICONS.ARROW}
+        </sp-icon>
+      </div>
+      <div>
+        <span>${appStore.i18n('plugins_select')}</span>
+        <sp-icon size="s">
+          ${ICONS.ARROW}
+        </sp-icon>
+      </div>
+      <div class="last">
+        <span>${appStore.i18n('back')}</span>
+        <sp-icon size="s">
+          esc
+        </sp-icon>
+      </div>
+    </div>
+  `;
   }
 
   /**
@@ -162,12 +152,19 @@ export class PluginActionBar extends MobxLitElement {
    * @returns {TemplateResult} The plugin menu item
    */
   renderPluginMenuItem(plugin) {
-    const pinned = plugin.isPinned(this.getPluginPrefs(plugin.id));
+    const pinned = plugin.isPinned();
     const disabled = !plugin.isEnabled();
     const pluginAction = (e) => {
       this.pluginMenuOverlay.removeAttribute('open');
       plugin.onButtonClick(e);
     };
+
+    let parentPluginText = '';
+    if (plugin.isChild()) {
+      parentPluginText = this.allowedPlugins
+        .find((p) => p.getId() === plugin.getParentId())
+        ?.getButtonText();
+    }
     const toggleAction = (e) => this.togglePlugin(plugin, e);
     const toggleIcon = html`
       ${pinned ? ICONS.STAR_FULL : ICONS.STAR_EMPTY}
@@ -182,6 +179,7 @@ export class PluginActionBar extends MobxLitElement {
           <sp-icon slot="icon">
             ${ICONS.ADOBE_LOGO}
           </sp-icon>
+          <span class="parent">${parentPluginText}</span>
           ${plugin.getButtonText()}
         </sp-menu-item>
         <sp-button
@@ -240,29 +238,7 @@ export class PluginActionBar extends MobxLitElement {
               ${menuItems}
             </sp-menu-group>
             <sp-divider size="s"></sp-divider>
-            <div class="keyboard-hints">
-              <div>
-                <span>${appStore.i18n('plugins_navigate')}</span>
-                <sp-icon size="s" style="transform: rotate(90deg)">
-                  ${ICONS.ARROW}
-                </sp-icon>
-                <sp-icon size="s" style="transform: rotate(270deg)">
-                  ${ICONS.ARROW}
-                </sp-icon>
-              </div>
-              <div>
-                <span>${appStore.i18n('plugins_select')}</span>
-                <sp-icon size="s">
-                  ${ICONS.ARROW}
-                </sp-icon>
-              </div>
-              <div class="last">
-                <span>${appStore.i18n('back')}</span>
-                <sp-icon size="s">
-                  esc
-                </sp-icon>
-              </div>
-            </div>
+            ${this.renderPluginMenuKeyboardHints()}
           </sp-menu>
         </sp-popover>`, this.pluginMenuOverlay);
     }
@@ -283,11 +259,8 @@ export class PluginActionBar extends MobxLitElement {
     ]
       .filter((plugin) => plugin.isVisible());
 
-    const pinnedPlugins = this.allowedPlugins
-      .filter((plugin) => plugin.isPinned(this.getPluginPrefs(plugin.id)));
-
-    return pinnedPlugins.length > 0
-      ? html`<sp-action-group>${[...pinnedPlugins.map((p) => p.render())]}</sp-action-group>`
+    return this.allowedPlugins.length > 0
+      ? html`<sp-action-group>${[...this.allowedPlugins.map((p) => p.render())]}</sp-action-group>`
       : '';
   }
 

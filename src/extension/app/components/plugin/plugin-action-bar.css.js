@@ -84,6 +84,11 @@ export const style = css`
     position: relative;
   }
 
+  action-bar .menu-item-container sp-menu-item span.parent:not(:empty)::after {
+    content: ">";
+    padding: 0 8px;
+  }
+  
   action-bar .menu-item-container::last-child {
     margin-bottom: 0;
   }

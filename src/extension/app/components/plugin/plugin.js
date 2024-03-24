@@ -13,6 +13,7 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
+import { appStore } from '../../store/app.js';
 import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**
@@ -86,7 +87,7 @@ export class SidekickPlugin {
    */
   isVisible() {
     return typeof this.config.condition !== 'function'
-      || !!this.config.condition(this.config.appStore);
+      || !!this.config.condition(appStore);
   }
 
   /**
@@ -95,18 +96,18 @@ export class SidekickPlugin {
    */
   isEnabled() {
     return typeof this.config.button?.isEnabled !== 'function'
-      || this.config.button.isEnabled(this.config.appStore);
+      || this.config.button.isEnabled(appStore);
   }
 
   /**
    * Is this plugin pinned to the sidekick's action bar?
-   * @param {Object} [userPrefs] The user preferences for this plugin
    * @returns {boolean} True if plugin is pinned, else false
    */
-  isPinned(userPrefs = {}) {
-    if (typeof userPrefs.pinned === 'boolean') {
+  isPinned() {
+    const prefs = appStore.getPluginPrefs(this.getId());
+    if (typeof prefs.pinned === 'boolean') {
       // use user preference if defined
-      return userPrefs.pinned;
+      return prefs.pinned;
     } else if (typeof this.config.pinned === 'boolean') {
       // use default from config if defined
       return this.config.pinned;
@@ -125,6 +126,22 @@ export class SidekickPlugin {
   }
 
   /**
+   * Is this plugin a child of another plugin?
+   * @returns {boolean} True if the plugin is a child, else false
+   */
+  isChild() {
+    return !!this.config.container;
+  }
+
+  /**
+   * Returns the parent plugin ID.
+   * @returns {string} The parent plugin ID
+   */
+  getParentId() {
+    return this.config.container;
+  }
+
+  /**
    * Adds a plugin to this plugin's children.
    * @param {SidekickPlugin} plugin The plugin to add
    */
@@ -138,8 +155,8 @@ export class SidekickPlugin {
    */
   async onButtonClick(evt) {
     const { config, id } = this;
-    await config.appStore.validateSession();
-    config.appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, { id });
+    await appStore.validateSession();
+    appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, { id });
     config.button.action(evt);
   }
 
@@ -161,12 +178,12 @@ export class SidekickPlugin {
 
   /**
    * Returns the rendered plugin.
-   * @returns {TemplateResult} The rendered plugin
+   * @returns {string|TemplateResult} The rendered plugin
    */
   render() {
     const { config } = this;
     if (typeof config.callback === 'function') {
-      config.callback(config.appStore, config);
+      config.callback(appStore, config);
     }
 
     // special case: env-switcher
@@ -176,40 +193,49 @@ export class SidekickPlugin {
       `;
     }
 
-    const childPlugins = Object.values(this.children)
-      .filter((childPlugin) => childPlugin.isVisible()
-        && childPlugin.isPinned());
+    if (this.isPinned()) {
+      const childPlugins = Object.values(this.children)
+        .filter((childPlugin) => childPlugin.isVisible() && childPlugin.isPinned());
 
-    if (childPlugins.length > 0) {
-      return html`
-        <action-bar-picker 
-          class=${`plugin-container ${this.getId}`} 
-          label=${this.getButtonText()} 
-          @change=${(e) => this.onChange(e)} 
-          placement="top"
-        >
-        ${childPlugins.map((child) => html`
-            <sp-menu-item
-              .disabled=${!child.isEnabled()}
-              value=${child.id}
-              @click=${(evt) => child.onButtonClick(evt)}
+      if (this.isContainer()) {
+        if (childPlugins.length > 0) {
+          return html`
+            <action-bar-picker 
+              class=${`plugin-container ${this.getId}`} 
+              label=${this.getButtonText()} 
+              @change=${(e) => this.onChange(e)} 
+              placement="top"
             >
-              ${child.getButtonText()}
-            </sp-menu-item>
-          `)}
-        </action-bar-picker>
+              ${childPlugins.map((childPlugin) => childPlugin.render())}
+            </action-bar-picker>
+          `;
+        } else {
+          return '';
+        }
+      } else if (this.isChild()) {
+        return html`
+          <sp-menu-item
+            .disabled=${!this.isEnabled()}
+            value=${this.getId()}
+            @click=${(evt) => this.onButtonClick(evt)}
+          >
+            ${this.getButtonText()}
+          </sp-menu-item>
+        `;
+      }
+
+      return html`
+        <sp-action-button 
+          class=${this.getId()} 
+          .disabled=${!this.isEnabled()} 
+          quiet 
+          @click=${(evt) => this.onButtonClick(evt)}
+        >
+            ${this.getButtonText()}
+        </sp-action-button>
       `;
     }
 
-    return html`
-      <sp-action-button 
-        class=${this.getId()} 
-        .disabled=${!this.isEnabled()} 
-        quiet 
-        @click=${(evt) => this.onButtonClick(evt)}
-      >
-          ${this.getButtonText()}
-      </sp-action-button>
-    `;
+    return '';
   }
 }

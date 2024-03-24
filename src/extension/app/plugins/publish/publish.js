@@ -56,6 +56,5 @@ export function createPublishPlugin(appStore) {
       isEnabled: (store) => store.isAuthorized('live', 'write') // only enable if authorized
         && store.status.preview && store.status.preview.status === 200, // and page previewed
     },
-    appStore,
   });
 }

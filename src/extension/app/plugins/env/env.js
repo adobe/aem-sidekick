@@ -20,10 +20,9 @@ import { SidekickPlugin } from '../../components/plugin/plugin.js';
  * Creates the env plugin
  * @returns {SidekickPlugin} The env plugin
  */
-export function createEnvPlugin(appStore) {
+export function createEnvPlugin() {
   return new SidekickPlugin({
     id: 'env-switcher',
     condition: (store) => !store.isAdmin(),
-    appStore,
   });
 }
