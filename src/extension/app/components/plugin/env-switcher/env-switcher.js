@@ -77,6 +77,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
   firstUpdated() {
     // Set up the locale aware environment names
     this.envNames = {
+      dev: appStore.i18n('development'),
       edit: appStore.i18n('edit'),
       preview: appStore.i18n('preview'),
       live: appStore.i18n('live'),
@@ -86,6 +87,8 @@ export class EnvironmentSwitcher extends MobxLitElement {
     // Determine the current environment
     if (appStore.isEditor()) {
       this.currentEnv = 'edit';
+    } else if (appStore.isDev()) {
+      this.currentEnv = 'dev';
     } else if (appStore.isPreview()) {
       this.currentEnv = 'preview';
     } else if (appStore.isLive()) {
@@ -107,9 +110,10 @@ export class EnvironmentSwitcher extends MobxLitElement {
    * @returns {string} - The last modified label
    */
   getLastModifiedLabel(id, lastModified) {
+    const envId = id === 'dev' ? 'preview' : id;
     return lastModified
-      ? appStore.i18n(`${id}_last_updated`).replace('$1', getTimeAgo(appStore.languageDict, lastModified))
-      : appStore.i18n(`${id}_never_updated`);
+      ? appStore.i18n(`${envId}_last_updated`).replace('$1', getTimeAgo(appStore.languageDict, lastModified))
+      : appStore.i18n(`${envId}_never_updated`);
   }
 
   /**
@@ -194,6 +198,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
 
     const navToHeader = this.createNavigateToHeader();
     const divider = this.createDivider();
+    const devMenuItem = this.createMenuItem('dev', {}, previewLastMod);
     const editMenuItem = this.createMenuItem('edit', {}, editLastMod);
     const previewMenuItem = this.createMenuItem('preview', {}, previewLastMod);
     const liveMenuItem = this.createMenuItem('live', {}, liveLastMod);
@@ -219,6 +224,17 @@ export class EnvironmentSwitcher extends MobxLitElement {
     }
 
     switch (this.currentEnv) {
+      case 'dev':
+        devMenuItem.classList.add('current-env');
+        picker.append(
+          devMenuItem,
+          divider,
+          navToHeader,
+          editMenuItem,
+          previewMenuItem,
+          liveMenuItem,
+        );
+        break;
       case 'edit':
         editMenuItem.classList.add('current-env');
         picker.append(
