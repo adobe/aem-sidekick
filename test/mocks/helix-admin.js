@@ -26,6 +26,7 @@ import {
   defaultSharepointProfileResponse,
   defaultStatusResponseWithProfile,
   defaultStatusLoggedInNotAuthorizedResponse,
+  defaultSharepointSheetStatusResponse,
 } from '../fixtures/helix-admin.js';
 import {
   getDefaultEditorEnviromentLocations,
@@ -130,7 +131,7 @@ export const sharepointEditorSheetStatusUrl = `https://admin.hlx.page/status/ado
 export const mockSharepointEditorSheetFetchStatusSuccess = (overrides = {}) => fetchMock.get(sharepointEditorSheetStatusUrl, {
   status: 200,
   body: {
-    ...defaultSharepointStatusResponse,
+    ...defaultSharepointSheetStatusResponse,
     ...overrides,
   },
 }, { overwriteRoutes: true });

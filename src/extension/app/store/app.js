@@ -155,9 +155,7 @@ export class AppStore {
       location: this.location,
     });
 
-    this.sidekick.addEventListener('statusfetched', () => {
-      this.showView();
-    });
+    this.showView();
   }
 
   /**
@@ -687,11 +685,16 @@ export class AppStore {
   findViews(viewType, testPath) {
     // find view based on resource path
     if (!testPath) {
-      const { webPath } = this.status;
-      if (!webPath) {
-        return [];
+      if (this.isProject()) {
+        const { pathname } = this.location;
+        testPath = pathname;
+      } else {
+        const { webPath } = this.status;
+        if (!webPath) {
+          return [];
+        }
+        testPath = webPath;
       }
-      testPath = webPath;
     }
 
     const scriptRoot = chrome.runtime.getURL('/');
@@ -1162,6 +1165,13 @@ export class AppStore {
 
     if (targetEnv === 'edit') {
       envUrl = status.edit && status.edit.url;
+    }
+
+    const [customView] = this.findViews(VIEWS.CUSTOM);
+    if (customView) {
+      const customViewUrl = new URL(customView.viewer, envUrl);
+      customViewUrl.searchParams.set('path', status.webPath);
+      envUrl = customViewUrl.href;
     }
 
     // switch or open env

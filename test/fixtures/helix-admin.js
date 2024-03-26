@@ -31,9 +31,9 @@ export const defaultConfigJSON = {
 
 export const defaultConfigJSONWithHost = {
   ...defaultConfigJSON,
-  previewHost: 'https://custom-preview-host.com',
-  liveHost: 'https://custom-live-host.com',
-  host: 'https://custom-host.com',
+  previewHost: 'custom-preview-host.com',
+  liveHost: 'custom-live-host.com',
+  host: 'custom-host.com',
 };
 
 export const defaultConfigJSONWithPlugins = {
@@ -175,6 +175,59 @@ export const defaultSharepointStatusResponse = {
     preview: 'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/',
     live: 'https://admin.hlx.page/live/adobe/aem-boilerplate/main/',
     code: 'https://admin.hlx.page/code/adobe/aem-boilerplate/main/',
+  },
+};
+
+export const defaultSharepointSheetStatusResponse = {
+  webPath: '/placeholders.json',
+  resourcePath: '/placeholders.json',
+  live: {
+    url: 'https://main--aem-boilerplate--adobe.hlx.live/placeholders.json',
+    status: 200,
+    contentBusId: 'helix-content-bus/content-bus-id/live/placeholders.json',
+    contentType: 'text/plain; charset=utf-8',
+    lastModified: 'Tue, 19 Dec 2023 15:42:45 GMT',
+    sourceLocation: 'onedrive:/drives/drive-id/items/item-id',
+    sourceLastModified: 'Wed, 01 Nov 2023 17:22:52 GMT',
+    permissions: [
+      'read',
+      'write',
+    ],
+  },
+  preview: {
+    url: 'https://main--aem-boilerplate--adobe.hlx.page/placeholders.json',
+    status: 200,
+    contentBusId: 'helix-content-bus/content-bus-id/preview/placeholders.json',
+    contentType: 'text/plain; charset=utf-8',
+    lastModified: 'Tue, 19 Dec 2023 15:42:34 GMT',
+    sourceLocation: 'onedrive:/drives/drive-id/items/item-id',
+    sourceLastModified: 'Wed, 01 Nov 2023 17:22:52 GMT',
+    permissions: [
+      'read',
+      'write',
+    ],
+  },
+  edit: {
+    url: 'https://adobe-my.sharepoint.com/:w:/r/personal/user_adobe_com/_layouts/15/Doc.aspx?sourcedoc={89B9F732-7067-458B-BF05-C64013503F33}',
+    name: 'index',
+    contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    lastModified: 'Wed, 29 Dec 2023 17:22:52 GMT',
+    sourceLocation: 'onedrive:/drives/drive-id/items/item-id',
+    status: 200,
+  },
+  code: {
+    status: 400,
+    permissions: [
+      'delete',
+      'read',
+      'write',
+    ],
+  },
+  links: {
+    status: 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/placeholders.json',
+    preview: 'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/placeholders.json',
+    live: 'https://admin.hlx.page/live/adobe/aem-boilerplate/main/placeholders.json',
+    code: 'https://admin.hlx.page/code/adobe/aem-boilerplate/main/placeholders.json',
   },
 };
 

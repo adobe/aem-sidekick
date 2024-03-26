@@ -105,8 +105,8 @@ describe('Test App Store', () => {
     expect(appStore.siteStore.plugins.length).to.eq(8);
     expect(appStore.siteStore.scriptUrl).to.eq('https://www.hlx.live/tools/sidekick/index.js');
     expect(appStore.siteStore.host).to.eq('custom-host.com');
-    expect(appStore.siteStore.innerHost).to.eq('https://custom-preview-host.com');
-    expect(appStore.siteStore.liveHost).to.eq('https://custom-live-host.com');
+    expect(appStore.siteStore.innerHost).to.eq('custom-preview-host.com');
+    expect(appStore.siteStore.liveHost).to.eq('custom-live-host.com');
     expect(appStore.siteStore.project).to.eq('AEM Boilerplate');
   });
 
@@ -447,6 +447,10 @@ describe('Test App Store', () => {
         innerHost: new URL(mockStatus.preview.url).hostname,
         outerHost: new URL(mockStatus.live.url).hostname,
         devUrl: new URL('https://localhost:3000'),
+        views: [{
+          path: '**.json',
+          viewer: '/test/wtr/fixtures/views/json/json.html',
+        }],
       };
 
       // Mock other functions

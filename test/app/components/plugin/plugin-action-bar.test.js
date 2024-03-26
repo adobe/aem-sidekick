@@ -218,11 +218,8 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPluginCount(3);
       expectEnvPlugin(['dev', 'edit', 'preview', 'prod']);
-      expectPlugin('env-switcher');
-      expectPlugin('.reload');
-      expectPlugin('.publish');
+      expectAllPlugins(['env-switcher', 'reload', 'publish', 'unpublish']);
     });
 
     it('isEditor', async () => {
