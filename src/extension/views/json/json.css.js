@@ -79,7 +79,7 @@ export const style = css`
   .header sp-search {
     width: 100%;
     max-width: 400px;
-    --mod-textfield-corner-radius: var(--spectrum2-large-border-radius);
+    --mod-textfield-corner-radius: var(--spectrum2-xlarge-border-radius);
     --mod-textfield-border-width: 2px;
     --mod-textfield-border-color: var(--spectrum2-sidekick-border-color);
     --mod-textfield-background-color: var(--spectrum2-sidekick-background-pasteboard);
