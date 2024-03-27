@@ -167,6 +167,7 @@ export class PluginList extends LitElement {
     <div class="filter-container">
       <sp-textfield
         quiet
+        size="xl"
         placeholder="${filterPlaceholder}"
         id="plugin-filter"
         @input=${filterAction}
@@ -235,7 +236,7 @@ export class PluginList extends LitElement {
 
     return html`
       <div class="plugin-list-container">
-        <sp-menu size="xl" id="plugin-list-menu" aria-labelledby="applied-label" role="listbox">
+        <sp-menu id="plugin-list-menu" aria-labelledby="applied-label" role="listbox">
           ${this.renderFilter()}
           <sp-divider size="s"></sp-divider>
           <sp-menu-group id="plugin-list-plugins" selects="single">

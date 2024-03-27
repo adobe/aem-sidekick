@@ -28,7 +28,7 @@ export const style = css`
   .filter-container {
     padding: 0 16px;
     box-model: border-box;
-    height: 45px;
+    height: 46px;
     overflow: hidden;
   }
 
