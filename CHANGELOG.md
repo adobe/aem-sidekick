@@ -1,3 +1,11 @@
+# [1.15.0](https://github.com/adobe/aem-sidekick/compare/v1.14.0...v1.15.0) (2024-03-27)
+
+
+### Features
+
+* Custom JSON view ([#84](https://github.com/adobe/aem-sidekick/issues/84)) ([ce525c1](https://github.com/adobe/aem-sidekick/commit/ce525c102ac387663af6e6f6847bf600e426302f))
+* support development environment in switcher ([#90](https://github.com/adobe/aem-sidekick/issues/90)) ([7009ea2](https://github.com/adobe/aem-sidekick/commit/7009ea28285f488417a2f8d03f20314ab6eb9b86))
+
 # [1.14.0](https://github.com/adobe/aem-sidekick/compare/v1.13.0...v1.14.0) (2024-3-20)
 
 
