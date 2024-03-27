@@ -441,7 +441,7 @@
       "message": "Information"
     },
     "json_view_description": {
-      "message": "User-friendly data rendition."
+      "message": "Data rendition"
     },
     "live": {
       "message": "Live"
@@ -612,6 +612,18 @@
     },
     "login_wait": {
       "message": "Please sign in..."
+    },
+    "json_results_stat": {
+      "message": "Showing $1 of $2 results"
+    },
+    "search": {
+      "message": "Search"
+    },
+    "no_results": {
+      "message": "No Results Found"
+    },
+    "no_results_subheading": {
+      "message": "Try refining your search term"
     },
     "destructive_confirmation": {
       "message": "Are you sure you want to $1 this?"

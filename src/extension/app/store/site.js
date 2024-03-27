@@ -261,7 +261,7 @@ export class SiteStore {
     this.views = [
       {
         path: '**.json',
-        viewer: chrome.runtime.getURL('view/json/json.html'),
+        viewer: chrome.runtime.getURL('views/json/json.html'),
         title: () => this.appStore.i18n('json_view_description'),
       },
     ];
