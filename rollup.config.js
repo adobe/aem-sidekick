@@ -21,7 +21,7 @@ import replace from '@rollup/plugin-replace';
 import { babel } from '@rollup/plugin-babel';
 import sidekickManifestBuildPlugin from './build/build.js';
 
-function shared(browser) {
+function shared(browser, path = '') {
   return {
     output: {
       entryFileNames: '[name].js',
@@ -29,7 +29,7 @@ function shared(browser) {
       assetFileNames: '[name][extname]',
       exports: 'named',
       format: 'es',
-      dir: `dist/${browser}`,
+      dir: `dist/${browser}${path}`,
       sourcemap: true,
     },
 
@@ -37,7 +37,7 @@ function shared(browser) {
   };
 }
 
-function plugins(browser) {
+function commonPlugins() {
   return [
     /** Resolve bare module imports */
     nodeResolve(),
@@ -47,6 +47,26 @@ function plugins(browser) {
     esbuild({
       minify: true,
       target: ['chrome64', 'firefox67', 'safari11.1'],
+    }),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+    }),
+  ];
+}
+
+function extensionPlugins(browser) {
+  return [
+    /** Resolve bare module imports */
+    nodeResolve(),
+    /** Transform decorators with babel */
+    babel({ babelHelpers: 'bundled' }),
+    /** Minify JS, compile JS to a lower language target */
+    esbuild({
+      minify: true,
+      target: ['chrome64', 'firefox67', 'safari11.1'],
+    }),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('production'),
     }),
     /** Bundle assets references via import.meta.url */
     importMetaAssets(),
@@ -66,7 +86,14 @@ function plugins(browser) {
 function extensionBuild(browser) {
   return {
     ...shared(browser),
-    plugins: [...plugins(browser)],
+    plugins: [...commonPlugins(), ...extensionPlugins(browser)],
+  };
+}
+
+function viewBuild(browser, path) {
+  return {
+    ...shared(browser, path),
+    plugins: [...commonPlugins()],
   };
 }
 
@@ -78,5 +105,9 @@ export default [
   {
     input: 'src/extension/index.js',
     ...extensionBuild('safari'),
+  },
+  {
+    input: 'src/extension/views/json/json.js',
+    ...viewBuild('chrome', '/views/json'),
   },
 ];

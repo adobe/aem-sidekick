@@ -22,7 +22,7 @@ import {
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
-  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS,
+  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS, RESTRICTED_PATHS,
 } from '../constants.js';
 // eslint-disable-next-line import/no-cycle
 import { Plugin } from '../components/plugin/plugin.js';
@@ -59,6 +59,15 @@ import { getConfig, setConfig } from '../../config.js';
 /**
  * @typedef {import('@Types').Modal} Modal
  */
+
+/**
+ * Enum for view types.
+ * @enum {number}
+ */
+export const VIEWS = {
+  DEFAULT: 0,
+  CUSTOM: 1,
+};
 
 export class AppStore {
   // eslint-disable-next-line no-undef
@@ -155,6 +164,8 @@ export class AppStore {
       config: this.siteStore.toJSON(),
       location: this.location,
     });
+
+    this.showView();
   }
 
   /**
@@ -711,6 +722,41 @@ export class AppStore {
   }
 
   /**
+   * Checks for configured views for the current resource.
+   * @private
+   * @param {number} viewType An optional view type (see {@link VIEWS})
+   * @param {string} [testPath] An optional test path (default: status.webPath)
+   * @returns {Object[]} The views
+   */
+  findViews(viewType, testPath) {
+    // find view based on resource path
+    if (!testPath) {
+      if (this.isProject()) {
+        const { pathname } = this.location;
+        testPath = pathname;
+      } else {
+        const { webPath } = this.status;
+        if (!webPath) {
+          return [];
+        }
+        testPath = webPath;
+      }
+    }
+
+    const scriptRoot = chrome.runtime.getURL('/');
+    const { views } = this.siteStore;
+    const defaultOnly = viewType === VIEWS.DEFAULT;
+    const customOnly = viewType === VIEWS.CUSTOM;
+    return views.filter(({
+      path,
+      viewer,
+    }) => globToRegExp(path).test(testPath)
+        && !RESTRICTED_PATHS.includes(testPath)
+        && (!defaultOnly || viewer.startsWith(scriptRoot))
+        && (!customOnly || !viewer.startsWith(scriptRoot)));
+  }
+
+  /**
      * Fetches the status for the current resource.
      * @fires Sidekick#statusfetched
      * @param {boolean} [refreshLocation] Refresh the sidekick's location (optional)
@@ -1038,6 +1084,93 @@ export class AppStore {
   }
 
   /**
+   * Creates and/or returns a view overlay.
+   * @private
+   * @param {boolean} [create] Create the view if none exists
+   * @returns {Element} The view overlay
+   */
+  getViewOverlay(create) {
+    let view = this.sidekick.shadowRoot.querySelector('.hlx-sk-special-view');
+
+    if (create && !view) {
+      view = document.createElement('div');
+      view.classList.add('hlx-sk-special-view');
+      this.sidekick.shadowRoot.append(view);
+
+      const iframe = document.createElement('iframe');
+      iframe.setAttribute('class', 'container');
+      iframe.setAttribute('allow', 'clipboard-write *');
+      view.appendChild(iframe);
+
+      // listen for messages from the view
+      window.addEventListener('message', (event) => {
+        // only accept messages from the extension
+        if (event.origin === `chrome-extension://${chrome.runtime.id}`) {
+          const { data } = event;
+          if (data.detail.event === 'hlx-close-view') {
+            view.remove();
+            [...this.sidekick.parentElement.children].forEach((el) => {
+              if (el !== this.sidekick) {
+                try {
+                  // @ts-ignore
+                  el.style.display = 'initial';
+                } catch (e) {
+                  // ignore
+                }
+              }
+            });
+          }
+        }
+      });
+    }
+    return view;
+  }
+
+  /**
+   * Shows the view.
+   * @private
+   */
+  async showView() {
+    if (!this.isProject()) {
+      return;
+    }
+    const {
+      location: {
+        origin,
+        href,
+        search,
+      },
+    } = this;
+    const searchParams = new URLSearchParams(search);
+    if (searchParams.get('path')) {
+      // custom view
+      return;
+    }
+    const [view] = this.findViews(VIEWS.DEFAULT);
+    if (view && !this.getViewOverlay()) {
+      const { viewer, title } = view;
+      if (viewer) {
+        const viewUrl = new URL(viewer, origin);
+        viewUrl.searchParams.set('url', href);
+        viewUrl.searchParams.set('title', title(this.sidekick));
+        const viewOverlay = this.getViewOverlay(true);
+        viewOverlay.querySelector('.container').setAttribute('src', viewUrl.toString());
+        // hide original content
+        [...this.sidekick.parentElement.children].forEach((el) => {
+          if (el !== this.sidekick) {
+            try {
+              // @ts-ignore
+              el.style.display = 'none';
+            } catch (e) {
+              // ignore
+            }
+          }
+        });
+      }
+    }
+  }
+
+  /**
    * Switches to (or opens) a given environment.
    * @param {string} targetEnv One of the following environments:
    *        edit, dev, preview, live or prod
@@ -1080,13 +1213,13 @@ export class AppStore {
       envUrl = status.edit && status.edit.url;
     }
 
-    // TODO: Setup custom views
-    // const [customView] = findViews(this, VIEWS.CUSTOM);
-    // if (customView) {
-    //   const customViewUrl = new URL(customView.viewer, envUrl);
-    //   customViewUrl.searchParams.set('path', status.webPath);
-    //   envUrl = customViewUrl;
-    // }
+    const [customView] = this.findViews(VIEWS.CUSTOM);
+    if (customView) {
+      const customViewUrl = new URL(customView.viewer, envUrl);
+      customViewUrl.searchParams.set('path', status.webPath);
+      envUrl = customViewUrl.href;
+    }
+
     // switch or open env
     if (open || this.isEditor()) {
       this.openPage(envUrl, open
