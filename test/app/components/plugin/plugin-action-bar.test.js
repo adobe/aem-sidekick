@@ -418,7 +418,7 @@ describe('Plugin action bar', () => {
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const actionGroup = recursiveQuery(actionBar, 'sp-action-group');
-      expect(actionGroup.children.length).to.equal(5);
+      expect(actionGroup.children.length).to.equal(4);
 
       const propertiesButton = recursiveQuery(actionGroup, '.properties');
       expect(propertiesButton).to.exist;
