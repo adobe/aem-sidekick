@@ -225,7 +225,7 @@ export const style = css`
   @media (min-width: 600px) {
 
   }
-  
+
   @media (min-width: 900px) {
     .header .right {
       flex: 1;
