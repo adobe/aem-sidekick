@@ -169,7 +169,7 @@ export class JSONView extends LitElement {
         <h1>Adobe Experience Manager Sites <span>${searchParams.get('title')}</span></h1>
         </div>
         <div class="center">
-          <sp-search @input=${this.onSearch} placeholder=${i18n(this.languageDict, 'search')}></sp-search>
+          <sp-search @input=${this.onSearch} @submit=${(e) => e.preventDefault()} placeholder=${i18n(this.languageDict, 'search')}></sp-search>
         </div>
         <div class="right">
           <button variant="primary" @click=${this.onCloseView}><sp-icon-close></sp-icon-close></button>
