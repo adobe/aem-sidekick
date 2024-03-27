@@ -189,6 +189,14 @@ export class ModalContainer extends LitElement {
           </div>
         `;
         break;
+      case MODALS.PLUGIN_LIST:
+        options.dismissable = true;
+        options.underlay = false;
+        options.headline = '';
+        options.content = html`
+          <plugin-list></plugin-list>
+        `;
+        break;
       default:
         this.cleanup();
         return html``;

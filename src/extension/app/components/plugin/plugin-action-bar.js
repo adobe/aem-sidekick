@@ -12,12 +12,12 @@
 
 /* eslint-disable max-len */
 
-import { html, render } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
 import { appStore } from '../../store/app.js';
-import { ICONS } from '../../constants.js';
+import { ICONS, MODALS, MODAL_EVENTS } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 
 /**
@@ -38,16 +38,16 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   /**
-   * The core and custom plugins allowed in the current environment.
+   * The core and custom plugins visible in the current environment.
    * @type {SidekickPlugin[]}
    */
-  allowedPlugins = [];
+  visiblePlugins = [];
 
   /**
-   * The plugin menu overlay
+   * The modal container.
    * @type {HTMLElement}
    */
-  pluginMenuOverlay = null;
+  modalContainer = null;
 
   /**
   * Are we ready to render?
@@ -73,171 +73,6 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   /**
-   * Filters the plugin menu.
-   * @param {string} filter The filter term
-   */
-  filterPluginMenu(filter) {
-    // TODO: Implement filtering
-    // eslint-disable-next-line no-console
-    console.log('Filtering plugin menu', filter);
-  }
-
-  /**
-   * Toggles the pinned state of a plugin.
-   * @param {SidekickPlugin} plugin The plugin
-   * @param {Object} e The event
-   */
-  async togglePlugin(plugin, e) {
-    e.stopPropagation();
-    const button = e.target.closest('sp-button');
-    const pluginPrefs = appStore.getPluginPrefs(plugin.getId());
-
-    // flip the pinned state
-    const newPinnedState = !plugin.isPinned();
-    pluginPrefs.pinned = newPinnedState;
-
-    // toggle button state
-    button.setAttribute('title', newPinnedState
-      ? appStore.i18n('plugin_unpin')
-      : appStore.i18n('plugin_pin'));
-    const icon = button.querySelector('sp-icon');
-    icon.innerHTML = (newPinnedState ? ICONS.STAR_FULL : ICONS.STAR_EMPTY).strings.join('');
-
-    // persist updated preferences
-    await appStore.setPluginPrefs(plugin.getId(), pluginPrefs);
-  }
-
-  /**
-   * Render the keyboard hints for the plugin menu.
-   * @returns {TemplateResult} The plugin menu item
-   */
-  renderPluginMenuKeyboardHints() {
-    return html`
-      <div class="keyboard-hints">
-      <div>
-        <span>${appStore.i18n('plugins_navigate')}</span>
-        <sp-icon size="s" style="transform: rotate(90deg)">
-          ${ICONS.ARROW}
-        </sp-icon>
-        <sp-icon size="s" style="transform: rotate(270deg)">
-          ${ICONS.ARROW}
-        </sp-icon>
-      </div>
-      <div>
-        <span>${appStore.i18n('plugins_select')}</span>
-        <sp-icon size="s">
-          ${ICONS.ARROW}
-        </sp-icon>
-      </div>
-      <div class="last">
-        <span>${appStore.i18n('back')}</span>
-        <sp-icon size="s">
-          esc
-        </sp-icon>
-      </div>
-    </div>
-  `;
-  }
-
-  /**
-   * Render a plugin menu item.
-   * @param {SidekickPlugin} plugin The plugin
-   * @returns {TemplateResult} The plugin menu item
-   */
-  renderPluginMenuItem(plugin) {
-    const pinned = plugin.isPinned();
-    const disabled = !plugin.isEnabled();
-    const pluginAction = (e) => {
-      this.pluginMenuOverlay.removeAttribute('open');
-      plugin.onButtonClick(e);
-    };
-
-    let parentPluginText = '';
-    if (plugin.isChild()) {
-      parentPluginText = this.allowedPlugins
-        .find((p) => p.getId() === plugin.getParentId())
-        ?.getButtonText();
-    }
-    const toggleAction = (e) => this.togglePlugin(plugin, e);
-    const toggleIcon = html`
-      ${pinned ? ICONS.STAR_FULL : ICONS.STAR_EMPTY}
-    `;
-    const toggleTitle = pinned ? appStore.i18n('plugin_unpin') : appStore.i18n('plugin_pin');
-
-    return html`
-      <div class="menu-item-container">
-        <sp-menu-item
-          @click=${pluginAction}
-          .disabled=${disabled}>
-          <sp-icon slot="icon">
-            ${ICONS.ADOBE_LOGO}
-          </sp-icon>
-          <span class="parent">${parentPluginText}</span>
-          ${plugin.getButtonText()}
-        </sp-menu-item>
-        <sp-button
-          quiet
-          icon-only
-          title="${toggleTitle}"
-          @click=${toggleAction}>
-          <sp-icon slot="icon">
-            ${toggleIcon}
-          </sp-icon>
-        </sp-button>
-      </div>`;
-  }
-
-  /**
-   * Render the plugin menu.
-   */
-  renderPluginMenu() {
-    if (appStore.status?.webPath && !this.pluginMenuOverlay) {
-      const filterAction = (e) => this.filterPluginMenu(e.target.value);
-      const filterPlaceholder = appStore.i18n('plugins_filter');
-      const groupTitle = appStore.i18n('plugins');
-
-      // add allowed non-container plugins
-      const pluginList = this.allowedPlugins
-        .filter((plugin) => plugin.getId() !== 'env-switcher' // special case: env-switcher
-          && !plugin.isContainer());
-
-      // include allowed children of container plugins
-      this.allowedPlugins
-        .filter((plugin) => plugin.isContainer())
-        .forEach((container) => {
-          Object.values(container.children)
-            .filter((child) => child.isVisible())
-            .forEach((child) => pluginList.push(child));
-        });
-
-      const menuItems = pluginList.map((plugin) => this.renderPluginMenuItem(plugin));
-
-      this.pluginMenuOverlay = this.shadowRoot.querySelector('#plugin-list-overlay');
-      render(html`
-        <sp-popover role="presentation">
-          <sp-menu id="plugin-list-menu" aria-labelledby="applied-label" role="listbox">
-            <div class="filter-container">
-              <sp-textfield
-                quiet
-                placeholder="${filterPlaceholder}"
-                size="xl"
-                @input=${filterAction}
-              >
-              </sp-textfield>
-            </div>
-            <sp-divider size="s"></sp-divider>
-            <sp-menu-group id="plugin-list-plugins" selects="single">
-              <span slot="header">${groupTitle}</span>
-              ${menuItems}
-            </sp-menu-group>
-            <sp-divider size="s"></sp-divider>
-            ${this.renderPluginMenuKeyboardHints()}
-          </sp-menu>
-        </sp-popover>`, this.pluginMenuOverlay);
-    }
-  }
-
-  /**
    * Render the core and custom plugins
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
@@ -246,15 +81,45 @@ export class PluginActionBar extends MobxLitElement {
       return '';
     }
 
-    this.allowedPlugins = [
+    this.visiblePlugins = [
       ...Object.values(appStore.corePlugins),
       ...Object.values(appStore.customPlugins),
     ]
       .filter((plugin) => plugin.isVisible());
 
-    return this.allowedPlugins.length > 0
-      ? html`<sp-action-group>${[...this.allowedPlugins.map((p) => p.render())]}</sp-action-group>`
+    return this.visiblePlugins.length > 0
+      ? html`<sp-action-group>${[...this.visiblePlugins.map((p) => p.render())]}</sp-action-group>`
       : '';
+  }
+
+  /**
+   * Removes the modal container.
+   */
+  removeModalContainer() {
+    this.modalContainer.remove();
+    this.modalContainer = null;
+  }
+
+  /**
+   * Toggles the plugin list dialog.
+   * @param {Event} event The event object
+   */
+  togglePluginListDialog({ target }) {
+    if (this.modalContainer) {
+      this.removeModalContainer();
+    } else {
+      this.modalContainer = appStore.showModal({ type: MODALS.PLUGIN_LIST });
+
+      // handle the dialog close event
+      window.setTimeout(() => {
+        const dialogWrapper = this.modalContainer.shadowRoot.querySelector('sp-dialog-wrapper');
+        dialogWrapper.addEventListener(MODAL_EVENTS.CLOSE, () => {
+          this.removeModalContainer();
+          // @ts-ignore
+          target.removeAttribute('selected');
+        });
+      }, 500);
+    }
   }
 
   renderSystemPlugins() {
@@ -266,15 +131,14 @@ export class PluginActionBar extends MobxLitElement {
     const pluginList = html`
       <sp-action-button
         quiet
-        id="plugin-list-trigger"
-        title="${appStore.i18n('plugins_manage')}"
+        toggles
+        label="${appStore.i18n('plugins_manage')}"
         .disabled=${!appStore.status?.webPath}
-        @click=${() => this.renderPluginMenu()}>
+        @click=${(e) => this.togglePluginListDialog(e)}>
         <sp-icon slot="icon" size="l">
           ${ICONS.PLUGINS}
         </sp-icon>
-      </sp-action-button>
-      <sp-overlay id="plugin-list-overlay" trigger="plugin-list-trigger@click"></sp-overlay>`;
+      </sp-action-button>`;
     systemPlugins.push(pluginList);
 
     const properties = html`
