@@ -78,7 +78,7 @@ export const style = css`
   .keyboard-hints-container {
     display: flex;
     flex-direction: row;
-    padding: 8px;
+    margin: 8px;
     font-size: smaller;
     color: var(--spectrum-global-color-gray-600);
   }
@@ -100,17 +100,20 @@ export const style = css`
   }
 
   .keyboard-hints-container sp-icon {
+    box-sizing: border-box;
+    width: 24px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 2px;
-    background-color: var(--spectrum-global-color-gray-300);
-    border-radius: 4px;
-    padding: 3px;
+    background-color: var(--spectrum-global-color-gray-200);
+    border-radius: 6px;
+    font-size: 10px;
   }
 
   .keyboard-hints-container sp-icon > svg {
-    width: 10px;
-    height: 10px;
+    width: 16px;
+    height: 16px;
   }
 `;

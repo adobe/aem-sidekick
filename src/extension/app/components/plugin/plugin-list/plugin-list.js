@@ -55,8 +55,8 @@ export class PluginList extends LitElement {
    * The filter field.
    * @type {HTMLInputElement}
    */
-  @query('sp-textfield')
-  accessor filterField;
+  @query('sp-menu-item')
+  accessor firstMenuItem;
 
   /**
    * The filter text.
@@ -87,7 +87,12 @@ export class PluginList extends LitElement {
   }
 
   async firstUpdated() {
-    (await this.filterField)?.focus();
+    // a timeout is needed here to enable keyboard access
+    window.setTimeout(async () => {
+      const menuItem = await this.firstMenuItem;
+      menuItem.focus();
+      menuItem.setAttribute('focused', 'true');
+    }, 100);
   }
 
   /**
@@ -130,8 +135,11 @@ export class PluginList extends LitElement {
     const pinned = plugin.isPinned();
     const disabled = !plugin.isEnabled();
     const pluginAction = (e) => {
-      plugin.onButtonClick(e);
       this.dispatchEvent(new CustomEvent('close'));
+      // remove modal container before the plugin action is called
+      window.setTimeout(() => {
+        plugin.onButtonClick(e);
+      }, 100);
     };
 
     let parentPluginText = '';
@@ -186,7 +194,7 @@ export class PluginList extends LitElement {
         size="xl"
         placeholder="${filterPlaceholder}"
         id="plugin-filter"
-        @input=${(filterAction)}
+        @input=${filterAction}
       ></sp-textfield>
     </div>
     `;
@@ -202,13 +210,9 @@ export class PluginList extends LitElement {
       <div>
         <span>${appStore.i18n('plugins_navigate')}</span>
         <sp-icon size="s">
-          tab
-        </sp-icon>
-        +
-        <sp-icon size="s" style="transform: rotate(90deg)">
           ${ICONS.ARROW}
         </sp-icon>
-        <sp-icon size="s" style="transform: rotate(270deg)">
+        <sp-icon size="s" style="transform: rotate(180deg)">
           ${ICONS.ARROW}
         </sp-icon>
       </div>

@@ -17,7 +17,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
 import { appStore } from '../../store/app.js';
-import { ICONS, MODALS, MODAL_EVENTS } from '../../constants.js';
+import { ICONS, MODALS } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 
 /**
@@ -102,23 +102,12 @@ export class PluginActionBar extends MobxLitElement {
 
   /**
    * Toggles the plugin list dialog.
-   * @param {Event} event The event object
    */
-  togglePluginListDialog({ target }) {
+  togglePluginListDialog() {
     if (this.modalContainer) {
       this.removeModalContainer();
     } else {
       this.modalContainer = appStore.showModal({ type: MODALS.PLUGIN_LIST });
-
-      // handle the dialog close event
-      window.setTimeout(() => {
-        const dialogWrapper = this.modalContainer.shadowRoot.querySelector('sp-dialog-wrapper');
-        dialogWrapper.addEventListener(MODAL_EVENTS.CLOSE, () => {
-          this.removeModalContainer();
-          // @ts-ignore
-          target.removeAttribute('selected');
-        });
-      }, 500);
     }
   }
 
@@ -134,7 +123,7 @@ export class PluginActionBar extends MobxLitElement {
         toggles
         label="${appStore.i18n('plugins_manage')}"
         .disabled=${!appStore.status?.webPath}
-        @click=${(e) => this.togglePluginListDialog(e)}>
+        @click=${this.togglePluginListDialog}>
         <sp-icon slot="icon" size="l">
           ${ICONS.PLUGINS}
         </sp-icon>
