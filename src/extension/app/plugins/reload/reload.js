@@ -11,7 +11,7 @@
  */
 
 import { MODALS } from '../../constants.js';
-import { SidekickPlugin } from '../../components/plugin/plugin.js';
+import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 import { i18n } from '../../utils/i18n.js';
 
@@ -26,10 +26,10 @@ import { i18n } from '../../utils/i18n.js';
 /**
  * Creates the reload plugin
  * @param {AppStore} appStore The app store
- * @returns {SidekickPlugin} The reload plugin
+ * @returns {Plugin} The reload plugin
  */
 export function createReloadPlugin(appStore) {
-  return new SidekickPlugin({
+  return new Plugin({
     id: 'reload',
     condition: (store) => store.isPreview() || store.isDev(),
     button: {

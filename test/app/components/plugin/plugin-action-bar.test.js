@@ -43,7 +43,7 @@ import {
 import { EXTERNAL_EVENTS } from '../../../../src/extension/app/constants.js';
 import { pluginFactory } from '../../../../src/extension/app/plugins/plugin-factory.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
-import { SidekickPlugin } from '../../../../src/extension/app/components/plugin/plugin.js';
+import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -273,7 +273,7 @@ describe('Plugin action bar', () => {
       // Create a spy for the action function
       const actionSpy = sinon.spy(actionFunction);
 
-      const stub = sinon.stub(pluginFactory, 'createPublishPlugin').returns(new SidekickPlugin({
+      const stub = sinon.stub(pluginFactory, 'createPublishPlugin').returns(new Plugin({
         id: 'publish',
         condition: () => true,
         button: {

@@ -18,7 +18,7 @@ import { style } from './plugin-list.css.js';
 import { ICONS } from '../../../constants.js';
 
 /**
- * @typedef {import('../../plugin/plugin.js').SidekickPlugin} SidekickPlugin
+ * @typedef {import('../../plugin/plugin.js').Plugin} SidekickPlugin
  */
 
 /**

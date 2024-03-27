@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { SidekickPlugin } from '../../components/plugin/plugin.js';
+import { Plugin } from '../../components/plugin/plugin.js';
 
 /**
  * @typedef {import('@Types').CorePlugin} CorePlugin
@@ -18,10 +18,10 @@ import { SidekickPlugin } from '../../components/plugin/plugin.js';
 
 /**
  * Creates the env plugin
- * @returns {SidekickPlugin} The env plugin
+ * @returns {Plugin} The env plugin
  */
 export function createEnvPlugin() {
-  return new SidekickPlugin({
+  return new Plugin({
     id: 'env-switcher',
     condition: (store) => !store.isAdmin(),
   });

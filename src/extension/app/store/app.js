@@ -25,7 +25,7 @@ import {
   ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS,
 } from '../constants.js';
 // eslint-disable-next-line import/no-cycle
-import { SidekickPlugin } from '../components/plugin/plugin.js';
+import { Plugin } from '../components/plugin/plugin.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
@@ -102,13 +102,13 @@ export class AppStore {
 
   /**
    * Dictionary of language keys
-   * @type {Object.<string, SidekickPlugin>}
+   * @type {Object.<string, Plugin>}
    */
   @observable accessor corePlugins;
 
   /**
    * Dictionary of language keys
-   * @type {Object.<string, SidekickPlugin>}
+   * @type {Object.<string, Plugin>}
    */
   @observable accessor customPlugins;
 
@@ -334,7 +334,7 @@ export class AppStore {
             corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
           } else {
             // add custom plugin
-            const customPlugin = new SidekickPlugin(plugin);
+            const customPlugin = new Plugin(plugin);
             if (plugin.container) {
               this.customPlugins[plugin.container]?.append(customPlugin);
             } else {

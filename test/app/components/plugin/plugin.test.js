@@ -14,7 +14,7 @@
 import { expect } from '@open-wc/testing';
 import sinon from 'sinon';
 import chromeMock from '../../../mocks/chrome.js';
-import { SidekickPlugin } from '../../../../src/extension/app/components/plugin/plugin.js';
+import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 import { defaultConfigJSONWithPlugins } from '../../../fixtures/helix-admin.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
 
@@ -23,7 +23,7 @@ window.chrome = chromeMock;
 
 describe('SidekickPlugin', () => {
   it('creates plugin from config', async () => {
-    const plugin = new SidekickPlugin({
+    const plugin = new Plugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
     });
     expect(plugin.config).to.deep.equal({
@@ -32,7 +32,7 @@ describe('SidekickPlugin', () => {
   });
 
   it('validates plugin condition', async () => {
-    const plugin = new SidekickPlugin({
+    const plugin = new Plugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
     });
     const res = plugin.isVisible();
@@ -40,10 +40,10 @@ describe('SidekickPlugin', () => {
   });
 
   it('appends child plugin', async () => {
-    const plugin = new SidekickPlugin({
+    const plugin = new Plugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
     });
-    const childPlugin = new SidekickPlugin({
+    const childPlugin = new Plugin({
       ...defaultConfigJSONWithPlugins.plugins[1],
     });
     plugin.append(childPlugin);
@@ -51,7 +51,7 @@ describe('SidekickPlugin', () => {
   });
 
   it('is pinned by default', async () => {
-    const plugin = new SidekickPlugin({
+    const plugin = new Plugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
     });
     const pinned = plugin.isPinned();
@@ -59,7 +59,7 @@ describe('SidekickPlugin', () => {
   });
 
   it('uses pinned state from config', async () => {
-    const plugin = new SidekickPlugin({
+    const plugin = new Plugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
       pinned: false,
     });
@@ -69,7 +69,7 @@ describe('SidekickPlugin', () => {
 
   it('pinned state from user prefs supersedes config', async () => {
     const sandbox = sinon.createSandbox();
-    const plugin = new SidekickPlugin({
+    const plugin = new Plugin({
       ...defaultConfigJSONWithPlugins.plugins[0],
       pinned: false,
     });

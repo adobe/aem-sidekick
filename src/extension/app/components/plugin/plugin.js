@@ -46,9 +46,9 @@ import { EXTERNAL_EVENTS } from '../../constants.js';
  * Creates a sidekick plugin.
  * @param {CorePlugin|CustomPlugin} plugin The plugin configuration
  */
-export class SidekickPlugin {
+export class Plugin {
   /**
-   * @type {Object<string, SidekickPlugin>}
+   * @type {Object<string, Plugin>}
    */
   children = {};
 
@@ -143,7 +143,7 @@ export class SidekickPlugin {
 
   /**
    * Adds a plugin to this plugin's children.
-   * @param {SidekickPlugin} plugin The plugin to add
+   * @param {Plugin} plugin The plugin to add
    */
   append(plugin) {
     this.children[plugin.id] = plugin;
@@ -200,10 +200,10 @@ export class SidekickPlugin {
       if (this.isContainer()) {
         if (childPlugins.length > 0) {
           return html`
-            <action-bar-picker 
-              class=${`plugin-container ${this.getId()}`} 
-              label=${this.getButtonText()} 
-              @change=${(e) => this.onChange(e)} 
+            <action-bar-picker
+              class=${`plugin-container ${this.getId()}`}
+              label=${this.getButtonText()}
+              @change=${(e) => this.onChange(e)}
               placement="top"
             >${childPlugins.map((childPlugin) => childPlugin.render())}</action-bar-picker>
           `;
@@ -221,10 +221,10 @@ export class SidekickPlugin {
       }
 
       return html`
-        <sp-action-button 
-          class=${this.getId()} 
-          .disabled=${!this.isEnabled()} 
-          quiet 
+        <sp-action-button
+          class=${this.getId()}
+          .disabled=${!this.isEnabled()}
+          quiet
           @click=${(evt) => this.onButtonClick(evt)}
         >${this.getButtonText()}</sp-action-button>
       `;

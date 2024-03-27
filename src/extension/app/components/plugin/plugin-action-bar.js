@@ -21,7 +21,7 @@ import { ICONS, MODALS, MODAL_EVENTS } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 
 /**
- * @typedef {import('../plugin/plugin.js').SidekickPlugin} SidekickPlugin
+ * @typedef {import('../plugin/plugin.js').Plugin} SidekickPlugin
  */
 
 /**

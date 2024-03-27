@@ -11,7 +11,7 @@
  */
 
 import { MODALS } from '../../constants.js';
-import { SidekickPlugin } from '../../components/plugin/plugin.js';
+import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 
 /**
@@ -25,10 +25,10 @@ import { newTab } from '../../utils/browser.js';
 /**
  * Creates the publish plugin
  * @param {AppStore} appStore The app store
- * @returns {SidekickPlugin} The publish plugin
+ * @returns {Plugin} The publish plugin
  */
 export function createPublishPlugin(appStore) {
-  return new SidekickPlugin({
+  return new Plugin({
     id: 'publish',
     condition: (store) => store.isProject() && store.isContent(),
     button: {
