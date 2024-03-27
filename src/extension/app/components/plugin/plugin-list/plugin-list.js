@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, query } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { html, LitElement } from 'lit';
 import { appStore } from '../../../store/app.js';
@@ -52,6 +52,20 @@ export class PluginList extends LitElement {
   listedPlugins = [];
 
   /**
+   * The filter field.
+   * @type {HTMLInputElement}
+   */
+  @query('sp-textfield')
+  accessor filterField;
+
+  /**
+   * The filter text.
+   * @type {string}
+   */
+  @property({ type: String })
+  accessor filterText = '';
+
+  /**
    * Are we ready to enable?
    * @type {Boolean}
    */
@@ -72,14 +86,8 @@ export class PluginList extends LitElement {
     this.ready = true;
   }
 
-  /**
-   * Filters the plugins.
-   * @param {string} filter The filter term
-   */
-  filterPluginMenu(filter) {
-    // TODO: Implement filtering
-    // eslint-disable-next-line no-console
-    console.log('Filtering plugin menu', filter);
+  async firstUpdated() {
+    (await this.filterField)?.focus();
   }
 
   /**
@@ -110,9 +118,15 @@ export class PluginList extends LitElement {
   /**
    * Render a list item.
    * @param {SidekickPlugin} plugin The plugin
-   * @returns {TemplateResult} The list item
+   * @returns {string|TemplateResult} The list item
    */
   renderListItem(plugin) {
+    // apply filter if present
+    if (this.filterText && (!plugin.getButtonText().toLowerCase().includes(this.filterText)
+        || !plugin.getId().toLowerCase().includes(this.filterText))) {
+      return '';
+    }
+
     const pinned = plugin.isPinned();
     const disabled = !plugin.isEnabled();
     const pluginAction = (e) => {
@@ -160,7 +174,9 @@ export class PluginList extends LitElement {
    * @returns {TemplateResult} The filter field
    */
   renderFilter() {
-    const filterAction = (e) => this.filterPluginMenu(e.target.value);
+    const filterAction = (e) => {
+      this.filterText = e.target.value.toLowerCase();
+    };
     const filterPlaceholder = appStore.i18n('plugins_filter');
 
     return html`
@@ -170,7 +186,7 @@ export class PluginList extends LitElement {
         size="xl"
         placeholder="${filterPlaceholder}"
         id="plugin-filter"
-        @input=${filterAction}
+        @input=${(filterAction)}
       ></sp-textfield>
     </div>
     `;
@@ -185,6 +201,10 @@ export class PluginList extends LitElement {
       <div class="keyboard-hints-container">
       <div>
         <span>${appStore.i18n('plugins_navigate')}</span>
+        <sp-icon size="s">
+          tab
+        </sp-icon>
+        +
         <sp-icon size="s" style="transform: rotate(90deg)">
           ${ICONS.ARROW}
         </sp-icon>
@@ -236,16 +256,16 @@ export class PluginList extends LitElement {
 
     return html`
       <div class="plugin-list-container">
+        ${this.renderFilter()}
+        <sp-divider size="s"></sp-divider>
         <sp-menu id="plugin-list-menu" aria-labelledby="applied-label" role="listbox">
-          ${this.renderFilter()}
-          <sp-divider size="s"></sp-divider>
           <sp-menu-group id="plugin-list-plugins" selects="single">
             <span slot="header">${appStore.i18n('plugins')}</span>
             ${this.listedPlugins.map((plugin) => this.renderListItem(plugin))}
           </sp-menu-group>
-          <sp-divider size="s"></sp-divider>
-          ${this.renderKeyboardHints()}
-        </sp-menu>
+          </sp-menu>
+        <sp-divider size="s"></sp-divider>
+        ${this.renderKeyboardHints()}
       </div>
     `;
   }
