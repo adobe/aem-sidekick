@@ -157,6 +157,7 @@ export class PluginList extends LitElement {
     return html`
       <div class="menu-item-container">
         <sp-menu-item
+          class="${plugin.getId()}"
           @click=${pluginAction}
           .disabled=${disabled}>
           <sp-icon slot="icon">

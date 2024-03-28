@@ -121,6 +121,7 @@ export class PluginActionBar extends MobxLitElement {
       <sp-action-button
         quiet
         toggles
+        class="plugin-list"
         label="${appStore.i18n('plugins_manage')}"
         .disabled=${!appStore.status?.webPath}
         @click=${this.togglePluginListDialog}>

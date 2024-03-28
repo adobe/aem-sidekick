@@ -75,7 +75,7 @@ describe('Plugin action bar', () => {
     expect([...menuButtons].length).to.equal(environments.length);
   }
 
-  function expectAllPlugins(pluginIds) {
+  function expectPinnedPlugins(pluginIds) {
     const actionGroup = recursiveQuery(sidekick, 'sp-action-group:first-of-type');
     const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, action-bar-picker');
 
@@ -95,12 +95,10 @@ describe('Plugin action bar', () => {
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
         'reload',
-        'delete',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
@@ -117,7 +115,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
         'edit-preview',
         'asset-library',
@@ -143,7 +141,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
         'edit-preview',
       ]);
@@ -161,10 +159,9 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
@@ -180,10 +177,9 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['prod', 'preview', 'edit']);
@@ -199,7 +195,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
       ]);
 
@@ -219,7 +215,11 @@ describe('Plugin action bar', () => {
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
       expectEnvPlugin(['dev', 'edit', 'preview', 'prod']);
-      expectAllPlugins(['env-switcher', 'reload', 'publish', 'unpublish']);
+      expectPinnedPlugins([
+        'env-switcher',
+        'reload',
+        'publish',
+      ]);
     });
 
     it('isEditor', async () => {
@@ -234,7 +234,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
         'edit-preview',
       ]);
@@ -254,7 +254,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
         'edit-preview',
       ]);
@@ -274,12 +274,10 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
         'reload',
-        'delete',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'prod']);
@@ -313,12 +311,10 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
         'reload',
-        'delete',
         'publish',
-        'unpublish',
       ]);
 
       const publishButton = recursiveQuery(sidekick, '.publish');
@@ -353,7 +349,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
         'edit-preview',
         'asset-library',
@@ -385,7 +381,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectPinnedPlugins([
         'env-switcher',
         'edit-preview',
         'asset-library',

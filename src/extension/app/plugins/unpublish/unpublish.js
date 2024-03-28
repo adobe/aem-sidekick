@@ -34,7 +34,7 @@ export function createUnpublishPlugin(appStore) {
     id: 'unpublish',
     condition: (store) => store.isProject()
       && !RESTRICTED_PATHS.includes(store.location.pathname),
-    // pinned: false, // TODO: set to unpinned
+    pinned: false,
     button: {
       text: appStore.i18n('unpublish'),
       action: async () => {
