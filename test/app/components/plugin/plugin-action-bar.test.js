@@ -99,6 +99,7 @@ describe('Plugin action bar', () => {
         'env-switcher',
         'reload',
         'publish',
+        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
@@ -162,6 +163,7 @@ describe('Plugin action bar', () => {
       expectPinnedPlugins([
         'env-switcher',
         'publish',
+        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
@@ -180,6 +182,7 @@ describe('Plugin action bar', () => {
       expectPinnedPlugins([
         'env-switcher',
         'publish',
+        'unpublish',
       ]);
 
       expectEnvPlugin(['prod', 'preview', 'edit']);
@@ -278,6 +281,7 @@ describe('Plugin action bar', () => {
         'env-switcher',
         'reload',
         'publish',
+        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'prod']);
@@ -315,6 +319,7 @@ describe('Plugin action bar', () => {
         'env-switcher',
         'reload',
         'publish',
+        'unpublish',
       ]);
 
       const publishButton = recursiveQuery(sidekick, '.publish');
