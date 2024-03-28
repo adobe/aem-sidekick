@@ -85,6 +85,20 @@ describe('Plugin action bar', () => {
     ).to.deep.equal(pluginIds);
   }
 
+  async function expectPluginList(pluginIds) {
+    // open plugin list
+    const pluginList = recursiveQuery(sidekick, '.plugin-list');
+    pluginList.click();
+
+    // wait for modal and retrieve plugins
+    await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
+    const modalContainer = recursiveQuery(sidekick, 'modal-container');
+    const plugins = recursiveQueryAll(modalContainer, 'sp-menu-item');
+
+    expect([...plugins]
+      .map((plugin) => plugin.className)).to.deep.equal(pluginIds);
+  }
+
   describe('renders correct default plugins in action bar', () => {
     it('isPreview', async () => {
       mockFetchStatusSuccess();
@@ -99,7 +113,6 @@ describe('Plugin action bar', () => {
         'env-switcher',
         'reload',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
@@ -163,7 +176,6 @@ describe('Plugin action bar', () => {
       expectPinnedPlugins([
         'env-switcher',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
@@ -182,7 +194,6 @@ describe('Plugin action bar', () => {
       expectPinnedPlugins([
         'env-switcher',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['prod', 'preview', 'edit']);
@@ -281,7 +292,6 @@ describe('Plugin action bar', () => {
         'env-switcher',
         'reload',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'prod']);
@@ -319,7 +329,6 @@ describe('Plugin action bar', () => {
         'env-switcher',
         'reload',
         'publish',
-        'unpublish',
       ]);
 
       const publishButton = recursiveQuery(sidekick, '.publish');
@@ -403,6 +412,58 @@ describe('Plugin action bar', () => {
 
       openStub.restore();
       validateStub.restore();
+    });
+  });
+
+  describe('renders correct plugins in plugin list', () => {
+    it('isPreview', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      await expectPluginList([
+        'reload',
+        'delete',
+        'publish',
+        'unpublish',
+      ]);
+    });
+
+    it('isLive', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'live');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      await expectPluginList([
+        'publish',
+        'unpublish',
+      ]);
+    });
+
+    it('isProd', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'prod');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      await expectPluginList([
+        'publish',
+        'unpublish',
+      ]);
     });
   });
 
