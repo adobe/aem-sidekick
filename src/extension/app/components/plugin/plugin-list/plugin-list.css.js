@@ -27,7 +27,7 @@ export const style = css`
 
   .filter-container {
     padding: 0 16px;
-    box-model: border-box;
+    box-sizing: border-box;
     height: 46px;
     overflow: hidden;
   }
@@ -101,8 +101,8 @@ export const style = css`
 
   .keyboard-hints-container sp-icon {
     box-sizing: border-box;
-    width: 24px;
-    height: 28px;
+    width: 28px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
