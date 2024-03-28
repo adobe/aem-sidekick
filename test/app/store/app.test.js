@@ -989,6 +989,146 @@ describe('Test App Store', () => {
     });
   });
 
+  describe('unpublish', async () => {
+    const unpublishPath = '/unpublish-path';
+    let sandbox;
+    let fakeFetch;
+    let instance;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+      fakeFetch = sandbox.stub(window, 'fetch');
+      instance = appStore;
+
+      // Mock other functions
+      sandbox.stub(instance, 'isContent');
+      sandbox.stub(instance, 'isEditor');
+      sandbox.stub(instance, 'isPreview');
+      sandbox.stub(instance, 'isDev');
+      sandbox.stub(instance, 'fireEvent');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('deletes content from live', async () => {
+      instance.isContent.returns(true);
+      instance.status = { webPath: unpublishPath };
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({}),
+      });
+
+      const resp = await instance.unpublish();
+
+      expect(resp.path).to.equal(unpublishPath);
+      expect(resp.error).to.equal('');
+      sinon.assert.calledWith(instance.fireEvent, 'unpublished', unpublishPath);
+    });
+
+    it('only unpublishes content', async () => {
+      instance.isContent.returns(false);
+      instance.status = {
+        webPath: unpublishPath,
+      };
+
+      const resp = await instance.unpublish();
+
+      expect(resp).to.equal(null);
+      expect(fakeFetch.called).to.be.false;
+    });
+
+    it('handles network error', async () => {
+      const consoleSpy = sandbox.spy(console, 'log');
+      instance.isContent.returns(true);
+      instance.status = { webPath: unpublishPath };
+
+      fakeFetch.throws(error);
+
+      const resp = await instance.unpublish();
+
+      expect(resp.error).to.equal(error.message);
+      expect(consoleSpy.calledWithMatch('failed to unpublish', unpublishPath, error)).to.be.true;
+    });
+  });
+
+  describe('plugin preferences', () => {
+    const sandbox = sinon.createSandbox();
+    let instance;
+    let isEditorStub;
+    let isPreviewStub;
+    let isLiveStub;
+    let isProdStub;
+    let isDevStub;
+    let isAdminStub;
+    let syncStorageGetStub;
+    let syncStorageSetStub;
+
+    beforeEach(() => {
+      instance = appStore;
+      isEditorStub = sandbox.stub(instance, 'isEditor');
+      isPreviewStub = sandbox.stub(instance, 'isPreview');
+      isLiveStub = sandbox.stub(instance, 'isLive');
+      isProdStub = sandbox.stub(instance, 'isProd');
+      isDevStub = sandbox.stub(instance, 'isDev');
+      isAdminStub = sandbox.stub(instance, 'isAdmin');
+      isEditorStub.returns(false);
+      isPreviewStub.returns(false);
+      isLiveStub.returns(false);
+      isProdStub.returns(false);
+      isDevStub.returns(false);
+      isAdminStub.returns(false);
+
+      syncStorageGetStub = sandbox.stub(chrome.storage.sync, 'get');
+      syncStorageSetStub = sandbox.stub(chrome.storage.sync, 'set');
+      syncStorageSetStub.resolves();
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+      restoreEnvironment(document);
+      fetchMock.restore();
+    });
+
+    it.skip('sets and retrieves plugin preferences for an env', async () => {
+      let prefs;
+      mockFetchStatusSuccess();
+      mockHelixEnvironment(document, 'preview');
+      isPreviewStub.returns(true);
+      syncStorageGetStub.resolves({
+        pluginPrefs: {
+          preview: {
+            foo: {
+              pinned: true,
+            },
+          },
+        },
+      });
+
+      // return empty object if no stored prefs yet
+      prefs = await instance.getPluginPrefs('foo');
+      expect(prefs).to.deep.equal({});
+
+      // load stored prefs
+      await instance.initSettings();
+
+      // return stored prefs
+      prefs = await instance.getPluginPrefs('foo');
+      expect(prefs.pinned).is.true;
+
+      // change prefs
+      await instance.setPluginPrefs('foo', { pinned: false });
+      expect(syncStorageSetStub.called).is.true;
+
+      // return changed prefsq
+      prefs = await instance.getPluginPrefs('foo');
+      expect(prefs.pinned).is.false;
+    });
+  });
+
   describe('findViews', () => {
     let instance;
 
@@ -1208,72 +1348,6 @@ describe('Test App Store', () => {
       expect(frame.src).to.equal('http://viewer.com/?url=https%3A%2F%2Fmain--aem-boilerplate--adobe.hlx.page%2Fplaceholders.json&title=Test+Title');
       expect(findViewsStub.calledWith(VIEWS.DEFAULT)).to.be.true;
       expect(getViewOverlayStub.calledTwice).to.be.true;
-    });
-  });
-
-  describe('unpublish', async () => {
-    const unpublishPath = '/unpublish-path';
-    let sandbox;
-    let fakeFetch;
-    let instance;
-
-    beforeEach(() => {
-      sandbox = sinon.createSandbox();
-      fakeFetch = sandbox.stub(window, 'fetch');
-      instance = appStore;
-
-      // Mock other functions
-      sandbox.stub(instance, 'isContent');
-      sandbox.stub(instance, 'isEditor');
-      sandbox.stub(instance, 'isPreview');
-      sandbox.stub(instance, 'isDev');
-      sandbox.stub(instance, 'fireEvent');
-    });
-
-    afterEach(() => {
-      sandbox.restore();
-    });
-
-    it('deletes content from live', async () => {
-      instance.isContent.returns(true);
-      instance.status = { webPath: unpublishPath };
-
-      const headers = new Headers();
-
-      fakeFetch.resolves({
-        ok: true, status: 200, headers, json: () => Promise.resolve({}),
-      });
-
-      const resp = await instance.unpublish();
-
-      expect(resp.path).to.equal(unpublishPath);
-      expect(resp.error).to.equal('');
-      sinon.assert.calledWith(instance.fireEvent, 'unpublished', unpublishPath);
-    });
-
-    it('only unpublishes content', async () => {
-      instance.isContent.returns(false);
-      instance.status = {
-        webPath: unpublishPath,
-      };
-
-      const resp = await instance.unpublish();
-
-      expect(resp).to.equal(null);
-      expect(fakeFetch.called).to.be.false;
-    });
-
-    it('handles network error', async () => {
-      const consoleSpy = sandbox.spy(console, 'log');
-      instance.isContent.returns(true);
-      instance.status = { webPath: unpublishPath };
-
-      fakeFetch.throws(error);
-
-      const resp = await instance.unpublish();
-
-      expect(resp.error).to.equal(error.message);
-      expect(consoleSpy.calledWithMatch('failed to unpublish', unpublishPath, error)).to.be.true;
     });
   });
 
