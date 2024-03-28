@@ -39,7 +39,14 @@ window.chrome = chromeMock;
 async function clickDeletePlugin(sidekick) {
   await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-  const deletePlugin = recursiveQuery(sidekick, '.delete');
+  // open plugin list
+  const pluginList = recursiveQuery(sidekick, '.plugin-list');
+  pluginList.click();
+
+  await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
+  const modalContainer = recursiveQuery(sidekick, 'modal-container');
+  await waitUntil(() => recursiveQuery(modalContainer, '.delete'));
+  const deletePlugin = recursiveQuery(modalContainer, '.delete');
   expect(deletePlugin.textContent.trim()).to.equal('Delete');
   await waitUntil(() => deletePlugin.getAttribute('disabled') === null);
   deletePlugin.click();
@@ -97,7 +104,7 @@ describe('Delete plugin', () => {
       });
 
       afterEach(() => {
-        // document.body.removeChild(sidekick);
+        document.body.removeChild(sidekick);
         fetchMock.reset();
         restoreEnvironment(document);
         sandbox.restore();

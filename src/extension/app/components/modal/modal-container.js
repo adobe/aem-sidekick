@@ -189,6 +189,14 @@ export class ModalContainer extends LitElement {
           </div>
         `;
         break;
+      case MODALS.PLUGIN_LIST:
+        options.dismissable = false;
+        options.underlay = false;
+        options.headline = '';
+        options.content = html`
+          <plugin-list></plugin-list>
+        `;
+        break;
       default:
         this.cleanup();
         return html``;
@@ -197,6 +205,7 @@ export class ModalContainer extends LitElement {
     return html`
         <sp-dialog-wrapper
             open
+            class=${type}
             headline=${options.headline}
             confirm-label=${options.confirmLabel}
             cancel-label=${options.cancelLabel}

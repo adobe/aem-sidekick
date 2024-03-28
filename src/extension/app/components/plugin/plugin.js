@@ -13,6 +13,7 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
+import { appStore } from '../../store/app.js';
 import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**
@@ -45,11 +46,18 @@ import { EXTERNAL_EVENTS } from '../../constants.js';
  * Creates a sidekick plugin.
  * @param {CorePlugin|CustomPlugin} plugin The plugin configuration
  */
-export class SidekickPlugin {
+export class Plugin {
   /**
-   * @type {Object<string, SidekickPlugin>}
+   * @type {Object<string, Plugin>}
    */
   children = {};
+
+  /**
+   * The plugin configuration
+   * @property
+   * @type {Object}
+   */
+  config;
 
   constructor(plugin) {
     this.disabled = false;
@@ -58,22 +66,48 @@ export class SidekickPlugin {
   }
 
   /**
-   * Checks the plugin's condition.
-   * @returns {boolean} True if plugin's condition is met, else false
+   * Returns the plugin ID.
+   * @returns {string} The plugin ID
    */
-  checkCondition() {
-    return !this.config.condition || !!this.config.condition(this.config.appStore);
+  getId() {
+    return this.config.id;
   }
 
   /**
-   * Returns the pinned state of the plugin.
-   * @param {Object} [userPrefs] The user preferences for this plugin
+   * Returns the plugin's button text.
+   * @returns {string} The plugin's button text or ID
+   */
+  getButtonText() {
+    return this.config.button?.text || this.getId();
+  }
+
+  /**
+   * Is this plugin visible in the current environment?
+   * @returns {boolean} True if plugin is visible, else false
+   */
+  isVisible() {
+    return typeof this.config.condition !== 'function'
+      || !!this.config.condition(appStore);
+  }
+
+  /**
+   * Is this plugin enabled for the current resource?
+   * @returns {boolean} True if plugin is enabled, else false
+   */
+  isEnabled() {
+    return typeof this.config.button?.isEnabled !== 'function'
+      || this.config.button.isEnabled(appStore);
+  }
+
+  /**
+   * Is this plugin pinned to the sidekick's action bar?
    * @returns {boolean} True if plugin is pinned, else false
    */
-  isPinned(userPrefs = {}) {
-    if (typeof userPrefs.pinned === 'boolean') {
+  isPinned() {
+    const prefs = appStore.getPluginPrefs(this.getId());
+    if (typeof prefs.pinned === 'boolean') {
       // use user preference if defined
-      return userPrefs.pinned;
+      return prefs.pinned;
     } else if (typeof this.config.pinned === 'boolean') {
       // use default from config if defined
       return this.config.pinned;
@@ -84,8 +118,32 @@ export class SidekickPlugin {
   }
 
   /**
+   * Is this plugin a container?
+   * @returns {boolean} True if the plugin is a container, else false
+   */
+  isContainer() {
+    return Object.keys(this.children).length > 0;
+  }
+
+  /**
+   * Is this plugin a child of another plugin?
+   * @returns {boolean} True if the plugin is a child, else false
+   */
+  isChild() {
+    return !!this.config.container;
+  }
+
+  /**
+   * Returns the parent plugin ID.
+   * @returns {string} The parent plugin ID
+   */
+  getContainerId() {
+    return this.config.container;
+  }
+
+  /**
    * Adds a plugin to this plugin's children.
-   * @param {SidekickPlugin} plugin The plugin to add
+   * @param {Plugin} plugin The plugin to add
    */
   append(plugin) {
     this.children[plugin.id] = plugin;
@@ -93,13 +151,12 @@ export class SidekickPlugin {
 
   /**
    * Executes the plugin's button action.
-   * @private
    * @param {Event} evt The event object
    */
   async onButtonClick(evt) {
     const { config, id } = this;
-    await config.appStore.validateSession();
-    config.appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, { id });
+    await appStore.validateSession();
+    appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, { id });
     config.button.action(evt);
   }
 
@@ -121,53 +178,58 @@ export class SidekickPlugin {
 
   /**
    * Returns the rendered plugin.
-   * @returns {TemplateResult} The rendered plugin
+   * @returns {string|TemplateResult} The rendered plugin
    */
   render() {
     const { config } = this;
     if (typeof config.callback === 'function') {
-      config.callback(config.appStore, config);
+      config.callback(appStore, config);
     }
 
     // special case: env-switcher
-    if (config.id === 'env-switcher') {
+    if (this.getId() === 'env-switcher') {
       return html`
         <env-switcher></env-switcher>
       `;
     }
 
-    const childConfigs = Object.values(this.children)
-      .filter((childPlugin) => childPlugin.checkCondition()
-        && childPlugin.isPinned())
-      .map((childPlugin) => childPlugin.config);
+    if (this.isPinned()) {
+      const childPlugins = Object.values(this.children)
+        .filter((childPlugin) => childPlugin.isVisible() && childPlugin.isPinned());
 
-    if (childConfigs.length > 0) {
+      if (this.isContainer()) {
+        if (childPlugins.length > 0) {
+          return html`
+            <action-bar-picker
+              class=${`plugin-container ${this.getId()}`}
+              label=${this.getButtonText()}
+              @change=${(e) => this.onChange(e)}
+              placement="top"
+            >${childPlugins.map((childPlugin) => childPlugin.render())}</action-bar-picker>
+          `;
+        } else {
+          return '';
+        }
+      } else if (this.isChild()) {
+        return html`
+          <sp-menu-item
+            .disabled=${!this.isEnabled()}
+            value=${this.getId()}
+            @click=${(evt) => this.onButtonClick(evt)}
+          >${this.getButtonText()}</sp-menu-item>
+        `;
+      }
+
       return html`
-        <action-bar-picker 
-          class=${`plugin-container ${config.id}`} 
-          label=${config.button.text} 
-          @change=${(e) => this.onChange(e)} 
-          placement="top"
-        >
-        ${childConfigs.map((childConfig) => html`
-            <sp-menu-item value=${childConfig.id}>${childConfig.button.text}</sp-menu-item>
-          `)}
-        </action-bar-picker>
+        <sp-action-button
+          class=${this.getId()}
+          .disabled=${!this.isEnabled()}
+          quiet
+          @click=${(evt) => this.onButtonClick(evt)}
+        >${this.getButtonText()}</sp-action-button>
       `;
     }
 
-    const isEnabled = typeof config.button?.isEnabled === 'function'
-      ? config.button.isEnabled : () => true;
-
-    return html`
-      <sp-action-button 
-        class=${config.id} 
-        .disabled=${!isEnabled(config.appStore)} 
-        quiet 
-        @click=${(evt) => this.onButtonClick(evt)}
-      >
-          ${config.button.text}
-      </sp-action-button>
-    `;
+    return '';
   }
 }

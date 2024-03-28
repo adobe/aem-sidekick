@@ -22,7 +22,7 @@
  */
 
 import { MODALS } from '../../constants.js';
-import { SidekickPlugin } from '../../components/plugin/plugin.js';
+import { Plugin } from '../../components/plugin/plugin.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -35,10 +35,10 @@ import { SidekickPlugin } from '../../components/plugin/plugin.js';
 /**
  * Creates the preview plugin
  * @param {AppStore} appStore The app store
- * @returns {SidekickPlugin} The preview plugin
+ * @returns {Plugin} The preview plugin
  */
 export function createPreviewPlugin(appStore) {
-  return new SidekickPlugin({
+  return new Plugin({
     id: 'edit-preview',
     condition: (store) => store.isEditor(),
     button: {
@@ -112,6 +112,5 @@ export function createPreviewPlugin(appStore) {
         }, { once: true });
       }
     },
-    appStore,
   });
 }

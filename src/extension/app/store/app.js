@@ -24,11 +24,13 @@ import { EventBus } from '../utils/event-bus.js';
 import {
   ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS, RESTRICTED_PATHS,
 } from '../constants.js';
+// eslint-disable-next-line import/no-cycle
+import { Plugin } from '../components/plugin/plugin.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
-import { SidekickPlugin } from '../components/plugin/plugin.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
 import { ToastContainer } from '../components/toast/toast-container.js';
+import { getConfig, setConfig } from '../../config.js';
 
 /**
  * The sidekick configuration object type
@@ -102,14 +104,20 @@ export class AppStore {
   languageDict;
 
   /**
+   * User preferences for plugins
+   * @type {Object}
+   */
+  @observable accessor pluginPrefs;
+
+  /**
    * Dictionary of language keys
-   * @type {Object.<string, SidekickPlugin>}
+   * @type {Object.<string, Plugin>}
    */
   @observable accessor corePlugins;
 
   /**
    * Dictionary of language keys
-   * @type {Object.<string, SidekickPlugin>}
+   * @type {Object.<string, Plugin>}
    */
   @observable accessor customPlugins;
 
@@ -144,6 +152,8 @@ export class AppStore {
       this.languageDict = await fetchLanguageDict(this.siteStore, 'en');
     }
 
+    await this.initSettings();
+
     this.setupPlugins();
 
     this.fetchStatus();
@@ -166,6 +176,42 @@ export class AppStore {
     this.initialized = true;
   }
 
+  @action
+  async initSettings() {
+    this.pluginPrefs = await getConfig('sync', 'pluginPrefs');
+  }
+
+  /**
+   * Returns the plugin preferences.
+   * @param {string} id The plugin ID
+   * @returns {Object} The plugin preferences
+   */
+  getPluginPrefs(id) {
+    if (this.pluginPrefs) {
+      const env = this.getEnv();
+      if (this.pluginPrefs[env]) {
+        return this.pluginPrefs[env][id] || {};
+      }
+    }
+    return {};
+  }
+
+  /**
+   * Updates the plugin preferences.
+   * @param {string} id The plugin ID
+   * @param {Object} prefs The plugin preferences
+   */
+  async setPluginPrefs(id, prefs) {
+    const pluginPrefs = this.pluginPrefs || {};
+    const env = this.getEnv();
+    if (!pluginPrefs[env]) {
+      pluginPrefs[env] = {};
+    }
+    pluginPrefs[env][id] = prefs;
+    await setConfig('sync', { pluginPrefs });
+    this.pluginPrefs = pluginPrefs;
+  }
+
   /**
    * Sets up the plugins in a single call
    */
@@ -182,7 +228,7 @@ export class AppStore {
     this.corePlugins = {};
 
     if (this.siteStore.ready && this.siteStore.authorized) {
-      const envPlugin = pluginFactory.createEnvPlugin(this);
+      const envPlugin = pluginFactory.createEnvPlugin();
       const previewPlugin = pluginFactory.createPreviewPlugin(this);
       const reloadPlugin = pluginFactory.createReloadPlugin(this);
       const deletePlugin = pluginFactory.createDeletePlugin(this);
@@ -301,7 +347,7 @@ export class AppStore {
             corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
           } else {
             // add custom plugin
-            const customPlugin = new SidekickPlugin(plugin);
+            const customPlugin = new Plugin(plugin);
             if (plugin.container) {
               this.customPlugins[plugin.container]?.append(customPlugin);
             } else {
