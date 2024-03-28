@@ -137,7 +137,7 @@ export class Plugin {
    * Returns the parent plugin ID.
    * @returns {string} The parent plugin ID
    */
-  getParentId() {
+  getContainerId() {
     return this.config.container;
   }
 

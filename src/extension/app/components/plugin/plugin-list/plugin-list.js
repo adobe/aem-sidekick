@@ -145,7 +145,7 @@ export class PluginList extends LitElement {
     let parentPluginText = '';
     if (plugin.isChild()) {
       parentPluginText = this.visiblePlugins
-        .find((p) => p.getId() === plugin.getParentId())
+        .find((p) => p.getId() === plugin.getContainerId())
         ?.getButtonText();
     }
     const toggleAction = (e) => this.togglePlugin(plugin, e);
