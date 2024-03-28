@@ -86,9 +86,10 @@ export const spectrum2 = css`
     --spectrum2-small-border-radius: 4px;
     --spectrum2-default-border-radius: 8px;
     --spectrum2-medium-border-radius: 10px;
-    --spectrum2-large-border-radius: 16px;
+    --spectrum2-large-border-radius: 12px;
+    --spectrum2-xlarge-border-radius: 16px;
     --spectrum2-form-input-border-radius: var(--spectrum2-medium-border-radius);
-    --spectrum2-dialog-border-radius: var(--spectrum2-large-border-radius);
+    --spectrum2-dialog-border-radius: var(--spectrum2-xlarge-border-radius);
     --spectrum2-sidekick-border-radius: var(--spectrum2-large-border-radius);
     
     --spectrum2-sidekick-background: var(--sidekick-background-dark);
