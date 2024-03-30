@@ -10,7 +10,9 @@
  * governing permissions and limitations under the License.
  */
 
-import { customElement, property, query } from 'lit/decorators.js';
+import {
+  customElement, property, query, queryAll,
+} from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { html, LitElement } from 'lit';
 import { appStore } from '../../../store/app.js';
@@ -52,11 +54,18 @@ export class PluginList extends LitElement {
   listedPlugins = [];
 
   /**
+   * The menu items.
+   * @type {NodeListOf<HTMLElement>}
+   */
+  @queryAll('sp-menu-item')
+  accessor menuItems;
+
+  /**
    * The filter field.
    * @type {HTMLInputElement}
    */
-  @query('sp-menu-item')
-  accessor firstMenuItem;
+  @query('#plugin-list-filter')
+  accessor filterField;
 
   /**
    * The filter text.
@@ -89,9 +98,7 @@ export class PluginList extends LitElement {
   async firstUpdated() {
     // a timeout is needed here to enable keyboard access
     window.setTimeout(async () => {
-      const menuItem = await this.firstMenuItem;
-      menuItem.focus();
-      menuItem.setAttribute('focused', 'true');
+      this.focusFirstMenuItem();
     }, 100);
   }
 
@@ -179,6 +186,18 @@ export class PluginList extends LitElement {
   }
 
   /**
+   * Places the focus on the first available menu item.
+   */
+  focusFirstMenuItem() {
+    const itemToFocus = [...this.menuItems]
+      .find((child) => !child.hasAttribute('disabled'));
+    if (itemToFocus) {
+      itemToFocus.focus();
+      itemToFocus.setAttribute('focused', 'true');
+    }
+  }
+
+  /**
    * Render the filter field.
    * @returns {TemplateResult} The filter field
    */
@@ -188,14 +207,22 @@ export class PluginList extends LitElement {
     };
     const filterPlaceholder = appStore.i18n('plugins_filter');
 
+    const arrowDownListener = (e) => {
+      e.preventDefault();
+      if (e.key === 'ArrowDown') {
+        this.focusFirstMenuItem();
+      }
+    };
+
     return html`
     <div class="filter-container">
       <sp-textfield
         quiet
         size="xl"
         placeholder="${filterPlaceholder}"
-        id="plugin-filter"
+        id="plugin-list-filter"
         @input=${filterAction}
+        @keyup=${arrowDownListener}
       ></sp-textfield>
     </div>
     `;
