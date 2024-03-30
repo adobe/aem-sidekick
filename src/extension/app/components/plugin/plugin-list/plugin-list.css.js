@@ -75,6 +75,20 @@ export const style = css`
     border-color: transparent;
   }
 
+  sp-menu-item {
+    padding-top: 2px;
+  }
+
+  sp-menu-item [slot="icon"] {
+    margin-top: 6px;
+  }
+
+  sp-menu-item[focused] {
+    box-shadow: none;
+    background-color: var(--spectrum-global-color-gray-200);
+    border-radius: var(--spectrum2-default-border-radius);
+  }
+
   .keyboard-hints-container {
     display: flex;
     flex-direction: row;
