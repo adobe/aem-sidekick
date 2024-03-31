@@ -80,9 +80,8 @@ export const style = css`
     border: 1px solid var(--spectrum2-preview-border-open);
   }
 
-  :host(.env-preview[disabled]) #button{
-    background-color: transparent;
-    border: 1px solid var(--spectrum2-preview-border-default);
+  :host(.env-preview[disabled]) #button {
+    opacity: 0.48;
   }
 
   :host(.env-preview[disabled]) #button #label,
@@ -113,8 +112,7 @@ export const style = css`
 
   :host(.env-live[disabled]) #button,
   :host(.env-prod[disabled]) #button {
-    background-color: transparent;
-    border: 1px solid var(--spectrum2-live-border-default);
+    opacity: 0.48;
   }
 
   :host(.env-live[disabled]) #button #label,
