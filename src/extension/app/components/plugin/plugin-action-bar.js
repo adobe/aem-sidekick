@@ -101,9 +101,9 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   /**
-   * Toggles the plugin list dialog.
+   * Toggles the plugin list modal.
    */
-  togglePluginListDialog() {
+  togglePluginListModal() {
     if (this.modalContainer) {
       this.removeModalContainer();
     } else {
@@ -124,7 +124,7 @@ export class PluginActionBar extends MobxLitElement {
         class="plugin-list"
         label="${appStore.i18n('plugins_manage')}"
         .disabled=${!appStore.status?.webPath}
-        @click=${this.togglePluginListDialog}>
+        @click=${this.togglePluginListModal}>
         <sp-icon slot="icon" size="l">
           ${ICONS.PLUGINS}
         </sp-icon>
