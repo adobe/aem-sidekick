@@ -55,7 +55,7 @@ describe('Plugin action bar', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(sidekick);
+    // document.body.removeChild(sidekick);
     fetchMock.reset();
     restoreEnvironment(document);
   });
@@ -75,7 +75,7 @@ describe('Plugin action bar', () => {
     expect([...menuButtons].length).to.equal(environments.length);
   }
 
-  function expectPinnedPlugins(pluginIds) {
+  function expectInActionBar(pluginIds) {
     const actionGroup = recursiveQuery(sidekick, 'sp-action-group:first-of-type');
     const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, action-bar-picker');
 
@@ -85,10 +85,15 @@ describe('Plugin action bar', () => {
     ).to.deep.equal(pluginIds);
   }
 
-  async function expectPluginList(pluginIds) {
+  function togglePluginList() {
     // open plugin list
     const pluginList = recursiveQuery(sidekick, '.plugin-list');
     pluginList.click();
+  }
+
+  async function expectInPluginList(pluginIds) {
+    // open plugin list
+    togglePluginList();
 
     // wait for modal and retrieve plugins
     await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
@@ -109,7 +114,7 @@ describe('Plugin action bar', () => {
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'reload',
         'publish',
@@ -129,7 +134,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
         'asset-library',
@@ -155,7 +160,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
       ]);
@@ -173,7 +178,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'publish',
       ]);
@@ -191,7 +196,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'publish',
       ]);
@@ -209,7 +214,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
       ]);
 
@@ -229,7 +234,7 @@ describe('Plugin action bar', () => {
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
       expectEnvPlugin(['dev', 'edit', 'preview', 'prod']);
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'reload',
         'publish',
@@ -248,7 +253,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
       ]);
@@ -268,7 +273,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
       ]);
@@ -288,7 +293,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'reload',
         'publish',
@@ -325,7 +330,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'reload',
         'publish',
@@ -363,7 +368,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
         'asset-library',
@@ -395,7 +400,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectPinnedPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
         'asset-library',
@@ -415,8 +420,8 @@ describe('Plugin action bar', () => {
     });
   });
 
-  describe('renders correct plugins in plugin list', () => {
-    it('isPreview', async () => {
+  describe('plugin list', () => {
+    it('opens and closes plugin list', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();
       mockHelixEnvironment(document, 'preview');
@@ -426,7 +431,28 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      await expectPluginList([
+      // open plugin list
+      togglePluginList();
+      await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
+      const dialogWrapper = recursiveQuery(sidekick, 'sp-dialog-wrapper');
+      expect(dialogWrapper.className).to.contain('plugin-list');
+
+      // close plugion list
+      togglePluginList();
+      expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
+    });
+
+    it('isPreview: renders correct plugins in plugin list', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      await expectInPluginList([
         'reload',
         'delete',
         'publish',
@@ -434,7 +460,7 @@ describe('Plugin action bar', () => {
       ]);
     });
 
-    it('isLive', async () => {
+    it('isLive: renders correct plugins in plugin list', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();
       mockHelixEnvironment(document, 'live');
@@ -444,13 +470,13 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      await expectPluginList([
+      await expectInPluginList([
         'publish',
         'unpublish',
       ]);
     });
 
-    it('isProd', async () => {
+    it('isProd: renders correct plugins in plugin list', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();
       mockHelixEnvironment(document, 'prod');
@@ -460,7 +486,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      await expectPluginList([
+      await expectInPluginList([
         'publish',
         'unpublish',
       ]);
