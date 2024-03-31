@@ -98,7 +98,8 @@ export class PluginList extends LitElement {
   async firstUpdated() {
     // a timeout is needed here to enable keyboard access
     window.setTimeout(async () => {
-      this.focusFirstMenuItem();
+      const filterField = await this.filterField;
+      filterField.focus();
     }, 100);
   }
 
