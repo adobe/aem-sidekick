@@ -39,7 +39,9 @@ const TEST_CHILD_CONFIG = {
   },
 };
 
-describe('SidekickPlugin', () => {
+describe('Plugin', () => {
+  const sandbox = sinon.createSandbox();
+
   it('creates plugin from config', async () => {
     const plugin = new Plugin(TEST_CONFIG);
     expect(plugin.config).to.deep.equal(TEST_CONFIG);
@@ -87,7 +89,6 @@ describe('SidekickPlugin', () => {
   });
 
   it('pinned state from user prefs supersedes config', async () => {
-    const sandbox = sinon.createSandbox();
     const plugin = new Plugin({
       ...TEST_CONFIG,
       pinned: false,
