@@ -1239,7 +1239,7 @@ describe('Test App Store', () => {
       expect(iframe.getAttribute('allow')).to.equal('clipboard-write *');
     });
 
-    it.skip('removes the view and resets siblings display on receiving a valid hlx-close-view message', async () => {
+    it('removes the view and resets siblings display on receiving a valid hlx-close-view message', async () => {
       mockFetchConfigWithoutPluginsJSONSuccess();
       const addEventListenerStub = sinon.stub(window, 'addEventListener');
 
