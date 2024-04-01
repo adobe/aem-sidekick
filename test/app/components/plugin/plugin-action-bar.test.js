@@ -13,7 +13,7 @@
 
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
-import { expect, waitUntil } from '@open-wc/testing';
+import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import sinon from 'sinon';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
@@ -49,15 +49,17 @@ import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.j
 window.chrome = chromeMock;
 
 describe('Plugin action bar', () => {
+  const sandbox = sinon.createSandbox();
   let sidekick;
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
   });
 
   afterEach(() => {
-    // document.body.removeChild(sidekick);
+    document.body.removeChild(sidekick);
     fetchMock.reset();
     restoreEnvironment(document);
+    sandbox.restore();
   });
 
   function expectEnvPlugin(environments) {
@@ -308,9 +310,9 @@ describe('Plugin action bar', () => {
       const actionFunction = async () => Promise.resolve();
 
       // Create a spy for the action function
-      const actionSpy = sinon.spy(actionFunction);
+      const actionSpy = sandbox.spy(actionFunction);
 
-      const stub = sinon.stub(pluginFactory, 'createPublishPlugin').returns(new Plugin({
+      const stub = sandbox.stub(pluginFactory, 'createPublishPlugin').returns(new Plugin({
         id: 'publish',
         condition: () => true,
         button: {
@@ -358,7 +360,7 @@ describe('Plugin action bar', () => {
     });
 
     it('custom container plugin', async () => {
-      mockSharepointEditorDocFetchStatusSuccess();
+      const fireEventStub = sandbox.stub(appStore, 'fireEvent');
       mockSharepointDirectoryFetchStatusSuccess();
       mockFetchConfigWithPluginsJSONSuccess();
       mockEditorAdminEnvironment(document, 'editor');
@@ -381,6 +383,13 @@ describe('Plugin action bar', () => {
 
       expect([...plugins].length).to.equal(2);
       expect(plugins.values().next().value.textContent).to.equal('Tag Selector');
+
+      plugins.values().next().value.click();
+      await aTimeout(100);
+      expect(fireEventStub.calledWith(
+        EXTERNAL_EVENTS.PLUGIN_USED,
+        { id: 'tag-selector' },
+      )).to.be.true;
     });
 
     it('clicks custom plugin', async () => {
@@ -389,9 +398,9 @@ describe('Plugin action bar', () => {
       mockFetchConfigWithPluginsJSONSuccess();
       mockEditorAdminEnvironment(document, 'editor');
 
-      const validateStub = sinon.stub(appStore, 'validateSession').resolves();
-      const openStub = sinon.stub(window, 'open');
-      const pluginUsedEventSpy = sinon.spy();
+      const validateStub = sandbox.stub(appStore, 'validateSession').resolves();
+      const openStub = sandbox.stub(window, 'open');
+      const pluginUsedEventSpy = sandbox.spy();
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
