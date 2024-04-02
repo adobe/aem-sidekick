@@ -41,6 +41,7 @@ async function clickDeletePlugin(sidekick) {
 
   // open plugin list
   const pluginList = recursiveQuery(sidekick, '.plugin-list');
+  await waitUntil(() => pluginList.getAttribute('disabled') === null, 'pluginList is not disabled', { timeout: 3000 });
   pluginList.click();
 
   await waitUntil(() => recursiveQuery(sidekick, 'modal-container'), 'modal container never appeared', { timeout: 3000 });
