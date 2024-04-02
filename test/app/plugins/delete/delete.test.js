@@ -41,15 +41,15 @@ async function clickDeletePlugin(sidekick) {
 
   // open plugin list
   const pluginList = recursiveQuery(sidekick, '.plugin-list');
-  await waitUntil(() => pluginList.getAttribute('disabled') === null, 'pluginList is not disabled', { timeout: 3000 });
+  await waitUntil(() => pluginList.getAttribute('disabled') === null, 'pluginList is not disabled');
   pluginList.click();
 
-  await waitUntil(() => recursiveQuery(sidekick, 'modal-container'), 'modal container never appeared', { timeout: 3000 });
+  await waitUntil(() => recursiveQuery(sidekick, 'modal-container'), 'modal container never appeared');
   const modalContainer = recursiveQuery(sidekick, 'modal-container');
   await waitUntil(() => recursiveQuery(modalContainer, '.delete'));
   const deletePlugin = recursiveQuery(modalContainer, '.delete');
   expect(deletePlugin.textContent.trim()).to.equal('Delete');
-  await waitUntil(() => deletePlugin.getAttribute('disabled') === null, 'delete plugin is not disabled', { timeout: 3000 });
+  await waitUntil(() => deletePlugin.getAttribute('disabled') === null, 'delete plugin is not disabled');
   deletePlugin.click();
 
   await aTimeout(200);
@@ -147,7 +147,7 @@ describe('Delete plugin', () => {
         expect(loadPageStub.calledWith(
           `${getDefaultHelixEnviromentLocations(HelixMockContentType.DOC, 'hlx').preview}/`,
         )).to.be.true;
-      }).timeout(20000);
+      });
 
       it('refuses to delete if user unauthenticated and source file still exists', async () => {
         mockFetchStatusSuccess(
