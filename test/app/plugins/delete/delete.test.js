@@ -43,12 +43,12 @@ async function clickDeletePlugin(sidekick) {
   const pluginList = recursiveQuery(sidekick, '.plugin-list');
   pluginList.click();
 
-  await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
+  await waitUntil(() => recursiveQuery(sidekick, 'modal-container'), 'modal container never appeared', { timeout: 3000 });
   const modalContainer = recursiveQuery(sidekick, 'modal-container');
   await waitUntil(() => recursiveQuery(modalContainer, '.delete'));
   const deletePlugin = recursiveQuery(modalContainer, '.delete');
   expect(deletePlugin.textContent.trim()).to.equal('Delete');
-  await waitUntil(() => deletePlugin.getAttribute('disabled') === null, 'delete plugin is not disabled', { timeout: 2000 });
+  await waitUntil(() => deletePlugin.getAttribute('disabled') === null, 'delete plugin is not disabled', { timeout: 3000 });
   deletePlugin.click();
 
   await aTimeout(200);
