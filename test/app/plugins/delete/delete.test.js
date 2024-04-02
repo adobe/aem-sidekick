@@ -110,7 +110,9 @@ describe('Delete plugin', () => {
         sandbox.restore();
       });
 
-      it('asks for user confirmation and redirects to the site root', async () => {
+      it(`(${contentType}) asks for user confirmation and redirects to the site root`, async () => {
+        // @ts-ignore
+        sandbox.stub(appStore, 'showView').returns();
         mockFetchStatusSuccess(
           {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
@@ -146,7 +148,7 @@ describe('Delete plugin', () => {
         )).to.be.true;
       });
 
-      it('refuses to delete if user unauthenticated and source file still exists', async () => {
+      it(`(${contentType}) refuses to delete if user unauthenticated and source file still exists`, async () => {
         mockFetchStatusSuccess(
           {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
@@ -167,7 +169,7 @@ describe('Delete plugin', () => {
         expect(showToastSpy.called).to.be.true;
       });
 
-      it('allows authenticated user to delete if source file still exists', async () => {
+      it(`(${contentType}) allows authenticated user to delete if source file still exists`, async () => {
         mockFetchStatusSuccess(
           {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
@@ -198,7 +200,7 @@ describe('Delete plugin', () => {
         await waitUntil(() => deleteStub.calledOnce === true);
       });
 
-      it('handles server failure', async () => {
+      it(`(${contentType}) handles server failure`, async () => {
         mockFetchStatusSuccess(
           {
             // source document is not found
