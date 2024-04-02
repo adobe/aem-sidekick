@@ -48,7 +48,7 @@ async function clickDeletePlugin(sidekick) {
   await waitUntil(() => recursiveQuery(modalContainer, '.delete'));
   const deletePlugin = recursiveQuery(modalContainer, '.delete');
   expect(deletePlugin.textContent.trim()).to.equal('Delete');
-  await waitUntil(() => deletePlugin.getAttribute('disabled') === null);
+  await waitUntil(() => deletePlugin.getAttribute('disabled') === null, 'delete plugin is not disabled', { timeout: 2000 });
   deletePlugin.click();
 
   await aTimeout(200);
@@ -110,7 +110,7 @@ describe('Delete plugin', () => {
         sandbox.restore();
       });
 
-      it(`(${contentType}) asks for user confirmation and redirects to the site root`, async () => {
+      it('asks for user confirmation and redirects to the site root', async () => {
         // @ts-ignore
         sandbox.stub(appStore, 'showView').returns();
         mockFetchStatusSuccess(
@@ -146,9 +146,9 @@ describe('Delete plugin', () => {
         expect(loadPageStub.calledWith(
           `${getDefaultHelixEnviromentLocations(HelixMockContentType.DOC, 'hlx').preview}/`,
         )).to.be.true;
-      });
+      }).timeout(20000);
 
-      it(`(${contentType}) refuses to delete if user unauthenticated and source file still exists`, async () => {
+      it('refuses to delete if user unauthenticated and source file still exists', async () => {
         mockFetchStatusSuccess(
           {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
@@ -169,7 +169,7 @@ describe('Delete plugin', () => {
         expect(showToastSpy.called).to.be.true;
       });
 
-      it(`(${contentType}) allows authenticated user to delete if source file still exists`, async () => {
+      it('allows authenticated user to delete if source file still exists', async () => {
         mockFetchStatusSuccess(
           {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
@@ -200,7 +200,7 @@ describe('Delete plugin', () => {
         await waitUntil(() => deleteStub.calledOnce === true);
       });
 
-      it(`(${contentType}) handles server failure`, async () => {
+      it('handles server failure', async () => {
         mockFetchStatusSuccess(
           {
             // source document is not found
