@@ -1203,15 +1203,17 @@ describe('Test App Store', () => {
 
   describe('getViewOverlay', () => {
     let instance;
+    let sandbox;
 
     beforeEach(() => {
       instance = appStore;
+      sandbox = sinon.createSandbox();
       const shadowRoot = sidekickElement.attachShadow({ mode: 'open' });
       shadowRoot.appendChild(document.createElement('div'));
     });
 
     afterEach(() => {
-      sinon.restore();
+      sandbox.restore();
     });
 
     it('returns an existing view without creating a new one', async () => {
@@ -1241,7 +1243,7 @@ describe('Test App Store', () => {
 
     it('removes the view and resets siblings display on receiving a valid hlx-close-view message', async () => {
       mockFetchConfigWithoutPluginsJSONSuccess();
-      const addEventListenerStub = sinon.stub(window, 'addEventListener');
+      const addEventListenerStub = sandbox.stub(window, 'addEventListener');
 
       const sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -1262,7 +1264,7 @@ describe('Test App Store', () => {
       });
 
       // Trigger the event listener manually
-      const eventListenerCallback = addEventListenerStub.getCall(1).args[1];
+      const eventListenerCallback = addEventListenerStub.getCalls().find((call) => call.calledWith('message')).args[1];
       // @ts-ignore
       eventListenerCallback(messageEvent);
 
