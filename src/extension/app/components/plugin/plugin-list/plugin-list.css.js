@@ -71,7 +71,7 @@ export const style = css`
     position: absolute;
     color: currentColor;
     top: 0;
-    right: 0;
+    right: 2px;
     border-color: transparent;
   }
 
