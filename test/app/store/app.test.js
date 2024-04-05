@@ -102,7 +102,7 @@ describe('Test App Store', () => {
     expect(contextLoadedSpy.calledOnce).to.be.true;
     await testDefaultConfig();
 
-    expect(appStore.siteStore.plugins.length).to.eq(8);
+    expect(appStore.siteStore.plugins.length).to.eq(9);
     expect(appStore.siteStore.scriptUrl).to.eq('https://www.hlx.live/tools/sidekick/index.js');
     expect(appStore.siteStore.host).to.eq('custom-host.com');
     expect(appStore.siteStore.innerHost).to.eq('custom-preview-host.com');

@@ -57,6 +57,8 @@ export const defaultConfigJSONWithPlugins = {
       environments: ['edit'],
       url: 'https://main--aem-boilerplate--adobe.hlx.live/tools/sidekick/library.html',
       includePaths: ['**.docx**'],
+      passConfig: true,
+      passReferrer: true,
     },
     {
       id: 'tools',
@@ -84,7 +86,7 @@ export const defaultConfigJSONWithPlugins = {
       containerId: 'tools',
       title: 'Preflight',
       id: 'preflight',
-      environments: ['dev', 'preview', 'live'],
+      environments: ['edit', 'dev', 'preview', 'live'],
       event: 'preflight',
     },
     {
@@ -105,6 +107,11 @@ export const defaultConfigJSONWithPlugins = {
       environments: ['edit'],
       url: 'https://main--aem-boilerplate--adobe.hlx.page/tools/loc',
       isPalette: true,
+    },
+    {
+      // override core plugin
+      id: 'publish',
+      excludePaths: ['**/drafts/**'],
     },
   ],
 };

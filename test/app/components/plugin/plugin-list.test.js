@@ -86,9 +86,9 @@ describe('Plugin list', () => {
     const pluginList = await createPluginList(new AEMSidekick(defaultSidekickConfig));
 
     const plugins = [...recursiveQueryAll(pluginList, 'sp-menu-item')];
-    expect(plugins.length).to.equal(5);
+    expect(plugins.length).to.equal(6);
     const childPlugins = plugins.filter((p) => recursiveQuery(p, 'span.parent:not(:empty)'));
-    expect(childPlugins.length).to.equal(2);
+    expect(childPlugins.length).to.equal(3);
   });
 
   it('toggles plugin', async () => {
