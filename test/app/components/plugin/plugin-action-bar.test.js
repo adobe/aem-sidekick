@@ -55,11 +55,12 @@ describe('Plugin action bar', () => {
     mockFetchEnglishMessagesSuccess();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     document.body.removeChild(sidekick);
     fetchMock.reset();
     restoreEnvironment(document);
     sandbox.restore();
+    await aTimeout(100);
   });
 
   function expectEnvPlugin(environments) {
