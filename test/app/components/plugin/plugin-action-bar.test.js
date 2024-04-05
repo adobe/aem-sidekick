@@ -464,10 +464,27 @@ describe('Plugin action bar', () => {
       const dialogWrapper = recursiveQuery(sidekick, 'sp-dialog-wrapper');
       expect(dialogWrapper.className).to.contain('plugin-list');
 
-      // close plugion list
+      // close plugin list
       togglePluginList();
       expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
     });
+
+    it('esc closes plugin list', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      togglePluginList();
+      document.dispatchEvent(new KeyboardEvent('keyup', { key: 'X' }));
+      expect(recursiveQuery(sidekick, 'modal-container')).to.exist;
+      document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape' }));
+      expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
+    }).timeout(5000);
 
     it('isPreview: renders correct plugins in plugin list', async () => {
       mockFetchStatusSuccess();
