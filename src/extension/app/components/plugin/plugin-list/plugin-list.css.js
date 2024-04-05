@@ -92,7 +92,7 @@ export const style = css`
   .keyboard-hints-container {
     display: flex;
     flex-direction: row;
-    margin: 8px;
+    margin: 10px;
     font-size: smaller;
     color: var(--spectrum-global-color-gray-600);
   }
@@ -127,7 +127,7 @@ export const style = css`
   }
 
   .keyboard-hints-container sp-icon > svg {
-    width: 16px;
-    height: 16px;
+    width: 12px;
+    height: 12px;
   }
 `;
