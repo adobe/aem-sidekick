@@ -84,6 +84,7 @@ describe('Plugin list', () => {
     mockEditorAdminEnvironment(document, 'editor');
 
     const pluginList = await createPluginList(new AEMSidekick(defaultSidekickConfig));
+    await aTimeout(500);
 
     const plugins = [...recursiveQueryAll(pluginList, 'sp-menu-item')];
     expect(plugins.length).to.equal(6);
