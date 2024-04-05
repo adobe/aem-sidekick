@@ -44,7 +44,7 @@ async function createPluginList(sidekick) {
   const pluginList = new PluginList();
   document.body.append(pluginList);
 
-  await waitUntil(() => recursiveQuery(pluginList, 'sp-menu'));
+  await waitUntil(() => recursiveQuery(pluginList, 'sp-menu-item'));
   return pluginList;
 }
 
