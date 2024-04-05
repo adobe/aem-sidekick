@@ -55,7 +55,7 @@ describe('Plugin action bar', () => {
     mockFetchEnglishMessagesSuccess();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     document.body.removeChild(sidekick);
     fetchMock.reset();
     restoreEnvironment(document);
@@ -135,6 +135,7 @@ describe('Plugin action bar', () => {
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await aTimeout(500);
 
       expectInActionBar([
         'env-switcher',
@@ -381,7 +382,7 @@ describe('Plugin action bar', () => {
       const toolsPlugin = recursiveQuery(sidekick, 'action-bar-picker.tools');
       const plugins = recursiveQueryAll(toolsPlugin, 'sp-menu-item');
 
-      expect([...plugins].length).to.equal(2);
+      expect([...plugins].length).to.equal(3);
       expect(plugins.values().next().value.textContent).to.equal('Tag Selector');
 
       plugins.values().next().value.click();
@@ -398,14 +399,12 @@ describe('Plugin action bar', () => {
       mockFetchConfigWithPluginsJSONSuccess();
       mockEditorAdminEnvironment(document, 'editor');
 
-      const validateStub = sandbox.stub(appStore, 'validateSession').resolves();
-      const openStub = sandbox.stub(window, 'open');
-      const pluginUsedEventSpy = sandbox.spy();
+      sandbox.stub(appStore, 'validateSession').resolves();
+      const fireEventStub = sandbox.stub(appStore, 'fireEvent');
+      const openPageStub = sandbox.stub(appStore, 'openPage');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
-
-      sidekick.addEventListener(EXTERNAL_EVENTS.PLUGIN_USED, pluginUsedEventSpy);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
@@ -420,12 +419,31 @@ describe('Plugin action bar', () => {
       const libraryPlugin = recursiveQuery(sidekick, '.library');
       libraryPlugin.click();
 
-      await waitUntil(() => openStub.calledOnce);
-      expect(openStub.calledOnce).to.be.true;
-      expect(pluginUsedEventSpy.calledOnce).to.be.true;
+      await waitUntil(() => openPageStub.calledOnce);
+      expect(openPageStub.calledOnce).to.be.true;
+      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, { id: 'library' })).to.be.true;
 
-      openStub.restore();
-      validateStub.restore();
+      recursiveQuery(sidekick, '.tools').click();
+      const preflightPlugin = recursiveQuery(sidekick, '[value="preflight"]');
+      preflightPlugin.click();
+
+      await aTimeout(100);
+
+      expect(fireEventStub.calledWithMatch('custom:preflight')).to.be.true;
+      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, { id: 'preflight' })).to.be.true;
+    });
+
+    it.skip('overrides core plugin', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'preview', null, 'https://main--aem-boilerplate--adobe.aem.page/en/drafts/test');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expect(recursiveQuery(sidekick, '.publish')).to.equal(undefined);
     });
   });
 
@@ -446,10 +464,27 @@ describe('Plugin action bar', () => {
       const dialogWrapper = recursiveQuery(sidekick, 'sp-dialog-wrapper');
       expect(dialogWrapper.className).to.contain('plugin-list');
 
-      // close plugion list
+      // close plugin list
       togglePluginList();
       expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
     });
+
+    it('esc closes plugin list', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      togglePluginList();
+      document.dispatchEvent(new KeyboardEvent('keyup', { key: 'X' }));
+      expect(recursiveQuery(sidekick, 'modal-container')).to.exist;
+      document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape' }));
+      expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
+    }).timeout(5000);
 
     it('isPreview: renders correct plugins in plugin list', async () => {
       mockFetchStatusSuccess();
@@ -564,10 +599,14 @@ describe('Plugin action bar', () => {
       mockFetchStatusWithProfileSuccess();
       mockHelixEnvironment(document, 'preview');
 
+      const statusFetchedSpy = sandbox.spy();
+
       sidekick = new AEMSidekick(defaultSidekickConfig);
+      sidekick.addEventListener('statusfetched', statusFetchedSpy);
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+      await aTimeout(100);
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');

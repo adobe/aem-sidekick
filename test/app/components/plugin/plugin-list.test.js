@@ -44,7 +44,7 @@ async function createPluginList(sidekick) {
   const pluginList = new PluginList();
   document.body.append(pluginList);
 
-  await waitUntil(() => recursiveQuery(pluginList, 'sp-menu'));
+  await waitUntil(() => recursiveQuery(pluginList, 'sp-menu-item'));
   return pluginList;
 }
 
@@ -84,11 +84,12 @@ describe('Plugin list', () => {
     mockEditorAdminEnvironment(document, 'editor');
 
     const pluginList = await createPluginList(new AEMSidekick(defaultSidekickConfig));
+    await aTimeout(500);
 
     const plugins = [...recursiveQueryAll(pluginList, 'sp-menu-item')];
-    expect(plugins.length).to.equal(5);
+    expect(plugins.length).to.equal(6);
     const childPlugins = plugins.filter((p) => recursiveQuery(p, 'span.parent:not(:empty)'));
-    expect(childPlugins.length).to.equal(2);
+    expect(childPlugins.length).to.equal(3);
   });
 
   it('toggles plugin', async () => {

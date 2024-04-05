@@ -50,6 +50,12 @@ export class PluginActionBar extends MobxLitElement {
   modalContainer = null;
 
   /**
+   * The escape handler.
+   * @tupe {Function}
+   */
+  escapehandler;
+
+  /**
   * Are we ready to render?
   * @type {boolean}
   */
@@ -63,6 +69,7 @@ export class PluginActionBar extends MobxLitElement {
     super.connectedCallback();
 
     this.ready = true;
+    this.escapeHandler = this.createEscapeHandler();
 
     reaction(
       () => appStore.status,
@@ -93,11 +100,24 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   /**
+   * Creates an ESC handler to close the plugin list modal and deselect the toggle button.
+   */
+  createEscapeHandler() {
+    return ({ key }) => {
+      if (key === 'Escape') {
+        this.shadowRoot.querySelector('.plugin-list').removeAttribute('selected');
+        this.removeModalContainer();
+      }
+    };
+  }
+
+  /**
    * Removes the modal container.
    */
   removeModalContainer() {
     this.modalContainer.remove();
     this.modalContainer = null;
+    document.removeEventListener('keyup', this.escapeHandler);
   }
 
   /**
@@ -108,6 +128,7 @@ export class PluginActionBar extends MobxLitElement {
       this.removeModalContainer();
     } else {
       this.modalContainer = appStore.showModal({ type: MODALS.PLUGIN_LIST });
+      document.addEventListener('keyup', this.escapeHandler);
     }
   }
 

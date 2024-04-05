@@ -19,6 +19,10 @@ export const style = css`
     padding: 12px;
   }
 
+  action-bar sp-action-group:first-of-type {
+    flex-grow: 1;
+  }
+
   action-bar sp-action-group.not-authorized {
     padding: 0px;
   }

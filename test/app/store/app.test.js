@@ -102,7 +102,7 @@ describe('Test App Store', () => {
     expect(contextLoadedSpy.calledOnce).to.be.true;
     await testDefaultConfig();
 
-    expect(appStore.siteStore.plugins.length).to.eq(8);
+    expect(appStore.siteStore.plugins.length).to.eq(9);
     expect(appStore.siteStore.scriptUrl).to.eq('https://www.hlx.live/tools/sidekick/index.js');
     expect(appStore.siteStore.host).to.eq('custom-host.com');
     expect(appStore.siteStore.innerHost).to.eq('custom-preview-host.com');
@@ -1093,11 +1093,85 @@ describe('Test App Store', () => {
       fetchMock.restore();
     });
 
-    it.skip('sets and retrieves plugin preferences for an env', async () => {
-      let prefs;
+    it('sets plugin preferences for an env', async () => {
       mockFetchStatusSuccess();
       mockHelixEnvironment(document, 'preview');
       isPreviewStub.returns(true);
+
+      // no stored prefs
+      syncStorageGetStub.resolves({});
+      await instance.initSettings();
+
+      await instance.setPluginPrefs('plugin1', { test: 1 });
+      expect(syncStorageSetStub.called).is.true;
+      expect(instance.getPluginPrefs('plugin1').test).to.equal(1);
+
+      // stored prefs for different env
+      syncStorageGetStub.resolves({
+        pluginPrefs: {
+          live: {
+            plugin2: {
+              pinned: true,
+            },
+          },
+        },
+      });
+
+      await instance.setPluginPrefs('plugin2', { test: 1 });
+      expect(syncStorageSetStub.called).is.true;
+      expect(instance.getPluginPrefs('plugin2').test).to.equal(1);
+
+      // stored prefs for this env
+      syncStorageGetStub.resolves({
+        pluginPrefs: {
+          preview: {
+            plugin3: {
+              pinned: true,
+            },
+          },
+        },
+      });
+
+      await instance.setPluginPrefs('plugin3', { test: { foo: true } });
+      expect(syncStorageSetStub.called).is.true;
+      expect(instance.getPluginPrefs('plugin3').test).to.deep.equal({ foo: true });
+    });
+
+    it('retrieves plugin preferences for an env', async () => {
+      mockFetchStatusSuccess();
+      mockHelixEnvironment(document, 'preview');
+      isPreviewStub.returns(true);
+
+      // return empty object if no stored prefs yet
+      expect(instance.getPluginPrefs('foo')).to.deep.equal({});
+
+      // stored prefs for different env
+      syncStorageGetStub.resolves({
+        pluginPrefs: {
+          live: {
+            foo: {
+              pinned: true,
+            },
+          },
+        },
+      });
+      await instance.initSettings();
+      expect(instance.getPluginPrefs('foo')).to.deep.equal({});
+
+      // stored prefs for this env, but different plugin
+      syncStorageGetStub.resolves({
+        pluginPrefs: {
+          preview: {
+            bar: {
+              pinned: true,
+            },
+          },
+        },
+      });
+      await instance.initSettings();
+      expect(instance.getPluginPrefs('foo')).to.deep.equal({});
+
+      // stored prefs for this env and plugin
       syncStorageGetStub.resolves({
         pluginPrefs: {
           preview: {
@@ -1107,25 +1181,8 @@ describe('Test App Store', () => {
           },
         },
       });
-
-      // return empty object if no stored prefs yet
-      prefs = await instance.getPluginPrefs('foo');
-      expect(prefs).to.deep.equal({});
-
-      // load stored prefs
       await instance.initSettings();
-
-      // return stored prefs
-      prefs = await instance.getPluginPrefs('foo');
-      expect(prefs.pinned).is.true;
-
-      // change prefs
-      await instance.setPluginPrefs('foo', { pinned: false });
-      expect(syncStorageSetStub.called).is.true;
-
-      // return changed prefsq
-      prefs = await instance.getPluginPrefs('foo');
-      expect(prefs.pinned).is.false;
+      expect(instance.getPluginPrefs('foo').pinned).is.true;
     });
   });
 
