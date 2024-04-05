@@ -135,6 +135,7 @@ describe('Plugin action bar', () => {
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await aTimeout(500);
 
       expectInActionBar([
         'env-switcher',
