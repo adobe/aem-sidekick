@@ -60,7 +60,6 @@ describe('Plugin action bar', () => {
     fetchMock.reset();
     restoreEnvironment(document);
     sandbox.restore();
-    await aTimeout(100);
   });
 
   function expectEnvPlugin(environments) {
