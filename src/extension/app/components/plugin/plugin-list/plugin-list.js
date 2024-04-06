@@ -188,6 +188,7 @@ export class PluginList extends LitElement {
 
   /**
    * Places the focus on the first available menu item.
+   * @returns {HTMLElement} The first menu item
    */
   focusFirstMenuItem() {
     const itemToFocus = [...this.menuItems]
@@ -195,7 +196,9 @@ export class PluginList extends LitElement {
     if (itemToFocus) {
       itemToFocus.focus();
       itemToFocus.setAttribute('focused', 'true');
+      return itemToFocus;
     }
+    return null;
   }
 
   /**
@@ -210,8 +213,11 @@ export class PluginList extends LitElement {
 
     const arrowDownListener = (e) => {
       e.preventDefault();
+      e.stopPropagation();
       if (e.key === 'ArrowDown') {
         this.focusFirstMenuItem();
+      } else if (e.key === 'Enter') {
+        this.focusFirstMenuItem()?.click();
       }
     };
 

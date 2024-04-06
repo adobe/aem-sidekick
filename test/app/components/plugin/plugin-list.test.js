@@ -140,5 +140,17 @@ describe('Plugin list', () => {
     // does not move focus to first menu item
     filterField.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowDown' }));
     expect(plugins.filter((p) => p.getAttribute('focused')).length).to.equal(0);
+
+    // change filter
+    filterField.value = 'publish';
+    filterField.dispatchEvent(new Event('input')); // trigger filtering
+    await aTimeout(100);
+
+    const publishStub = sandbox.stub(appStore, 'publish');
+
+    // moves focus to first menu item and executes action
+    filterField.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter' }));
+    await aTimeout(100);
+    expect(publishStub.called).to.be.true;
   });
 });
