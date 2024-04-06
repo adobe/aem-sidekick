@@ -51,9 +51,9 @@ export class PluginActionBar extends MobxLitElement {
 
   /**
    * The escape handler.
-   * @tupe {Function}
+   * @type {EventListenerOrEventListenerObject}
    */
-  escapehandler;
+  escapeHandler;
 
   /**
   * Are we ready to render?
@@ -101,8 +101,12 @@ export class PluginActionBar extends MobxLitElement {
 
   /**
    * Creates an ESC handler to close the plugin list modal and deselect the toggle button.
+   * @returns {EventListenerOrEventListenerObject} The escape handler
    */
   createEscapeHandler() {
+    /**
+     * @param {KeyboardEvent} event The event
+     */
     return ({ key }) => {
       if (key === 'Escape') {
         this.shadowRoot.querySelector('.plugin-list').removeAttribute('selected');
