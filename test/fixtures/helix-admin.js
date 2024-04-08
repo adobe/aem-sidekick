@@ -105,6 +105,16 @@ export const defaultConfigJSONWithPlugins = {
   ],
 };
 
+export const defaultEnvJSON = {
+  version: 1,
+  prod: {
+    host: 'foo.bar',
+    routes: [],
+  },
+  contentSourceUrl: 'https://adobe.sharepoint.com/sites/foo/Shared%20Documents/root',
+  contentSourceType: 'onedrive',
+};
+
 /**
  * status request stubs
  */

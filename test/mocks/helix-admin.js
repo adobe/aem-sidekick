@@ -17,6 +17,7 @@ import fetchMock from 'fetch-mock/esm/client.js';
 import {
   defaultConfigJSON,
   defaultConfigJSONWithPlugins,
+  defaultEnvJSON,
   defaultSharepointStatusResponse,
   defaultGdriveStatusResponse,
   defaultDirectorySharepointStatusResponse,
@@ -54,6 +55,15 @@ export const mockFetchLocalConfigJSONSuccess = (overrides = {}) => fetchMock.get
     ...overrides,
   },
 });
+
+export const defaultEnvJSONUrl = 'https://admin.hlx.page/sidekick/adobe/aem-boilerplate/main/env.json';
+export const mockFetchEnvJSONSuccess = (overrides = {}) => fetchMock.get(defaultEnvJSONUrl, {
+  status: 200,
+  body: {
+    ...defaultEnvJSON,
+    ...overrides,
+  },
+}, { overwriteRoutes: true });
 
 export const defaultStatusUrl = 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=auto';
 export const mockFetchStatusSuccess = (overrides = {}, contentSource = 'sharepoint') => fetchMock.get(defaultStatusUrl, {
