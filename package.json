@@ -86,7 +86,7 @@
     "babel-plugin-istanbul": "6.1.1",
     "chokidar": "3.6.0",
     "codecov": "3.8.3",
-    "eslint": "8.57.0",
+    "eslint": "9.0.0",
     "eslint-plugin-mobx": "0.0.9",
     "fetch-mock": "9.11.0",
     "fs-extra": "11.2.0",
