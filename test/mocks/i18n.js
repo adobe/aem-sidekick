@@ -17,7 +17,7 @@ import fetchMock from 'fetch-mock/esm/client.js';
 
 import enMessages from '../../src/extension/_locales/en/messages.json' assert { type: 'json' };
 
-export const englishMessagesUrl = '/test/wtr/fixtures/_locales/en/messages.json';
+export const englishMessagesUrl = '/test/fixtures/_locales/en/messages.json';
 export const mockFetchEnglishMessagesSuccess = () => fetchMock.get(englishMessagesUrl, {
   status: 200,
   body: enMessages,
