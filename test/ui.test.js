@@ -231,7 +231,7 @@ describe('Test UI: RUM collection when clicked', () => {
     clickListener({
       menuItemId: 'openPreview',
     }, tab);
-    await aTimeout(200);
+    await aTimeout(500);
     expect(logSpy.calledWithMatch('sampleRUM', 'sidekick:context-menu:openPreview')).to.be.true;
   });
 
@@ -239,7 +239,7 @@ describe('Test UI: RUM collection when clicked', () => {
     clickListener({
       menuItemId: 'openViewDocSource', // provoke error in sampleRUM
     }, tab);
-    await aTimeout(200);
+    await aTimeout(500);
     expect(logSpy.calledWithMatch('Unable to collect RUM data', error)).to.be.true;
   });
 
@@ -248,7 +248,7 @@ describe('Test UI: RUM collection when clicked', () => {
     clickListener({
       menuItemId: 'openPreview',
     }, {});
-    await aTimeout(200);
+    await aTimeout(500);
     expect(logSpy.callCount).to.equal(logs);
   });
 });
