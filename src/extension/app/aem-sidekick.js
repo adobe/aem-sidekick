@@ -17,12 +17,13 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 import { customElement } from 'lit/decorators.js';
 import { log } from '../log.js';
 import { style } from './aem-sidekick.css.js';
+import { spectrum2 } from './spectrum-2.css.js';
 import { appStore } from './store/app.js';
 
 @customElement('aem-sidekick')
 export class AEMSidekick extends MobxLitElement {
   static get styles() {
-    return [style];
+    return [spectrum2, style];
   }
 
   constructor(config) {
@@ -36,13 +37,12 @@ export class AEMSidekick extends MobxLitElement {
   }
 
   render() {
-    return html`
+    return appStore.siteStore?.ready
+      ? html`
       <theme-wrapper>
         <plugin-action-bar></plugin-action-bar>
-        <toast-container></toast-container>
-        <modal-container></modal-container>
         <palette-container></palette-container>
       </theme-wrapper>
-    `;
+    ` : '';
   }
 }

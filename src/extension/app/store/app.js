@@ -22,9 +22,13 @@ import {
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
-  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS,
+  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS, RESTRICTED_PATHS,
 } from '../constants.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
+import { SidekickPlugin } from '../components/plugin/plugin.js';
+import { KeyboardListener } from '../utils/keyboard.js';
+import { ModalContainer } from '../components/modal/modal-container.js';
+import { ToastContainer } from '../components/toast/toast-container.js';
 
 /**
  * The sidekick configuration object type
@@ -50,6 +54,19 @@ import { pluginFactory } from '../plugins/plugin-factory.js';
  * @typedef {import('@Types').AdminResponse} AdminResponse
  */
 
+/**
+ * @typedef {import('@Types').Modal} Modal
+ */
+
+/**
+ * Enum for view types.
+ * @enum {number}
+ */
+export const VIEWS = {
+  DEFAULT: 0,
+  CUSTOM: 1,
+};
+
 export class AppStore {
   // eslint-disable-next-line no-undef
   @observable accessor initialized = false;
@@ -73,6 +90,12 @@ export class AppStore {
   @observable accessor status = {};
 
   /**
+   * Profile of the current user
+   * @type {Object}
+   */
+  @observable accessor profile;
+
+  /**
    * Dictionary of language keys
    * @type {Object}
    */
@@ -80,18 +103,25 @@ export class AppStore {
 
   /**
    * Dictionary of language keys
-   * @type {Object.<string, CorePlugin>}
+   * @type {Object.<string, SidekickPlugin>}
    */
   @observable accessor corePlugins;
 
   /**
    * Dictionary of language keys
-   * @type {Object.<string, CustomPlugin>}
+   * @type {Object.<string, SidekickPlugin>}
    */
   @observable accessor customPlugins;
 
+  /**
+   * Keyboards listener
+   * @type {KeyboardListener}
+   */
+  keyboardListener;
+
   constructor() {
     this.siteStore = new SiteStore(this);
+    this.keyboardListener = new KeyboardListener();
   }
 
   /**
@@ -114,8 +144,7 @@ export class AppStore {
       this.languageDict = await fetchLanguageDict(this.siteStore, 'en');
     }
 
-    this.setupCorePlugins();
-    this.setupCustomPlugins();
+    this.setupPlugins();
 
     this.fetchStatus();
 
@@ -125,6 +154,8 @@ export class AppStore {
       config: this.siteStore.toJSON(),
       location: this.location,
     });
+
+    this.showView();
   }
 
   /**
@@ -136,21 +167,35 @@ export class AppStore {
   }
 
   /**
+   * Sets up the plugins in a single call
+   */
+  setupPlugins() {
+    this.setupCorePlugins();
+    this.setupCustomPlugins();
+  }
+
+  /**
    * Sets up the core plugins.
    */
   @action
   setupCorePlugins() {
     this.corePlugins = {};
 
-    const envPlugin = pluginFactory.createEnvPlugin();
-    const previewPlugin = pluginFactory.createPreviewPlugin(this);
-    const reloadPlugin = pluginFactory.createReloadPlugin(this);
-    const publishPlugin = pluginFactory.createPublishPlugin(this);
+    if (this.siteStore.ready && this.siteStore.authorized) {
+      const envPlugin = pluginFactory.createEnvPlugin(this);
+      const previewPlugin = pluginFactory.createPreviewPlugin(this);
+      const reloadPlugin = pluginFactory.createReloadPlugin(this);
+      const deletePlugin = pluginFactory.createDeletePlugin(this);
+      const publishPlugin = pluginFactory.createPublishPlugin(this);
+      const unpublishPlugin = pluginFactory.createUnpublishPlugin(this);
 
-    this.corePlugins[envPlugin.id] = envPlugin;
-    this.corePlugins[previewPlugin.id] = previewPlugin;
-    this.corePlugins[reloadPlugin.id] = reloadPlugin;
-    this.corePlugins[publishPlugin.id] = publishPlugin;
+      this.corePlugins[envPlugin.id] = envPlugin;
+      this.corePlugins[previewPlugin.id] = previewPlugin;
+      this.corePlugins[reloadPlugin.id] = reloadPlugin;
+      this.corePlugins[deletePlugin.id] = deletePlugin;
+      this.corePlugins[publishPlugin.id] = publishPlugin;
+      this.corePlugins[unpublishPlugin.id] = unpublishPlugin;
+    }
   }
 
   /**
@@ -160,101 +205,111 @@ export class AppStore {
   setupCustomPlugins() {
     this.customPlugins = {};
 
-    const { location, siteStore: { lang, plugins, innerHost } = {} } = this;
-    if (plugins && Array.isArray(plugins)) {
-      plugins.forEach((cfg, i) => {
-        const {
-          id,
-          title,
-          titleI18n,
-          url,
-          passConfig,
-          passReferrer,
-          isPalette,
-          event: eventName,
-          environments,
-          excludePaths,
-          includePaths,
-          isContainer,
-          containerId,
-        } = cfg;
-        const condition = (appStore) => {
-          let excluded = false;
-          const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
-          if (excludePaths && Array.isArray(excludePaths)
-              && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
-            excluded = true;
-          }
-          if (includePaths && Array.isArray(includePaths)
-              && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
-            excluded = false;
-          }
-          if (excluded) {
-            // excluding plugin
-            return false;
-          }
-          if (!environments || environments.includes('any')) {
-            return true;
-          }
-          const envChecks = {
-            dev: appStore.isDev,
-            edit: appStore.isEditor,
-            preview: appStore.isPreview,
-            live: appStore.isLive,
-            prod: appStore.isProd,
+    if (this.siteStore.authorized) {
+      const { location, siteStore: { lang, plugins, innerHost } = {} } = this;
+      if (plugins && Array.isArray(plugins)) {
+        plugins.forEach((cfg, i) => {
+          const {
+            id = `custom-plugin-${i}`,
+            title = id,
+            titleI18n,
+            url,
+            pinned,
+            passConfig,
+            passReferrer,
+            isPalette,
+            event: eventName,
+            environments,
+            excludePaths,
+            includePaths,
+            isContainer,
+            containerId,
+          } = cfg;
+          const condition = (appStore) => {
+            let excluded = false;
+            const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
+            if (excludePaths && Array.isArray(excludePaths)
+                && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              excluded = true;
+            }
+            if (includePaths && Array.isArray(includePaths)
+                && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              excluded = false;
+            }
+            if (excluded) {
+              // excluding plugin
+              return false;
+            }
+            if (!environments || environments.includes('any')) {
+              return true;
+            }
+            const envChecks = {
+              dev: appStore.isDev,
+              edit: appStore.isEditor,
+              preview: appStore.isPreview,
+              live: appStore.isLive,
+              prod: appStore.isProd,
+            };
+            return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
           };
-          return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
-        };
-          // assemble plugin config
-        const plugin = {
-          custom: true,
-          id: id || `custom-plugin-${i}`,
-          condition,
-          button: {
-            text: (titleI18n && titleI18n[lang]) || title || '',
-            action: () => {
-              if (url) {
-                const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
-                if (passConfig) {
-                  target.searchParams.append('ref', this.siteStore.ref);
-                  target.searchParams.append('repo', this.siteStore.repo);
-                  target.searchParams.append('owner', this.siteStore.owner);
-                  if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
-                  if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+            // assemble plugin config
+          const plugin = {
+            custom: true,
+            id,
+            condition,
+            button: {
+              text: (titleI18n && titleI18n[lang]) || title,
+              action: () => {
+                if (url) {
+                  const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
+                  if (passConfig) {
+                    target.searchParams.append('ref', this.siteStore.ref);
+                    target.searchParams.append('repo', this.siteStore.repo);
+                    target.searchParams.append('owner', this.siteStore.owner);
+                    if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
+                    if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+                  }
+                  if (passReferrer) {
+                    target.searchParams.append('referrer', location.href);
+                  }
+                  if (isPalette) {
+                    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_PALETTE, {
+                      detail: {
+                        plugin: cfg,
+                      },
+                    }));
+                  } else {
+                    // open url in new window
+                    this.openPage(target.toString(), `hlx-sk-${id || `custom-plugin-${i}`}`);
+                  }
+                } else if (eventName) {
+                  // fire custom event
+                  this.fireEvent(`custom:${eventName}`);
                 }
-                if (passReferrer) {
-                  target.searchParams.append('referrer', location.href);
-                }
-                if (isPalette) {
-                  EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_PALETTE, {
-                    detail: {
-                      plugin: cfg,
-                    },
-                  }));
-                } else {
-                  // open url in new window
-                  window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
-                }
-              } else if (eventName) {
-                // fire custom event
-                this.fireEvent(`custom:${eventName}`);
-              }
+              },
+              isDropdown: isContainer,
             },
-            isDropdown: isContainer,
-          },
-          container: containerId,
-        };
-        // check default plugin
-        const defaultPlugin = this.corePlugins[plugin.id];
-        if (defaultPlugin) {
-          // extend default condition
-          const { condition: defaultCondition } = defaultPlugin;
-          defaultPlugin.condition = (s) => defaultCondition(s) && condition(s);
-        } else {
-          // add custom plugin
-          this.customPlugins[plugin.id] = plugin;
-        }
-      });
+            pinned,
+            container: containerId,
+            appStore: this,
+          };
+          // check if this overlaps with a core plugin, if so override the condition only
+          const corePlugin = this.corePlugins[plugin.id];
+          if (corePlugin) {
+            // extend default condition
+            const { condition: defaultCondition } = corePlugin.config;
+            corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
+          } else {
+            // add custom plugin
+            const customPlugin = new SidekickPlugin(plugin);
+            if (plugin.container) {
+              this.customPlugins[plugin.container]?.append(customPlugin);
+            } else {
+              this.customPlugins[plugin.id] = customPlugin;
+            }
+          }
+        });
+      }
     }
   }
 
@@ -450,6 +505,42 @@ export class AppStore {
   }
 
   /**
+   * Creates a modal and appends it to the sidekick.
+   * If a modal is already open, it will be replaced.
+   * @param {Modal} modal The modal to display
+   */
+  showModal(modal) {
+    const existingModal = this.sidekick?.shadowRoot?.querySelector('theme-wrapper').querySelector('modal-container');
+    if (existingModal) {
+      existingModal.remove();
+    }
+
+    const modalContainer = new ModalContainer(modal);
+    this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(modalContainer);
+
+    return modalContainer;
+  }
+
+  /*
+   * Returns the current environment or an empty string.
+   * @returns {string} the current environment
+   */
+  getEnv() {
+    return [
+      'isEditor',
+      'isPreview',
+      'isLive',
+      'isProd',
+      'isAdmin',
+      'isDev',
+    ]
+      .filter((method) => this[method]())
+      .map((method) => method.substring(2)) // cut off 'is'
+      .join('')
+      .toLowerCase();
+  }
+
+  /**
    * Displays a wait modal
    * @param {string} [message] The message to display
    */
@@ -457,31 +548,49 @@ export class AppStore {
     if (!message) {
       message = this.i18n('please_wait');
     }
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-      detail: {
-        type: MODALS.WAIT,
-        data: { message },
-      },
-    }));
+
+    return this.showModal({
+      type: MODALS.WAIT,
+      data: { message },
+    });
   }
 
   /**
    * Hides the modal
    */
   hideWait() {
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_MODAL));
+    EventBus.instance.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
+  }
+
+  /**
+   * Opens a new page. Abstracted for testing.
+   * @param {string} url The URL to open
+   * @param {string} [name] The window name (optional)
+   * @returns {Window} The window object
+   */
+  // istanbul ignore next 3
+  openPage(url, name) {
+    return window.open(url, name);
+  }
+
+  /**
+   * Navigates to the provided URL in the current window. Abstracted for testing.
+   * @param {string} url The URL to load
+   */
+  // istanbul ignore next 3
+  loadPage(url) {
+    window.location.href = url;
   }
 
   /**
    * Reloads the current page. Abstracted for testing.
+   * @param {boolean} [newTab] Open current page in a new tab
    */
   reloadPage(newTab) {
     if (newTab) {
-      // istanbul ignore next
-      window.open(window.location.href);
+      this.openPage(window.location.href);
     } else {
-      // istanbul ignore next
-      window.location.reload();
+      this.loadPage(window.location.href);
     }
   }
 
@@ -550,14 +659,55 @@ export class AppStore {
    * @param {string} [variant] The variant of the toast (optional)
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
-  showToast(message, variant = 'info', timeout = 2000) {
-    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.SHOW_TOAST, {
-      detail: {
-        message,
-        variant,
-        timeout,
-      },
-    }));
+  showToast(message, variant = 'info', timeout = 6000) {
+    const existingToast = this.sidekick?.shadowRoot?.querySelector('theme-wrapper').querySelector('toast-container');
+    if (existingToast) {
+      existingToast.remove();
+    }
+
+    const toastContainer = new ToastContainer({
+      message,
+      variant,
+      timeout,
+    });
+    this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(toastContainer);
+
+    return toastContainer;
+  }
+
+  /**
+   * Checks for configured views for the current resource.
+   * @private
+   * @param {number} viewType An optional view type (see {@link VIEWS})
+   * @param {string} [testPath] An optional test path (default: status.webPath)
+   * @returns {Object[]} The views
+   */
+  findViews(viewType, testPath) {
+    // find view based on resource path
+    if (!testPath) {
+      if (this.isProject()) {
+        const { pathname } = this.location;
+        testPath = pathname;
+      } else {
+        const { webPath } = this.status;
+        if (!webPath) {
+          return [];
+        }
+        testPath = webPath;
+      }
+    }
+
+    const scriptRoot = chrome.runtime.getURL('/');
+    const { views } = this.siteStore;
+    const defaultOnly = viewType === VIEWS.DEFAULT;
+    const customOnly = viewType === VIEWS.CUSTOM;
+    return views.filter(({
+      path,
+      viewer,
+    }) => globToRegExp(path).test(testPath)
+        && !RESTRICTED_PATHS.includes(testPath)
+        && (!defaultOnly || viewer.startsWith(scriptRoot))
+        && (!customOnly || !viewer.startsWith(scriptRoot)));
   }
 
   /**
@@ -723,37 +873,77 @@ export class AppStore {
         }, { once: true });
         this.fetchStatus();
       } else if (status.webPath.startsWith('/.helix/') && resp.error) {
-        // show detail message only in config update mode
-        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-          detail: {
-            type: MODALS.ERROR,
-            data: {
-              message: `${this.i18n('error_config_failure')}${resp.error}`,
-            },
+        this.showModal({
+          type: MODALS.ERROR,
+          data: {
+            message: `${this.i18n('error_config_failure')}${resp.error}`,
           },
-        }));
+        });
       } else {
         // eslint-disable-next-line no-console
         console.error(resp);
-
-        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-          detail: {
-            type: MODALS.ERROR,
-            data: {
-              message: this.i18n('error_preview_failure'),
-            },
+        this.showModal({
+          type: MODALS.ERROR,
+          data: {
+            message: this.i18n('error_preview_failure'),
           },
-        }));
+        });
       }
       return;
     }
     // handle special case /.helix/*
     if (status.webPath.startsWith('/.helix/')) {
       this.showToast(this.i18n('preview_config_success'), 'positive');
+      this.hideWait();
       return;
     }
     this.hideWait();
     this.switchEnv('preview');
+  }
+
+  /**
+   * Deletes the current resource from preview and unpublishes it if published.
+   * @fires Sidekick#deleted
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async delete() {
+    const { siteStore, status } = this;
+    const path = status.webPath;
+
+    // delete content only
+    if (!this.isContent()) {
+      return null;
+    }
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
+    try {
+      // delete preview
+      resp = await fetch(
+        getAdminUrl(siteStore, 'preview', path),
+        {
+          method: 'DELETE',
+          ...getAdminFetchOptions(),
+        },
+      );
+      // also unpublish if published
+      if (status.live && status.live.lastModified) {
+        await this.unpublish();
+      }
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('failed to delete', path, e);
+      resp.error = e.message;
+    }
+    return {
+      ok: resp.ok || false,
+      status: resp.status || 0,
+      error: (resp.headers && resp.headers.get('x-error')) || resp.error || '',
+      path,
+    };
   }
 
   /**
@@ -802,11 +992,136 @@ export class AppStore {
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('failed to publish', path, e);
+      console.log('failed to publish', path, e);
+      resp.error = e.message;
     }
     resp.path = path;
-    resp.error = (resp.headers && resp.headers.get('x-error')) || '';
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
     return resp;
+  }
+
+  /**
+   * Unpublishes the current page.
+   * @fires Sidekick#unpublished
+   * @returns {Promise<AdminResponse>} The response object
+   */
+  async unpublish() {
+    // unpublish content only
+    if (!this.isContent()) {
+      return null;
+    }
+    const { siteStore, status } = this;
+    const path = status.webPath;
+
+    /**
+     * @type {AdminResponse}
+     */
+    let resp = {};
+    try {
+      // delete live
+      resp = await fetch(
+        getAdminUrl(siteStore, 'live', path),
+        {
+          method: 'DELETE',
+          ...getAdminFetchOptions(),
+        },
+      );
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, path);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('failed to unpublish', path, e);
+      resp.error = e.message;
+    }
+    resp.path = path;
+    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
+    return resp;
+  }
+
+  /**
+   * Creates and/or returns a view overlay.
+   * @private
+   * @param {boolean} [create] Create the view if none exists
+   * @returns {Element} The view overlay
+   */
+  getViewOverlay(create) {
+    let view = this.sidekick.shadowRoot.querySelector('.hlx-sk-special-view');
+
+    if (create && !view) {
+      view = document.createElement('div');
+      view.classList.add('hlx-sk-special-view');
+      this.sidekick.shadowRoot.append(view);
+
+      const iframe = document.createElement('iframe');
+      iframe.setAttribute('class', 'container');
+      iframe.setAttribute('allow', 'clipboard-write *');
+      view.appendChild(iframe);
+
+      // listen for messages from the view
+      window.addEventListener('message', (event) => {
+        // only accept messages from the extension
+        if (event.origin === `chrome-extension://${chrome.runtime.id}`) {
+          const { data } = event;
+          if (data.detail.event === 'hlx-close-view') {
+            view.remove();
+            [...this.sidekick.parentElement.children].forEach((el) => {
+              if (el !== this.sidekick) {
+                try {
+                  // @ts-ignore
+                  el.style.display = 'initial';
+                } catch (e) {
+                  // ignore
+                }
+              }
+            });
+          }
+        }
+      });
+    }
+    return view;
+  }
+
+  /**
+   * Shows the view.
+   * @private
+   */
+  async showView() {
+    if (!this.isProject()) {
+      return;
+    }
+    const {
+      location: {
+        origin,
+        href,
+        search,
+      },
+    } = this;
+    const searchParams = new URLSearchParams(search);
+    if (searchParams.get('path')) {
+      // custom view
+      return;
+    }
+    const [view] = this.findViews(VIEWS.DEFAULT);
+    if (view && !this.getViewOverlay()) {
+      const { viewer, title } = view;
+      if (viewer) {
+        const viewUrl = new URL(viewer, origin);
+        viewUrl.searchParams.set('url', href);
+        viewUrl.searchParams.set('title', title(this.sidekick));
+        const viewOverlay = this.getViewOverlay(true);
+        viewOverlay.querySelector('.container').setAttribute('src', viewUrl.toString());
+        // hide original content
+        [...this.sidekick.parentElement.children].forEach((el) => {
+          if (el !== this.sidekick) {
+            try {
+              // @ts-ignore
+              el.style.display = 'none';
+            } catch (e) {
+              // ignore
+            }
+          }
+        });
+      }
+    }
   }
 
   /**
@@ -836,7 +1151,10 @@ export class AppStore {
     if (!status.webPath) {
       // eslint-disable-next-line no-console
       console.log('not ready yet, trying again in a second ...');
-      window.setTimeout(() => this.switchEnv(targetEnv, open), 1000);
+      window.setTimeout(
+        // istanbul ignore next
+        () => this.switchEnv(targetEnv, open), 1000,
+      );
       return;
     }
     const envOrigin = targetEnv === 'dev' ? siteStore.devUrl.origin : `https://${envHost}`;
@@ -849,25 +1167,184 @@ export class AppStore {
       envUrl = status.edit && status.edit.url;
     }
 
-    // TODO: Setup custom views
-    // const [customView] = findViews(this, VIEWS.CUSTOM);
-    // if (customView) {
-    //   const customViewUrl = new URL(customView.viewer, envUrl);
-    //   customViewUrl.searchParams.set('path', status.webPath);
-    //   envUrl = customViewUrl;
-    // }
+    const [customView] = this.findViews(VIEWS.CUSTOM);
+    if (customView) {
+      const customViewUrl = new URL(customView.viewer, envUrl);
+      customViewUrl.searchParams.set('path', status.webPath);
+      envUrl = customViewUrl.href;
+    }
 
     // switch or open env
     if (open || this.isEditor()) {
-      window.open(envUrl, open
+      this.openPage(envUrl, open
         ? '' : `hlx-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
-      this.hideWait();
     } else {
-      window.location.href = envUrl;
+      this.loadPage(envUrl);
     }
     this.fireEvent(EXTERNAL_EVENTS.EVIRONMENT_SWITCHED, {
       sourceUrl: href,
       targetUrl: envUrl,
+    });
+    this.hideWait();
+  }
+
+  /**
+   * Retrieves the profile of the current user.
+   * @returns {Promise<Object | false>} The response object
+   */
+  async getProfile() {
+    try {
+      const url = getAdminUrl(this.siteStore, 'profile');
+      const opts = getAdminFetchOptions();
+      const res = await fetch(url, opts);
+
+      if (!res.ok) {
+        return false;
+      }
+
+      const response = await res.json();
+      if (response.status === 200) {
+        return response.profile;
+      }
+      return false;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to fetch profile:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Logs the user in.
+   * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
+   */
+  login(selectAccount) {
+    this.showWait(this.i18n('login_wait'));
+    const loginUrl = getAdminUrl(this.siteStore, 'login');
+    let extensionId = window.chrome?.runtime?.id;
+    // istanbul ignore next 3
+    if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
+      extensionId = 'cookie';
+    }
+    loginUrl.searchParams.set('extensionId', extensionId);
+    if (selectAccount) {
+      loginUrl.searchParams.set('selectAccount', 'true');
+    }
+    const loginWindow = this.openPage(loginUrl.toString());
+
+    let attempts = 0;
+
+    async function checkLoggedIn() {
+      // istanbul ignore else
+      if (loginWindow.closed) {
+        const { siteStore, status } = this;
+        attempts += 1;
+        // try 5 times after login window has been closed
+        this.status.profile = await this.getProfile();
+        if (this.status.profile) {
+          // logged in, stop checking
+          delete status.status;
+          this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
+          await this.siteStore.initStore(siteStore);
+          this.siteStore.authTokenExpiry = (
+            window.hlx
+            && window.hlx.sidekickConfig
+            && window.hlx.sidekickConfig.authTokenExpiry) || 0;
+          this.setupPlugins();
+          // encourageLogin(sk, false);
+          this.fetchStatus();
+          this.fireEvent('loggedin');
+          this.hideWait();
+          return;
+        }
+        if (attempts >= 5) {
+          // give up after 5 attempts
+          this.showModal({
+            type: MODALS.ERROR,
+            data: {
+              message: this.i18n('error_login_timeout'),
+            },
+          });
+          return;
+        }
+      }
+      // try again after 1s
+      window.setTimeout(checkLoggedIn.bind(this), 1000);
+    }
+    window.setTimeout(checkLoggedIn.bind(this), 1000);
+  }
+
+  /**
+   * Logs the user out.
+   */
+  logout() {
+    this.showWait();
+    const logoutUrl = getAdminUrl(this.siteStore, 'logout');
+    let extensionId = window.chrome?.runtime?.id;
+    // istanbul ignore next 3
+    if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
+      extensionId = 'cookie';
+    }
+    logoutUrl.searchParams.set('extensionId', extensionId);
+    const logoutWindow = this.openPage(logoutUrl.toString());
+
+    let attempts = 0;
+
+    async function checkLoggedOut() {
+      // istanbul ignore else
+      if (logoutWindow.closed) {
+        attempts += 1;
+        // try 5 times after login window has been closed
+        this.status.profile = await this.getProfile();
+        if (!this.status.profile) {
+          delete this.status.profile;
+          delete this.siteStore.authTokenExpiry;
+          this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
+          this.siteStore.authorized = false;
+          this.setupPlugins();
+          this.fetchStatus();
+          this.fireEvent('loggedout');
+          return;
+        }
+        if (attempts >= 5) {
+          this.showModal({
+            type: MODALS.ERROR,
+            data: {
+              message: this.i18n('error_logout_error'),
+            },
+          });
+          return;
+        }
+      }
+      // try again after 1s
+      window.setTimeout(checkLoggedOut.bind(this), 1000);
+    }
+    window.setTimeout(checkLoggedOut.bind(this), 1000);
+  }
+
+  /**
+   * Validate the current session, and if the token is expired, re-login.
+   * @returns {Promise<void>}
+   */
+  async validateSession() {
+    return new Promise((resolve) => {
+      const { profile } = this.status;
+      if (!profile) {
+        resolve();
+      }
+      const now = Date.now();
+      const { exp } = profile;
+      if (exp > now) {
+        // token is expired
+        this.login(true);
+        this.sidekick.addEventListener('statusfetched', () => {
+          // wait will be hidden by login, show again
+          this.showWait();
+          resolve();
+        }, { once: true });
+      } else {
+        resolve();
+      }
     });
   }
 }

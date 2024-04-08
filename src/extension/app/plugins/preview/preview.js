@@ -21,8 +21,8 @@
  * governing permissions and limitations under the License.
  */
 
-import { EVENTS, MODALS } from '../../constants.js';
-import { EventBus } from '../../utils/event-bus.js';
+import { MODALS } from '../../constants.js';
+import { SidekickPlugin } from '../../components/plugin/plugin.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -35,10 +35,10 @@ import { EventBus } from '../../utils/event-bus.js';
 /**
  * Creates the preview plugin
  * @param {AppStore} appStore The app store
- * @returns {CorePlugin} The preview plugin
+ * @returns {SidekickPlugin} The preview plugin
  */
 export function createPreviewPlugin(appStore) {
-  return {
+  return new SidekickPlugin({
     id: 'edit-preview',
     condition: (store) => store.isEditor(),
     button: {
@@ -69,14 +69,12 @@ export function createPreviewPlugin(appStore) {
               errorKey = 'error_preview_not_gsheet_ms_excel';
             }
 
-            EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-              detail: {
-                type: MODALS.ERROR,
-                data: {
-                  message: appStore.i18n(errorKey),
-                },
+            appStore.showModal({
+              type: MODALS.ERROR,
+              data: {
+                message: appStore.i18n(errorKey),
               },
-            }));
+            });
 
             return;
           }
@@ -114,5 +112,6 @@ export function createPreviewPlugin(appStore) {
         }, { once: true });
       }
     },
-  };
+    appStore,
+  });
 }

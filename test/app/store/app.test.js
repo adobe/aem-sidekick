@@ -14,8 +14,10 @@
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
-import { expect, waitUntil } from '@open-wc/testing';
-import { AppStore } from '../../../src/extension/app/store/app.js';
+import {
+  aTimeout, expect, waitUntil,
+} from '@open-wc/testing';
+import { AppStore, VIEWS } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
 import {
   mockFetchConfigJSONNotFound,
@@ -25,13 +27,20 @@ import {
   mockFetchStatusServerError,
   mockFetchStatusSuccess,
   mockFetchStatusUnauthorized,
+  mockFetchProfileSuccess,
+  mockFetchProfileUnauthorized,
+  mockFetchProfileError,
+  mockFetchConfigWithoutPluginsJSONSuccess,
 } from '../../mocks/helix-admin.js';
 import { mockFetchEnglishMessagesSuccess } from '../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 import { EventBus } from '../../../src/extension/app/utils/event-bus.js';
-import { EVENTS, MODALS } from '../../../src/extension/app/constants.js';
+import { MODALS, MODAL_EVENTS } from '../../../src/extension/app/constants.js';
 import { mockHelixEnvironment, restoreEnvironment } from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
+import { recursiveQuery, error } from '../../test-utils.js';
+import { AEMSidekick } from '../../../src/extension/index.js';
+import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -96,8 +105,8 @@ describe('Test App Store', () => {
     expect(appStore.siteStore.plugins.length).to.eq(8);
     expect(appStore.siteStore.scriptUrl).to.eq('https://www.hlx.live/tools/sidekick/index.js');
     expect(appStore.siteStore.host).to.eq('custom-host.com');
-    expect(appStore.siteStore.innerHost).to.eq('https://custom-preview-host.com');
-    expect(appStore.siteStore.liveHost).to.eq('https://custom-live-host.com');
+    expect(appStore.siteStore.innerHost).to.eq('custom-preview-host.com');
+    expect(appStore.siteStore.liveHost).to.eq('custom-live-host.com');
     expect(appStore.siteStore.project).to.eq('AEM Boilerplate');
   });
 
@@ -355,12 +364,15 @@ describe('Test App Store', () => {
 
   describe('wait dialog', async () => {
     it('showWait()', async () => {
-      const callback = sinon.spy();
-      const eventBus = EventBus.instance;
-      eventBus.addEventListener(EVENTS.OPEN_MODAL, callback);
-      appStore.showWait('test');
-      expect(callback.calledOnce).to.be.true;
-      expect(callback.args[0][0].detail).to.deep.equal({
+      appStore.sidekick = document.createElement('div');
+      appStore.sidekick.attachShadow({ mode: 'open' });
+      appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
+
+      const modalSpy = sinon.spy(appStore, 'showModal');
+      const modalElement = appStore.showWait('test');
+      expect(modalElement.nodeName).to.equal('MODAL-CONTAINER');
+      expect(modalSpy.calledOnce).to.be.true;
+      expect(modalSpy.args[0][0]).to.deep.equal({
         type: MODALS.WAIT,
         data: { message: 'test' },
       });
@@ -369,24 +381,159 @@ describe('Test App Store', () => {
     it('hideWait()', async () => {
       const callback = sinon.spy();
       const eventBus = EventBus.instance;
-      eventBus.addEventListener(EVENTS.CLOSE_MODAL, callback);
+      eventBus.addEventListener(MODAL_EVENTS.CLOSE, callback);
       appStore.hideWait();
       expect(callback.calledOnce).to.be.true;
     });
   });
 
   describe('show toast', async () => {
-    it('showWait()', async () => {
-      const callback = sinon.spy();
-      const eventBus = EventBus.instance;
-      eventBus.addEventListener(EVENTS.SHOW_TOAST, callback);
-      appStore.showToast('test');
-      expect(callback.calledOnce).to.be.true;
-      expect(callback.args[0][0].detail).to.deep.equal({
-        message: 'test',
-        variant: 'info',
-        timeout: 2000,
-      });
+    it('showToast()', async () => {
+      appStore.sidekick = document.createElement('div');
+      appStore.sidekick.attachShadow({ mode: 'open' });
+      appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
+
+      const toastSpy = sinon.spy(appStore, 'showToast');
+      const toastElement = appStore.showToast('test', 'info', 2000);
+      expect(toastElement.nodeName).to.equal('TOAST-CONTAINER');
+      expect(toastSpy.calledOnce).to.be.true;
+      expect(toastSpy.args[0][0]).to.equal('test');
+      expect(toastSpy.args[0][1]).to.equal('info');
+      expect(toastSpy.args[0][2]).to.equal(2000);
+    });
+  });
+
+  describe('reloadPage', async () => {
+    const sandbox = sinon.createSandbox();
+    let openPageStub;
+    let loadPageStub;
+
+    beforeEach(() => {
+      openPageStub = sandbox.stub(appStore, 'openPage');
+      loadPageStub = sandbox.stub(appStore, 'loadPage');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('opens a new tab', async () => {
+      appStore.reloadPage(true);
+      expect(openPageStub.calledOnce).to.be.true;
+    });
+
+    it('reloads the current tab', async () => {
+      appStore.reloadPage();
+      expect(loadPageStub.calledOnce).to.be.true;
+    });
+  });
+
+  describe('switchEnv', async () => {
+    const mockStatus = defaultSharepointStatusResponse;
+    const sandbox = sinon.createSandbox();
+    let openPage;
+    let loadPage;
+    let instance;
+
+    beforeEach(() => {
+      sandbox.stub(window, 'fetch').resolves(new Response(JSON.stringify({
+        webPath: '/somepath',
+      })));
+      instance = appStore;
+      instance.siteStore = {
+        owner: 'adobe',
+        repo: 'aem-boilerplate',
+        ref: 'main',
+        innerHost: new URL(mockStatus.preview.url).hostname,
+        outerHost: new URL(mockStatus.live.url).hostname,
+        devUrl: new URL('https://localhost:3000'),
+        views: [{
+          path: '**.json',
+          viewer: '/test/wtr/fixtures/views/json/json.html',
+        }],
+      };
+
+      // Mock other functions
+      sandbox.stub(instance, 'fireEvent');
+
+      openPage = sandbox.spy();
+      loadPage = sandbox.spy();
+      sandbox.stub(instance, 'openPage').callsFake(openPage);
+      sandbox.stub(instance, 'loadPage').callsFake(loadPage);
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('switches from editor to preview', async () => {
+      instance.location = new URL(mockStatus.edit.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('preview');
+      expect(openPage.calledWith(mockStatus.preview.url)).to.be.true;
+    });
+
+    it('switches from preview to editor', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('edit');
+      expect(loadPage.calledWith(mockStatus.edit.url)).to.be.true;
+    });
+
+    it('switches from live to preview', async () => {
+      instance.location = new URL(mockStatus.live.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('preview');
+      expect(loadPage.calledWith(mockStatus.preview.url)).to.be.true;
+    });
+
+    it('switches from preview to live opening a new window', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('live', true);
+      expect(openPage.calledWith(mockStatus.live.url)).to.be.true;
+    });
+
+    it('switches from preview to dev', async () => {
+      instance.location = new URL(mockStatus.live.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('dev');
+      const devUrl = new URL(
+        new URL(mockStatus.preview.url).pathname,
+        'https://localhost:3000',
+      );
+      expect(loadPage.calledWith(devUrl.href)).to.be.true;
+    });
+
+    it('switches to live instead of prod', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('prod');
+      expect(loadPage.calledWith(mockStatus.live.url)).to.be.true;
+    });
+
+    it('aborts on invaid target env', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('foo');
+      expect(openPage.calledOnce).to.be.false;
+      expect(loadPage.calledOnce).to.be.false;
+    });
+
+    it('aborts on status error', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status.error = 'some error occurred';
+      await instance.switchEnv('live');
+      expect(openPage.calledOnce).to.be.false;
+      expect(loadPage.calledOnce).to.be.false;
+    });
+
+    it('retries if status not ready yet', async () => {
+      const consoleSpy = sandbox.spy(console, 'log');
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = {};
+      await instance.switchEnv('live');
+      expect(consoleSpy.calledWith('not ready yet, trying again in a second ...')).to.be.true;
     });
   });
 
@@ -537,7 +684,7 @@ describe('Test App Store', () => {
     let showToastStub;
     let updatePreviewSpy;
     let addEventListenerSpy;
-    let dispatchEventSpy;
+    let modalSpy;
 
     beforeEach(() => {
       instance = appStore;
@@ -551,7 +698,7 @@ describe('Test App Store', () => {
       showToastStub = sandbox.stub(instance, 'showToast');
       updatePreviewSpy = sandbox.spy(instance, 'updatePreview');
       addEventListenerSpy = sandbox.spy(instance.sidekick, 'addEventListener');
-      dispatchEventSpy = sandbox.spy(EventBus.instance, 'dispatchEvent');
+      modalSpy = sandbox.spy(instance, 'showModal');
     });
 
     afterEach(() => {
@@ -593,7 +740,7 @@ describe('Test App Store', () => {
       await instance.updatePreview(true);
 
       expect(showWaitStub.called).is.true;
-      expect(dispatchEventSpy.calledWith(sinon.match.has('type', EVENTS.OPEN_MODAL))).is.true;
+      expect(modalSpy.calledWith(sinon.match.has('type', MODALS.ERROR))).is.true;
     });
 
     // Test when resp is not ok, ranBefore is true, status.webPath
@@ -605,7 +752,7 @@ describe('Test App Store', () => {
       await instance.updatePreview(true);
 
       expect(showWaitStub.called).is.true;
-      expect(dispatchEventSpy.calledWith(sinon.match.has('type', EVENTS.OPEN_MODAL))).is.true;
+      expect(modalSpy.calledWith(sinon.match.has('type', MODALS.ERROR))).is.true;
     });
 
     // Test when resp is ok and status.webPath starts with /.helix/
@@ -616,7 +763,7 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showWaitStub.called).is.true;
-      expect(hideWaitStub.called).is.false;
+      expect(hideWaitStub.called).is.true;
       expect(showToastStub.calledWith(sinon.match.string, 'positive')).is.true;
     });
 
@@ -630,6 +777,97 @@ describe('Test App Store', () => {
       expect(showWaitStub.called).is.true;
       expect(hideWaitStub.called).is.true;
       expect(switchEnvStub.calledWith('preview')).is.true;
+    });
+  });
+
+  describe('delete', async () => {
+    const deletePath = '/delete-path';
+
+    let sandbox;
+    let fakeFetch;
+    let instance;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+      fakeFetch = sandbox.stub(window, 'fetch');
+      instance = appStore;
+
+      // Mock other functions
+      sandbox.stub(instance, 'isContent');
+      sandbox.stub(instance, 'isEditor');
+      sandbox.stub(instance, 'isPreview');
+      sandbox.stub(instance, 'isDev');
+      sandbox.stub(instance, 'fireEvent');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('deletes unpublished content from preview', async () => {
+      instance.isContent.returns(true);
+      instance.status = { webPath: deletePath };
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({}),
+      });
+
+      const resp = await instance.delete();
+
+      expect(resp.path).to.equal(deletePath);
+      expect(resp.error).to.equal('');
+      sinon.assert.calledWith(instance.fireEvent, 'deleted', deletePath);
+    });
+
+    it('deletes published content from preview and live', async () => {
+      const unpublishStub = sandbox.stub(instance, 'unpublish');
+      instance.isContent.returns(true);
+      instance.status = {
+        webPath: deletePath,
+        live: {
+          lastModified: '2023-01-01T00:00:00Z',
+        },
+      };
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({}),
+      });
+
+      const resp = await instance.delete();
+
+      expect(resp.path).to.equal(deletePath);
+      expect(resp.error).to.equal('');
+      expect(unpublishStub.calledOnce).to.be.true;
+      sinon.assert.calledWith(instance.fireEvent, 'deleted', deletePath);
+    });
+
+    it('only deletes content', async () => {
+      instance.isContent.returns(false);
+      instance.status = {
+        webPath: deletePath,
+      };
+
+      const resp = await instance.delete();
+
+      expect(resp).to.equal(null);
+      expect(fakeFetch.called).to.be.false;
+    });
+
+    it('handles network error', async () => {
+      const consoleSpy = sandbox.spy(console, 'log');
+      instance.isContent.returns(true);
+      instance.status = { webPath: deletePath };
+
+      fakeFetch.throws(error);
+
+      const response = await instance.delete();
+
+      expect(response.error).to.equal(error.message);
+      expect(consoleSpy.calledWith('failed to delete', deletePath, error)).to.be.true;
     });
   });
 
@@ -748,6 +986,510 @@ describe('Test App Store', () => {
       const resp = await instance.publish('/somepath');
 
       expect(resp.error).to.eq('Some error');
+    });
+  });
+
+  describe('findViews', () => {
+    let instance;
+
+    beforeEach(() => {
+      instance = appStore;
+      instance.status = { webPath: '/some.json' };
+      instance.siteStore = {
+        views: [
+          { path: '**.json', viewer: '/test/wtr/fixtures/views/json/json.html' },
+        ],
+      };
+    });
+
+    afterEach(() => {
+      sinon.restore(); // Restore original functions
+    });
+
+    it('should return an empty array if testPath and webPath are not provided', () => {
+      instance.status.webPath = null;
+      const result = instance.findViews(VIEWS.CUSTOM);
+      expect(result).to.deep.equal([]);
+    });
+
+    it('should use webPath as testPath if not provided', () => {
+      const [view] = instance.findViews(VIEWS.DEFAULT);
+      expect(view.path).to.equal('**.json');
+      expect(view.viewer).to.equal('/test/wtr/fixtures/views/json/json.html');
+    });
+
+    it('should use testPath', () => {
+      const [view] = instance.findViews(VIEWS.DEFAULT, '/foo.json');
+      expect(view.path).to.equal('**.json');
+      expect(view.viewer).to.equal('/test/wtr/fixtures/views/json/json.html');
+    });
+
+    it('should filter views based on DEFAULT viewType', () => {
+      const [view] = instance.findViews(VIEWS.DEFAULT);
+      expect(view.path).to.equal('**.json');
+      expect(view.viewer).to.equal('/test/wtr/fixtures/views/json/json.html');
+    });
+
+    it('should filter views based on CUSTOM viewType (no custom)', () => {
+      const result = instance.findViews(VIEWS.CUSTOM);
+      expect(result.length).to.equal(0);
+    });
+
+    it('should filter views based on CUSTOM viewType (with custom)', () => {
+      instance.status = { webPath: '/some.psd' };
+      instance.siteStore = {
+        views: [
+          { path: '**.json', viewer: '/test/wtr/fixtures/views/json/json.html' },
+          { path: '**.psd', viewer: 'https://example.com/psd-renderer.html' },
+        ],
+      };
+      const [view] = instance.findViews(VIEWS.CUSTOM);
+      expect(view.path).to.equal('**.psd');
+      expect(view.viewer).to.equal('https://example.com/psd-renderer.html');
+    });
+
+    it('should include all matching views if viewType is neither DEFAULT nor CUSTOM', () => {
+      instance.siteStore = {
+        views: [
+          { path: '**.json', viewer: '/test/wtr/fixtures/views/json/json.html' },
+          { path: '**.psd', viewer: 'https://example.com/psd-renderer.html' },
+        ],
+      };
+      const [view] = instance.findViews();
+      expect(view.path).to.equal('**.json');
+      expect(view.viewer).to.equal('/test/wtr/fixtures/views/json/json.html');
+    });
+  });
+
+  describe('getViewOverlay', () => {
+    let instance;
+
+    beforeEach(() => {
+      instance = appStore;
+      const shadowRoot = sidekickElement.attachShadow({ mode: 'open' });
+      shadowRoot.appendChild(document.createElement('div'));
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns an existing view without creating a new one', async () => {
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      const existingView = document.createElement('div');
+      existingView.classList.add('hlx-sk-special-view');
+      sidekickElement.shadowRoot.appendChild(existingView);
+
+      const view = instance.getViewOverlay(false);
+      expect(view).to.equal(existingView);
+    });
+
+    it('creates and returns a new view when none exists and create is true', async () => {
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      const view = instance.getViewOverlay(true);
+      expect(view.classList.contains('hlx-sk-special-view')).to.be.true;
+      expect(instance.sidekick.shadowRoot.querySelector('.hlx-sk-special-view')).to.equal(view);
+    });
+
+    it('adds an iframe to the new view with the correct attributes', async () => {
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      const view = instance.getViewOverlay(true);
+      const iframe = view.querySelector('iframe.container');
+      expect(iframe).to.not.be.null;
+      expect(iframe.getAttribute('allow')).to.equal('clipboard-write *');
+    });
+
+    it('removes the view and resets siblings display on receiving a valid hlx-close-view message', async () => {
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      const addEventListenerStub = sinon.stub(window, 'addEventListener');
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      appStore.sidekick = sidekick;
+      appStore.getViewOverlay(true); // Create a new view
+
+      const sibling = document.createElement('div');
+      sibling.style.display = 'none';
+      instance.sidekick.parentElement.appendChild(sibling);
+
+      // Simulate receiving a valid message
+      const messageEvent = new MessageEvent('message', {
+        data: { detail: { event: 'hlx-close-view' } },
+        origin: `chrome-extension://${chrome.runtime.id}`,
+      });
+
+      // Trigger the event listener manually
+      const eventListenerCallback = addEventListenerStub.getCall(1).args[1];
+      // @ts-ignore
+      eventListenerCallback(messageEvent);
+
+      await aTimeout(1000);
+      expect(instance.sidekick.shadowRoot.querySelector('.hlx-sk-special-view')).to.be.null;
+      expect(sibling.style.display).to.equal('initial');
+    }).timeout(5000);
+  });
+
+  describe('showView', () => {
+    let instance;
+    let isProjectStub;
+    let findViewsSpy;
+    let findViewsStub;
+    let getViewOverlayStub;
+
+    beforeEach(async () => {
+      instance = appStore;
+      isProjectStub = sinon.stub(instance, 'isProject');
+      getViewOverlayStub = sinon.stub(instance, 'getViewOverlay');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+      fetchMock.restore();
+    });
+
+    it('does nothing if isProject returns false', async () => {
+      isProjectStub.returns(false);
+      findViewsSpy = sinon.spy(instance, 'findViews');
+
+      await instance.showView();
+      expect(isProjectStub.calledOnce).to.be.true;
+      expect(findViewsSpy.called).to.be.false;
+    });
+
+    it('exits early if "path" search param is present', async () => {
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      fetchMock.get('https://admin.hlx.page/status/adobe/aem-boilerplate/main/path/placeholders.json?editUrl=auto', {
+        status: 200,
+        body: {
+          body: { },
+        },
+      }, { overwriteRoutes: true });
+      findViewsSpy = sinon.spy(instance, 'findViews');
+      instance.location = new URL('https://main--aem-boilerplate--adobe.hlx.page/placeholders.json?path=/path/placeholders.json');
+      isProjectStub.returns(true);
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
+
+      await instance.showView();
+      expect(findViewsSpy.called).to.be.false;
+    });
+
+    it('sets iframe src correctly if a DEFAULT view is found and no overlay exists', async () => {
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      isProjectStub.returns(true);
+      instance.location = new URL('https://main--aem-boilerplate--adobe.hlx.page/placeholders.json');
+      findViewsStub = sinon.stub(instance, 'findViews').returns([{ viewer: 'http://viewer.com', title: () => 'Test Title' }]);
+      getViewOverlayStub.onCall(0).returns(undefined);
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      instance.sidekick = sidekick;
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
+
+      const overlayContainer = document.createElement('div');
+      overlayContainer.className = 'hlx-sk-special-view';
+
+      const frame = document.createElement('iframe');
+      frame.className = 'container';
+      overlayContainer.appendChild(frame);
+
+      getViewOverlayStub.onCall(1).returns(overlayContainer);
+      sidekick.shadowRoot.appendChild(overlayContainer);
+
+      await instance.showView();
+
+      expect(frame.src).to.equal('http://viewer.com/?url=https%3A%2F%2Fmain--aem-boilerplate--adobe.hlx.page%2Fplaceholders.json&title=Test+Title');
+      expect(findViewsStub.calledWith(VIEWS.DEFAULT)).to.be.true;
+      expect(getViewOverlayStub.calledTwice).to.be.true;
+    });
+  });
+
+  describe('unpublish', async () => {
+    const unpublishPath = '/unpublish-path';
+    let sandbox;
+    let fakeFetch;
+    let instance;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+      fakeFetch = sandbox.stub(window, 'fetch');
+      instance = appStore;
+
+      // Mock other functions
+      sandbox.stub(instance, 'isContent');
+      sandbox.stub(instance, 'isEditor');
+      sandbox.stub(instance, 'isPreview');
+      sandbox.stub(instance, 'isDev');
+      sandbox.stub(instance, 'fireEvent');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('deletes content from live', async () => {
+      instance.isContent.returns(true);
+      instance.status = { webPath: unpublishPath };
+
+      const headers = new Headers();
+
+      fakeFetch.resolves({
+        ok: true, status: 200, headers, json: () => Promise.resolve({}),
+      });
+
+      const resp = await instance.unpublish();
+
+      expect(resp.path).to.equal(unpublishPath);
+      expect(resp.error).to.equal('');
+      sinon.assert.calledWith(instance.fireEvent, 'unpublished', unpublishPath);
+    });
+
+    it('only unpublishes content', async () => {
+      instance.isContent.returns(false);
+      instance.status = {
+        webPath: unpublishPath,
+      };
+
+      const resp = await instance.unpublish();
+
+      expect(resp).to.equal(null);
+      expect(fakeFetch.called).to.be.false;
+    });
+
+    it('handles network error', async () => {
+      const consoleSpy = sandbox.spy(console, 'log');
+      instance.isContent.returns(true);
+      instance.status = { webPath: unpublishPath };
+
+      fakeFetch.throws(error);
+
+      const resp = await instance.unpublish();
+
+      expect(resp.error).to.equal(error.message);
+      expect(consoleSpy.calledWithMatch('failed to unpublish', unpublishPath, error)).to.be.true;
+    });
+  });
+
+  describe('getProfile', () => {
+    beforeEach(async () => {
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+    });
+
+    it('should return the profile on a successful response', async () => {
+      mockFetchProfileSuccess();
+
+      const result = await appStore.getProfile();
+      expect(result).to.deep.equal(defaultSharepointProfileResponse.profile);
+    });
+
+    it('should return false if the response is not ok', async () => {
+      mockFetchProfileUnauthorized();
+
+      const result = await appStore.getProfile();
+      expect(result).to.be.false;
+    });
+
+    it('should handle fetch errors gracefully', async () => {
+      mockFetchProfileError();
+
+      const result = await appStore.getProfile();
+      expect(result).to.be.false;
+    });
+
+    it('should handle fetch throws gracefully', async () => {
+      const fetchStub = sinon.stub(window, 'fetch').throws(new Error('Network failure'));
+
+      const result = await appStore.getProfile();
+      expect(result).to.be.false;
+
+      fetchStub.restore();
+    });
+  });
+
+  describe('login', () => {
+    let instance;
+    let clock;
+    let getProfileStub;
+    let sandbox;
+
+    beforeEach(() => {
+      instance = appStore;
+      sandbox = sinon.createSandbox();
+      clock = sandbox.useFakeTimers();
+      window.hlx = {};
+      window.hlx.sidekickConfig = {};
+
+      sandbox.stub(appStore, 'openPage').returns({ closed: true });
+      getProfileStub = sandbox.stub(appStore, 'getProfile').resolves(false);
+    });
+
+    afterEach(() => {
+      clock.restore();
+      sandbox.restore();
+    });
+
+    it('should attempt to check login status up to 5 times after login window is closed', async () => {
+      const modalSpy = sinon.spy(appStore, 'showModal');
+
+      instance.login(false);
+
+      // Fast-forward time to simulate the retries
+      for (let i = 0; i < 5; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await clock.tickAsync(1000); // Fast-forward 1 second for each attempt
+      }
+
+      expect(getProfileStub.callCount).to.equal(5);
+
+      await waitUntil(() => modalSpy.called, 'Modal never opened');
+
+      expect(modalSpy.callCount).to.equal(2);
+      expect(modalSpy.args[1][0].type).to.equal(MODALS.ERROR);
+    }).timeout(20000);
+
+    it('handles successful login correctly', async () => {
+      instance.sidekick = document.createElement('div');
+      getProfileStub.onCall(0).resolves(false);
+      getProfileStub.onCall(4).resolves({ name: 'foo' }); // Simulate success on the 5th attempt
+
+      const loginEventSpy = sinon.spy();
+      instance.sidekick.addEventListener('loggedin', loginEventSpy);
+
+      // Mock other methods called upon successful login
+      const initStoreStub = sandbox.stub(instance.siteStore, 'initStore').resolves();
+      const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
+      const fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
+      const hideWaitStub = sandbox.stub(instance, 'hideWait');
+
+      instance.login(false); // Call without selectAccount
+
+      await clock.tickAsync(5000); // Fast-forward time
+
+      expect(initStoreStub.called).to.be.true;
+      expect(setupCorePluginsStub.called).to.be.true;
+      expect(fetchStatusStub.called).to.be.true;
+      expect(hideWaitStub.calledOnce).to.be.true;
+    }).timeout(20000);
+  });
+
+  describe('logout', () => {
+    let instance;
+    let clock;
+    let getProfileStub;
+    let sandbox;
+
+    beforeEach(() => {
+      instance = appStore;
+      sandbox = sinon.createSandbox();
+      clock = sandbox.useFakeTimers();
+      window.hlx = {};
+      window.hlx.sidekickConfig = {};
+      sandbox.stub(appStore, 'openPage').returns({ closed: true });
+    });
+
+    afterEach(() => {
+      clock.restore();
+      sandbox.restore();
+    });
+
+    it('should attempt to check logout status up to 5 times after login window is closed', async () => {
+      const modalSpy = sinon.spy(appStore, 'showModal');
+      getProfileStub = sandbox.stub(appStore, 'getProfile');
+      getProfileStub.resolves({ name: 'foo' });
+
+      instance.logout();
+
+      // Fast-forward time to simulate the retries
+      await clock.tickAsync(5000);
+
+      expect(getProfileStub.callCount).to.equal(5);
+
+      await waitUntil(() => modalSpy.called, 'Modal never opened');
+
+      expect(modalSpy.callCount).to.equal(2);
+      expect(modalSpy.args[1][0].type).to.equal(MODALS.ERROR);
+    }).timeout(20000);
+
+    it('handles successful logout correctly', async () => {
+      mockFetchStatusSuccess();
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+
+      instance.sidekick = document.createElement('div');
+      getProfileStub = sandbox.stub(appStore, 'getProfile');
+      getProfileStub.onCall(0).resolves({ name: 'foo' });
+      getProfileStub.onCall(4).resolves(false); // Simulate success on the 5th attempt
+
+      const loginEventSpy = sinon.spy();
+      instance.sidekick.addEventListener('loggedout', loginEventSpy);
+
+      const statusEventSpy = sinon.spy();
+      instance.sidekick.addEventListener('statusfetched', statusEventSpy);
+
+      // Mock other methods called upon successful login
+      const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
+
+      instance.logout();
+
+      // Fast-forward time to simulate the retries
+      for (let i = 0; i < 5; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await clock.tickAsync(1000);
+      }
+
+      expect(setupCorePluginsStub.calledOnce).to.be.true;
+      expect(loginEventSpy.calledOnce).to.be.true;
+
+      await waitUntil(() => statusEventSpy.calledTwice, 'Status should fire twice');
+      expect(statusEventSpy.calledTwice).to.be.true;
+    }).timeout(20000);
+  });
+
+  describe('validateSession tests', () => {
+    let instance;
+    let clock;
+    let now;
+
+    beforeEach(() => {
+      instance = appStore;
+      now = Date.now();
+      clock = sinon.useFakeTimers(now);
+      instance.login = sinon.spy();
+      instance.showWait = sinon.spy();
+      instance.sidekick = { addEventListener: sinon.stub() };
+    });
+
+    afterEach(() => {
+      clock.restore();
+    });
+
+    it('should resolve immediately if profile is not set', async () => {
+      instance.status = {};
+      await instance.validateSession();
+      expect(instance.login.called).to.be.false;
+    });
+
+    it('should re-login and show wait if token is expired', async () => {
+      const futureTime = now + 1000; // Ensure the token is considered expired
+      instance.status = { profile: { exp: futureTime } };
+      instance.sidekick.addEventListener.callsFake((event, callback) => callback());
+
+      await instance.validateSession();
+      expect(instance.login.calledOnceWith(true)).to.be.true;
+      expect(instance.showWait.calledOnce).to.be.true;
+    });
+
+    it('should resolve immediately if token is not expired', async () => {
+      const pastTime = now - 1000; // Ensure the token is not considered expired
+      instance.status = { profile: { exp: pastTime } };
+      await instance.validateSession();
+      expect(instance.login.called).to.be.false;
     });
   });
 });

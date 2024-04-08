@@ -29,9 +29,6 @@ export const ENVS = {
  * @enum {string}
  */
 export const EVENTS = {
-  OPEN_MODAL: 'open-modal',
-  CLOSE_MODAL: 'close-modal',
-  SHOW_TOAST: 'show-toast',
   OPEN_PALETTE: 'open-palette',
   CLOSE_PALETTE: 'close-palette',
 };
@@ -45,7 +42,9 @@ export const EXTERNAL_EVENTS = {
   STATUS_FETCHED: 'statusfetched',
   RESOURCE_UPDATED: 'updated',
   RESOURCE_PREVIEWED: 'previewed',
+  RESOURCE_DELETED: 'deleted',
   RESOURCE_PUBLISHED: 'published',
+  RESOURCE_UNPUBLISHED: 'unpublished',
   EVIRONMENT_SWITCHED: 'envswitched',
   PLUGIN_USED: 'pluginused',
 };
@@ -57,4 +56,33 @@ export const EXTERNAL_EVENTS = {
 export const MODALS = {
   WAIT: 'wait',
   ERROR: 'error',
+  DELETE: 'delete',
 };
+
+/**
+ * Modal Events
+ * @enum {string}
+ */
+export const MODAL_EVENTS = {
+  CLOSE: 'close',
+  CANCEL: 'cancel',
+  SECONDARY: 'secondary',
+  CONFIRM: 'confirm',
+};
+
+/**
+ * Toast Events
+ * @enum {string}
+ */
+export const TOAST_EVENTS = {
+  CLOSE: 'close',
+};
+
+/**
+ * Array of restricted paths with limited sidekick functionality.
+ * @private
+ * @type {string[]}
+ */
+export const RESTRICTED_PATHS = [
+  '/helix-env.json',
+];

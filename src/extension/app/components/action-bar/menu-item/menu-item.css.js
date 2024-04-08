@@ -15,13 +15,17 @@
 import { css } from 'lit';
 
 export const style = css`
-  :host(:not(.env-edit)[class]),
-  :host(:not(.env-edit)[class]) #label {
-    color: var(--spectrum-white);
+  :host(.current-env) {
+    margin-bottom: 7px;
   }
 
   :host(.current-env) #label {
     font-weight: 700;
+  }
+
+  :host(:hover) {
+    background-color: var(--spectrum2-preview-background-hover);
+    border-radius: var(--spectrum2-default-border-radius);
   }
 
   :host(.current-env.env-edit[aria-disabled="true"]) #label,
@@ -32,25 +36,38 @@ export const style = css`
   }
 
   :host(.current-env.env-preview){
-    background-color: #1379F3;
-    border-radius: 4px;
+    background-color: var(--spectrum2-preview-background-default);
+    border: 1px solid var(--spectrum2-preview-border-default);
+    border-radius: var(--spectrum2-default-border-radius);
+    --mod-menu-item-background-color-hover: var(--spectrum2-preview-background-hover);
   }
 
-  :host(.current-env.env-preview) #label {
+  :host(.current-env.env-dev) #label,
+  :host(.current-env.env-preview) #label,
+  :host(.current-env.env-live) #label,
+  :host(.current-env.env-prod) #label {
     color: var(--spectrum-white);
     font-weight: 700;
   }
 
   :host(.current-env) [name="description"]::slotted(*){
-    color: var(--spectrum-gray-800);
+    color: var(--spectrum2-preview-content-default);
     font-weight: 400;
   }
 
   :host(.current-env.env-live),
   :host(.current-env.env-prod) {
-    background-color: #009112;
-    border-radius: 4px;
+    background-color: var(--spectrum2-live-background-default);
+    border: 1px solid var(--spectrum2-live-border-default);
+    border-radius: var(--spectrum2-default-border-radius);
     font-weight: 700;
+  }
+
+  :host(.current-env.env-live[aria-disabled="true"]) [name="description"]::slotted(*),
+  :host(.current-env.env-prod[aria-disabled="true"]) [name="description"]::slotted(*),
+  :host(.current-env.env-live[disabled]) [name="description"]::slotted(*),
+    :host(.current-env.env-prod[disabled]) [name="description"]::slotted(*) {
+    color: var(--spectrum2-live-content-default);
   }
 
   sp-status-light {
@@ -59,10 +76,46 @@ export const style = css`
     right: 0;
   }
 
+  :host(.user) {
+    border-bottom: 1px solid var(--spectrum-global-color-gray-300);
+  }
+
+  .user-item {
+    display: flex;
+    gap: 6px;
+  }
+
+  .user-item > slot {
+    display: flex;
+    padding-top: 3px;
+  }
+
+  .user-item .info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .user-item slot::slotted(img) {
+    width: 32px;
+    height: 32px;
+  }
+
+  .logout-item {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .logout-item > slot::slotted(sp-icon-log-out) {
+    width: 32px;
+  }
+
   @media (prefers-color-scheme: light) {
-    :host(.current-env) #label,
-    :host(.current-env) [name="description"]::slotted(*){
-      color: var(--spectrum-white);
+    :host(.current-env.env-dev) #label,
+    :host(.current-env.env-preview) #label,
+    :host(.current-env.env-live) #label,
+    :host(.current-env.env-prod) #label {
+      color: var(--spectrum-gray-800);
     }
 
     :host(:not(.env-edit, .current-env)[class]),

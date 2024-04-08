@@ -10,11 +10,11 @@
  * governing permissions and limitations under the License.
  */
 
-import { customElement, query } from 'lit/decorators.js';
+/* eslint-disable wc/no-constructor-params */
+
+import { customElement, query, property } from 'lit/decorators.js';
 import { html, LitElement } from 'lit';
 import { style } from './toast-container.css.js';
-import { EventBus } from '../../utils/event-bus.js';
-import { EVENTS } from '../../constants.js';
 
 /**
  * The Toast object type
@@ -28,45 +28,63 @@ import { EVENTS } from '../../constants.js';
  */
 @customElement('toast-container')
 export class ToastContainer extends LitElement {
-    /**
-     * The toast container HTMLElement
-     * @type {HTMLElement}
-     */
-    @query('.toast-container')
-    accessor toastContainer;
+  /**
+   * Active toast object
+   * @type {Toast}
+   */
+  @property({ type: Object })
+  accessor toast;
 
-    static get styles() {
-      return [style];
-    }
+  /**
+   * The toast container HTMLElement
+   * @type {HTMLElement}
+   */
+  @query('.toast-container')
+  accessor toastContainer;
 
-    async connectedCallback() {
-      super.connectedCallback();
+  static get styles() {
+    return [style];
+  }
 
-      EventBus.instance.addEventListener(EVENTS.SHOW_TOAST, (e) => {
-        this.renderToast(e.detail);
-      });
-    }
+  /**
+   * Constructor
+   * @param {Toast} toast the toast details
+   */
+  constructor(toast) {
+    super();
+    this.toast = toast;
+  }
 
-    /**
+  firstUpdated() {
+    this.renderToast(this.toast);
+  }
+
+  /**
+   * Called when the toast is closed
+   */
+  onClosed() {
+    this.remove();
+  }
+
+  /**
      * Render a toast
      * @param {Toast} toast The toast message
      */
-    renderToast(toast) {
-      if (this.toastContainer.childElementCount === 0) {
-        const toastElement = document.createElement('sp-toast');
-        toastElement.setAttribute('variant', toast.variant);
-        toastElement.setAttribute('open', 'true');
-        toastElement.setAttribute('timeout', toast.timeout);
-        toastElement.textContent = toast.message;
-        this.toastContainer.append(toastElement);
+  renderToast(toast) {
+    const toastElement = document.createElement('sp-toast');
+    toastElement.setAttribute('variant', toast.variant);
+    toastElement.setAttribute('open', 'true');
+    toastElement.setAttribute('timeout', toast.timeout.toString());
+    toastElement.textContent = toast.message;
+    toastElement.addEventListener('close', this.onClosed.bind(this));
+    this.toastContainer.append(toastElement);
 
-        toastElement.addEventListener('close', () => {
-          this.toastContainer.removeChild(toastElement);
-        });
-      }
-    }
+    toastElement.addEventListener('close', () => {
+      this.toastContainer.removeChild(toastElement);
+    });
+  }
 
-    render() {
-      return html`<div class="toast-container"></div>`;
-    }
+  render() {
+    return html`<div class="toast-container"></div>`;
+  }
 }

@@ -10,6 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
+// import { property } from 'lit/decorators.js';
+import { observable, action } from 'mobx';
 import { log } from '../../log.js';
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import { getLanguage } from '../utils/i18n.js';
@@ -155,10 +157,38 @@ export class SiteStore {
   plugins;
 
   /**
+   * Are we currently authorized for the site?
+   * Since the config fetch is the first request, we need to track it's
+   * response status early so the UI can render appropriately.
+   * @type {boolean}
+   */
+  authorized = false;
+
+  /**
+   * Custom views
+   * @type {number}
+   */
+  authTokenExpiry;
+
+  /**
+   * Has the store been initialized?
+   * @type {boolean}
+   */
+  @observable accessor ready = false;
+
+  /**
    * @param {AppStore} appStore
    */
   constructor(appStore) {
     this.appStore = appStore;
+  }
+
+  /**
+   * Set as initialized.
+   */
+  @action
+  setReady() {
+    this.ready = true;
   }
 
   /**
@@ -189,6 +219,7 @@ export class SiteStore {
       try {
         const res = await fetch(configUrl, getAdminFetchOptions(true));
         if (res.status === 200) {
+          this.authorized = true;
           config = {
             ...config,
             ...(await res.json()),
@@ -200,6 +231,8 @@ export class SiteStore {
             adminVersion,
             _extended: Date.now(),
           };
+        } else if (res.status !== 404) {
+          this.authorized = false;
         }
       } catch (e) {
         /* istanbul ignore next */
@@ -228,7 +261,7 @@ export class SiteStore {
     this.views = [
       {
         path: '**.json',
-        viewer: chrome.runtime.getURL('view/json/json.html'),
+        viewer: chrome.runtime.getURL('views/json/json.html'),
         title: () => this.appStore.i18n('json_view_description'),
       },
     ];
@@ -258,6 +291,7 @@ export class SiteStore {
     this.project = project;
     this.devUrl = devUrl;
     this.lang = lang || getLanguage();
+    this.setReady();
   }
 
   /**
@@ -271,6 +305,7 @@ export class SiteStore {
       ref: this.ref,
       giturl: this.giturl,
       devUrl: this.devUrl.href,
+      // @ts-ignore
       mountpoint: this.mountpoint,
       mountpoints: this.mountpoints,
       project: this.project,

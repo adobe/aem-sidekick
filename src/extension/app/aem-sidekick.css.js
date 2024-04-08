@@ -35,5 +35,23 @@ export const style = css`
     transform: translate(-50%, 0px);
     bottom: 150px;
     pointer-events: auto;
+    z-index: 1;
+    min-width: 620px;
+    max-width: 800px;
+  }
+
+  .hlx-sk-special-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh; 
+  }
+  
+  .hlx-sk-special-view iframe {
+    border: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
   }
 `;

@@ -18,8 +18,6 @@ import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/divider/sp-divider.js';
 import '@spectrum-web-components/toast/sp-toast.js';
-import '@spectrum-web-components/dialog/sp-dialog-base.js';
-import '@spectrum-web-components/dialog/sp-dialog-wrapper.js';
 import '@spectrum-web-components/progress-circle/sp-progress-circle.js';
 import '@spectrum-web-components/action-menu/sp-action-menu.js';
 import '@spectrum-web-components/menu/sp-menu-group.js';
@@ -27,12 +25,11 @@ import '@spectrum-web-components/menu/sp-menu-divider.js';
 import '@spectrum-web-components/overlay/sp-overlay.js';
 import '@spectrum-web-components/picker/sp-picker.js';
 import '@spectrum-web-components/status-light/sp-status-light.js';
+import '@spectrum-web-components/textfield/sp-textfield.js';
+import '@spectrum-web-components/icon/sp-icon.js';
 
-import '@spectrum-web-components/icons-workflow/icons/sp-icon-play.js';
-import '@spectrum-web-components/icons-workflow/icons/sp-icon-edit.js';
-import '@spectrum-web-components/icons-workflow/icons/sp-icon-refresh.js';
-import '@spectrum-web-components/icons-workflow/icons/sp-icon-share.js';
-import '@spectrum-web-components/icons-workflow/icons/sp-icon-real-time-customer-profile.js';
+import '@spectrum-web-components/icons-workflow/icons/sp-icon-user.js';
+import '@spectrum-web-components/icons-workflow/icons/sp-icon-log-out.js';
 
 import './app/components/action-bar/action-bar.js';
 import './app/components/action-bar/picker/picker.js';
@@ -45,7 +42,8 @@ import './app/components/plugin/palette-container.js';
 import './app/components/plugin/palette-dialog/palette-dialog-wrapper.js';
 import './app/components/plugin/palette-dialog/palette-dialog.js';
 import './app/components/plugin/env-switcher/env-switcher.js';
-import './app/components/dialog/dialog.js';
+import './app/components/plugin/login/login.js';
+import './app/components/dialog-wrapper/dialog-wrapper.js';
 
 import { AEMSidekick } from './app/aem-sidekick.js';
 import { AEMConfigPicker } from './app/config-picker.js';

@@ -14,14 +14,14 @@
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
-import { expect, waitUntil } from '@open-wc/testing';
+import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import {
-  mockFetchConfigJSONNotFound,
+  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
   mockFetchStatusSuccess,
 } from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
@@ -29,8 +29,7 @@ import { appStore } from '../../../../src/extension/app/store/app.js';
 import {
   mockHelixEnvironment, restoreEnvironment,
 } from '../../../mocks/environment.js';
-import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
-import { EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
+import { MODALS } from '../../../../src/extension/app/constants.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -50,7 +49,7 @@ describe('Reload plugin', () => {
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
     mockFetchStatusSuccess();
-    mockFetchConfigJSONNotFound();
+    mockFetchConfigWithoutPluginsOrHostJSONSuccess();
     mockHelixEnvironment(document, 'preview');
 
     sidekick = new AEMSidekick(defaultSidekickConfig);
@@ -75,8 +74,11 @@ describe('Reload plugin', () => {
 
     const reloadPlugin = recursiveQuery(sidekick, '.reload');
     expect(reloadPlugin.textContent.trim()).to.equal('Reload');
+    await waitUntil(() => reloadPlugin.getAttribute('disabled') === null);
 
     reloadPlugin.click();
+
+    await aTimeout(500);
 
     await waitUntil(() => updateStub.calledOnce === true);
 
@@ -91,8 +93,7 @@ describe('Reload plugin', () => {
       .resolves(new Response('', { status: 500, headers: {} }));
     const showWaitSpy = sandbox.spy(appStore, 'showWait');
 
-    const modalSpy = sandbox.spy();
-    EventBus.instance.addEventListener(EVENTS.OPEN_MODAL, modalSpy);
+    const modalSpy = sandbox.spy(appStore, 'showModal');
 
     await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
@@ -106,8 +107,8 @@ describe('Reload plugin', () => {
     expect(showWaitSpy.calledOnce).to.be.true;
 
     expect(modalSpy.calledTwice).to.be.true;
-    expect(modalSpy.args[0][0].detail.type).to.equal(MODALS.WAIT);
-    expect(modalSpy.args[1][0].detail.type).to.equal(MODALS.ERROR);
+    expect(modalSpy.args[0][0].type).to.equal(MODALS.WAIT);
+    expect(modalSpy.args[1][0].type).to.equal(MODALS.ERROR);
 
     expect(reloaded).to.be.false;
   });

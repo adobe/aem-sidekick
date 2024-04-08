@@ -10,9 +10,9 @@
  * governing permissions and limitations under the License.
  */
 
-import { EVENTS, MODALS } from '../../constants.js';
+import { MODALS } from '../../constants.js';
+import { SidekickPlugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
-import { EventBus } from '../../utils/event-bus.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -25,10 +25,10 @@ import { EventBus } from '../../utils/event-bus.js';
 /**
  * Creates the publish plugin
  * @param {AppStore} appStore The app store
- * @returns {CorePlugin} The publish plugin
+ * @returns {SidekickPlugin} The publish plugin
  */
 export function createPublishPlugin(appStore) {
-  return {
+  return new SidekickPlugin({
     id: 'publish',
     condition: (store) => store.isProject() && store.isContent(),
     button: {
@@ -45,18 +45,17 @@ export function createPublishPlugin(appStore) {
           // eslint-disable-next-line no-console
           console.error(res);
 
-          EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_MODAL, {
-            detail: {
-              type: MODALS.ERROR,
-              data: {
-                message: appStore.i18n('publish_failure'),
-              },
+          appStore.showModal({
+            type: MODALS.ERROR,
+            data: {
+              message: appStore.i18n('publish_failure'),
             },
-          }));
+          });
         }
       },
-      isEnabled: (store) => store.isAuthorized('live', 'write') && store.status.edit
-          && store.status.edit.url, // enable only if edit url exists
+      isEnabled: (store) => store.isAuthorized('live', 'write') // only enable if authorized
+        && store.status.preview && store.status.preview.status === 200, // and page previewed
     },
-  };
+    appStore,
+  });
 }
