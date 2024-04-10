@@ -13,7 +13,8 @@
 import { customElement, property } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { html, LitElement, css } from 'lit';
-import { appStore, SidekickState } from '../../../store/app.js';
+import { appStore } from '../../../store/app.js';
+import { SidekickState } from '../../../constants.js';
 
 /**
  * Login Button component
