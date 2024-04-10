@@ -657,5 +657,11 @@
     },
     "back": {
       "message": "Back"
+    }, 
+    "reload_success": {
+      "message": "Preview successfully updated, reloading..."
+    }, 
+    "publish_success": {
+      "message": "Publish successful, reloading..."
     }
 }

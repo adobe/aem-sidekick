@@ -97,19 +97,15 @@ export function createPreviewPlugin(appStore) {
       const { previewPath, previewTimestamp } = JSON
         .parse(window.sessionStorage.getItem('hlx-sk-preview') || '{}');
       window.sessionStorage.removeItem('hlx-sk-preview');
-      if (previewTimestamp < Date.now() + 60000) {
-        // preview request detected in session storage, wait for status...
-        appStore.showWait();
-        appStore.sidekick.addEventListener('statusfetched', async () => {
-          const { status } = appStore;
-          /* istanbul ignore else  */
-          if (status.webPath === previewPath && appStore.isAuthorized('preview', 'write')) {
-            // update preview and remove preview request from session storage
-            appStore.updatePreview();
-          } else {
-            appStore.hideWait();
-          }
-        }, { once: true });
+      if (previewTimestamp < Date.now() + 160000) {
+        const { status } = appStore;
+        /* istanbul ignore else  */
+        if (status.webPath === previewPath && appStore.isAuthorized('preview', 'write')) {
+          // update preview and remove preview request from session storage
+          appStore.updatePreview();
+        } else {
+          appStore.hideWait();
+        }
       }
     },
   });

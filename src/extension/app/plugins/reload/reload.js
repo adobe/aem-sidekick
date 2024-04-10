@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { MODALS } from '../../constants.js';
+import { MODALS, SidekickState } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 import { i18n } from '../../utils/i18n.js';
@@ -35,16 +35,26 @@ export function createReloadPlugin(appStore) {
     button: {
       text: i18n(appStore.languageDict, 'reload'),
       action: async (evt) => {
-        appStore.showWait();
+        appStore.setState(SidekickState.PREVIEWING);
         try {
           const resp = await appStore.update();
           if (!resp.ok && resp.status >= 400) {
             // eslint-disable-next-line no-console
             console.error(resp);
+            appStore.showToast(resp.headers['x-error'], 'negative');
             throw new Error(resp.headers['x-error'] || resp.status);
           }
-          appStore.hideWait();
-          appStore.reloadPage(newTab(evt));
+
+          const closeHandler = () => {
+            appStore.reloadPage(newTab(evt));
+          };
+
+          appStore.setState();
+
+          const toast = appStore.showToast(i18n(appStore.languageDict, 'reload_success'), 'positive', 3000000);
+          toast.setAttribute('action-label', 'Open');
+          toast.addEventListener('closed', closeHandler);
+          toast.action = closeHandler;
         } catch (e) {
           appStore.showModal({
             type: MODALS.ERROR,

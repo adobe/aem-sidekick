@@ -62,6 +62,9 @@ export const spectrum2 = css`
     --sidekick-border-color-dark: #393939;
     --sidekick-border-color-light: #DADADA;
 
+    --sidekick-min-width: 620px;
+    --sidekick-max-width: 800px;
+
     --spectrum2-edit-content-default: var(--edit-content-default-dark);
     --spectrum2-edit-background-default: var(--edit-background-default-dark);
     --spectrum2-edit-background-hover: var(--edit-background-hover-dark);
@@ -102,6 +105,10 @@ export const spectrum2 = css`
       0px 0px 3px 0px rgba(0, 0, 0, 0.12),
       0px 3px 8px 0px rgba(0, 0, 0, 0.04),
       0px 4px 16px 0px rgba(0, 0, 0, 0.08);
+
+    --mod-toast-corner-radius: var(--spectrum2-large-border-radius);
+    --mod-toast-divider-color: transparent;
+    --mod-toast-max-inline-size: var(--sidekick-max-width);
   }
 
   @media (prefers-color-scheme: light) {

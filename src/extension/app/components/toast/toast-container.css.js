@@ -18,8 +18,15 @@ export const style = css`
     flex-direction: column;
     gap: 16px;
     position: absolute;
-    bottom: 91px;
+    left: 50%;
+    transform: translate(-50%, 0px);
+    bottom: 90px;
     align-items: center;
+    min-width: var(--sidekick-min-width);
+    max-width: var(--sidekick-max-width);
+  }
+
+  .toast-container sp-toast {
     width: 100%;
   }
 `;

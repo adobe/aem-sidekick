@@ -10,9 +10,10 @@
  * governing permissions and limitations under the License.
  */
 
-import { MODALS } from '../../constants.js';
+import { MODALS, SidekickState } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
+import { i18n } from '../../utils/i18n.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -36,11 +37,19 @@ export function createPublishPlugin(appStore) {
       action: async (evt) => {
         const { location } = appStore;
         const path = location.pathname;
-        appStore.showWait();
+        appStore.setState(SidekickState.PUBLISHNG);
         const res = await appStore.publish(path);
         if (res.ok) {
-          appStore.hideWait();
-          appStore.switchEnv('prod', newTab(evt));
+          const closeHandler = () => {
+            appStore.switchEnv('prod', newTab(evt));
+          };
+
+          appStore.setState();
+
+          const toast = appStore.showToast(i18n(appStore.languageDict, 'publish_success'), 'positive');
+          toast.setAttribute('action-label', 'Open');
+          toast.addEventListener('closed', closeHandler);
+          toast.action = closeHandler;
         } else {
           // eslint-disable-next-line no-console
           console.error(res);

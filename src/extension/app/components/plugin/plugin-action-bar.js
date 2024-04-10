@@ -16,9 +16,10 @@ import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
-import { appStore } from '../../store/app.js';
+import { appStore, SidekickState } from '../../store/app.js';
 import { ICONS, MODALS } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
+import '../action-bar/activity-action/activity-action.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} SidekickPlugin
@@ -68,11 +69,10 @@ export class PluginActionBar extends MobxLitElement {
   async connectedCallback() {
     super.connectedCallback();
 
-    this.ready = true;
     this.escapeHandler = this.createEscapeHandler();
 
     reaction(
-      () => appStore.status,
+      () => appStore.state,
       () => {
         this.requestUpdate();
       },
@@ -84,8 +84,11 @@ export class PluginActionBar extends MobxLitElement {
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
-    if (!appStore.corePlugins) {
-      return '';
+    if (appStore.state !== SidekickState.READY) {
+      return html`
+        <sp-action-group>
+          <activity-action></activity-action>
+        </sp-action-group>`;
     }
 
     this.visiblePlugins = [
@@ -96,7 +99,7 @@ export class PluginActionBar extends MobxLitElement {
 
     return this.visiblePlugins.length > 0
       ? html`<sp-action-group>${[...this.visiblePlugins.map((p) => p.render())]}</sp-action-group>`
-      : '';
+      : html`<sp-action-group></sp-action-group>`;
   }
 
   /**
@@ -177,17 +180,17 @@ export class PluginActionBar extends MobxLitElement {
     systemPlugins.push(ICONS.ADOBE_LOGO);
 
     const actionGroup = html`<sp-action-group>${systemPlugins}</sp-action-group>`;
-    const divider = loggedIn || siteStore.authorized ? html`<sp-divider size="s" vertical></sp-divider>` : '';
+    const divider = html`<sp-divider size="s" vertical></sp-divider>`;
 
     return [divider, actionGroup];
   }
 
   render() {
-    return this.ready ? html`
+    return html`
       <action-bar>
         ${this.renderPlugins()}
         ${this.renderSystemPlugins()}
       </action-bar>
-    ` : '';
+    `;
   }
 }

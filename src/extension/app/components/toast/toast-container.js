@@ -25,6 +25,7 @@ import { style } from './toast-container.css.js';
  * Toast container component
  * @element toast-container
  * @class ToastContainer
+ * @fires closed
  */
 @customElement('toast-container')
 export class ToastContainer extends LitElement {
@@ -41,6 +42,20 @@ export class ToastContainer extends LitElement {
    */
   @query('.toast-container')
   accessor toastContainer;
+
+  /**
+  * Toast action label
+  * @type {string}
+  */
+  @property({ type: String, attribute: 'action-label' })
+  accessor actionLabel;
+
+  /**
+  * Action
+  * @type {Object}
+  */
+  @property({ type: Object })
+  accessor action;
 
   static get styles() {
     return [style];
@@ -64,6 +79,7 @@ export class ToastContainer extends LitElement {
    */
   onClosed() {
     this.remove();
+    this.dispatchEvent(new CustomEvent('closed'));
   }
 
   /**
@@ -77,7 +93,16 @@ export class ToastContainer extends LitElement {
     toastElement.setAttribute('timeout', toast.timeout.toString());
     toastElement.textContent = toast.message;
     toastElement.addEventListener('close', this.onClosed.bind(this));
+
+    if (this.actionLabel) {
+      toastElement.setAttribute('action-label', this.actionLabel);
+    }
+
     this.toastContainer.append(toastElement);
+
+    toastElement.addEventListener('action', () => {
+      this.action();
+    });
 
     toastElement.addEventListener('close', () => {
       this.toastContainer.removeChild(toastElement);

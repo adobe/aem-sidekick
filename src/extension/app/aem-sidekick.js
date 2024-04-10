@@ -37,12 +37,11 @@ export class AEMSidekick extends MobxLitElement {
   }
 
   render() {
-    return appStore.siteStore?.ready
-      ? html`
+    return html`
       <theme-wrapper>
         <plugin-action-bar></plugin-action-bar>
         <palette-container></palette-container>
       </theme-wrapper>
-    ` : '';
+    `;
   }
 }

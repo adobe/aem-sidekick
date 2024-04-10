@@ -22,7 +22,7 @@ import {
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
-  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS, RESTRICTED_PATHS,
+  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS, RESTRICTED_PATHS, SidekickState,
 } from '../constants.js';
 // eslint-disable-next-line import/no-cycle
 import { Plugin } from '../components/plugin/plugin.js';
@@ -70,9 +70,6 @@ export const VIEWS = {
 };
 
 export class AppStore {
-  // eslint-disable-next-line no-undef
-  @observable accessor initialized = false;
-
   /**
    * The current location
    * @type {URL}
@@ -127,6 +124,12 @@ export class AppStore {
    */
   keyboardListener;
 
+  /**
+   * The current state of the sidekick
+   * @type {String}
+   */
+  @observable accessor state = SidekickState.FETCHING_STATUS;
+
   constructor() {
     this.siteStore = new SiteStore(this);
     this.keyboardListener = new KeyboardListener();
@@ -158,8 +161,6 @@ export class AppStore {
 
     this.fetchStatus();
 
-    this.setInitialized();
-
     this.fireEvent(EXTERNAL_EVENTS.CONTEXT_LOADED, {
       config: this.siteStore.toJSON(),
       location: this.location,
@@ -168,17 +169,34 @@ export class AppStore {
     this.showView();
   }
 
-  /**
-   * Sets the initialized flag.
-   */
-  @action
-  setInitialized() {
-    this.initialized = true;
-  }
-
   @action
   async initSettings() {
     this.pluginPrefs = await getConfig('sync', 'pluginPrefs');
+  }
+
+  /**
+   * Set as initialized.
+   * @param {string} [state] The state to set
+   */
+  @action
+  setState(state) {
+    if (state) {
+      this.state = state;
+      return;
+    }
+
+    const { profile, error } = this.status;
+    const { authorized } = this.siteStore;
+
+    if (!profile && !authorized) {
+      this.state = SidekickState.LOGIN_REQUIRED;
+    } else if (!authorized) {
+      this.state = SidekickState.UNAUTHORIZED;
+    } else if (error) {
+      this.state = SidekickState.ERROR;
+    } else {
+      this.state = SidekickState.READY;
+    }
   }
 
   /**
@@ -781,6 +799,7 @@ export class AppStore {
       this.status.apiUrl = apiUrl;
     }
 
+    this.setState(SidekickState.FETCHING_STATUS);
     fetch(this.status.apiUrl, {
       ...getAdminFetchOptions(),
     })
@@ -841,6 +860,9 @@ export class AppStore {
         //   },
         // };
         // this.showModal(modal);
+      })
+      .finally(() => {
+        this.setState();
       });
   }
 
@@ -908,7 +930,7 @@ export class AppStore {
   }
 
   async updatePreview(ranBefore) {
-    this.showWait();
+    this.setState(SidekickState.PREVIEWING);
     const { status } = this;
     const resp = await this.update();
     if (!resp.ok) {
@@ -940,10 +962,10 @@ export class AppStore {
     // handle special case /.helix/*
     if (status.webPath.startsWith('/.helix/')) {
       this.showToast(this.i18n('preview_config_success'), 'positive');
-      this.hideWait();
+      this.setState();
       return;
     }
-    this.hideWait();
+    this.setState();
     this.switchEnv('preview');
   }
 
