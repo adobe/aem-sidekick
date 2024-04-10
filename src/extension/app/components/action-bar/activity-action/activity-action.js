@@ -13,8 +13,8 @@
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { reaction } from 'mobx';
-import { ICONS } from '../../../constants.js';
-import { appStore, SidekickState } from '../../../store/app.js';
+import { ICONS, SidekickState } from '../../../constants.js';
+import { appStore } from '../../../store/app.js';
 
 @customElement('activity-action')
 export class ActivityAction extends LitElement {
