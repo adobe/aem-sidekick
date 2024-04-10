@@ -16,8 +16,8 @@ import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
-import { appStore, SidekickState } from '../../store/app.js';
-import { ICONS, MODALS } from '../../constants.js';
+import { appStore } from '../../store/app.js';
+import { ICONS, MODALS, SidekickState } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import '../action-bar/activity-action/activity-action.js';
 
