@@ -51,10 +51,7 @@ export function createReloadPlugin(appStore) {
 
           appStore.setState();
 
-          const toast = appStore.showToast(i18n(appStore.languageDict, 'reload_success'), 'positive', 3000000);
-          toast.setAttribute('action-label', 'Open');
-          toast.addEventListener('closed', closeHandler);
-          toast.action = closeHandler;
+          appStore.showToast(i18n(appStore.languageDict, 'reload_success'), 'positive', closeHandler);
         } catch (e) {
           appStore.showModal({
             type: MODALS.ERROR,

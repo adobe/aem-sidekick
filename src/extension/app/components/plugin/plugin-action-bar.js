@@ -13,7 +13,7 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, query } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
 import { appStore } from '../../store/app.js';
@@ -64,6 +64,13 @@ export class PluginActionBar extends MobxLitElement {
   accessor ready = false;
 
   /**
+   * The toast container HTMLElement
+   * @type {HTMLElement}
+   */
+  @query('action-bar')
+  accessor actionBar;
+
+  /**
    * Loads the user preferences for plugins in this environment.
    */
   async connectedCallback() {
@@ -74,6 +81,20 @@ export class PluginActionBar extends MobxLitElement {
     reaction(
       () => appStore.state,
       () => {
+        if (appStore.state === SidekickState.TOAST) {
+          this.actionBar.classList.add(appStore.toast.variant);
+
+          setTimeout(() => {
+            this.actionBar.className = '';
+            if (appStore.toast.closeCallback) {
+              appStore.toast.closeCallback();
+            }
+            appStore.closeToast();
+          }, appStore.toast.timeout);
+        } else {
+          this.actionBar.className = '';
+        }
+
         this.requestUpdate();
       },
     );
@@ -145,6 +166,10 @@ export class PluginActionBar extends MobxLitElement {
 
     const systemPlugins = [];
 
+    if (appStore.state === SidekickState.TOAST) {
+      return html``;
+    }
+
     const pluginList = html`
       <sp-action-button
         quiet
@@ -186,11 +211,11 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   render() {
-    return html`
+    return appStore.state !== SidekickState.INITIALIZING ? html`
       <action-bar>
         ${this.renderPlugins()}
         ${this.renderSystemPlugins()}
       </action-bar>
-    `;
+    ` : '';
   }
 }

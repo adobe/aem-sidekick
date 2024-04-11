@@ -19,6 +19,10 @@ import { appStore } from '../../../store/app.js';
 @customElement('activity-action')
 export class ActivityAction extends LitElement {
   static styles = css`
+    :host {
+      width: 100%;
+    }
+
     .container {
       display: flex;
       align-items: center;
@@ -29,10 +33,50 @@ export class ActivityAction extends LitElement {
     .container span {
       padding-bottom: 2px;
     }
+
+    .toast-container {
+      color: #fff;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      width: 100%;
+    }
+
+    .toast-container .message {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-grow: 1;
+    }
+
+    .toast-container .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .toast-container .actions sp-action-button {
+      color: #fff;
+      border-radius: 16px;
+      --highcontrast-actionbutton-background-color-hover: #fff4;
+      --highcontrast-actionbutton-background-color-active: #fff2;
+    }
+
+    .toast-container .actions sp-action-button.close {
+      color: #fff;
+    }
+
+    .toast-container .actions sp-action-button.action {
+      --highcontrast-actionbutton-background-color-default: #fff2;
+      height: 100%;
+      min-height: 32px;
+      min-width: 65px;
+      padding-bottom: 2px;
+    }
   `;
 
   /**
-   * Loads the user preferences for plugins in this environment.
+   * Listen for state changes
    */
   async connectedCallback() {
     super.connectedCallback();
@@ -48,24 +92,40 @@ export class ActivityAction extends LitElement {
   renderType() {
     switch (appStore.state) {
       case SidekickState.FETCHING_STATUS:
-        return html`
-          <sp-progress-circle size="s" indeterminate></sp-progress-circle><span>Loading status</span>
-        `;
+      case SidekickState.LOGGING_IN:
+      case SidekickState.LOGGING_OUT:
       case SidekickState.PREVIEWING:
-        return html`
-            <sp-progress-circle size="s" indeterminate></sp-progress-circle><span>Updating <b>Preview</b></span>
-          `;
       case SidekickState.PUBLISHNG:
+      case SidekickState.UNPUBLISHING:
+      case SidekickState.DELETING:
         return html`
-            <sp-progress-circle size="s" indeterminate></sp-progress-circle><span>Updating <b>Publish</b></span>
-          `;
+          <sp-progress-circle size="s" indeterminate></sp-progress-circle><span>${appStore.i18n(appStore.state)}</span>
+        `;
       case SidekickState.LOGIN_REQUIRED:
         return html`
-          ${ICONS.INFO}<span>Sign in to continue</span>
+          ${ICONS.INFO}<span>${appStore.i18n(appStore.state)}</span>
         `;
       case SidekickState.UNAUTHORIZED:
         return html`
-          ${ICONS.INFO}<span>Account not authorized</span>
+          ${ICONS.ALERT_TRIANGLE}<span>${appStore.i18n(appStore.state)}</span>
+        `;
+      case SidekickState.TOAST:
+        return html`
+          <div class="toast-container">
+            <div class="message">
+              ${ICONS.CHECKMARK}<span>${appStore.toast.message}</span>
+            </div>
+            <div class="actions">
+              ${appStore.toast.actionCallback && appStore.toast.actionLabel ? html`
+                <sp-action-button class="action" quiet @click=${appStore.toast.actionCallback}>
+                  ${appStore.toast.actionLabel}
+                </sp-action-button>
+              ` : html``}
+              <sp-action-button class="close" quiet @click=${appStore.toast.closeCallback}>
+                <sp-icon slot="icon">${ICONS.CLOSE_X}</sp-icon>
+              </sp-action-button>
+            </div>
+          </div>
         `;
       default:
         return html``;

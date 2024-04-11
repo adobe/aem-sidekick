@@ -26,6 +26,21 @@ export class ActionBar extends LitElement {
       backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
       -webkit-backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
     }
+
+    :host(.positive) .action-bar {
+      transition: background-color 500ms;
+      background-color: #05834E;
+    }
+
+    :host(.negative) .action-bar {
+      transition: background-color 500ms;
+      background-color: #D73220;
+    }
+
+    :host(.info) .action-bar {
+      transition: background-color 500ms;
+      background-color: #3B63FB;
+    }
   `;
 
   render() {

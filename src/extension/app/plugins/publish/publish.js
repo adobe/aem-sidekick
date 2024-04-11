@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { MODALS, SidekickState } from '../../constants.js';
+import { SidekickState } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 import { i18n } from '../../utils/i18n.js';
@@ -40,26 +40,24 @@ export function createPublishPlugin(appStore) {
         appStore.setState(SidekickState.PUBLISHNG);
         const res = await appStore.publish(path);
         if (res.ok) {
-          const closeHandler = () => {
+          const actionCallback = () => {
             appStore.switchEnv('prod', newTab(evt));
           };
 
-          appStore.setState();
+          const closeCallback = () => {
+            appStore.closeToast();
+          };
 
-          const toast = appStore.showToast(i18n(appStore.languageDict, 'publish_success'), 'positive');
-          toast.setAttribute('action-label', 'Open');
-          toast.addEventListener('closed', closeHandler);
-          toast.action = closeHandler;
+          appStore.showToast(i18n(appStore.languageDict, 'publish_success'), 'positive', closeCallback, actionCallback, 'Open', 10000000);
         } else {
           // eslint-disable-next-line no-console
           console.error(res);
 
-          appStore.showModal({
-            type: MODALS.ERROR,
-            data: {
-              message: appStore.i18n('publish_failure'),
-            },
-          });
+          appStore.showToast(
+            appStore.i18n('publish_failure'),
+            'negative',
+            () => appStore.closeToast(),
+          );
         }
       },
       isEnabled: (store) => store.isAuthorized('live', 'write') // only enable if authorized

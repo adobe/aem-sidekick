@@ -663,5 +663,32 @@
     }, 
     "publish_success": {
       "message": "Publish successful, reloading..."
+    }, 
+    "fetching_status_state": {
+      "message": "Loading status"
+    }, 
+    "login_required_state": {
+      "message": "Sign in to continue"
+    }, 
+    "logging_in_state": {
+      "message": "Signing in...."
+    }, 
+    "logging_out_state": {
+      "message": "Signing out...."
+    }, 
+    "unauthorized_state": {
+      "message": "Account not authorized"
+    }, 
+    "previewing_state": {
+      "message": "Updating Preview"
+    }, 
+    "publishing_state": {
+      "message": "Publishing..."
+    }, 
+    "unpublishing_state": {
+      "message": "Unpublishing..."
+    }, 
+    "deleting_state": {
+      "message": "Deleting..."
     }
 }

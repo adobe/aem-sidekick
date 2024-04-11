@@ -29,7 +29,6 @@ import { Plugin } from '../components/plugin/plugin.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
-import { ToastContainer } from '../components/toast/toast-container.js';
 import { getConfig, setConfig } from '../../config.js';
 
 /**
@@ -128,7 +127,13 @@ export class AppStore {
    * The current state of the sidekick
    * @type {String}
    */
-  @observable accessor state = SidekickState.FETCHING_STATUS;
+  @observable accessor state = SidekickState.INITIALIZING;
+
+  /**
+   * Toast data
+   * @type {import('@Types').Toast}
+   */
+  accessor toast;
 
   constructor() {
     this.siteStore = new SiteStore(this);
@@ -720,23 +725,35 @@ export class AppStore {
   /**
    * Displays a toast message
    * @param {string} message The message to display
-   * @param {string} [variant] The variant of the toast (optional)
+   * @param {string} variant The variant of the toast (optional)
+   * @param {function} closeCallback The close callback function
+   * @param {function} actionCallback The action callback function
+   * @param {string} actionLabel The action label
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
-  showToast(message, variant = 'info', timeout = 6000) {
-    const existingToast = this.sidekick?.shadowRoot?.querySelector('theme-wrapper').querySelector('toast-container');
-    if (existingToast) {
-      existingToast.remove();
+  showToast(message, variant = 'info', closeCallback = undefined, actionCallback = undefined, actionLabel = 'Ok', timeout = 6000) {
+    if (this.toast) {
+      this.toast = null;
+      this.setState();
     }
 
-    const toastContainer = new ToastContainer({
+    this.toast = {
       message,
       variant,
+      closeCallback,
+      actionCallback,
+      actionLabel,
       timeout,
-    });
-    this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(toastContainer);
+    };
+    this.setState(SidekickState.TOAST);
+  }
 
-    return toastContainer;
+  /**
+   * Closes the toast message
+   */
+  closeToast() {
+    this.toast = null;
+    this.setState();
   }
 
   /**
@@ -1287,7 +1304,7 @@ export class AppStore {
    * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
    */
   login(selectAccount) {
-    this.showWait(this.i18n('login_wait'));
+    this.setState(SidekickState.LOGGING_IN);
     const loginUrl = getAdminUrl(this.siteStore, 'login');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
@@ -1322,7 +1339,6 @@ export class AppStore {
           // encourageLogin(sk, false);
           this.fetchStatus();
           this.fireEvent('loggedin');
-          this.hideWait();
           return;
         }
         if (attempts >= 5) {
@@ -1333,6 +1349,7 @@ export class AppStore {
               message: this.i18n('error_login_timeout'),
             },
           });
+          this.setState();
           return;
         }
       }
@@ -1346,7 +1363,7 @@ export class AppStore {
    * Logs the user out.
    */
   logout() {
-    this.showWait();
+    this.setState(SidekickState.LOGGING_OUT);
     const logoutUrl = getAdminUrl(this.siteStore, 'logout');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
@@ -1381,6 +1398,7 @@ export class AppStore {
               message: this.i18n('error_logout_error'),
             },
           });
+          this.setState();
           return;
         }
       }

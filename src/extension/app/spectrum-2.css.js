@@ -109,6 +109,7 @@ export const spectrum2 = css`
     --mod-toast-corner-radius: var(--spectrum2-large-border-radius);
     --mod-toast-divider-color: transparent;
     --mod-toast-max-inline-size: var(--sidekick-max-width);
+    --mod-actionbutton-border-radius: var(--spectrum2-default-border-radius);
   }
 
   @media (prefers-color-scheme: light) {

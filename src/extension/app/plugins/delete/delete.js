@@ -13,7 +13,7 @@
 import { log } from '../../../log.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import {
-  MODALS, MODAL_EVENTS, TOAST_EVENTS, RESTRICTED_PATHS,
+  MODALS, MODAL_EVENTS, TOAST_EVENTS, RESTRICTED_PATHS, SidekickState,
 } from '../../constants.js';
 
 /**
@@ -65,10 +65,9 @@ export function createDeletePlugin(appStore) {
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
           // perform delete
-          appStore.showWait();
+          appStore.setState(SidekickState.DELETING);
           try {
             const resp = await appStore.delete();
-            appStore.hideWait();
             if (resp.ok) {
               // show success toast
               const toast = appStore.showToast(
@@ -92,6 +91,7 @@ export function createDeletePlugin(appStore) {
                 message: appStore.i18n('delete_failure'),
               },
             });
+            appStore.setState();
           }
         });
       },
