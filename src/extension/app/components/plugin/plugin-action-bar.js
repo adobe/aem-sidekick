@@ -82,7 +82,7 @@ export class PluginActionBar extends MobxLitElement {
       .filter((plugin) => plugin.isVisible());
 
     return this.visiblePlugins.length > 0
-      ? html`<sp-action-group>${[...this.visiblePlugins.map((p) => p.render())]}</sp-action-group>`
+      ? html`<sp-action-group>${this.visiblePlugins.map((p) => p.render())}</sp-action-group>`
       : '';
   }
 

@@ -641,7 +641,7 @@
       "message": "Manage plugins"
     },
     "plugins_filter": {
-      "message": "Search plugins ..."
+      "message": "Search plugins..."
     },
     "plugins_navigate": {
       "message": "Navigate"
