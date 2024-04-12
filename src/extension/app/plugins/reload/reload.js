@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { MODALS, SidekickState } from '../../constants.js';
+import { SidekickState } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 import { i18n } from '../../utils/i18n.js';
@@ -53,12 +53,7 @@ export function createReloadPlugin(appStore) {
 
           appStore.showToast(i18n(appStore.languageDict, 'reload_success'), 'positive', closeHandler);
         } catch (e) {
-          appStore.showModal({
-            type: MODALS.ERROR,
-            data: {
-              message: appStore.i18n('reload_failure'),
-            },
-          });
+          this.showToast(appStore.i18n('reload_failure'), 'negative');
         }
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write')

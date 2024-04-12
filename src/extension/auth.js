@@ -41,7 +41,7 @@ export async function addAuthTokenHeaders() {
           requestHeaders: [{
             operation: 'set',
             header: 'x-auth-token',
-            value: authToken,
+            value: `${authToken}123`,
           }],
         },
         condition: {

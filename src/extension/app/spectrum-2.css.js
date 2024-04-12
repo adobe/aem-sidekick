@@ -93,8 +93,12 @@ export const spectrum2 = css`
     --spectrum2-xlarge-border-radius: 16px;
     --spectrum2-form-input-border-radius: var(--spectrum2-medium-border-radius);
     --spectrum2-dialog-border-radius: var(--spectrum2-xlarge-border-radius);
-    --spectrum2-sidekick-border-radius: var(--spectrum2-large-border-radius);
 
+    --spectrum2-color-positive: #05834E;
+    --spectrum2-color-negative: #D73220;
+    --spectrum2-color-info: #3B63FB;
+
+    --spectrum2-sidekick-border-radius: var(--spectrum2-large-border-radius);
     --spectrum2-sidekick-background: var(--sidekick-background-dark);
     --spectrum2-sidekick-layer-1: var(--sidekick-background-layer1-dark);
     --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-dark);

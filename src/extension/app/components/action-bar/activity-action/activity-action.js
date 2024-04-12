@@ -89,6 +89,14 @@ export class ActivityAction extends LitElement {
     );
   }
 
+  handleCloseToast() {
+    if (appStore.toast.closeCallback) {
+      appStore.toast.closeCallback();
+      return;
+    }
+    appStore.closeToast();
+  }
+
   renderType() {
     switch (appStore.state) {
       case SidekickState.FETCHING_STATUS:
@@ -121,7 +129,7 @@ export class ActivityAction extends LitElement {
                   ${appStore.toast.actionLabel}
                 </sp-action-button>
               ` : html``}
-              <sp-action-button class="close" quiet @click=${appStore.toast.closeCallback}>
+              <sp-action-button class="close" quiet @click=${this.handleCloseToast}>
                 <sp-icon slot="icon">${ICONS.CLOSE_X}</sp-icon>
               </sp-action-button>
             </div>

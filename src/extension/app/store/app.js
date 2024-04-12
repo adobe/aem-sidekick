@@ -725,10 +725,10 @@ export class AppStore {
   /**
    * Displays a toast message
    * @param {string} message The message to display
-   * @param {string} variant The variant of the toast (optional)
-   * @param {function} closeCallback The close callback function
-   * @param {function} actionCallback The action callback function
-   * @param {string} actionLabel The action label
+   * @param {string} [variant] The variant of the toast (optional)
+   * @param {function} [closeCallback] The close callback function
+   * @param {function} [actionCallback] The action callback function
+   * @param {string} [actionLabel] The action label
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
   showToast(message, variant = 'info', closeCallback = undefined, actionCallback = undefined, actionLabel = 'Ok', timeout = 6000) {
@@ -1333,13 +1333,7 @@ export class AppStore {
         }
         if (attempts >= 5) {
           // give up after 5 attempts
-          this.showModal({
-            type: MODALS.ERROR,
-            data: {
-              message: this.i18n('error_login_timeout'),
-            },
-          });
-          this.setState();
+          this.showToast(this.i18n('error_login_timeout'), 'negative');
           return;
         }
       }
@@ -1382,13 +1376,7 @@ export class AppStore {
           return;
         }
         if (attempts >= 5) {
-          this.showModal({
-            type: MODALS.ERROR,
-            data: {
-              message: this.i18n('error_logout_error'),
-            },
-          });
-          this.setState();
+          this.showToast(this.i18n('error_logout_error'), 'negative');
           return;
         }
       }

@@ -29,17 +29,20 @@ export class ActionBar extends LitElement {
 
     :host(.positive) .action-bar {
       transition: background-color 500ms;
-      background-color: #05834E;
+      background-color: var(--spectrum2-color-positive);
+      border: 1px solid var(--spectrum2-color-positive);
     }
 
     :host(.negative) .action-bar {
       transition: background-color 500ms;
-      background-color: #D73220;
+      background-color: var(--spectrum2-color-negative);
+      border: 1px solid var(--spectrum2-color-negative);
     }
 
     :host(.info) .action-bar {
       transition: background-color 500ms;
-      background-color: #3B63FB;
+      background-color: var(--spectrum2-color-info);
+      border: 1px solid var(--spectrum2-color-info);
     }
   `;
 
