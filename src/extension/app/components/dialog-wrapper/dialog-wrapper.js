@@ -38,6 +38,7 @@ export class DialogWrapper extends SPDialogWrapper {
         e.preventDefault();
         e.stopPropagation();
         this.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
+        this.remove();
       });
     }
   }

@@ -87,15 +87,10 @@ describe('Plugin action bar', () => {
     ).to.deep.equal(pluginIds);
   }
 
-  function togglePluginList() {
+  async function expectInPluginList(pluginIds) {
     // open plugin list
     const pluginList = recursiveQuery(sidekick, '.plugin-list');
     pluginList.click();
-  }
-
-  async function expectInPluginList(pluginIds) {
-    // open plugin list
-    togglePluginList();
 
     // wait for modal and retrieve plugins
     await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
@@ -448,7 +443,7 @@ describe('Plugin action bar', () => {
   });
 
   describe('plugin list', () => {
-    it('opens and closes plugin list', async () => {
+    it('opens plugin list', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();
       mockHelixEnvironment(document, 'preview');
@@ -459,54 +454,13 @@ describe('Plugin action bar', () => {
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
       // open plugin list
-      togglePluginList();
+      const pluginList = recursiveQuery(sidekick, '.plugin-list');
+      pluginList.click();
+
       await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
       const dialogWrapper = recursiveQuery(sidekick, 'sp-dialog-wrapper');
       expect(dialogWrapper.className).to.contain('plugin-list');
-
-      // close plugin list
-      togglePluginList();
-      expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
     });
-
-    it('cleans up on plugin list close event', async () => {
-      const removeEventListenerSpy = sandbox.spy(document, 'removeEventListener');
-      mockFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'preview');
-
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-
-      // open plugin list
-      togglePluginList();
-
-      // dispatch close event on modal
-      await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
-      recursiveQuery(sidekick, 'modal-container').dispatchEvent(new CustomEvent('close'));
-      await aTimeout(100);
-
-      expect(removeEventListenerSpy.calledWithMatch('keyup')).to.be.true;
-    });
-
-    it('esc closes plugin list', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'preview');
-
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-
-      togglePluginList();
-      document.dispatchEvent(new KeyboardEvent('keyup', { key: 'X' }));
-      expect(recursiveQuery(sidekick, 'modal-container')).to.exist;
-      document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape' }));
-      expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
-    }).timeout(5000);
 
     it('isPreview: renders correct plugins in plugin list', async () => {
       mockFetchStatusSuccess();

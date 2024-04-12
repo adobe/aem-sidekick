@@ -17,7 +17,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
 import { appStore } from '../../store/app.js';
-import { ICONS, MODALS, MODAL_EVENTS } from '../../constants.js';
+import { ICONS, MODALS } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 
 /**
@@ -44,18 +44,6 @@ export class PluginActionBar extends MobxLitElement {
   visiblePlugins = [];
 
   /**
-   * The modal container.
-   * @type {HTMLElement}
-   */
-  modalContainer = null;
-
-  /**
-   * The escape handler.
-   * @type {EventListenerOrEventListenerObject}
-   */
-  escapeHandler;
-
-  /**
   * Are we ready to render?
   * @type {boolean}
   */
@@ -69,7 +57,6 @@ export class PluginActionBar extends MobxLitElement {
     super.connectedCallback();
 
     this.ready = true;
-    this.escapeHandler = this.createEscapeHandler();
 
     reaction(
       () => appStore.status,
@@ -100,42 +87,10 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   /**
-   * Creates an ESC handler to close the plugin list modal and deselect the toggle button.
-   * @returns {EventListenerOrEventListenerObject} The escape handler
+   * Shows the plugin list modal.
    */
-  createEscapeHandler() {
-    /**
-     * @param {KeyboardEvent} event The event
-     */
-    return ({ key }) => {
-      if (key === 'Escape') {
-        this.cleanup();
-      }
-    };
-  }
-
-  /**
-   * Removes the modal container.
-   */
-  cleanup() {
-    this.modalContainer.remove();
-    this.modalContainer = null;
-    document.removeEventListener('keyup', this.escapeHandler);
-  }
-
-  /**
-   * Toggles the plugin list modal.
-   */
-  togglePluginListModal() {
-    if (this.modalContainer) {
-      this.cleanup();
-    } else {
-      this.modalContainer = appStore.showModal({ type: MODALS.PLUGIN_LIST });
-      this.modalContainer.addEventListener(MODAL_EVENTS.CLOSE, () => {
-        this.cleanup();
-      });
-      document.addEventListener('keyup', this.escapeHandler);
-    }
+  showPluginListModal() {
+    appStore.showModal({ type: MODALS.PLUGIN_LIST });
   }
 
   renderSystemPlugins() {
@@ -150,7 +105,7 @@ export class PluginActionBar extends MobxLitElement {
         class="plugin-list"
         label="${appStore.i18n('plugins_manage')}"
         .disabled=${!appStore.status?.webPath}
-        @click=${this.togglePluginListModal}>
+        @click=${this.showPluginListModal}>
         <sp-icon slot="icon" size="l">
           ${ICONS.PLUGINS}
         </sp-icon>

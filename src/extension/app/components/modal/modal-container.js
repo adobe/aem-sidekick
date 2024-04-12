@@ -86,8 +86,7 @@ export class ModalContainer extends LitElement {
   firstUpdated() {
     const dialogWrapper = this.shadowRoot.querySelector('sp-dialog-wrapper');
     dialogWrapper.addEventListener(MODAL_EVENTS.CLOSE, () => {
-      // propagate close event from dialog wrapper to modal container
-      this.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
+      this.remove();
     });
   }
 
@@ -105,6 +104,7 @@ export class ModalContainer extends LitElement {
      * @param {KeyboardEvent} e The keyboard event
      */
     return ({ key }) => {
+      /* istanbul ignore else  */
       if (key === 'Escape') {
         this.onCancel();
       } else if (key === 'Enter') {

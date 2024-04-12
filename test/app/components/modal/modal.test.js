@@ -323,9 +323,7 @@ describe('Modals', () => {
     expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
   });
 
-  it('propagates close event from dialog', async () => {
-    let closed = false;
-
+  it('cleans up on close event from dialog', async () => {
     sidekick = new AEMSidekick(defaultSidekickConfig);
     document.body.appendChild(sidekick);
 
@@ -334,15 +332,12 @@ describe('Modals', () => {
     const modal = appStore.showModal({
       type: MODALS.PLUGIN_LIST,
     });
-    modal.addEventListener(MODAL_EVENTS.CLOSE, () => {
-      closed = true;
-    });
 
     await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
     const dialog = recursiveQuery(modal, 'sp-dialog-wrapper');
     dialog.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
-
     await aTimeout(100);
-    expect(closed).to.be.true;
+
+    expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
   });
 });
