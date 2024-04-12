@@ -13,7 +13,7 @@
 import { log } from '../../../log.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import {
-  MODALS, MODAL_EVENTS, TOAST_EVENTS, RESTRICTED_PATHS, SidekickState,
+  MODALS, MODAL_EVENTS, RESTRICTED_PATHS, SidekickState,
 } from '../../constants.js';
 
 /**
@@ -70,28 +70,25 @@ export function createDeletePlugin(appStore) {
             const resp = await appStore.delete();
             if (resp.ok) {
               // show success toast
-              const toast = appStore.showToast(
+              appStore.showToast(
                 isPage
                   ? appStore.i18n('delete_page_success')
                   : appStore.i18n('delete_file_success'),
                 'positive',
+                () => {
+                  log.info(`redirecting to ${location.origin}/`);
+                  appStore.loadPage(`${location.origin}/`);
+                },
               );
-              toast.addEventListener(TOAST_EVENTS.CLOSE, () => {
-                log.info(`redirecting to ${location.origin}/`);
-                appStore.loadPage(`${location.origin}/`);
-              });
             } else {
               throw new Error(resp.headers?.['x-error']);
             }
           } catch (e) {
-            // eslint-disable-next-line no-console
-            appStore.showModal({
-              type: MODALS.ERROR,
-              data: {
-                message: appStore.i18n('delete_failure'),
-              },
-            });
-            appStore.setState();
+            appStore.showToast(
+              appStore.i18n('delete_failure'),
+              'negative',
+              () => appStore.closeToast(),
+            );
           }
         });
       },

@@ -958,21 +958,11 @@ export class AppStore {
         }, { once: true });
         this.fetchStatus();
       } else if (status.webPath.startsWith('/.helix/') && resp.error) {
-        this.showModal({
-          type: MODALS.ERROR,
-          data: {
-            message: `${this.i18n('error_config_failure')}${resp.error}`,
-          },
-        });
+        this.showToast(`${this.i18n('error_preview_failure')}${resp.error}`, 'negative');
       } else {
         // eslint-disable-next-line no-console
         console.error(resp);
-        this.showModal({
-          type: MODALS.ERROR,
-          data: {
-            message: this.i18n('error_preview_failure'),
-          },
-        });
+        this.showToast(`${this.i18n('error_preview_failure')}`, 'negative');
       }
       return;
     }

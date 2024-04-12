@@ -21,7 +21,6 @@
  * governing permissions and limitations under the License.
  */
 
-import { MODALS } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 
 /**
@@ -69,12 +68,11 @@ export function createPreviewPlugin(appStore) {
               errorKey = 'error_preview_not_gsheet_ms_excel';
             }
 
-            appStore.showModal({
-              type: MODALS.ERROR,
-              data: {
-                message: appStore.i18n(errorKey),
-              },
-            });
+            appStore.showToast(
+              appStore.i18n(errorKey),
+              'negative',
+              () => appStore.closeToast(),
+            );
 
             return;
           }
@@ -104,7 +102,7 @@ export function createPreviewPlugin(appStore) {
           // update preview and remove preview request from session storage
           appStore.updatePreview();
         } else {
-          appStore.hideWait();
+          appStore.closeToast();
         }
       }
     },

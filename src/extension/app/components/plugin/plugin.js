@@ -157,7 +157,13 @@ export class Plugin {
     const { config, id } = this;
     await appStore.validateSession();
     appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, { id });
-    config.button.action(evt);
+    try {
+      config.button.action(evt);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+      appStore.showToast(error.message, 'negative');
+    }
   }
 
   /**
