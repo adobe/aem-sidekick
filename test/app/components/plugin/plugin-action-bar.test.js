@@ -469,6 +469,28 @@ describe('Plugin action bar', () => {
       expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
     });
 
+    it('cleans up on plugin list close event', async () => {
+      const removeEventListenerSpy = sandbox.spy(document, 'removeEventListener');
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      // open plugin list
+      togglePluginList();
+
+      // dispatch close event on modal
+      await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
+      recursiveQuery(sidekick, 'modal-container').dispatchEvent(new CustomEvent('close'));
+      await aTimeout(100);
+
+      expect(removeEventListenerSpy.calledWithMatch('keyup')).to.be.true;
+    });
+
     it('esc closes plugin list', async () => {
       mockFetchStatusSuccess();
       mockFetchConfigWithoutPluginsJSONSuccess();

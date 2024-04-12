@@ -212,8 +212,10 @@ export class PluginList extends LitElement {
     const filterPlaceholder = appStore.i18n('plugins_filter');
 
     const arrowDownListener = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+      if (e.key !== 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+      }
       if (e.key === 'ArrowDown') {
         this.focusFirstMenuItem();
       } else if (e.key === 'Enter') {

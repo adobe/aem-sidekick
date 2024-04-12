@@ -17,7 +17,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
 import { appStore } from '../../store/app.js';
-import { ICONS, MODALS } from '../../constants.js';
+import { ICONS, MODALS, MODAL_EVENTS } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 
 /**
@@ -109,8 +109,7 @@ export class PluginActionBar extends MobxLitElement {
      */
     return ({ key }) => {
       if (key === 'Escape') {
-        this.shadowRoot.querySelector('.plugin-list').removeAttribute('selected');
-        this.removeModalContainer();
+        this.cleanup();
       }
     };
   }
@@ -118,7 +117,7 @@ export class PluginActionBar extends MobxLitElement {
   /**
    * Removes the modal container.
    */
-  removeModalContainer() {
+  cleanup() {
     this.modalContainer.remove();
     this.modalContainer = null;
     document.removeEventListener('keyup', this.escapeHandler);
@@ -129,9 +128,12 @@ export class PluginActionBar extends MobxLitElement {
    */
   togglePluginListModal() {
     if (this.modalContainer) {
-      this.removeModalContainer();
+      this.cleanup();
     } else {
       this.modalContainer = appStore.showModal({ type: MODALS.PLUGIN_LIST });
+      this.modalContainer.addEventListener(MODAL_EVENTS.CLOSE, () => {
+        this.cleanup();
+      });
       document.addEventListener('keyup', this.escapeHandler);
     }
   }
@@ -145,7 +147,6 @@ export class PluginActionBar extends MobxLitElement {
     const pluginList = html`
       <sp-action-button
         quiet
-        toggles
         class="plugin-list"
         label="${appStore.i18n('plugins_manage')}"
         .disabled=${!appStore.status?.webPath}

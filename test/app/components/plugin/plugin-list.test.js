@@ -153,4 +153,23 @@ describe('Plugin list', () => {
     await aTimeout(100);
     expect(publishStub.called).to.be.true;
   });
+
+  it('closes modal on escape key in filter field', async () => {
+    mockFetchStatusSuccess();
+    mockFetchConfigWithoutPluginsOrHostJSONSuccess();
+    mockHelixEnvironment(document, 'preview');
+
+    const sidekick = new AEMSidekick(defaultSidekickConfig);
+    const pluginList = await createPluginList(sidekick);
+
+    const plugins = [...recursiveQueryAll(pluginList, 'sp-menu-item')];
+    expect(plugins.length).to.equal(4);
+
+    // filters plugins
+    const filterField = recursiveQuery(pluginList, 'sp-textfield');
+    filterField.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape' }));
+    await aTimeout(100);
+
+    expect(recursiveQuery(sidekick, 'modal-container')).to.be.undefined;
+  });
 });
