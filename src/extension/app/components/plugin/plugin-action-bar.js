@@ -13,7 +13,7 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
+import { customElement, query } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
 import { appStore } from '../../store/app.js';
@@ -45,25 +45,6 @@ export class PluginActionBar extends MobxLitElement {
   visiblePlugins = [];
 
   /**
-   * The modal container.
-   * @type {HTMLElement}
-   */
-  modalContainer = null;
-
-  /**
-   * The escape handler.
-   * @type {EventListenerOrEventListenerObject}
-   */
-  escapeHandler;
-
-  /**
-  * Are we ready to render?
-  * @type {boolean}
-  */
-  @property({ type: Boolean, attribute: false })
-  accessor ready = false;
-
-  /**
    * The toast container HTMLElement
    * @type {HTMLElement}
    */
@@ -75,8 +56,6 @@ export class PluginActionBar extends MobxLitElement {
    */
   async connectedCallback() {
     super.connectedCallback();
-
-    this.escapeHandler = this.createEscapeHandler();
 
     reaction(
       () => appStore.state,
@@ -119,45 +98,15 @@ export class PluginActionBar extends MobxLitElement {
       .filter((plugin) => plugin.isVisible());
 
     return this.visiblePlugins.length > 0
-      ? html`<sp-action-group>${[...this.visiblePlugins.map((p) => p.render())]}</sp-action-group>`
-      : html`<sp-action-group></sp-action-group>`;
+      ? html`<sp-action-group>${this.visiblePlugins.map((p) => p.render())}</sp-action-group>`
+      : '<sp-action-group></sp-action-group>';
   }
 
   /**
-   * Creates an ESC handler to close the plugin list modal and deselect the toggle button.
-   * @returns {EventListenerOrEventListenerObject} The escape handler
+   * Shows the plugin list modal.
    */
-  createEscapeHandler() {
-    /**
-     * @param {KeyboardEvent} event The event
-     */
-    return ({ key }) => {
-      if (key === 'Escape') {
-        this.shadowRoot.querySelector('.plugin-list').removeAttribute('selected');
-        this.removeModalContainer();
-      }
-    };
-  }
-
-  /**
-   * Removes the modal container.
-   */
-  removeModalContainer() {
-    this.modalContainer.remove();
-    this.modalContainer = null;
-    document.removeEventListener('keyup', this.escapeHandler);
-  }
-
-  /**
-   * Toggles the plugin list modal.
-   */
-  togglePluginListModal() {
-    if (this.modalContainer) {
-      this.removeModalContainer();
-    } else {
-      this.modalContainer = appStore.showModal({ type: MODALS.PLUGIN_LIST });
-      document.addEventListener('keyup', this.escapeHandler);
-    }
+  showPluginListModal() {
+    appStore.showModal({ type: MODALS.PLUGIN_LIST });
   }
 
   renderSystemPlugins() {
@@ -177,7 +126,7 @@ export class PluginActionBar extends MobxLitElement {
         class="plugin-list"
         label="${appStore.i18n('plugins_manage')}"
         .disabled=${!appStore.status?.webPath}
-        @click=${this.togglePluginListModal}>
+        @click=${this.showPluginListModal}>
         <sp-icon slot="icon" size="l">
           ${ICONS.PLUGINS}
         </sp-icon>

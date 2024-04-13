@@ -18,6 +18,7 @@ import { html, nothing } from '@spectrum-web-components/base';
 import { DialogWrapper as SPDialogWrapper } from '@spectrum-web-components/dialog';
 import { ifDefined } from '@spectrum-web-components/base/src/directives.js';
 import { style } from './dialog-wrapper.css.js';
+import { MODAL_EVENTS } from '../../constants.js';
 
 export class DialogWrapper extends SPDialogWrapper {
   static get styles() {
@@ -30,6 +31,17 @@ export class DialogWrapper extends SPDialogWrapper {
    */
   @property({ type: Boolean })
   accessor negative;
+
+  firstUpdated() {
+    if (this.underlay && this.closeOnUnderlayClick) {
+      this.shadowRoot.querySelector('sp-underlay').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
+        this.remove();
+      });
+    }
+  }
 
   renderDialog() {
     const hideDivider = this.noDivider || !this.headline || this.headlineVisibility === 'none';

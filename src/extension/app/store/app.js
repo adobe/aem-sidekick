@@ -174,11 +174,6 @@ export class AppStore {
     this.showView();
   }
 
-  @action
-  async initSettings() {
-    this.pluginPrefs = await getConfig('sync', 'pluginPrefs');
-  }
-
   /**
    * Set as initialized.
    * @param {string} [state] The state to set
@@ -205,21 +200,6 @@ export class AppStore {
   }
 
   /**
-   * Returns the plugin preferences.
-   * @param {string} id The plugin ID
-   * @returns {Object} The plugin preferences
-   */
-  getPluginPrefs(id) {
-    if (this.pluginPrefs) {
-      const env = this.getEnv();
-      if (this.pluginPrefs[env]) {
-        return this.pluginPrefs[env][id] || {};
-      }
-    }
-    return {};
-  }
-
-  /**
    * Updates the plugin preferences.
    * @param {string} id The plugin ID
    * @param {Object} prefs The plugin preferences
@@ -233,6 +213,26 @@ export class AppStore {
     pluginPrefs[env][id] = prefs;
     await setConfig('sync', { pluginPrefs });
     this.pluginPrefs = pluginPrefs;
+  }
+
+  @action
+  async initSettings() {
+    this.pluginPrefs = await getConfig('sync', 'pluginPrefs');
+  }
+
+  /**
+   * Returns the plugin preferences.
+   * @param {string} id The plugin ID
+   * @returns {Object} The plugin preferences
+   */
+  getPluginPrefs(id) {
+    if (this.pluginPrefs) {
+      const env = this.getEnv();
+      if (this.pluginPrefs[env]) {
+        return this.pluginPrefs[env][id] || {};
+      }
+    }
+    return {};
   }
 
   /**

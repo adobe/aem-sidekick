@@ -1,3 +1,15 @@
+# [1.16.0](https://github.com/adobe/aem-sidekick/compare/v1.15.0...v1.16.0) (2024-04-13)
+
+
+### Bug Fixes
+
+* ui tweaks ([#106](https://github.com/adobe/aem-sidekick/issues/106)) ([9099086](https://github.com/adobe/aem-sidekick/commit/909908674205a26914363f53149b6f81c1f2ce97))
+
+
+### Features
+
+* plugin menu ([#105](https://github.com/adobe/aem-sidekick/issues/105)) ([5dab7fb](https://github.com/adobe/aem-sidekick/commit/5dab7fb73efa6d35bc1dd2da654350be578e75ef))
+
 # [1.15.0](https://github.com/adobe/aem-sidekick/compare/v1.14.0...v1.15.0) (2024-03-27)
 
 

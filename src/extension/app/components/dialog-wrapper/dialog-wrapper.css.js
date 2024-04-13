@@ -21,6 +21,10 @@ export const style = css`
       --mod-dialog-confirm-padding-grid: 0;
     }
 
+    :host(.plugin-list) sp-underlay {
+      background-color: transparent;
+    }
+
     .modal {
       border-radius: var(--spectrum2-dialog-border-radius);
       box-shadow: var(--spectrum2-sidekick-box-shadow);

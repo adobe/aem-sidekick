@@ -96,13 +96,9 @@ export class PluginList extends LitElement {
   }
 
   async firstUpdated() {
-    // a timeout is needed here to enable keyboard access
-    window.setTimeout(async () => {
-      const filterField = await this.filterField;
-      filterField.focus();
-    }, 100);
+    const filterField = await this.filterField;
+    filterField.focus();
   }
-
   /**
    * Toggles the pinned state of a plugin.
    * @param {SidekickPlugin} plugin The plugin
@@ -212,8 +208,10 @@ export class PluginList extends LitElement {
     const filterPlaceholder = appStore.i18n('plugins_filter');
 
     const arrowDownListener = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+      if (e.key !== 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+      }
       if (e.key === 'ArrowDown') {
         this.focusFirstMenuItem();
       } else if (e.key === 'Enter') {
