@@ -17,6 +17,14 @@ export const style = css`
       --mod-modal-background-color: var(--spectrum2-sidekick-background);
     }
 
+    :host(.plugin-list) {
+      --mod-dialog-confirm-padding-grid: 0;
+    }
+
+    :host(.plugin-list) sp-underlay {
+      background-color: transparent;
+    }
+
     .modal {
       border-radius: var(--spectrum2-dialog-border-radius);
       box-shadow: var(--spectrum2-sidekick-box-shadow);

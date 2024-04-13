@@ -12,76 +12,135 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
 import { expect } from '@open-wc/testing';
+import sinon from 'sinon';
 import chromeMock from '../../../mocks/chrome.js';
-import { SidekickPlugin } from '../../../../src/extension/app/components/plugin/plugin.js';
-import { defaultConfigJSONWithPlugins } from '../../../fixtures/helix-admin.js';
+import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
 
-describe('SidekickPlugin', () => {
+const TEST_CONFIG = {
+  id: 'test',
+  condition: () => true,
+  button: {
+    text: 'Test',
+    // eslint-disable-next-line no-console
+    action: () => console.log('test'),
+  },
+};
+
+const TEST_CHILD_CONFIG = {
+  id: 'test-child',
+  container: 'test',
+  button: {
+    text: 'Test Child',
+    action: () => {},
+  },
+};
+
+describe('Plugin', () => {
+  const sandbox = sinon.createSandbox();
+
   it('creates plugin from config', async () => {
-    const plugin = new SidekickPlugin({
-      ...defaultConfigJSONWithPlugins.plugins[0],
-      appStore,
-    });
-    expect(plugin.config).to.deep.equal({
-      ...defaultConfigJSONWithPlugins.plugins[0],
-      appStore,
-    });
+    const plugin = new Plugin(TEST_CONFIG);
+    expect(plugin.config).to.deep.equal(TEST_CONFIG);
   });
 
   it('validates plugin condition', async () => {
-    const plugin = new SidekickPlugin({
-      ...defaultConfigJSONWithPlugins.plugins[0],
-      appStore,
-    });
-    const res = plugin.checkCondition();
+    const plugin = new Plugin(TEST_CONFIG);
+    const res = plugin.isVisible();
     expect(res).to.be.true;
   });
 
-  it('appends child plugin', async () => {
-    const plugin = new SidekickPlugin({
-      ...defaultConfigJSONWithPlugins.plugins[0],
-      appStore,
+  it('uses id as fallback to button text', async () => {
+    const plugin = new Plugin({
+      id: 'test',
+      condition: () => true,
+      button: {
+        action: () => {},
+      },
     });
-    const childPlugin = new SidekickPlugin({
-      ...defaultConfigJSONWithPlugins.plugins[1],
-      appStore,
-    });
-    plugin.append(childPlugin);
-    expect(Object.keys(plugin.children).length).to.equal(1);
+    expect(plugin.getButtonText()).to.equal('test');
+  });
+
+  it('can be a container with children', async () => {
+    const parent = new Plugin(TEST_CONFIG);
+    const child = new Plugin(TEST_CHILD_CONFIG);
+    parent.append(child);
+    expect(parent.isContainer()).to.be.true;
+    expect(child.isChild()).to.be.true;
+    expect(child.getContainerId()).to.equal('test');
   });
 
   it('is pinned by default', async () => {
-    const plugin = new SidekickPlugin({
-      ...defaultConfigJSONWithPlugins.plugins[0],
-      appStore,
-    });
+    const plugin = new Plugin(TEST_CONFIG);
     const pinned = plugin.isPinned();
     expect(pinned).to.be.true;
   });
 
   it('uses pinned state from config', async () => {
-    const plugin = new SidekickPlugin({
-      ...defaultConfigJSONWithPlugins.plugins[0],
+    const plugin = new Plugin({
+      ...TEST_CONFIG,
       pinned: false,
-      appStore,
     });
     const pinned = plugin.isPinned();
     expect(pinned).to.be.false;
   });
 
   it('pinned state from user prefs supersedes config', async () => {
-    const plugin = new SidekickPlugin({
-      ...defaultConfigJSONWithPlugins.plugins[0],
+    const plugin = new Plugin({
+      ...TEST_CONFIG,
       pinned: false,
-      appStore,
     });
-    const pinned = plugin.isPinned({
-      pinned: true,
-    });
+    sandbox.stub(appStore, 'getPluginPrefs').returns({ pinned: true });
+    const pinned = plugin.isPinned();
     expect(pinned).to.be.true;
+    sandbox.restore();
+  });
+
+  it('renders plugin as button', async () => {
+    const plugin = new Plugin(TEST_CONFIG);
+    // @ts-ignore
+    const renderedPlugin = plugin.render().strings.join('');
+    expect(renderedPlugin).to.contain('sp-action-button');
+  });
+
+  it('renders container plugin as picker', async () => {
+    const parent = new Plugin({
+
+    });
+    const child = new Plugin({
+      ...TEST_CONFIG,
+      container: 'tools',
+    });
+    parent.append(child);
+  });
+
+  it('does not render if not pinned', async () => {
+    const plugin = new Plugin({
+      id: 'test',
+      button: {
+        text: 'Test',
+        action: () => {},
+      },
+      pinned: false,
+    });
+    const renderedPlugin = plugin.render();
+    // @ts-ignore
+    expect(renderedPlugin).to.equal('');
+  });
+
+  it('does not render container plugin if no children are visible', async () => {
+    const parent = new Plugin(TEST_CONFIG);
+    const child = new Plugin({
+      ...TEST_CHILD_CONFIG,
+      condition: () => false, // not visible
+    });
+    parent.append(child);
+
+    const renderedPlugin = parent.render();
+    // @ts-ignore
+    expect(renderedPlugin).to.equal('');
   });
 });

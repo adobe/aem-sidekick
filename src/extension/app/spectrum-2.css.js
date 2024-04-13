@@ -91,16 +91,16 @@ export const spectrum2 = css`
     --spectrum2-form-input-border-radius: var(--spectrum2-medium-border-radius);
     --spectrum2-dialog-border-radius: var(--spectrum2-xlarge-border-radius);
     --spectrum2-sidekick-border-radius: var(--spectrum2-large-border-radius);
-    
+
     --spectrum2-sidekick-background: var(--sidekick-background-dark);
     --spectrum2-sidekick-layer-1: var(--sidekick-background-layer1-dark);
     --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-dark);
     --spectrum2-sidekick-background-pasteboard: var(--sidekick-background-pasteboard-dark);
     --spectrum2-sidekick-border-color: var(--sidekick-border-color-dark);
     --spectrum2-sidekick-backdrop-filter: blur(12px);
-    --spectrum2-sidekick-box-shadow: 
-      0px 0px 3px 0px rgba(0, 0, 0, 0.12), 
-      0px 3px 8px 0px rgba(0, 0, 0, 0.04), 
+    --spectrum2-sidekick-box-shadow:
+      0px 0px 3px 0px rgba(0, 0, 0, 0.12),
+      0px 3px 8px 0px rgba(0, 0, 0, 0.04),
       0px 4px 16px 0px rgba(0, 0, 0, 0.08);
   }
 
@@ -112,21 +112,21 @@ export const spectrum2 = css`
       --spectrum2-preview-border-default: var(--preview-border-default-light);
       --spectrum2-preview-border-hover: var(--preview-border-hover-light);
       --spectrum2-preview-border-open: var(--preview-border-open-light);
-  
+
       --spectrum2-live-content-default: var(--live-content-default-light);
       --spectrum2-live-background-default: var(--live-background-default-light);
       --spectrum2-live-background-hover: var(--live-background-hover-light);
       --spectrum2-live-border-default: var(--live-border-default-light);
       --spectrum2-live-border-hover: var(--live-border-hover-light);
       --spectrum2-live-border-open: var(--live-border-open-light);
-  
+
       --spectrum2-edit-content-default: var(--edit-content-default-light);
       --spectrum2-edit-background-default: var(--edit-background-default-light);
       --spectrum2-edit-background-hover: var(--edit-background-hover-light);
       --spectrum2-edit-border-default: var(--edit-border-default-light);
       --spectrum2-edit-border-hover: var(--edit-border-hover-light);
       --spectrum2-edit-border-open: var(--edit-border-open-light);
-  
+
       --spectrum2-sidekick-background: var(--sidekick-background-light);
       --spectrum2-sidekick-layer-1: var(--sidekick-background-layer1-light);
       --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-light);

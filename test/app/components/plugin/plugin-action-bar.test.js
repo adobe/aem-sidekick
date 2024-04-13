@@ -13,7 +13,7 @@
 
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
-import { expect, waitUntil } from '@open-wc/testing';
+import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import sinon from 'sinon';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
@@ -43,21 +43,23 @@ import {
 import { EXTERNAL_EVENTS } from '../../../../src/extension/app/constants.js';
 import { pluginFactory } from '../../../../src/extension/app/plugins/plugin-factory.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
-import { SidekickPlugin } from '../../../../src/extension/app/components/plugin/plugin.js';
+import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('Plugin action bar', () => {
+  const sandbox = sinon.createSandbox();
   let sidekick;
   beforeEach(async () => {
     mockFetchEnglishMessagesSuccess();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     document.body.removeChild(sidekick);
     fetchMock.reset();
     restoreEnvironment(document);
+    sandbox.restore();
   });
 
   function expectEnvPlugin(environments) {
@@ -75,7 +77,7 @@ describe('Plugin action bar', () => {
     expect([...menuButtons].length).to.equal(environments.length);
   }
 
-  function expectAllPlugins(pluginIds) {
+  function expectInActionBar(pluginIds) {
     const actionGroup = recursiveQuery(sidekick, 'sp-action-group:first-of-type');
     const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, action-bar-picker');
 
@@ -83,6 +85,20 @@ describe('Plugin action bar', () => {
       [...plugins].map((plugin) => plugin.className.replace('plugin-container ', '')
         || plugin.tagName.toLowerCase()),
     ).to.deep.equal(pluginIds);
+  }
+
+  async function expectInPluginList(pluginIds) {
+    // open plugin list
+    const pluginList = recursiveQuery(sidekick, '.plugin-list');
+    pluginList.click();
+
+    // wait for modal and retrieve plugins
+    await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
+    const modalContainer = recursiveQuery(sidekick, 'modal-container');
+    const plugins = recursiveQueryAll(modalContainer, 'sp-menu-item');
+
+    expect([...plugins]
+      .map((plugin) => plugin.className)).to.deep.equal(pluginIds);
   }
 
   describe('renders correct default plugins in action bar', () => {
@@ -95,12 +111,10 @@ describe('Plugin action bar', () => {
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
         'reload',
-        'delete',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
@@ -116,8 +130,9 @@ describe('Plugin action bar', () => {
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await aTimeout(500);
 
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
         'asset-library',
@@ -143,7 +158,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
       ]);
@@ -161,10 +176,9 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'live']);
@@ -180,10 +194,9 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['prod', 'preview', 'edit']);
@@ -199,7 +212,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
       ]);
 
@@ -219,7 +232,11 @@ describe('Plugin action bar', () => {
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
       expectEnvPlugin(['dev', 'edit', 'preview', 'prod']);
-      expectAllPlugins(['env-switcher', 'reload', 'publish', 'unpublish']);
+      expectInActionBar([
+        'env-switcher',
+        'reload',
+        'publish',
+      ]);
     });
 
     it('isEditor', async () => {
@@ -234,7 +251,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
       ]);
@@ -254,7 +271,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
       ]);
@@ -274,12 +291,10 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
         'reload',
-        'delete',
         'publish',
-        'unpublish',
       ]);
 
       expectEnvPlugin(['preview', 'edit', 'prod']);
@@ -291,16 +306,15 @@ describe('Plugin action bar', () => {
       const actionFunction = async () => Promise.resolve();
 
       // Create a spy for the action function
-      const actionSpy = sinon.spy(actionFunction);
+      const actionSpy = sandbox.spy(actionFunction);
 
-      const stub = sinon.stub(pluginFactory, 'createPublishPlugin').returns(new SidekickPlugin({
+      const stub = sandbox.stub(pluginFactory, 'createPublishPlugin').returns(new Plugin({
         id: 'publish',
         condition: () => true,
         button: {
           text: 'Publish',
           action: actionSpy,
         },
-        appStore,
       }));
 
       mockFetchStatusSuccess();
@@ -314,12 +328,10 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
         'reload',
-        'delete',
         'publish',
-        'unpublish',
       ]);
 
       const publishButton = recursiveQuery(sidekick, '.publish');
@@ -344,7 +356,7 @@ describe('Plugin action bar', () => {
     });
 
     it('custom container plugin', async () => {
-      mockSharepointEditorDocFetchStatusSuccess();
+      const fireEventStub = sandbox.stub(appStore, 'fireEvent');
       mockSharepointDirectoryFetchStatusSuccess();
       mockFetchConfigWithPluginsJSONSuccess();
       mockEditorAdminEnvironment(document, 'editor');
@@ -354,7 +366,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
         'asset-library',
@@ -365,8 +377,15 @@ describe('Plugin action bar', () => {
       const toolsPlugin = recursiveQuery(sidekick, 'action-bar-picker.tools');
       const plugins = recursiveQueryAll(toolsPlugin, 'sp-menu-item');
 
-      expect([...plugins].length).to.equal(2);
+      expect([...plugins].length).to.equal(3);
       expect(plugins.values().next().value.textContent).to.equal('Tag Selector');
+
+      plugins.values().next().value.click();
+      await aTimeout(100);
+      expect(fireEventStub.calledWith(
+        EXTERNAL_EVENTS.PLUGIN_USED,
+        { id: 'tag-selector' },
+      )).to.be.true;
     });
 
     it('clicks custom plugin', async () => {
@@ -375,18 +394,16 @@ describe('Plugin action bar', () => {
       mockFetchConfigWithPluginsJSONSuccess();
       mockEditorAdminEnvironment(document, 'editor');
 
-      const validateStub = sinon.stub(appStore, 'validateSession').resolves();
-      const openStub = sinon.stub(window, 'open');
-      const pluginUsedEventSpy = sinon.spy();
+      sandbox.stub(appStore, 'validateSession').resolves();
+      const fireEventStub = sandbox.stub(appStore, 'fireEvent');
+      const openPageStub = sandbox.stub(appStore, 'openPage');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
 
-      sidekick.addEventListener(EXTERNAL_EVENTS.PLUGIN_USED, pluginUsedEventSpy);
-
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-      expectAllPlugins([
+      expectInActionBar([
         'env-switcher',
         'edit-preview',
         'asset-library',
@@ -397,12 +414,102 @@ describe('Plugin action bar', () => {
       const libraryPlugin = recursiveQuery(sidekick, '.library');
       libraryPlugin.click();
 
-      await waitUntil(() => openStub.calledOnce);
-      expect(openStub.calledOnce).to.be.true;
-      expect(pluginUsedEventSpy.calledOnce).to.be.true;
+      await waitUntil(() => openPageStub.calledOnce);
+      expect(openPageStub.calledOnce).to.be.true;
+      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, { id: 'library' })).to.be.true;
 
-      openStub.restore();
-      validateStub.restore();
+      recursiveQuery(sidekick, '.tools').click();
+      const preflightPlugin = recursiveQuery(sidekick, '[value="preflight"]');
+      preflightPlugin.click();
+
+      await aTimeout(100);
+
+      expect(fireEventStub.calledWithMatch('custom:preflight')).to.be.true;
+      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, { id: 'preflight' })).to.be.true;
+    });
+
+    it.skip('overrides core plugin', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'preview', null, 'https://main--aem-boilerplate--adobe.aem.page/en/drafts/test');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      expect(recursiveQuery(sidekick, '.publish')).to.equal(undefined);
+    });
+  });
+
+  describe('plugin list', () => {
+    it('opens plugin list', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      // open plugin list
+      const pluginList = recursiveQuery(sidekick, '.plugin-list');
+      pluginList.click();
+
+      await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
+      const dialogWrapper = recursiveQuery(sidekick, 'sp-dialog-wrapper');
+      expect(dialogWrapper.className).to.contain('plugin-list');
+    });
+
+    it('isPreview: renders correct plugins in plugin list', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'preview');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      await expectInPluginList([
+        'reload',
+        'delete',
+        'publish',
+        'unpublish',
+      ]);
+    });
+
+    it('isLive: renders correct plugins in plugin list', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'live');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      await expectInPluginList([
+        'publish',
+        'unpublish',
+      ]);
+    });
+
+    it('isProd: renders correct plugins in plugin list', async () => {
+      mockFetchStatusSuccess();
+      mockFetchConfigWithoutPluginsJSONSuccess();
+      mockHelixEnvironment(document, 'prod');
+
+      sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      await expectInPluginList([
+        'publish',
+        'unpublish',
+      ]);
     });
   });
 
@@ -419,7 +526,7 @@ describe('Plugin action bar', () => {
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const actionGroup = recursiveQuery(actionBar, 'sp-action-group');
-      expect(actionGroup.children.length).to.equal(3);
+      expect(actionGroup.children.length).to.equal(4);
 
       const propertiesButton = recursiveQuery(actionGroup, '.properties');
       expect(propertiesButton).to.exist;
@@ -468,10 +575,14 @@ describe('Plugin action bar', () => {
       mockFetchStatusWithProfileSuccess();
       mockHelixEnvironment(document, 'preview');
 
+      const statusFetchedSpy = sandbox.spy();
+
       sidekick = new AEMSidekick(defaultSidekickConfig);
+      sidekick.addEventListener('statusfetched', statusFetchedSpy);
       document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+      await aTimeout(100);
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');

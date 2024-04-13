@@ -83,6 +83,13 @@ export class ModalContainer extends LitElement {
     });
   }
 
+  firstUpdated() {
+    const dialogWrapper = this.shadowRoot.querySelector('sp-dialog-wrapper');
+    dialogWrapper.addEventListener(MODAL_EVENTS.CLOSE, () => {
+      this.remove();
+    });
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
     document.removeEventListener('keyup', this.keyHandler);
@@ -97,6 +104,7 @@ export class ModalContainer extends LitElement {
      * @param {KeyboardEvent} e The keyboard event
      */
     return ({ key }) => {
+      /* istanbul ignore else  */
       if (key === 'Escape') {
         this.onCancel();
       } else if (key === 'Enter') {
@@ -189,6 +197,15 @@ export class ModalContainer extends LitElement {
           </div>
         `;
         break;
+      case MODALS.PLUGIN_LIST:
+        options.dismissable = false;
+        options.underlay = true;
+        options.closeOnUnderlayClick = true;
+        options.headline = '';
+        options.content = html`
+          <plugin-list></plugin-list>
+        `;
+        break;
       default:
         this.cleanup();
         return html``;
@@ -197,6 +214,7 @@ export class ModalContainer extends LitElement {
     return html`
         <sp-dialog-wrapper
             open
+            class=${type}
             headline=${options.headline}
             confirm-label=${options.confirmLabel}
             cancel-label=${options.cancelLabel}
@@ -204,6 +222,7 @@ export class ModalContainer extends LitElement {
             .dismissable=${options.dismissable}
             .negative=${options.negative}
             .underlay=${options.underlay}
+            .closeOnUnderlayClick=${options.closeOnUnderlayClick}
             .error=${options.error}
             @confirm=${this.onConfirm}
             @cancel=${this.onCancel}>

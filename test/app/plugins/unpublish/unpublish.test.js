@@ -39,9 +39,18 @@ window.chrome = chromeMock;
 async function clickUnpublishPlugin(sidekick) {
   await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-  const unpublishPlugin = recursiveQuery(sidekick, '.unpublish');
+  // open plugin list
+  const pluginList = recursiveQuery(sidekick, '.plugin-list');
+  await waitUntil(() => pluginList.getAttribute('disabled') === null, 'pluginList is not disabled');
+  pluginList.click();
+
+  await waitUntil(() => recursiveQuery(sidekick, 'modal-container'), 'modal container never appeared');
+  const modalContainer = recursiveQuery(sidekick, 'modal-container');
+  await waitUntil(() => recursiveQuery(modalContainer, '.unpublish'));
+
+  const unpublishPlugin = recursiveQuery(modalContainer, '.unpublish');
   expect(unpublishPlugin.textContent.trim()).to.equal('Unpublish');
-  await waitUntil(() => unpublishPlugin.getAttribute('disabled') === null);
+  await waitUntil(() => unpublishPlugin.getAttribute('disabled') === null, 'unpublish plugin is not disabled');
   unpublishPlugin.click();
 
   await aTimeout(200);

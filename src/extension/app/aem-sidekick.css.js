@@ -45,9 +45,9 @@ export const style = css`
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh; 
+    height: 100vh;
   }
-  
+
   .hlx-sk-special-view iframe {
     border: 0;
     width: 100%;

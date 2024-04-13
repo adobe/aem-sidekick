@@ -78,6 +78,7 @@ describe('Preview plugin', () => {
     });
 
     it('previewing from sharepoint editor - sheet', async () => {
+      sandbox.stub(appStore, 'showView').returns();
       mockSharepointEditorSheetFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor', HelixMockContentType.SHEET);
       const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();

@@ -11,7 +11,7 @@
  */
 
 import { log } from '../../../log.js';
-import { SidekickPlugin } from '../../components/plugin/plugin.js';
+import { Plugin } from '../../components/plugin/plugin.js';
 import {
   MODALS, MODAL_EVENTS, TOAST_EVENTS, RESTRICTED_PATHS,
 } from '../../constants.js';
@@ -27,14 +27,14 @@ import {
 /**
  * Creates the unpublish plugin
  * @param {AppStore} appStore The app store
- * @returns {SidekickPlugin} The unpublish plugin
+ * @returns {Plugin} The unpublish plugin
  */
 export function createUnpublishPlugin(appStore) {
-  return new SidekickPlugin({
+  return new Plugin({
     id: 'unpublish',
     condition: (store) => store.isProject()
       && !RESTRICTED_PATHS.includes(store.location.pathname),
-    // pinned: false, // TODO: set to unpinned
+    pinned: false,
     button: {
       text: appStore.i18n('unpublish'),
       action: async () => {

@@ -633,5 +633,29 @@
     },
     "destructive_confirmation_invalid": {
       "message": "Sorry, please enter the text exactly as displayed to confirm."
+    },
+    "plugins": {
+      "message": "Plugins"
+    },
+    "plugins_manage": {
+      "message": "Manage plugins"
+    },
+    "plugins_filter": {
+      "message": "Search plugins..."
+    },
+    "plugins_navigate": {
+      "message": "Navigate"
+    },
+    "plugins_select": {
+      "message": "Select"
+    },
+    "plugin_pin": {
+      "message": "Pin this plugin"
+    },
+    "plugin_unpin": {
+      "message": "Unpin this plugin"
+    },
+    "back": {
+      "message": "Back"
     }
 }

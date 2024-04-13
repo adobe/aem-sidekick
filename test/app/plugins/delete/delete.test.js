@@ -39,9 +39,17 @@ window.chrome = chromeMock;
 async function clickDeletePlugin(sidekick) {
   await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-  const deletePlugin = recursiveQuery(sidekick, '.delete');
+  // open plugin list
+  const pluginList = recursiveQuery(sidekick, '.plugin-list');
+  await waitUntil(() => pluginList.getAttribute('disabled') === null, 'pluginList is not disabled');
+  pluginList.click();
+
+  await waitUntil(() => recursiveQuery(sidekick, 'modal-container'), 'modal container never appeared');
+  const modalContainer = recursiveQuery(sidekick, 'modal-container');
+  await waitUntil(() => recursiveQuery(modalContainer, '.delete'));
+  const deletePlugin = recursiveQuery(modalContainer, '.delete');
   expect(deletePlugin.textContent.trim()).to.equal('Delete');
-  await waitUntil(() => deletePlugin.getAttribute('disabled') === null);
+  await waitUntil(() => deletePlugin.getAttribute('disabled') === null, 'delete plugin is not disabled');
   deletePlugin.click();
 
   await aTimeout(200);
@@ -97,13 +105,15 @@ describe('Delete plugin', () => {
       });
 
       afterEach(() => {
-        // document.body.removeChild(sidekick);
+        document.body.removeChild(sidekick);
         fetchMock.reset();
         restoreEnvironment(document);
         sandbox.restore();
       });
 
       it('asks for user confirmation and redirects to the site root', async () => {
+        // @ts-ignore
+        sandbox.stub(appStore, 'showView').returns();
         mockFetchStatusSuccess(
           {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',

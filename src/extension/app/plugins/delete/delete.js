@@ -11,7 +11,7 @@
  */
 
 import { log } from '../../../log.js';
-import { SidekickPlugin } from '../../components/plugin/plugin.js';
+import { Plugin } from '../../components/plugin/plugin.js';
 import {
   MODALS, MODAL_EVENTS, TOAST_EVENTS, RESTRICTED_PATHS,
 } from '../../constants.js';
@@ -27,14 +27,14 @@ import {
 /**
  * Creates the delete plugin
  * @param {AppStore} appStore The app store
- * @returns {SidekickPlugin} The delete plugin
+ * @returns {Plugin} The delete plugin
  */
 export function createDeletePlugin(appStore) {
-  return new SidekickPlugin({
+  return new Plugin({
     id: 'delete',
     condition: (store) => store.isPreview()
-      && !RESTRICTED_PATHS.includes(store.location.pathname),
-    // pinned: false, // TODO: set to unpinned
+      && !RESTRICTED_PATHS.includes(store.location.pathname), // or restricted path
+    pinned: false,
     button: {
       text: appStore.i18n('delete'),
       action: async () => {
