@@ -99,6 +99,7 @@ export class PluginList extends LitElement {
     const filterField = await this.filterField;
     filterField.focus();
   }
+
   /**
    * Toggles the pinned state of a plugin.
    * @param {SidekickPlugin} plugin The plugin

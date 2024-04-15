@@ -15,7 +15,7 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
-import { recursiveQuery } from '../../../test-utils.js';
+import { expectToast, recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
@@ -29,7 +29,6 @@ import {
 import '../../../../src/extension/index.js';
 import { appStore } from '../../../../src/extension/app/store/app.js';
 import { HelixMockContentType, mockEditorAdminEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
-import { MODALS } from '../../../../src/extension/app/constants.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -137,7 +136,7 @@ describe('Preview plugin', () => {
       mockGdriveEditorFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
 
-      const modalSpy = sandbox.spy(appStore, 'showModal');
+      const toastSpy = sandbox.spy(appStore, 'showToast');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -149,16 +148,14 @@ describe('Preview plugin', () => {
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
       previewPlugin.click();
 
-      await waitUntil(() => modalSpy.calledOnce === true);
-      expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0].type).to.equal(MODALS.ERROR);
+      await expectToast(toastSpy, 'Preview generation failed. Must be Google document or spreadsheet.', 'negative');
     });
 
     it('previewing from gdrive editor - not a gdoc type', async () => {
       mockGdriveEditorFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
 
-      const modalSpy = sandbox.spy(appStore, 'showModal');
+      const toastSpy = sandbox.spy(appStore, 'showToast');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -171,16 +168,14 @@ describe('Preview plugin', () => {
 
       previewPlugin.click();
 
-      await waitUntil(() => modalSpy.calledOnce === true);
-      expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0].type).to.equal(MODALS.ERROR);
+      await expectToast(toastSpy, 'This is a Microsoft Word document. Please convert it to Google Docs: File > Save as Google Docs', 'negative');
     });
 
     it('previewing from gdrive editor - not a gsheet type', async () => {
       mockGdriveEditorFetchStatusSuccess();
       mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
 
-      const modalSpy = sandbox.spy(appStore, 'showModal');
+      const toastSpy = sandbox.spy(appStore, 'showToast');
 
       sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
@@ -193,9 +188,7 @@ describe('Preview plugin', () => {
 
       previewPlugin.click();
 
-      await waitUntil(() => modalSpy.calledOnce === true);
-      expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0].type).to.equal(MODALS.ERROR);
+      await expectToast(toastSpy, 'This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets', 'negative');
     });
   });
 });

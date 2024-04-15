@@ -10,6 +10,10 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-disable no-unused-expressions */
+
+import { expect, waitUntil } from '@open-wc/testing';
+
 export const findAllDeep = (parent, selectors, depth = null) => {
   const nodes = new Set();
   const currentDepth = 1;
@@ -52,5 +56,24 @@ export const recursiveQueryAll = (element, selector) => findAllDeep(
 export const sleep = (ms = 0) => new Promise((resolve) => {
   setTimeout(resolve, ms);
 });
+
+export async function expectToast(spy, message, variant) {
+  await waitUntil(() => spy.calledOnce === true);
+  expect(spy.calledOnce).to.be.true;
+  expect(spy.args[0][0]).eq(message);
+  expect(spy.args[0][1]).eq(variant);
+}
+
+export function clickToastAction(sidekick) {
+  const toast = recursiveQuery(sidekick, '.toast-container');
+  const actionButton = recursiveQuery(toast, 'sp-action-button.action');
+  actionButton.click();
+}
+
+export function clickToastClose(sidekick) {
+  const toast = recursiveQuery(sidekick, '.toast-container');
+  const closeButton = recursiveQuery(toast, 'sp-action-button.close');
+  closeButton.click();
+}
 
 export const error = new Error('this is just a test');

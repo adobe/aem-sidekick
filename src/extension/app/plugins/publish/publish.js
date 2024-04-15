@@ -48,7 +48,7 @@ export function createPublishPlugin(appStore) {
             appStore.closeToast();
           };
 
-          appStore.showToast(i18n(appStore.languageDict, 'publish_success'), 'positive', closeCallback, actionCallback, 'Open', 10000000);
+          appStore.showToast(i18n(appStore.languageDict, 'publish_success'), 'positive', closeCallback, actionCallback, 'Open');
         } else {
           // eslint-disable-next-line no-console
           console.error(res);

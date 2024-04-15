@@ -15,7 +15,9 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
-import { recursiveQuery } from '../../../test-utils.js';
+import {
+  clickToastAction, expectToast, recursiveQuery,
+} from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
 import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
@@ -67,8 +69,7 @@ describe('Reload plugin', () => {
   it('reload calls appStore.update() and reloads window', async () => {
     const updateStub = sandbox.stub(appStore, 'update')
       .resolves(new Response('', { status: 200, headers: {} }));
-    const showWaitSpy = sandbox.spy(appStore, 'showWait');
-    const hideWaitSpy = sandbox.spy(appStore, 'hideWait');
+    const showToastSpy = sandbox.spy(appStore, 'showToast');
 
     await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
@@ -83,8 +84,8 @@ describe('Reload plugin', () => {
     await waitUntil(() => updateStub.calledOnce === true);
 
     expect(updateStub.calledOnce).to.be.true;
-    expect(showWaitSpy.calledOnce).to.be.true;
-    expect(hideWaitSpy.calledOnce).to.be.true;
+    await expectToast(showToastSpy, 'Preview successfully updated, reloading...', 'positive');
+    clickToastAction(sidekick);
     expect(reloaded).to.be.true;
   });
 

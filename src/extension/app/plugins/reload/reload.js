@@ -46,14 +46,16 @@ export function createReloadPlugin(appStore) {
           }
 
           const closeHandler = () => {
+            appStore.closeToast();
+          };
+
+          const actionHandler = () => {
             appStore.reloadPage(newTab(evt));
           };
 
-          appStore.setState();
-
-          appStore.showToast(i18n(appStore.languageDict, 'reload_success'), 'positive', closeHandler);
+          appStore.showToast(i18n(appStore.languageDict, 'reload_success'), 'positive', closeHandler, actionHandler, 'Open');
         } catch (e) {
-          this.showToast(appStore.i18n('reload_failure'), 'negative');
+          appStore.showToast(appStore.i18n('reload_failure'), 'negative');
         }
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write')

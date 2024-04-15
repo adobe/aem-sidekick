@@ -66,11 +66,11 @@ function confirmUnpublish(sidekick) {
   unpublishButton.click();
 }
 
-async function closeToast(sidekick) {
+async function closeToast(sidekick, variant = 'positive') {
   // click toast close button
-  await waitUntil(() => recursiveQuery(sidekick, 'sp-toast') !== null);
-  const toast = recursiveQuery(sidekick, 'sp-toast');
-  const closeButton = recursiveQuery(toast, 'sp-close-button');
+  await waitUntil(() => recursiveQuery(sidekick, `action-bar.${variant}`) !== null);
+  const toast = recursiveQuery(sidekick, '.toast-container');
+  const closeButton = recursiveQuery(toast, 'sp-action-button.close');
   closeButton.click();
 }
 
@@ -82,8 +82,6 @@ describe('Unpublish plugin', () => {
     let loadPageStub;
     let showModalSpy;
     let showToastSpy;
-    let showWaitSpy;
-    let hideWaitSpy;
 
     beforeEach(async () => {
       mockFetchEnglishMessagesSuccess();
@@ -91,8 +89,6 @@ describe('Unpublish plugin', () => {
       loadPageStub = sandbox.stub(appStore, 'loadPage');
       showModalSpy = sandbox.spy(appStore, 'showModal');
       showToastSpy = sandbox.spy(appStore, 'showToast');
-      showWaitSpy = sandbox.spy(appStore, 'showWait');
-      hideWaitSpy = sandbox.spy(appStore, 'hideWait');
 
       mockFetchConfigWithoutPluginsOrHostJSONSuccess();
       mockHelixEnvironment(document, 'preview');
@@ -129,8 +125,6 @@ describe('Unpublish plugin', () => {
       await waitUntil(() => unpublishStub.calledOnce === true);
 
       expect(unpublishStub.calledOnce).to.be.true;
-      expect(showWaitSpy.calledOnce).to.be.true;
-      expect(hideWaitSpy.calledOnce).to.be.true;
       expect(showToastSpy.calledOnce).to.be.true;
 
       await closeToast(sidekick);
@@ -204,8 +198,8 @@ describe('Unpublish plugin', () => {
       confirmUnpublish(sidekick);
 
       await waitUntil(() => unpublishStub.calledOnce === true);
-
-      expect(showModalSpy.calledWithMatch({ type: MODALS.ERROR })).to.be.true;
+      expect(showToastSpy.args[0][0]).to.eq('Unpublication failed. Please try again later.');
+      expect(showToastSpy.args[0][1]).to.eq('negative');
     });
   });
 });

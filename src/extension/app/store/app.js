@@ -731,7 +731,7 @@ export class AppStore {
    * @param {string} [actionLabel] The action label
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
-  showToast(message, variant = 'info', closeCallback = undefined, actionCallback = undefined, actionLabel = 'Ok', timeout = 6000) {
+  showToast(message, variant = 'info', closeCallback = undefined, actionCallback = undefined, actionLabel = 'Ok', timeout = 3000) {
     if (this.toast) {
       this.toast = null;
       this.setState();

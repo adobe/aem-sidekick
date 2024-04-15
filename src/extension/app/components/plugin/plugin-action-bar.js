@@ -13,7 +13,7 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
-import { customElement, query } from 'lit/decorators.js';
+import { customElement, queryAsync } from 'lit/decorators.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
 import { appStore } from '../../store/app.js';
@@ -48,7 +48,7 @@ export class PluginActionBar extends MobxLitElement {
    * The toast container HTMLElement
    * @type {HTMLElement}
    */
-  @query('action-bar')
+  @queryAsync('action-bar')
   accessor actionBar;
 
   /**
@@ -59,19 +59,22 @@ export class PluginActionBar extends MobxLitElement {
 
     reaction(
       () => appStore.state,
-      () => {
+      async () => {
+        const actionBar = await this.actionBar;
         if (appStore.state === SidekickState.TOAST) {
-          this.actionBar.classList.add(appStore.toast.variant);
+          actionBar.classList.add(appStore.toast.variant);
 
           setTimeout(() => {
-            this.actionBar.className = '';
-            if (appStore.toast.closeCallback) {
-              appStore.toast.closeCallback();
+            actionBar.className = '';
+            if (appStore.toast?.actionCallback) {
+              appStore.toast?.actionCallback();
             }
             appStore.closeToast();
           }, appStore.toast.timeout);
-        } else {
-          this.actionBar.className = '';
+        // We need to reset the class name to remove the toast variant, but only if it exists.
+        // It's possible for actionBar to be null on the first render.
+        } else if (actionBar) {
+          actionBar.className = '';
         }
 
         this.requestUpdate();
@@ -122,7 +125,6 @@ export class PluginActionBar extends MobxLitElement {
     const pluginList = html`
       <sp-action-button
         quiet
-        toggles
         class="plugin-list"
         label="${appStore.i18n('plugins_manage')}"
         .disabled=${!appStore.status?.webPath}

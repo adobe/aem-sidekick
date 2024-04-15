@@ -364,7 +364,7 @@
       "message": "This is a Microsoft Word document. Please convert it to Google Docs: File > Save as Google Docs"
     },
     "error_preview_not_gsheet_ms_excel": {
-      "message": "This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets'"
+      "message": "This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets"
     },
     "error_status_404_content": {
       "message": "404 Not found: Check your Sidekick configuration or URL."

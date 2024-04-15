@@ -97,6 +97,19 @@ export class ActivityAction extends LitElement {
     appStore.closeToast();
   }
 
+  getToastIcon() {
+    switch (appStore.toast.variant) {
+      case 'positive':
+        return ICONS.CHECKMARK;
+      case 'negative':
+        return ICONS.ALERT_TRIANGLE;
+      case 'info':
+        return ICONS.INFO;
+      default:
+        return ICONS.INFO;
+    }
+  }
+
   renderType() {
     switch (appStore.state) {
       case SidekickState.FETCHING_STATUS:
@@ -111,7 +124,7 @@ export class ActivityAction extends LitElement {
         `;
       case SidekickState.LOGIN_REQUIRED:
         return html`
-          ${ICONS.INFO}<span>${appStore.i18n(appStore.state)}</span>
+          ${this.getToastIcon()}<span>${appStore.i18n(appStore.state)}</span>
         `;
       case SidekickState.UNAUTHORIZED:
         return html`
