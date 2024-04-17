@@ -525,7 +525,7 @@ describe('Plugin action bar', () => {
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const actionGroup = recursiveQuery(actionBar, 'sp-action-group:nth-child(2)');
+      const actionGroup = recursiveQuery(actionBar, 'sp-action-group:nth-of-type(2)');
       expect(actionGroup.children.length).to.equal(4);
 
       const propertiesButton = recursiveQuery(actionGroup, '.properties');

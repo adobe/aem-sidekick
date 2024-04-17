@@ -133,7 +133,7 @@ export class PluginActionBar extends MobxLitElement {
     systemPlugins.push(ICONS.ADOBE_LOGO);
 
     const actionGroup = html`<sp-action-group>${systemPlugins}</sp-action-group>`;
-    const divider = loggedIn || siteStore.authorized ? html`<sp-divider size="s" vertical></sp-divider>` : '';
+    const divider = html`<sp-divider size="s" vertical></sp-divider>`;
 
     return [divider, actionGroup];
   }
