@@ -115,7 +115,7 @@ export async function updateContextMenu({
     // clear context menu
     await chrome.contextMenus.removeAll();
 
-    if (isValidProject(config)) {
+    if (isValidProject(config) && !url.startsWith(GH_URL)) {
       const { owner, repo } = config;
       const project = await getProject(`${owner}/${repo}`);
       // add/remove project config
@@ -139,15 +139,6 @@ export async function updateContextMenu({
           contexts: [
             'action',
           ],
-        });
-        // open preview url
-        await chrome.contextMenus.create({
-          id: 'openPreview',
-          title: chrome.i18n.getMessage('open_preview'),
-          contexts: [
-            'action',
-          ],
-          visible: url.startsWith(GH_URL),
         });
       }
       // open view doc source

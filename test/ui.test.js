@@ -24,16 +24,12 @@ import { error } from './test-utils.js';
 // @ts-ignore
 window.chrome = chromeMock;
 
+let clickListener;
+
 // prep listener test before importing ui.js
-const openPreviewSpy = sinon.spy(internalActions, 'openPreview');
 sinon.replace(chrome.contextMenus.onClicked, 'addListener', async (func) => {
-  // @ts-ignore
-  func({
-    menuItemId: 'openPreview',
-  }, {
-    id: 1,
-    url: 'https://main--blog--adobe.hlx.page/',
-  });
+  // store click listener for later use
+  clickListener = func;
 });
 
 const { updateContextMenu, updateIcon } = await import('../src/extension/ui.js');
@@ -70,7 +66,14 @@ describe('Test UI: updateContextMenu', () => {
   });
 
   it('click listener invokes action', async () => {
-    expect(openPreviewSpy.called).to.be.true;
+    const openViewDocSourceStub = sinon.stub(internalActions, 'openViewDocSource');
+    clickListener({
+      menuItemId: 'openViewDocSource',
+    }, {
+      id: 1,
+      url: 'https://main--blog--adobe.hlx.page/',
+    });
+    expect(openViewDocSourceStub.called).to.be.true;
   });
 
   it('updateContextMenu: project not added yet', async () => {
@@ -91,9 +94,8 @@ describe('Test UI: updateContextMenu', () => {
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
-    expect(createSpy.callCount).to.equal(4);
+    expect(createSpy.callCount).to.equal(3);
     expect(createSpy.calledWithMatch({ id: 'enableDisableProject' })).to.be.true;
-    expect(createSpy.calledWithMatch({ id: 'openPreview' })).to.be.true;
   });
 
   it('updateContextMenu: project added and disabled', async () => {
@@ -104,7 +106,7 @@ describe('Test UI: updateContextMenu', () => {
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
-    expect(createSpy.callCount).to.equal(4);
+    expect(createSpy.callCount).to.equal(3);
   });
 
   it('updateContextMenu: no matching config', async () => {
@@ -136,7 +138,7 @@ describe('Test UI: updateContextMenu', () => {
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
-    expect(createSpy.callCount).to.equal(3);
+    expect(createSpy.callCount).to.equal(2);
     expect(createSpy.calledWithMatch({ id: 'openViewDocSource' })).to.be.false;
   });
 
@@ -149,8 +151,17 @@ describe('Test UI: updateContextMenu', () => {
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
-    expect(createSpy.callCount).to.equal(3);
+    expect(createSpy.callCount).to.equal(2);
     expect(createSpy.calledWithMatch({ id: 'openViewDocSource' })).to.be.false;
+  });
+
+  it('updateContextMenu: ignore github url', async () => {
+    await updateContextMenu({
+      url: 'https://github.com/foo/bar/',
+      config,
+    });
+    expect(removeAllSpy.callCount).to.equal(1);
+    expect(createSpy.callCount).to.equal(0);
   });
 });
 
