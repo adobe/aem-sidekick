@@ -21,7 +21,7 @@ import {
   internalActions,
 } from '../src/extension/actions.js';
 import chromeMock from './mocks/chrome.js';
-import { error } from './test-utils.js';
+import { error, mockTab } from './test-utils.js';
 import { log } from '../src/extension/log.js';
 
 // @ts-ignore
@@ -49,7 +49,7 @@ describe('Test actions', () => {
       {
         owner, repo, authToken, exp,
       },
-      { url: 'https://admin.hlx.page/auth/test/project/main' },
+      mockTab('https://admin.hlx.page/auth/test/project/main'),
     );
     expect(set.called).to.be.true;
     expect(resp).to.equal('close');
@@ -58,7 +58,7 @@ describe('Test actions', () => {
       {
         owner, repo, authToken, exp,
       },
-      { url: 'https://admin.hlx.fake/' },
+      mockTab('https://admin.hlx.fake/'),
     );
     expect(resp).to.equal('invalid message');
     // error handling
@@ -67,20 +67,20 @@ describe('Test actions', () => {
       {
         owner, repo, authToken, exp,
       },
-      { url: 'https://admin.hlx.page/auth/test/project/main' },
+      mockTab('https://admin.hlx.page/auth/test/project/main'),
     );
     expect(resp).to.equal('invalid message');
     // testing noops
     set.resetHistory();
     await externalActions.updateAuthToken(
       { owner, repo },
-      { url: 'https://admin.hlx.page/auth/test/project/main' },
+      mockTab('https://admin.hlx.page/auth/test/project/main'),
     );
     await externalActions.updateAuthToken(
       {
         owner, repo, authToken, exp,
       },
-      { url: 'https://some.malicious.actor/' },
+      mockTab('https://some.malicious.actor/'),
     );
     await externalActions.updateAuthToken({}, {});
     expect(set.notCalled).to.be.true;
@@ -91,10 +91,9 @@ describe('Test actions', () => {
     const remove = sandbox.spy(chrome.storage.sync, 'remove');
     const reload = sandbox.spy(chrome.tabs, 'reload');
     // add project
-    await internalActions.addRemoveProject({
+    await internalActions.addRemoveProject(mockTab('https://main--bar--foo.hlx.page/', {
       id: 1,
-      url: 'https://main--bar--foo.hlx.page/',
-    });
+    }));
     expect(set.calledWith({
       projects: ['foo/bar'],
     })).to.be.true;
@@ -131,15 +130,13 @@ describe('Test actions', () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const reload = sandbox.spy(chrome.tabs, 'reload');
     // add project first
-    await internalActions.addRemoveProject({
+    await internalActions.addRemoveProject(mockTab('https://main--bar--foo.hlx.page/', {
       id: 1,
-      url: 'https://main--bar--foo.hlx.page/',
-    });
+    }));
     // disable project
-    await internalActions.enableDisableProject({
+    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.hlx.page/', {
       id: 1,
-      url: 'https://main--bar--foo.hlx.page/',
-    });
+    }));
     expect(set.calledWith({
       'foo/bar': {
         id: 'foo/bar/main',
@@ -152,10 +149,9 @@ describe('Test actions', () => {
     })).to.be.true;
     expect(reload.calledWith(1)).to.be.true;
     // enable project
-    await internalActions.enableDisableProject({
+    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.hlx.page/', {
       id: 2,
-      url: 'https://main--bar--foo.hlx.page/',
-    });
+    }));
     expect(set.calledWith({
       'foo/bar': {
         id: 'foo/bar/main',
@@ -168,28 +164,25 @@ describe('Test actions', () => {
     expect(reload.calledWith(2)).to.be.true;
     // testing noop
     set.resetHistory();
-    await internalActions.enableDisableProject({
-      id: 1,
+    await internalActions.enableDisableProject(mockTab('https://www.example.com/', {
       url: 'https://www.example.com/',
-    });
+    }));
     expect(set.notCalled).to.be.true;
   });
 
   it('internal: openPreview', async () => {
     const create = sandbox.spy(chrome.tabs, 'create');
-    await internalActions.openPreview({
+    await internalActions.openPreview(mockTab('https://github.com/adobe/blog', {
       id: 1,
-      url: 'https://github.com/adobe/blog',
-    });
+    }));
     expect(create.calledWith({
       url: 'https://main--blog--adobe.hlx.page/',
     })).to.be.true;
     // open preview with unsupported url
     create.resetHistory();
-    await internalActions.openPreview({
+    await internalActions.openPreview(mockTab('https://www.example.com', {
       id: 1,
-      url: 'https://www.example.com',
-    });
+    }));
     expect(create.called).to.be.false;
   });
 
@@ -200,7 +193,6 @@ describe('Test actions', () => {
     expect(createSpy.calledWithMatch({
       url: '/test/wtr/fixtures/view-doc-source/index.html?tabId=1',
       type: 'popup',
-      width: 740,
     })).to.be.true;
   });
 
@@ -218,43 +210,37 @@ describe('Test actions', () => {
             return null;
           case 2:
             // tab without url
-            return {
-              id: 1,
-            };
+            return mockTab('');
           case 3:
             // inactive tab
-            return {
+            return mockTab('https://www.example.com/', {
               id: 1,
-              url: 'https://www.example.com/',
-            };
+              active: false,
+            });
           case 4:
             // tab with invalid url
-            return {
+            return mockTab('foo', {
               id: 1,
               active: true,
-              url: 'foo',
-            };
+            });
           case 5:
             // tab without vds
-            return {
+            return mockTab('https://www.example.com/', {
               id: 1,
               active: true,
-              url: 'https://www.example.com/',
-            };
+            });
           case 6:
             // tab with vds=false
-            return {
+            return mockTab('https://www.example.com/?view-doc-source=false', {
               id: 1,
               active: true,
-              url: 'https://www.example.com/?view-doc-source=false',
-            };
+            });
           default:
             // tab with vds=true
-            return {
+            return mockTab('https://www.example.com/?view-doc-source=true', {
               id: 1,
               active: true,
-              url: 'https://www.example.com/?view-doc-source=true',
-            };
+            });
         }
       });
     // no tab

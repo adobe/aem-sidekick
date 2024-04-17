@@ -32,7 +32,7 @@ import {
   getProjectFromUrl,
 } from '../src/extension/project.js';
 import { urlCache } from '../src/extension/url-cache.js';
-import { error } from './test-utils.js';
+import { error, mockTab } from './test-utils.js';
 import { mockDiscoveryCalls } from './mocks/discover.js';
 
 // @ts-ignore
@@ -351,32 +351,32 @@ describe('Test project', () => {
 
   it('getProjectMatches', async () => {
     // match preview URL
-    expect((await getProjectMatches(CONFIGS, 'https://main--bar1--foo.hlx.page/')).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar1--foo.hlx.page/'))).length).to.equal(1);
     // match preview URL with any ref
-    expect((await getProjectMatches(CONFIGS, 'https://baz--bar1--foo.hlx.page/')).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://baz--bar1--foo.hlx.page/'))).length).to.equal(1);
     // match custom preview URL
-    expect((await getProjectMatches(CONFIGS, 'https://6-preview.foo.bar/')).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://6-preview.foo.bar/'))).length).to.equal(1);
     // match live URL
-    expect((await getProjectMatches(CONFIGS, 'https://main--bar1--foo.hlx.live/')).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar1--foo.hlx.live/'))).length).to.equal(1);
     // match custom live URL
-    expect((await getProjectMatches(CONFIGS, 'https://6-live.foo.bar/')).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://6-live.foo.bar/'))).length).to.equal(1);
     // match production host
-    expect((await getProjectMatches(CONFIGS, 'https://1.foo.bar/')).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://1.foo.bar/'))).length).to.equal(1);
     // ignore disabled config
-    expect((await getProjectMatches(CONFIGS, 'https://main--bar2--foo.hlx.live/')).length).to.equal(0);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar2--foo.hlx.live/'))).length).to.equal(0);
     // match transient URL
-    expect((await getProjectMatches(CONFIGS, 'https://main--bar0--foo.hlx.live/')).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar0--foo.hlx.live/'))).length).to.equal(1);
     // testing else paths
-    expect((await getProjectMatches(CONFIGS, 'https://bar--foo.hlx.live/')).length).to.equal(0);
-    await urlCache.set('https://7.foo.bar/', { owner: 'foo', repo: 'bar6' });
-    expect((await getProjectMatches(CONFIGS, 'https://7.foo.bar/')).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://bar--foo.hlx.live/'))).length).to.equal(0);
+    await urlCache.set(mockTab('https://7.foo.bar/'), { owner: 'foo', repo: 'bar6' });
+    expect((await getProjectMatches(CONFIGS, mockTab('https://7.foo.bar/'))).length).to.equal(1);
     // match sharepoint URL (docx)
     mockDiscoveryCalls();
-    await urlCache.set('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true');
-    expect((await getProjectMatches(CONFIGS, 'https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true')).length).to.equal(1);
+    await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'));
+    expect((await getProjectMatches(CONFIGS, mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'))).length).to.equal(1);
     // match transient gdrive URL
-    await urlCache.set('https://docs.google.com/document/d/1234567890/edit', { owner: 'foo', repo: 'bar0' });
-    expect((await getProjectMatches(CONFIGS, 'https://docs.google.com/document/d/1234567890/edit')).length).to.equal(1);
+    await urlCache.set(mockTab('https://docs.google.com/document/d/1234567890/edit'), { owner: 'foo', repo: 'bar0' });
+    expect((await getProjectMatches(CONFIGS, mockTab('https://docs.google.com/document/d/1234567890/edit'))).length).to.equal(1);
   });
 
   it('getGitHubSettings', async () => {
@@ -404,18 +404,18 @@ describe('Test project', () => {
       repo: 'blog',
       ref: 'stage',
     };
-    const github = await getProjectFromUrl('https://github.com/adobe/blog/tree/stage');
+    const github = await getProjectFromUrl(mockTab('https://github.com/adobe/blog/tree/stage'));
     expect(github).to.eql(settings);
-    const share = await getProjectFromUrl('https://www.aem.live/tools/sidekick/?giturl=https://github.com/adobe/blog/tree/stage');
+    const share = await getProjectFromUrl(mockTab('https://www.aem.live/tools/sidekick/?giturl=https://github.com/adobe/blog/tree/stage'));
     expect(share).to.eql(settings);
-    const nomatch = await getProjectFromUrl('https://blog.adobe.com');
+    const nomatch = await getProjectFromUrl(mockTab('https://blog.adobe.com'));
     expect(nomatch).to.eql({});
-    urlCache.set('https://blog.adobe.com', settings);
-    const cached = await getProjectFromUrl('https://blog.adobe.com');
+    urlCache.set(mockTab('https://blog.adobe.com'), settings);
+    const cached = await getProjectFromUrl(mockTab('https://blog.adobe.com'));
     expect(cached).to.eql({ ...settings, ref: 'main' });
-    const sharenogiturl = await getProjectFromUrl('https://www.aem.live/tools/sidekick/');
+    const sharenogiturl = await getProjectFromUrl(mockTab('https://www.aem.live/tools/sidekick/'));
     expect(sharenogiturl).to.eql({});
-    const shareinvalidgiturl = await getProjectFromUrl('https://www.aem.live/tools/sidekick/?giturl=https://www.example.com');
+    const shareinvalidgiturl = await getProjectFromUrl(mockTab('https://www.aem.live/tools/sidekick/?giturl=https://www.example.com'));
     expect(shareinvalidgiturl).to.eql({});
     // @ts-ignore
     const none = await getProjectFromUrl();

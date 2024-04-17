@@ -54,8 +54,8 @@ async function updateAuthToken({
  * Adds or removes a project based on the tab's URL
  * @param {chrome.tabs.Tab} tab The tab
  */
-async function addRemoveProject({ id, url }) {
-  const config = await getProjectFromUrl(url);
+async function addRemoveProject(tab) {
+  const config = await getProjectFromUrl(tab);
   if (isValidProject(config)) {
     const { owner, repo } = config;
     const project = await getProject(config);
@@ -64,7 +64,7 @@ async function addRemoveProject({ id, url }) {
     } else {
       await deleteProject(`${owner}/${repo}`);
     }
-    await chrome.tabs.reload(id, { bypassCache: true });
+    await chrome.tabs.reload(tab.id, { bypassCache: true });
   }
 }
 
@@ -72,8 +72,9 @@ async function addRemoveProject({ id, url }) {
  * Enables or disables a project based on the tab's URL
  * @param {chrome.tabs.Tab} tab The tab
  */
-async function enableDisableProject({ id, url }) {
-  const cfg = await getProjectFromUrl(url);
+async function enableDisableProject(tab) {
+  const { id } = tab;
+  const cfg = await getProjectFromUrl(tab);
   if (await toggleProject(cfg)) {
     await chrome.tabs.reload(id, { bypassCache: true });
   }

@@ -102,13 +102,13 @@ export default async function checkTab(id) {
     url = await getProxyUrl(tab);
   }
   // fill url cache
-  await urlCache.set(url, projects);
+  await urlCache.set(tab, projects);
 
   // todo: if share url, inject install helper
 
-  const matches = await getProjectMatches(projects, url);
+  const matches = await getProjectMatches(projects, tab);
 
-  const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(url);
+  const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(tab);
 
   if (matches.length > 0) {
     // inject content script and send matches to tab

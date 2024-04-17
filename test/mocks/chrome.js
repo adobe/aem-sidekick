@@ -79,10 +79,11 @@ export default {
     reload: async () => {},
   },
   scripting: {
-    executeScript: ({ func }) => {
+    executeScript: async ({ func, args = [] }) => {
       if (typeof func === 'function') {
-        func();
+        return func(...args);
       }
+      return null;
     },
   },
   contextMenus: {
