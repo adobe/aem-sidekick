@@ -44,77 +44,105 @@ export function isGoogleDriveHost(url) {
 }
 
 /**
- * Encodes the URL to be used in the `/shares/` MSGraph API call
- * @param {string} sharingUrl The sharing URL
- * @returns {string} The encoded sharing URL
- */
-function encodeSharingUrl(sharingUrl) {
-  const base64 = btoa(sharingUrl)
-    .replace(/=/, '')
-    .replace(/\//, '_')
-    .replace(/\+/, '-');
-  return `u!${base64}`;
-}
-
-/**
  * Fetches the edit info from Microsoft SharePoint.
  * @todo also use fstab information to figure out the resource path etc.
- * @param {string} url The URL
+ * @param {chrome.tabs.Tab} tab The tab
  * @returns {Promise<Object>} The edit info
  */
-async function fetchSharePointEditInfo(url) {
-  const spUrl = new URL(url);
-  // sometimes sharepoint redirects to an url with a search param `RootFolder` instead of `id`
-  // and then the sharelink can't be resolved. so we convert it to `id`
-  const rootFolder = spUrl.searchParams.get('RootFolder');
-  if (rootFolder) {
-    spUrl.searchParams.set('id', rootFolder);
-    spUrl.searchParams.delete('RootFolder');
-  }
-  const shareLink = encodeSharingUrl(spUrl.href);
-  spUrl.pathname = `/_api/v2.0/shares/${shareLink}/driveItem`;
-  spUrl.search = '';
-  let resp = await fetch(spUrl);
-  if (!resp.ok) {
-    log.debug('unable to resolve edit url ', resp.status, await resp.text());
-    return null;
-  }
-  const data = await resp.json();
+async function fetchSharePointEditInfo(tab) {
+  return new Promise((resolve) => {
+    // inject edit info retriever
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: async (tabUrl) => {
+        const encodeSharingUrl = (sharingUrl) => {
+          const base64 = btoa(sharingUrl)
+            .replace(/=/, '')
+            .replace(/\//, '_')
+            .replace(/\+/, '-');
+          return `u!${base64}`;
+        };
 
-  // get root item
-  spUrl.pathname = `/_api/v2.0/drives/${data.parentReference.driveId}`;
-  resp = await fetch(spUrl);
-  if (!resp.ok) {
-    log.debug('unable to load root url: ', resp.status, await resp.text());
-    return null;
-  }
-  const rootData = await resp.json();
+        const fetchEditInfo = async (urlFromTab) => {
+          // convert `RootFolder` to `id` if present
+          const spUrl = new URL(urlFromTab);
+          const rootFolder = spUrl.searchParams.get('RootFolder');
+          if (rootFolder) {
+            spUrl.searchParams.set('id', rootFolder);
+            spUrl.searchParams.delete('RootFolder');
+          }
+          const shareLink = encodeSharingUrl(spUrl.href);
+          spUrl.pathname = `/_api/v2.0/shares/${shareLink}/driveItem`;
+          spUrl.search = '';
+          let resp = await fetch(spUrl, { credentials: 'include' });
+          if (!resp.ok) {
+            log.warn('unable to resolve edit url: ', resp.status, await resp.text());
+            return null;
+          }
+          const data = await resp.json();
 
-  const info = {
-    status: 200,
-    name: data.name,
-    sourceLocation: `onedrive:/drives/${data.parentReference.driveId}/items/${data.id}`,
-    lastModified: data.lastModifiedDateTime,
-  };
-  if (data.folder) {
-    info.url = data.webUrl;
-    info.contentType = 'application/folder';
-    info.childCount = data.folder.childCount;
-  } else {
-    const folder = data.parentReference.path.split(':').pop();
-    info.url = `${rootData.webUrl}${folder}/${data.name}`;
-    info.contentType = data.file.mimeType;
-  }
-  return info;
+          // get root item
+          spUrl.pathname = `/_api/v2.0/drives/${data.parentReference.driveId}`;
+          resp = await fetch(spUrl, { credentials: 'include' });
+          if (!resp.ok) {
+            log.warn('unable to load root url: ', resp.status, await resp.text());
+            return null;
+          }
+          const rootData = await resp.json();
+
+          const info = {
+            status: 200,
+            name: data.name,
+            sourceLocation: `onedrive:/drives/${data.parentReference.driveId}/items/${data.id}`,
+            lastModified: data.lastModifiedDateTime,
+          };
+          if (data.folder) {
+            info.url = data.webUrl;
+            info.contentType = 'application/folder';
+            info.childCount = data.folder.childCount;
+          } else {
+            const folder = data.parentReference.path.split(':').pop();
+            info.url = `${rootData.webUrl}${folder}/${data.name}`;
+            info.contentType = data.file.mimeType;
+          }
+          return info;
+        };
+        const spEditInfo = await fetchEditInfo(tabUrl);
+
+        chrome.runtime.sendMessage({ spEditInfo });
+      },
+      args: [tab.url],
+    }).catch((e) => {
+      log.warn('fetchSharePointEditInfo: failed to inject script', e);
+      resolve(null);
+    });
+
+    // listen for edit info from tab
+    const listener = ({ spEditInfo }, { tab: msgTab }) => {
+      // check if message contains edit info and is sent from right tab
+      if (typeof spEditInfo !== 'undefined' && tab && tab.id === msgTab.id) {
+        chrome.runtime.onMessage.removeListener(listener);
+        resolve(spEditInfo);
+      }
+    };
+    chrome.runtime.onMessage.addListener(listener);
+
+    // resolve with null after 1s
+    setTimeout(() => {
+      log.debug('fetchSharePointEditInfo: timed out');
+      chrome.runtime.onMessage.removeListener(listener);
+      resolve(null);
+    }, 1000);
+  });
 }
 
 /**
  * Fetches the edit info from Google Drive.
  * @todo implement
- * @param {string} url The URL
+ * @param {chrome.tabs.Tab} tab The tab
  * @returns {Promise<Object>} The edit info
  */
-async function fetchGoogleDriveEditInfo(url) {
+async function fetchGoogleDriveEditInfo({ url }) {
   // todo: implement
   return {
     url,
@@ -137,10 +165,10 @@ async function fetchGoogleDriveEditInfo(url) {
 class UrlCache {
   /**
    * Looks up a URL and returns its associated projects, or an empty array.
-   * @param {string} url The URL
+   * @param {chrome.tabs.Tab} tab The tab
    * @returns {Promise<Object[]>} The project results from the cached entry
    */
-  async get(url) {
+  async get({ url }) {
     const urlCache = await getConfig('session', 'urlCache') || [];
     const entry = urlCache.find((e) => e.url === url);
     if (entry && (!entry.expiry || entry.expiry > Date.now())) {
@@ -153,11 +181,12 @@ class UrlCache {
 
   /**
    * Updates the URL cache for the duration of the browser session.
-   * @param {string} url The URL
+   * @param {chrome.tabs.Tab} tab The tab
    * @param {SidekickConfig|SidekickConfig[]} [config] The project config(s)
    * @returns {Promise<void>}
    */
-  async set(url, config = {}) {
+  async set(tab, config = {}) {
+    const { url } = tab;
     // @ts-ignore
     const { owner, repo } = config;
     const createCacheEntry = (cacheUrl, results, expiry = 0) => {
@@ -194,10 +223,10 @@ class UrlCache {
       if (!isSPHost && !isGoogleDriveHost(url)) {
         return;
       }
-      if ((await this.get(url)).length === 0) {
+      if ((await this.get(tab)).length === 0) {
         const info = isSPHost
-          ? await fetchSharePointEditInfo(url)
-          : await fetchGoogleDriveEditInfo(url);
+          ? await fetchSharePointEditInfo(tab)
+          : await fetchGoogleDriveEditInfo(tab);
         log.debug('resource edit info', info);
 
         let results = [];

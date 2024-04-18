@@ -23,14 +23,13 @@ import {
 import {
   mockDiscoveryCalls,
 } from './mocks/discover.js';
+import { error, mockTab } from './test-utils.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('Test url-cache', () => {
   const sandbox = sinon.createSandbox();
-
-  const fetchStub = mockDiscoveryCalls([11, 13, 20], [17]);
 
   before(async () => {
     await setUserAgent('HeadlessChrome');
@@ -54,70 +53,154 @@ describe('Test url-cache', () => {
     )).to.be.true;
   });
 
-  it('set url', async () => {
-    const storageSpy = sandbox.spy(window.chrome.storage.session, 'set');
-    // static url without config: 0 calls
-    await urlCache.set('https://www.hlx.live/');
-    expect(fetchStub.callCount).to.equal(0);
-    expect(storageSpy.callCount).to.equal(0);
-    // sharepoint: 3 fetchSpy calls, 1 storageSpy call
-    await urlCache.set('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true');
-    expect(fetchStub.callCount).to.equal(3);
-    expect(storageSpy.callCount).to.equal(1);
-    // gdrive: 1 fetchSpy call, 1 storageSpy call
-    await urlCache.set('https://docs.google.com/document/d/1234567890/edit');
-    expect(fetchStub.callCount).to.equal(4);
-    expect(storageSpy.callCount).to.equal(2);
-    // cache: add new entry: 1 fetchSpy call, 1 storageSpy call
-    await urlCache.set('https://docs.google.com/document/d/0987654321/edit');
-    expect(fetchStub.callCount).to.equal(5);
-    expect(storageSpy.callCount).to.equal(3);
-    // cache: reuse existing match: 0 calls
-    await urlCache.set('https://docs.google.com/document/d/0987654321/edit');
-    expect(fetchStub.callCount).to.equal(5);
-    expect(storageSpy.callCount).to.equal(3);
-    // cache: refresh expired match: 1 fetchSpy call, 1 storageSpy call
-    sandbox.stub(Date, 'now').returns(Date.now() + 7205000); // fast-forward 2 days and 5 seconds
-    await urlCache.set('https://docs.google.com/document/d/0987654321/edit');
-    expect(fetchStub.callCount).to.equal(6);
-    expect(storageSpy.callCount).to.equal(4);
-    // static url with config: 0 fetchSpy calls, 1 storageSpy call
-    await urlCache.set('https://random.foo.bar/', { owner: 'foo', repo: 'random' });
-    expect(fetchStub.callCount).to.equal(6);
-    expect(storageSpy.callCount).to.equal(5);
-    // update static url with config: 0 fetchSpy calls, 1 storageSpy call
-    await urlCache.set('https://random.foo.bar/', { owner: 'bar', repo: 'random' });
-    expect(fetchStub.callCount).to.equal(6);
-    expect(storageSpy.callCount).to.equal(6);
-    // sharepoint root folder: 3 fetchSpy calls, 1 storageSpy call
-    await urlCache.set('https://foo.sharepoint.com/sites/foo/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2Ffoo%2FShared%20Documents%2Ffoo&viewid=77cb4d37%2D30e2%2D4762%2D87ef%2D5ad0e1059258&RootFolder=1234');
-    expect(fetchStub.callCount).to.equal(9);
-    expect(storageSpy.callCount).to.equal(7);
-    // error handling (fetch root item fails): 3 fetchSpy calls, 1 storageSpy call
-    await urlCache.set('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true');
-    expect(fetchStub.callCount).to.equal(12);
-    expect(storageSpy.callCount).to.equal(8);
-    // error handling (fetch edit info fails): 2 fetchSpy calls, 1 storageSpy call
-    await urlCache.set('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=bla.docx&action=default&mobileredirect=true');
-    expect(fetchStub.callCount).to.equal(14);
-    expect(storageSpy.callCount).to.equal(9);
-    // error handling (empty discovery)
-    await urlCache.set('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=baz.docx&action=default&mobileredirect=true');
-    // error handling (discovery fails)
-    await urlCache.set('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=baz.docx&action=default&mobileredirect=true');
+  describe('set', () => {
+    const fetchStub = mockDiscoveryCalls([11, 13, 20], [17]);
+    let sessionSet;
+    let sendMessage;
+
+    let onMessageListener;
+    beforeEach(() => {
+      sessionSet = sandbox.spy(window.chrome.storage.session, 'set');
+      sandbox.stub(window.chrome.runtime.onMessage, 'addListener').callsFake((listener) => {
+        expect(listener).to.be.a('function');
+        onMessageListener = listener;
+      });
+      // @ts-ignore
+      sendMessage = sandbox.stub(window.chrome.runtime, 'sendMessage').callsFake((message) => {
+        expect(onMessageListener).to.be.a('function');
+        expect(message).to.be.an('object');
+        onMessageListener(message, { tab: { id: 0 } });
+      });
+    });
+
+    afterEach(() => {
+      fetchStub.resetHistory();
+    });
+
+    it('static url without config', async () => {
+      await urlCache.set(mockTab('https://www.hlx.live/'));
+      expect(fetchStub.callCount).to.equal(0);
+      expect(sessionSet.callCount).to.equal(0);
+    });
+
+    it('sharepoint url', async () => {
+      await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'));
+      expect(fetchStub.callCount).to.equal(3);
+      expect(sessionSet.callCount).to.equal(1);
+    }).timeout(5000);
+
+    it('gdrive url', async () => {
+      await urlCache.set(mockTab('https://docs.google.com/document/d/1234567890/edit'));
+      expect(fetchStub.callCount).to.equal(1);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('add new entry', async () => {
+      await urlCache.set(mockTab('https://docs.google.com/document/d/0987654321/edit'));
+      expect(fetchStub.callCount).to.equal(1);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('reuse existing match', async () => {
+      await urlCache.set(mockTab('https://docs.google.com/document/d/0987654321/edit'));
+      expect(fetchStub.callCount).to.equal(0);
+      expect(sessionSet.callCount).to.equal(0);
+    });
+
+    it('refresh expired match', async () => {
+      sandbox.stub(Date, 'now').returns(Date.now() + 7205000); // fast-forward 2 days and 5 seconds
+      await urlCache.set(mockTab('https://docs.google.com/document/d/0987654321/edit'));
+      expect(fetchStub.callCount).to.equal(1);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('static url with config', async () => {
+      await urlCache.set(mockTab('https://random.foo.bar/'), { owner: 'foo', repo: 'random' });
+      expect(fetchStub.callCount).to.equal(0);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('update static url with config', async () => {
+      await urlCache.set(mockTab('https://random.foo.bar/'), { owner: 'bar', repo: 'random' });
+      expect(fetchStub.callCount).to.equal(0);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('sharepoint url with root folder', async () => {
+      await urlCache.set(mockTab('https://foo.sharepoint.com/sites/foo/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2Ffoo%2FShared%20Documents%2Ffoo&viewid=77cb4d37%2D30e2%2D4762%2D87ef%2D5ad0e1059258&RootFolder=1234'));
+      expect(fetchStub.callCount).to.equal(3);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('fetch root item fails', async () => {
+      // : 3 fetchSpy calls, 1 storageSpy call
+      await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C896%7D&file=index.docx&action=default&mobileredirect=true'));
+      expect(fetchStub.callCount).to.equal(3);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('fetch edit info fails', async () => {
+      await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=bla.docx&action=default&mobileredirect=true'));
+      expect(fetchStub.callCount).to.equal(2);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('discovery empty', async () => {
+      await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=baz.docx&action=default&mobileredirect=true'));
+      expect(fetchStub.callCount).to.equal(3);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('discovery fails', async () => {
+      await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=baz.docx&action=default&mobileredirect=true'));
+      expect(fetchStub.callCount).to.equal(3);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('script injection fails', async () => {
+      sandbox.stub(window.chrome.scripting, 'executeScript').rejects(error);
+      await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19E-4A68-4DBF-8641-DA2F1283C895%7D&file=baz.docx&action=default&mobileredirect=true'));
+      expect(fetchStub.callCount).to.equal(1);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('unexpected response from tab', async () => {
+      sendMessage.restore();
+      sendMessage = sandbox.stub(window.chrome.runtime, 'sendMessage').callsFake(() => onMessageListener({ }, { tab: { id: 0 } }));
+      await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%70BFD9A19E-4A68-4DBF-8641-DA2F1283C895%7D&file=baz.docx&action=default&mobileredirect=true'));
+      expect(fetchStub.callCount).to.equal(3);
+      expect(sessionSet.callCount).to.equal(1);
+    });
   });
 
-  it('get url', async () => {
-    const sessionGet = sandbox.spy(chrome.storage.session, 'get');
-    // known url
-    let results = await urlCache.get('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true');
-    expect(results.length).to.equal(1);
-    // unknown url
-    results = await urlCache.get('https://foo.sharepoint.com/:x:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7ABFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.xlsx&action=default&mobileredirect=true');
-    expect(results.length).to.equal(0);
-    // static url
-    results = await urlCache.get('https://random.foo.bar/');
-    expect(results.length).to.equal(1);
-    expect(sessionGet.called).to.be.true;
+  describe('get', () => {
+    let sessionGet;
+
+    beforeEach(() => {
+      sessionGet = sandbox.spy(window.chrome.storage.session, 'get');
+    });
+
+    afterEach(() => {
+      sessionGet.resetHistory();
+    });
+
+    it('known url', async () => {
+      // known url
+      const results = await urlCache.get(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'));
+      expect(results.length).to.equal(1);
+      expect(sessionGet.callCount).to.equal(1);
+    });
+
+    it('unknown url', async () => {
+      const results = await urlCache.get(mockTab('https://foo.sharepoint.com/:x:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7ABFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.xlsx&action=default&mobileredirect=true'));
+      expect(results.length).to.equal(0);
+      expect(sessionGet.callCount).to.equal(1);
+    });
+
+    it('static url', async () => {
+      const results = await urlCache.get(mockTab('https://random.foo.bar/'));
+      expect(results.length).to.equal(1);
+      expect(sessionGet.callCount).to.equal(1);
+    });
   });
 });

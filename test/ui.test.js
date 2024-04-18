@@ -245,10 +245,10 @@ describe('Test UI: RUM collection when clicked', () => {
 
   it('collects RUM', async () => {
     clickListener({
-      menuItemId: 'openPreview',
+      menuItemId: 'openViewDocSource',
     }, tab);
-    await aTimeout(500);
-    expect(logSpy.calledWithMatch('sampleRUM', 'sidekick:context-menu:openPreview')).to.be.true;
+    await aTimeout(1000);
+    expect(logSpy.calledWithMatch('sampleRUM', 'sidekick:context-menu:openViewDocSource')).to.be.true;
   });
 
   it('handles error', async () => {

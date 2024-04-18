@@ -137,10 +137,11 @@ function getShareSettings(shareurl) {
 
 /**
  * Tries to retrieve a project config from a URL.
- * @param {string} url The URL of the tab
+ * @param {chrome.tabs.Tab} [tab] The tab
  * @returns {Promise<Object>} The project config
  */
-export async function getProjectFromUrl(url) {
+export async function getProjectFromUrl(tab) {
+  const { url } = tab || {};
   if (!url) {
     return {};
   }
@@ -167,7 +168,7 @@ export async function getProjectFromUrl(url) {
         };
       } else {
         // check if url is known in url cache
-        const { owner, repo } = (await urlCache.get(url))
+        const { owner, repo } = (await urlCache.get(tab))
           .find((r) => r.originalRepository) || {};
         if (owner && repo) {
           return {
@@ -404,13 +405,13 @@ function getConfigDetails(host) {
 /**
  * Returns matches from configured projects for a given tab URL.
  * @param {Object[]} configs The project configurations
- * @param {string} tabUrl The tab URL
+ * @param {chrome.tabs.Tab} tab The tab
  * @returns {Promise<Object[]>} The matches
  */
-export async function getProjectMatches(configs, tabUrl) {
+export async function getProjectMatches(configs, tab) {
   const {
     host: checkHost,
-  } = new URL(tabUrl);
+  } = new URL(tab.url);
   // exclude disabled configs
   const matches = configs
     .filter((cfg) => !cfg.disabled)
@@ -428,7 +429,7 @@ export async function getProjectMatches(configs, tabUrl) {
         || isValidHost(checkHost, owner, repo); // inner or outer
     });
   // check url cache if no matches
-  const cachedResults = await urlCache.get(tabUrl);
+  const cachedResults = await urlCache.get(tab);
   cachedResults.forEach((e) => {
     // add matches from url cache
     matches.push(...configs.filter(({ owner, repo }) => e.owner === owner && e.repo === repo));
