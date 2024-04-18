@@ -51,27 +51,24 @@ describe('Test auth', () => {
   it('setAuthToken', async () => {
     const getConfig = sandbox.spy(chrome.storage.session, 'get');
     const setConfig = sandbox.spy(chrome.storage.session, 'set');
-    const removeConfig = sandbox.spy(chrome.storage.session, 'remove');
     const owner = 'test';
-    const repo = 'project';
     const authToken = '1234567890';
     const authTokenExpiry = Date.now() / 1000 + 60;
 
     // set auth token
-    await setAuthToken(owner, repo, authToken, authTokenExpiry);
-    expect(getConfig.callCount).to.equal(3);
-    expect(setConfig.callCount).to.be.equal(2);
+    await setAuthToken(owner, authToken, authTokenExpiry);
+    expect(getConfig.callCount).to.equal(2);
+    expect(setConfig.callCount).to.be.equal(1);
     // update auth token without expiry
-    await setAuthToken(owner, repo, authToken);
-    expect(getConfig.callCount).to.equal(6);
-    expect(setConfig.callCount).to.be.equal(4);
+    await setAuthToken(owner, authToken);
+    expect(getConfig.callCount).to.equal(4);
+    expect(setConfig.callCount).to.be.equal(2);
     // remove auth token
-    await setAuthToken(owner, repo, '');
-    expect(removeConfig.calledWith('test/project')).to.be.true;
-    expect(removeConfig.callCount).to.equal(1);
+    await setAuthToken(owner, '');
+    expect(setConfig.callCount).to.equal(3);
     // remove auth token again
-    await setAuthToken(owner, repo, '');
-    expect(removeConfig.callCount).to.equal(1);
+    await setAuthToken(owner, '');
+    expect(setConfig.callCount).to.equal(4);
     // testing else paths
     getConfig.resetHistory();
     setConfig.resetHistory();
