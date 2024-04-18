@@ -170,6 +170,22 @@ describe('Test actions', () => {
     expect(set.notCalled).to.be.true;
   });
 
+  it('internal: openPreview', async () => {
+    const create = sandbox.spy(chrome.tabs, 'create');
+    await internalActions.openPreview(mockTab('https://github.com/adobe/blog', {
+      id: 1,
+    }));
+    expect(create.calledWith({
+      url: 'https://main--blog--adobe.hlx.page/',
+    })).to.be.true;
+    // open preview with unsupported url
+    create.resetHistory();
+    await internalActions.openPreview(mockTab('https://www.example.com', {
+      id: 1,
+    }));
+    expect(create.called).to.be.false;
+  });
+
   it('internal: openViewDocSource', async () => {
     const { openViewDocSource } = internalActions;
     const createSpy = sandbox.spy(chrome.windows, 'create');
