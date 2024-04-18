@@ -262,7 +262,7 @@ describe('Test UI: RUM collection when clicked', () => {
   it('does nothing without tab url', async () => {
     const logs = logSpy.callCount;
     clickListener({
-      menuItemId: 'openPreview',
+      menuItemId: 'openViewDocSource',
     }, {});
     await aTimeout(500);
     expect(logSpy.callCount).to.equal(logs);
