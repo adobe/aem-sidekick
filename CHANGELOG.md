@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/adobe/aem-sidekick/compare/v1.16.0...v1.17.0) (2024-04-18)
+
+
+### Features
+
+* reuse auth token within the same org ([#114](https://github.com/adobe/aem-sidekick/issues/114)) ([a5cae3c](https://github.com/adobe/aem-sidekick/commit/a5cae3cc4fec07373585ac84fce6bc549a0f83b1))
+
 # [1.16.0](https://github.com/adobe/aem-sidekick/compare/v1.15.0...v1.16.0) (2024-04-13)
 
 
