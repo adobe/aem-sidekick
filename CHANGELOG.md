@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/adobe/aem-sidekick/compare/v1.17.0...v1.18.0) (2024-04-18)
+
+
+### Features
+
+* RUM data collection for context menu items ([#85](https://github.com/adobe/aem-sidekick/issues/85)) ([ed446be](https://github.com/adobe/aem-sidekick/commit/ed446be478c537cc71d9add6b9bfdcc75522957e))
+
 # [1.17.0](https://github.com/adobe/aem-sidekick/compare/v1.16.0...v1.17.0) (2024-04-18)
 
 
