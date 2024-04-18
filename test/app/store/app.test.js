@@ -1194,7 +1194,7 @@ describe('Test App Store', () => {
       instance.status = { webPath: '/some.json' };
       instance.siteStore = {
         views: [
-          { path: '**.json', viewer: '/test/wtr/fixtures/views/json/json.html' },
+          { path: '**.json', viewer: '/test/fixtures/views/json/json.html' },
         ],
       };
     });
@@ -1212,19 +1212,19 @@ describe('Test App Store', () => {
     it('should use webPath as testPath if not provided', () => {
       const [view] = instance.findViews(VIEWS.DEFAULT);
       expect(view.path).to.equal('**.json');
-      expect(view.viewer).to.equal('/test/wtr/fixtures/views/json/json.html');
+      expect(view.viewer).to.equal('/test/fixtures/views/json/json.html');
     });
 
     it('should use testPath', () => {
       const [view] = instance.findViews(VIEWS.DEFAULT, '/foo.json');
       expect(view.path).to.equal('**.json');
-      expect(view.viewer).to.equal('/test/wtr/fixtures/views/json/json.html');
+      expect(view.viewer).to.equal('/test/fixtures/views/json/json.html');
     });
 
     it('should filter views based on DEFAULT viewType', () => {
       const [view] = instance.findViews(VIEWS.DEFAULT);
       expect(view.path).to.equal('**.json');
-      expect(view.viewer).to.equal('/test/wtr/fixtures/views/json/json.html');
+      expect(view.viewer).to.equal('/test/fixtures/views/json/json.html');
     });
 
     it('should filter views based on CUSTOM viewType (no custom)', () => {
@@ -1236,7 +1236,7 @@ describe('Test App Store', () => {
       instance.status = { webPath: '/some.psd' };
       instance.siteStore = {
         views: [
-          { path: '**.json', viewer: '/test/wtr/fixtures/views/json/json.html' },
+          { path: '**.json', viewer: '/test/fixtures/views/json/json.html' },
           { path: '**.psd', viewer: 'https://example.com/psd-renderer.html' },
         ],
       };
@@ -1248,13 +1248,13 @@ describe('Test App Store', () => {
     it('should include all matching views if viewType is neither DEFAULT nor CUSTOM', () => {
       instance.siteStore = {
         views: [
-          { path: '**.json', viewer: '/test/wtr/fixtures/views/json/json.html' },
+          { path: '**.json', viewer: '/test/fixtures/views/json/json.html' },
           { path: '**.psd', viewer: 'https://example.com/psd-renderer.html' },
         ],
       };
       const [view] = instance.findViews();
       expect(view.path).to.equal('**.json');
-      expect(view.viewer).to.equal('/test/wtr/fixtures/views/json/json.html');
+      expect(view.viewer).to.equal('/test/fixtures/views/json/json.html');
     });
   });
 
