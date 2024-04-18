@@ -339,7 +339,7 @@ export async function deleteProject(project) {
   const i = projects.indexOf(handle);
   if (i >= 0) {
     // delete admin auth header rule
-    chrome.runtime.sendMessage({ deleteAuthToken: { owner, repo } });
+    chrome.runtime.sendMessage({ updateAuthToken: { owner, authToken: '' } });
     // delete the project entry
     await removeConfig('sync', handle);
     // remove project entry from index
