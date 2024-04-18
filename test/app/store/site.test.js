@@ -11,19 +11,11 @@
  */
 /* eslint-disable no-unused-expressions, no-import-assign, import/no-extraneous-dependencies */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
 import { expect } from '@open-wc/testing';
 import { AppStore } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
-import {
-  mockFetchConfigJSONNotAuthorized,
-  mockFetchConfigJSONNotFound,
-  mockFetchConfigWithPluginsJSONSuccess,
-  mockFetchLocalConfigJSONSuccess,
-  mockFetchStatusSuccess,
-} from '../../mocks/helix-admin.js';
-import { mockFetchEnglishMessagesSuccess } from '../../mocks/i18n.js';
+import { SidekickTest } from '../../sidekick-test.js';
+import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -43,36 +35,57 @@ window.chrome = chromeMock;
  * @typedef {import('@Types').SidekickConfig} SidekickConfig
  */
 
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
+
 describe('Test Site Store', () => {
   /**
    * @type {SidekickOptionsConfig}
    */
+  // @ts-ignore
   const defaultConfig = {
     owner: 'adobe',
     ref: 'main',
     repo: 'aem-boilerplate',
     giturl: 'https://github.com/adobe/aem-boilerplate',
-    mountpoint: 'https://drive.google.com/drive/folders/folder-id',
     mountpoints: ['https://drive.google.com/drive/folders/folder-id'],
   };
 
   describe('loadContext', () => {
+  /**
+   * @type {SidekickTest}
+   */
+    let sidekickTest;
+
+    /**
+   * @type {AEMSidekick}
+   */
     let sidekickElement;
+
+    /**
+   * @type {AppStore}
+   */
     let appStore;
 
     beforeEach(() => {
-      mockFetchStatusSuccess();
-      mockFetchEnglishMessagesSuccess();
-      sidekickElement = document.createElement('div');
       appStore = new AppStore();
+      sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigNotFound();
+
+      // @ts-ignore
+      sidekickElement = document.createElement('div');
     });
 
     afterEach(() => {
-      fetchMock.restore();
+      sidekickTest.destroy();
     });
 
     it('minimum config', async () => {
-      mockFetchConfigJSONNotFound();
       await appStore.loadContext(sidekickElement, defaultConfig);
 
       expect(appStore.siteStore.project).to.equal('');
@@ -96,7 +109,6 @@ describe('Test Site Store', () => {
     });
 
     it('hlx 5', async () => {
-      mockFetchConfigJSONNotFound();
       const config = {
         ...defaultConfig,
         previewHost: 'main--aem-boilerplate--adobe.aem.page',
@@ -109,8 +121,9 @@ describe('Test Site Store', () => {
     });
 
     it('dev mode', async () => {
-      mockFetchConfigJSONNotFound();
-      mockFetchLocalConfigJSONSuccess();
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(false, false, {}, true);
+
       /**
        * @type {SidekickOptionsConfig}
        */
@@ -123,7 +136,6 @@ describe('Test Site Store', () => {
     });
 
     it('special views ', async () => {
-      mockFetchConfigJSONNotFound();
       /**
        * @type {SidekickOptionsConfig | ClientConfig}
        */
@@ -137,6 +149,8 @@ describe('Test Site Store', () => {
           },
         ],
       };
+
+      // @ts-ignore
       await appStore.loadContext(sidekickElement, config);
       expect(appStore.siteStore.views.length).to.equal(2);
       expect(appStore.siteStore.views[0].path).to.equal('**.ext');
@@ -144,11 +158,14 @@ describe('Test Site Store', () => {
 
       expect(appStore.siteStore.views[1].path).to.equal('**.json');
       expect(appStore.siteStore.views[1].viewer).to.equal('/test/wtr/fixtures/views/json/json.html');
+      // @ts-ignore
       expect(appStore.siteStore.views[1].title()).to.equal('Data rendition');
     });
 
     it('using ClientConfig (config.json)', async () => {
-      mockFetchConfigWithPluginsJSONSuccess();
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true, true);
+
       await appStore.loadContext(sidekickElement, defaultConfig);
       expect(appStore.siteStore.project).to.equal('AEM Boilerplate');
       expect(appStore.siteStore.innerHost).to.equal('custom-preview-host.com');
@@ -172,13 +189,14 @@ describe('Test Site Store', () => {
     });
 
     it('auth enabled and not logged in (401 on config.json)', async () => {
-      mockFetchConfigJSONNotAuthorized();
+      sidekickTest
+        .mockFetchSidekickConfigUnAuthorized();
+
       await appStore.loadContext(sidekickElement, defaultConfig);
       expect(appStore.siteStore.authorized).to.equal(false);
     });
 
     it('with window.hlx.sidekickConfig', async () => {
-      mockFetchConfigJSONNotFound();
       window.hlx = {};
       window.hlx.sidekickConfig = {
         owner: 'adobe',

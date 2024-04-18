@@ -112,5 +112,6 @@ export function createPreviewPlugin(appStore) {
         }, { once: true });
       }
     },
-  });
+  },
+  appStore);
 }

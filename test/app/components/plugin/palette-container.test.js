@@ -15,33 +15,50 @@
 import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
-import {
-  mockSharepointEditorDocFetchStatusSuccess,
-  mockFetchConfigWithPluginsJSONSuccess,
-} from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
-import { mockEditorAdminEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import { AppStore } from '../../../../src/extension/app/store/app.js';
+import { SidekickTest } from '../../../sidekick-test.js';
+
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('Palette container', () => {
+  /**
+   * @type {SidekickTest}
+   */
+  let sidekickTest;
+
+  /**
+   * @type {AEMSidekick}
+   */
   let sidekick;
+
+  /**
+   * @type {AppStore}
+   */
+  let appStore;
+
   beforeEach(async () => {
-    mockFetchEnglishMessagesSuccess();
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+    sidekickTest
+      .mockFetchEditorStatusSuccess()
+      .mockFetchSidekickConfigSuccess(true, true)
+      .mockEditorAdminEnvironment();
   });
 
   afterEach(() => {
-    document.body.removeChild(sidekick);
-    restoreEnvironment(document);
+    sidekickTest.destroy();
   });
 
   async function openPallete(plugin = 'tag-selector') {
-    sidekick = new AEMSidekick(defaultSidekickConfig);
-    document.body.appendChild(sidekick);
+    sidekick = sidekickTest.createSidekick();
 
     await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
@@ -63,10 +80,6 @@ describe('Palette container', () => {
   }
 
   it('closes palette plugin via close button', async () => {
-    mockSharepointEditorDocFetchStatusSuccess();
-    mockFetchConfigWithPluginsJSONSuccess();
-    mockEditorAdminEnvironment(document, 'editor');
-
     await openPallete();
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
@@ -80,10 +93,6 @@ describe('Palette container', () => {
   });
 
   it('closes palette plugin via esc key', async () => {
-    mockSharepointEditorDocFetchStatusSuccess();
-    mockFetchConfigWithPluginsJSONSuccess();
-    mockEditorAdminEnvironment(document, 'editor');
-
     await openPallete();
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
@@ -99,10 +108,6 @@ describe('Palette container', () => {
   });
 
   it('palette renders titleI18n', async () => {
-    mockSharepointEditorDocFetchStatusSuccess();
-    mockFetchConfigWithPluginsJSONSuccess();
-    mockEditorAdminEnvironment(document, 'editor');
-
     await openPallete('localize');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');

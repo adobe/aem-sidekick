@@ -13,6 +13,7 @@
 /* eslint-disable no-restricted-globals */
 
 import { observable, action } from 'mobx';
+import { createContext } from '@lit/context';
 import { SiteStore } from './site.js';
 import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
 import sampleRUM from '../utils/rum.js';
@@ -228,7 +229,7 @@ export class AppStore {
     this.corePlugins = {};
 
     if (this.siteStore.ready && this.siteStore.authorized) {
-      const envPlugin = pluginFactory.createEnvPlugin();
+      const envPlugin = pluginFactory.createEnvPlugin(this);
       const previewPlugin = pluginFactory.createPreviewPlugin(this);
       const reloadPlugin = pluginFactory.createReloadPlugin(this);
       const deletePlugin = pluginFactory.createDeletePlugin(this);
@@ -337,7 +338,6 @@ export class AppStore {
             },
             pinned,
             container: containerId,
-            appStore: this,
           };
           // check if this overlaps with a core plugin, if so override the condition only
           const corePlugin = this.corePlugins[plugin.id];
@@ -347,7 +347,7 @@ export class AppStore {
             corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
           } else {
             // add custom plugin
-            const customPlugin = new Plugin(plugin);
+            const customPlugin = new Plugin(plugin, this);
             if (plugin.container) {
               this.customPlugins[plugin.container]?.append(customPlugin);
             } else {
@@ -507,8 +507,7 @@ export class AppStore {
   }
 
   /**
-   * Recognizes a SharePoint folder URL.
-   * @private
+   * Recognizes a SharePoint folder URL.\
    * @param {URL} url The URL
    * @returns {boolean} <code>true</code> if URL is SharePoint folder, else <code>false</code>
    */
@@ -524,7 +523,6 @@ export class AppStore {
 
   /**
    * Recognizes a SharePoint editor URL.
-   * @private
    * @param {URL} url The URL
    * @returns {boolean} <code>true</code> if URL is SharePoint editor, else <code>false</code>
    */
@@ -537,7 +535,6 @@ export class AppStore {
 
   /**
    * Recognizes a SharePoint viewer URL.
-   * @private
    * @param {URL} url The URL
    * @returns {boolean} <code>true</code> if URL is SharePoint viewer, else <code>false</code>
    */
@@ -561,7 +558,7 @@ export class AppStore {
       existingModal.remove();
     }
 
-    const modalContainer = new ModalContainer(modal);
+    const modalContainer = new ModalContainer(modal, this);
     this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(modalContainer);
 
     return modalContainer;
@@ -1085,7 +1082,6 @@ export class AppStore {
 
   /**
    * Creates and/or returns a view overlay.
-   * @private
    * @param {boolean} [create] Create the view if none exists
    * @returns {Element} The view overlay
    */
@@ -1395,4 +1391,4 @@ export class AppStore {
   }
 }
 
-export const appStore = new AppStore();
+export const appStoreContext = createContext('appStore');

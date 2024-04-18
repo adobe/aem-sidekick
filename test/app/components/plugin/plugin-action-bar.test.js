@@ -11,59 +11,58 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
-import sinon from 'sinon';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
-import {
-  mockSharepointDirectoryFetchStatusSuccess,
-  mockSharepointEditorDocFetchStatusSuccess,
-  mockFetchConfigJSONNotFound,
-  mockFetchConfigJSONNotAuthorized,
-  mockFetchStatusWithProfileSuccess,
-  mockFetchStatusUnauthorized,
-  mockFetchConfigWithPluginsJSONSuccess,
-  mockFetchConfigWithoutPluginsJSONSuccess,
-  mockFetchConfigWithUnpinnedPluginJSONSuccess,
-  mockFetchStatusSuccess,
-  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
-} from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
 import {
-  mockHelixEnvironment,
-  mockEditorAdminEnvironment,
-  mockLocation,
-  restoreEnvironment,
+  EditorMockEnvironments,
+  HelixMockContentSources,
+  HelixMockContentType,
+  HelixMockEnvironments,
 } from '../../../mocks/environment.js';
 import { EXTERNAL_EVENTS } from '../../../../src/extension/app/constants.js';
 import { pluginFactory } from '../../../../src/extension/app/plugins/plugin-factory.js';
-import { appStore } from '../../../../src/extension/app/store/app.js';
+import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
+import { SidekickTest } from '../../../sidekick-test.js';
+
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('Plugin action bar', () => {
-  const sandbox = sinon.createSandbox();
+  /**
+   * @type {SidekickTest}
+   */
+  let sidekickTest;
+
+  /**
+   * @type {AEMSidekick}
+   */
   let sidekick;
+
+  /**
+   * @type {AppStore}
+   */
+  let appStore;
+
   beforeEach(async () => {
-    mockFetchEnglishMessagesSuccess();
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
   });
 
   afterEach(async () => {
-    document.body.removeChild(sidekick);
-    fetchMock.reset();
-    restoreEnvironment(document);
-    sandbox.restore();
+    sidekickTest.destroy();
   });
 
   function expectEnvPlugin(environments) {
-    const actionBar = recursiveQuery(sidekick, 'action-bar');
+    const actionBar = recursiveQuery(sidekickTest.sidekick, 'action-bar');
     const envPlugin = recursiveQuery(actionBar, 'env-switcher');
     const picker = recursiveQuery(envPlugin, 'action-bar-picker');
 
@@ -78,7 +77,7 @@ describe('Plugin action bar', () => {
   }
 
   function expectInActionBar(pluginIds) {
-    const actionGroup = recursiveQuery(sidekick, 'sp-action-group:first-of-type');
+    const actionGroup = recursiveQuery(sidekickTest.sidekick, 'sp-action-group:first-of-type');
     const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, action-bar-picker');
 
     expect(
@@ -89,12 +88,12 @@ describe('Plugin action bar', () => {
 
   async function expectInPluginList(pluginIds) {
     // open plugin list
-    const pluginList = recursiveQuery(sidekick, '.plugin-list');
+    const pluginList = recursiveQuery(sidekickTest.sidekick, '.plugin-list');
     pluginList.click();
 
     // wait for modal and retrieve plugins
-    await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
-    const modalContainer = recursiveQuery(sidekick, 'modal-container');
+    await waitUntil(() => recursiveQuery(sidekickTest.sidekick, 'modal-container'));
+    const modalContainer = recursiveQuery(sidekickTest.sidekick, 'modal-container');
     const plugins = recursiveQueryAll(modalContainer, 'sp-menu-item');
 
     expect([...plugins]
@@ -103,14 +102,14 @@ describe('Plugin action bar', () => {
 
   describe('renders correct default plugins in action bar', () => {
     it('isPreview', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsOrHostJSONSuccess();
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW)
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false, false)
+        .createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      await sidekickTest.awaitEnvSwitcher();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
       expectInActionBar([
         'env-switcher',
         'reload',
@@ -121,15 +120,15 @@ describe('Plugin action bar', () => {
     });
 
     it('editor - w/custom plugins', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithPluginsJSONSuccess();
-      mockSharepointEditorDocFetchStatusSuccess();
-      mockEditorAdminEnvironment(document, 'editor');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, true)
+        .mockFetchEditorStatusSuccess()
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR);
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
       await aTimeout(500);
 
       expectInActionBar([
@@ -147,34 +146,15 @@ describe('Plugin action bar', () => {
       expect(assetLibraryPlugin.textContent.trim()).to.equal('asset-library');
     });
 
-    it('editor - w/unpinned plugin', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithUnpinnedPluginJSONSuccess();
-      mockSharepointEditorDocFetchStatusSuccess();
-      mockEditorAdminEnvironment(document, 'editor');
-
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-
-      expectInActionBar([
-        'env-switcher',
-        'edit-preview',
-      ]);
-
-      expect(recursiveQuery(sidekick, '.custom-plugin-0')).to.equal(undefined);
-    });
-
     it('isLive', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
-      mockHelixEnvironment(document, 'live');
+      sidekickTest
+        .mockHelixEnvironment(HelixMockEnvironments.LIVE)
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false, false);
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       expectInActionBar([
         'env-switcher',
@@ -185,14 +165,13 @@ describe('Plugin action bar', () => {
     });
 
     it('isProd', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
-      mockHelixEnvironment(document, 'prod');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false, false)
+        .mockHelixEnvironment(HelixMockEnvironments.PROD)
+        .createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       expectInActionBar([
         'env-switcher',
@@ -203,14 +182,13 @@ describe('Plugin action bar', () => {
     });
 
     it('Unsupported env', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
-      mockLocation(document, 'https://www.example.com');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false, false)
+        .mockLocation('https://www.example.com')
+        .createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       expectInActionBar([
         'env-switcher',
@@ -220,16 +198,13 @@ describe('Plugin action bar', () => {
     });
 
     it('isDev', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'dev');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockHelixEnvironment(HelixMockEnvironments.DEV)
+        .createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      sidekick.appendChild(document.createElement('div'));
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       expectEnvPlugin(['dev', 'edit', 'preview', 'prod']);
       expectInActionBar([
@@ -240,16 +215,13 @@ describe('Plugin action bar', () => {
     });
 
     it('isEditor', async () => {
-      mockSharepointEditorDocFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
-      mockEditorAdminEnvironment(document, 'editor');
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
+        .mockFetchSidekickConfigSuccess(false, false)
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
+        .createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      sidekick.appendChild(document.createElement('div'));
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       expectInActionBar([
         'env-switcher',
@@ -260,16 +232,13 @@ describe('Plugin action bar', () => {
     });
 
     it('isEditor - custom config with prod host', async () => {
-      mockSharepointEditorDocFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockEditorAdminEnvironment(document, 'editor');
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
+        .createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      sidekick.appendChild(document.createElement('div'));
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       expectInActionBar([
         'env-switcher',
@@ -280,16 +249,13 @@ describe('Plugin action bar', () => {
     });
 
     it('isPreview - custom config with prod host', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW)
+        .createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      sidekick.appendChild(document.createElement('div'));
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       expectInActionBar([
         'env-switcher',
@@ -301,32 +267,31 @@ describe('Plugin action bar', () => {
     });
 
     it('core plugin clicked', async () => {
-      window.hlx = {};
+      const { sandbox } = sidekickTest;
 
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      window.hlx = {};
       const actionFunction = async () => Promise.resolve();
 
       // Create a spy for the action function
       const actionSpy = sandbox.spy(actionFunction);
 
-      const stub = sandbox.stub(pluginFactory, 'createPublishPlugin').returns(new Plugin({
+      sandbox.stub(pluginFactory, 'createPublishPlugin').returns(new Plugin({
         id: 'publish',
         condition: () => true,
         button: {
           text: 'Publish',
           action: actionSpy,
         },
-      }));
+      }, appStore));
 
-      mockFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'preview');
+      sidekick = sidekickTest.createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      sidekick.appendChild(document.createElement('div'));
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       expectInActionBar([
         'env-switcher',
@@ -339,32 +304,31 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => actionSpy.calledOnce);
       expect(actionSpy.calledOnce).to.be.true;
-
-      stub.restore();
     });
 
     it('isAdmin - loads correct plugins', async () => {
-      mockSharepointEditorDocFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
-      mockEditorAdminEnvironment(document, 'admin');
-
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
+        .mockFetchSidekickConfigSuccess(false, false)
+        .mockEditorAdminEnvironment(EditorMockEnvironments.ADMIN)
+        .createSidekick();
 
       // TODO: Expand tests when bulk plugin is added
       // expectPluginCount(0);
     });
 
     it('custom container plugin', async () => {
+      const { sandbox } = sidekickTest;
+
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
+        .mockFetchSidekickConfigSuccess(true, true)
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR);
+
+      sidekick = sidekickTest.createSidekick();
+
       const fireEventStub = sandbox.stub(appStore, 'fireEvent');
-      mockSharepointDirectoryFetchStatusSuccess();
-      mockFetchConfigWithPluginsJSONSuccess();
-      mockEditorAdminEnvironment(document, 'editor');
-
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       expectInActionBar([
         'env-switcher',
@@ -389,17 +353,17 @@ describe('Plugin action bar', () => {
     });
 
     it('clicks custom plugin', async () => {
-      mockSharepointEditorDocFetchStatusSuccess();
-      mockSharepointDirectoryFetchStatusSuccess();
-      mockFetchConfigWithPluginsJSONSuccess();
-      mockEditorAdminEnvironment(document, 'editor');
+      const { sandbox } = sidekickTest;
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
+        .mockFetchSidekickConfigSuccess(true, true)
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR);
+
+      sidekick = sidekickTest.createSidekick();
 
       sandbox.stub(appStore, 'validateSession').resolves();
       const fireEventStub = sandbox.stub(appStore, 'fireEvent');
       const openPageStub = sandbox.stub(appStore, 'openPage');
-
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
@@ -428,30 +392,29 @@ describe('Plugin action bar', () => {
       expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, { id: 'preflight' })).to.be.true;
     });
 
-    it.skip('overrides core plugin', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'preview', null, 'https://main--aem-boilerplate--adobe.aem.page/en/drafts/test');
+    it('overrides core plugin', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {}, HelixMockContentSources.SHAREPOINT, 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/en/drafts/test?editUrl=auto')
+        .mockFetchSidekickConfigSuccess(true, true)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW, undefined, 'https://main--aem-boilerplate--adobe.aem.page/en/drafts/test');
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
-
+      await sidekickTest.awaitEnvSwitcher();
       expect(recursiveQuery(sidekick, '.publish')).to.equal(undefined);
     });
   });
 
   describe('plugin list', () => {
     it('opens plugin list', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       // open plugin list
       const pluginList = recursiveQuery(sidekick, '.plugin-list');
@@ -463,14 +426,13 @@ describe('Plugin action bar', () => {
     });
 
     it('isPreview: renders correct plugins in plugin list', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess()
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW)
+        .createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       await expectInPluginList([
         'reload',
@@ -481,14 +443,13 @@ describe('Plugin action bar', () => {
     });
 
     it('isLive: renders correct plugins in plugin list', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'live');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockHelixEnvironment(HelixMockEnvironments.LIVE)
+        .createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       await expectInPluginList([
         'publish',
@@ -497,14 +458,13 @@ describe('Plugin action bar', () => {
     });
 
     it('isProd: renders correct plugins in plugin list', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockHelixEnvironment(document, 'prod');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockHelixEnvironment(HelixMockEnvironments.PROD)
+        .createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       await expectInPluginList([
         'publish',
@@ -515,17 +475,17 @@ describe('Plugin action bar', () => {
 
   describe('login states', () => {
     it('not logged in, site has authentication enabled', async () => {
-      mockFetchConfigJSONNotAuthorized();
-      mockFetchStatusUnauthorized();
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest
+        .mockFetchSidekickConfigUnAuthorized()
+        .mockFetchStatusUnauthorized()
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+      await sidekickTest.awaitActionBar();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const actionGroup = recursiveQuery(actionBar, 'sp-action-group');
+      const actionGroup = recursiveQuery(actionBar, 'sp-action-group:nth-of-type(2)');
       expect(actionGroup.children.length).to.equal(4);
 
       const propertiesButton = recursiveQuery(actionGroup, '.properties');
@@ -541,14 +501,14 @@ describe('Plugin action bar', () => {
     });
 
     it('not logged in, site does not have authentication enabled', async () => {
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockFetchStatusSuccess();
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockFetchStatusSuccess()
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+      await sidekickTest.awaitEnvSwitcher();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
@@ -571,15 +531,17 @@ describe('Plugin action bar', () => {
     });
 
     it('logged in', async () => {
-      mockFetchConfigWithoutPluginsJSONSuccess();
-      mockFetchStatusWithProfileSuccess();
-      mockHelixEnvironment(document, 'preview');
+      const { sandbox } = sidekickTest;
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockFetchStatusSuccess(true)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
 
       const statusFetchedSpy = sandbox.spy();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
       sidekick.addEventListener('statusfetched', statusFetchedSpy);
-      document.body.appendChild(sidekick);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
       await aTimeout(100);

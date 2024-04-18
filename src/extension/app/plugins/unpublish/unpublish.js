@@ -94,6 +94,6 @@ export function createUnpublishPlugin(appStore) {
         && store.status.live?.status === 200 // and page published
         && store.status.code?.status !== 200, // and not code
     },
-    appStore,
-  });
+  },
+  appStore);
 }

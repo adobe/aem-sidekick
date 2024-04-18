@@ -11,59 +11,68 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
-import sinon from 'sinon';
 import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
-import {
-  mockFetchConfigJSONNotFound,
-  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
-  mockFetchStatusSuccess,
-} from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
-import { appStore } from '../../../../src/extension/app/store/app.js';
+import { AppStore } from '../../../../src/extension/app/store/app.js';
 import {
-  mockHelixEnvironment, restoreEnvironment,
+  HelixMockEnvironments,
 } from '../../../mocks/environment.js';
 import { MODALS } from '../../../../src/extension/app/constants.js';
+import { SidekickTest } from '../../../sidekick-test.js';
+
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('Publish plugin', () => {
+  /**
+   * @type {SidekickTest}
+   */
+  let sidekickTest;
+
+  /**
+   * @type {AEMSidekick}
+   */
   let sidekick;
-  const sandbox = sinon.createSandbox();
+
+  /**
+   * @type {AppStore}
+   */
+  let appStore;
 
   beforeEach(async () => {
-    mockFetchEnglishMessagesSuccess();
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+    sidekickTest
+      .mockFetchStatusSuccess()
+      .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
   });
 
   afterEach(() => {
-    document.body.removeChild(sidekick);
-    fetchMock.reset();
-    restoreEnvironment(document);
-    sandbox.restore();
+    sidekickTest.destroy();
   });
 
   describe('switching between environments', () => {
     it('publish from preview - docx', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigWithoutPluginsOrHostJSONSuccess();
-      mockHelixEnvironment(document, 'preview');
+      const { sandbox } = sidekickTest;
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(false, false);
+
       const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
       const switchEnvStub = sandbox.stub(appStore, 'switchEnv').returns();
       const showWaitSpy = sandbox.spy(appStore, 'showWait');
       const hideWaitSpy = sandbox.spy(appStore, 'hideWait');
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       const publishPlugin = recursiveQuery(sidekick, '.publish');
       expect(publishPlugin.textContent.trim()).to.equal('Publish');
@@ -76,26 +85,21 @@ describe('Publish plugin', () => {
       expect(switchEnvStub.calledOnce).to.be.true;
       expect(showWaitSpy.calledOnce).to.be.true;
       expect(hideWaitSpy.calledOnce).to.be.true;
-
-      publishStub.restore();
-      switchEnvStub.restore();
-      showWaitSpy.restore();
-      hideWaitSpy.restore();
     });
 
     it('publish from preview - failure', async () => {
-      mockFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
-      mockHelixEnvironment(document, 'preview');
+      const { sandbox } = sidekickTest;
+      sidekickTest
+        .mockFetchSidekickConfigSuccess();
+
       const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: false, status: 500 });
       const showWaitSpy = sandbox.spy(appStore, 'showWait');
 
-      const modalSpy = sinon.spy(appStore, 'showModal');
+      const modalSpy = sandbox.spy(appStore, 'showModal');
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       const publishPlugin = recursiveQuery(sidekick, '.publish');
       expect(publishPlugin.textContent.trim()).to.equal('Publish');
@@ -110,9 +114,6 @@ describe('Publish plugin', () => {
       expect(modalSpy.calledTwice).to.be.true;
       expect(modalSpy.args[0][0].type).to.equal(MODALS.WAIT);
       expect(modalSpy.args[1][0].type).to.equal(MODALS.ERROR);
-
-      publishStub.restore();
-      showWaitSpy.restore();
     });
   });
 });

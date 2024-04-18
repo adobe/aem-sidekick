@@ -19,28 +19,19 @@ import {
 } from '@open-wc/testing';
 import { AppStore, VIEWS } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
-import {
-  mockFetchConfigJSONNotFound,
-  mockFetchConfigWithPluginsJSONSuccess,
-  mockGdriveFetchStatusEditURLSuccess,
-  mockFetchStatusNotFound,
-  mockFetchStatusServerError,
-  mockFetchStatusSuccess,
-  mockFetchStatusUnauthorized,
-  mockFetchProfileSuccess,
-  mockFetchProfileUnauthorized,
-  mockFetchProfileError,
-  mockFetchConfigWithoutPluginsJSONSuccess,
-} from '../../mocks/helix-admin.js';
-import { mockFetchEnglishMessagesSuccess } from '../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 import { EventBus } from '../../../src/extension/app/utils/event-bus.js';
 import { MODALS, MODAL_EVENTS } from '../../../src/extension/app/constants.js';
-import { mockHelixEnvironment, restoreEnvironment } from '../../mocks/environment.js';
+import {
+  HelixMockContentSources,
+  HelixMockEnvironments,
+  restoreEnvironment,
+} from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
 import { recursiveQuery, error } from '../../test-utils.js';
 import { AEMSidekick } from '../../../src/extension/index.js';
 import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
+import { SidekickTest } from '../../sidekick-test.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -56,20 +47,35 @@ window.chrome = chromeMock;
  */
 
 describe('Test App Store', () => {
+  /**
+   * @type {SidekickTest}
+   */
+  let sidekickTest;
+
+  /**
+   * @type {AEMSidekick}
+   */
   let sidekickElement;
 
+  /**
+   * @type {AppStore}
+   */
   let appStore;
 
   beforeEach(() => {
-    mockFetchStatusSuccess();
-    mockFetchEnglishMessagesSuccess();
-    mockFetchConfigJSONNotFound();
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+    sidekickTest
+      .mockFetchStatusSuccess()
+      .mockFetchSidekickConfigNotFound();
+
+    // @ts-ignore
     sidekickElement = document.createElement('div');
     appStore = new AppStore();
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    sidekickTest.destroy();
   });
 
   async function testDefaultConfig() {
@@ -85,7 +91,7 @@ describe('Test App Store', () => {
   }
 
   it('loadContext - no config.json', async () => {
-    const contextLoadedSpy = sinon.spy();
+    const contextLoadedSpy = sidekickTest.sandbox.spy();
     sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
 
     await appStore.loadContext(sidekickElement, defaultSidekickConfig);
@@ -94,8 +100,10 @@ describe('Test App Store', () => {
   });
 
   it('loadContext - with config.json and custom plugins', async () => {
-    mockFetchConfigWithPluginsJSONSuccess();
-    const contextLoadedSpy = sinon.spy();
+    sidekickTest
+      .mockFetchSidekickConfigSuccess(true, true);
+
+    const contextLoadedSpy = sidekickTest.sandbox.spy();
     sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
 
     await appStore.loadContext(sidekickElement, defaultSidekickConfig);
@@ -111,7 +119,9 @@ describe('Test App Store', () => {
   });
 
   it('loadContext - unsupported lang, default to en', async () => {
-    mockFetchConfigWithPluginsJSONSuccess();
+    sidekickTest
+      .mockFetchSidekickConfigSuccess(true, true);
+
     const contextLoadedSpy = sinon.spy();
     sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
 
@@ -261,7 +271,7 @@ describe('Test App Store', () => {
     });
 
     it('authenticated', async () => {
-      mockFetchStatusSuccess({ profile: { name: 'foo' } });
+      sidekickTest.mockFetchStatusSuccess(true);
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => appStore.status.webPath,
@@ -296,7 +306,8 @@ describe('Test App Store', () => {
 
   describe('fetchStatus()', async () => {
     it('success', async () => {
-      mockFetchStatusSuccess();
+      sidekickTest
+        .mockFetchStatusSuccess();
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await appStore.fetchStatus(true);
       await waitUntil(
@@ -307,8 +318,10 @@ describe('Test App Store', () => {
     });
 
     it('success - editor', async () => {
-      mockGdriveFetchStatusEditURLSuccess();
-      sinon.stub(appStore, 'isEditor').returns(true);
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.GDRIVE);
+
+      sidekickTest.sandbox.stub(appStore, 'isEditor').returns(true);
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await appStore.fetchStatus();
       await waitUntil(
@@ -319,7 +332,8 @@ describe('Test App Store', () => {
     });
 
     it('unauthorized', async () => {
-      mockFetchStatusUnauthorized();
+      sidekickTest
+        .mockFetchStatusUnauthorized();
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => appStore.status.status,
@@ -329,7 +343,8 @@ describe('Test App Store', () => {
     });
 
     it('not found', async () => {
-      mockFetchStatusNotFound();
+      sidekickTest
+        .mockFetchStatusNotFound();
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => appStore.status.error,
@@ -339,7 +354,8 @@ describe('Test App Store', () => {
     });
 
     it('not found - editor', async () => {
-      mockFetchStatusNotFound();
+      sidekickTest
+        .mockFetchStatusNotFound();
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
 
       appStore.location.href = 'https://adobe-my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx';
@@ -352,7 +368,8 @@ describe('Test App Store', () => {
     });
 
     it('server error', async () => {
-      mockFetchStatusServerError();
+      sidekickTest
+        .mockFetchStatusError();
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => appStore.status.error,
@@ -364,11 +381,12 @@ describe('Test App Store', () => {
 
   describe('wait dialog', async () => {
     it('showWait()', async () => {
+      // @ts-ignore
       appStore.sidekick = document.createElement('div');
       appStore.sidekick.attachShadow({ mode: 'open' });
       appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
 
-      const modalSpy = sinon.spy(appStore, 'showModal');
+      const modalSpy = sidekickTest.sandbox.spy(appStore, 'showModal');
       const modalElement = appStore.showWait('test');
       expect(modalElement.nodeName).to.equal('MODAL-CONTAINER');
       expect(modalSpy.calledOnce).to.be.true;
@@ -379,7 +397,7 @@ describe('Test App Store', () => {
     });
 
     it('hideWait()', async () => {
-      const callback = sinon.spy();
+      const callback = sidekickTest.sandbox.spy();
       const eventBus = EventBus.instance;
       eventBus.addEventListener(MODAL_EVENTS.CLOSE, callback);
       appStore.hideWait();
@@ -389,11 +407,12 @@ describe('Test App Store', () => {
 
   describe('show toast', async () => {
     it('showToast()', async () => {
+      // @ts-ignore
       appStore.sidekick = document.createElement('div');
       appStore.sidekick.attachShadow({ mode: 'open' });
       appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
 
-      const toastSpy = sinon.spy(appStore, 'showToast');
+      const toastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
       const toastElement = appStore.showToast('test', 'info', 2000);
       expect(toastElement.nodeName).to.equal('TOAST-CONTAINER');
       expect(toastSpy.calledOnce).to.be.true;
@@ -404,17 +423,16 @@ describe('Test App Store', () => {
   });
 
   describe('reloadPage', async () => {
-    const sandbox = sinon.createSandbox();
     let openPageStub;
     let loadPageStub;
 
     beforeEach(() => {
-      openPageStub = sandbox.stub(appStore, 'openPage');
-      loadPageStub = sandbox.stub(appStore, 'loadPage');
+      openPageStub = sidekickTest.sandbox.stub(appStore, 'openPage');
+      loadPageStub = sidekickTest.sandbox.stub(appStore, 'loadPage');
     });
 
     afterEach(() => {
-      sandbox.restore();
+      sidekickTest.sandbox.restore();
     });
 
     it('opens a new tab', async () => {
@@ -430,16 +448,16 @@ describe('Test App Store', () => {
 
   describe('switchEnv', async () => {
     const mockStatus = defaultSharepointStatusResponse;
-    const sandbox = sinon.createSandbox();
     let openPage;
     let loadPage;
     let instance;
 
     beforeEach(() => {
-      sandbox.stub(window, 'fetch').resolves(new Response(JSON.stringify({
+      sidekickTest.sandbox.stub(window, 'fetch').resolves(new Response(JSON.stringify({
         webPath: '/somepath',
       })));
       instance = appStore;
+      // @ts-ignore
       instance.siteStore = {
         owner: 'adobe',
         repo: 'aem-boilerplate',
@@ -454,16 +472,16 @@ describe('Test App Store', () => {
       };
 
       // Mock other functions
-      sandbox.stub(instance, 'fireEvent');
+      sidekickTest.sandbox.stub(instance, 'fireEvent');
 
-      openPage = sandbox.spy();
-      loadPage = sandbox.spy();
-      sandbox.stub(instance, 'openPage').callsFake(openPage);
-      sandbox.stub(instance, 'loadPage').callsFake(loadPage);
+      openPage = sidekickTest.sandbox.spy();
+      loadPage = sidekickTest.sandbox.spy();
+      sidekickTest.sandbox.stub(instance, 'openPage').callsFake(openPage);
+      sidekickTest.sandbox.stub(instance, 'loadPage').callsFake(loadPage);
     });
 
     afterEach(() => {
-      sandbox.restore();
+      sidekickTest.sandbox.restore();
     });
 
     it('switches from editor to preview', async () => {
@@ -529,7 +547,7 @@ describe('Test App Store', () => {
     });
 
     it('retries if status not ready yet', async () => {
-      const consoleSpy = sandbox.spy(console, 'log');
+      const consoleSpy = sidekickTest.sandbox.spy(console, 'log');
       instance.location = new URL(mockStatus.preview.url);
       instance.status = {};
       await instance.switchEnv('live');
@@ -538,13 +556,12 @@ describe('Test App Store', () => {
   });
 
   describe('update', async () => {
-    let sandbox;
     let fakeFetch;
     let instance;
 
     beforeEach(() => {
-      sandbox = sinon.createSandbox();
-      fakeFetch = sandbox.stub(window, 'fetch');
+      const { sandbox } = sidekickTest;
+      fakeFetch = sidekickTest.sandbox.stub(window, 'fetch');
       instance = appStore;
 
       // Mock other functions
@@ -556,7 +573,7 @@ describe('Test App Store', () => {
     });
 
     afterEach(() => {
-      sandbox.restore();
+      sidekickTest.sandbox.restore();
     });
 
     it('should handle successful update for content w/path', async () => {
@@ -689,6 +706,7 @@ describe('Test App Store', () => {
     beforeEach(() => {
       instance = appStore;
       sandbox = sinon.createSandbox();
+      // @ts-ignore
       instance.sidekick = document.createElement('div');
       updateStub = sandbox.stub(instance, 'update');
       showWaitStub = sandbox.stub(instance, 'showWait');
@@ -901,7 +919,7 @@ describe('Test App Store', () => {
     });
 
     it('should handle successful publish', async () => {
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest.mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
       isContentStub.returns(true);
       instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', outerHost: 'main--aem-boilerplate--adobe.hlx.live', host: 'host' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
@@ -1094,8 +1112,9 @@ describe('Test App Store', () => {
     });
 
     it('sets plugin preferences for an env', async () => {
-      mockFetchStatusSuccess();
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
       isPreviewStub.returns(true);
 
       // no stored prefs
@@ -1138,8 +1157,9 @@ describe('Test App Store', () => {
     });
 
     it('retrieves plugin preferences for an env', async () => {
-      mockFetchStatusSuccess();
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
       isPreviewStub.returns(true);
 
       // return empty object if no stored prefs yet
@@ -1192,6 +1212,7 @@ describe('Test App Store', () => {
     beforeEach(() => {
       instance = appStore;
       instance.status = { webPath: '/some.json' };
+      // @ts-ignore
       instance.siteStore = {
         views: [
           { path: '**.json', viewer: '/test/wtr/fixtures/views/json/json.html' },
@@ -1299,7 +1320,9 @@ describe('Test App Store', () => {
     });
 
     it('removes the view and resets siblings display on receiving a valid hlx-close-view message', async () => {
-      mockFetchConfigWithoutPluginsJSONSuccess();
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true, false);
+
       const addEventListenerStub = sandbox.stub(window, 'addEventListener');
 
       const sidekick = new AEMSidekick(defaultSidekickConfig);
@@ -1359,7 +1382,7 @@ describe('Test App Store', () => {
     });
 
     it('exits early if "path" search param is present', async () => {
-      mockFetchConfigWithoutPluginsJSONSuccess();
+      sidekickTest.mockFetchSidekickConfigSuccess(true, false);
       fetchMock.get('https://admin.hlx.page/status/adobe/aem-boilerplate/main/path/placeholders.json?editUrl=auto', {
         status: 200,
         body: {
@@ -1380,7 +1403,7 @@ describe('Test App Store', () => {
     });
 
     it('sets iframe src correctly if a DEFAULT view is found and no overlay exists', async () => {
-      mockFetchConfigWithoutPluginsJSONSuccess();
+      sidekickTest.mockFetchSidekickConfigSuccess(true, false);
       isProjectStub.returns(true);
       instance.location = new URL('https://main--aem-boilerplate--adobe.hlx.page/placeholders.json');
       findViewsStub = sinon.stub(instance, 'findViews').returns([{ viewer: 'http://viewer.com', title: () => 'Test Title' }]);
@@ -1416,21 +1439,21 @@ describe('Test App Store', () => {
     });
 
     it('should return the profile on a successful response', async () => {
-      mockFetchProfileSuccess();
+      sidekickTest.mockFetchProfileSuccess();
 
       const result = await appStore.getProfile();
       expect(result).to.deep.equal(defaultSharepointProfileResponse.profile);
     });
 
     it('should return false if the response is not ok', async () => {
-      mockFetchProfileUnauthorized();
+      sidekickTest.mockFetchProfileUnauthorized();
 
       const result = await appStore.getProfile();
       expect(result).to.be.false;
     });
 
     it('should handle fetch errors gracefully', async () => {
-      mockFetchProfileError();
+      sidekickTest.mockFetchProfileError();
 
       const result = await appStore.getProfile();
       expect(result).to.be.false;
@@ -1459,6 +1482,7 @@ describe('Test App Store', () => {
       window.hlx = {};
       window.hlx.sidekickConfig = {};
 
+      // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       getProfileStub = sandbox.stub(appStore, 'getProfile').resolves(false);
     });
@@ -1524,6 +1548,7 @@ describe('Test App Store', () => {
       clock = sandbox.useFakeTimers();
       window.hlx = {};
       window.hlx.sidekickConfig = {};
+      // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
     });
 
@@ -1551,7 +1576,7 @@ describe('Test App Store', () => {
     }).timeout(20000);
 
     it('handles successful logout correctly', async () => {
-      mockFetchStatusSuccess();
+      sidekickTest.mockFetchStatusSuccess();
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
 
       instance.sidekick = document.createElement('div');
@@ -1595,6 +1620,7 @@ describe('Test App Store', () => {
       clock = sinon.useFakeTimers(now);
       instance.login = sinon.spy();
       instance.showWait = sinon.spy();
+      // @ts-ignore
       instance.sidekick = { addEventListener: sinon.stub() };
     });
 

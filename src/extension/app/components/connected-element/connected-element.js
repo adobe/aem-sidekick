@@ -10,15 +10,20 @@
  * governing permissions and limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable wc/no-constructor-params */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
+import { LitElement } from 'lit';
+import { consume } from '@lit/context';
+import { appStoreContext } from '../../store/app.js';
 
-import enMessages from '../../src/extension/_locales/en/messages.json' assert { type: 'json' };
+/**
+ * @typedef {import('@AppStore').AppStore} AppStore
+ */
 
-export const englishMessagesUrl = '/test/wtr/fixtures/_locales/en/messages.json';
-export const mockFetchEnglishMessagesSuccess = () => fetchMock.get(englishMessagesUrl, {
-  status: 200,
-  body: enMessages,
-}, { overwriteRoutes: true });
+export class ConnectedElement extends LitElement {
+  /**
+   * @type {AppStore}
+   */
+  @consume({ context: appStoreContext })
+  accessor appStore;
+}

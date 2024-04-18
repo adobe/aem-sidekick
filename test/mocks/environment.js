@@ -13,9 +13,12 @@
 /* eslint-disable no-unused-vars */
 
 import sinon from 'sinon';
-import { appStore } from '../../src/extension/app/store/app.js';
 
 let stubs = [];
+
+/**
+ * @typedef {import('@AppStore').AppStore} AppStore
+ */
 
 /**
  * Mock content types
@@ -33,7 +36,7 @@ export const HelixMockContentType = {
  * Mock second level domains
  * @enum {string}
  */
-const HelixSecondLevelDomains = {
+export const HelixSecondLevelDomains = {
   HLX: 'hlx',
   AEM: 'aem',
 };
@@ -43,7 +46,7 @@ const HelixSecondLevelDomains = {
  * @enum {string}
  */
 // eslint-disable-next-line no-unused-vars
-const HelixMockEnvironments = {
+export const HelixMockEnvironments = {
   DEV: 'dev',
   PREVIEW: 'preview',
   LIVE: 'live',
@@ -54,7 +57,7 @@ const HelixMockEnvironments = {
  * Mock editor environments
  * @enum {string}
  */
-const EditorMockEnvironments = {
+export const EditorMockEnvironments = {
   EDITOR: 'editor',
   ADMIN: 'admin',
 };
@@ -67,7 +70,7 @@ const EditorMockEnvironments = {
  * Mock content sources
  * @enum {string}
  */
-const HelixMockContentSources = {
+export const HelixMockContentSources = {
   SHAREPOINT: 'sharepoint',
   GDRIVE: 'gdrive',
 };
@@ -150,8 +153,9 @@ export function getDefaultEditorEnviromentLocations(contentSource, contentType) 
 /**
  * Given a helix environment, stubs the appropriate methods in appStore
  * @param {AllEnvironments} environment
+ * @param {AppStore} appStore
  */
-function stubEnvironment(environment) {
+export function stubEnvironment(environment, appStore) {
   const environments = ['dev', 'preview', 'live', 'prod', 'editor', 'admin'];
   environments.forEach((env) => {
     const method = `is${env.charAt(0).toUpperCase() + env.slice(1)}`;
@@ -167,14 +171,14 @@ function stubEnvironment(environment) {
 
 /**
  * Mocks a helix environment
- * @param {Document} document The HTML document used to mock the environment
+ * @param {AppStore} appStore The appStore instance for the test
  * @param {HelixMockEnvironments} environment The helix environment
  * @param {HelixMockContentType} contentType The active content type for the environment
  * @param {string} [location] Location override (Optional)
  * @param {string} [sld] Second level domain override (Optional) (Default: hlx)
  */
 export function mockHelixEnvironment(
-  document,
+  appStore,
   environment = HelixMockEnvironments.PREVIEW,
   contentType = HelixMockContentType.DOC,
   location = undefined,
@@ -184,7 +188,7 @@ export function mockHelixEnvironment(
   }
 
   // Given the environment, mock the appropriate methods in appStore
-  stubEnvironment(environment);
+  stubEnvironment(environment, appStore);
 
   // Mock the browsers location
   mockLocation(
@@ -195,14 +199,14 @@ export function mockHelixEnvironment(
 
 /**
  * Mocks an editor/admin environment
- * @param {Document} document The HTML document used to mock the environment
+ * @param {AppStore} appStore The appStore instance for the test
  * @param {EditorMockEnvironments} [environment] The editor/admin environment (Default: editor)
  * @param {HelixMockContentType} [contentType] The document type (Default: doc)
  * @param {HelixMockContentSources} [contentSource] The content source (Default: sharepoint)
  * @param {string} [location] Location override (Optional)
  */
 export function mockEditorAdminEnvironment(
-  document,
+  appStore,
   environment = EditorMockEnvironments.EDITOR,
   contentType = HelixMockContentType.DOC,
   contentSource = HelixMockContentSources.SHAREPOINT,
@@ -212,7 +216,7 @@ export function mockEditorAdminEnvironment(
   }
 
   // Given the environment, mock the appropriate methods in appStore
-  stubEnvironment(environment);
+  stubEnvironment(environment, appStore);
 
   // Mock the browsers location
   mockLocation(document,

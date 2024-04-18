@@ -13,21 +13,17 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, max-len */
 
 // @ts-ignore
-import sinon from 'sinon';
 import {
   expect, waitUntil, aTimeout,
 } from '@open-wc/testing';
 import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
 import { MODALS, MODAL_EVENTS } from '../../../../src/extension/app/constants.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../src/extension/index.js';
+import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { recursiveQuery } from '../../../test-utils.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
-import { appStore } from '../../../../src/extension/app/store/app.js';
-import { fetchLanguageDict } from '../../../../src/extension/app/utils/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
-import { mockFetchConfigWithoutPluginsJSONSuccess, mockFetchStatusSuccess } from '../../../mocks/helix-admin.js';
-import { mockHelixEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import { HelixMockEnvironments } from '../../../mocks/environment.js';
+import { SidekickTest } from '../../../sidekick-test.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -36,30 +32,47 @@ window.chrome = chromeMock;
  * @typedef {import('../../../../src/extension/app/components/modal/modal-container.js').ModalContainer} ModalContainer
  */
 
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
+
 describe('Modals', () => {
+  /**
+   * @type {SidekickTest}
+   */
+  let sidekickTest;
+
+  /**
+   * @type {AEMSidekick}
+   */
   let sidekick;
-  let sandbox;
+
+  /**
+   * @type {AppStore}
+   */
+  let appStore;
+
   beforeEach(async () => {
-    sandbox = sinon.createSandbox();
-    mockFetchEnglishMessagesSuccess();
-    mockFetchStatusSuccess();
-    mockFetchConfigWithoutPluginsJSONSuccess();
-    mockHelixEnvironment(document, 'preview');
-    appStore.languageDict = await fetchLanguageDict(undefined, 'en');
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+
+    sidekickTest
+      .mockFetchStatusSuccess()
+      .mockFetchSidekickConfigSuccess(true, false)
+      .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+    // appStore.languageDict = await fetchLanguageDict(undefined, 'en');
   });
 
   afterEach(() => {
-    if (document.body.contains(sidekick)) {
-      document.body.removeChild(sidekick);
-    }
-    restoreEnvironment(document);
+    sidekickTest.destroy();
   });
 
   it('renders wait modal and closes', async () => {
-    sidekick = new AEMSidekick(defaultSidekickConfig);
-    document.body.appendChild(sidekick);
+    sidekick = sidekickTest.createSidekick();
 
-    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    await sidekickTest.awaitEnvSwitcher();
     appStore.showModal({
       type: MODALS.WAIT,
       data: {
@@ -71,8 +84,7 @@ describe('Modals', () => {
 
     await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
     const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
-
-    expect(dialogWrapper.getAttribute('open')).to.equal('');
+    expect(dialogWrapper.getAttribute('open') === '').to.be.true;
 
     EventBus.instance.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
 
@@ -80,10 +92,9 @@ describe('Modals', () => {
   });
 
   it('displays error modal', async () => {
-    sidekick = new AEMSidekick(defaultSidekickConfig);
-    document.body.appendChild(sidekick);
+    sidekick = sidekickTest.createSidekick();
 
-    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    await sidekickTest.awaitEnvSwitcher();
     appStore.showModal({
       type: MODALS.ERROR,
       data: {
@@ -92,7 +103,7 @@ describe('Modals', () => {
       },
     });
 
-    const confirmSpy = sandbox.spy();
+    const confirmSpy = sidekickTest.sandbox.spy();
     const modal = recursiveQuery(sidekick, 'modal-container');
     modal.addEventListener('confirm', confirmSpy);
 
@@ -115,9 +126,8 @@ describe('Modals', () => {
 
   describe('destructive modal', () => {
     beforeEach(async () => {
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
     });
 
     it('default text', async () => {
@@ -160,8 +170,8 @@ describe('Modals', () => {
         type: MODALS.DELETE,
       });
 
-      const confirmSpy = sandbox.spy();
-      const cancelSpy = sandbox.spy();
+      const confirmSpy = sidekickTest.sandbox.spy();
+      const cancelSpy = sidekickTest.sandbox.spy();
       const modal = recursiveQuery(sidekick, 'modal-container');
       modal.addEventListener('confirm', confirmSpy);
       modal.addEventListener('cancelled', cancelSpy);
@@ -198,8 +208,8 @@ describe('Modals', () => {
         type: MODALS.DELETE,
       });
 
-      const confirmSpy = sandbox.spy();
-      const cancelSpy = sandbox.spy();
+      const confirmSpy = sidekickTest.sandbox.spy();
+      const cancelSpy = sidekickTest.sandbox.spy();
       const modal = recursiveQuery(sidekick, 'modal-container');
       modal.addEventListener('confirm', confirmSpy);
       modal.addEventListener('cancelled', cancelSpy);
@@ -237,8 +247,8 @@ describe('Modals', () => {
         type: MODALS.DELETE,
       });
 
-      const confirmSpy = sandbox.spy();
-      const cancelSpy = sandbox.spy();
+      const confirmSpy = sidekickTest.sandbox.spy();
+      const cancelSpy = sidekickTest.sandbox.spy();
       const modal = recursiveQuery(sidekick, 'modal-container');
       modal.addEventListener(MODAL_EVENTS.CONFIRM, confirmSpy);
       modal.addEventListener(MODAL_EVENTS.CANCEL, cancelSpy);
@@ -262,8 +272,8 @@ describe('Modals', () => {
         type: MODALS.DELETE,
       });
 
-      const confirmSpy = sandbox.spy();
-      const cancelSpy = sandbox.spy();
+      const confirmSpy = sidekickTest.sandbox.spy();
+      const cancelSpy = sidekickTest.sandbox.spy();
       const modal = recursiveQuery(sidekick, 'modal-container');
       modal.addEventListener(MODAL_EVENTS.CONFIRM, confirmSpy);
       modal.addEventListener(MODAL_EVENTS.CANCEL, cancelSpy);
@@ -286,10 +296,9 @@ describe('Modals', () => {
   });
 
   it('displays error modal - default headline', async () => {
-    sidekick = new AEMSidekick(defaultSidekickConfig);
-    document.body.appendChild(sidekick);
+    sidekick = sidekickTest.createSidekick();
 
-    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    await sidekickTest.awaitEnvSwitcher();
     appStore.showModal({
       type: MODALS.ERROR,
       data: {
@@ -308,10 +317,9 @@ describe('Modals', () => {
   });
 
   it('ignores unknown modal type', async () => {
-    sidekick = new AEMSidekick(defaultSidekickConfig);
-    document.body.appendChild(sidekick);
+    sidekick = sidekickTest.createSidekick();
 
-    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    await sidekickTest.awaitEnvSwitcher();
     appStore.showModal({
       type: 'unknown-type',
       data: {
@@ -324,10 +332,9 @@ describe('Modals', () => {
   });
 
   it('cleans up on close event from dialog', async () => {
-    sidekick = new AEMSidekick(defaultSidekickConfig);
-    document.body.appendChild(sidekick);
+    sidekick = sidekickTest.createSidekick();
 
-    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    await sidekickTest.awaitEnvSwitcher();
 
     const modal = appStore.showModal({
       type: MODALS.PLUGIN_LIST,

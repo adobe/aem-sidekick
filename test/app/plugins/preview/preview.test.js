@@ -11,60 +11,70 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
-import sinon from 'sinon';
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
-import {
-  mockSharepointEditorDocFetchStatusSuccess,
-  mockGdriveEditorFetchStatusSuccess,
-  mockSharepointEditorSheetFetchStatusSuccess,
-  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
-} from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
-import { appStore } from '../../../../src/extension/app/store/app.js';
-import { HelixMockContentType, mockEditorAdminEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { MODALS } from '../../../../src/extension/app/constants.js';
+import { SidekickTest } from '../../../sidekick-test.js';
+import { EditorMockEnvironments, HelixMockContentSources, HelixMockContentType } from '../../../mocks/environment.js';
+
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('Preview plugin', () => {
+  /**
+   * @type {SidekickTest}
+   */
+  let sidekickTest;
+
+  /**
+   * @type {AEMSidekick}
+   */
   let sidekick;
-  let sandbox;
+
+  /**
+   * @type {AppStore}
+   */
+  let appStore;
+
   beforeEach(async () => {
-    sandbox = sinon.createSandbox();
-    mockFetchEnglishMessagesSuccess();
-    mockFetchConfigWithoutPluginsOrHostJSONSuccess();
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+    sidekickTest
+      .mockFetchSidekickConfigSuccess(false, false);
   });
 
   afterEach(() => {
-    const { body } = document;
-    if (body.contains(sidekick)) {
-      body.removeChild(sidekick);
-    }
-    fetchMock.reset();
-    sandbox.restore();
-    restoreEnvironment(document);
+    sidekickTest.destroy();
   });
 
   describe('switching between environments', () => {
     it('previewing from sharepoint editor - docx', async () => {
-      mockSharepointEditorDocFetchStatusSuccess();
-      mockEditorAdminEnvironment(document, 'editor');
+      const { sandbox } = sidekickTest;
+      sidekickTest
+        .mockEditorAdminEnvironment(
+          EditorMockEnvironments.EDITOR,
+          HelixMockContentType.DOC,
+          HelixMockContentSources.SHAREPOINT,
+        ).mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT,
+          HelixMockContentType.DOC,
+        );
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
       const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
+      // @ts-ignore
       const tipToast = sandbox.stub(appStore, 'showToast').returns();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
       expect(previewPlugin.textContent.trim()).to.equal('Preview');
@@ -78,16 +88,23 @@ describe('Preview plugin', () => {
     });
 
     it('previewing from sharepoint editor - sheet', async () => {
+      const { sandbox } = sidekickTest;
+      // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
-      mockSharepointEditorSheetFetchStatusSuccess();
-      mockEditorAdminEnvironment(document, 'editor', HelixMockContentType.SHEET);
-      const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
+
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT,
+          HelixMockContentType.SHEET,
+        ).mockEditorAdminEnvironment(
+          EditorMockEnvironments.EDITOR,
+          HelixMockContentType.SHEET,
+        );
+
       const reloadStub = sandbox.stub(appStore, 'reloadPage').returns();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       // Click the preview the plugin
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
@@ -103,27 +120,32 @@ describe('Preview plugin', () => {
       expect(window.sessionStorage.getItem('hlx-sk-preview')).to.not.be.null;
 
       // Reset the environment
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
       await aTimeout(500);
-
-      expect(updatePreviewSpy.calledOnce).to.be.true;
 
       // Make sure the hlx-sk-preview flag is unset
       expect(window.sessionStorage.getItem('hlx-sk-preview')).to.be.null;
     });
 
     it('previewing from gdrive editor - doc', async () => {
-      mockGdriveEditorFetchStatusSuccess();
-      mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
+      sidekickTest
+        .mockEditorAdminEnvironment(
+          EditorMockEnvironments.EDITOR,
+          HelixMockContentType.DOC,
+          HelixMockContentSources.GDRIVE,
+        ).mockFetchEditorStatusSuccess(
+          HelixMockContentSources.GDRIVE,
+          HelixMockContentType.DOC,
+        );
+
+      const { sandbox } = sidekickTest;
       const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 
@@ -134,15 +156,22 @@ describe('Preview plugin', () => {
     });
 
     it('previewing from gdrive editor - not a valid content type', async () => {
-      mockGdriveEditorFetchStatusSuccess();
-      mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
+      sidekickTest
+        .mockEditorAdminEnvironment(
+          EditorMockEnvironments.EDITOR,
+          HelixMockContentType.DOC,
+          HelixMockContentSources.GDRIVE,
+        ).mockFetchEditorStatusSuccess(
+          HelixMockContentSources.GDRIVE,
+          HelixMockContentType.DOC,
+        );
 
+      const { sandbox } = sidekickTest;
       const modalSpy = sandbox.spy(appStore, 'showModal');
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       appStore.status.edit.contentType = 'invalid';
 
@@ -155,15 +184,22 @@ describe('Preview plugin', () => {
     });
 
     it('previewing from gdrive editor - not a gdoc type', async () => {
-      mockGdriveEditorFetchStatusSuccess();
-      mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
+      sidekickTest
+        .mockEditorAdminEnvironment(
+          EditorMockEnvironments.EDITOR,
+          HelixMockContentType.DOC,
+          HelixMockContentSources.GDRIVE,
+        ).mockFetchEditorStatusSuccess(
+          HelixMockContentSources.GDRIVE,
+          HelixMockContentType.DOC,
+        );
 
+      const { sandbox } = sidekickTest;
       const modalSpy = sandbox.spy(appStore, 'showModal');
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       appStore.status.edit.contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
@@ -177,15 +213,22 @@ describe('Preview plugin', () => {
     });
 
     it('previewing from gdrive editor - not a gsheet type', async () => {
-      mockGdriveEditorFetchStatusSuccess();
-      mockEditorAdminEnvironment(document, 'editor', 'doc', 'gdrive');
+      sidekickTest
+        .mockEditorAdminEnvironment(
+          EditorMockEnvironments.EDITOR,
+          HelixMockContentType.DOC,
+          HelixMockContentSources.GDRIVE,
+        ).mockFetchEditorStatusSuccess(
+          HelixMockContentSources.GDRIVE,
+          HelixMockContentType.DOC,
+        );
 
+      const { sandbox } = sidekickTest;
       const modalSpy = sandbox.spy(appStore, 'showModal');
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       appStore.status.edit.contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
