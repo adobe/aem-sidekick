@@ -157,7 +157,7 @@ describe('Test check-tab', () => {
     });
 
     await checkTab(tab.id);
-    expect(executeScriptSpy.callCount).to.equal(3);
+    expect(executeScriptSpy.callCount).to.equal(1);
 
     // check again without proxyUrl meta tag
     proxyUrl.remove();
@@ -172,7 +172,7 @@ describe('Test check-tab', () => {
     });
 
     await checkTab(tab.id);
-    expect(executeScriptSpy.callCount).to.equal(3);
+    expect(executeScriptSpy.callCount).to.equal(1);
   });
 
   it('checkTab: script injection fails', async () => {
