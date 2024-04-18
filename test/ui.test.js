@@ -11,36 +11,42 @@
  */
 /* eslint-disable no-unused-expressions */
 
-import { expect } from '@open-wc/testing';
+import { aTimeout, expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
 import chromeMock from './mocks/chrome.js';
 import { addProject, getProject, updateProject } from '../src/extension/project.js';
-import { internalActions } from '../src/extension/actions.js';
 import { setDisplay } from '../src/extension/display.js';
+import { internalActions } from '../src/extension/actions.js';
 import { error } from './test-utils.js';
+import { mockFetchEnvJSONSuccess } from './mocks/helix-admin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
 
+const sandbox = sinon.createSandbox();
+const config = {
+  owner: 'adobe',
+  repo: 'aem-boilerplate',
+  ref: 'main',
+  mountpoints: [],
+};
+const url = 'https://main--blog--adobe.hlx.page/';
+const tab = {
+  id: 1,
+  url,
+};
 let clickListener;
 
 // prep listener test before importing ui.js
+const logSpy = sinon.spy(console, 'log');
 sinon.replace(chrome.contextMenus.onClicked, 'addListener', async (func) => {
   // store click listener for later use
   clickListener = func;
 });
 
 const { updateContextMenu, updateIcon } = await import('../src/extension/ui.js');
-
-const sandbox = sinon.createSandbox();
-const config = {
-  owner: 'foo',
-  repo: 'bar',
-  ref: 'main',
-  mountpoints: [],
-};
 
 describe('Test UI: updateContextMenu', () => {
   let createSpy;
@@ -78,7 +84,7 @@ describe('Test UI: updateContextMenu', () => {
 
   it('updateContextMenu: project not added yet', async () => {
     await updateContextMenu({
-      url: 'https://main--bar--foo.hlx.page/',
+      url,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -88,9 +94,10 @@ describe('Test UI: updateContextMenu', () => {
   });
 
   it('updateContextMenu: project added and enabled', async () => {
+    mockFetchEnvJSONSuccess();
     await addProject(config);
     await updateContextMenu({
-      url: 'https://main--bar--foo.hlx.page/',
+      url,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -102,7 +109,7 @@ describe('Test UI: updateContextMenu', () => {
     const project = await getProject(config);
     await updateProject({ ...project, disabled: true });
     await updateContextMenu({
-      url: 'https://main--bar--foo.hlx.page/',
+      url,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -111,7 +118,7 @@ describe('Test UI: updateContextMenu', () => {
 
   it('updateContextMenu: no matching config', async () => {
     await updateContextMenu({
-      url: 'https://main--bar--foo.hlx.page/',
+      url,
     });
     expect(removeAllSpy.callCount).to.equal(1);
     expect(createSpy.callCount).to.equal(0);
@@ -134,7 +141,7 @@ describe('Test UI: updateContextMenu', () => {
         { tab: { id: 1 } },
       ));
     await updateContextMenu({
-      url: 'https://main--bar--foo.hlx.page/',
+      url,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -143,11 +150,10 @@ describe('Test UI: updateContextMenu', () => {
   });
 
   it('updateContextMenu: guessAEMSite fails', async () => {
-    // addListenerStub.restore();
     sandbox.stub(chrome.scripting, 'executeScript')
       .throws(error);
     await updateContextMenu({
-      url: 'https://main--bar--foo.hlx.page/',
+      url,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -225,5 +231,40 @@ describe('Test UI: updateIcon', () => {
         512: 'icons/hidden/icon-512x512.png',
       },
     })).to.be.true;
+  });
+});
+
+describe('Test UI: RUM collection when clicked', () => {
+  before(async () => {
+    await setUserAgent('HeadlessChrome');
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it('collects RUM', async () => {
+    clickListener({
+      menuItemId: 'openPreview',
+    }, tab);
+    await aTimeout(500);
+    expect(logSpy.calledWithMatch('sampleRUM', 'sidekick:context-menu:openPreview')).to.be.true;
+  });
+
+  it('handles error', async () => {
+    clickListener({
+      menuItemId: 'openViewDocSource', // provoke error in sampleRUM
+    }, tab);
+    await aTimeout(500);
+    expect(logSpy.calledWithMatch('Unable to collect RUM data', error)).to.be.true;
+  });
+
+  it('does nothing without tab url', async () => {
+    const logs = logSpy.callCount;
+    clickListener({
+      menuItemId: 'openPreview',
+    }, {});
+    await aTimeout(500);
+    expect(logSpy.callCount).to.equal(logs);
   });
 });

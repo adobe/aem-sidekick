@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Adobe. All rights reserved.
+ * Copyright 2024 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,15 +10,19 @@
  * governing permissions and limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+import { error } from '../test-utils.js';
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
-
-import enMessages from '../../src/extension/_locales/en/messages.json' assert { type: 'json' };
-
-export const englishMessagesUrl = '/test/fixtures/_locales/en/messages.json';
-export const mockFetchEnglishMessagesSuccess = () => fetchMock.get(englishMessagesUrl, {
-  status: 200,
-  body: enMessages,
-}, { overwriteRoutes: true });
+/**
+ * Log RUM for sidekick telemetry (dummy)
+ * @private
+ * @param {string} checkpoint identifies the checkpoint in funnel
+ * @param {Object} data additional data for RUM sample
+ */
+export default function sampleRUM(checkpoint, data = {}) {
+  // eslint-disable-next-line no-console
+  console.log('sampleRUM', checkpoint, data);
+  if (checkpoint === 'sidekick:context-menu:openViewDocSource') {
+    // test error handling
+    throw error;
+  }
+}

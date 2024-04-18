@@ -180,7 +180,7 @@ describe('Test actions', () => {
     const createSpy = sandbox.spy(chrome.windows, 'create');
     await openViewDocSource({ id: 1 });
     expect(createSpy.calledWithMatch({
-      url: '/test/wtr/fixtures/view-doc-source/index.html?tabId=1',
+      url: '/test/fixtures/view-doc-source/index.html?tabId=1',
       type: 'popup',
       width: 740,
     })).to.be.true;
