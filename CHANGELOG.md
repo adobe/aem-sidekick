@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/adobe/aem-sidekick/compare/v1.18.0...v1.19.0) (2024-04-18)
+
+
+### Features
+
+* move sharepoint edit info call from service worker to tab ([#116](https://github.com/adobe/aem-sidekick/issues/116)) ([d342faf](https://github.com/adobe/aem-sidekick/commit/d342fafddd6bd0072ecbb7f0733f1a0186535b47))
+
 # [1.18.0](https://github.com/adobe/aem-sidekick/compare/v1.17.0...v1.18.0) (2024-04-18)
 
 
