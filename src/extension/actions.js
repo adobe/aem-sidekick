@@ -18,7 +18,6 @@ import {
   toggleProject,
   deleteProject,
   isValidProject,
-  getGitHubSettings,
   getProject,
 } from './project.js';
 
@@ -80,19 +79,6 @@ async function enableDisableProject(tab) {
 }
 
 /**
- * Opens the preview URL of a project based on a GitHub URL
- * @param {chrome.tabs.Tab} tab The tab
- */
-async function openPreview({ url }) {
-  const { owner, repo, ref } = getGitHubSettings(url);
-  if (owner && repo) {
-    await chrome.tabs.create({
-      url: `https://${ref}--${repo}--${owner}.hlx.page/`,
-    });
-  }
-}
-
-/**
  * Opens the view document source popup.
  * @param {chrome.tabs.Tab} tab The tab
  */
@@ -132,7 +118,6 @@ export async function checkViewDocSource(id) {
 export const internalActions = {
   addRemoveProject,
   enableDisableProject,
-  openPreview,
   openViewDocSource,
 };
 
