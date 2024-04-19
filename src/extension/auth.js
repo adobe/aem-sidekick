@@ -11,7 +11,7 @@
  */
 
 import { log } from './log.js';
-import { getConfig, removeConfig, setConfig } from './config.js';
+import { getConfig, setConfig } from './config.js';
 
 /**
  * Sets the x-auth-token header for all requests to admin.hlx.page if project config
@@ -29,10 +29,7 @@ export async function addAuthTokenHeaders() {
     let id = 2;
     const projects = await getConfig('session', 'projects') || [];
     const addRules = [];
-    const projectConfigs = (await Promise.all(projects
-      .map((handle) => getConfig('session', handle))))
-      .filter((cfg) => !!cfg);
-    projectConfigs.forEach(({ owner, repo, authToken }) => {
+    projects.forEach(({ owner, authToken }) => {
       addRules.push({
         id,
         priority: 1,
@@ -45,14 +42,14 @@ export async function addAuthTokenHeaders() {
           }],
         },
         condition: {
-          regexFilter: `^https://admin.hlx.page/[a-z]+/${owner}/${repo}/.*`,
+          regexFilter: `^https://admin.hlx.page/[a-z]+/${owner}/.*`,
           requestDomains: ['admin.hlx.page'],
           requestMethods: ['get', 'post', 'delete'],
           resourceTypes: ['xmlhttprequest'],
         },
       });
       id += 1;
-      log.debug(`addAuthTokensHeaders: added admin auth header rule for ${owner}/${repo}`);
+      log.debug(`addAuthTokensHeaders: added admin auth header rule for ${owner}`);
     });
     if (addRules.length > 0) {
       await chrome.declarativeNetRequest.updateSessionRules({
@@ -67,32 +64,28 @@ export async function addAuthTokenHeaders() {
 /**
  * Sets the auth token for a given project.
  * @param {string} owner The project owner
- * @param {string} repo The project repository
  * @param {string} token The auth token
  * @param {number} [exp] The token expiry in seconds since epoch
  * @returns {Promise<void>}
  */
-export async function setAuthToken(owner, repo, token, exp) {
-  if (owner && repo) {
-    const handle = `${owner}/${repo}`;
+export async function setAuthToken(owner, token, exp) {
+  if (owner) {
     const projects = await getConfig('session', 'projects') || [];
-    const projectIndex = projects.indexOf(handle);
+    const projectIndex = projects.findIndex((project) => project.owner === owner);
     if (token) {
-      // store auth token in session storage
-      await setConfig('session', {
-        [handle]: {
-          owner,
-          repo,
-          authToken: token,
-          authTokenExpiry: exp ? exp * 1000 : 0, // store expiry in milliseconds
-        },
-      });
+      const authTokenExpiry = exp ? exp * 1000 : 0; // store expiry in milliseconds
       if (projectIndex < 0) {
-        projects.push(handle);
+        projects.push({
+          owner,
+          authToken: token,
+          authTokenExpiry,
+        });
+      } else {
+        projects[projectIndex].authToken = token;
+        projects[projectIndex].authTokenExpiry = authTokenExpiry;
       }
     } else if (projectIndex >= 0) {
       // remove auth token from session storage
-      await removeConfig('session', handle);
       projects.splice(projectIndex, 1);
     }
     await setConfig('session', { projects });

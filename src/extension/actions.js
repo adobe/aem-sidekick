@@ -18,7 +18,6 @@ import {
   toggleProject,
   deleteProject,
   isValidProject,
-  getGitHubSettings,
   getProject,
 } from './project.js';
 
@@ -26,21 +25,20 @@ import {
  * Updates the auth token via external messaging API (admin only).
  * @param {Object} message The message object
  * @param {string} message.owner The project owner
- * @param {string} message.repo The project repository
  * @param {string} message.authToken The auth token
  * @param {number} message.exp The token expiry in seconds since epoch
  * @param {chrome.runtime.MessageSender} sender The sender
  * @returns {Promise<string>} The action's response
  */
 async function updateAuthToken({
-  owner, repo, authToken, exp,
+  owner, authToken, exp,
 }, sender) {
   const { url } = sender;
-  if (owner && repo) {
+  if (owner) {
     try {
       if (new URL(url).origin === 'https://admin.hlx.page'
         && authToken !== undefined) {
-        await setAuthToken(owner, repo, authToken, exp);
+        await setAuthToken(owner, authToken, exp);
         return 'close';
       }
     } catch (e) {
@@ -54,8 +52,8 @@ async function updateAuthToken({
  * Adds or removes a project based on the tab's URL
  * @param {chrome.tabs.Tab} tab The tab
  */
-async function addRemoveProject({ id, url }) {
-  const config = await getProjectFromUrl(url);
+async function addRemoveProject(tab) {
+  const config = await getProjectFromUrl(tab);
   if (isValidProject(config)) {
     const { owner, repo } = config;
     const project = await getProject(config);
@@ -64,7 +62,7 @@ async function addRemoveProject({ id, url }) {
     } else {
       await deleteProject(`${owner}/${repo}`);
     }
-    await chrome.tabs.reload(id, { bypassCache: true });
+    await chrome.tabs.reload(tab.id, { bypassCache: true });
   }
 }
 
@@ -72,23 +70,11 @@ async function addRemoveProject({ id, url }) {
  * Enables or disables a project based on the tab's URL
  * @param {chrome.tabs.Tab} tab The tab
  */
-async function enableDisableProject({ id, url }) {
-  const cfg = await getProjectFromUrl(url);
+async function enableDisableProject(tab) {
+  const { id } = tab;
+  const cfg = await getProjectFromUrl(tab);
   if (await toggleProject(cfg)) {
     await chrome.tabs.reload(id, { bypassCache: true });
-  }
-}
-
-/**
- * Opens the preview URL of a project based on a GitHub URL
- * @param {chrome.tabs.Tab} tab The tab
- */
-async function openPreview({ url }) {
-  const { owner, repo, ref } = getGitHubSettings(url);
-  if (owner && repo) {
-    await chrome.tabs.create({
-      url: `https://${ref}--${repo}--${owner}.hlx.page/`,
-    });
   }
 }
 
@@ -132,7 +118,6 @@ export async function checkViewDocSource(id) {
 export const internalActions = {
   addRemoveProject,
   enableDisableProject,
-  openPreview,
   openViewDocSource,
 };
 

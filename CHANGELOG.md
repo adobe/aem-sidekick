@@ -1,3 +1,24 @@
+# [1.19.0](https://github.com/adobe/aem-sidekick/compare/v1.18.0...v1.19.0) (2024-04-18)
+
+
+### Features
+
+* move sharepoint edit info call from service worker to tab ([#116](https://github.com/adobe/aem-sidekick/issues/116)) ([d342faf](https://github.com/adobe/aem-sidekick/commit/d342fafddd6bd0072ecbb7f0733f1a0186535b47))
+
+# [1.18.0](https://github.com/adobe/aem-sidekick/compare/v1.17.0...v1.18.0) (2024-04-18)
+
+
+### Features
+
+* RUM data collection for context menu items ([#85](https://github.com/adobe/aem-sidekick/issues/85)) ([ed446be](https://github.com/adobe/aem-sidekick/commit/ed446be478c537cc71d9add6b9bfdcc75522957e))
+
+# [1.17.0](https://github.com/adobe/aem-sidekick/compare/v1.16.0...v1.17.0) (2024-04-18)
+
+
+### Features
+
+* reuse auth token within the same org ([#114](https://github.com/adobe/aem-sidekick/issues/114)) ([a5cae3c](https://github.com/adobe/aem-sidekick/commit/a5cae3cc4fec07373585ac84fce6bc549a0f83b1))
+
 # [1.16.0](https://github.com/adobe/aem-sidekick/compare/v1.15.0...v1.16.0) (2024-04-13)
 
 

@@ -50,7 +50,7 @@ export default {
   runtime: {
     id: ID,
     getManifest: async () => readFile({ path: '../../src/extension/manifest.json' }).then((mf) => JSON.parse(mf)),
-    getURL: (path) => `/test/wtr/fixtures/${path}`.replace('//', '/'),
+    getURL: (path) => `/test/fixtures/${path}`.replace('//', '/'),
     lastError: null,
     sendMessage: () => {},
     onMessage: {
@@ -79,10 +79,11 @@ export default {
     reload: async () => {},
   },
   scripting: {
-    executeScript: ({ func }) => {
+    executeScript: async ({ func, args = [] }) => {
       if (typeof func === 'function') {
-        func();
+        return func(...args);
       }
+      return null;
     },
   },
   contextMenus: {

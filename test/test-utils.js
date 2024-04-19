@@ -54,3 +54,27 @@ export const sleep = (ms = 0) => new Promise((resolve) => {
 });
 
 export const error = new Error('this is just a test');
+
+/**
+* Returns a mock tab object.
+* @param {string} url The tab URL
+* @param {Object} overrides The overrides (https://developer.chrome.com/docs/extensions/reference/api/tabs#type-Tab)
+* @returns {chrome.tabs.Tab} The tab
+*/
+export function mockTab(url, overrides) {
+  return {
+    url,
+    id: 0,
+    windowId: 0,
+    groupId: 0,
+    index: 0,
+    pinned: false,
+    highlighted: false,
+    active: true,
+    incognito: false,
+    selected: true,
+    discarded: false,
+    autoDiscardable: false,
+    ...overrides,
+  };
+}
