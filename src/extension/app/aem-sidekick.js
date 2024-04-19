@@ -40,7 +40,7 @@ export class AEMSidekick extends MobxLitElement {
     this.appStore.loadContext(this, config);
 
     this.addEventListener('contextloaded', (data) => {
-      log.debug('Console was loaded', data);
+      log.debug('contextloaded fired', data);
     });
   }
 

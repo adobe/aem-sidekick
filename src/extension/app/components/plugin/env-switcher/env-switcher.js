@@ -299,7 +299,10 @@ export class EnvironmentSwitcher extends ConnectedElement {
     const { picker } = this;
     const { value } = picker;
 
-    const openNewTab = value === 'edit' ? true : newTab(this.appStore.keyboardListener);
+    const openNewTab = value === 'edit'
+      ? true
+      : newTab(this.appStore.keyboardListener);
+
     this.appStore.switchEnv(value, openNewTab);
     picker.value = this.currentEnv;
   }

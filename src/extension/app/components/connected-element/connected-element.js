@@ -20,6 +20,11 @@ import { appStoreContext } from '../../store/app.js';
  * @typedef {import('@AppStore').AppStore} AppStore
  */
 
+/**
+ * Base class for any components that needs access the appStore
+ * @extends {LitElement}
+ * @class ConnectedElement
+ */
 export class ConnectedElement extends LitElement {
   /**
    * @type {AppStore}

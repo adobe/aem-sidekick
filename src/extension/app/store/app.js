@@ -507,7 +507,7 @@ export class AppStore {
   }
 
   /**
-   * Recognizes a SharePoint folder URL.\
+   * Recognizes a SharePoint folder URL.
    * @param {URL} url The URL
    * @returns {boolean} <code>true</code> if URL is SharePoint folder, else <code>false</code>
    */
