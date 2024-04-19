@@ -377,6 +377,15 @@ describe('Test App Store', () => {
       );
       expect(appStore.status.error).to.equal('error_status_500');
     });
+
+    it('empty config returns no status', async () => {
+      sidekickTest
+        .mockFetchStatusError();
+      const fetchStatusSpy = sidekickTest.sandbox.spy(appStore, 'fetchStatus');
+      // @ts-ignore
+      await appStore.loadContext(sidekickElement, {});
+      expect(fetchStatusSpy.returnValues[0]).to.be.undefined;
+    });
   });
 
   describe('wait dialog', async () => {
