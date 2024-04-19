@@ -467,7 +467,7 @@ describe('Test App Store', () => {
         devUrl: new URL('https://localhost:3000'),
         views: [{
           path: '**.json',
-          viewer: '/test/wtr/fixtures/views/json/json.html',
+          viewer: '/test/fixtures/views/json/json.html',
         }],
       };
 

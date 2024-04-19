@@ -27,7 +27,7 @@ window.chrome = chromeMock;
 
 describe('AEM Config Picker', () => {
   beforeEach(async () => {
-    fetchMock.get('/test/wtr/fixtures/_locales/en/messages.json', {
+    fetchMock.get('/test/fixtures/_locales/en/messages.json', {
       status: 200,
       body: enMessages,
     }, { overwriteRoutes: true });

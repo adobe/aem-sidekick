@@ -69,7 +69,7 @@ export const defaultLocalConfigJSONUrl = 'http://localhost:3000/tools/sidekick/c
 /**
  * i18n path
  */
-export const englishMessagesUrl = '/test/wtr/fixtures/_locales/en/messages.json';
+export const englishMessagesUrl = '/test/fixtures/_locales/en/messages.json';
 
 export class SidekickTest {
   /**

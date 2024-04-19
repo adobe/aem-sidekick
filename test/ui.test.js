@@ -15,12 +15,13 @@ import { aTimeout, expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
+// @ts-ignore
+import fetchMock from 'fetch-mock/esm/client.js';
 import chromeMock from './mocks/chrome.js';
 import { addProject, getProject, updateProject } from '../src/extension/project.js';
 import { setDisplay } from '../src/extension/display.js';
 import { internalActions } from '../src/extension/actions.js';
 import { error } from './test-utils.js';
-import { mockFetchEnvJSONSuccess } from './mocks/helix-admin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -94,7 +95,19 @@ describe('Test UI: updateContextMenu', () => {
   });
 
   it('updateContextMenu: project added and enabled', async () => {
-    mockFetchEnvJSONSuccess();
+    fetchMock.get('https://admin.hlx.page/sidekick/adobe/aem-boilerplate/main/env.json', {
+      status: 200,
+      body: {
+        version: 1,
+        prod: {
+          host: 'foo.bar',
+          routes: [],
+        },
+        contentSourceUrl: 'https://adobe.sharepoint.com/sites/foo/Shared%20Documents/root',
+        contentSourceType: 'onedrive',
+      },
+    }, { overwriteRoutes: true });
+
     await addProject(config);
     await updateContextMenu({
       url,
