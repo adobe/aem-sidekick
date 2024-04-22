@@ -76,6 +76,13 @@ export class LoginButton extends ConnectedElement {
       },
     );
 
+    reaction(
+      () => this.appStore.state,
+      () => {
+        this.requestUpdate();
+      },
+    );
+
     // As soon as there is any change to the profile we want to be notified
     reaction(
       () => this.appStore.status.profile,

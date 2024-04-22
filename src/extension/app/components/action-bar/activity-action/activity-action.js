@@ -116,7 +116,7 @@ export class ActivityAction extends ConnectedElement {
         `;
       case SIDEKICK_STATE.LOGIN_REQUIRED:
         return html`
-          ${this.getToastIcon()}<span>${this.appStore.i18n(this.appStore.state)}</span>
+          ${ICONS.INFO}<span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
       case SIDEKICK_STATE.UNAUTHORIZED:
         return html`

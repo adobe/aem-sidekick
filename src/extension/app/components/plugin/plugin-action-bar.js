@@ -18,6 +18,7 @@ import { reaction } from 'mobx';
 import { ICONS, MODALS, SIDEKICK_STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
+import '../action-bar/activity-action/activity-action.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} SidekickPlugin
@@ -72,6 +73,8 @@ export class PluginActionBar extends ConnectedElement {
         } else if (actionBar) {
           actionBar.className = '';
         }
+
+        this.requestUpdate();
       },
     );
   }
