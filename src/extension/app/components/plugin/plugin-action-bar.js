@@ -13,9 +13,9 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, queryAsync } from 'lit/decorators.js';
 import { reaction } from 'mobx';
-import { ICONS, MODALS } from '../../constants.js';
+import { ICONS, MODALS, SIDEKICK_STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 
@@ -42,12 +42,8 @@ export class PluginActionBar extends ConnectedElement {
    */
   visiblePlugins = [];
 
-  /**
-  * Are we ready to render?
-  * @type {boolean}
-  */
-  @property({ type: Boolean, attribute: false })
-  accessor ready = false;
+  @queryAsync('action-bar')
+  accessor actionBar;
 
   /**
    * Loads the user preferences for plugins in this environment.
@@ -58,9 +54,24 @@ export class PluginActionBar extends ConnectedElement {
     this.ready = true;
 
     reaction(
-      () => this.appStore.status,
-      () => {
-        this.requestUpdate();
+      () => this.appStore.state,
+      async () => {
+        const actionBar = await this.actionBar;
+        if (this.appStore.state === SIDEKICK_STATE.TOAST) {
+          actionBar.classList.add(this.appStore.toast.variant);
+
+          setTimeout(() => {
+            actionBar.className = '';
+            if (this.appStore.toast?.actionCallback) {
+              this.appStore.toast?.actionCallback();
+            }
+            this.appStore.closeToast();
+          }, this.appStore.toast.timeout);
+          // We need to reset the class name to remove the toast variant, but only if it exists.
+          // It's possible for actionBar to be null on the first render.
+        } else if (actionBar) {
+          actionBar.className = '';
+        }
       },
     );
   }
@@ -70,8 +81,11 @@ export class PluginActionBar extends ConnectedElement {
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
-    if (!this.appStore.corePlugins) {
-      return '';
+    if (this.appStore.state !== SIDEKICK_STATE.READY) {
+      return html`
+        <sp-action-group>
+          <activity-action></activity-action>
+        </sp-action-group>`;
     }
 
     this.visiblePlugins = [
@@ -97,6 +111,10 @@ export class PluginActionBar extends ConnectedElement {
     const { siteStore } = this.appStore;
 
     const systemPlugins = [];
+
+    if (this.appStore.state === SIDEKICK_STATE.TOAST) {
+      return html``;
+    }
 
     const pluginList = html`
       <sp-action-button
@@ -138,7 +156,7 @@ export class PluginActionBar extends ConnectedElement {
   }
 
   render() {
-    return this.ready ? html`
+    return this.appStore.state !== SIDEKICK_STATE.INITIALIZING ? html`
       <action-bar>
         ${this.renderPlugins()}
         ${this.renderSystemPlugins()}

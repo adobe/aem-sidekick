@@ -10,16 +10,18 @@
  * governing permissions and limitations under the License.
  */
 
-import { css } from 'lit';
+import { createEnvPlugin } from './env/env.js';
+import { createPreviewPlugin } from './preview/preview.js';
+import { createReloadPlugin } from './reload/reload.js';
+import { createDeletePlugin } from './delete/delete.js';
+import { createPublishPlugin } from './publish/publish.js';
+import { createUnpublishPlugin } from './unpublish/unpublish.js';
 
-export const style = css`
-  .toast-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    position: absolute;
-    bottom: 91px;
-    align-items: center;
-    width: 100%;
-  }
-`;
+export const pluginFactory = (() => ({
+  createEnvPlugin,
+  createPreviewPlugin,
+  createReloadPlugin,
+  createDeletePlugin,
+  createPublishPlugin,
+  createUnpublishPlugin,
+}))();

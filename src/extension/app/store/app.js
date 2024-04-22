@@ -23,14 +23,19 @@ import {
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
-  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS, RESTRICTED_PATHS,
+  ENVS,
+  EVENTS,
+  EXTERNAL_EVENTS,
+  MODALS,
+  MODAL_EVENTS,
+  RESTRICTED_PATHS,
+  SIDEKICK_STATE,
 } from '../constants.js';
 // eslint-disable-next-line import/no-cycle
 import { Plugin } from '../components/plugin/plugin.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
-import { ToastContainer } from '../components/toast/toast-container.js';
 import { getConfig, setConfig } from '../../config.js';
 
 /**
@@ -71,9 +76,6 @@ export const VIEWS = {
 };
 
 export class AppStore {
-  // eslint-disable-next-line no-undef
-  @observable accessor initialized = false;
-
   /**
    * The current location
    * @type {URL}
@@ -128,6 +130,18 @@ export class AppStore {
    */
   keyboardListener;
 
+  /**
+   * The current state of the sidekick
+   * @type {String}
+   */
+  @observable accessor state = SIDEKICK_STATE.INITIALIZING;
+
+  /**
+   * Toast data
+   * @type {import('@Types').Toast}
+   */
+  accessor toast;
+
   constructor() {
     this.siteStore = new SiteStore(this);
     this.keyboardListener = new KeyboardListener();
@@ -159,8 +173,6 @@ export class AppStore {
 
     this.fetchStatus();
 
-    this.setInitialized();
-
     this.fireEvent(EXTERNAL_EVENTS.CONTEXT_LOADED, {
       config: this.siteStore.toJSON(),
       location: this.location,
@@ -170,11 +182,28 @@ export class AppStore {
   }
 
   /**
-   * Sets the initialized flag.
+   * Set the application state
+   * @param {string} [state] The state to set
    */
   @action
-  setInitialized() {
-    this.initialized = true;
+  setState(state) {
+    if (state) {
+      this.state = state;
+      return;
+    }
+
+    const { profile, error } = this.status;
+    const { authorized } = this.siteStore;
+
+    if (!profile && !authorized) {
+      this.state = SIDEKICK_STATE.LOGIN_REQUIRED;
+    } else if (!authorized) {
+      this.state = SIDEKICK_STATE.UNAUTHORIZED;
+    } else if (error) {
+      this.state = SIDEKICK_STATE.ERROR;
+    } else {
+      this.state = SIDEKICK_STATE.READY;
+    }
   }
 
   @action
@@ -700,22 +729,34 @@ export class AppStore {
    * Displays a toast message
    * @param {string} message The message to display
    * @param {string} [variant] The variant of the toast (optional)
+   * @param {function} [closeCallback] The close callback function
+   * @param {function} [actionCallback] The action callback function
+   * @param {string} [actionLabel] The action label
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
-  showToast(message, variant = 'info', timeout = 6000) {
-    const existingToast = this.sidekick?.shadowRoot?.querySelector('theme-wrapper').querySelector('toast-container');
-    if (existingToast) {
-      existingToast.remove();
+  showToast(message, variant = 'info', closeCallback = undefined, actionCallback = undefined, actionLabel = 'Ok', timeout = 3000) {
+    if (this.toast) {
+      this.toast = null;
+      this.setState();
     }
 
-    const toastContainer = new ToastContainer({
+    this.toast = {
       message,
       variant,
+      closeCallback,
+      actionCallback,
+      actionLabel,
       timeout,
-    });
-    this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(toastContainer);
+    };
+    this.setState(SIDEKICK_STATE.TOAST);
+  }
 
-    return toastContainer;
+  /**
+   * Closes the toast message
+   */
+  closeToast() {
+    this.toast = null;
+    this.setState();
   }
 
   /**
@@ -778,6 +819,7 @@ export class AppStore {
       this.status.apiUrl = apiUrl;
     }
 
+    this.setState(SIDEKICK_STATE.FETCHING_STATUS);
     fetch(this.status.apiUrl, {
       ...getAdminFetchOptions(),
     })
@@ -838,6 +880,9 @@ export class AppStore {
         //   },
         // };
         // this.showModal(modal);
+      })
+      .finally(() => {
+        this.setState();
       });
   }
 
@@ -905,7 +950,7 @@ export class AppStore {
   }
 
   async updatePreview(ranBefore) {
-    this.showWait();
+    this.setState(SIDEKICK_STATE.PREVIEWING);
     const { status } = this;
     const resp = await this.update();
     if (!resp.ok) {
@@ -916,31 +961,21 @@ export class AppStore {
         }, { once: true });
         this.fetchStatus();
       } else if (status.webPath.startsWith('/.helix/') && resp.error) {
-        this.showModal({
-          type: MODALS.ERROR,
-          data: {
-            message: `${this.i18n('error_config_failure')}${resp.error}`,
-          },
-        });
+        this.showToast(`${this.i18n('error_config_failure')}${resp.error}`, 'negative');
       } else {
         // eslint-disable-next-line no-console
         console.error(resp);
-        this.showModal({
-          type: MODALS.ERROR,
-          data: {
-            message: this.i18n('error_preview_failure'),
-          },
-        });
+        this.showToast(`${this.i18n('error_preview_failure')}${resp.error}`, 'negative');
       }
       return;
     }
     // handle special case /.helix/*
     if (status.webPath.startsWith('/.helix/')) {
       this.showToast(this.i18n('preview_config_success'), 'positive');
-      this.hideWait();
+      this.setState();
       return;
     }
-    this.hideWait();
+    this.setState();
     this.switchEnv('preview');
   }
 
@@ -1261,7 +1296,7 @@ export class AppStore {
    * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
    */
   login(selectAccount) {
-    this.showWait(this.i18n('login_wait'));
+    this.setState(SIDEKICK_STATE.LOGGING_IN);
     const loginUrl = getAdminUrl(this.siteStore, 'login');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
@@ -1296,17 +1331,11 @@ export class AppStore {
           // encourageLogin(sk, false);
           this.fetchStatus();
           this.fireEvent('loggedin');
-          this.hideWait();
           return;
         }
         if (attempts >= 5) {
           // give up after 5 attempts
-          this.showModal({
-            type: MODALS.ERROR,
-            data: {
-              message: this.i18n('error_login_timeout'),
-            },
-          });
+          this.showToast(this.i18n('error_login_timeout'), 'negative');
           return;
         }
       }
@@ -1320,7 +1349,7 @@ export class AppStore {
    * Logs the user out.
    */
   logout() {
-    this.showWait();
+    this.setState(SIDEKICK_STATE.LOGGING_OUT);
     const logoutUrl = getAdminUrl(this.siteStore, 'logout');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3

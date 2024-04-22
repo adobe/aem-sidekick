@@ -36,8 +36,8 @@ export const style = css`
     bottom: 150px;
     pointer-events: auto;
     z-index: 1;
-    min-width: 620px;
-    max-width: 800px;
+    min-width: var(--sidekick-min-width);
+    max-width: var(--sidekick-max-width);
   }
 
   .hlx-sk-special-view {

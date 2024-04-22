@@ -45,12 +45,11 @@ export class AEMSidekick extends MobxLitElement {
   }
 
   render() {
-    return this.appStore.siteStore?.ready
-      ? html`
+    return html`
       <theme-wrapper>
         <plugin-action-bar></plugin-action-bar>
         <palette-container></palette-container>
       </theme-wrapper>
-    ` : '';
+    `;
   }
 }

@@ -364,7 +364,7 @@
       "message": "This is a Microsoft Word document. Please convert it to Google Docs: File > Save as Google Docs"
     },
     "error_preview_not_gsheet_ms_excel": {
-      "message": "This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets'"
+      "message": "This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets"
     },
     "error_status_404_content": {
       "message": "404 Not found: Check your Sidekick configuration or URL."
@@ -657,5 +657,38 @@
     },
     "back": {
       "message": "Back"
+    }, 
+    "reload_success": {
+      "message": "Preview successfully updated, reloading..."
+    }, 
+    "publish_success": {
+      "message": "Publish successful, reloading..."
+    }, 
+    "fetching_status_state": {
+      "message": "Loading status"
+    }, 
+    "login_required_state": {
+      "message": "Sign in to continue"
+    }, 
+    "logging_in_state": {
+      "message": "Signing in...."
+    }, 
+    "logging_out_state": {
+      "message": "Signing out...."
+    }, 
+    "unauthorized_state": {
+      "message": "Account not authorized"
+    }, 
+    "previewing_state": {
+      "message": "Updating Preview"
+    }, 
+    "publishing_state": {
+      "message": "Publishing..."
+    }, 
+    "unpublishing_state": {
+      "message": "Unpublishing..."
+    }, 
+    "deleting_state": {
+      "message": "Deleting..."
     }
 }

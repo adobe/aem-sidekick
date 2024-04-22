@@ -162,7 +162,13 @@ export class Plugin {
     const { config, id } = this;
     await this.appStore.validateSession();
     this.appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, { id });
-    config.button.action(evt);
+    try {
+      config.button.action(evt);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+      this.appStore.showToast(error.message, 'negative');
+    }
   }
 
   /**
