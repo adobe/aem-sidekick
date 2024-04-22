@@ -12,8 +12,7 @@
 
 /* eslint-disable wc/no-constructor-params */
 
-import { html } from 'lit';
-import { MobxLitElement } from '@adobe/lit-mobx';
+import { html, LitElement } from 'lit';
 import { provide } from '@lit/context';
 import { customElement } from 'lit/decorators.js';
 import { log } from '../log.js';
@@ -22,7 +21,7 @@ import { spectrum2 } from './spectrum-2.css.js';
 import { AppStore, appStoreContext } from './store/app.js';
 
 @customElement('aem-sidekick')
-export class AEMSidekick extends MobxLitElement {
+export class AEMSidekick extends LitElement {
   /**
    * @type {AppStore}
    */
