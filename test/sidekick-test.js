@@ -187,7 +187,7 @@ export class SidekickTest {
    * @param {string} variant The toast variant type
    * @returns {Promise<void>}
    */
-  async cliockToastAction(variant = 'positive') {
+  async clickToastAction(variant = 'positive') {
     await this.awaitToast();
     await waitUntil(() => recursiveQuery(this.sidekick, `action-bar.${variant}`) !== null);
     const closeButton = recursiveQuery(this.sidekick, 'sp-action-button.action');

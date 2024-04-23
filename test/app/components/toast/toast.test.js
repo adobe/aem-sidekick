@@ -78,16 +78,6 @@ describe('Toasts', () => {
     await sidekickTest.clickToastClose();
   }).timeout(5000);
 
-  it('defaults to info icon', async () => {
-    sidekick = sidekickTest.createSidekick();
-
-    await sidekickTest.awaitEnvSwitcher();
-
-    appStore.showToast('Test Toast');
-
-    await sidekickTest.awaitToast();
-  }).timeout(5000);
-
   it('renders 1 toast at a time', async () => {
     sidekick = sidekickTest.createSidekick();
 

@@ -23,6 +23,7 @@ import { recursiveQuery } from '../../../test-utils.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import { HelixMockEnvironments } from '../../../mocks/environment.js';
 import { SidekickTest } from '../../../sidekick-test.js';
+import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -94,6 +95,37 @@ describe('Modals', () => {
 
     await aTimeout(100);
     expect(confirmSpy.calledOnce).to.be.true;
+    expect(recursiveQuery(modal, 'sp-dialog-wrapper')).to.be.undefined;
+  });
+
+  it('displays error modal with close event', async () => {
+    sidekick = sidekickTest.createSidekick();
+
+    await sidekickTest.awaitEnvSwitcher();
+    appStore.showModal({
+      type: MODALS.ERROR,
+      data: {
+        message: 'There was an error',
+        headline: 'Oh snap',
+      },
+    });
+
+    const confirmSpy = sidekickTest.sandbox.spy();
+    const modal = recursiveQuery(sidekick, 'modal-container');
+    modal.addEventListener('confirm', confirmSpy);
+
+    await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+    const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+
+    expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+    const dialogHeading = recursiveQuery(dialogWrapper, 'h2');
+    expect(dialogHeading.textContent.trim()).to.eq('Oh snap');
+    expect(dialogWrapper.textContent.trim()).to.eq('There was an error');
+
+    EventBus.instance.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
+
+    await aTimeout(100);
     expect(recursiveQuery(modal, 'sp-dialog-wrapper')).to.be.undefined;
   });
 

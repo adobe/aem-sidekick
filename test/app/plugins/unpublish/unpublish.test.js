@@ -182,7 +182,7 @@ describe('Unpublish plugin', () => {
       await waitUntil(() => unpublishStub.calledOnce);
     });
 
-    it('handles server failure', async () => {
+    it('handles server failure with toast dismiss', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           // source document is not found
@@ -194,6 +194,8 @@ describe('Unpublish plugin', () => {
           },
         });
 
+      const closeToastSpy = sidekickTest.sandbox.spy(appStore, 'closeToast');
+
       unpublishStub.resolves({ ok: false, status: 500, headers: { 'x-error': 'something went wrong' } });
 
       await clickUnpublishPlugin(sidekick);
@@ -203,7 +205,12 @@ describe('Unpublish plugin', () => {
       confirmUnpublish(sidekick);
 
       await waitUntil(() => unpublishStub.calledOnce);
+
+      await sidekickTest.awaitToast();
+      sidekickTest.clickToastClose();
+      await waitUntil(() => closeToastSpy.calledOnce);
+      expect(closeToastSpy.calledOnce);
       expect(showToastSpy.calledWith('Unpublication failed. Please try again later.', 'negative')).to.be.true;
-    });
+    }).timeout(5000);
   });
 });

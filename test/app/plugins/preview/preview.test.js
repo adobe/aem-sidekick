@@ -155,7 +155,7 @@ describe('Preview plugin', () => {
       expect(updatePreviewSpy.calledOnce).to.be.true;
     });
 
-    it('previewing from gdrive editor - not a valid content type', async () => {
+    it('previewing from gdrive editor - not a valid content type with toast dismiss', async () => {
       sidekickTest
         .mockEditorAdminEnvironment(
           EditorMockEnvironments.EDITOR,
@@ -168,6 +168,7 @@ describe('Preview plugin', () => {
 
       const { sandbox } = sidekickTest;
       const toastSpy = sandbox.spy(appStore, 'showToast');
+      const closeToastSpy = sandbox.spy(appStore, 'closeToast');
 
       sidekick = sidekickTest.createSidekick();
 
@@ -179,6 +180,9 @@ describe('Preview plugin', () => {
       previewPlugin.click();
 
       await waitUntil(() => toastSpy.calledOnce);
+
+      await sidekickTest.clickToastClose();
+      expect(closeToastSpy.calledOnce);
       expect(toastSpy.calledOnceWith('This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets', 'negative'));
     });
 

@@ -87,6 +87,7 @@ describe('Delete plugin', () => {
       let loadPageStub;
       let showModalSpy;
       let showToastSpy;
+      let closeToastSpy;
 
       beforeEach(async () => {
         appStore = new AppStore();
@@ -100,6 +101,7 @@ describe('Delete plugin', () => {
         loadPageStub = sandbox.stub(appStore, 'loadPage');
         showModalSpy = sandbox.spy(appStore, 'showModal');
         showToastSpy = sandbox.spy(appStore, 'showToast');
+        closeToastSpy = sandbox.spy(appStore, 'closeToast');
 
         sidekick = sidekickTest.createSidekick();
       });
@@ -190,7 +192,7 @@ describe('Delete plugin', () => {
         await waitUntil(() => deleteStub.calledOnce);
       });
 
-      it('handles server failure', async () => {
+      it('handles server failure with toast dismiss', async () => {
         sidekickTest
           .mockFetchStatusSuccess(false, {
           // source document is not found
@@ -212,6 +214,8 @@ describe('Delete plugin', () => {
 
         await waitUntil(() => deleteStub.calledOnce);
 
+        sidekickTest.clickToastClose();
+        expect(closeToastSpy.calledOnce);
         expect(showToastSpy.calledWith('Deletion failed. Please try again later.', 'negative')).to.be.true;
       });
     });

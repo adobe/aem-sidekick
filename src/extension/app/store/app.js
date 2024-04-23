@@ -1333,13 +1333,14 @@ export class AppStore {
     async function checkLoggedOut() {
       // istanbul ignore else
       if (logoutWindow.closed) {
+        const { siteStore } = this;
         attempts += 1;
         // try 5 times after login window has been closed
         this.status.profile = await this.getProfile();
         if (!this.status.profile) {
           delete this.status.profile;
           delete this.siteStore.authTokenExpiry;
-          this.siteStore.authorized = false;
+          await this.siteStore.initStore(siteStore);
           this.setupPlugins();
           this.fetchStatus();
           this.fireEvent('loggedout');
