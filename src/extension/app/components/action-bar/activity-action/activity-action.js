@@ -97,6 +97,7 @@ export class ActivityAction extends ConnectedElement {
         return ICONS.ALERT_TRIANGLE;
       case 'info':
         return ICONS.INFO;
+      /* istanbul ignore next */
       default:
         return ICONS.INFO;
     }
@@ -126,7 +127,7 @@ export class ActivityAction extends ConnectedElement {
         return html`
           <div class="toast-container">
             <div class="message">
-              ${ICONS.CHECKMARK}<span>${this.appStore.toast.message}</span>
+              ${this.getToastIcon()}<span>${this.appStore.toast.message}</span>
             </div>
             <div class="actions">
               ${this.appStore.toast.actionCallback && this.appStore.toast.actionLabel ? html`

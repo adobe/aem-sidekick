@@ -141,14 +141,10 @@ export class PluginActionBar extends ConnectedElement {
     systemPlugins.push(properties);
 
     const loggedIn = profile && siteStore.authorized;
-
-    // If we are not logged in or we have a profile, show the login button
-    if (profile || !loggedIn) {
-      const authStatus = loggedIn ? '' : 'not-authorized';
-      systemPlugins.push(html`
-        <login-button class=${authStatus}></login-button>
-      `);
-    }
+    const authStatus = loggedIn ? '' : 'not-authorized';
+    systemPlugins.push(html`
+      <login-button class=${authStatus}></login-button>
+    `);
 
     systemPlugins.push(ICONS.ADOBE_LOGO);
 

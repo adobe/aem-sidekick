@@ -20,7 +20,6 @@ import { AppStore } from '../../../../src/extension/app/store/app.js';
 import {
   HelixMockEnvironments,
 } from '../../../mocks/environment.js';
-import { MODALS } from '../../../../src/extension/app/constants.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 
 /**
@@ -48,6 +47,7 @@ describe('Reload plugin', () => {
   let appStore;
 
   let reloaded = false;
+  let showToastSpy;
 
   beforeEach(async () => {
     appStore = new AppStore();
@@ -58,7 +58,7 @@ describe('Reload plugin', () => {
       .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
     sidekick = sidekickTest.createSidekick();
-
+    showToastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
     sidekickTest.sandbox.stub(appStore, 'reloadPage').callsFake(() => {
       reloaded = true;
     });
@@ -74,8 +74,6 @@ describe('Reload plugin', () => {
     const { sandbox } = sidekickTest;
     const updateStub = sandbox.stub(appStore, 'update')
       .resolves(new Response('', { status: 200, headers: {} }));
-    const showWaitSpy = sandbox.spy(appStore, 'showWait');
-    const hideWaitSpy = sandbox.spy(appStore, 'hideWait');
 
     await sidekickTest.awaitEnvSwitcher();
 
@@ -87,21 +85,18 @@ describe('Reload plugin', () => {
 
     await aTimeout(500);
 
-    await waitUntil(() => updateStub.calledOnce === true);
+    await waitUntil(() => updateStub.calledOnce);
 
+    await sidekickTest.cliockToastAction();
     expect(updateStub.calledOnce).to.be.true;
-    expect(showWaitSpy.calledOnce).to.be.true;
-    expect(hideWaitSpy.calledOnce).to.be.true;
     expect(reloaded).to.be.true;
+    expect(showToastSpy.calledWith('Preview successfully updated, reloading...', 'positive')).to.be.true;
   });
 
   it('reload handles failure', async () => {
     const { sandbox } = sidekickTest;
     const updateStub = sandbox.stub(appStore, 'update')
-      .resolves(new Response('', { status: 500, headers: {} }));
-    const showWaitSpy = sandbox.spy(appStore, 'showWait');
-
-    const modalSpy = sandbox.spy(appStore, 'showModal');
+      .resolves(new Response('Error Message', { status: 500, headers: {} }));
 
     await sidekickTest.awaitEnvSwitcher();
 
@@ -109,15 +104,10 @@ describe('Reload plugin', () => {
 
     reloadPlugin.click();
 
-    await waitUntil(() => updateStub.calledOnce === true);
+    await waitUntil(() => updateStub.calledOnce);
 
     expect(updateStub.calledOnce).to.be.true;
-    expect(showWaitSpy.calledOnce).to.be.true;
-
-    expect(modalSpy.calledTwice).to.be.true;
-    expect(modalSpy.args[0][0].type).to.equal(MODALS.WAIT);
-    expect(modalSpy.args[1][0].type).to.equal(MODALS.ERROR);
-
+    expect(showToastSpy.calledWith('Reloading failed. Please try again later.', 'negative')).to.be.true;
     expect(reloaded).to.be.false;
   });
 });

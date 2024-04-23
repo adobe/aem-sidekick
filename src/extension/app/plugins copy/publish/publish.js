@@ -38,7 +38,6 @@ export function createPublishPlugin(appStore) {
         const { location } = appStore;
         const path = location.pathname;
         appStore.setState(SIDEKICK_STATE.PUBLISHNG);
-        appStore.showWait();
         const res = await appStore.publish(path);
         if (res.ok) {
           const actionCallback = () => {

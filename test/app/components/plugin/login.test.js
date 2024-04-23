@@ -18,7 +18,7 @@ import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import '../../../../src/extension/index.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { HelixMockEnvironments } from '../../../mocks/environment.js';
-import { MODALS } from '../../../../src/extension/app/constants.js';
+import { SIDEKICK_STATE } from '../../../../src/extension/app/constants.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 
 /**
@@ -45,9 +45,13 @@ describe('Login', () => {
    */
   let appStore;
 
+  let setStateSpy;
+
   beforeEach(async () => {
     appStore = new AppStore();
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+
+    setStateSpy = sidekickTest.sandbox.spy(appStore, 'setState');
 
     sidekickTest
       .mockFetchStatusSuccess()
@@ -64,35 +68,37 @@ describe('Login', () => {
     async function login() {
       // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
-      const modalSpy = sidekickTest.sandbox.spy(appStore, 'showModal');
 
       sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitStatusFetched();
 
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
       const loginButton = recursiveQuery(sidekick, 'login-button');
 
       const loginActionButton = recursiveQuery(loginButton, 'sp-action-button');
-
       await waitUntil(() => loginActionButton.getAttribute('disabled') === null);
 
       expect(loginActionButton).to.exist;
       expect(loginActionButton.textContent).to.eq('Sign in');
 
-      sidekickTest.mockFetchStatusSuccess(true);
+      sidekickTest
+        .mockFetchStatusSuccess(true)
+        .mockFetchSidekickConfigSuccess();
       loginActionButton.click();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'sp-dialog-wrapper'));
-      await waitUntil(() => recursiveQuery(sidekick, 'sp-dialog-wrapper') === undefined);
-      await waitUntil(() => recursiveQuery(loginButton, 'sp-menu-item.user'));
+      await waitUntil(() => appStore.state === SIDEKICK_STATE.LOGGING_IN);
+      await waitUntil(() => appStore.status.profile !== undefined, 'Profile not loaded', { timeout: 10000 });
 
-      expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0].type).to.equal(MODALS.WAIT);
       expect(openStub.calledOnce).to.be.true;
     }
 
     it('Successful login ', async () => {
       await login();
-    }).timeout(20000);
+      await waitUntil(() => appStore.state === SIDEKICK_STATE.READY);
+
+      expect(setStateSpy.calledWith(SIDEKICK_STATE.FETCHING_STATUS)).to.be.true;
+      expect(setStateSpy.calledWith(SIDEKICK_STATE.LOGGING_IN)).to.be.true;
+    });
 
     it('Successful logout ', async () => {
       await login();
@@ -105,11 +111,43 @@ describe('Login', () => {
       await waitUntil(() => accountMenu.getAttribute('open') !== null);
 
       sidekickTest
+        .mockFetchStatusUnauthorized()
         .mockFetchProfileUnauthorized();
 
       const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
       logoutButton.click();
-      await waitUntil(() => recursiveQuery(sidekick, 'sp-dialog-wrapper'));
+
+      await waitUntil(() => appStore.state === SIDEKICK_STATE.LOGGING_OUT);
+      await sidekickTest.awaitLoggedOut();
+      await waitUntil(() => appStore.state === SIDEKICK_STATE.LOGIN_REQUIRED);
+    }).timeout(20000);
+
+    it('Unauthorized after login ', async () => {
+      // @ts-ignore
+      const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitStatusFetched();
+
+      await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
+      const loginButton = recursiveQuery(sidekick, 'login-button');
+
+      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button');
+      await waitUntil(() => loginActionButton.getAttribute('disabled') === null);
+
+      expect(loginActionButton).to.exist;
+      expect(loginActionButton.textContent).to.eq('Sign in');
+
+      sidekickTest
+        .mockFetchProfileSuccess()
+        .mockFetchStatusForbiddenWithProfile()
+        .mockFetchSidekickConfigForbidden();
+      loginActionButton.click();
+
+      await waitUntil(() => appStore.state === SIDEKICK_STATE.LOGGING_IN);
+
+      expect(openStub.calledOnce).to.be.true;
+      await waitUntil(() => appStore.state === SIDEKICK_STATE.UNAUTHORIZED, '', { timeout: 10000 });
     }).timeout(20000);
   });
 });

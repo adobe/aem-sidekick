@@ -661,8 +661,11 @@
     "reload_success": {
       "message": "Preview successfully updated, reloading..."
     }, 
+    "preview_success": {
+      "message": "Preview successful, opening preview..."
+    }, 
     "publish_success": {
-      "message": "Publish successful, reloading..."
+      "message": "Publish successful, opening publish..."
     }, 
     "fetching_status_state": {
       "message": "Loading status"

@@ -85,7 +85,7 @@ export class ModalContainer extends LitElement {
 
   firstUpdated() {
     const dialogWrapper = this.shadowRoot.querySelector('sp-dialog-wrapper');
-    dialogWrapper.addEventListener(MODAL_EVENTS.CLOSE, () => {
+    dialogWrapper?.addEventListener(MODAL_EVENTS.CLOSE, () => {
       this.remove();
     });
   }
@@ -162,15 +162,6 @@ export class ModalContainer extends LitElement {
     const { type, data } = modal;
     const options = {};
     switch (type) {
-      case MODALS.WAIT:
-        options.dismissable = false;
-        options.content = html`
-          <div class="wait-dialog">
-            <sp-progress-circle label=${data.message} indeterminate></sp-progress-circle>
-            <span>${data.message}</span>
-          </div>
-        `;
-        break;
       case MODALS.ERROR:
         options.dismissable = false;
         options.headline = data?.headline ?? this.appStore.i18n('error');

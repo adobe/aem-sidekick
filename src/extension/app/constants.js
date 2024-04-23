@@ -56,7 +56,6 @@ export const EXTERNAL_EVENTS = {
  * @enum {string}
  */
 export const MODALS = {
-  WAIT: 'wait',
   ERROR: 'error',
   DELETE: 'delete',
   PLUGIN_LIST: 'plugin-list',

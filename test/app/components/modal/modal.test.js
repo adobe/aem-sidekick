@@ -16,7 +16,6 @@
 import {
   expect, waitUntil, aTimeout,
 } from '@open-wc/testing';
-import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
 import { MODALS, MODAL_EVENTS } from '../../../../src/extension/app/constants.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
@@ -27,10 +26,6 @@ import { SidekickTest } from '../../../sidekick-test.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
-
-/**
- * @typedef {import('../../../../src/extension/app/components/modal/modal-container.js').ModalContainer} ModalContainer
- */
 
 /**
  * The AEMSidekick object type
@@ -67,28 +62,6 @@ describe('Modals', () => {
 
   afterEach(() => {
     sidekickTest.destroy();
-  });
-
-  it('renders wait modal and closes', async () => {
-    sidekick = sidekickTest.createSidekick();
-
-    await sidekickTest.awaitEnvSwitcher();
-    appStore.showModal({
-      type: MODALS.WAIT,
-      data: {
-        message: 'test',
-      },
-    });
-
-    const modal = recursiveQuery(sidekick, 'modal-container');
-
-    await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
-    const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
-    expect(dialogWrapper.getAttribute('open') === '').to.be.true;
-
-    EventBus.instance.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
-
-    expect(modal.modal).to.be.undefined;
   });
 
   it('displays error modal', async () => {

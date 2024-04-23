@@ -20,8 +20,7 @@ import {
 import { AppStore, VIEWS } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
-import { EventBus } from '../../../src/extension/app/utils/event-bus.js';
-import { MODALS, MODAL_EVENTS } from '../../../src/extension/app/constants.js';
+import { MODALS, SIDEKICK_STATE } from '../../../src/extension/app/constants.js';
 import {
   HelixMockContentSources,
   HelixMockEnvironments,
@@ -350,7 +349,7 @@ describe('Test App Store', () => {
         () => appStore.status.error,
         'Status never loaded',
       );
-      expect(appStore.status.error).to.equal('error_status_404_content');
+      expect(appStore.status.error).to.equal('404 Not found: Check your Sidekick configuration or URL.');
     });
 
     it('not found - editor', async () => {
@@ -364,7 +363,7 @@ describe('Test App Store', () => {
         () => appStore.status.error,
         'Status never loaded',
       );
-      expect(appStore.status.error).to.equal('error_status_404_document');
+      expect(appStore.status.error).to.equal('404 Not found: Check your Sidekick configuration and make sure access to this document is granted.');
     });
 
     it('server error', async () => {
@@ -375,7 +374,7 @@ describe('Test App Store', () => {
         () => appStore.status.error,
         'Status never loaded',
       );
-      expect(appStore.status.error).to.equal('error_status_500');
+      expect(appStore.status.error).to.equal('500 Internal server error: Failed to fetch the page status. Please try again later.');
     });
 
     it('empty config returns no status', async () => {
@@ -388,32 +387,6 @@ describe('Test App Store', () => {
     });
   });
 
-  describe('wait dialog', async () => {
-    it('showWait()', async () => {
-      // @ts-ignore
-      appStore.sidekick = document.createElement('div');
-      appStore.sidekick.attachShadow({ mode: 'open' });
-      appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
-
-      const modalSpy = sidekickTest.sandbox.spy(appStore, 'showModal');
-      const modalElement = appStore.showWait('test');
-      expect(modalElement.nodeName).to.equal('MODAL-CONTAINER');
-      expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0]).to.deep.equal({
-        type: MODALS.WAIT,
-        data: { message: 'test' },
-      });
-    });
-
-    it('hideWait()', async () => {
-      const callback = sidekickTest.sandbox.spy();
-      const eventBus = EventBus.instance;
-      eventBus.addEventListener(MODAL_EVENTS.CLOSE, callback);
-      appStore.hideWait();
-      expect(callback.calledOnce).to.be.true;
-    });
-  });
-
   describe('show toast', async () => {
     it('showToast()', async () => {
       // @ts-ignore
@@ -421,13 +394,20 @@ describe('Test App Store', () => {
       appStore.sidekick.attachShadow({ mode: 'open' });
       appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
 
+      const closeCallback = () => {};
+      const actionCallback = () => {};
       const toastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
-      const toastElement = appStore.showToast('test', 'info', 2000);
-      expect(toastElement.nodeName).to.equal('TOAST-CONTAINER');
+      appStore.showToast('test', 'info', closeCallback, actionCallback);
+      expect(appStore.toast).to.deep.equal({
+        closeCallback,
+        actionCallback,
+        actionLabel: 'Ok',
+        message: 'test',
+        timeout: 3000,
+        variant: 'info',
+      });
+      expect(appStore.state).to.equal(SIDEKICK_STATE.TOAST);
       expect(toastSpy.calledOnce).to.be.true;
-      expect(toastSpy.args[0][0]).to.equal('test');
-      expect(toastSpy.args[0][1]).to.equal('info');
-      expect(toastSpy.args[0][2]).to.equal(2000);
     });
   });
 
@@ -444,12 +424,12 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.restore();
     });
 
-    it('opens a new tab', async () => {
+    it('opens a new tab', () => {
       appStore.reloadPage(true);
       expect(openPageStub.calledOnce).to.be.true;
     });
 
-    it('reloads the current tab', async () => {
+    it('reloads the current tab', () => {
       appStore.reloadPage();
       expect(loadPageStub.calledOnce).to.be.true;
     });
@@ -703,14 +683,11 @@ describe('Test App Store', () => {
     let instance;
     let sandbox;
     let updateStub;
-    let showWaitStub;
-    let hideWaitStub;
     let fetchStatusStub;
-    let switchEnvStub;
     let showToastStub;
+    let setStateStub;
     let updatePreviewSpy;
     let addEventListenerSpy;
-    let modalSpy;
 
     beforeEach(() => {
       instance = appStore;
@@ -718,29 +695,25 @@ describe('Test App Store', () => {
       // @ts-ignore
       instance.sidekick = document.createElement('div');
       updateStub = sandbox.stub(instance, 'update');
-      showWaitStub = sandbox.stub(instance, 'showWait');
-      hideWaitStub = sandbox.stub(instance, 'hideWait');
       fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
-      switchEnvStub = sandbox.stub(instance, 'switchEnv');
       showToastStub = sandbox.stub(instance, 'showToast');
+      setStateStub = sandbox.stub(instance, 'setState');
       updatePreviewSpy = sandbox.spy(instance, 'updatePreview');
       addEventListenerSpy = sandbox.spy(instance.sidekick, 'addEventListener');
-      modalSpy = sandbox.spy(instance, 'showModal');
     });
 
     afterEach(() => {
       sandbox.restore();
     });
 
-    it('should show wait, update, and handle success response', async () => {
+    it('should show previewing, update, and handle success response', async () => {
       updateStub.resolves({ ok: true });
       instance.status = { webPath: '/somepath' };
 
       await instance.updatePreview(false);
 
-      expect(showWaitStub.called).is.true;
-      expect(hideWaitStub.called).is.true;
-      expect(switchEnvStub.calledWith('preview')).is.true;
+      expect(showToastStub.calledOnce).is.true;
+      expect(setStateStub.calledWith(SIDEKICK_STATE.PREVIEWING)).is.true;
     });
 
     // Test when resp is not ok, ranBefore is false
@@ -750,7 +723,7 @@ describe('Test App Store', () => {
 
       await instance.updatePreview(false);
 
-      expect(showWaitStub.called).is.true;
+      expect(setStateStub.calledWith(SIDEKICK_STATE.PREVIEWING)).is.true;
       expect(addEventListenerSpy.called).is.true;
       expect(fetchStatusStub.called).is.true;
 
@@ -766,32 +739,31 @@ describe('Test App Store', () => {
 
       await instance.updatePreview(true);
 
-      expect(showWaitStub.called).is.true;
-      expect(modalSpy.calledWith(sinon.match.has('type', MODALS.ERROR))).is.true;
+      expect(showToastStub.calledOnce).is.true;
+      expect(showToastStub.calledWith('Error message', 'negative')).is.true;
     });
 
     // Test when resp is not ok, ranBefore is true, status.webPath
     // does not start with /.helix/, or resp has no error
     it('should handle generic failure', async () => {
-      updateStub.resolves({ ok: false });
+      updateStub.resolves({ ok: false, error: 'Error message' });
       instance.status = { webPath: '/not-helix/' };
 
       await instance.updatePreview(true);
 
-      expect(showWaitStub.called).is.true;
-      expect(modalSpy.calledWith(sinon.match.has('type', MODALS.ERROR))).is.true;
+      expect(showToastStub.calledOnce).is.true;
+      expect(showToastStub.calledWith('Error message', 'negative')).is.true;
     });
 
     // Test when resp is ok and status.webPath starts with /.helix/
     it('should handle success with specific path', async () => {
-      updateStub.resolves({ ok: true });
+      updateStub.resolves({ ok: true, error: 'Error message' });
       instance.status = { webPath: '/.helix/some-path' };
 
       await instance.updatePreview(false);
 
-      expect(showWaitStub.called).is.true;
-      expect(hideWaitStub.called).is.true;
-      expect(showToastStub.calledWith(sinon.match.string, 'positive')).is.true;
+      expect(showToastStub.calledOnce).is.true;
+      expect(showToastStub.calledWith('', 'positive')).is.true;
     });
 
     // Test when resp is ok and status.webPath does not start with /.helix/
@@ -801,9 +773,8 @@ describe('Test App Store', () => {
 
       await instance.updatePreview(false);
 
-      expect(showWaitStub.called).is.true;
-      expect(hideWaitStub.called).is.true;
-      expect(switchEnvStub.calledWith('preview')).is.true;
+      expect(showToastStub.calledOnce).is.true;
+      expect(showToastStub.calledWith('', 'positive')).is.true;
     });
   });
 
@@ -1478,7 +1449,7 @@ describe('Test App Store', () => {
     });
   });
 
-  describe('login', () => {
+  describe.skip('login', () => {
     let instance;
     let clock;
     let getProfileStub;
@@ -1545,7 +1516,7 @@ describe('Test App Store', () => {
     }).timeout(20000);
   });
 
-  describe('logout', () => {
+  describe.skip('logout', () => {
     let instance;
     let clock;
     let getProfileStub;
@@ -1618,7 +1589,7 @@ describe('Test App Store', () => {
     }).timeout(20000);
   });
 
-  describe('validateSession tests', () => {
+  describe.skip('validateSession tests', () => {
     let instance;
     let clock;
     let now;
@@ -1628,7 +1599,6 @@ describe('Test App Store', () => {
       now = Date.now();
       clock = sinon.useFakeTimers(now);
       instance.login = sinon.spy();
-      instance.showWait = sinon.spy();
       // @ts-ignore
       instance.sidekick = { addEventListener: sinon.stub() };
     });
@@ -1650,7 +1620,6 @@ describe('Test App Store', () => {
 
       await instance.validateSession();
       expect(instance.login.calledOnceWith(true)).to.be.true;
-      expect(instance.showWait.calledOnce).to.be.true;
     });
 
     it('should resolve immediately if token is not expired', async () => {

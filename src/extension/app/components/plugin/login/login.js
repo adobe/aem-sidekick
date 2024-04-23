@@ -102,17 +102,17 @@ export class LoginButton extends ConnectedElement {
 
   renderLogin() {
     const { profile } = this.appStore.status;
-    const showLogin = !profile && !this.appStore.siteStore.authorized;
     const authenticated = this.appStore.isAuthenticated();
 
-    if (!showLogin && !authenticated) {
-      // eslint-disable-next-line wc/no-self-class
-      this.classList.add('no-login');
+    if ((!this.appStore.status.webPath && this.appStore.status?.status !== 401)
+      || this.appStore.state === SIDEKICK_STATE.LOGGING_IN
+      || this.appStore.state === SIDEKICK_STATE.LOGGING_OUT) {
+      return html``;
     }
 
-    if (this.appStore.state === SIDEKICK_STATE.LOGIN_REQUIRED) {
+    if (!authenticated) {
       return html`<sp-action-button quiet class="login" @click=${this.login}>${this.appStore.i18n('user_login')}</sp-action-button>`;
-    } else if (authenticated) {
+    } else {
       return html`
         <sp-action-menu
           selects="single"
@@ -136,8 +136,6 @@ export class LoginButton extends ConnectedElement {
         </sp-action-menu>
       `;
     }
-
-    return html``;
   }
 
   render() {

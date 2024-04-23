@@ -68,7 +68,6 @@ export function createUnpublishPlugin(appStore) {
           appStore.setState(SIDEKICK_STATE.UNPUBLISHING);
           try {
             const resp = await appStore.unpublish();
-            appStore.hideWait();
             if (resp.ok) {
               // show success toast
               appStore.showToast(

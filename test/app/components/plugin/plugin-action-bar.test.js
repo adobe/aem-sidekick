@@ -522,9 +522,7 @@ describe('Plugin action bar', () => {
 
       const loginButton = recursiveQuery(systemActionGroup, 'login-button');
       expect(loginButton).to.exist;
-      expect(loginButton.classList.length).to.equal(2);
       expect(loginButton.classList.contains('not-authorized')).to.be.true;
-      expect(loginButton.classList.contains('no-login')).to.be.true;
 
       const logo = recursiveQuery(systemActionGroup, 'svg');
       expect(logo).to.exist;

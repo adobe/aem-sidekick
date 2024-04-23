@@ -26,8 +26,6 @@ import {
   ENVS,
   EVENTS,
   EXTERNAL_EVENTS,
-  MODALS,
-  MODAL_EVENTS,
   RESTRICTED_PATHS,
   SIDEKICK_STATE,
 } from '../constants.js';
@@ -613,28 +611,6 @@ export class AppStore {
   }
 
   /**
-   * Displays a wait modal
-   * @param {string} [message] The message to display
-   */
-  showWait(message) {
-    if (!message) {
-      message = this.i18n('please_wait');
-    }
-
-    return this.showModal({
-      type: MODALS.WAIT,
-      data: { message },
-    });
-  }
-
-  /**
-   * Hides the modal
-   */
-  hideWait() {
-    EventBus.instance.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
-  }
-
-  /**
    * Opens a new page. Abstracted for testing.
    * @param {string} url The URL to open
    * @param {string} [name] The window name (optional)
@@ -861,28 +837,15 @@ export class AppStore {
       })
       .then((json) => this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, json))
       .catch(({ message }) => {
-        this.status.error = message;
-        // TODO: Setup modals
-        // const modal = {
-        //   message: message.startsWith('error_') ? i18n(this, message) : [
-        //     i18n(this, 'error_status_fatal'),
-        //     'https://status.hlx.live/',
-        //   ],
-        //   sticky: true,
-        //   level: 0,
-        //   callback: () => {
-        //     // this error is fatal, hide and delete sidekick
-        //     if (window.hlx.sidekick) {
-        //       window.hlx.sidekick.hide();
-        //       window.hlx.sidekick.replaceWith(''); // remove() doesn't work for custom element
-        //       delete window.hlx.sidekick;
-        //     }
-        //   },
-        // };
-        // this.showModal(modal);
+        const error = message.startsWith('error_') ? this.i18n(message) : this.i18n('error_status_fatal');
+        this.status.error = error;
+        this.showToast(error, 'negative');
       })
       .finally(() => {
-        this.setState();
+        // Don't set a state if a toast is shown
+        if (!this.toast) {
+          this.setState();
+        }
       });
   }
 
@@ -975,8 +938,17 @@ export class AppStore {
       this.setState();
       return;
     }
-    this.setState();
-    this.switchEnv('preview');
+
+    const actionCallback = () => {
+      this.setState();
+      this.switchEnv('preview');
+    };
+
+    const closeCallback = () => {
+      this.closeToast();
+    };
+
+    this.showToast(this.i18n('preview_success'), 'positive', closeCallback, actionCallback, 'Open');
   }
 
   /**
@@ -1209,7 +1181,6 @@ export class AppStore {
    * @fires Sidekick#envswitched
    */
   switchEnv(targetEnv, open = false) {
-    this.showWait();
     const hostType = ENVS[targetEnv];
     if (!hostType) {
       // eslint-disable-next-line no-console
@@ -1262,7 +1233,6 @@ export class AppStore {
       sourceUrl: href,
       targetUrl: envUrl,
     });
-    this.hideWait();
   }
 
   /**
@@ -1321,14 +1291,13 @@ export class AppStore {
         if (this.status.profile) {
           // logged in, stop checking
           delete status.status;
-          this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
+          this.sidekick.addEventListener('statusfetched', () => this.setState(), { once: true });
           await this.siteStore.initStore(siteStore);
           this.siteStore.authTokenExpiry = (
             window.hlx
             && window.hlx.sidekickConfig
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
-          // encourageLogin(sk, false);
           this.fetchStatus();
           this.fireEvent('loggedin');
           return;
@@ -1370,7 +1339,6 @@ export class AppStore {
         if (!this.status.profile) {
           delete this.status.profile;
           delete this.siteStore.authTokenExpiry;
-          this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
           this.siteStore.authorized = false;
           this.setupPlugins();
           this.fetchStatus();
@@ -1378,12 +1346,7 @@ export class AppStore {
           return;
         }
         if (attempts >= 5) {
-          this.showModal({
-            type: MODALS.ERROR,
-            data: {
-              message: this.i18n('error_logout_error'),
-            },
-          });
+          this.showToast(this.i18n('error_logout_error'), 'negative');
           return;
         }
       }
@@ -1409,8 +1372,6 @@ export class AppStore {
         // token is expired
         this.login(true);
         this.sidekick.addEventListener('statusfetched', () => {
-          // wait will be hidden by login, show again
-          this.showWait();
           resolve();
         }, { once: true });
       } else {

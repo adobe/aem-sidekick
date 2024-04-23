@@ -20,7 +20,6 @@ import { AppStore } from '../../../../src/extension/app/store/app.js';
 import {
   HelixMockEnvironments,
 } from '../../../mocks/environment.js';
-import { MODALS } from '../../../../src/extension/app/constants.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 
 /**
@@ -67,8 +66,7 @@ describe('Publish plugin', () => {
 
       const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
       const switchEnvStub = sandbox.stub(appStore, 'switchEnv').returns();
-      const showWaitSpy = sandbox.spy(appStore, 'showWait');
-      const hideWaitSpy = sandbox.spy(appStore, 'hideWait');
+      const showToastSpy = sandbox.spy(appStore, 'showToast');
 
       sidekick = sidekickTest.createSidekick();
 
@@ -79,13 +77,11 @@ describe('Publish plugin', () => {
       await waitUntil(() => publishPlugin.getAttribute('disabled') === null);
       publishPlugin.click();
 
-      await waitUntil(() => publishStub.calledOnce === true);
+      await waitUntil(() => publishStub.calledOnce);
+      await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
 
-      expect(publishStub.calledOnce).to.be.true;
-      expect(switchEnvStub.calledOnce).to.be.true;
-      expect(showWaitSpy.calledOnce).to.be.true;
-      expect(hideWaitSpy.calledOnce).to.be.true;
-    });
+      expect(showToastSpy.calledWith('Publish successful, opening publish...', 'positive')).to.be.true;
+    }).timeout(15000);
 
     it('publish from preview - failure', async () => {
       const { sandbox } = sidekickTest;
@@ -93,9 +89,7 @@ describe('Publish plugin', () => {
         .mockFetchSidekickConfigSuccess();
 
       const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: false, status: 500 });
-      const showWaitSpy = sandbox.spy(appStore, 'showWait');
-
-      const modalSpy = sandbox.spy(appStore, 'showModal');
+      const showToastSpy = sandbox.spy(appStore, 'showToast');
 
       sidekick = sidekickTest.createSidekick();
 
@@ -106,14 +100,10 @@ describe('Publish plugin', () => {
 
       publishPlugin.click();
 
-      await waitUntil(() => publishStub.calledOnce === true);
+      await waitUntil(() => publishStub.calledOnce);
 
       expect(publishStub.calledOnce).to.be.true;
-      expect(showWaitSpy.calledOnce).to.be.true;
-
-      expect(modalSpy.calledTwice).to.be.true;
-      expect(modalSpy.args[0][0].type).to.equal(MODALS.WAIT);
-      expect(modalSpy.args[1][0].type).to.equal(MODALS.ERROR);
+      expect(showToastSpy.calledWith('Publication failed. Please try again later.', 'negative')).to.be.true;
     });
   });
 });
