@@ -10,62 +10,18 @@
  * governing permissions and limitations under the License.
  */
 
-import { html, css } from 'lit';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { ICONS, SIDEKICK_STATE } from '../../../constants.js';
 import { ConnectedElement } from '../../connected-element/connected-element.js';
+import { style } from './activity-action.css.js';
 
 @customElement('activity-action')
 export class ActivityAction extends ConnectedElement {
-  static styles = css`
-    :host {
-      width: 100%;
-    }
-    .container {
-      display: flex;
-      align-items: center;
-      height: 100%;
-      gap: 12px;
-    }
-    .container span {
-      padding-bottom: 2px;
-    }
-    .toast-container {
-      color: #fff;
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-      width: 100%;
-    }
-    .toast-container .message {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-grow: 1;
-    }
-    .toast-container .actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .toast-container .actions sp-action-button {
-      color: #fff;
-      border-radius: 16px;
-      --highcontrast-actionbutton-background-color-hover: #fff4;
-      --highcontrast-actionbutton-background-color-active: #fff2;
-    }
-    .toast-container .actions sp-action-button.close {
-      color: #fff;
-    }
-    .toast-container .actions sp-action-button.action {
-      --highcontrast-actionbutton-background-color-default: #fff2;
-      height: 100%;
-      min-height: 32px;
-      min-width: 65px;
-      padding-bottom: 2px;
-    }
-  `;
+  static get styles() {
+    return [style];
+  }
 
   /**
    * Listen for state changes
