@@ -117,7 +117,7 @@ export class PluginActionBar extends MobxLitElement {
           this.requestUpdate();
           this.shadowRoot.firstElementChild.classList.remove('resizing');
         }
-      }, 100);
+      }, 200);
     });
   }
 
