@@ -105,6 +105,7 @@ export class PluginActionBar extends MobxLitElement {
   firstUpdated() {
     window.addEventListener('resize', () => {
       this.resizing = Date.now();
+      this.shadowRoot.firstElementChild.classList.add('resizing');
       window.setTimeout(() => {
         if (this.resizing + 100 < Date.now()) {
           this.resizing = 0;
@@ -114,6 +115,7 @@ export class PluginActionBar extends MobxLitElement {
             this.transientPlugins = [];
           }
           this.requestUpdate();
+          this.shadowRoot.firstElementChild.classList.remove('resizing');
         }
       }, 100);
     });
