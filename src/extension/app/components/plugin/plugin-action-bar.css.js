@@ -17,6 +17,11 @@ import { css } from 'lit';
 export const style = css`
   action-bar sp-action-group {
     padding: 12px;
+    flex-wrap: nowrap;
+  }
+
+  action-bar sp-action-group div.plugin-container {
+    overflow-x: hidden;
   }
 
   action-bar sp-action-group:first-of-type {
@@ -24,15 +29,49 @@ export const style = css`
   }
 
   action-bar sp-action-group.not-authorized {
-    padding: 0px;
+    padding: 0;
   }
 
   action-bar .plugin-container {
     width: auto;
   }
 
-  action-bar sp-action-group > svg {
+  action-bar sp-action-group:last-of-type > svg {
     width: 32px;
     height: 32px;
+  }
+
+  action-bar.resizing > sp-menu-divider,
+  action-bar.resizing > sp-action-group:last-of-type {
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+  }
+
+  action-bar sp-action-group .filler {
+    flex-grow: 1;
+  }
+
+  #plugin-menu {
+    width: max-content;
+  }
+
+  action-bar action-bar-picker sp-menu-item {
+    min-width: 120px;
+  }
+
+  #plugin-menu sp-menu-group [slot="header"] {
+    text-transform: uppercase;
+    font-size: var(--spectrum-global-dimension-font-size-75);
+    color: var(--spectrum-global-color-gray-600);
+  }
+
+  #plugin-menu sp-menu-group sp-menu-item {
+    padding-left: 24px;
+  }
+
+  @media (max-width: 800px) {
+    #properties {
+      display: none;
+    }
   }
 `;

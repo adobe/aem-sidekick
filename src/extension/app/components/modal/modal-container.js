@@ -197,15 +197,6 @@ export class ModalContainer extends LitElement {
           </div>
         `;
         break;
-      case MODALS.PLUGIN_LIST:
-        options.dismissable = false;
-        options.underlay = true;
-        options.closeOnUnderlayClick = true;
-        options.headline = '';
-        options.content = html`
-          <plugin-list></plugin-list>
-        `;
-        break;
       default:
         this.cleanup();
         return html``;

@@ -26,6 +26,12 @@ export class ActionBar extends LitElement {
       backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
       -webkit-backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
     }
+
+    @media (max-width: 600px) {
+      .action-bar {
+        border-radius: 0;
+      }
+    }
   `;
 
   render() {
