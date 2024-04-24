@@ -41,12 +41,6 @@ export const style = css`
     height: 32px;
   }
 
-  action-bar.resizing > sp-menu-divider,
-  action-bar.resizing > sp-action-group:last-of-type {
-    opacity: 0;
-    transition: opacity 0.2s ease-out;
-  }
-
   action-bar sp-action-group .filler {
     flex-grow: 1;
   }

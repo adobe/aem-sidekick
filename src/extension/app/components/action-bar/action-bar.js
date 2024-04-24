@@ -25,6 +25,7 @@ export class ActionBar extends LitElement {
       box-shadow: var(--spectrum2-sidekick-box-shadow);
       backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
       -webkit-backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
+      overflow: hidden;
     }
 
     @media (max-width: 600px) {
