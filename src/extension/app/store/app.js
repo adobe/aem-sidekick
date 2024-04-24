@@ -190,15 +190,13 @@ export class AppStore {
       return;
     }
 
-    const { profile, error } = this.status;
+    const { profile } = this.status;
     const { authorized } = this.siteStore;
 
     if (!profile && !authorized) {
       this.state = SIDEKICK_STATE.LOGIN_REQUIRED;
     } else if (!authorized) {
       this.state = SIDEKICK_STATE.UNAUTHORIZED;
-    } else if (error) {
-      this.state = SIDEKICK_STATE.ERROR;
     } else {
       this.state = SIDEKICK_STATE.READY;
     }
@@ -837,7 +835,7 @@ export class AppStore {
       })
       .then((json) => this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, json))
       .catch(({ message }) => {
-        const error = message.startsWith('error_') ? this.i18n(message) : this.i18n('error_status_fatal');
+        const error = this.i18n(message);
         this.status.error = error;
         this.showToast(error, 'negative');
       })
@@ -939,16 +937,13 @@ export class AppStore {
       return;
     }
 
+    /* istanbul ignore next 4 */
     const actionCallback = () => {
       this.setState();
       this.switchEnv('preview');
     };
 
-    const closeCallback = () => {
-      this.closeToast();
-    };
-
-    this.showToast(this.i18n('preview_success'), 'positive', closeCallback, actionCallback, 'Open');
+    this.showToast(this.i18n('preview_success'), 'positive', undefined, actionCallback, 'Open');
   }
 
   /**

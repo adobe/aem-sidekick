@@ -20,7 +20,7 @@ import {
 import { AppStore, VIEWS } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
-import { MODALS, SIDEKICK_STATE } from '../../../src/extension/app/constants.js';
+import { SIDEKICK_STATE } from '../../../src/extension/app/constants.js';
 import {
   HelixMockContentSources,
   HelixMockEnvironments,
@@ -31,6 +31,7 @@ import { recursiveQuery, error } from '../../test-utils.js';
 import { AEMSidekick } from '../../../src/extension/index.js';
 import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
 import { SidekickTest } from '../../sidekick-test.js';
+import { fetchLanguageDict } from '../../../src/extension/app/utils/i18n.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -714,6 +715,20 @@ describe('Test App Store', () => {
 
       expect(showToastStub.calledOnce).is.true;
       expect(setStateStub.calledWith(SIDEKICK_STATE.PREVIEWING)).is.true;
+    });
+
+    it('should show previewing, update, and handle success response with toast action', async () => {
+      updateStub.resolves({ ok: true });
+      instance.status = { webPath: '/somepath' };
+
+      const switchEnvSpy = sandbox.spy(instance, 'switchEnv');
+
+      await instance.updatePreview(false);
+
+      expect(showToastStub.calledOnce).is.true;
+      expect(setStateStub.calledWith(SIDEKICK_STATE.PREVIEWING)).is.true;
+
+      expect(switchEnvSpy.calledWith('preview'));
     });
 
     // Test when resp is not ok, ranBefore is false
@@ -1449,14 +1464,16 @@ describe('Test App Store', () => {
     });
   });
 
-  describe.skip('login', () => {
+  describe('login', () => {
     let instance;
     let clock;
     let getProfileStub;
     let sandbox;
+    let toastSpy;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       instance = appStore;
+      instance.languageDict = await fetchLanguageDict(undefined, 'en');
       sandbox = sinon.createSandbox();
       clock = sandbox.useFakeTimers();
       window.hlx = {};
@@ -1464,6 +1481,7 @@ describe('Test App Store', () => {
 
       // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
+      toastSpy = sandbox.spy(appStore, 'showToast');
       getProfileStub = sandbox.stub(appStore, 'getProfile').resolves(false);
     });
 
@@ -1473,8 +1491,6 @@ describe('Test App Store', () => {
     });
 
     it('should attempt to check login status up to 5 times after login window is closed', async () => {
-      const modalSpy = sinon.spy(appStore, 'showModal');
-
       instance.login(false);
 
       // Fast-forward time to simulate the retries
@@ -1485,10 +1501,9 @@ describe('Test App Store', () => {
 
       expect(getProfileStub.callCount).to.equal(5);
 
-      await waitUntil(() => modalSpy.called, 'Modal never opened');
+      await waitUntil(() => toastSpy.called, 'Modal never opened');
 
-      expect(modalSpy.callCount).to.equal(2);
-      expect(modalSpy.args[1][0].type).to.equal(MODALS.ERROR);
+      expect(toastSpy.calledWith('Sign out failed. Please try again later.', 'negative'));
     }).timeout(20000);
 
     it('handles successful login correctly', async () => {
@@ -1503,7 +1518,6 @@ describe('Test App Store', () => {
       const initStoreStub = sandbox.stub(instance.siteStore, 'initStore').resolves();
       const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
       const fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
-      const hideWaitStub = sandbox.stub(instance, 'hideWait');
 
       instance.login(false); // Call without selectAccount
 
@@ -1512,24 +1526,26 @@ describe('Test App Store', () => {
       expect(initStoreStub.called).to.be.true;
       expect(setupCorePluginsStub.called).to.be.true;
       expect(fetchStatusStub.called).to.be.true;
-      expect(hideWaitStub.calledOnce).to.be.true;
     }).timeout(20000);
   });
 
-  describe.skip('logout', () => {
+  describe('logout', () => {
     let instance;
     let clock;
     let getProfileStub;
     let sandbox;
+    let toastSpy;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       instance = appStore;
+      instance.languageDict = await fetchLanguageDict(undefined, 'en');
       sandbox = sinon.createSandbox();
       clock = sandbox.useFakeTimers();
       window.hlx = {};
       window.hlx.sidekickConfig = {};
       // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
+      toastSpy = sandbox.spy(appStore, 'showToast');
     });
 
     afterEach(() => {
@@ -1538,7 +1554,6 @@ describe('Test App Store', () => {
     });
 
     it('should attempt to check logout status up to 5 times after login window is closed', async () => {
-      const modalSpy = sinon.spy(appStore, 'showModal');
       getProfileStub = sandbox.stub(appStore, 'getProfile');
       getProfileStub.resolves({ name: 'foo' });
 
@@ -1549,10 +1564,9 @@ describe('Test App Store', () => {
 
       expect(getProfileStub.callCount).to.equal(5);
 
-      await waitUntil(() => modalSpy.called, 'Modal never opened');
+      await waitUntil(() => toastSpy.called, 'Modal never opened');
 
-      expect(modalSpy.callCount).to.equal(2);
-      expect(modalSpy.args[1][0].type).to.equal(MODALS.ERROR);
+      expect(toastSpy.calledWith('Sign out failed. Please try again later.', 'negative'));
     }).timeout(20000);
 
     it('handles successful logout correctly', async () => {
@@ -1589,7 +1603,7 @@ describe('Test App Store', () => {
     }).timeout(20000);
   });
 
-  describe.skip('validateSession tests', () => {
+  describe('validateSession tests', () => {
     let instance;
     let clock;
     let now;

@@ -105,7 +105,6 @@ export const SIDEKICK_STATE = {
   UNPUBLISHING: 'unpublishing_state',
   DELETING: 'deleting_state',
   TOAST: 'toast_state',
-  ERROR: 'error_state',
   READY: 'ready_state',
 };
 
