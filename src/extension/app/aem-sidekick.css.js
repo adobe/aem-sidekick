@@ -15,8 +15,10 @@ import { css } from 'lit';
 export const style = css`
   :host {
     position: fixed;
-    height: 100%;
-    width: 100%;
+    left:0;
+    right: 0;
+    top: 0;
+    bottom: 0;
     pointer-events: none;
     z-index: 999999999999;
   }

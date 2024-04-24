@@ -104,46 +104,59 @@ export class PluginActionBar extends MobxLitElement {
 
   firstUpdated() {
     window.addEventListener('resize', () => {
-      this.resizing = Date.now();
-      this.shadowRoot.firstElementChild.classList.add('resizing');
-      window.setTimeout(() => {
-        if (this.resizing + 100 < Date.now()) {
-          this.resizing = 0;
-          // move transient plugins from menu back to bar
-          if (this.transientPlugins.length > 0) {
-            this.barPlugins.push(...this.transientPlugins);
-            this.transientPlugins = [];
-          }
-          this.requestUpdate();
-          this.shadowRoot.firstElementChild.classList.remove('resizing');
-        }
-      }, 200);
+      this.checkOverflow();
     });
   }
 
   checkOverflow() {
     const barWidth = parseInt(window.getComputedStyle(this).width, 10);
-    // console.log('check overflow...', barWidth);
+
+    // Left Plugins
     const leftStyles = window.getComputedStyle(this.actionGroups[0]);
     const leftPadding = parseInt(leftStyles.padding, 10);
     const leftWidth = parseInt(leftStyles.width, 10) + leftPadding * 2;
-    const rightStyles = window.getComputedStyle(this.actionGroups[1]);
-    const rightPadding = parseInt(rightStyles.padding, 10);
-    const rightWidth = parseInt(rightStyles.width, 10) + rightPadding * 2;
 
+    // Plugin Menu
+    const pluginMenuStyles = window.getComputedStyle(this.actionGroups[1]);
+    const pluginMenuPadding = parseInt(pluginMenuStyles.padding, 10);
+
+    // System Plugins
+    const systemStyles = window.getComputedStyle(this.actionGroups[2]);
+    const rightPadding = parseInt(systemStyles.padding, 10);
+
+    // Width of system plugins and plugin menu
+    const rightWidth = parseInt(pluginMenuStyles.width, 10) + parseInt(systemStyles.width, 10) + (rightPadding * 2) + (pluginMenuPadding * 2);
+
+    // Open space is total width minus left and right (system plugins and plugin menu)
+    const openSpace = barWidth - rightWidth - leftWidth;
+
+    // If the left plugins are wider than the bar, move the last one to the menu
     if (leftWidth > barWidth - rightWidth && this.barPlugins.length > 1) {
-      // console.log('overflow detected...');
-      // move last plugin from bar to menu and repaint
       const lastBarPlugin = this.barPlugins.pop();
       this.transientPlugins.unshift(lastBarPlugin);
       this.requestUpdate();
+      return;
+    }
+
+    // If the last transient plugin fits in the open space, move it back to the bar
+    if (this.transientPlugins.length > 0) {
+      const lastTransientPlugin = this.transientPlugins[0];
+      if (lastTransientPlugin) {
+        const { config } = lastTransientPlugin;
+        if (config) {
+          const estimatedWidth = (config.button.text.length * 6) + 30;
+          if (estimatedWidth < openSpace && this.transientPlugins.length > 0) {
+            this.barPlugins.push(this.transientPlugins.shift());
+            this.requestUpdate();
+          }
+        }
+      }
     }
   }
 
   async updated() {
     await this.updateComplete;
     this.checkOverflow();
-    // console.log('updated', this.barPlugins.length, this.transientPlugins.length, this.menuPlugins.length);
   }
 
   onPluginMenuSelect() {
@@ -167,22 +180,27 @@ export class PluginActionBar extends MobxLitElement {
   }
 
   renderPluginMenu() {
-    return this.transientPlugins.length > 0 || this.menuPlugins.length > 0 ? html`
-      <action-bar-picker
-        id="plugin-menu"
-        chevron="false"
-        placement="top"
-        label="⋯"
-        title="${appStore.i18n('plugins_more')}"
-        quiet
-        @change=${this.onPluginMenuSelect}
-        .disabled=${!this.ready}>
-        ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
-        ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0
-          ? html`<sp-menu-divider size="s"></sp-menu-divider>`
-          : ''}
-        ${this.menuPlugins.map((p) => this.renderPluginMenuItem(p))}
-      </action-bar-picker>` : '';
+    return html`
+      <sp-action-group>
+        ${this.transientPlugins.length > 0 || this.menuPlugins.length > 0 ? html`
+          <action-bar-picker
+            id="plugin-menu"
+            chevron="false"
+            placement="top"
+            label="⋯"
+            title="${appStore.i18n('plugins_more')}"
+            quiet
+            @change=${this.onPluginMenuSelect}
+            .disabled=${!this.ready}>
+            ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
+            ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0
+              ? html`<sp-menu-divider size="s"></sp-menu-divider>`
+              : ''}
+            ${this.menuPlugins.map((p) => this.renderPluginMenuItem(p))}
+          </action-bar-picker>
+        ` : ''}
+      </sp-action-group>
+      `;
   }
 
   /**
@@ -193,8 +211,6 @@ export class PluginActionBar extends MobxLitElement {
     // console.log('rendering plugins...', this.barPlugins.length, this.transientPlugins.length, this.menuPlugins.length);
     return html`<sp-action-group>
       ${this.barPlugins.length > 0 ? this.barPlugins.map((p) => p.render()) : ''}
-      <div class="filler"></div>
-      ${this.renderPluginMenu()}
     </sp-action-group>`;
   }
 
@@ -234,6 +250,7 @@ export class PluginActionBar extends MobxLitElement {
     return this.ready ? html`
       <action-bar>
         ${this.renderPlugins()}
+        ${this.renderPluginMenu()}
         ${this.renderSystemPlugins()}
       </action-bar>
     ` : '';

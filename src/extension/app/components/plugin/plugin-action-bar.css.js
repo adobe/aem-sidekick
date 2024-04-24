@@ -20,12 +20,12 @@ export const style = css`
     flex-wrap: nowrap;
   }
 
-  action-bar sp-action-group div.plugin-container {
-    overflow-x: hidden;
+  action-bar sp-action-group:nth-of-type(2) {
+    margin-left: auto;
   }
 
-  action-bar sp-action-group:first-of-type {
-    flex-grow: 1;
+  action-bar sp-action-group div.plugin-container {
+    overflow-x: hidden;
   }
 
   action-bar sp-action-group.not-authorized {
@@ -39,12 +39,6 @@ export const style = css`
   action-bar sp-action-group:last-of-type > svg {
     width: 32px;
     height: 32px;
-  }
-
-  action-bar.resizing > sp-menu-divider,
-  action-bar.resizing > sp-action-group:last-of-type {
-    opacity: 0;
-    transition: opacity 0.2s ease-out;
   }
 
   action-bar sp-action-group .filler {
