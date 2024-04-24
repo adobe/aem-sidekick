@@ -32,8 +32,11 @@ import {
 export function createUnpublishPlugin(appStore) {
   return new Plugin({
     id: 'unpublish',
-    condition: (store) => store.isProject()
-      && !RESTRICTED_PATHS.includes(store.location.pathname),
+    condition: (store) => store.isProject() // only enable in project env
+      && store.isAuthorized('live', 'delete') // if user authorized to unpublish
+      && store.status.live?.status === 200 // and page published
+      && store.status.code?.status !== 200 // and not code
+      && !RESTRICTED_PATHS.includes(store.location.pathname), // and not restricted path
     pinned: false,
     button: {
       text: appStore.i18n('unpublish'),
@@ -90,9 +93,6 @@ export function createUnpublishPlugin(appStore) {
           }
         });
       },
-      isEnabled: (store) => store.isAuthorized('live', 'delete') // only enable if authorized
-        && store.status.live?.status === 200 // and page published
-        && store.status.code?.status !== 200, // and not code
     },
     appStore,
   });

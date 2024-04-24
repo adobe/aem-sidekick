@@ -36,19 +36,22 @@ import { MODALS } from '../../../../src/extension/app/constants.js';
 // @ts-ignore
 window.chrome = chromeMock;
 
-async function clickUnpublishPlugin(sidekick) {
+async function expectUnpublishPlugin(sidekick, expected = true) {
   await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-  // open plugin list
-  const pluginList = recursiveQuery(sidekick, '.plugin-list');
-  await waitUntil(() => pluginList.getAttribute('disabled') === null, 'pluginList is not disabled');
-  pluginList.click();
+  // open plugin menu
+  const pluginMenu = recursiveQuery(sidekick, '#plugin-menu');
+  if (pluginMenu) {
+    pluginMenu.click();
+  }
 
-  await waitUntil(() => recursiveQuery(sidekick, 'modal-container'), 'modal container never appeared');
-  const modalContainer = recursiveQuery(sidekick, 'modal-container');
-  await waitUntil(() => recursiveQuery(modalContainer, '.unpublish'));
+  const deletePlugin = recursiveQuery(sidekick, '.unpublish');
+  expect(deletePlugin !== undefined).to.equal(expected);
+  return deletePlugin;
+}
 
-  const unpublishPlugin = recursiveQuery(modalContainer, '.unpublish');
+async function clickUnpublishPlugin(sidekick) {
+  const unpublishPlugin = await expectUnpublishPlugin(sidekick, true);
   expect(unpublishPlugin.textContent.trim()).to.equal('Unpublish');
   await waitUntil(() => unpublishPlugin.getAttribute('disabled') === null, 'unpublish plugin is not disabled');
   unpublishPlugin.click();
@@ -106,6 +109,13 @@ describe('Unpublish plugin', () => {
       fetchMock.reset();
       restoreEnvironment(document);
       sandbox.restore();
+    });
+
+    it('no unpublish plugin if user not authorized', async () => {
+      // @ts-ignore
+      sandbox.stub(appStore, 'showView').returns();
+      mockFetchStatusSuccess();
+      await expectUnpublishPlugin(sidekick, false);
     });
 
     it('asks for user confirmation and redirects to the site root', async () => {

@@ -36,18 +36,22 @@ import { MODALS } from '../../../../src/extension/app/constants.js';
 // @ts-ignore
 window.chrome = chromeMock;
 
-async function clickDeletePlugin(sidekick) {
+async function expectDeletePlugin(sidekick, expected = true) {
   await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
-  // open plugin list
-  const pluginList = recursiveQuery(sidekick, '.plugin-list');
-  await waitUntil(() => pluginList.getAttribute('disabled') === null, 'pluginList is not disabled');
-  pluginList.click();
+  // open plugin menu if present
+  const pluginMenu = recursiveQuery(sidekick, '#plugin-menu');
+  if (pluginMenu) {
+    pluginMenu.click();
+  }
 
-  await waitUntil(() => recursiveQuery(sidekick, 'modal-container'), 'modal container never appeared');
-  const modalContainer = recursiveQuery(sidekick, 'modal-container');
-  await waitUntil(() => recursiveQuery(modalContainer, '.delete'));
-  const deletePlugin = recursiveQuery(modalContainer, '.delete');
+  const deletePlugin = recursiveQuery(sidekick, '.delete');
+  expect(deletePlugin !== undefined).to.equal(expected);
+  return deletePlugin;
+}
+
+async function clickDeletePlugin(sidekick) {
+  const deletePlugin = await expectDeletePlugin(sidekick, true);
   expect(deletePlugin.textContent.trim()).to.equal('Delete');
   await waitUntil(() => deletePlugin.getAttribute('disabled') === null, 'delete plugin is not disabled');
   deletePlugin.click();
@@ -109,6 +113,13 @@ describe('Delete plugin', () => {
         fetchMock.reset();
         restoreEnvironment(document);
         sandbox.restore();
+      });
+
+      it('no delete plugin if user not authorized', async () => {
+        // @ts-ignore
+        sandbox.stub(appStore, 'showView').returns();
+        mockFetchStatusSuccess({}, null, statusUrl);
+        await expectDeletePlugin(sidekick, false);
       });
 
       it('asks for user confirmation and redirects to the site root', async () => {

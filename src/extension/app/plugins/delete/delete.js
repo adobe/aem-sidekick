@@ -32,8 +32,11 @@ import {
 export function createDeletePlugin(appStore) {
   return new Plugin({
     id: 'delete',
-    condition: (store) => store.isPreview()
-      && !RESTRICTED_PATHS.includes(store.location.pathname), // or restricted path
+    condition: (store) => store.isPreview() // only enable in preview
+      && store.isAuthorized('preview', 'delete') // if user authorized to delete
+      && store.status.preview?.status === 200 // and page previewed
+      && store.status.code?.status !== 200 // and not code
+      && !RESTRICTED_PATHS.includes(store.location.pathname), // and not restricted path
     pinned: false,
     button: {
       text: appStore.i18n('delete'),
@@ -95,9 +98,6 @@ export function createDeletePlugin(appStore) {
           }
         });
       },
-      isEnabled: (store) => store.isAuthorized('preview', 'delete') // only enable if authorized
-        && store.status.preview?.status === 200 // and page previewed
-        && store.status.code?.status !== 200, // and not code
     },
     appStore,
   });
