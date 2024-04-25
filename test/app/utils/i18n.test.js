@@ -106,9 +106,14 @@ describe('i18n', () => {
     });
 
     it('should handle "today" dates correctly', () => {
-      const date = new Date(Date.now() - 2 * 60 * 60 * 5000); // 5 hours ago
+      const fixedDate = new Date(2023, 4, 1, 15, 0); // May 1, 2023, 15:00
+      const clock = sinon.useFakeTimers(fixedDate.getTime());
+
+      const date = new Date(Date.now() - 2 * 3600 * 1000); // 2 hours ago
       const expectedTime = date.toLocaleTimeString([], { timeStyle: 'short' });
       expect(getTimeAgo(languageDict, date)).to.equal(`Today at ${expectedTime}`);
+
+      clock.restore();
     });
 
     it('should handle "yesterday" dates correctly', () => {
