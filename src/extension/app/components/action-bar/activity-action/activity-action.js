@@ -13,7 +13,7 @@
 import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { reaction } from 'mobx';
-import { ICONS, SIDEKICK_STATE } from '../../../constants.js';
+import { ICONS, STATE } from '../../../constants.js';
 import { ConnectedElement } from '../../connected-element/connected-element.js';
 import { style } from './activity-action.css.js';
 
@@ -61,25 +61,25 @@ export class ActivityAction extends ConnectedElement {
 
   renderType() {
     switch (this.appStore.state) {
-      case SIDEKICK_STATE.FETCHING_STATUS:
-      case SIDEKICK_STATE.LOGGING_IN:
-      case SIDEKICK_STATE.LOGGING_OUT:
-      case SIDEKICK_STATE.PREVIEWING:
-      case SIDEKICK_STATE.PUBLISHNG:
-      case SIDEKICK_STATE.UNPUBLISHING:
-      case SIDEKICK_STATE.DELETING:
+      case STATE.FETCHING_STATUS:
+      case STATE.LOGGING_IN:
+      case STATE.LOGGING_OUT:
+      case STATE.PREVIEWING:
+      case STATE.PUBLISHNG:
+      case STATE.UNPUBLISHING:
+      case STATE.DELETING:
         return html`
           <sp-progress-circle size="s" indeterminate></sp-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
-      case SIDEKICK_STATE.LOGIN_REQUIRED:
+      case STATE.LOGIN_REQUIRED:
         return html`
           ${ICONS.INFO}<span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
-      case SIDEKICK_STATE.UNAUTHORIZED:
+      case STATE.UNAUTHORIZED:
         return html`
           ${ICONS.ALERT_TRIANGLE}<span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
-      case SIDEKICK_STATE.TOAST:
+      case STATE.TOAST:
         return html`
           <div class="toast-container">
             <div class="message">

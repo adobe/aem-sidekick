@@ -18,7 +18,7 @@ import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import '../../../../src/extension/index.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { HelixMockEnvironments } from '../../../mocks/environment.js';
-import { SIDEKICK_STATE } from '../../../../src/extension/app/constants.js';
+import { STATE } from '../../../../src/extension/app/constants.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 
 /**
@@ -81,7 +81,7 @@ describe('Login', () => {
       expect(loginActionButton.textContent).to.eq('Sign in');
       loginActionButton.click();
 
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.LOGGING_IN);
+      await waitUntil(() => appStore.state === STATE.LOGGING_IN);
       await waitUntil(() => appStore.status.profile !== undefined, 'Profile not loaded', { timeout: 10000 });
 
       expect(openStub.calledOnce).to.be.true;
@@ -95,13 +95,13 @@ describe('Login', () => {
       sidekick = sidekickTest.createSidekick();
       await sidekickTest.awaitStatusFetched();
 
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.LOGIN_REQUIRED);
+      await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
 
       await login();
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.READY);
+      await waitUntil(() => appStore.state === STATE.READY);
 
-      expect(setStateSpy.calledWith(SIDEKICK_STATE.FETCHING_STATUS)).to.be.true;
-      expect(setStateSpy.calledWith(SIDEKICK_STATE.LOGGING_IN)).to.be.true;
+      expect(setStateSpy.calledWith(STATE.FETCHING_STATUS)).to.be.true;
+      expect(setStateSpy.calledWith(STATE.LOGGING_IN)).to.be.true;
 
       const accountElement = recursiveQuery(sidekick, 'login-button');
       const accountButton = recursiveQuery(accountElement, 'sp-action-button');
@@ -118,9 +118,9 @@ describe('Login', () => {
       const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
       logoutButton.click();
 
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.LOGGING_OUT);
+      await waitUntil(() => appStore.state === STATE.LOGGING_OUT);
       await sidekickTest.awaitLoggedOut();
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.LOGIN_REQUIRED);
+      await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
     }).timeout(20000);
 
     it('Successful login and logout without authentication enabled ', async () => {
@@ -131,12 +131,12 @@ describe('Login', () => {
       sidekick = sidekickTest.createSidekick();
       await sidekickTest.awaitStatusFetched();
 
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.READY);
+      await waitUntil(() => appStore.state === STATE.READY);
       await login();
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.READY);
+      await waitUntil(() => appStore.state === STATE.READY);
 
-      expect(setStateSpy.calledWith(SIDEKICK_STATE.FETCHING_STATUS)).to.be.true;
-      expect(setStateSpy.calledWith(SIDEKICK_STATE.LOGGING_IN)).to.be.true;
+      expect(setStateSpy.calledWith(STATE.FETCHING_STATUS)).to.be.true;
+      expect(setStateSpy.calledWith(STATE.LOGGING_IN)).to.be.true;
 
       const accountElement = recursiveQuery(sidekick, 'login-button');
       const accountButton = recursiveQuery(accountElement, 'sp-action-button');
@@ -152,9 +152,9 @@ describe('Login', () => {
       const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
       logoutButton.click();
 
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.LOGGING_OUT);
+      await waitUntil(() => appStore.state === STATE.LOGGING_OUT);
       await sidekickTest.awaitLoggedOut();
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.READY);
+      await waitUntil(() => appStore.state === STATE.READY);
     }).timeout(20000);
 
     it('Successful login and logout with authentication enabled ', async () => {
@@ -165,12 +165,12 @@ describe('Login', () => {
       sidekick = sidekickTest.createSidekick();
       await sidekickTest.awaitStatusFetched();
 
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.READY);
+      await waitUntil(() => appStore.state === STATE.READY);
       await login();
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.READY);
+      await waitUntil(() => appStore.state === STATE.READY);
 
-      expect(setStateSpy.calledWith(SIDEKICK_STATE.FETCHING_STATUS)).to.be.true;
-      expect(setStateSpy.calledWith(SIDEKICK_STATE.LOGGING_IN)).to.be.true;
+      expect(setStateSpy.calledWith(STATE.FETCHING_STATUS)).to.be.true;
+      expect(setStateSpy.calledWith(STATE.LOGGING_IN)).to.be.true;
 
       const accountElement = recursiveQuery(sidekick, 'login-button');
       const accountButton = recursiveQuery(accountElement, 'sp-action-button');
@@ -186,9 +186,9 @@ describe('Login', () => {
       const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
       logoutButton.click();
 
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.LOGGING_OUT);
+      await waitUntil(() => appStore.state === STATE.LOGGING_OUT);
       await sidekickTest.awaitLoggedOut();
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.READY);
+      await waitUntil(() => appStore.state === STATE.READY);
     }).timeout(20000);
 
     it('Unauthorized after login ', async () => {
@@ -217,10 +217,10 @@ describe('Login', () => {
         .mockFetchSidekickConfigForbidden();
       loginActionButton.click();
 
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.LOGGING_IN);
+      await waitUntil(() => appStore.state === STATE.LOGGING_IN);
 
       expect(openStub.calledOnce).to.be.true;
-      await waitUntil(() => appStore.state === SIDEKICK_STATE.UNAUTHORIZED, '', { timeout: 10000 });
+      await waitUntil(() => appStore.state === STATE.UNAUTHORIZED, '', { timeout: 10000 });
     }).timeout(20000);
   });
 });

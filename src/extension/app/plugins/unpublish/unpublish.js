@@ -16,7 +16,7 @@ import {
   MODALS,
   MODAL_EVENTS,
   RESTRICTED_PATHS,
-  SIDEKICK_STATE,
+  STATE,
 } from '../../constants.js';
 
 /**
@@ -65,7 +65,7 @@ export function createUnpublishPlugin(appStore) {
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
           // perform unpublish
-          appStore.setState(SIDEKICK_STATE.UNPUBLISHING);
+          appStore.setState(STATE.UNPUBLISHING);
           try {
             const resp = await appStore.unpublish();
             if (resp.ok) {

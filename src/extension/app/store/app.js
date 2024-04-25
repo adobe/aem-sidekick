@@ -27,7 +27,7 @@ import {
   EVENTS,
   EXTERNAL_EVENTS,
   RESTRICTED_PATHS,
-  SIDEKICK_STATE,
+  STATE,
 } from '../constants.js';
 // eslint-disable-next-line import/no-cycle
 import { Plugin } from '../components/plugin/plugin.js';
@@ -132,7 +132,7 @@ export class AppStore {
    * The current state of the sidekick
    * @type {String}
    */
-  @observable accessor state = SIDEKICK_STATE.INITIALIZING;
+  @observable accessor state = STATE.INITIALIZING;
 
   /**
    * Toast data
@@ -194,11 +194,11 @@ export class AppStore {
     const { authorized } = this.siteStore;
 
     if (!profile && !authorized) {
-      this.state = SIDEKICK_STATE.LOGIN_REQUIRED;
+      this.state = STATE.LOGIN_REQUIRED;
     } else if (!authorized) {
-      this.state = SIDEKICK_STATE.UNAUTHORIZED;
+      this.state = STATE.UNAUTHORIZED;
     } else {
-      this.state = SIDEKICK_STATE.READY;
+      this.state = STATE.READY;
     }
   }
 
@@ -722,7 +722,7 @@ export class AppStore {
       actionLabel,
       timeout,
     };
-    this.setState(SIDEKICK_STATE.TOAST);
+    this.setState(STATE.TOAST);
   }
 
   /**
@@ -793,7 +793,7 @@ export class AppStore {
       this.status.apiUrl = apiUrl;
     }
 
-    this.setState(SIDEKICK_STATE.FETCHING_STATUS);
+    this.setState(STATE.FETCHING_STATUS);
     fetch(this.status.apiUrl, {
       ...getAdminFetchOptions(),
     })
@@ -911,7 +911,7 @@ export class AppStore {
   }
 
   async updatePreview(ranBefore) {
-    this.setState(SIDEKICK_STATE.PREVIEWING);
+    this.setState(STATE.PREVIEWING);
     const { status } = this;
     const resp = await this.update();
     if (!resp.ok) {
@@ -1261,7 +1261,7 @@ export class AppStore {
    * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
    */
   login(selectAccount) {
-    this.setState(SIDEKICK_STATE.LOGGING_IN);
+    this.setState(STATE.LOGGING_IN);
     const loginUrl = getAdminUrl(this.siteStore, 'login');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
@@ -1313,7 +1313,7 @@ export class AppStore {
    * Logs the user out.
    */
   logout() {
-    this.setState(SIDEKICK_STATE.LOGGING_OUT);
+    this.setState(STATE.LOGGING_OUT);
     const logoutUrl = getAdminUrl(this.siteStore, 'logout');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3

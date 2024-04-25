@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { SIDEKICK_STATE } from '../../constants.js';
+import { STATE } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 import { i18n } from '../../utils/i18n.js';
@@ -35,7 +35,7 @@ export function createReloadPlugin(appStore) {
     button: {
       text: i18n(appStore.languageDict, 'reload'),
       action: async (evt) => {
-        appStore.setState(SIDEKICK_STATE.PREVIEWING);
+        appStore.setState(STATE.PREVIEWING);
         try {
           const resp = await appStore.update();
           if (!resp.ok && resp.status >= 400) {

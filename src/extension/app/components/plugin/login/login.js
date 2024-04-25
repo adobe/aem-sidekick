@@ -14,7 +14,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { html, css } from 'lit';
 import { ConnectedElement } from '../../connected-element/connected-element.js';
-import { ICONS, SIDEKICK_STATE } from '../../../constants.js';
+import { ICONS, STATE } from '../../../constants.js';
 
 /**
  * Login Button component
@@ -105,8 +105,8 @@ export class LoginButton extends ConnectedElement {
     const authenticated = this.appStore.isAuthenticated();
 
     if ((!this.appStore.status.webPath && this.appStore.status?.status !== 401)
-      || this.appStore.state === SIDEKICK_STATE.LOGGING_IN
-      || this.appStore.state === SIDEKICK_STATE.LOGGING_OUT) {
+      || this.appStore.state === STATE.LOGGING_IN
+      || this.appStore.state === STATE.LOGGING_OUT) {
       return html``;
     }
 

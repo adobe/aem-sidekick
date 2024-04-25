@@ -93,7 +93,7 @@ export const RESTRICTED_PATHS = [
  * Enum for sidekick states.
  * @enum {string}
  */
-export const SIDEKICK_STATE = {
+export const STATE = {
   INITIALIZING: 'initializing_state',
   FETCHING_STATUS: 'fetching_status_state',
   LOGIN_REQUIRED: 'login_required_state',

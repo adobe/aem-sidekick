@@ -20,7 +20,7 @@ import {
 import { AppStore, VIEWS } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
-import { SIDEKICK_STATE } from '../../../src/extension/app/constants.js';
+import { STATE } from '../../../src/extension/app/constants.js';
 import {
   HelixMockContentSources,
   HelixMockEnvironments,
@@ -407,7 +407,7 @@ describe('Test App Store', () => {
         timeout: 3000,
         variant: 'info',
       });
-      expect(appStore.state).to.equal(SIDEKICK_STATE.TOAST);
+      expect(appStore.state).to.equal(STATE.TOAST);
       expect(toastSpy.calledOnce).to.be.true;
     });
   });
@@ -714,7 +714,7 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(setStateStub.calledWith(SIDEKICK_STATE.PREVIEWING)).is.true;
+      expect(setStateStub.calledWith(STATE.PREVIEWING)).is.true;
     });
 
     it('should show previewing, update, and handle success response with toast action', async () => {
@@ -726,7 +726,7 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(setStateStub.calledWith(SIDEKICK_STATE.PREVIEWING)).is.true;
+      expect(setStateStub.calledWith(STATE.PREVIEWING)).is.true;
 
       expect(switchEnvSpy.calledWith('preview'));
     });
@@ -738,7 +738,7 @@ describe('Test App Store', () => {
 
       await instance.updatePreview(false);
 
-      expect(setStateStub.calledWith(SIDEKICK_STATE.PREVIEWING)).is.true;
+      expect(setStateStub.calledWith(STATE.PREVIEWING)).is.true;
       expect(addEventListenerSpy.called).is.true;
       expect(fetchStatusStub.called).is.true;
 

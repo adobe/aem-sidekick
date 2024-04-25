@@ -15,7 +15,7 @@
 import { html } from 'lit';
 import { customElement, queryAsync } from 'lit/decorators.js';
 import { reaction } from 'mobx';
-import { ICONS, MODALS, SIDEKICK_STATE } from '../../constants.js';
+import { ICONS, MODALS, STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import '../action-bar/activity-action/activity-action.js';
@@ -59,7 +59,7 @@ export class PluginActionBar extends ConnectedElement {
       async () => {
         const actionBar = await this.actionBar;
         if (actionBar) {
-          if (this.appStore.state === SIDEKICK_STATE.TOAST) {
+          if (this.appStore.state === STATE.TOAST) {
             actionBar.classList.add(this.appStore.toast.variant);
 
             setTimeout(() => {
@@ -86,7 +86,7 @@ export class PluginActionBar extends ConnectedElement {
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
-    if (this.appStore.state !== SIDEKICK_STATE.READY) {
+    if (this.appStore.state !== STATE.READY) {
       return html`
         <sp-action-group>
           <activity-action></activity-action>
@@ -116,7 +116,7 @@ export class PluginActionBar extends ConnectedElement {
 
     const systemPlugins = [];
 
-    if (this.appStore.state === SIDEKICK_STATE.TOAST) {
+    if (this.appStore.state === STATE.TOAST) {
       return html``;
     }
 
@@ -155,7 +155,7 @@ export class PluginActionBar extends ConnectedElement {
   }
 
   render() {
-    return this.appStore.state !== SIDEKICK_STATE.INITIALIZING ? html`
+    return this.appStore.state !== STATE.INITIALIZING ? html`
       <action-bar>
         ${this.renderPlugins()}
         ${this.renderSystemPlugins()}

@@ -16,7 +16,7 @@ import {
   MODALS,
   MODAL_EVENTS,
   RESTRICTED_PATHS,
-  SIDEKICK_STATE,
+  STATE,
 } from '../../constants.js';
 
 /**
@@ -68,7 +68,7 @@ export function createDeletePlugin(appStore) {
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
           // perform delete
-          appStore.setState(SIDEKICK_STATE.DELETING);
+          appStore.setState(STATE.DELETING);
           try {
             const resp = await appStore.delete();
             if (resp.ok) {

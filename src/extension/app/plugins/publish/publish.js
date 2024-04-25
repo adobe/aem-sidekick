@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { SIDEKICK_STATE } from '../../constants.js';
+import { STATE } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 
@@ -36,7 +36,7 @@ export function createPublishPlugin(appStore) {
       action: async (evt) => {
         const { location, siteStore } = appStore;
         const path = location.pathname;
-        appStore.setState(SIDEKICK_STATE.PUBLISHNG);
+        appStore.setState(STATE.PUBLISHNG);
         const res = await appStore.publish(path);
         if (res.ok) {
           const actionCallback = () => {
