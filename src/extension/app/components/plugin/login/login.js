@@ -12,8 +12,8 @@
 
 import { customElement, property } from 'lit/decorators.js';
 import { reaction } from 'mobx';
-import { html, LitElement, css } from 'lit';
-import { appStore } from '../../../store/app.js';
+import { html, css } from 'lit';
+import { ConnectedElement } from '../../connected-element/connected-element.js';
 
 /**
  * Login Button component
@@ -21,7 +21,7 @@ import { appStore } from '../../../store/app.js';
  * @class LoginButton
  */
 @customElement('login-button')
-export class LoginButton extends LitElement {
+export class LoginButton extends ConnectedElement {
   /**
    * Are we ready to enable?
    * @type {Boolean}
@@ -69,7 +69,7 @@ export class LoginButton extends LitElement {
     super.connectedCallback();
 
     reaction(
-      () => appStore.status,
+      () => this.appStore.status,
       () => {
         this.ready = true;
         this.requestUpdate();
@@ -78,7 +78,7 @@ export class LoginButton extends LitElement {
 
     // As soon as there is any change to the profile we want to be notified
     reaction(
-      () => appStore.status.profile,
+      () => this.appStore.status.profile,
       () => {
         this.requestUpdate();
       },
@@ -86,17 +86,17 @@ export class LoginButton extends LitElement {
   }
 
   login() {
-    appStore.login(true);
+    this.appStore.login(true);
   }
 
   logout() {
-    appStore.logout();
+    this.appStore.logout();
   }
 
   renderLogin() {
-    const { profile } = appStore.status;
-    const showLogin = !profile && !appStore.siteStore.authorized;
-    const authenticated = appStore.isAuthenticated();
+    const { profile } = this.appStore.status;
+    const showLogin = !profile && !this.appStore.siteStore.authorized;
+    const authenticated = this.appStore.isAuthenticated();
 
     if (!showLogin && !authenticated) {
       // eslint-disable-next-line wc/no-self-class
@@ -106,7 +106,7 @@ export class LoginButton extends LitElement {
     return html`
       ${showLogin
         ? html`
-          <sp-action-button quiet class="login" @click=${this.login} .disabled=${!this.ready}>${appStore.i18n('user_login')}</sp-action-button>
+          <sp-action-button quiet class="login" @click=${this.login} .disabled=${!this.ready}>${this.appStore.i18n('user_login')}</sp-action-button>
         ` : ''
       }
       ${authenticated

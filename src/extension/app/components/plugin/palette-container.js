@@ -11,11 +11,11 @@
  */
 
 import { customElement, property } from 'lit/decorators.js';
-import { html, LitElement, css } from 'lit';
+import { html, css } from 'lit';
 import { EventBus } from '../../utils/event-bus.js';
 import { EVENTS } from '../../constants.js';
-import { appStore } from '../../store/app.js';
 import sampleRUM from '../../utils/rum.js';
+import { ConnectedElement } from '../connected-element/connected-element.js';
 
 /**
  * The modal type
@@ -33,7 +33,7 @@ import sampleRUM from '../../utils/rum.js';
  * @class PaletteContainer
  */
 @customElement('palette-container')
-export class PaletteContainer extends LitElement {
+export class PaletteContainer extends ConnectedElement {
   /**
    * Active plugin object
    * @type {CustomPlugin}
@@ -78,8 +78,8 @@ export class PaletteContainer extends LitElement {
   closed() {
     this.plugin = undefined;
     sampleRUM('sidekick:paletteclosed', {
-      source: appStore.location.href,
-      target: appStore.status.webPath,
+      source: this.appStore.location.href,
+      target: this.appStore.status.webPath,
     });
   }
 
@@ -101,7 +101,7 @@ export class PaletteContainer extends LitElement {
       url,
     } = this.plugin;
 
-    const paletteTitle = (titleI18n && titleI18n[appStore.siteStore.lang]) || title;
+    const paletteTitle = (titleI18n && titleI18n[this.appStore.siteStore.lang]) || title;
 
     return html`
       <palette-dialog-wrapper

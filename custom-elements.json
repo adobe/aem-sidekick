@@ -10,7 +10,19 @@
           "kind": "class",
           "description": "",
           "name": "AEMSidekick",
-          "members": [],
+          "members": [
+            {
+              "kind": "field",
+              "name": "accessor",
+              "type": {
+                "text": "AppStore"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "appStore"
+            }
+          ],
           "superclass": {
             "name": "MobxLitElement",
             "package": "@adobe/lit-mobx"

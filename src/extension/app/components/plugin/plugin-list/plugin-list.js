@@ -14,10 +14,10 @@ import {
   customElement, property, query, queryAll,
 } from 'lit/decorators.js';
 import { reaction } from 'mobx';
-import { html, LitElement } from 'lit';
-import { appStore } from '../../../store/app.js';
+import { html } from 'lit';
 import { style } from './plugin-list.css.js';
 import { ICONS } from '../../../constants.js';
+import { ConnectedElement } from '../../connected-element/connected-element.js';
 
 /**
  * @typedef {import('../../plugin/plugin.js').Plugin} SidekickPlugin
@@ -34,7 +34,7 @@ import { ICONS } from '../../../constants.js';
  * @class PluginList
  */
 @customElement('plugin-list')
-export class PluginList extends LitElement {
+export class PluginList extends ConnectedElement {
   static get styles() {
     return [
       style,
@@ -85,7 +85,7 @@ export class PluginList extends LitElement {
     super.connectedCallback();
 
     reaction(
-      () => appStore.status,
+      () => this.appStore.status,
       () => {
         this.ready = true;
         this.requestUpdate();
@@ -108,7 +108,7 @@ export class PluginList extends LitElement {
   async togglePlugin(plugin, e) {
     e.stopPropagation();
     const button = e.target.closest('sp-button');
-    const pluginPrefs = appStore.getPluginPrefs(plugin.getId());
+    const pluginPrefs = this.appStore.getPluginPrefs(plugin.getId());
 
     // flip the pinned state
     const newPinnedState = !plugin.isPinned();
@@ -116,13 +116,13 @@ export class PluginList extends LitElement {
 
     // toggle button state
     button.setAttribute('title', newPinnedState
-      ? appStore.i18n('plugin_unpin')
-      : appStore.i18n('plugin_pin'));
+      ? this.appStore.i18n('plugin_unpin')
+      : this.appStore.i18n('plugin_pin'));
     const icon = button.querySelector('sp-icon');
     icon.innerHTML = (newPinnedState ? ICONS.STAR_FULL : ICONS.STAR_EMPTY).strings.join('');
 
     // persist updated preferences
-    await appStore.setPluginPrefs(plugin.getId(), pluginPrefs);
+    await this.appStore.setPluginPrefs(plugin.getId(), pluginPrefs);
   }
 
   /**
@@ -157,7 +157,7 @@ export class PluginList extends LitElement {
     const toggleIcon = html`
       ${pinned ? ICONS.STAR_FULL : ICONS.STAR_EMPTY}
     `;
-    const toggleTitle = pinned ? appStore.i18n('plugin_unpin') : appStore.i18n('plugin_pin');
+    const toggleTitle = pinned ? this.appStore.i18n('plugin_unpin') : this.appStore.i18n('plugin_pin');
 
     return html`
       <div class="menu-item-container">
@@ -206,7 +206,7 @@ export class PluginList extends LitElement {
     const filterAction = (e) => {
       this.filterText = e.target.value.toLowerCase();
     };
-    const filterPlaceholder = appStore.i18n('plugins_filter');
+    const filterPlaceholder = this.appStore.i18n('plugins_filter');
 
     const arrowDownListener = (e) => {
       if (e.key !== 'Escape') {
@@ -242,7 +242,7 @@ export class PluginList extends LitElement {
     return html`
       <div class="keyboard-hints-container">
       <div>
-        <span>${appStore.i18n('plugins_navigate')}</span>
+        <span>${this.appStore.i18n('plugins_navigate')}</span>
         <sp-icon size="s">
           ${ICONS.ARROW}
         </sp-icon>
@@ -251,13 +251,13 @@ export class PluginList extends LitElement {
         </sp-icon>
       </div>
       <div>
-        <span>${appStore.i18n('plugins_select')}</span>
+        <span>${this.appStore.i18n('plugins_select')}</span>
         <sp-icon size="s">
           ${ICONS.RETURN}
         </sp-icon>
       </div>
       <div class="last">
-        <span>${appStore.i18n('back')}</span>
+        <span>${this.appStore.i18n('back')}</span>
         <sp-icon size="s">
           esc
         </sp-icon>
@@ -273,8 +273,8 @@ export class PluginList extends LitElement {
   renderList() {
     // gather the plugins
     this.visiblePlugins = [
-      ...Object.values(appStore.corePlugins),
-      ...Object.values(appStore.customPlugins),
+      ...Object.values(this.appStore.corePlugins),
+      ...Object.values(this.appStore.customPlugins),
     ]
       .filter((plugin) => plugin.isVisible());
 
@@ -298,7 +298,7 @@ export class PluginList extends LitElement {
         <sp-divider size="s"></sp-divider>
         <sp-menu id="plugin-list-menu" aria-labelledby="applied-label" role="listbox">
           <sp-menu-group id="plugin-list-plugins" selects="single">
-            <span slot="header">${appStore.i18n('plugins')}</span>
+            <span slot="header">${this.appStore.i18n('plugins')}</span>
             ${this.listedPlugins.map((plugin) => this.renderListItem(plugin))}
           </sp-menu-group>
           </sp-menu>
@@ -309,6 +309,6 @@ export class PluginList extends LitElement {
   }
 
   render() {
-    return this.ready && appStore.status?.webPath ? this.renderList() : '';
+    return this.ready && this.appStore.status?.webPath ? this.renderList() : '';
   }
 }

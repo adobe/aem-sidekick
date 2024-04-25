@@ -11,56 +11,67 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
-import sinon from 'sinon';
 import { expect, waitUntil } from '@open-wc/testing';
 import { sendKeys } from '@web/test-runner-commands';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
-import {
-  mockFetchConfigWithoutPluginsJSONSuccess,
-  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
-  mockFetchStatusSuccess,
-  mockSharepointEditorSheetFetchStatusSuccess,
-} from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
-import { appStore } from '../../../../src/extension/app/store/app.js';
-import { mockEditorAdminEnvironment, mockHelixEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import { AppStore } from '../../../../src/extension/app/store/app.js';
+import {
+  EditorMockEnvironments,
+  HelixMockContentSources,
+  HelixMockContentType,
+  HelixMockEnvironments,
+} from '../../../mocks/environment.js';
+import { SidekickTest } from '../../../sidekick-test.js';
+
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('Environment Switcher', () => {
+  /**
+   * @type {SidekickTest}
+   */
+  let sidekickTest;
+
+  /**
+   * @type {AEMSidekick}
+   */
   let sidekick;
-  let sandbox;
+
+  /**
+   * @type {AppStore}
+   */
+  let appStore;
+
   beforeEach(async () => {
-    mockFetchEnglishMessagesSuccess();
-    mockFetchConfigWithoutPluginsOrHostJSONSuccess();
-    sandbox = sinon.createSandbox();
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+
+    sidekickTest
+      .mockFetchSidekickConfigSuccess(true, false);
   });
 
   afterEach(() => {
-    if (document.body.contains(sidekick)) {
-      document.body.removeChild(sidekick);
-    }
-    fetchMock.reset();
-    restoreEnvironment(document);
-    sandbox.restore();
+    sidekickTest.destroy();
   });
 
   describe('switching between environments', () => {
     it('preview -> live', async () => {
-      mockFetchStatusSuccess();
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
@@ -77,7 +88,7 @@ describe('Environment Switcher', () => {
       expect(picker.getAttribute('open')).to.not.be.null;
       expect(overlay.getAttribute('open')).to.not.be.null;
 
-      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').returns();
+      const switchEnvStub = sidekickTest.sandbox.stub(appStore, 'switchEnv').returns();
       const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
       liveButton.click();
 
@@ -89,23 +100,29 @@ describe('Environment Switcher', () => {
     }).timeout(20000);
 
     it('edit -> preview - with special views', async () => {
-      mockFetchConfigWithoutPluginsJSONSuccess({
-        specialViews: [
-          {
-            path: '**.json',
-            viewer: '/tools/sidekick/example/index.html',
-            title: 'JSON',
-          },
-        ],
-      });
-      mockSharepointEditorSheetFetchStatusSuccess();
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(false)
+        .mockFetchEditorStatusSuccess(
+          HelixMockContentSources.SHAREPOINT,
+          HelixMockContentType.SHEET,
+        )
+        .mockEditorAdminEnvironment(
+          EditorMockEnvironments.EDITOR,
+          HelixMockContentType.SHEET,
+        )
+        .mockFetchSidekickConfigSuccess(true, false, {
+          specialViews: [
+            {
+              path: '**.json',
+              viewer: '/tools/sidekick/example/index.html',
+              title: 'JSON',
+            },
+          ],
+        });
 
-      mockEditorAdminEnvironment(document, 'editor', 'sheet');
+      sidekick = sidekickTest.createSidekick();
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
@@ -122,7 +139,7 @@ describe('Environment Switcher', () => {
       expect(picker.getAttribute('open')).to.not.be.null;
       expect(overlay.getAttribute('open')).to.not.be.null;
 
-      const openPageStub = sandbox.stub(appStore, 'openPage').returns(null);
+      const openPageStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns(null);
       const previewButton = recursiveQuery(picker, 'sp-menu-item.env-preview');
       previewButton.click();
 
@@ -134,13 +151,14 @@ describe('Environment Switcher', () => {
     });
 
     it('change environment - preview -> live (with meta key)', async () => {
-      mockFetchStatusSuccess();
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
@@ -160,7 +178,7 @@ describe('Environment Switcher', () => {
       // Simulate pressing the key
       await sendKeys({ down: 'Meta' });
 
-      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').returns();
+      const switchEnvStub = sidekickTest.sandbox.stub(appStore, 'switchEnv').returns();
       const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
       liveButton.click();
 
@@ -175,22 +193,23 @@ describe('Environment Switcher', () => {
     }).timeout(20000);
 
     it('live out of date - should show status light', async () => {
-      mockFetchStatusSuccess({
-        preview: {
-          lastModified: 'Tue, 19 Dec 2024 15:42:34 GMT',
-          sourceLastModified: 'Wed, 01 Nov 2024 17:22:52 GMT',
-        },
-        live: {
-          status: 200,
-          lastModified: 'Tue, 12 Dec 2024 15:42:34 GMT',
-        },
-      });
-      mockHelixEnvironment(document, 'preview');
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(false)
+        .mockFetchStatusSuccess(false, {
+          preview: {
+            lastModified: 'Tue, 19 Dec 2024 15:42:34 GMT',
+            sourceLastModified: 'Wed, 01 Nov 2024 17:22:52 GMT',
+          },
+          live: {
+            status: 200,
+            lastModified: 'Tue, 12 Dec 2024 15:42:34 GMT',
+          },
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+      await sidekickTest.awaitEnvSwitcher();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');

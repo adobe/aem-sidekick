@@ -13,16 +13,22 @@
 import { Plugin } from '../../components/plugin/plugin.js';
 
 /**
+ * @typedef {import('@AppStore').AppStore} AppStore
+ */
+
+/**
  * @typedef {import('@Types').CorePlugin} CorePlugin
  */
 
 /**
  * Creates the env plugin
+ * @param {AppStore} appStore The app store
  * @returns {Plugin} The env plugin
  */
-export function createEnvPlugin() {
+export function createEnvPlugin(appStore) {
   return new Plugin({
     id: 'env-switcher',
     condition: (store) => !store.isAdmin(),
-  });
+  },
+  appStore);
 }

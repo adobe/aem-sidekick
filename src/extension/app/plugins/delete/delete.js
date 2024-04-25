@@ -99,6 +99,6 @@ export function createDeletePlugin(appStore) {
         && store.status.preview?.status === 200 // and page previewed
         && store.status.code?.status !== 200, // and not code
     },
-    appStore,
-  });
+  },
+  appStore);
 }

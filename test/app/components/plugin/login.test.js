@@ -11,58 +11,62 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
-import sinon from 'sinon';
 import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
-import {
-  mockFetchConfigJSONNotFound,
-  mockFetchProfileSuccess,
-  mockFetchProfileUnauthorized,
-  mockFetchStatusSuccess,
-  mockFetchStatusWithProfileSuccess,
-} from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
-import { appStore } from '../../../../src/extension/app/store/app.js';
-import { mockHelixEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import { AppStore } from '../../../../src/extension/app/store/app.js';
+import { HelixMockEnvironments } from '../../../mocks/environment.js';
 import { MODALS } from '../../../../src/extension/app/constants.js';
+import { SidekickTest } from '../../../sidekick-test.js';
+
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('Login', () => {
+  /**
+   * @type {SidekickTest}
+   */
+  let sidekickTest;
+
+  /**
+   * @type {AEMSidekick}
+   */
   let sidekick;
-  let sandbox;
+
+  /**
+   * @type {AppStore}
+   */
+  let appStore;
+
   beforeEach(async () => {
-    sandbox = sinon.createSandbox();
-    mockFetchEnglishMessagesSuccess();
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+
+    sidekickTest
+      .mockFetchStatusSuccess()
+      .mockFetchSidekickConfigNotFound()
+      .mockFetchProfileSuccess()
+      .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
   });
 
   afterEach(() => {
-    document.body.removeChild(sidekick);
-    fetchMock.reset();
-    sandbox.restore();
-    restoreEnvironment(document);
+    sidekickTest.destroy();
   });
 
   describe('Login', () => {
     async function login() {
-      mockFetchStatusSuccess();
-      mockFetchConfigJSONNotFound();
-      mockFetchProfileSuccess();
-      mockHelixEnvironment(document, 'preview');
-
       // @ts-ignore
-      const openStub = sandbox.stub(appStore, 'openPage').returns({ closed: true });
-      const modalSpy = sandbox.spy(appStore, 'showModal');
+      const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
+      const modalSpy = sidekickTest.sandbox.spy(appStore, 'showModal');
 
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
 
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
       const loginButton = recursiveQuery(sidekick, 'login-button');
@@ -74,7 +78,7 @@ describe('Login', () => {
       expect(loginActionButton).to.exist;
       expect(loginActionButton.textContent).to.eq('Sign in');
 
-      mockFetchStatusWithProfileSuccess();
+      sidekickTest.mockFetchStatusSuccess(true);
       loginActionButton.click();
 
       await waitUntil(() => recursiveQuery(sidekick, 'sp-dialog-wrapper'));
@@ -100,7 +104,9 @@ describe('Login', () => {
       const accountMenu = recursiveQuery(accountElement, 'sp-action-menu');
       await waitUntil(() => accountMenu.getAttribute('open') !== null);
 
-      mockFetchProfileUnauthorized();
+      sidekickTest
+        .mockFetchProfileUnauthorized();
+
       const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
       logoutButton.click();
       await waitUntil(() => recursiveQuery(sidekick, 'sp-dialog-wrapper'));

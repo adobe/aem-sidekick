@@ -11,66 +11,73 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
-import sinon from 'sinon';
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
-import {
-  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
-  mockFetchStatusSuccess,
-} from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
-import { appStore } from '../../../../src/extension/app/store/app.js';
+import { AppStore } from '../../../../src/extension/app/store/app.js';
 import {
-  mockHelixEnvironment, restoreEnvironment,
+  HelixMockEnvironments,
 } from '../../../mocks/environment.js';
 import { MODALS } from '../../../../src/extension/app/constants.js';
+import { SidekickTest } from '../../../sidekick-test.js';
+
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('Reload plugin', () => {
+  /**
+   * @type {SidekickTest}
+   */
+  let sidekickTest;
+
+  /**
+   * @type {AEMSidekick}
+   */
   let sidekick;
-  let sandbox;
+
+  /**
+   * @type {AppStore}
+   */
+  let appStore;
+
   let reloaded = false;
 
-  before(() => {
-    sandbox = sinon.createSandbox();
-    sandbox.stub(appStore, 'reloadPage').callsFake(() => {
+  beforeEach(async () => {
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+    sidekickTest
+      .mockFetchSidekickConfigSuccess(false, false)
+      .mockFetchStatusSuccess()
+      .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+    sidekick = sidekickTest.createSidekick();
+
+    sidekickTest.sandbox.stub(appStore, 'reloadPage').callsFake(() => {
       reloaded = true;
     });
-  });
 
-  beforeEach(async () => {
-    mockFetchEnglishMessagesSuccess();
-    mockFetchStatusSuccess();
-    mockFetchConfigWithoutPluginsOrHostJSONSuccess();
-    mockHelixEnvironment(document, 'preview');
-
-    sidekick = new AEMSidekick(defaultSidekickConfig);
-    document.body.appendChild(sidekick);
     reloaded = false;
   });
 
   afterEach(() => {
-    document.body.removeChild(sidekick);
-    fetchMock.reset();
-    restoreEnvironment(document);
-    sandbox.restore();
+    sidekickTest.destroy();
   });
 
   it('reload calls appStore.update() and reloads window', async () => {
+    const { sandbox } = sidekickTest;
     const updateStub = sandbox.stub(appStore, 'update')
       .resolves(new Response('', { status: 200, headers: {} }));
     const showWaitSpy = sandbox.spy(appStore, 'showWait');
     const hideWaitSpy = sandbox.spy(appStore, 'hideWait');
 
-    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    await sidekickTest.awaitEnvSwitcher();
 
     const reloadPlugin = recursiveQuery(sidekick, '.reload');
     expect(reloadPlugin.textContent.trim()).to.equal('Reload');
@@ -89,13 +96,14 @@ describe('Reload plugin', () => {
   });
 
   it('reload handles failure', async () => {
+    const { sandbox } = sidekickTest;
     const updateStub = sandbox.stub(appStore, 'update')
       .resolves(new Response('', { status: 500, headers: {} }));
     const showWaitSpy = sandbox.spy(appStore, 'showWait');
 
     const modalSpy = sandbox.spy(appStore, 'showModal');
 
-    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    await sidekickTest.awaitEnvSwitcher();
 
     const reloadPlugin = recursiveQuery(sidekick, '.reload');
 

@@ -16,18 +16,21 @@ import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import { expect, waitUntil } from '@open-wc/testing';
 import chromeMock from './mocks/chrome.js';
-import { mockFetchEnglishMessagesSuccess } from './mocks/i18n.js';
 import { AEMConfigPicker } from '../src/extension/app/config-picker.js';
 import { matchingConfigs } from './fixtures/sidekick-config.js';
 import '../src/extension/index.js';
 import { recursiveQuery, recursiveQueryAll } from './test-utils.js';
+import enMessages from '../src/extension/_locales/en/messages.json' assert { type: 'json' };
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('AEM Config Picker', () => {
   beforeEach(async () => {
-    mockFetchEnglishMessagesSuccess();
+    fetchMock.get('/test/fixtures/_locales/en/messages.json', {
+      status: 200,
+      body: enMessages,
+    }, { overwriteRoutes: true });
   });
 
   afterEach(() => {

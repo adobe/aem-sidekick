@@ -14,11 +14,10 @@
 
 import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { MobxLitElement } from '@adobe/lit-mobx';
 import { reaction } from 'mobx';
-import { appStore } from '../../store/app.js';
 import { ICONS, MODALS } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
+import { ConnectedElement } from '../connected-element/connected-element.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} SidekickPlugin
@@ -30,7 +29,7 @@ import { style } from './plugin-action-bar.css.js';
  */
 
 @customElement('plugin-action-bar')
-export class PluginActionBar extends MobxLitElement {
+export class PluginActionBar extends ConnectedElement {
   static get styles() {
     return [
       style,
@@ -59,7 +58,7 @@ export class PluginActionBar extends MobxLitElement {
     this.ready = true;
 
     reaction(
-      () => appStore.status,
+      () => this.appStore.status,
       () => {
         this.requestUpdate();
       },
@@ -71,13 +70,13 @@ export class PluginActionBar extends MobxLitElement {
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
-    if (!appStore.corePlugins) {
+    if (!this.appStore.corePlugins) {
       return '';
     }
 
     this.visiblePlugins = [
-      ...Object.values(appStore.corePlugins),
-      ...Object.values(appStore.customPlugins),
+      ...Object.values(this.appStore.corePlugins),
+      ...Object.values(this.appStore.customPlugins),
     ]
       .filter((plugin) => plugin.isVisible());
 
@@ -90,12 +89,12 @@ export class PluginActionBar extends MobxLitElement {
    * Shows the plugin list modal.
    */
   showPluginListModal() {
-    appStore.showModal({ type: MODALS.PLUGIN_LIST });
+    this.appStore.showModal({ type: MODALS.PLUGIN_LIST });
   }
 
   renderSystemPlugins() {
-    const { profile } = appStore.status;
-    const { siteStore } = appStore;
+    const { profile } = this.appStore.status;
+    const { siteStore } = this.appStore;
 
     const systemPlugins = [];
 
@@ -103,8 +102,8 @@ export class PluginActionBar extends MobxLitElement {
       <sp-action-button
         quiet
         class="plugin-list"
-        label="${appStore.i18n('plugins_manage')}"
-        .disabled=${!appStore.status?.webPath}
+        label="${this.appStore.i18n('plugins_manage')}"
+        .disabled=${!this.appStore.status?.webPath}
         @click=${this.showPluginListModal}>
         <sp-icon slot="icon" size="l">
           ${ICONS.PLUGINS}

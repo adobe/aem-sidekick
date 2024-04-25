@@ -13,11 +13,10 @@
 /* eslint-disable wc/no-constructor-params */
 
 import { customElement, property } from 'lit/decorators.js';
-import { html, LitElement } from 'lit';
+import { LitElement, html } from 'lit';
 import { style } from './modal-container.css.js';
 import { EventBus } from '../../utils/event-bus.js';
 import { MODALS, MODAL_EVENTS } from '../../constants.js';
-import { appStore } from '../../store/app.js';
 
 /**
  * The modal type
@@ -64,10 +63,11 @@ export class ModalContainer extends LitElement {
    * Constructor
    * @param {Modal} modal the modal details
    */
-  constructor(modal) {
+  constructor(modal, appStore) {
     super();
 
     this.modal = modal;
+    this.appStore = appStore;
   }
 
   async connectedCallback() {
@@ -173,8 +173,8 @@ export class ModalContainer extends LitElement {
         break;
       case MODALS.ERROR:
         options.dismissable = false;
-        options.headline = data?.headline ?? appStore.i18n('error');
-        options.confirmLabel = data?.confirmLabel ?? appStore.i18n('ok');
+        options.headline = data?.headline ?? this.appStore.i18n('error');
+        options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('ok');
         options.content = html`
           ${data.message}
         `;
@@ -185,15 +185,15 @@ export class ModalContainer extends LitElement {
         options.negative = true;
         options.underlay = true;
         options.error = true;
-        options.headline = data?.headline ?? appStore.i18n('destructive_confirmation').replace('$1', this.action);
-        options.confirmLabel = data?.confirmLabel ?? appStore.i18n('config_delete');
-        options.cancelLabel = appStore.i18n('cancel');
+        options.headline = data?.headline ?? this.appStore.i18n('destructive_confirmation').replace('$1', this.action);
+        options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('config_delete');
+        options.cancelLabel = this.appStore.i18n('cancel');
         options.content = html`
           ${data?.message || ''}
-          <div class="prompt">${appStore.i18n('destructive_confirmation_prompt').replace('$1', this.action.toUpperCase())}</div>
+          <div class="prompt">${this.appStore.i18n('destructive_confirmation_prompt').replace('$1', this.action.toUpperCase())}</div>
           <div class="delete-input">
             <sp-textfield id="delete-confirmation"></sp-textfield>
-            <sp-help-text variant="negative">${appStore.i18n('destructive_confirmation_invalid')}</sp-help-text>
+            <sp-help-text variant="negative">${this.appStore.i18n('destructive_confirmation_invalid')}</sp-help-text>
           </div>
         `;
         break;
