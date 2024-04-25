@@ -182,4 +182,8 @@ export const style = css`
   sp-overlay sp-popover {
     backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
   }
+
+  sp-tray {
+    margin-bottom: 64px;
+  }
 `;
