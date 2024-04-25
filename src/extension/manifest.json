@@ -53,6 +53,7 @@
           "project.js",
           "rum.js",
           "sp-popover.js",
+          "sp-tray.js",
           "tab.js",
           "url-cache.js",
           "views/json/json.html",
