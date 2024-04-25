@@ -1,3 +1,16 @@
+# [1.20.0](https://github.com/adobe/aem-sidekick/compare/v1.19.0...v1.20.0) (2024-04-25)
+
+
+### Bug Fixes
+
+* remove singleton and add new test framework ([#119](https://github.com/adobe/aem-sidekick/issues/119)) ([1e32e23](https://github.com/adobe/aem-sidekick/commit/1e32e23641efee796079ca2b9a08587b134d50d2))
+
+
+### Features
+
+* **context-menu:** remove open preview option ([#118](https://github.com/adobe/aem-sidekick/issues/118)) ([3464ec1](https://github.com/adobe/aem-sidekick/commit/3464ec1efd396d6d0c5168bf3e8c9579c221b15d)), closes [#115](https://github.com/adobe/aem-sidekick/issues/115) [#114](https://github.com/adobe/aem-sidekick/issues/114) [#114](https://github.com/adobe/aem-sidekick/issues/114) [#85](https://github.com/adobe/aem-sidekick/issues/85) [#85](https://github.com/adobe/aem-sidekick/issues/85) [#116](https://github.com/adobe/aem-sidekick/issues/116) [#116](https://github.com/adobe/aem-sidekick/issues/116)
+* Loading in action-bar ([#120](https://github.com/adobe/aem-sidekick/issues/120)) ([a546a5d](https://github.com/adobe/aem-sidekick/commit/a546a5d7201189b9c56cb576b7459e23401839a3))
+
 # [1.19.0](https://github.com/adobe/aem-sidekick/compare/v1.18.0...v1.19.0) (2024-04-18)
 
 
