@@ -23,6 +23,28 @@ export class PaletteDialogWrapper extends DialogWrapper {
     return [
       ...super.styles,
       css`
+        :host {
+          --mod-modal-background-color: transparent;
+          --mod-modal-confirm-border-radius: var(--spectrum2-sidekick-border-radius);
+          --spectrum-modal-max-width: 100%;
+          --mod-dialog-confirm-padding-grid: 0;
+          --mod-dialog-confirm-description-padding: 0;
+        }
+
+        .modal {
+          background-color: var(--spectrum2-sidekick-background);
+          backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
+          -webkit-backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
+          overflow: hidden;
+        }
+
+        h2 {
+          display: flex;
+          align-items: center;
+          height: 100%;
+          padding-left: 12px;
+        }
+
         .modal {
           width: 100%;
           height: 100%;
