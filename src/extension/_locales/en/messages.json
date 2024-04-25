@@ -468,6 +468,9 @@
     "open_urls": {
       "message": "Open URLs"
     },
+    "open": {
+      "message": "Open"
+    },
     "open_urls_confirm": {
       "message": "Are you sure you want to open $1 URLs?"
     },
@@ -665,7 +668,7 @@
       "message": "Preview successfully updated, opening Preview..."
     }, 
     "publish_success": {
-      "message": "Publish successful, opening publish..."
+      "message": "Publication successful, opening $1..."
     }, 
     "fetching_status_state": {
       "message": "Loading status..."

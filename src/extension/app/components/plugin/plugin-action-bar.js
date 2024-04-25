@@ -58,20 +58,22 @@ export class PluginActionBar extends ConnectedElement {
       () => this.appStore.state,
       async () => {
         const actionBar = await this.actionBar;
-        if (this.appStore.state === SIDEKICK_STATE.TOAST) {
-          actionBar.classList.add(this.appStore.toast.variant);
+        if (actionBar) {
+          if (this.appStore.state === SIDEKICK_STATE.TOAST) {
+            actionBar.classList.add(this.appStore.toast.variant);
 
-          setTimeout(() => {
+            setTimeout(() => {
+              actionBar.className = '';
+              if (this.appStore.toast?.actionCallback) {
+                this.appStore.toast?.actionCallback();
+              }
+              this.appStore.closeToast();
+            }, this.appStore.toast.timeout);
+            // We need to reset the class name to remove the toast variant, but only if it exists.
+            // It's possible for actionBar to be null on the first render.
+          } else if (actionBar) {
             actionBar.className = '';
-            if (this.appStore.toast?.actionCallback) {
-              this.appStore.toast?.actionCallback();
-            }
-            this.appStore.closeToast();
-          }, this.appStore.toast.timeout);
-          // We need to reset the class name to remove the toast variant, but only if it exists.
-          // It's possible for actionBar to be null on the first render.
-        } else if (actionBar) {
-          actionBar.className = '';
+          }
         }
 
         this.requestUpdate();
@@ -110,7 +112,6 @@ export class PluginActionBar extends ConnectedElement {
   }
 
   renderSystemPlugins() {
-    const { profile } = this.appStore.status;
     const { siteStore } = this.appStore;
 
     const systemPlugins = [];
@@ -140,10 +141,9 @@ export class PluginActionBar extends ConnectedElement {
       </sp-action-button>`;
     systemPlugins.push(properties);
 
-    const loggedIn = profile && siteStore.authorized;
-    const authStatus = loggedIn ? '' : 'not-authorized';
+    const buttonType = siteStore.authorized ? '' : 'not-authorized';
     systemPlugins.push(html`
-      <login-button class=${authStatus}></login-button>
+      <login-button class=${buttonType}></login-button>
     `);
 
     systemPlugins.push(ICONS.ADOBE_LOGO);

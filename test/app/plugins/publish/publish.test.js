@@ -80,7 +80,7 @@ describe('Publish plugin', () => {
       await waitUntil(() => publishStub.calledOnce);
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
 
-      expect(showToastSpy.calledWith('Publish successful, opening publish...', 'positive')).to.be.true;
+      expect(showToastSpy.calledWith('Publication successful, opening live...', 'positive')).to.be.true;
     }).timeout(15000);
 
     it('publish from preview - docx with toast dismiss', async () => {
@@ -106,7 +106,33 @@ describe('Publish plugin', () => {
       await sidekickTest.clickToastClose();
 
       await waitUntil(() => closeToastSpy.calledOnce, 'toast was not dismissed', { timeout: 5000 });
-      expect(showToastSpy.calledWith('Publish successful, opening publish...', 'positive')).to.be.true;
+      expect(showToastSpy.calledWith('Publication successful, opening live...', 'positive')).to.be.true;
+    }).timeout(15000);
+
+    it('publish from preview - docx with host and toast dismiss', async () => {
+      const { sandbox } = sidekickTest;
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true, false);
+
+      const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
+      const showToastSpy = sandbox.spy(appStore, 'showToast');
+      const closeToastSpy = sandbox.spy(appStore, 'closeToast');
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const publishPlugin = recursiveQuery(sidekick, '.publish');
+      expect(publishPlugin.textContent.trim()).to.equal('Publish');
+      await waitUntil(() => publishPlugin.getAttribute('disabled') === null);
+      publishPlugin.click();
+
+      await waitUntil(() => publishStub.calledOnce);
+
+      await sidekickTest.clickToastClose();
+
+      await waitUntil(() => closeToastSpy.calledOnce, 'toast was not dismissed', { timeout: 5000 });
+      expect(showToastSpy.calledWith('Publication successful, opening production...', 'positive')).to.be.true;
     }).timeout(15000);
 
     it('publish from preview - failure with toast dimiss', async () => {

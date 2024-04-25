@@ -12,7 +12,7 @@
 
 /* eslint-disable wc/no-constructor-params */
 
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, queryAsync } from 'lit/decorators.js';
 import { LitElement, html } from 'lit';
 import { style } from './modal-container.css.js';
 import { EventBus } from '../../utils/event-bus.js';
@@ -55,6 +55,12 @@ export class ModalContainer extends LitElement {
   @property({ type: String })
   accessor action;
 
+  /**
+   * The dialog wrapper
+   */
+  @queryAsync('sp-dialog-wrapper')
+  accessor dialogWrapper;
+
   static get styles() {
     return [style];
   }
@@ -83,9 +89,9 @@ export class ModalContainer extends LitElement {
     });
   }
 
-  firstUpdated() {
-    const dialogWrapper = this.shadowRoot.querySelector('sp-dialog-wrapper');
-    dialogWrapper?.addEventListener(MODAL_EVENTS.CLOSE, () => {
+  async firstUpdated() {
+    const dialogWrapper = await this.dialogWrapper;
+    dialogWrapper.addEventListener(MODAL_EVENTS.CLOSE, () => {
       this.remove();
     });
   }

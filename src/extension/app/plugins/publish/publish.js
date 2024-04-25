@@ -13,7 +13,6 @@
 import { SIDEKICK_STATE } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
-import { i18n } from '../../utils/i18n.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -35,7 +34,7 @@ export function createPublishPlugin(appStore) {
     button: {
       text: appStore.i18n('publish'),
       action: async (evt) => {
-        const { location } = appStore;
+        const { location, siteStore } = appStore;
         const path = location.pathname;
         appStore.setState(SIDEKICK_STATE.PUBLISHNG);
         const res = await appStore.publish(path);
@@ -48,7 +47,9 @@ export function createPublishPlugin(appStore) {
             appStore.closeToast();
           };
 
-          appStore.showToast(i18n(appStore.languageDict, 'publish_success'), 'positive', closeCallback, actionCallback, 'Open');
+          const { host } = siteStore;
+          const targetEnv = host ? 'production' : 'live';
+          appStore.showToast(appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv).toLowerCase()), 'positive', closeCallback, actionCallback, 'Open');
         } else {
           // eslint-disable-next-line no-console
           console.error(res);
