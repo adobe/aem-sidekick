@@ -668,7 +668,7 @@
       "message": "Publish successful, opening publish..."
     }, 
     "fetching_status_state": {
-      "message": "Loading status"
+      "message": "Loading status..."
     }, 
     "login_required_state": {
       "message": "Sign in to continue"
