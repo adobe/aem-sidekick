@@ -49,7 +49,7 @@ export function createPublishPlugin(appStore) {
 
           const { host } = siteStore;
           const targetEnv = host ? 'production' : 'live';
-          appStore.showToast(appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv).toLowerCase()), 'positive', closeCallback, actionCallback, 'Open');
+          appStore.showToast(appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv).toLowerCase()), 'positive', closeCallback, actionCallback, appStore.i18n('open'));
         } else {
           // eslint-disable-next-line no-console
           console.error(res);

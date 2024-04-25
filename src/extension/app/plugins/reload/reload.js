@@ -52,7 +52,7 @@ export function createReloadPlugin(appStore) {
             appStore.reloadPage(newTab(evt));
           };
 
-          appStore.showToast(i18n(appStore.languageDict, 'reload_success'), 'positive', closeHandler, actionHandler, 'Open');
+          appStore.showToast(i18n(appStore.languageDict, 'reload_success'), 'positive', closeHandler, actionHandler, appStore.i18n('open'));
         } catch (e) {
           appStore.showToast(appStore.i18n('reload_failure'), 'negative');
         }
