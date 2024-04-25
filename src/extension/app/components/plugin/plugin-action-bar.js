@@ -13,11 +13,14 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
-import { customElement, property, query, queryAll } from 'lit/decorators.js';
+import {
+  customElement, property, queryAll, queryAsync,
+} from 'lit/decorators.js';
 import { reaction } from 'mobx';
-import { ICONS } from '../../constants.js';
+import { ICONS, STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
+import '../action-bar/activity-action/activity-action.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} Plugin
@@ -67,7 +70,7 @@ export class PluginActionBar extends ConnectedElement {
   @property({ type: Boolean, attribute: false })
   accessor ready = false;
 
-  @query('action-bar')
+  @queryAsync('action-bar')
   accessor actionBar;
 
   @queryAll('sp-action-group')
@@ -81,8 +84,8 @@ export class PluginActionBar extends ConnectedElement {
     this.ready = true;
 
     reaction(
-      () => this.appStore.status,
-      () => {
+      () => this.appStore.state,
+      async () => {
         this.visiblePlugins = [
           ...Object.values(this.appStore.corePlugins),
           ...Object.values(this.appStore.customPlugins),
@@ -93,6 +96,25 @@ export class PluginActionBar extends ConnectedElement {
 
         this.menuPlugins = this.visiblePlugins
           .filter((plugin) => !plugin.isPinned());
+
+        const actionBar = await this.actionBar;
+        if (actionBar) {
+          if (this.appStore.state === STATE.TOAST) {
+            actionBar.classList.add(this.appStore.toast.variant);
+
+            setTimeout(() => {
+              actionBar.className = '';
+              if (this.appStore.toast?.actionCallback) {
+                this.appStore.toast?.actionCallback();
+              }
+              this.appStore.closeToast();
+            }, this.appStore.toast.timeout);
+            // We need to reset the class name to remove the toast variant, but only if it exists.
+            // It's possible for actionBar to be null on the first render.
+          } else if (actionBar) {
+            actionBar.className = '';
+          }
+        }
 
         this.requestUpdate();
       },
@@ -185,7 +207,7 @@ export class PluginActionBar extends ConnectedElement {
             chevron="false"
             placement="top"
             label="⋯"
-            title="${appStore.i18n('plugins_more')}"
+            title="${this.appStore.i18n('plugins_more')}"
             quiet
             @change=${this.onPluginMenuSelect}
             .disabled=${!this.ready}>
@@ -205,6 +227,13 @@ export class PluginActionBar extends ConnectedElement {
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
+    if (this.appStore.state !== STATE.READY) {
+      return html`
+        <sp-action-group>
+          <activity-action></activity-action>
+        </sp-action-group>`;
+    }
+
     return html`
       <sp-action-group>
         ${this.barPlugins.length > 0 ? this.barPlugins.map((p) => p.render()) : ''}
@@ -212,10 +241,13 @@ export class PluginActionBar extends ConnectedElement {
   }
 
   renderSystemPlugins() {
-    const { profile } = this.appStore.status;
     const { siteStore } = this.appStore;
 
     const systemPlugins = [];
+
+    if (this.appStore.state === STATE.TOAST) {
+      return html``;
+    }
 
     const properties = html`
       <sp-action-button id="properties" quiet>
@@ -225,15 +257,10 @@ export class PluginActionBar extends ConnectedElement {
       </sp-action-button>`;
     systemPlugins.push(properties);
 
-    const loggedIn = profile && siteStore.authorized;
-
-    // If we are not logged in or we have a profile, show the login button
-    if (profile || !loggedIn) {
-      const authStatus = loggedIn ? '' : 'not-authorized';
-      systemPlugins.push(html`
-        <login-button id="user" class=${authStatus}></login-button>
-      `);
-    }
+    const buttonType = siteStore.authorized ? '' : 'not-authorized';
+    systemPlugins.push(html`
+      <login-button class=${buttonType}></login-button>
+    `);
 
     systemPlugins.push(ICONS.ADOBE_LOGO);
 
@@ -244,7 +271,7 @@ export class PluginActionBar extends ConnectedElement {
   }
 
   render() {
-    return this.ready ? html`
+    return this.appStore.state !== STATE.INITIALIZING ? html`
       <action-bar>
         ${this.renderPlugins()}
         ${this.renderPluginMenu()}

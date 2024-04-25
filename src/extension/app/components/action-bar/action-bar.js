@@ -27,11 +27,26 @@ export class ActionBar extends LitElement {
       -webkit-backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
     }
 
-    @media (max-width: 600px) {
+    :host(.positive) .action-bar {
+      transition: background-color 500ms;
+      background-color: var(--spectrum2-color-positive);
+      border: 1px solid var(--spectrum2-color-positive);
+    }
+    :host(.negative) .action-bar {
+      transition: background-color 500ms;
+      background-color: var(--spectrum2-color-negative);
+      border: 1px solid var(--spectrum2-color-negative);
+    }
+    :host(.info) .action-bar {
+      transition: background-color 500ms;
+      background-color: var(--spectrum2-color-info);
+      border: 1px solid var(--spectrum2-color-info);
+    }
+
+    @media (max-width: 700px) {
       .action-bar {
         border-radius: 0;
       }
-    }
   `;
 
   render() {

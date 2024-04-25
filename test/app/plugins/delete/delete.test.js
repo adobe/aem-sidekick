@@ -66,14 +66,6 @@ function confirmDelete(sidekick) {
   deleteButton.click();
 }
 
-async function closeToast(sidekick) {
-  // click toast close button
-  await waitUntil(() => recursiveQuery(sidekick, 'sp-toast') !== null);
-  const toast = recursiveQuery(sidekick, 'sp-toast');
-  const closeButton = recursiveQuery(toast, 'sp-close-button');
-  closeButton.click();
-}
-
 describe('Delete plugin', () => {
   for (const contentType of [HelixMockContentType.DOC, HelixMockContentType.SHEET]) {
     describe(`deletes ${contentType}`, () => {
@@ -99,8 +91,7 @@ describe('Delete plugin', () => {
       let loadPageStub;
       let showModalSpy;
       let showToastSpy;
-      let showWaitSpy;
-      let hideWaitSpy;
+      let closeToastSpy;
 
       beforeEach(async () => {
         appStore = new AppStore();
@@ -114,8 +105,7 @@ describe('Delete plugin', () => {
         loadPageStub = sandbox.stub(appStore, 'loadPage');
         showModalSpy = sandbox.spy(appStore, 'showModal');
         showToastSpy = sandbox.spy(appStore, 'showToast');
-        showWaitSpy = sandbox.spy(appStore, 'showWait');
-        hideWaitSpy = sandbox.spy(appStore, 'hideWait');
+        closeToastSpy = sandbox.spy(appStore, 'closeToast');
 
         sidekick = sidekickTest.createSidekick();
       });
@@ -154,15 +144,14 @@ describe('Delete plugin', () => {
 
         confirmDelete(sidekick);
 
-        await waitUntil(() => deleteStub.calledOnce === true);
+        await waitUntil(() => deleteStub.calledOnce);
+
+        sidekickTest.clickToastClose();
 
         expect(deleteStub.calledOnce).to.be.true;
-        expect(showWaitSpy.calledOnce).to.be.true;
-        expect(hideWaitSpy.calledOnce).to.be.true;
         expect(showToastSpy.calledOnce).to.be.true;
 
-        await closeToast(sidekick);
-
+        await waitUntil(() => loadPageStub.calledOnce);
         expect(loadPageStub.calledWith(
           `${getDefaultHelixEnviromentLocations(HelixMockContentType.DOC, 'hlx').preview}/`,
         )).to.be.true;
@@ -211,10 +200,10 @@ describe('Delete plugin', () => {
 
         confirmDelete(sidekick);
 
-        await waitUntil(() => deleteStub.calledOnce === true);
+        await waitUntil(() => deleteStub.calledOnce);
       });
 
-      it('handles server failure', async () => {
+      it('handles server failure with toast dismiss', async () => {
         sidekickTest
           .mockFetchStatusSuccess(false, {
           // source document is not found
@@ -234,9 +223,11 @@ describe('Delete plugin', () => {
 
         confirmDelete(sidekick);
 
-        await waitUntil(() => deleteStub.calledOnce === true);
+        await waitUntil(() => deleteStub.calledOnce);
 
-        expect(showModalSpy.calledWithMatch({ type: MODALS.ERROR })).to.be.true;
+        sidekickTest.clickToastClose();
+        expect(closeToastSpy.calledOnce);
+        expect(showToastSpy.calledWith('Deletion failed. Please try again later.', 'negative')).to.be.true;
       });
     });
   }

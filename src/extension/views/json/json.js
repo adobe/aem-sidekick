@@ -140,6 +140,12 @@ export class JSONView extends LitElement {
       return '';
     }
 
+    if (!json[':type']) {
+      // Not a sheet backed json file, close view
+      this.onCloseView(false);
+      return [];
+    }
+
     const sheets = {};
     const multiSheet = json[':type'] === 'multi-sheet' && json[':names'];
     if (multiSheet) {
@@ -425,10 +431,12 @@ export class JSONView extends LitElement {
   /**
    * Close the json view
    */
-  onCloseView() {
+  onCloseView(trackRum = true) {
     const customEventDetail = { detail: { event: 'hlx-close-view' } };
     window.parent.postMessage(customEventDetail, '*');
-    sampleRUM('sidekick:jsonview:close');
+    if (trackRum) {
+      sampleRUM('sidekick:jsonview:close');
+    }
   }
 
   render() {

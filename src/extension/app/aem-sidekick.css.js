@@ -15,7 +15,7 @@ import { css } from 'lit';
 export const style = css`
   :host {
     position: fixed;
-    left:0;
+    left: 0;
     right: 0;
     top: 0;
     bottom: 0;
@@ -35,11 +35,11 @@ export const style = css`
     position: absolute;
     left: 50%;
     transform: translate(-50%, 0px);
-    bottom: 150px;
+    bottom: 55px;
     pointer-events: auto;
     z-index: 1;
     width: 80vw;
-    max-width: 640px;
+    max-width: var(--sidekick-max-width);
   }
 
   .hlx-sk-special-view {
@@ -57,13 +57,7 @@ export const style = css`
     pointer-events: auto;
   }
 
-  @media (max-width: 800px) {
-    plugin-action-bar {
-      width: 90vw;
-    }
-  }
-
-  @media (max-width: 600px) {
+  @media (max-width: 700px) {
     plugin-action-bar {
       width: 100vw;
       bottom: 0;

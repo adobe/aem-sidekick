@@ -24,8 +24,8 @@
             }
           ],
           "superclass": {
-            "name": "MobxLitElement",
-            "package": "@adobe/lit-mobx"
+            "name": "LitElement",
+            "package": "lit"
           },
           "tagName": "aem-sidekick",
           "customElement": true

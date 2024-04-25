@@ -13,7 +13,10 @@
 import { log } from '../../../log.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import {
-  MODALS, MODAL_EVENTS, TOAST_EVENTS, RESTRICTED_PATHS,
+  MODALS,
+  MODAL_EVENTS,
+  RESTRICTED_PATHS,
+  STATE,
 } from '../../constants.js';
 
 /**
@@ -65,31 +68,29 @@ export function createUnpublishPlugin(appStore) {
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
           // perform unpublish
-          appStore.showWait();
+          appStore.setState(STATE.UNPUBLISHING);
           try {
             const resp = await appStore.unpublish();
-            appStore.hideWait();
             if (resp.ok) {
               // show success toast
-              const toast = appStore.showToast(
+              appStore.showToast(
                 appStore.i18n('unpublish_page_success'),
                 'positive',
+                () => {
+                  log.info(`redirecting to ${location.origin}/`);
+                  appStore.loadPage(`${location.origin}/`);
+                },
               );
-              toast.addEventListener(TOAST_EVENTS.CLOSE, () => {
-                log.info(`redirecting to ${location.origin}/`);
-                appStore.loadPage(`${location.origin}/`);
-              });
             } else {
               throw new Error(resp.headers?.['x-error']);
             }
           } catch (e) {
             // eslint-disable-next-line no-console
-            appStore.showModal({
-              type: MODALS.ERROR,
-              data: {
-                message: appStore.i18n('unpublish_failure'),
-              },
-            });
+            appStore.showToast(
+              appStore.i18n('unpublish_failure'),
+              'negative',
+              () => appStore.closeToast(),
+            );
           }
         });
       },

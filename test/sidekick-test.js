@@ -14,7 +14,7 @@
 
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
-import { waitUntil } from '@open-wc/testing';
+import { aTimeout, waitUntil } from '@open-wc/testing';
 import sinon from 'sinon';
 import { AppStore } from '../src/extension/app/store/app.js';
 import { AEMSidekick } from '../src/extension/index.js';
@@ -41,6 +41,7 @@ import {
   defaultDirectorySharepointStatusResponse,
   defaultSharepointProfileResponse,
   defaultGdriveProfileResponse,
+  defaultStatusLoggedInNotAuthorizedResponse,
 } from './fixtures/helix-admin.js';
 import enMessages from '../src/extension/_locales/en/messages.json' assert { type: 'json' };
 
@@ -141,6 +142,56 @@ export class SidekickTest {
    */
   async awaitEnvSwitcher() {
     await waitUntil(() => recursiveQuery(this.sidekick, 'env-switcher'));
+  }
+
+  /**
+   * Await the status to be fetched
+   */
+  async awaitStatusFetched() {
+    const statusFetchedSpy = this.sandbox.spy();
+    this.sidekick.addEventListener('statusfetched', statusFetchedSpy);
+    await waitUntil(() => statusFetchedSpy.calledOnce, 'Status not fetched', { timeout: 2000 });
+  }
+
+  /**
+   * Await the status to be fetched
+   */
+  async awaitLoggedOut() {
+    const logoutSpy = this.sandbox.spy();
+    this.sidekick.addEventListener('loggedout', logoutSpy);
+    await waitUntil(() => logoutSpy.calledOnce, 'Logout not compelte', { timeout: 2000 });
+  }
+
+  /**
+   * Await a toast to appear
+   */
+  async awaitToast() {
+    await waitUntil(() => recursiveQuery(this.sidekick, '.toast-container .message') !== null);
+    await aTimeout(500);
+  }
+
+  /**
+   * Click the close button on the toast
+   * @param {string} variant The toast variant type
+   * @returns {Promise<void>}
+   */
+  async clickToastClose(variant = 'positive') {
+    await this.awaitToast();
+    await waitUntil(() => recursiveQuery(this.sidekick, `action-bar.${variant}`) !== null);
+    const closeButton = recursiveQuery(this.sidekick, 'sp-action-button.close');
+    closeButton.click();
+  }
+
+  /**
+   * Click the action button on the toast
+   * @param {string} variant The toast variant type
+   * @returns {Promise<void>}
+   */
+  async clickToastAction(variant = 'positive') {
+    await this.awaitToast();
+    await waitUntil(() => recursiveQuery(this.sidekick, `action-bar.${variant}`) !== null);
+    const closeButton = recursiveQuery(this.sidekick, 'sp-action-button.action');
+    closeButton.click();
   }
 
   /**
@@ -255,6 +306,19 @@ export class SidekickTest {
   mockFetchStatusUnauthorized(statusUrl = defaultStatusUrl) {
     fetchMock.get(statusUrl, {
       status: 401,
+    }, { overwriteRoutes: true });
+    return this;
+  }
+
+  /**
+   * Mocks a 404 response from the status endpoint
+   * @param {string} statusUrl The status URL
+   * @returns {SidekickTest}
+   */
+  mockFetchStatusForbiddenWithProfile(statusUrl = defaultStatusUrl) {
+    fetchMock.get(statusUrl, {
+      status: 200,
+      body: defaultStatusLoggedInNotAuthorizedResponse,
     }, { overwriteRoutes: true });
     return this;
   }
@@ -388,6 +452,18 @@ export class SidekickTest {
   mockFetchSidekickConfigUnAuthorized(configUrl = defaultConfigJSONUrl) {
     fetchMock.get(configUrl, {
       status: 401,
+    }, { overwriteRoutes: true });
+    return this;
+  }
+
+  /**
+   * Mocks a 403 response from the config endpoint
+   * @param {string} configUrl The config URL
+   * @returns {SidekickTest}
+   */
+  mockFetchSidekickConfigForbidden(configUrl = defaultConfigJSONUrl) {
+    fetchMock.get(configUrl, {
+      status: 403,
     }, { overwriteRoutes: true });
     return this;
   }
