@@ -835,7 +835,7 @@ export class AppStore {
       })
       .then((json) => this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, json))
       .catch(({ message }) => {
-        const error = this.i18n(message);
+        const error = this.i18n(message) || this.i18n('error_status_fatal');
         this.status.error = error;
         this.showToast(error, 'negative');
       })
