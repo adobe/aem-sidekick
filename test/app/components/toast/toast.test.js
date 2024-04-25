@@ -14,7 +14,8 @@
 
 // @ts-ignore
 import {
-  expect, waitUntil, aTimeout,
+  expect,
+  waitUntil,
 } from '@open-wc/testing';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
 import chromeMock from '../../../mocks/chrome.js';
@@ -26,10 +27,6 @@ import { SidekickTest } from '../../../sidekick-test.js';
 /**
  * The AEMSidekick object type
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
- */
-
-/**
- * @typedef {import('../../../../src/extension/app/components/toast/toast-container.js').ToastContainer} ToastContainer
  */
 
 // @ts-ignore
@@ -51,6 +48,8 @@ describe('Toasts', () => {
    */
   let appStore;
 
+  let toastSpy;
+
   beforeEach(async () => {
     appStore = new AppStore();
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
@@ -58,6 +57,8 @@ describe('Toasts', () => {
       .mockFetchStatusSuccess()
       .mockFetchSidekickConfigSuccess(true, false)
       .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+    toastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
   });
 
   afterEach(() => {
@@ -71,22 +72,11 @@ describe('Toasts', () => {
 
     appStore.showToast('Test Toast', 'info');
 
-    const toastContainer = recursiveQuery(sidekick, 'toast-container');
-
-    await waitUntil(() => recursiveQuery(toastContainer, 'sp-toast'));
-
-    const toast = recursiveQuery(toastContainer, 'sp-toast');
-    expect(toast).to.exist;
-    expect(toast.textContent).to.equal('Test Toast');
-    expect(toast.getAttribute('variant')).to.equal('info');
-
-    const closeButton = recursiveQuery(toast, 'sp-close-button');
-    expect(closeButton).to.exist;
-    closeButton.click();
-
-    await aTimeout(1);
-    expect(recursiveQuery(toastContainer, 'sp-toast')).to.be.undefined;
-  });
+    await sidekickTest.awaitToast();
+    expect(toastSpy.calledWith('Test Toast', 'info')).to.be.true;
+    await waitUntil(() => recursiveQuery(sidekick, '.toast-container .message span').textContent === 'Test Toast');
+    await sidekickTest.clickToastClose();
+  }).timeout(5000);
 
   it('renders 1 toast at a time', async () => {
     sidekick = sidekickTest.createSidekick();
@@ -94,14 +84,13 @@ describe('Toasts', () => {
     await sidekickTest.awaitEnvSwitcher();
 
     appStore.showToast('Test Toast 1', 'info');
+    await sidekickTest.awaitToast();
 
     appStore.showToast('Test Toast 2', 'info');
+    await sidekickTest.awaitToast();
 
-    const toastContainer = recursiveQuery(sidekick, 'toast-container');
-
-    await waitUntil(() => recursiveQuery(toastContainer, 'sp-toast'));
-
-    const toasts = [...recursiveQueryAll(toastContainer, 'sp-toast')];
+    await waitUntil(() => recursiveQuery(sidekick, '.toast-container .message span').textContent === 'Test Toast 2');
+    const toasts = [...recursiveQueryAll(sidekick, '.toast-container')];
     expect(toasts.length).to.equal(1);
-  });
+  }).timeout(5000);
 });

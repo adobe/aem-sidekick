@@ -115,6 +115,7 @@ describe('browser utils', () => {
     it('returns false for invalid host formats', () => {
       expect(matchProjectHost('invalidhost', 'repo--owner.aem.page')).to.eq(false);
       expect(matchProjectHost('main--repo--owner.aem.page', 'invalidhost')).to.eq(false);
+      expect(matchProjectHost('main--helix-website--adobe.aem.live', 'www.aem.live')).to.eq(false);
     });
   });
 

@@ -13,11 +13,12 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, queryAsync } from 'lit/decorators.js';
 import { reaction } from 'mobx';
-import { ICONS, MODALS } from '../../constants.js';
+import { ICONS, MODALS, STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
+import '../action-bar/activity-action/activity-action.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} SidekickPlugin
@@ -42,12 +43,8 @@ export class PluginActionBar extends ConnectedElement {
    */
   visiblePlugins = [];
 
-  /**
-  * Are we ready to render?
-  * @type {boolean}
-  */
-  @property({ type: Boolean, attribute: false })
-  accessor ready = false;
+  @queryAsync('action-bar')
+  accessor actionBar;
 
   /**
    * Loads the user preferences for plugins in this environment.
@@ -58,8 +55,27 @@ export class PluginActionBar extends ConnectedElement {
     this.ready = true;
 
     reaction(
-      () => this.appStore.status,
-      () => {
+      () => this.appStore.state,
+      async () => {
+        const actionBar = await this.actionBar;
+        if (actionBar) {
+          if (this.appStore.state === STATE.TOAST) {
+            actionBar.classList.add(this.appStore.toast.variant);
+
+            setTimeout(() => {
+              actionBar.className = '';
+              if (this.appStore.toast?.actionCallback) {
+                this.appStore.toast?.actionCallback();
+              }
+              this.appStore.closeToast();
+            }, this.appStore.toast.timeout);
+            // We need to reset the class name to remove the toast variant, but only if it exists.
+            // It's possible for actionBar to be null on the first render.
+          } else if (actionBar) {
+            actionBar.className = '';
+          }
+        }
+
         this.requestUpdate();
       },
     );
@@ -70,8 +86,11 @@ export class PluginActionBar extends ConnectedElement {
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
-    if (!this.appStore.corePlugins) {
-      return '';
+    if (this.appStore.state !== STATE.READY) {
+      return html`
+        <sp-action-group>
+          <activity-action></activity-action>
+        </sp-action-group>`;
     }
 
     this.visiblePlugins = [
@@ -93,10 +112,13 @@ export class PluginActionBar extends ConnectedElement {
   }
 
   renderSystemPlugins() {
-    const { profile } = this.appStore.status;
     const { siteStore } = this.appStore;
 
     const systemPlugins = [];
+
+    if (this.appStore.state === STATE.TOAST) {
+      return html``;
+    }
 
     const pluginList = html`
       <sp-action-button
@@ -119,15 +141,10 @@ export class PluginActionBar extends ConnectedElement {
       </sp-action-button>`;
     systemPlugins.push(properties);
 
-    const loggedIn = profile && siteStore.authorized;
-
-    // If we are not logged in or we have a profile, show the login button
-    if (profile || !loggedIn) {
-      const authStatus = loggedIn ? '' : 'not-authorized';
-      systemPlugins.push(html`
-        <login-button class=${authStatus}></login-button>
-      `);
-    }
+    const buttonType = siteStore.authorized ? '' : 'not-authorized';
+    systemPlugins.push(html`
+      <login-button class=${buttonType}></login-button>
+    `);
 
     systemPlugins.push(ICONS.ADOBE_LOGO);
 
@@ -138,7 +155,7 @@ export class PluginActionBar extends ConnectedElement {
   }
 
   render() {
-    return this.ready ? html`
+    return this.appStore.state !== STATE.INITIALIZING ? html`
       <action-bar>
         ${this.renderPlugins()}
         ${this.renderSystemPlugins()}

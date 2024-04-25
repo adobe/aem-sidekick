@@ -17,7 +17,6 @@ import chromeMock from '../../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import '../../../../src/extension/index.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
-import { MODALS } from '../../../../src/extension/app/constants.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 import { EditorMockEnvironments, HelixMockContentSources, HelixMockContentType } from '../../../mocks/environment.js';
 
@@ -82,7 +81,7 @@ describe('Preview plugin', () => {
 
       previewPlugin.click();
 
-      await waitUntil(() => updatePreviewSpy.calledOnce === true);
+      await waitUntil(() => updatePreviewSpy.calledOnce);
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(tipToast.calledOnce).to.be.true;
     });
@@ -91,6 +90,7 @@ describe('Preview plugin', () => {
       const { sandbox } = sidekickTest;
       // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
+      const updatePreviewSpy = sidekickTest.sandbox.stub(appStore, 'updatePreview').resolves();
 
       sidekickTest
         .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT,
@@ -110,7 +110,7 @@ describe('Preview plugin', () => {
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
       previewPlugin.click();
 
-      await waitUntil(() => reloadStub.calledOnce === true);
+      await waitUntil(() => reloadStub.calledOnce);
       expect(reloadStub.calledOnce).to.be.true;
 
       // Simulate a reload
@@ -121,9 +121,9 @@ describe('Preview plugin', () => {
 
       // Reset the environment
       sidekick = sidekickTest.createSidekick();
-
-      await sidekickTest.awaitEnvSwitcher();
       await aTimeout(500);
+
+      expect(updatePreviewSpy.calledOnce).to.be.true;
 
       // Make sure the hlx-sk-preview flag is unset
       expect(window.sessionStorage.getItem('hlx-sk-preview')).to.be.null;
@@ -150,12 +150,12 @@ describe('Preview plugin', () => {
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 
       previewPlugin.click();
-      await waitUntil(() => updatePreviewSpy.calledOnce === true);
+      await waitUntil(() => updatePreviewSpy.calledOnce);
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
     });
 
-    it('previewing from gdrive editor - not a valid content type', async () => {
+    it('previewing from gdrive editor - not a valid content type with toast dismiss', async () => {
       sidekickTest
         .mockEditorAdminEnvironment(
           EditorMockEnvironments.EDITOR,
@@ -167,7 +167,8 @@ describe('Preview plugin', () => {
         );
 
       const { sandbox } = sidekickTest;
-      const modalSpy = sandbox.spy(appStore, 'showModal');
+      const toastSpy = sandbox.spy(appStore, 'showToast');
+      const closeToastSpy = sandbox.spy(appStore, 'closeToast');
 
       sidekick = sidekickTest.createSidekick();
 
@@ -178,9 +179,11 @@ describe('Preview plugin', () => {
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
       previewPlugin.click();
 
-      await waitUntil(() => modalSpy.calledOnce === true);
-      expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0].type).to.equal(MODALS.ERROR);
+      await waitUntil(() => toastSpy.calledOnce);
+
+      await sidekickTest.clickToastClose();
+      expect(closeToastSpy.calledOnce);
+      expect(toastSpy.calledOnceWith('This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets', 'negative'));
     });
 
     it('previewing from gdrive editor - not a gdoc type', async () => {
@@ -195,7 +198,7 @@ describe('Preview plugin', () => {
         );
 
       const { sandbox } = sidekickTest;
-      const modalSpy = sandbox.spy(appStore, 'showModal');
+      const toastSpy = sandbox.spy(appStore, 'showToast');
 
       sidekick = sidekickTest.createSidekick();
 
@@ -207,9 +210,8 @@ describe('Preview plugin', () => {
 
       previewPlugin.click();
 
-      await waitUntil(() => modalSpy.calledOnce === true);
-      expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0].type).to.equal(MODALS.ERROR);
+      await waitUntil(() => toastSpy.calledOnce);
+      expect(toastSpy.calledOnceWith('This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets', 'negative'));
     });
 
     it('previewing from gdrive editor - not a gsheet type', async () => {
@@ -224,7 +226,7 @@ describe('Preview plugin', () => {
         );
 
       const { sandbox } = sidekickTest;
-      const modalSpy = sandbox.spy(appStore, 'showModal');
+      const toastSpy = sandbox.spy(appStore, 'showToast');
 
       sidekick = sidekickTest.createSidekick();
 
@@ -236,9 +238,8 @@ describe('Preview plugin', () => {
 
       previewPlugin.click();
 
-      await waitUntil(() => modalSpy.calledOnce === true);
-      expect(modalSpy.calledOnce).to.be.true;
-      expect(modalSpy.args[0][0].type).to.equal(MODALS.ERROR);
+      await waitUntil(() => toastSpy.calledOnce);
+      expect(toastSpy.calledOnceWith('This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets', 'negative'));
     });
   });
 });

@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { MODALS } from '../../constants.js';
+import { STATE } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 
@@ -34,23 +34,30 @@ export function createPublishPlugin(appStore) {
     button: {
       text: appStore.i18n('publish'),
       action: async (evt) => {
-        const { location } = appStore;
+        const { location, siteStore } = appStore;
         const path = location.pathname;
-        appStore.showWait();
+        appStore.setState(STATE.PUBLISHNG);
         const res = await appStore.publish(path);
         if (res.ok) {
-          appStore.hideWait();
-          appStore.switchEnv('prod', newTab(evt));
+          const actionCallback = () => {
+            appStore.switchEnv('prod', newTab(evt));
+          };
+
+          const closeCallback = () => {
+            appStore.closeToast();
+          };
+
+          const { host } = siteStore;
+          const targetEnv = host ? 'production' : 'live';
+          appStore.showToast(appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv).toLowerCase()), 'positive', closeCallback, actionCallback, appStore.i18n('open'));
         } else {
           // eslint-disable-next-line no-console
           console.error(res);
-
-          appStore.showModal({
-            type: MODALS.ERROR,
-            data: {
-              message: appStore.i18n('publish_failure'),
-            },
-          });
+          appStore.showToast(
+            appStore.i18n('publish_failure'),
+            'negative',
+            () => appStore.closeToast(),
+          );
         }
       },
       isEnabled: (store) => store.isAuthorized('live', 'write') // only enable if authorized

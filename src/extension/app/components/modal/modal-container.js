@@ -12,7 +12,7 @@
 
 /* eslint-disable wc/no-constructor-params */
 
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, queryAsync } from 'lit/decorators.js';
 import { LitElement, html } from 'lit';
 import { style } from './modal-container.css.js';
 import { EventBus } from '../../utils/event-bus.js';
@@ -55,6 +55,12 @@ export class ModalContainer extends LitElement {
   @property({ type: String })
   accessor action;
 
+  /**
+   * The dialog wrapper
+   */
+  @queryAsync('sp-dialog-wrapper')
+  accessor dialogWrapper;
+
   static get styles() {
     return [style];
   }
@@ -83,8 +89,8 @@ export class ModalContainer extends LitElement {
     });
   }
 
-  firstUpdated() {
-    const dialogWrapper = this.shadowRoot.querySelector('sp-dialog-wrapper');
+  async firstUpdated() {
+    const dialogWrapper = await this.dialogWrapper;
     dialogWrapper.addEventListener(MODAL_EVENTS.CLOSE, () => {
       this.remove();
     });
@@ -162,15 +168,6 @@ export class ModalContainer extends LitElement {
     const { type, data } = modal;
     const options = {};
     switch (type) {
-      case MODALS.WAIT:
-        options.dismissable = false;
-        options.content = html`
-          <div class="wait-dialog">
-            <sp-progress-circle label=${data.message} indeterminate></sp-progress-circle>
-            <span>${data.message}</span>
-          </div>
-        `;
-        break;
       case MODALS.ERROR:
         options.dismissable = false;
         options.headline = data?.headline ?? this.appStore.i18n('error');

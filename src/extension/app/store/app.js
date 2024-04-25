@@ -23,14 +23,17 @@ import {
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
-  ENVS, EVENTS, EXTERNAL_EVENTS, MODALS, MODAL_EVENTS, RESTRICTED_PATHS,
+  ENVS,
+  EVENTS,
+  EXTERNAL_EVENTS,
+  RESTRICTED_PATHS,
+  STATE,
 } from '../constants.js';
 // eslint-disable-next-line import/no-cycle
 import { Plugin } from '../components/plugin/plugin.js';
 import { pluginFactory } from '../plugins/plugin-factory.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
-import { ToastContainer } from '../components/toast/toast-container.js';
 import { getConfig, setConfig } from '../../config.js';
 
 /**
@@ -71,9 +74,6 @@ export const VIEWS = {
 };
 
 export class AppStore {
-  // eslint-disable-next-line no-undef
-  @observable accessor initialized = false;
-
   /**
    * The current location
    * @type {URL}
@@ -128,6 +128,18 @@ export class AppStore {
    */
   keyboardListener;
 
+  /**
+   * The current state of the sidekick
+   * @type {String}
+   */
+  @observable accessor state = STATE.INITIALIZING;
+
+  /**
+   * Toast data
+   * @type {import('@Types').Toast}
+   */
+  accessor toast;
+
   constructor() {
     this.siteStore = new SiteStore(this);
     this.keyboardListener = new KeyboardListener();
@@ -159,8 +171,6 @@ export class AppStore {
 
     this.fetchStatus();
 
-    this.setInitialized();
-
     this.fireEvent(EXTERNAL_EVENTS.CONTEXT_LOADED, {
       config: this.siteStore.toJSON(),
       location: this.location,
@@ -170,11 +180,26 @@ export class AppStore {
   }
 
   /**
-   * Sets the initialized flag.
+   * Set the application state
+   * @param {string} [state] The state to set
    */
   @action
-  setInitialized() {
-    this.initialized = true;
+  setState(state) {
+    if (state) {
+      this.state = state;
+      return;
+    }
+
+    const { profile } = this.status;
+    const { authorized } = this.siteStore;
+
+    if (!profile && !authorized) {
+      this.state = STATE.LOGIN_REQUIRED;
+    } else if (!authorized) {
+      this.state = STATE.UNAUTHORIZED;
+    } else {
+      this.state = STATE.READY;
+    }
   }
 
   @action
@@ -584,28 +609,6 @@ export class AppStore {
   }
 
   /**
-   * Displays a wait modal
-   * @param {string} [message] The message to display
-   */
-  showWait(message) {
-    if (!message) {
-      message = this.i18n('please_wait');
-    }
-
-    return this.showModal({
-      type: MODALS.WAIT,
-      data: { message },
-    });
-  }
-
-  /**
-   * Hides the modal
-   */
-  hideWait() {
-    EventBus.instance.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
-  }
-
-  /**
    * Opens a new page. Abstracted for testing.
    * @param {string} url The URL to open
    * @param {string} [name] The window name (optional)
@@ -700,22 +703,34 @@ export class AppStore {
    * Displays a toast message
    * @param {string} message The message to display
    * @param {string} [variant] The variant of the toast (optional)
+   * @param {function} [closeCallback] The close callback function
+   * @param {function} [actionCallback] The action callback function
+   * @param {string} [actionLabel] The action label
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
-  showToast(message, variant = 'info', timeout = 6000) {
-    const existingToast = this.sidekick?.shadowRoot?.querySelector('theme-wrapper').querySelector('toast-container');
-    if (existingToast) {
-      existingToast.remove();
+  showToast(message, variant = 'info', closeCallback = undefined, actionCallback = undefined, actionLabel = 'Ok', timeout = 3000) {
+    if (this.toast) {
+      this.toast = null;
+      this.setState();
     }
 
-    const toastContainer = new ToastContainer({
+    this.toast = {
       message,
       variant,
+      closeCallback,
+      actionCallback,
+      actionLabel,
       timeout,
-    });
-    this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(toastContainer);
+    };
+    this.setState(STATE.TOAST);
+  }
 
-    return toastContainer;
+  /**
+   * Closes the toast message
+   */
+  closeToast() {
+    this.toast = null;
+    this.setState();
   }
 
   /**
@@ -778,6 +793,7 @@ export class AppStore {
       this.status.apiUrl = apiUrl;
     }
 
+    this.setState(STATE.FETCHING_STATUS);
     fetch(this.status.apiUrl, {
       ...getAdminFetchOptions(),
     })
@@ -819,25 +835,15 @@ export class AppStore {
       })
       .then((json) => this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, json))
       .catch(({ message }) => {
-        this.status.error = message;
-        // TODO: Setup modals
-        // const modal = {
-        //   message: message.startsWith('error_') ? i18n(this, message) : [
-        //     i18n(this, 'error_status_fatal'),
-        //     'https://status.hlx.live/',
-        //   ],
-        //   sticky: true,
-        //   level: 0,
-        //   callback: () => {
-        //     // this error is fatal, hide and delete sidekick
-        //     if (window.hlx.sidekick) {
-        //       window.hlx.sidekick.hide();
-        //       window.hlx.sidekick.replaceWith(''); // remove() doesn't work for custom element
-        //       delete window.hlx.sidekick;
-        //     }
-        //   },
-        // };
-        // this.showModal(modal);
+        const error = this.i18n(message) || this.i18n('error_status_fatal');
+        this.status.error = error;
+        this.showToast(error, 'negative');
+      })
+      .finally(() => {
+        // Don't set a state if a toast is shown
+        if (!this.toast) {
+          this.setState();
+        }
       });
   }
 
@@ -905,7 +911,7 @@ export class AppStore {
   }
 
   async updatePreview(ranBefore) {
-    this.showWait();
+    this.setState(STATE.PREVIEWING);
     const { status } = this;
     const resp = await this.update();
     if (!resp.ok) {
@@ -916,32 +922,28 @@ export class AppStore {
         }, { once: true });
         this.fetchStatus();
       } else if (status.webPath.startsWith('/.helix/') && resp.error) {
-        this.showModal({
-          type: MODALS.ERROR,
-          data: {
-            message: `${this.i18n('error_config_failure')}${resp.error}`,
-          },
-        });
+        this.showToast(`${this.i18n('error_config_failure')}${resp.error}`, 'negative');
       } else {
         // eslint-disable-next-line no-console
         console.error(resp);
-        this.showModal({
-          type: MODALS.ERROR,
-          data: {
-            message: this.i18n('error_preview_failure'),
-          },
-        });
+        this.showToast(`${this.i18n('error_preview_failure')}${resp.error}`, 'negative');
       }
       return;
     }
     // handle special case /.helix/*
     if (status.webPath.startsWith('/.helix/')) {
       this.showToast(this.i18n('preview_config_success'), 'positive');
-      this.hideWait();
+      this.setState();
       return;
     }
-    this.hideWait();
-    this.switchEnv('preview');
+
+    /* istanbul ignore next 4 */
+    const actionCallback = () => {
+      this.setState();
+      this.switchEnv('preview');
+    };
+
+    this.showToast(this.i18n('preview_success'), 'positive', undefined, actionCallback, 'Open');
   }
 
   /**
@@ -1174,7 +1176,6 @@ export class AppStore {
    * @fires Sidekick#envswitched
    */
   switchEnv(targetEnv, open = false) {
-    this.showWait();
     const hostType = ENVS[targetEnv];
     if (!hostType) {
       // eslint-disable-next-line no-console
@@ -1227,7 +1228,6 @@ export class AppStore {
       sourceUrl: href,
       targetUrl: envUrl,
     });
-    this.hideWait();
   }
 
   /**
@@ -1261,7 +1261,7 @@ export class AppStore {
    * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
    */
   login(selectAccount) {
-    this.showWait(this.i18n('login_wait'));
+    this.setState(STATE.LOGGING_IN);
     const loginUrl = getAdminUrl(this.siteStore, 'login');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
@@ -1286,27 +1286,20 @@ export class AppStore {
         if (this.status.profile) {
           // logged in, stop checking
           delete status.status;
-          this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
+          this.sidekick.addEventListener('statusfetched', () => this.setState(), { once: true });
           await this.siteStore.initStore(siteStore);
           this.siteStore.authTokenExpiry = (
             window.hlx
             && window.hlx.sidekickConfig
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
-          // encourageLogin(sk, false);
           this.fetchStatus();
           this.fireEvent('loggedin');
-          this.hideWait();
           return;
         }
         if (attempts >= 5) {
           // give up after 5 attempts
-          this.showModal({
-            type: MODALS.ERROR,
-            data: {
-              message: this.i18n('error_login_timeout'),
-            },
-          });
+          this.showToast(this.i18n('error_login_timeout'), 'negative');
           return;
         }
       }
@@ -1320,7 +1313,7 @@ export class AppStore {
    * Logs the user out.
    */
   logout() {
-    this.showWait();
+    this.setState(STATE.LOGGING_OUT);
     const logoutUrl = getAdminUrl(this.siteStore, 'logout');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
@@ -1335,26 +1328,21 @@ export class AppStore {
     async function checkLoggedOut() {
       // istanbul ignore else
       if (logoutWindow.closed) {
+        const { siteStore } = this;
         attempts += 1;
         // try 5 times after login window has been closed
         this.status.profile = await this.getProfile();
         if (!this.status.profile) {
           delete this.status.profile;
           delete this.siteStore.authTokenExpiry;
-          this.sidekick.addEventListener('statusfetched', () => this.hideWait(), { once: true });
-          this.siteStore.authorized = false;
+          await this.siteStore.initStore(siteStore);
           this.setupPlugins();
           this.fetchStatus();
           this.fireEvent('loggedout');
           return;
         }
         if (attempts >= 5) {
-          this.showModal({
-            type: MODALS.ERROR,
-            data: {
-              message: this.i18n('error_logout_error'),
-            },
-          });
+          this.showToast(this.i18n('error_logout_error'), 'negative');
           return;
         }
       }
@@ -1380,8 +1368,6 @@ export class AppStore {
         // token is expired
         this.login(true);
         this.sidekick.addEventListener('statusfetched', () => {
-          // wait will be hidden by login, show again
-          this.showWait();
           resolve();
         }, { once: true });
       } else {

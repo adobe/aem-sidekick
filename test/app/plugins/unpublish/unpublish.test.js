@@ -63,14 +63,6 @@ function confirmUnpublish(sidekick) {
   unpublishButton.click();
 }
 
-async function closeToast(sidekick) {
-  // click toast close button
-  await waitUntil(() => recursiveQuery(sidekick, 'sp-toast') !== null);
-  const toast = recursiveQuery(sidekick, 'sp-toast');
-  const closeButton = recursiveQuery(toast, 'sp-close-button');
-  closeButton.click();
-}
-
 describe('Unpublish plugin', () => {
   describe('unpublishes page', () => {
     /**
@@ -92,8 +84,6 @@ describe('Unpublish plugin', () => {
     let loadPageStub;
     let showModalSpy;
     let showToastSpy;
-    let showWaitSpy;
-    let hideWaitSpy;
 
     beforeEach(async () => {
       appStore = new AppStore();
@@ -107,8 +97,6 @@ describe('Unpublish plugin', () => {
       loadPageStub = sandbox.stub(appStore, 'loadPage');
       showModalSpy = sandbox.spy(appStore, 'showModal');
       showToastSpy = sandbox.spy(appStore, 'showToast');
-      showWaitSpy = sandbox.spy(appStore, 'showWait');
-      hideWaitSpy = sandbox.spy(appStore, 'hideWait');
 
       sidekick = sidekickTest.createSidekick();
     });
@@ -136,14 +124,12 @@ describe('Unpublish plugin', () => {
 
       confirmUnpublish(sidekick);
 
-      await waitUntil(() => unpublishStub.calledOnce === true);
+      await waitUntil(() => unpublishStub.calledOnce);
 
       expect(unpublishStub.calledOnce).to.be.true;
-      expect(showWaitSpy.calledOnce).to.be.true;
-      expect(hideWaitSpy.calledOnce).to.be.true;
       expect(showToastSpy.calledOnce).to.be.true;
 
-      await closeToast(sidekick);
+      await sidekickTest.clickToastClose();
 
       expect(loadPageStub.calledWith(
         `${getDefaultHelixEnviromentLocations(HelixMockContentType.DOC, 'hlx').preview}/`,
@@ -193,10 +179,10 @@ describe('Unpublish plugin', () => {
 
       confirmUnpublish(sidekick);
 
-      await waitUntil(() => unpublishStub.calledOnce === true);
+      await waitUntil(() => unpublishStub.calledOnce);
     });
 
-    it('handles server failure', async () => {
+    it('handles server failure with toast dismiss', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           // source document is not found
@@ -208,6 +194,8 @@ describe('Unpublish plugin', () => {
           },
         });
 
+      const closeToastSpy = sidekickTest.sandbox.spy(appStore, 'closeToast');
+
       unpublishStub.resolves({ ok: false, status: 500, headers: { 'x-error': 'something went wrong' } });
 
       await clickUnpublishPlugin(sidekick);
@@ -216,9 +204,13 @@ describe('Unpublish plugin', () => {
 
       confirmUnpublish(sidekick);
 
-      await waitUntil(() => unpublishStub.calledOnce === true);
+      await waitUntil(() => unpublishStub.calledOnce);
 
-      expect(showModalSpy.calledWithMatch({ type: MODALS.ERROR })).to.be.true;
-    });
+      await sidekickTest.awaitToast();
+      sidekickTest.clickToastClose();
+      await waitUntil(() => closeToastSpy.calledOnce);
+      expect(closeToastSpy.calledOnce);
+      expect(showToastSpy.calledWith('Unpublication failed. Please try again later.', 'negative')).to.be.true;
+    }).timeout(5000);
   });
 });
