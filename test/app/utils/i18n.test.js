@@ -106,7 +106,7 @@ describe('i18n', () => {
     });
 
     it('should handle "today" dates correctly', () => {
-      const date = new Date(Date.now() - 2 * 60 * 60 * 1000); // 2 hours ago
+      const date = new Date(Date.now() - 2 * 60 * 60 * 5000); // 5 hours ago
       const expectedTime = date.toLocaleTimeString([], { timeStyle: 'short' });
       expect(getTimeAgo(languageDict, date)).to.equal(`Today at ${expectedTime}`);
     });
