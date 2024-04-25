@@ -683,7 +683,7 @@
       "message": "Account not authorized"
     }, 
     "previewing_state": {
-      "message": "Updating Preview"
+      "message": "Updating Preview..."
     }, 
     "publishing_state": {
       "message": "Publishing..."
