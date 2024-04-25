@@ -662,7 +662,7 @@
       "message": "Preview successfully updated, reloading..."
     }, 
     "preview_success": {
-      "message": "Preview successful, opening preview..."
+      "message": "Preview successfully updated, opening Preview..."
     }, 
     "publish_success": {
       "message": "Publish successful, opening publish..."
