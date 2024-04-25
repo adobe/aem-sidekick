@@ -16,43 +16,58 @@
 import {
   expect, waitUntil, aTimeout,
 } from '@open-wc/testing';
-import { appStore } from '../../../../src/extension/app/store/app.js';
+import { AppStore } from '../../../../src/extension/app/store/app.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../src/extension/index.js';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
-import { mockFetchConfigWithoutPluginsJSONSuccess, mockFetchStatusSuccess } from '../../../mocks/helix-admin.js';
-import { mockHelixEnvironment, restoreEnvironment } from '../../../mocks/environment.js';
+import { HelixMockEnvironments } from '../../../mocks/environment.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
+import { SidekickTest } from '../../../sidekick-test.js';
 
-// @ts-ignore
-window.chrome = chromeMock;
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
 
 /**
  * @typedef {import('../../../../src/extension/app/components/toast/toast-container.js').ToastContainer} ToastContainer
  */
 
+// @ts-ignore
+window.chrome = chromeMock;
+
 describe('Toasts', () => {
+  /**
+   * @type {SidekickTest}
+   */
+  let sidekickTest;
+
+  /**
+   * @type {AEMSidekick}
+   */
   let sidekick;
+
+  /**
+   * @type {AppStore}
+   */
+  let appStore;
+
   beforeEach(async () => {
-    mockFetchEnglishMessagesSuccess();
-    mockFetchStatusSuccess();
-    mockFetchConfigWithoutPluginsJSONSuccess();
-    mockHelixEnvironment(document, 'preview');
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+    sidekickTest
+      .mockFetchStatusSuccess()
+      .mockFetchSidekickConfigSuccess(true, false)
+      .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
   });
 
   afterEach(() => {
-    if (document.body.contains(sidekick)) {
-      document.body.removeChild(sidekick);
-    }
-    restoreEnvironment(document);
+    sidekickTest.destroy();
   });
 
   it('renders wait modal and closes', async () => {
-    sidekick = new AEMSidekick(defaultSidekickConfig);
-    document.body.appendChild(sidekick);
+    sidekick = sidekickTest.createSidekick();
 
-    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    await sidekickTest.awaitEnvSwitcher();
 
     appStore.showToast('Test Toast', 'info');
 
@@ -74,10 +89,9 @@ describe('Toasts', () => {
   });
 
   it('renders 1 toast at a time', async () => {
-    sidekick = new AEMSidekick(defaultSidekickConfig);
-    document.body.appendChild(sidekick);
+    sidekick = sidekickTest.createSidekick();
 
-    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+    await sidekickTest.awaitEnvSwitcher();
 
     appStore.showToast('Test Toast 1', 'info');
 

@@ -13,26 +13,43 @@
 
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
-import { html } from 'lit';
-import { fixture, expect } from '@open-wc/testing';
+import { expect } from '@open-wc/testing';
 import { emulateMedia } from '@web/test-runner-commands';
+import { AppStore } from '../src/extension/app/store/app.js';
 import { recursiveQuery } from './test-utils.js';
 import chromeMock from './mocks/chrome.js';
-import { AEMSidekick } from '../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from './mocks/i18n.js';
 import { defaultSidekickConfig } from './fixtures/sidekick-config.js';
-import { mockFetchConfigJSONNotFound, mockFetchStatusSuccess } from './mocks/helix-admin.js';
 import '../src/extension/index.js';
-import { mockHelixEnvironment, restoreEnvironment } from './mocks/environment.js';
+import { HelixMockEnvironments, restoreEnvironment } from './mocks/environment.js';
+import { SidekickTest } from './sidekick-test.js';
+
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 describe('AEM Sidekick', () => {
+  /**
+   * @type {SidekickTest}
+   */
+  let sidekickTest;
+
+  /**
+   * @type {AEMSidekick}
+   */
+  let sidekick;
+
   beforeEach(async () => {
-    mockFetchEnglishMessagesSuccess();
-    mockFetchStatusSuccess();
-    mockHelixEnvironment(document, 'preview');
+    const appStoreTest = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStoreTest);
+
+    sidekickTest
+      .mockFetchStatusSuccess()
+      .mockFetchSidekickConfigSuccess(true, false)
+      .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
   });
 
   afterEach(() => {
@@ -41,15 +58,15 @@ describe('AEM Sidekick', () => {
   });
 
   it('renders theme and action-bar', async () => {
-    const element = await fixture(html`<aem-sidekick></aem-sidekick>`);
-    const theme = element.shadowRoot.querySelector('theme-wrapper');
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+    const theme = sidekick.shadowRoot.querySelector('theme-wrapper');
     expect(theme).to.exist;
 
     // detect color scheme change
     await emulateMedia({ colorScheme: 'light' });
     // todo: check if color scheme change is getting picked up
     // expect(theme.getAttribute('color')).to.equal('light');
-
     const spTheme = recursiveQuery(theme, 'sp-theme');
     expect(spTheme).to.exist;
   });
@@ -57,8 +74,9 @@ describe('AEM Sidekick', () => {
   describe('color themes', () => {
     it('renders light theme', async () => {
       await emulateMedia({ colorScheme: 'light' });
-      const element = await fixture(html`<aem-sidekick></aem-sidekick>`);
-      const themeWrapper = element.shadowRoot.querySelector('theme-wrapper');
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+      const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
 
       const spTheme = themeWrapper.shadowRoot.querySelector('sp-theme');
       expect(spTheme).to.exist;
@@ -68,8 +86,9 @@ describe('AEM Sidekick', () => {
 
     it('renders dark theme', async () => {
       await emulateMedia({ colorScheme: 'dark' });
-      const element = await fixture(html`<aem-sidekick></aem-sidekick>`);
-      const themeWrapper = element.shadowRoot.querySelector('theme-wrapper');
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+      const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
 
       const spTheme = themeWrapper.shadowRoot.querySelector('sp-theme');
       expect(spTheme).to.exist;
@@ -81,10 +100,10 @@ describe('AEM Sidekick', () => {
 
   describe('configuration loading', () => {
     it('default config', async () => {
-      mockFetchConfigJSONNotFound();
-      const sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekickTest
+        .mockFetchSidekickConfigNotFound();
 
+      sidekick = sidekickTest.createSidekick();
       sidekick.addEventListener('contextloaded', (event) => {
         // @ts-ignore
         const { detail } = event;
@@ -105,10 +124,10 @@ describe('AEM Sidekick', () => {
   });
 
   it('passes the a11y audit', async () => {
-    mockFetchConfigJSONNotFound();
-    const sidekick = new AEMSidekick(defaultSidekickConfig);
-    document.body.appendChild(sidekick);
+    sidekickTest
+      .mockFetchSidekickConfigNotFound();
 
+    sidekick = sidekickTest.createSidekick();
     sidekick.addEventListener('contextloaded', async () => {
       await expect(sidekick).shadowDom.to.be.accessible();
     });

@@ -94,6 +94,6 @@ export function createUnpublishPlugin(appStore) {
         });
       },
     },
-    appStore,
-  });
+  },
+  appStore);
 }

@@ -13,11 +13,10 @@
 import { customElement, property, query } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { html } from 'lit';
-import { MobxLitElement } from '@adobe/lit-mobx';
 import { style } from './env-switcher.css.js';
-import { appStore } from '../../../store/app.js';
 import { createTag, newTab } from '../../../utils/browser.js';
 import { getTimeAgo } from '../../../utils/i18n.js';
+import { ConnectedElement } from '../../connected-element/connected-element.js';
 
 /**
  * @typedef {import('../../action-bar/picker/picker.js').Picker} Picker
@@ -29,7 +28,7 @@ import { getTimeAgo } from '../../../utils/i18n.js';
  * @class EnvironmentSwitcher
  */
 @customElement('env-switcher')
-export class EnvironmentSwitcher extends MobxLitElement {
+export class EnvironmentSwitcher extends ConnectedElement {
   /**
    * The toast container HTMLElement
    * @type {Picker}
@@ -64,7 +63,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
     super.connectedCallback();
 
     reaction(
-      () => appStore.status,
+      () => this.appStore.status,
       () => {
         this.renderMenu();
       },
@@ -77,23 +76,23 @@ export class EnvironmentSwitcher extends MobxLitElement {
   firstUpdated() {
     // Set up the locale aware environment names
     this.envNames = {
-      dev: appStore.i18n('development'),
-      edit: appStore.i18n('edit'),
-      preview: appStore.i18n('preview'),
-      live: appStore.i18n('live'),
-      prod: appStore.i18n('production'),
+      dev: this.appStore.i18n('development'),
+      edit: this.appStore.i18n('edit'),
+      preview: this.appStore.i18n('preview'),
+      live: this.appStore.i18n('live'),
+      prod: this.appStore.i18n('production'),
     };
 
     // Determine the current environment
-    if (appStore.isEditor()) {
+    if (this.appStore.isEditor()) {
       this.currentEnv = 'edit';
-    } else if (appStore.isDev()) {
+    } else if (this.appStore.isDev()) {
       this.currentEnv = 'dev';
-    } else if (appStore.isPreview()) {
+    } else if (this.appStore.isPreview()) {
       this.currentEnv = 'preview';
-    } else if (appStore.isLive()) {
+    } else if (this.appStore.isLive()) {
       this.currentEnv = 'live';
-    } else if (appStore.isProd()) {
+    } else if (this.appStore.isProd()) {
       this.currentEnv = 'prod';
     }
 
@@ -112,8 +111,8 @@ export class EnvironmentSwitcher extends MobxLitElement {
   getLastModifiedLabel(id, lastModified) {
     const envId = id === 'dev' ? 'preview' : id;
     return lastModified
-      ? appStore.i18n(`${envId}_last_updated`).replace('$1', getTimeAgo(appStore.languageDict, lastModified))
-      : appStore.i18n(`${envId}_never_updated`);
+      ? this.appStore.i18n(`${envId}_last_updated`).replace('$1', getTimeAgo(this.appStore.languageDict, lastModified))
+      : this.appStore.i18n(`${envId}_never_updated`);
   }
 
   /**
@@ -164,7 +163,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
   createNavigateToHeader() {
     const menuItem = createTag({
       tag: 'div',
-      text: appStore.i18n('navigate_to'),
+      text: this.appStore.i18n('navigate_to'),
       attrs: {
         class: 'heading',
       },
@@ -186,7 +185,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
    */
   renderMenu() {
     const { picker } = this;
-    const { status } = appStore;
+    const { status } = this.appStore;
 
     // Reset contents of picker
     picker.innerHTML = '';
@@ -216,9 +215,9 @@ export class EnvironmentSwitcher extends MobxLitElement {
     }
 
     let showProd = false;
-    if (appStore.siteStore.host
-      && appStore.siteStore.host !== appStore.siteStore.outerHost
-      && (appStore.isEditor() || appStore.isProject())
+    if (this.appStore.siteStore.host
+      && this.appStore.siteStore.host !== this.appStore.siteStore.outerHost
+      && (this.appStore.isEditor() || this.appStore.isProject())
       && this.currentEnv !== 'prod') {
       showProd = true;
     }
@@ -288,7 +287,7 @@ export class EnvironmentSwitcher extends MobxLitElement {
       liveMenuItem.remove();
     }
 
-    if (appStore.status?.webPath) {
+    if (this.appStore.status?.webPath) {
       this.ready = true;
     }
   }
@@ -300,8 +299,11 @@ export class EnvironmentSwitcher extends MobxLitElement {
     const { picker } = this;
     const { value } = picker;
 
-    const openNewTab = value === 'edit' ? true : newTab(appStore.keyboardListener);
-    appStore.switchEnv(value, openNewTab);
+    const openNewTab = value === 'edit'
+      ? true
+      : newTab(this.appStore.keyboardListener);
+
+    this.appStore.switchEnv(value, openNewTab);
     picker.value = this.currentEnv;
   }
 

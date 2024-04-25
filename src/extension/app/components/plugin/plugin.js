@@ -13,7 +13,6 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
-import { appStore } from '../../store/app.js';
 import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**
@@ -48,6 +47,11 @@ import { EXTERNAL_EVENTS } from '../../constants.js';
  */
 export class Plugin {
   /**
+   * @type {AppStore}
+   */
+  appStore;
+
+  /**
    * @type {Object<string, Plugin>}
    */
   children = {};
@@ -59,7 +63,8 @@ export class Plugin {
    */
   config;
 
-  constructor(plugin) {
+  constructor(plugin, appStore) {
+    this.appStore = appStore;
     this.disabled = false;
     this.config = plugin;
     this.id = plugin.id;
@@ -87,7 +92,7 @@ export class Plugin {
    */
   isVisible() {
     return typeof this.config.condition !== 'function'
-      || !!this.config.condition(appStore);
+      || !!this.config.condition(this.appStore);
   }
 
   /**
@@ -96,7 +101,7 @@ export class Plugin {
    */
   isEnabled() {
     return typeof this.config.button?.isEnabled !== 'function'
-      || this.config.button.isEnabled(appStore);
+      || this.config.button.isEnabled(this.appStore);
   }
 
   /**
@@ -151,8 +156,8 @@ export class Plugin {
    */
   async onButtonClick(evt) {
     const { config, id } = this;
-    await appStore.validateSession();
-    appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, { id });
+    await this.appStore.validateSession();
+    this.appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, { id });
     config.button.action(evt);
   }
 
@@ -179,7 +184,7 @@ export class Plugin {
   render() {
     const { config } = this;
     if (typeof config.callback === 'function') {
-      config.callback(appStore, config);
+      config.callback(this.appStore, config);
     }
 
     // special case: env-switcher

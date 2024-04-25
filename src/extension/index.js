@@ -36,7 +36,6 @@ import './app/components/action-bar/picker/picker.js';
 import './app/components/action-bar/menu-item/menu-item.js';
 import './app/components/theme/theme.js';
 import './app/components/plugin/plugin-action-bar.js';
-import './app/components/modal/modal-container.js';
 import './app/components/toast/toast-container.js';
 import './app/components/plugin/palette-container.js';
 import './app/components/plugin/palette-dialog/palette-dialog-wrapper.js';

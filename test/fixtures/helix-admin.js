@@ -36,8 +36,7 @@ export const defaultConfigJSONWithHost = {
   host: 'custom-host.com',
 };
 
-export const defaultConfigJSONWithPlugins = {
-  ...defaultConfigJSONWithHost,
+export const defaultConfigPlugins = {
   plugins: [
     {
       id: 'asset-library',
@@ -308,8 +307,7 @@ export const defaultGdriveStatusResponse = {
   },
 };
 
-export const defaultStatusResponseWithProfile = {
-  ...defaultGdriveStatusResponse,
+export const defaultProfileResponse = {
   profile: {
     iss: 'https://accounts.google.com',
     aud: 'user-id.apps.googleusercontent.com',
@@ -328,6 +326,16 @@ export const defaultStatusResponseWithProfile = {
     hlx_hash: 'J9y9hUNu5vJS9_38ck_POjo2FgQ',
   },
 };
+
+export function defaultStatusResponse(contentSource = 'sharepoint', withProfile = false, overrides = {}) {
+  const status = (contentSource === 'sharepoint') ? defaultSharepointStatusResponse : defaultGdriveStatusResponse;
+  const profile = withProfile ? defaultProfileResponse : {};
+  return {
+    ...status,
+    ...profile,
+    ...overrides,
+  };
+}
 
 export const defaultStatusLoggedInNotAuthorizedResponse = {
   webPath: '/',

@@ -14,30 +14,38 @@
 
 import { html } from 'lit';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { provide } from '@lit/context';
 import { customElement } from 'lit/decorators.js';
 import { log } from '../log.js';
 import { style } from './aem-sidekick.css.js';
 import { spectrum2 } from './spectrum-2.css.js';
-import { appStore } from './store/app.js';
+import { AppStore, appStoreContext } from './store/app.js';
 
 @customElement('aem-sidekick')
 export class AEMSidekick extends MobxLitElement {
+  /**
+   * @type {AppStore}
+   */
+  @provide({ context: appStoreContext })
+  accessor appStore;
+
   static get styles() {
     return [spectrum2, style];
   }
 
-  constructor(config) {
+  constructor(config, store) {
     super();
-    appStore.loadContext(this, config);
 
-    // eslint-disable-next-line no-unused-vars
+    this.appStore = store || new AppStore();
+    this.appStore.loadContext(this, config);
+
     this.addEventListener('contextloaded', (data) => {
-      log.debug('console was loaded', data);
+      log.debug('contextloaded fired', data);
     });
   }
 
   render() {
-    return appStore.siteStore?.ready
+    return this.appStore.siteStore?.ready
       ? html`
       <theme-wrapper>
         <plugin-action-bar></plugin-action-bar>

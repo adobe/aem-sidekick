@@ -11,27 +11,24 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
-import sinon from 'sinon';
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
-import {
-  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
-  mockFetchStatusSuccess,
-} from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
-import { appStore } from '../../../../src/extension/app/store/app.js';
+import { AppStore } from '../../../../src/extension/app/store/app.js';
 import {
   HelixMockContentType,
+  HelixMockEnvironments,
   getDefaultHelixEnviromentLocations,
-  mockHelixEnvironment, restoreEnvironment,
 } from '../../../mocks/environment.js';
 import { MODALS } from '../../../../src/extension/app/constants.js';
+import { SidekickTest } from '../../../sidekick-test.js';
+
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -79,8 +76,21 @@ async function closeToast(sidekick) {
 
 describe('Unpublish plugin', () => {
   describe('unpublishes page', () => {
-    const sandbox = sinon.createSandbox();
+    /**
+     * @type {SidekickTest}
+     */
+    let sidekickTest;
+
+    /**
+     * @type {AEMSidekick}
+     */
     let sidekick;
+
+    /**
+     * @type {AppStore}
+     */
+    let appStore;
+
     let unpublishStub;
     let loadPageStub;
     let showModalSpy;
@@ -89,7 +99,13 @@ describe('Unpublish plugin', () => {
     let hideWaitSpy;
 
     beforeEach(async () => {
-      mockFetchEnglishMessagesSuccess();
+      appStore = new AppStore();
+      sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(false, false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      const { sandbox } = sidekickTest;
       unpublishStub = sandbox.stub(appStore, 'unpublish').resolves({ ok: true, status: 200 });
       loadPageStub = sandbox.stub(appStore, 'loadPage');
       showModalSpy = sandbox.spy(appStore, 'showModal');
@@ -97,18 +113,11 @@ describe('Unpublish plugin', () => {
       showWaitSpy = sandbox.spy(appStore, 'showWait');
       hideWaitSpy = sandbox.spy(appStore, 'hideWait');
 
-      mockFetchConfigWithoutPluginsOrHostJSONSuccess();
-      mockHelixEnvironment(document, 'preview');
-
-      sidekick = new AEMSidekick(defaultSidekickConfig);
-      document.body.appendChild(sidekick);
+      sidekick = sidekickTest.createSidekick();
     });
 
     afterEach(() => {
-      document.body.removeChild(sidekick);
-      fetchMock.reset();
-      restoreEnvironment(document);
-      sandbox.restore();
+      sidekickTest.destroy();
     });
 
     it('no unpublish plugin if user not authorized', async () => {
@@ -119,16 +128,17 @@ describe('Unpublish plugin', () => {
     });
 
     it('asks for user confirmation and redirects to the site root', async () => {
-      mockFetchStatusSuccess({
-        webPath: '/foo',
-        // source document is not found
-        edit: { status: 404 },
-        // live delete permission is granted
-        live: {
-          status: 200,
-          permissions: ['read', 'write', 'delete'],
-        },
-      });
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          webPath: '/foo',
+          // source document is not found
+          edit: { status: 404 },
+          // live delete permission is granted
+          live: {
+            status: 200,
+            permissions: ['read', 'write', 'delete'],
+          },
+        });
 
       await clickUnpublishPlugin(sidekick);
 
@@ -151,16 +161,17 @@ describe('Unpublish plugin', () => {
     });
 
     it('refuses to unpublish if user unauthenticated and source file still exists', async () => {
-      mockFetchStatusSuccess({
-        webPath: '/foo',
-        // live delete permission is granted
-        live: {
-          status: 200,
-          permissions: ['read', 'write', 'delete'],
-        },
-        // user not authenticated
-        profile: null,
-      });
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          webPath: '/foo',
+          // live delete permission is granted
+          live: {
+            status: 200,
+            permissions: ['read', 'write', 'delete'],
+          },
+          // user not authenticated
+          profile: null,
+        });
 
       await clickUnpublishPlugin(sidekick);
 
@@ -168,22 +179,23 @@ describe('Unpublish plugin', () => {
     });
 
     it('allows authenticated user to delete if source file still exists', async () => {
-      mockFetchStatusSuccess({
-        webPath: '/foo',
-        edit: {
-          status: 200,
-        },
-        // live delete permission is granted
-        live: {
-          status: 200,
-          permissions: ['read', 'write', 'delete'],
-        },
-        // user authenticated
-        profile: {
-          email: 'foo@example.com',
-          name: 'Peter Parker',
-        },
-      });
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          webPath: '/foo',
+          edit: {
+            status: 200,
+          },
+          // live delete permission is granted
+          live: {
+            status: 200,
+            permissions: ['read', 'write', 'delete'],
+          },
+          // user authenticated
+          profile: {
+            email: 'foo@example.com',
+            name: 'Peter Parker',
+          },
+        });
 
       await clickUnpublishPlugin(sidekick);
 
@@ -195,15 +207,16 @@ describe('Unpublish plugin', () => {
     });
 
     it('handles server failure', async () => {
-      mockFetchStatusSuccess({
-        // source document is not found
-        edit: { status: 404 },
-        // live delete permission is granted
-        live: {
-          status: 200,
-          permissions: ['read', 'write', 'delete'],
-        },
-      });
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          // source document is not found
+          edit: { status: 404 },
+          // live delete permission is granted
+          live: {
+            status: 200,
+            permissions: ['read', 'write', 'delete'],
+          },
+        });
 
       unpublishStub.resolves({ ok: false, status: 500, headers: { 'x-error': 'something went wrong' } });
 

@@ -13,14 +13,11 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
-import {
-  customElement, property, query, queryAll,
-} from 'lit/decorators.js';
-import { MobxLitElement } from '@adobe/lit-mobx';
+import { customElement, property, query, queryAll } from 'lit/decorators.js';
 import { reaction } from 'mobx';
-import { appStore } from '../../store/app.js';
 import { ICONS } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
+import { ConnectedElement } from '../connected-element/connected-element.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} Plugin
@@ -32,7 +29,7 @@ import { style } from './plugin-action-bar.css.js';
  */
 
 @customElement('plugin-action-bar')
-export class PluginActionBar extends MobxLitElement {
+export class PluginActionBar extends ConnectedElement {
   static get styles() {
     return [
       style,
@@ -84,11 +81,11 @@ export class PluginActionBar extends MobxLitElement {
     this.ready = true;
 
     reaction(
-      () => appStore.status,
+      () => this.appStore.status,
       () => {
         this.visiblePlugins = [
-          ...Object.values(appStore.corePlugins),
-          ...Object.values(appStore.customPlugins),
+          ...Object.values(this.appStore.corePlugins),
+          ...Object.values(this.appStore.customPlugins),
         ].filter((plugin) => plugin.isVisible());
 
         this.barPlugins = this.visiblePlugins
@@ -208,15 +205,15 @@ export class PluginActionBar extends MobxLitElement {
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
-    // console.log('rendering plugins...', this.barPlugins.length, this.transientPlugins.length, this.menuPlugins.length);
-    return html`<sp-action-group>
-      ${this.barPlugins.length > 0 ? this.barPlugins.map((p) => p.render()) : ''}
-    </sp-action-group>`;
+    return html`
+      <sp-action-group>
+        ${this.barPlugins.length > 0 ? this.barPlugins.map((p) => p.render()) : ''}
+      </sp-action-group>`;
   }
 
   renderSystemPlugins() {
-    const { profile } = appStore.status;
-    const { siteStore } = appStore;
+    const { profile } = this.appStore.status;
+    const { siteStore } = this.appStore;
 
     const systemPlugins = [];
 

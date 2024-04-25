@@ -11,27 +11,24 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
-import sinon from 'sinon';
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
-import { AEMSidekick } from '../../../../src/extension/app/aem-sidekick.js';
-import { mockFetchEnglishMessagesSuccess } from '../../../mocks/i18n.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
-import {
-  mockFetchConfigWithoutPluginsOrHostJSONSuccess,
-  mockFetchStatusSuccess,
-} from '../../../mocks/helix-admin.js';
 import '../../../../src/extension/index.js';
-import { appStore } from '../../../../src/extension/app/store/app.js';
+import { AppStore } from '../../../../src/extension/app/store/app.js';
 import {
   HelixMockContentType,
+  HelixMockEnvironments,
   getDefaultHelixEnviromentLocations,
-  mockHelixEnvironment, restoreEnvironment,
 } from '../../../mocks/environment.js';
 import { MODALS } from '../../../../src/extension/app/constants.js';
+import { SidekickTest } from '../../../sidekick-test.js';
+
+/**
+ * The AEMSidekick object type
+ * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
+ */
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -80,11 +77,24 @@ async function closeToast(sidekick) {
 describe('Delete plugin', () => {
   for (const contentType of [HelixMockContentType.DOC, HelixMockContentType.SHEET]) {
     describe(`deletes ${contentType}`, () => {
+      /**
+       * @type {SidekickTest}
+       */
+      let sidekickTest;
+
+      /**
+       * @type {AEMSidekick}
+       */
+      let sidekick;
+
+      /**
+       * @type {AppStore}
+       */
+      let appStore;
+
       const statusUrl = contentType === HelixMockContentType.SHEET
         ? 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/placeholders.json?editUrl=auto'
         : 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=auto';
-      const sandbox = sinon.createSandbox();
-      let sidekick;
       let deleteStub;
       let loadPageStub;
       let showModalSpy;
@@ -93,7 +103,13 @@ describe('Delete plugin', () => {
       let hideWaitSpy;
 
       beforeEach(async () => {
-        mockFetchEnglishMessagesSuccess();
+        appStore = new AppStore();
+        sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+        sidekickTest
+          .mockFetchSidekickConfigSuccess(false, false)
+          .mockHelixEnvironment(HelixMockEnvironments.PREVIEW, contentType);
+
+        const { sandbox } = sidekickTest;
         deleteStub = sandbox.stub(appStore, 'delete').resolves({ ok: true, status: 200 });
         loadPageStub = sandbox.stub(appStore, 'loadPage');
         showModalSpy = sandbox.spy(appStore, 'showModal');
@@ -101,18 +117,11 @@ describe('Delete plugin', () => {
         showWaitSpy = sandbox.spy(appStore, 'showWait');
         hideWaitSpy = sandbox.spy(appStore, 'hideWait');
 
-        mockFetchConfigWithoutPluginsOrHostJSONSuccess();
-        mockHelixEnvironment(document, 'preview', contentType);
-
-        sidekick = new AEMSidekick(defaultSidekickConfig);
-        document.body.appendChild(sidekick);
+        sidekick = sidekickTest.createSidekick();
       });
 
       afterEach(() => {
-        document.body.removeChild(sidekick);
-        fetchMock.reset();
-        restoreEnvironment(document);
-        sandbox.restore();
+        sidekickTest.destroy();
       });
 
       it('no delete plugin if user not authorized', async () => {
@@ -123,10 +132,11 @@ describe('Delete plugin', () => {
       });
 
       it('asks for user confirmation and redirects to the site root', async () => {
+        const { sandbox } = sidekickTest;
         // @ts-ignore
         sandbox.stub(appStore, 'showView').returns();
-        mockFetchStatusSuccess(
-          {
+        sidekickTest
+          .mockFetchStatusSuccess(false, {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
             // source document is not found
             edit: { status: 404 },
@@ -135,10 +145,8 @@ describe('Delete plugin', () => {
               status: 200,
               permissions: ['read', 'write', 'delete'],
             },
-          },
-          null,
-          statusUrl,
-        );
+          }, null, statusUrl,
+          );
 
         await clickDeletePlugin(sidekick);
 
@@ -161,8 +169,8 @@ describe('Delete plugin', () => {
       });
 
       it('refuses to delete if user unauthenticated and source file still exists', async () => {
-        mockFetchStatusSuccess(
-          {
+        sidekickTest
+          .mockFetchStatusSuccess(false, {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
             // preview delete permission is granted
             preview: {
@@ -171,10 +179,7 @@ describe('Delete plugin', () => {
             },
             // user not authenticated
             profile: null,
-          },
-          null,
-          statusUrl,
-        );
+          }, null, statusUrl);
 
         await clickDeletePlugin(sidekick);
 
@@ -182,8 +187,8 @@ describe('Delete plugin', () => {
       });
 
       it('allows authenticated user to delete if source file still exists', async () => {
-        mockFetchStatusSuccess(
-          {
+        sidekickTest
+          .mockFetchStatusSuccess(false, {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
             edit: {
               status: 200,
@@ -198,10 +203,7 @@ describe('Delete plugin', () => {
               email: 'foo@example.com',
               name: 'Peter Parker',
             },
-          },
-          null,
-          statusUrl,
-        );
+          }, null, statusUrl);
 
         await clickDeletePlugin(sidekick);
 
@@ -213,19 +215,16 @@ describe('Delete plugin', () => {
       });
 
       it('handles server failure', async () => {
-        mockFetchStatusSuccess(
-          {
-            // source document is not found
+        sidekickTest
+          .mockFetchStatusSuccess(false, {
+          // source document is not found
             edit: { status: 404 },
             // preview delete permission is granted
             preview: {
               status: 200,
               permissions: ['read', 'write', 'delete'],
             },
-          },
-          null,
-          statusUrl,
-        );
+          }, null, statusUrl);
 
         deleteStub.resolves({ ok: false, status: 500, headers: { 'x-error': 'something went wrong' } });
 

@@ -99,6 +99,6 @@ export function createDeletePlugin(appStore) {
         });
       },
     },
-    appStore,
-  });
+  },
+  appStore);
 }

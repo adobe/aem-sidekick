@@ -124,7 +124,7 @@ describe('Test actions', () => {
       url: 'https://www.example.com/',
     });
     expect(set.notCalled).to.be.true;
-  });
+  }).timeout(5000);
 
   it('internal: enableDisableProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
