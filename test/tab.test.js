@@ -188,6 +188,7 @@ describe('Test check-tab', () => {
   });
 
   it('checkTab: script injection fails', async () => {
+    sandbox.stub(chrome.storage.local, 'get').withArgs('display').returns({ display: true });
     executeScriptSpy.restore();
     executeScriptSpy = sandbox.stub(chrome.scripting, 'executeScript').throws(error);
     await checkTab(1);

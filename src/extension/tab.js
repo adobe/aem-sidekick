@@ -62,9 +62,6 @@ async function getProxyUrl({ id, url: tabUrl }) {
  * @param {Object[]} matches The config matches
  */
 async function injectContentScript(tabId, matches) {
-  if (!await chrome.tabs.get(tabId)) {
-    return;
-  }
   // execute content script
   try {
     await chrome.scripting.executeScript({
