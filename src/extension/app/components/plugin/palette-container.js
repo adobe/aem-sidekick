@@ -109,6 +109,7 @@ export class PaletteContainer extends ConnectedElement {
         headline=${paletteTitle}
         hero-label="ABC"
         style=${paletteRect || ''}
+        no-divider
         dismissable
         open
         @close=${this.closed}
