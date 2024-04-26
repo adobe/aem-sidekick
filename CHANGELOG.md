@@ -1,3 +1,10 @@
+## [1.20.1](https://github.com/adobe/aem-sidekick/compare/v1.20.0...v1.20.1) (2024-04-26)
+
+
+### Bug Fixes
+
+* palette styling ([#124](https://github.com/adobe/aem-sidekick/issues/124)) ([3084c4d](https://github.com/adobe/aem-sidekick/commit/3084c4dd0a5c95fd206fc083326f42851ed45b9b))
+
 # [1.20.0](https://github.com/adobe/aem-sidekick/compare/v1.19.0...v1.20.0) (2024-04-25)
 
 
