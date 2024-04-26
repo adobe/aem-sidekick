@@ -123,7 +123,8 @@ describe('Test check-tab', () => {
     expect(executeScriptSpy.callCount).to.equal(0);
   });
 
-  it('checkTab: url from configured project', async () => {
+  it('checkTab: url from configured project (display on)', async () => {
+    sandbox.stub(chrome.storage.local, 'get').withArgs('display').returns({ display: true });
     const tab = TABS[1];
     await checkTab(tab.id);
     expect(executeScriptSpy.callCount).to.equal(2);
@@ -131,6 +132,17 @@ describe('Test check-tab', () => {
       target: { tabId: tab.id },
       files: ['./content.js'],
     })).to.be.true;
+  });
+
+  it('checkTab: url from configured project (display off)', async () => {
+    sandbox.stub(chrome.storage.local, 'get').withArgs('display').returns({ display: false });
+    const tab = TABS[1];
+    await checkTab(tab.id);
+    expect(executeScriptSpy.callCount).to.equal(1);
+    expect(executeScriptSpy.calledWith({
+      target: { tabId: tab.id },
+      files: ['./content.js'],
+    })).to.be.false;
   });
 
   it('checkTab: unknown url', async () => {

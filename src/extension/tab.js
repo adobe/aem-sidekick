@@ -18,6 +18,7 @@ import {
 } from './project.js';
 import { urlCache } from './url-cache.js';
 import { updateUI } from './ui.js';
+import { getDisplay } from './display.js';
 
 export const DEV_URL = 'http://localhost:3000';
 
@@ -110,9 +111,19 @@ export default async function checkTab(id) {
 
   const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(tab);
 
-  if (matches.length > 0) {
+  const display = await getDisplay();
+
+  // If we found matches and the sidekick is displayed, inject content script
+  if (matches.length > 0 && display) {
     // inject content script and send matches to tab
     await injectContentScript(id, matches);
+  } else {
+    try {
+      // The display might have been toggled off, so let the content script know to update
+      await chrome.tabs.sendMessage(id, 'toggleDisplay');
+    } catch (e) {
+      // ignore, content script might not be loaded
+    }
   }
 
   // update UI
