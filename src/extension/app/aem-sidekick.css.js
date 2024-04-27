@@ -39,7 +39,7 @@ export const style = css`
     pointer-events: auto;
     z-index: 1;
     width: 80vw;
-    max-width: 800px;
+    max-width: 640px;
   }
 
   .hlx-sk-special-view {
