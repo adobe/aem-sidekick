@@ -184,6 +184,6 @@ export const style = css`
   }
 
   sp-tray {
-    margin-bottom: 64px;
+    margin-bottom: 58px;
   }
 `;
