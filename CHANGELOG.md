@@ -1,3 +1,10 @@
+## [1.20.3](https://github.com/adobe/aem-sidekick/compare/v1.20.2...v1.20.3) (2024-04-27)
+
+
+### Bug Fixes
+
+* toast when activating config, improve tests ([#126](https://github.com/adobe/aem-sidekick/issues/126)) ([4551c33](https://github.com/adobe/aem-sidekick/commit/4551c33683e810fb4db51dfefeb831596aaf5cae))
+
 ## [1.20.2](https://github.com/adobe/aem-sidekick/compare/v1.20.1...v1.20.2) (2024-04-27)
 
 
