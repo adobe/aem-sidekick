@@ -13,9 +13,7 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
-import {
-  customElement, property, queryAll, queryAsync,
-} from 'lit/decorators.js';
+import { customElement, queryAll, queryAsync } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { ICONS, STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
@@ -58,17 +56,16 @@ export class PluginActionBar extends ConnectedElement {
   menuPlugins = [];
 
   /**
-   * The plugins temprarily folded into the action menu.
+   * The plugins temporarily folded into the action menu.
    * @type {Plugin[]}
    */
   transientPlugins = [];
 
   /**
-   * Are we ready to render?
-   * @type {boolean}
+   * The current width of the action bar.
+   * @type {number}
    */
-  @property({ type: Boolean, attribute: false })
-  accessor ready = false;
+  actionBarWidth = 0;
 
   @queryAsync('action-bar')
   accessor actionBar;
@@ -81,7 +78,6 @@ export class PluginActionBar extends ConnectedElement {
    */
   async connectedCallback() {
     super.connectedCallback();
-    this.ready = true;
 
     reaction(
       () => this.appStore.state,
@@ -127,50 +123,55 @@ export class PluginActionBar extends ConnectedElement {
     });
   }
 
-  checkOverflow() {
-    const barWidth = parseInt(window.getComputedStyle(this).width, 10);
+  async checkOverflow() {
+    if (this.actionGroups.length === 0) {
+      // wait for action groups to be rendered
+      return;
+    }
 
-    // Left Plugins
+    const barWidth = parseInt(window.getComputedStyle(this).width, 10);
+    const barWidthSameOrLess = barWidth <= this.actionBarWidth;
+
+    // Left plugin container styles
     const leftStyles = window.getComputedStyle(this.actionGroups[0]);
     const leftPadding = parseInt(leftStyles.padding, 10);
     const leftWidth = parseInt(leftStyles.width, 10) + leftPadding * 2;
 
-    // Plugin Menu
+    // Plugin menu container styles
     const pluginMenuStyles = window.getComputedStyle(this.actionGroups[1]);
+    const pluginMenuWidth = parseInt(pluginMenuStyles.width, 10);
     const pluginMenuPadding = parseInt(pluginMenuStyles.padding, 10);
 
-    // System Plugins
+    // System plugin container styles
     const systemStyles = window.getComputedStyle(this.actionGroups[2]);
-    const rightPadding = parseInt(systemStyles.padding, 10);
+    const systemPadding = parseInt(systemStyles.padding, 10);
+    const systemWidth = parseInt(systemStyles.width, 10);
 
-    // Width of system plugins and plugin menu
-    const rightWidth = parseInt(pluginMenuStyles.width, 10) + parseInt(systemStyles.width, 10) + (rightPadding * 2) + (pluginMenuPadding * 2);
+    // Combined width of system plugins and plugin menu containers
+    const rightWidth = pluginMenuWidth + systemWidth + (systemPadding * 2) + (pluginMenuPadding * 2) + 10;
 
-    // Open space is total width minus left and right (system plugins and plugin menu)
-    const openSpace = barWidth - rightWidth - leftWidth;
-
-    // If the left plugins are wider than the bar, move the last one to the menu
-    if (leftWidth > barWidth - rightWidth && this.barPlugins.length > 1) {
-      const lastBarPlugin = this.barPlugins.pop();
-      this.transientPlugins.unshift(lastBarPlugin);
-      this.requestUpdate();
-      return;
-    }
-
-    // If the last transient plugin fits in the open space, move it back to the bar
-    if (this.transientPlugins.length > 0) {
-      const lastTransientPlugin = this.transientPlugins[0];
-      if (lastTransientPlugin) {
-        const { config } = lastTransientPlugin;
-        if (config) {
-          const estimatedWidth = (config.button.text.length * 6) + 30;
-          if (estimatedWidth < openSpace && this.transientPlugins.length > 0) {
-            this.barPlugins.push(this.transientPlugins.shift());
-            this.requestUpdate();
-          }
+    if (barWidthSameOrLess) {
+      // If the left plugins are wider than the bar, move the last one to the menu
+      if (leftWidth > barWidth - rightWidth && this.barPlugins.length > 1) {
+        this.transientPlugins.unshift(this.barPlugins.pop());
+        this.requestUpdate();
+      }
+    } else {
+      // If the first transient plugin fits in the open space, move it back to the bar
+      const openSpace = barWidth - systemWidth - leftWidth;
+      const firstTransientPlugin = this.transientPlugins[0];
+      if (firstTransientPlugin) {
+        let estimatedWidth = (firstTransientPlugin.getButtonText().length * 6) + 30;
+        if (firstTransientPlugin.isContainer()) {
+          estimatedWidth += 30;
+        }
+        if (estimatedWidth < openSpace && this.transientPlugins.length > 0) {
+          this.barPlugins.push(this.transientPlugins.shift());
+          this.requestUpdate();
         }
       }
     }
+    this.actionBarWidth = barWidth;
   }
 
   async updated() {
@@ -198,7 +199,15 @@ export class PluginActionBar extends ConnectedElement {
         </sp-menu-item>`;
   }
 
+  /**
+   * Render the plugin menu with unpinned and transient plugins
+   * @returns {TemplateResult|string} An array of Lit-html templates or strings, or a single empty string.
+   */
   renderPluginMenu() {
+    if (this.appStore.state === STATE.TOAST) {
+      return html``;
+    }
+
     return html`
       <sp-action-group>
         ${this.transientPlugins.length > 0 || this.menuPlugins.length > 0 ? html`
@@ -210,7 +219,7 @@ export class PluginActionBar extends ConnectedElement {
             title="${this.appStore.i18n('plugins_more')}"
             quiet
             @change=${this.onPluginMenuSelect}
-            .disabled=${!this.ready}>
+            .disabled=${this.appStore.state !== STATE.READY}>
             ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
             ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0
               ? html`<sp-menu-divider size="s"></sp-menu-divider>`
@@ -223,7 +232,7 @@ export class PluginActionBar extends ConnectedElement {
   }
 
   /**
-   * Render the core and custom plugins
+   * Render the pinned core and custom plugins
    * @returns {(TemplateResult|string)|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPlugins() {
@@ -259,7 +268,7 @@ export class PluginActionBar extends ConnectedElement {
 
     const buttonType = siteStore.authorized ? '' : 'not-authorized';
     systemPlugins.push(html`
-      <login-button class=${buttonType}></login-button>
+      <login-button id="user" class=${buttonType}></login-button>
     `);
 
     systemPlugins.push(ICONS.ADOBE_LOGO);
