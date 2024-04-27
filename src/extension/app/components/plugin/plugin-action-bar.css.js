@@ -63,8 +63,8 @@ export const style = css`
     padding-left: 24px;
   }
 
-  @media (max-width: 800px) {
-    #properties {
+  @media (max-width: 500px) {
+    #properties, #user {
       display: none;
     }
   }
