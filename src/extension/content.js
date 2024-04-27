@@ -82,31 +82,38 @@
 
   if (!sidekick) {
     // wait for config matches
-    chrome.runtime.onMessage.addListener(async ({ configMatches = [] }, { tab }) => {
-      // only accept message from background script
-      if (tab) {
-        return;
-      }
+    chrome.runtime.onMessage.addListener(async (message, { tab }) => {
+      // does the message contain config matches?
+      if (message.configMatches) {
+        const { configMatches } = message;
 
-      const { sidekick: storedSidekick } = window.hlx;
-      if (!storedSidekick) {
-        // Load custom element polyfill
-        await import('./lib/polyfills.min.js');
-
-        // Check session storage for previously stored project
-        const storedProject = JSON.parse(window.sessionStorage.getItem('hlx-sk-project') || null);
-
-        // First check if there is only one config match, if so load it
-        if (configMatches.length === 1) {
-          // load sidekick
-          const [config] = configMatches;
-          loadSidekick(config);
-        // If there is more than one config match, check if we previously stored a project
-        } else if (storedProject) {
-          loadSidekick(storedProject);
-        } else {
-          loadConfigPicker(configMatches);
+        // only accept message from background script
+        if (tab) {
+          return;
         }
+
+        const { sidekick: storedSidekick } = window.hlx;
+        if (!storedSidekick) {
+        // Load custom element polyfill
+          await import('./lib/polyfills.min.js');
+
+          // Check session storage for previously stored project
+          const storedProject = JSON.parse(window.sessionStorage.getItem('hlx-sk-project') || null);
+
+          // First check if there is only one config match, if so load it
+          if (configMatches.length === 1) {
+          // load sidekick
+            const [config] = configMatches;
+            loadSidekick(config);
+            // If there is more than one config match, check if we previously stored a project
+          } else if (storedProject) {
+            loadSidekick(storedProject);
+          } else {
+            loadConfigPicker(configMatches);
+          }
+        }
+      } else if (message === 'toggleDisplay') {
+        sidekick.setAttribute('open', `${await getDisplay()}`);
       }
     });
   } else {
