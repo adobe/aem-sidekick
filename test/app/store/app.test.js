@@ -690,11 +690,12 @@ describe('Test App Store', () => {
     let updatePreviewSpy;
     let addEventListenerSpy;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       instance = appStore;
       sandbox = sinon.createSandbox();
       // @ts-ignore
       instance.sidekick = document.createElement('div');
+      instance.languageDict = await fetchLanguageDict(undefined, 'en');
       updateStub = sandbox.stub(instance, 'update');
       fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
       showToastStub = sandbox.stub(instance, 'showToast');
@@ -755,30 +756,30 @@ describe('Test App Store', () => {
       await instance.updatePreview(true);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(showToastStub.calledWith('Error message', 'negative')).is.true;
+      expect(showToastStub.calledWith('Failed to activate configuration: Error message', 'negative')).is.true;
     });
 
     // Test when resp is not ok, ranBefore is true, status.webPath
     // does not start with /.helix/, or resp has no error
     it('should handle generic failure', async () => {
-      updateStub.resolves({ ok: false, error: 'Error message' });
+      updateStub.resolves({ ok: false });
       instance.status = { webPath: '/not-helix/' };
 
       await instance.updatePreview(true);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(showToastStub.calledWith('Error message', 'negative')).is.true;
+      expect(showToastStub.calledWith('Preview generation failed. Please try again later.', 'negative')).is.true;
     });
 
     // Test when resp is ok and status.webPath starts with /.helix/
-    it('should handle success with specific path', async () => {
-      updateStub.resolves({ ok: true, error: 'Error message' });
-      instance.status = { webPath: '/.helix/some-path' };
+    it('should handle activation with content in /.helix/', async () => {
+      updateStub.resolves({ ok: true });
+      instance.status = { webPath: '/.helix/config.json' };
 
       await instance.updatePreview(false);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(showToastStub.calledWith('', 'positive')).is.true;
+      expect(showToastStub.calledWith('Configuration successfully activated.', 'positive')).is.true;
     });
 
     // Test when resp is ok and status.webPath does not start with /.helix/
@@ -789,7 +790,7 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(showToastStub.calledWith('', 'positive')).is.true;
+      expect(showToastStub.calledWith('Preview successfully updated, opening Preview...', 'positive')).is.true;
     });
   });
 
