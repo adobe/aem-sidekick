@@ -22,10 +22,7 @@ export const style = css`
 
   action-bar sp-action-group:nth-of-type(2) {
     margin-left: auto;
-  }
-
-  action-bar sp-action-group div.plugin-container {
-    overflow-x: hidden;
+    padding: 12px 0;
   }
 
   action-bar sp-action-group.not-authorized {
@@ -47,6 +44,7 @@ export const style = css`
 
   #plugin-menu {
     width: max-content;
+    margin: 0 12px;
   }
 
   action-bar action-bar-picker sp-menu-item {
