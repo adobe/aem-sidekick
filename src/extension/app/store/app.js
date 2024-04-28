@@ -340,15 +340,6 @@ export class AppStore {
   }
 
   /**
-   * Returns the sidekick plugin with the specified ID.
-   * @param {string} id The plugin ID
-   * @returns {HTMLElement} The plugin
-   */
-  get(id) {
-    return this.sidekick.renderRoot.querySelector(`:scope div.plugin.${id}`);
-  }
-
-  /**
    * Checks if the current location is a development URL.
    * @returns {boolean} <code>true</code> if development URL, else <code>false</code>
    */
@@ -542,25 +533,6 @@ export class AppStore {
     this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(modalContainer);
 
     return modalContainer;
-  }
-
-  /*
-   * Returns the current environment or an empty string.
-   * @returns {string} the current environment
-   */
-  getEnv() {
-    return [
-      'isEditor',
-      'isPreview',
-      'isLive',
-      'isProd',
-      'isAdmin',
-      'isDev',
-    ]
-      .filter((method) => this[method]())
-      .map((method) => method.substring(2)) // cut off 'is'
-      .join('')
-      .toLowerCase();
   }
 
   /**
