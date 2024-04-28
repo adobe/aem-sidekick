@@ -217,6 +217,7 @@ export class Plugin {
           <sp-menu-item
             .disabled=${!this.isEnabled()}
             value=${this.getId()}
+            class=${this.getId()}
             @click=${(evt) => this.onButtonClick(evt)}
           >${this.getButtonText()}</sp-menu-item>
         `;
