@@ -29,8 +29,9 @@ import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 import {
-  defaultConfigJSONWithUnpinnedContainerPlugin,
-  defaultConfigJSONWithUnpinnedPlugin,
+  defaultConfigUnpinnedContainerPlugin,
+  defaultConfigUnpinnedPlugin,
+  defaultConfigPlugins,
 } from '../../../fixtures/helix-admin.js';
 
 /**
@@ -97,13 +98,11 @@ describe('Plugin action bar', () => {
   }
 
   async function expectInPluginMenu(pluginIds) {
-    // open plugin menu if present
+    // wait for plugin menu
+    await waitUntil(() => recursiveQuery(sidekick, '#plugin-menu'));
     const pluginMenu = recursiveQuery(sidekick, '#plugin-menu');
-    if (pluginMenu) {
-      pluginMenu.click();
-    }
-
     const plugins = recursiveQueryAll(pluginMenu, 'sp-menu-item');
+
     expect([...plugins]
       .map((plugin) => plugin.className)).to.deep.equal(pluginIds);
   }
@@ -142,7 +141,7 @@ describe('Plugin action bar', () => {
       expectInActionBar([
         'env-switcher',
         'edit-preview',
-        'asset-library',
+        'assets',
         'library',
         'tools',
       ]);
@@ -150,8 +149,8 @@ describe('Plugin action bar', () => {
       expectEnvPlugin(['edit', 'preview', 'prod']);
 
       // Should fallback to id for label if title not provided
-      const assetLibraryPlugin = recursiveQuery(sidekick, '.asset-library');
-      expect(assetLibraryPlugin.textContent.trim()).to.equal('asset-library');
+      const assetLibraryPlugin = recursiveQuery(sidekick, '.assets');
+      expect(assetLibraryPlugin.textContent.trim()).to.equal('assets');
     });
 
     it('isLive', async () => {
@@ -343,7 +342,7 @@ describe('Plugin action bar', () => {
       expectInActionBar([
         'env-switcher',
         'edit-preview',
-        'asset-library',
+        'assets',
         'library',
         'tools',
       ]);
@@ -380,7 +379,7 @@ describe('Plugin action bar', () => {
       expectInActionBar([
         'env-switcher',
         'edit-preview',
-        'asset-library',
+        'assets',
         'library',
         'tools',
       ]);
@@ -456,7 +455,7 @@ describe('Plugin action bar', () => {
     it('contains unpinned plugins', async () => {
       sidekickTest
         .mockFetchStatusSuccess(true)
-        .mockFetchSidekickConfigSuccess(false, false, defaultConfigJSONWithUnpinnedPlugin)
+        .mockFetchSidekickConfigSuccess(false, false, defaultConfigUnpinnedPlugin)
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
       sidekick = sidekickTest.createSidekick();
@@ -481,7 +480,7 @@ describe('Plugin action bar', () => {
     it('renders unpinned container as menu group', async () => {
       sidekickTest
         .mockFetchStatusSuccess(true)
-        .mockFetchSidekickConfigSuccess(false, false, defaultConfigJSONWithUnpinnedContainerPlugin)
+        .mockFetchSidekickConfigSuccess(false, false, defaultConfigUnpinnedContainerPlugin)
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
       sidekick = sidekickTest.createSidekick();
@@ -554,7 +553,12 @@ describe('Plugin action bar', () => {
     it('moves plugins between bar and plugin menu based on available space', async () => {
       sidekickTest
         .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
-        .mockFetchSidekickConfigSuccess(false, true)
+        .mockFetchSidekickConfigSuccess(false, false, {
+          plugins: [
+            ...defaultConfigPlugins.plugins,
+            ...defaultConfigUnpinnedPlugin.plugins,
+          ],
+        })
         .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
         .createSidekick();
 
@@ -563,40 +567,73 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitEnvSwitcher();
       await aTimeout(100);
 
+      // check initial state
       expectInActionBar([
         'env-switcher',
         'edit-preview',
-        'asset-library',
+        'assets',
         'library',
         'tools',
+      ]);
+      expectInPluginMenu([
+        'unpinned',
       ]);
 
       // make viewport narrower
       await setViewport({ width: 600, height: 600 });
-      await aTimeout(200);
+      await aTimeout(100);
 
-      // check if tools plugin moved to plugin menu
+      // check if tools container plugin moved to plugin menu
       expectInActionBar([
         'env-switcher',
         'edit-preview',
-        'asset-library',
+        'assets',
         'library',
       ]);
-      expectInPluginMenu([
-        'tools',
+      await expectInPluginMenu([
+        'tag-selector',
+        'checkschema',
+        'preflight',
+        'predicted-url',
+        'localize',
+        'unpinned',
       ]);
 
-      // make viewport wider
+      // make viewport narrower
+      await setViewport({ width: 400, height: 600 });
+      await aTimeout(100);
+
+      // check if library plugin moved to plugin menu
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+        'assets',
+      ]);
+      await expectInPluginMenu([
+        'library',
+        'tag-selector',
+        'checkschema',
+        'preflight',
+        'predicted-url',
+        'localize',
+        'unpinned',
+      ]);
+
+      // make viewport wider again
+      await setViewport({ width: 600, height: 600 });
       await setViewport({ width: 800, height: 600 });
-      await aTimeout(200);
+      await aTimeout(100);
 
-      // check if tools plugin moved back to bar
+      // check if all plugins moved back to bar
       expectInActionBar([
         'env-switcher',
         'edit-preview',
-        'asset-library',
+        'assets',
         'library',
         'tools',
+      ]);
+      await expectInPluginMenu([
+        'unpinned',
       ]);
     });
   });

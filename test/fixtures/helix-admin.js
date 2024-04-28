@@ -39,7 +39,7 @@ export const defaultConfigJSONWithHost = {
 export const defaultConfigPlugins = {
   plugins: [
     {
-      id: 'asset-library',
+      id: 'assets',
       environments: [
         'edit',
       ],
@@ -115,7 +115,7 @@ export const defaultConfigPlugins = {
   ],
 };
 
-export const defaultConfigJSONWithUnpinnedPlugin = {
+export const defaultConfigUnpinnedPlugin = {
   ...defaultConfigJSON,
   plugins: [
     {
@@ -127,7 +127,7 @@ export const defaultConfigJSONWithUnpinnedPlugin = {
   ],
 };
 
-export const defaultConfigJSONWithUnpinnedContainerPlugin = {
+export const defaultConfigUnpinnedContainerPlugin = {
   ...defaultConfigJSON,
   plugins: [
     {
