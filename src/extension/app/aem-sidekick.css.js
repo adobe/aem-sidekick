@@ -38,7 +38,7 @@ export const style = css`
     bottom: 55px;
     pointer-events: auto;
     z-index: 1;
-    width: 80vw;
+    width: 90vw;
     max-width: var(--sidekick-max-width);
   }
 
