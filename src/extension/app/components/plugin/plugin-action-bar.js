@@ -140,7 +140,6 @@ export class PluginActionBar extends ConnectedElement {
     // Plugin menu container styles
     const pluginMenuStyles = window.getComputedStyle(this.actionGroups[1]);
     const pluginMenuWidth = parseInt(pluginMenuStyles.width, 10);
-    const pluginMenuPadding = parseInt(pluginMenuStyles.padding, 10);
 
     // System plugin container styles
     const systemStyles = window.getComputedStyle(this.actionGroups[2]);
@@ -148,28 +147,19 @@ export class PluginActionBar extends ConnectedElement {
     const systemWidth = parseInt(systemStyles.width, 10);
 
     // Combined width of system plugins and plugin menu containers
-    const rightWidth = pluginMenuWidth + systemWidth + (systemPadding * 2) + (pluginMenuPadding * 2) + 10;
+    const rightWidth = pluginMenuWidth + systemWidth + (systemPadding * 2) + 8;
 
+    // Try moving the first transient plugin back to the bar
     if (barWidthSameOrLess) {
       // If the left plugins are wider than the bar, move the last one to the menu
       if (leftWidth > barWidth - rightWidth && this.barPlugins.length > 1) {
         this.transientPlugins.unshift(this.barPlugins.pop());
         this.requestUpdate();
       }
-    } else {
-      // If the first transient plugin fits in the open space, move it back to the bar
-      const openSpace = barWidth - systemWidth - leftWidth;
-      const firstTransientPlugin = this.transientPlugins[0];
-      if (firstTransientPlugin) {
-        let estimatedWidth = (firstTransientPlugin.getButtonText().length * 6) + 30;
-        if (firstTransientPlugin.isContainer()) {
-          estimatedWidth += 30;
-        }
-        if (estimatedWidth < openSpace && this.transientPlugins.length > 0) {
-          this.barPlugins.push(this.transientPlugins.shift());
-          this.requestUpdate();
-        }
-      }
+    // Try moving the first menu plugin back to the bar
+    } else if (this.transientPlugins[0]) {
+      this.barPlugins.push(this.transientPlugins.shift());
+      this.requestUpdate();
     }
     this.actionBarWidth = barWidth;
   }
