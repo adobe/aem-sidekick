@@ -116,14 +116,31 @@ export const defaultConfigPlugins = {
 };
 
 export const defaultConfigJSONWithUnpinnedPlugin = {
-  ...defaultConfigJSONWithHost,
+  ...defaultConfigJSON,
   plugins: [
     {
-      title: 'Pin me',
+      id: 'unpinned',
+      title: 'Unpinned Plugin',
       pinned: false,
       event: 'foo',
-      excludePaths: ['/**'],
-      includePaths: ['**/HelixProjects/**'],
+    },
+  ],
+};
+
+export const defaultConfigJSONWithUnpinnedContainerPlugin = {
+  ...defaultConfigJSON,
+  plugins: [
+    {
+      id: 'tools',
+      title: 'tools',
+      pinned: false,
+      isContainer: true,
+    },
+    {
+      id: 'tool',
+      title: 'Tool',
+      containerId: 'tools',
+      event: 'tool',
     },
   ],
 };
@@ -330,6 +347,10 @@ export const defaultProfileResponse = {
 export function defaultStatusResponse(contentSource = 'sharepoint', withProfile = false, overrides = {}) {
   const status = (contentSource === 'sharepoint') ? defaultSharepointStatusResponse : defaultGdriveStatusResponse;
   const profile = withProfile ? defaultProfileResponse : {};
+  if (withProfile) {
+    status.preview.permissions.push('delete');
+    status.live.permissions.push('delete');
+  }
   return {
     ...status,
     ...profile,

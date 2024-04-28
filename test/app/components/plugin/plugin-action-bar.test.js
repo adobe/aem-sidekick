@@ -12,6 +12,7 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
+import { setViewport as wtrSetViewPort } from '@web/test-runner-commands';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
@@ -27,11 +28,20 @@ import { pluginFactory } from '../../../../src/extension/app/plugins/plugin-fact
 import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 import { SidekickTest } from '../../../sidekick-test.js';
+import {
+  defaultConfigJSONWithUnpinnedContainerPlugin,
+  defaultConfigJSONWithUnpinnedPlugin,
+} from '../../../fixtures/helix-admin.js';
 
 /**
  * The AEMSidekick object type
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
  */
+
+async function setViewport(options) {
+  await wtrSetViewPort(options);
+  window.dispatchEvent(new Event('resize'));
+}
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -86,16 +96,14 @@ describe('Plugin action bar', () => {
     ).to.deep.equal(pluginIds);
   }
 
-  async function expectInPluginList(pluginIds) {
-    // open plugin list
-    const pluginList = recursiveQuery(sidekickTest.sidekick, '.plugin-list');
-    pluginList.click();
+  async function expectInPluginMenu(pluginIds) {
+    // open plugin menu if present
+    const pluginMenu = recursiveQuery(sidekick, '#plugin-menu');
+    if (pluginMenu) {
+      pluginMenu.click();
+    }
 
-    // wait for modal and retrieve plugins
-    await waitUntil(() => recursiveQuery(sidekickTest.sidekick, 'modal-container'));
-    const modalContainer = recursiveQuery(sidekickTest.sidekick, 'modal-container');
-    const plugins = recursiveQueryAll(modalContainer, 'sp-menu-item');
-
+    const plugins = recursiveQueryAll(pluginMenu, 'sp-menu-item');
     expect([...plugins]
       .map((plugin) => plugin.className)).to.deep.equal(pluginIds);
   }
@@ -187,6 +195,8 @@ describe('Plugin action bar', () => {
         .mockFetchSidekickConfigSuccess(false, false)
         .mockLocation('https://www.example.com')
         .createSidekick();
+
+      sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitEnvSwitcher();
 
@@ -405,70 +415,188 @@ describe('Plugin action bar', () => {
     });
   });
 
-  describe('plugin list', () => {
-    it('opens plugin list', async () => {
+  describe('plugin menu', () => {
+    it('omitted if no unpinned plugins', async () => {
       sidekickTest
         .mockFetchStatusSuccess()
-        .mockFetchSidekickConfigSuccess(true, false)
+        .mockFetchSidekickConfigSuccess()
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
       sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitEnvSwitcher();
 
-      // open plugin list
-      const pluginList = recursiveQuery(sidekick, '.plugin-list');
-      pluginList.click();
-
-      await waitUntil(() => recursiveQuery(sidekick, 'modal-container'));
-      const dialogWrapper = recursiveQuery(sidekick, 'sp-dialog-wrapper');
-      expect(dialogWrapper.className).to.contain('plugin-list');
+      const pluginMenu = recursiveQuery(sidekick, '#plugin-menu');
+      expect(pluginMenu).to.not.exist;
     });
 
-    it('isPreview: renders correct plugins in plugin list', async () => {
+    it('opens and closes on click', async () => {
       sidekickTest
-        .mockFetchStatusSuccess()
+        .mockFetchStatusSuccess(true)
+        .mockFetchSidekickConfigSuccess()
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      // open plugin menu
+      const pluginMenu = recursiveQuery(sidekick, '#plugin-menu');
+      expect(pluginMenu).to.exist;
+      pluginMenu.click();
+      await aTimeout(100);
+      expect(pluginMenu.hasAttribute('open')).to.be.true;
+
+      // close plugin menu
+      pluginMenu.click();
+      await aTimeout(100);
+      expect(pluginMenu.hasAttribute('open')).to.be.true;
+    });
+
+    it('contains unpinned plugins', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(true)
+        .mockFetchSidekickConfigSuccess(false, false, defaultConfigJSONWithUnpinnedPlugin)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      // open plugin menu
+      const pluginMenu = recursiveQuery(sidekick, '#plugin-menu');
+      expect(pluginMenu).to.exist;
+      pluginMenu.click();
+      await aTimeout(100);
+      expect(pluginMenu.hasAttribute('open')).to.be.true;
+
+      // check for delete plugin
+      expect(recursiveQuery(pluginMenu, '.delete')).to.exist;
+
+      // check for unpinned plugin
+      const unPinnedPlugin = recursiveQuery(pluginMenu, '.unpinned');
+      expect(unPinnedPlugin).to.exist;
+    });
+
+    it('renders unpinned container as menu group', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(true)
+        .mockFetchSidekickConfigSuccess(false, false, defaultConfigJSONWithUnpinnedContainerPlugin)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      // open plugin menu
+      const pluginMenu = recursiveQuery(sidekick, '#plugin-menu');
+      expect(pluginMenu).to.exist;
+
+      // check container and child plugin
+      const unpinnedContainer = recursiveQuery(pluginMenu, 'sp-menu-group#plugin-group-tools');
+      expect(unpinnedContainer).to.exist;
+      const childPlugin = recursiveQuery(unpinnedContainer, '.tool');
+      expect(childPlugin).to.exist;
+      childPlugin.click();
+      await aTimeout(100);
+      expect(pluginMenu.value).to.equal('');
+    });
+
+    it('renders correct plugins in preview', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(true)
         .mockFetchSidekickConfigSuccess()
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW)
         .createSidekick();
 
+      sidekick = sidekickTest.createSidekick();
+
       await sidekickTest.awaitEnvSwitcher();
 
-      await expectInPluginList([
-        'reload',
+      await expectInPluginMenu([
         'delete',
-        'publish',
         'unpublish',
       ]);
     });
 
-    it('isLive: renders correct plugins in plugin list', async () => {
+    it('renders correct plugins in live', async () => {
       sidekickTest
-        .mockFetchStatusSuccess()
-        .mockFetchSidekickConfigSuccess(true, false)
+        .mockFetchStatusSuccess(true)
+        .mockFetchSidekickConfigSuccess()
         .mockHelixEnvironment(HelixMockEnvironments.LIVE)
         .createSidekick();
 
+      sidekick = sidekickTest.createSidekick();
+
       await sidekickTest.awaitEnvSwitcher();
 
-      await expectInPluginList([
-        'publish',
+      await expectInPluginMenu([
         'unpublish',
       ]);
     });
 
-    it('isProd: renders correct plugins in plugin list', async () => {
+    it('renders correct plugins in prod', async () => {
       sidekickTest
-        .mockFetchStatusSuccess()
+        .mockFetchStatusSuccess(true)
         .mockFetchSidekickConfigSuccess(true, false)
         .mockHelixEnvironment(HelixMockEnvironments.PROD)
         .createSidekick();
 
+      sidekick = sidekickTest.createSidekick();
+
       await sidekickTest.awaitEnvSwitcher();
 
-      await expectInPluginList([
-        'publish',
+      await expectInPluginMenu([
         'unpublish',
+      ]);
+    });
+
+    it('moves plugins between bar and plugin menu based on available space', async () => {
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
+        .mockFetchSidekickConfigSuccess(false, true)
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
+        .createSidekick();
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+      await aTimeout(100);
+
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+        'asset-library',
+        'library',
+        'tools',
+      ]);
+
+      // make viewport narrower
+      await setViewport({ width: 600, height: 600 });
+      await aTimeout(200);
+
+      // check if tools plugin moved to plugin menu
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+        'asset-library',
+        'library',
+      ]);
+      expectInPluginMenu([
+        'tools',
+      ]);
+
+      // make viewport wider
+      await setViewport({ width: 800, height: 600 });
+      await aTimeout(200);
+
+      // check if tools plugin moved back to bar
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+        'asset-library',
+        'library',
+        'tools',
       ]);
     });
   });
@@ -485,18 +613,17 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitActionBar();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const actionGroup = recursiveQuery(actionBar, 'sp-action-group:nth-of-type(2)');
-      expect(actionGroup.children.length).to.equal(4);
+      const systemActionGroup = recursiveQuery(actionBar, 'sp-action-group:last-of-type');
+      expect(recursiveQuery(actionBar, 'login-button')).to.exist;
 
-      const propertiesButton = recursiveQuery(actionGroup, '.properties');
+      const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
       expect(propertiesButton).to.exist;
 
-      const loginButton = recursiveQuery(actionGroup, 'login-button');
+      const loginButton = recursiveQuery(systemActionGroup, 'login-button');
       expect(loginButton).to.exist;
-      expect(loginButton.classList.length).to.equal(1);
       expect(loginButton.classList.contains('not-authorized')).to.be.true;
 
-      const logo = recursiveQuery(actionGroup, 'svg');
+      const logo = recursiveQuery(systemActionGroup, 'svg');
       expect(logo).to.exist;
     });
 
@@ -513,11 +640,11 @@ describe('Plugin action bar', () => {
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
       const actionGroupsArray = [...actionGroups];
-      expect(actionGroupsArray.length).to.equal(2);
+      expect(actionGroupsArray.length).to.equal(3);
 
-      const systemActionGroup = actionGroupsArray[1];
+      const systemActionGroup = actionGroupsArray[2];
 
-      const propertiesButton = recursiveQuery(systemActionGroup, '.properties');
+      const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
       expect(propertiesButton).to.exist;
 
       const loginButton = recursiveQuery(systemActionGroup, 'login-button');
@@ -547,11 +674,11 @@ describe('Plugin action bar', () => {
       const actionBar = recursiveQuery(sidekick, 'action-bar');
       const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
       const actionGroupsArray = [...actionGroups];
-      expect(actionGroupsArray.length).to.equal(2);
+      expect(actionGroupsArray.length).to.equal(3);
 
-      const systemActionGroup = actionGroupsArray[1];
+      const systemActionGroup = actionGroupsArray[2];
 
-      const propertiesButton = recursiveQuery(systemActionGroup, '.properties');
+      const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
       expect(propertiesButton).to.exist;
 
       const loginButton = recursiveQuery(systemActionGroup, 'login-button');
