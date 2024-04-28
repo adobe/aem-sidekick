@@ -109,9 +109,10 @@ describe('Unpublish plugin', () => {
     });
 
     it('no unpublish plugin if user not authorized', async () => {
+      const { sandbox } = sidekickTest;
       // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
-      mockFetchStatusSuccess();
+      sidekickTest.mockFetchStatusSuccess();
       await expectUnpublishPlugin(sidekick, false);
     });
 

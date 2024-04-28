@@ -115,9 +115,10 @@ describe('Delete plugin', () => {
       });
 
       it('no delete plugin if user not authorized', async () => {
+        const { sandbox } = sidekickTest;
         // @ts-ignore
         sandbox.stub(appStore, 'showView').returns();
-        mockFetchStatusSuccess({}, null, statusUrl);
+        sidekickTest.mockFetchStatusSuccess(false, null, null, statusUrl);
         await expectDeletePlugin(sidekick, false);
       });
 
