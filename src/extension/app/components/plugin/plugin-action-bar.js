@@ -117,15 +117,9 @@ export class PluginActionBar extends ConnectedElement {
     );
   }
 
-  firstUpdated() {
-    window.addEventListener('resize', () => {
-      this.checkOverflow();
-    });
-  }
-
   async checkOverflow() {
-    if (this.actionGroups.length === 0) {
-      // wait for action groups to be rendered
+    if (this.actionGroups.length < 3) {
+      // wait for all action groups to be rendered
       return;
     }
 
@@ -164,9 +158,21 @@ export class PluginActionBar extends ConnectedElement {
     this.actionBarWidth = barWidth;
   }
 
+  firstUpdated() {
+    window.addEventListener('resize', () => {
+      this.checkOverflow();
+    });
+  }
+
   async updated() {
     await this.updateComplete;
     this.checkOverflow();
+  }
+
+  // istanbul ignore next 4
+  onPluginMenuSelect() {
+    // @ts-ignore
+    this.shadowRoot.querySelector('#plugin-menu').value = '';
   }
 
   renderPluginMenuItem(plugin) {
@@ -189,8 +195,8 @@ export class PluginActionBar extends ConnectedElement {
    * @returns {TemplateResult|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPluginMenu() {
-    if (this.appStore.state === STATE.TOAST) {
-      return html``;
+    if (this.appStore.state !== STATE.READY) {
+      return html`<sp-action-group></sp-action-group>`;
     }
 
     return html`
@@ -203,6 +209,7 @@ export class PluginActionBar extends ConnectedElement {
             label="⋯"
             title="${this.appStore.i18n('plugins_more')}"
             quiet
+            @change=${this.onPluginMenuSelect}
             .disabled=${this.appStore.state !== STATE.READY}>
             ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
             ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0
