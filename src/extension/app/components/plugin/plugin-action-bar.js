@@ -169,11 +169,6 @@ export class PluginActionBar extends ConnectedElement {
     this.checkOverflow();
   }
 
-  onPluginMenuSelect() {
-    // @ts-ignore
-    this.shadowRoot.querySelector('#plugin-menu').value = '';
-  }
-
   renderPluginMenuItem(plugin) {
     return plugin.isContainer()
       ? html`<sp-menu-group id="plugin-group-${plugin.id}">
@@ -208,7 +203,6 @@ export class PluginActionBar extends ConnectedElement {
             label="⋯"
             title="${this.appStore.i18n('plugins_more')}"
             quiet
-            @change=${this.onPluginMenuSelect}
             .disabled=${this.appStore.state !== STATE.READY}>
             ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
             ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0

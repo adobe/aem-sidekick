@@ -496,7 +496,10 @@ describe('Plugin action bar', () => {
       expect(unpinnedContainer).to.exist;
       const childPlugin = recursiveQuery(unpinnedContainer, '.tool');
       expect(childPlugin).to.exist;
-      childPlugin.click();
+
+      // click unpinned plugin
+      const deletePlugin = recursiveQuery(pluginMenu, '.delete');
+      deletePlugin.click();
       await aTimeout(100);
       expect(pluginMenu.value).to.equal('');
     });
