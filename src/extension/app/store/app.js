@@ -307,7 +307,7 @@ export class AppStore {
                     }));
                   } else {
                     // open url in new window
-                    this.openPage(target.toString(), `hlx-sk-${id || `custom-plugin-${i}`}`);
+                    this.openPage(target.toString(), `hlx-sk-${id}`);
                   }
                 } else if (eventName) {
                   // fire custom event
