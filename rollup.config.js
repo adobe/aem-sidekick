@@ -73,9 +73,12 @@ function extensionPlugins(browser) {
     /** Copy static assets */
     copy({
       targets: [
+        { src: 'src/extension/views/json/json.html', dest: `./dist/${browser}/views/json` },
+        { src: 'src/extension/views/doc-source/*', dest: `./dist/${browser}/views/doc-source` },
         { src: 'src/extension/options.html', dest: `./dist/${browser}` },
         { src: 'src/extension/icons', dest: `./dist/${browser}` },
         { src: 'src/extension/_locales', dest: `./dist/${browser}` },
+        { src: 'src/extension/rum.js', dest: `./dist/${browser}` },
       ],
     }),
     replace({
