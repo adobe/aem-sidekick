@@ -95,6 +95,7 @@ export const RESTRICTED_PATHS = [
  */
 export const STATE = {
   INITIALIZING: 'initializing_state',
+  COLLAPSED: 'collpased',
   FETCHING_STATUS: 'fetching_status_state',
   LOGIN_REQUIRED: 'login_required_state',
   LOGGING_IN: 'logging_in_state',

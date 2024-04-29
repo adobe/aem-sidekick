@@ -13,6 +13,7 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { customElement, queryAsync } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { ICONS, MODALS, STATE } from '../../constants.js';
@@ -60,19 +61,12 @@ export class PluginActionBar extends ConnectedElement {
         const actionBar = await this.actionBar;
         if (actionBar) {
           if (this.appStore.state === STATE.TOAST) {
-            actionBar.classList.add(this.appStore.toast.variant);
-
             setTimeout(() => {
-              actionBar.className = '';
               if (this.appStore.toast?.actionCallback) {
                 this.appStore.toast?.actionCallback();
               }
               this.appStore.closeToast();
             }, this.appStore.toast.timeout);
-            // We need to reset the class name to remove the toast variant, but only if it exists.
-            // It's possible for actionBar to be null on the first render.
-          } else if (actionBar) {
-            actionBar.className = '';
           }
         }
 
@@ -134,7 +128,7 @@ export class PluginActionBar extends ConnectedElement {
     systemPlugins.push(pluginList);
 
     const properties = html`
-      <sp-action-button class="properties" quiet>
+      <sp-action-button class="properties" quiet @click=${this.collapse}>
         <sp-icon slot="icon" size="l">
           ${ICONS.PROPERTIES}
         </sp-icon>
@@ -146,7 +140,7 @@ export class PluginActionBar extends ConnectedElement {
       <login-button class=${buttonType}></login-button>
     `);
 
-    systemPlugins.push(ICONS.ADOBE_LOGO);
+    systemPlugins.push(html`<button quiet @click=${this.toggleCollapse}>${ICONS.ADOBE_LOGO}</button>`);
 
     const actionGroup = html`<sp-action-group>${systemPlugins}</sp-action-group>`;
     const divider = html`<sp-divider size="s" vertical></sp-divider>`;
@@ -154,9 +148,26 @@ export class PluginActionBar extends ConnectedElement {
     return [divider, actionGroup];
   }
 
+  toggleCollapse() {
+    const { state } = this.appStore;
+    this.appStore.setState(state !== STATE.COLLAPSED ? STATE.COLLAPSED : undefined);
+  }
+
   render() {
-    return this.appStore.state !== STATE.INITIALIZING ? html`
-      <action-bar>
+    const { state } = this.appStore;
+    const classes = [];
+
+    if (state === STATE.COLLAPSED) {
+      classes.push('collapsed');
+    }
+
+    const { toast } = this.appStore;
+    if (toast) {
+      classes.push(toast.variant);
+    }
+
+    return state !== STATE.INITIALIZING ? html`
+      <action-bar class="${ifDefined(classes.length ? classes.join(' ') : undefined)}">
         ${this.renderPlugins()}
         ${this.renderSystemPlugins()}
       </action-bar>

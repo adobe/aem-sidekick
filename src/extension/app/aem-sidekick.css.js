@@ -32,14 +32,8 @@ export const style = css`
   }
 
   plugin-action-bar {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0px);
-    bottom: 55px;
     pointer-events: auto;
     z-index: 1;
-    min-width: var(--sidekick-min-width);
-    max-width: var(--sidekick-max-width);
   }
 
   .hlx-sk-special-view {
