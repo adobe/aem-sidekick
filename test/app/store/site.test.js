@@ -175,7 +175,7 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.plugins.length).to.equal(9);
       const firstPlugin = appStore.siteStore.plugins[0];
       expect(firstPlugin).to.deep.equal({
-        id: 'asset-library',
+        id: 'assets',
         environments: [
           'edit',
         ],

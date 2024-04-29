@@ -42,6 +42,11 @@ export class ActionBar extends LitElement {
       background-color: var(--spectrum2-color-info);
       border: 1px solid var(--spectrum2-color-info);
     }
+
+    @media (max-width: 700px) {
+      .action-bar {
+        border-radius: 0;
+      }
   `;
 
   render() {

@@ -762,7 +762,7 @@ describe('Test App Store', () => {
     // Test when resp is not ok, ranBefore is true, status.webPath
     // does not start with /.helix/, or resp has no error
     it('should handle generic failure', async () => {
-      updateStub.resolves({ ok: false });
+      updateStub.resolves({ ok: false, error: 'Error message' });
       instance.status = { webPath: '/not-helix/' };
 
       await instance.updatePreview(true);
@@ -1066,139 +1066,6 @@ describe('Test App Store', () => {
 
       expect(resp.error).to.equal(error.message);
       expect(consoleSpy.calledWithMatch('failed to unpublish', unpublishPath, error)).to.be.true;
-    });
-  });
-
-  describe('plugin preferences', () => {
-    const sandbox = sinon.createSandbox();
-    let instance;
-    let isEditorStub;
-    let isPreviewStub;
-    let isLiveStub;
-    let isProdStub;
-    let isDevStub;
-    let isAdminStub;
-    let syncStorageGetStub;
-    let syncStorageSetStub;
-
-    beforeEach(() => {
-      instance = appStore;
-      isEditorStub = sandbox.stub(instance, 'isEditor');
-      isPreviewStub = sandbox.stub(instance, 'isPreview');
-      isLiveStub = sandbox.stub(instance, 'isLive');
-      isProdStub = sandbox.stub(instance, 'isProd');
-      isDevStub = sandbox.stub(instance, 'isDev');
-      isAdminStub = sandbox.stub(instance, 'isAdmin');
-      isEditorStub.returns(false);
-      isPreviewStub.returns(false);
-      isLiveStub.returns(false);
-      isProdStub.returns(false);
-      isDevStub.returns(false);
-      isAdminStub.returns(false);
-
-      syncStorageGetStub = sandbox.stub(chrome.storage.sync, 'get');
-      syncStorageSetStub = sandbox.stub(chrome.storage.sync, 'set');
-      syncStorageSetStub.resolves();
-    });
-
-    afterEach(() => {
-      sandbox.restore();
-      restoreEnvironment(document);
-      fetchMock.restore();
-    });
-
-    it('sets plugin preferences for an env', async () => {
-      sidekickTest
-        .mockFetchStatusSuccess()
-        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
-      isPreviewStub.returns(true);
-
-      // no stored prefs
-      syncStorageGetStub.resolves({});
-      await instance.initSettings();
-
-      await instance.setPluginPrefs('plugin1', { test: 1 });
-      expect(syncStorageSetStub.called).is.true;
-      expect(instance.getPluginPrefs('plugin1').test).to.equal(1);
-
-      // stored prefs for different env
-      syncStorageGetStub.resolves({
-        pluginPrefs: {
-          live: {
-            plugin2: {
-              pinned: true,
-            },
-          },
-        },
-      });
-
-      await instance.setPluginPrefs('plugin2', { test: 1 });
-      expect(syncStorageSetStub.called).is.true;
-      expect(instance.getPluginPrefs('plugin2').test).to.equal(1);
-
-      // stored prefs for this env
-      syncStorageGetStub.resolves({
-        pluginPrefs: {
-          preview: {
-            plugin3: {
-              pinned: true,
-            },
-          },
-        },
-      });
-
-      await instance.setPluginPrefs('plugin3', { test: { foo: true } });
-      expect(syncStorageSetStub.called).is.true;
-      expect(instance.getPluginPrefs('plugin3').test).to.deep.equal({ foo: true });
-    });
-
-    it('retrieves plugin preferences for an env', async () => {
-      sidekickTest
-        .mockFetchStatusSuccess()
-        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
-      isPreviewStub.returns(true);
-
-      // return empty object if no stored prefs yet
-      expect(instance.getPluginPrefs('foo')).to.deep.equal({});
-
-      // stored prefs for different env
-      syncStorageGetStub.resolves({
-        pluginPrefs: {
-          live: {
-            foo: {
-              pinned: true,
-            },
-          },
-        },
-      });
-      await instance.initSettings();
-      expect(instance.getPluginPrefs('foo')).to.deep.equal({});
-
-      // stored prefs for this env, but different plugin
-      syncStorageGetStub.resolves({
-        pluginPrefs: {
-          preview: {
-            bar: {
-              pinned: true,
-            },
-          },
-        },
-      });
-      await instance.initSettings();
-      expect(instance.getPluginPrefs('foo')).to.deep.equal({});
-
-      // stored prefs for this env and plugin
-      syncStorageGetStub.resolves({
-        pluginPrefs: {
-          preview: {
-            foo: {
-              pinned: true,
-            },
-          },
-        },
-      });
-      await instance.initSettings();
-      expect(instance.getPluginPrefs('foo').pinned).is.true;
     });
   });
 

@@ -118,9 +118,9 @@ export const style = css`
       color: var(--spectrum-gray-800);
     }
 
-    :host(:not(.env-edit, .current-env, .delete, .unpublish)[class]),
-    :host(:not(.env-edit, .current-env, .delete, .unpublish)[class]) #label,
-    :host(:not(.env-edit, .current-env, .delete, .unpublish)[class]) [name="description"]::slotted(*) {
+    :host(:not(.env-edit, .current-env)[class]),
+    :host(:not(.env-edit, .current-env)[class]) #label,
+    :host(:not(.env-edit, .current-env)[class]) [name="description"]::slotted(*) {
       color: var(--spectrum-gray-800);
     }
   }

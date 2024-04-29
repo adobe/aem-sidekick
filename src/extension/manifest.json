@@ -49,6 +49,7 @@
           "config.js",
           "polyfills.min.js",
           "sp-popover.js",
+          "sp-tray.js",
           "views/json/json.html",
           "view-doc-source/js/content.js"
         ],
