@@ -15,6 +15,31 @@
 import { css } from 'lit';
 
 export const style = css`
+  action-bar {
+    position: absolute;
+    right: 50%;
+    transition: right 0.25s;
+    transform: translate(50%, 0);
+    bottom: 55px;
+    min-width: var(--sidekick-min-width);
+    max-width: var(--sidekick-max-width);
+  }
+
+  action-bar.collapsed {
+    min-width: unset;
+    left: unset;
+    right: 15px;
+    transform: translate(0px, 0px);
+  }
+
+  action-bar.collapsed sp-divider,
+  action-bar.collapsed sp-action-group:first-of-type,
+  action-bar.collapsed sp-action-group login-button,
+  action-bar.collapsed sp-action-group sp-action-button.properties,
+  action-bar.collapsed sp-action-group sp-action-button.plugin-list {
+    display: none;
+  }
+
   action-bar sp-action-group {
     padding: 12px;
   }
@@ -31,7 +56,15 @@ export const style = css`
     width: auto;
   }
 
-  action-bar sp-action-group > svg {
+  action-bar sp-action-group > button {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+  }
+
+  action-bar sp-action-group > button > svg {
     width: 32px;
     height: 32px;
   }
