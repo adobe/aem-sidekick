@@ -73,7 +73,9 @@ function extensionPlugins(browser) {
     /** Copy static assets */
     copy({
       targets: [
-        { src: 'src/extension/*', ignore: ['src/extension/app'], dest: `./dist/${browser}` },
+        { src: 'src/extension/options.html', dest: `./dist/${browser}` },
+        { src: 'src/extension/icons', dest: `./dist/${browser}` },
+        { src: 'src/extension/_locales', dest: `./dist/${browser}` },
       ],
     }),
     replace({
@@ -97,15 +99,26 @@ function viewBuild(browser, path) {
   };
 }
 
+function createExtension(browser) {
+  return [
+    {
+      input: 'src/extension/index.js',
+      ...extensionBuild(browser),
+    },
+    {
+      input: 'src/extension/background.js',
+      ...extensionBuild(browser),
+    },
+    {
+      input: 'src/extension/content.js',
+      ...extensionBuild(browser),
+    },
+  ];
+}
+
 export default [
-  {
-    input: 'src/extension/index.js',
-    ...extensionBuild('chrome'),
-  },
-  {
-    input: 'src/extension/index.js',
-    ...extensionBuild('safari'),
-  },
+  ...createExtension('chrome'),
+  ...createExtension('safari'),
   {
     input: 'src/extension/views/json/json.js',
     ...viewBuild('chrome', '/views/json'),

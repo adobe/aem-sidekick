@@ -12,7 +12,7 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
-import { setViewport as wtrSetViewPort } from '@web/test-runner-commands';
+import { setViewport } from '@web/test-runner-commands';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
@@ -39,8 +39,12 @@ import {
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
-async function setViewport(options) {
-  await wtrSetViewPort(options);
+/**
+ * Calls WTR's setViewPort and fires a resize event on the window.
+ * @param {Object} options The viewport options
+ */
+async function resizeWindow(options) {
+  await setViewport(options);
   window.dispatchEvent(new Event('resize'));
 }
 
@@ -194,8 +198,6 @@ describe('Plugin action bar', () => {
         .mockFetchSidekickConfigSuccess(false, false)
         .mockLocation('https://www.example.com')
         .createSidekick();
-
-      sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitEnvSwitcher();
 
@@ -587,7 +589,7 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport narrower
-      await setViewport({ width: 600, height: 600 });
+      await resizeWindow({ width: 600, height: 600 });
       await aTimeout(100);
 
       // check if tools container plugin moved to plugin menu
@@ -607,7 +609,7 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport narrower
-      await setViewport({ width: 400, height: 600 });
+      await resizeWindow({ width: 400, height: 600 });
       await aTimeout(100);
 
       // check if library plugin moved to plugin menu
@@ -627,8 +629,8 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport wider again
-      await setViewport({ width: 600, height: 600 });
-      await setViewport({ width: 800, height: 600 });
+      await resizeWindow({ width: 600, height: 600 });
+      await resizeWindow({ width: 800, height: 600 });
       await aTimeout(100);
 
       // check if all plugins moved back to bar
@@ -661,6 +663,35 @@ describe('Plugin action bar', () => {
       expect(recursiveQuery(actionBar, 'login-button')).to.exist;
 
       const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
+      expect(propertiesButton).to.exist;
+
+      const loginButton = recursiveQuery(systemActionGroup, 'login-button');
+      expect(loginButton).to.exist;
+      expect(loginButton.classList.length).to.equal(1);
+      expect(loginButton.classList.contains('not-authorized')).to.be.true;
+
+      const logo = recursiveQuery(systemActionGroup, 'svg');
+      expect(logo).to.exist;
+    });
+
+    it('not logged in, site does not have authentication enabled', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockFetchStatusSuccess()
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroupsArray = [...actionGroups];
+      expect(actionGroupsArray.length).to.equal(3);
+
+      const systemActionGroup = actionGroupsArray[2];
+
+      const propertiesButton = recursiveQuery(systemActionGroup, '.properties');
       expect(propertiesButton).to.exist;
 
       const loginButton = recursiveQuery(systemActionGroup, 'login-button');

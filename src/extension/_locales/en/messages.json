@@ -634,7 +634,7 @@
     "destructive_confirmation_invalid": {
       "message": "Sorry, please enter the text exactly as displayed to confirm."
     },
-    "reload_success": {
+        "reload_success": {
       "message": "Preview successfully updated, reloading..."
     },
     "preview_success": {
@@ -653,7 +653,7 @@
       "message": "Signing in...."
     },
     "logging_out_state": {
-      "message": "Signing out..."
+      "message": "Signing out...."
     },
     "unauthorized_state": {
       "message": "Account not authorized"

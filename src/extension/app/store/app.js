@@ -853,14 +853,13 @@ export class AppStore {
       } else {
         // eslint-disable-next-line no-console
         console.error(resp);
-        this.showToast(`${this.i18n('error_preview_failure')}${resp.error}`, 'negative');
+        this.showToast(`${this.i18n('error_preview_failure')}`, 'negative');
       }
       return;
     }
     // handle special case /.helix/*
     if (status.webPath.startsWith('/.helix/')) {
       this.showToast(this.i18n('preview_config_success'), 'positive');
-      this.setState();
       return;
     }
 
