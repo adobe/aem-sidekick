@@ -453,6 +453,7 @@ describe('Plugin action bar', () => {
     });
 
     it('contains unpinned plugins', async () => {
+      const { sandbox } = sidekickTest;
       sidekickTest
         .mockFetchStatusSuccess(true)
         .mockFetchSidekickConfigSuccess(false, false, defaultConfigUnpinnedPlugin)
@@ -461,6 +462,8 @@ describe('Plugin action bar', () => {
       sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitEnvSwitcher();
+
+      const customPluginId = 'custom-plugin-0'; // generated id
 
       // open plugin menu
       const pluginMenu = recursiveQuery(sidekick, '#plugin-menu');
@@ -473,8 +476,13 @@ describe('Plugin action bar', () => {
       expect(recursiveQuery(pluginMenu, '.delete')).to.exist;
 
       // check for unpinned plugin
-      const unPinnedPlugin = recursiveQuery(pluginMenu, '.unpinned');
+      const unPinnedPlugin = recursiveQuery(pluginMenu, `.${customPluginId}`);
       expect(unPinnedPlugin).to.exist;
+
+      const openPageStub = sandbox.stub(appStore, 'openPage');
+      unPinnedPlugin.click();
+      await aTimeout(100);
+      expect(openPageStub.calledOnce).to.be.true;
     });
 
     it('renders unpinned container as menu group', async () => {
@@ -564,6 +572,8 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitEnvSwitcher();
       await aTimeout(100);
 
+      const customPluginId = 'custom-plugin-9'; // generated id
+
       // check initial state
       expectInActionBar([
         'env-switcher',
@@ -573,7 +583,7 @@ describe('Plugin action bar', () => {
         'tools',
       ]);
       expectInPluginMenu([
-        'unpinned',
+        customPluginId,
       ]);
 
       // make viewport narrower
@@ -593,7 +603,7 @@ describe('Plugin action bar', () => {
         'preflight',
         'predicted-url',
         'localize',
-        'unpinned',
+        customPluginId,
       ]);
 
       // make viewport narrower
@@ -613,7 +623,7 @@ describe('Plugin action bar', () => {
         'preflight',
         'predicted-url',
         'localize',
-        'unpinned',
+        customPluginId,
       ]);
 
       // make viewport wider again
@@ -630,7 +640,7 @@ describe('Plugin action bar', () => {
         'tools',
       ]);
       await expectInPluginMenu([
-        'unpinned',
+        customPluginId,
       ]);
     });
   });

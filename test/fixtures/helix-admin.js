@@ -119,10 +119,9 @@ export const defaultConfigUnpinnedPlugin = {
   ...defaultConfigJSON,
   plugins: [
     {
-      id: 'unpinned',
       title: 'Unpinned Plugin',
       pinned: false,
-      event: 'foo',
+      url: '/tools/foo.html',
     },
   ],
 };
