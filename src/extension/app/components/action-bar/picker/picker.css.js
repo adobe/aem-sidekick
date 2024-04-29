@@ -181,6 +181,7 @@ export const style = css`
 
   sp-overlay sp-popover {
     backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
+    padding: 0;
   }
 
   sp-tray {
