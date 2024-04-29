@@ -665,37 +665,9 @@ describe('Plugin action bar', () => {
       const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
       expect(propertiesButton).to.exist;
 
-      const loginButton = recursiveQuery(systemActionGroup, 'login-button');
+      const loginButton = recursiveQuery(systemActionGroup, '#user');
       expect(loginButton).to.exist;
       expect(loginButton.classList.length).to.equal(1);
-      expect(loginButton.classList.contains('not-authorized')).to.be.true;
-
-      const logo = recursiveQuery(systemActionGroup, 'svg');
-      expect(logo).to.exist;
-    });
-
-    it('not logged in, site does not have authentication enabled', async () => {
-      sidekickTest
-        .mockFetchSidekickConfigSuccess(true, false)
-        .mockFetchStatusSuccess()
-        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
-
-      sidekick = sidekickTest.createSidekick();
-
-      await sidekickTest.awaitEnvSwitcher();
-
-      const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
-      const actionGroupsArray = [...actionGroups];
-      expect(actionGroupsArray.length).to.equal(3);
-
-      const systemActionGroup = actionGroupsArray[2];
-
-      const propertiesButton = recursiveQuery(systemActionGroup, '.properties');
-      expect(propertiesButton).to.exist;
-
-      const loginButton = recursiveQuery(systemActionGroup, 'login-button');
-      expect(loginButton).to.exist;
       expect(loginButton.classList.contains('not-authorized')).to.be.true;
 
       const logo = recursiveQuery(systemActionGroup, 'svg');
@@ -722,7 +694,34 @@ describe('Plugin action bar', () => {
       const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
       expect(propertiesButton).to.exist;
 
-      const loginButton = recursiveQuery(systemActionGroup, 'login-button');
+      const loginButton = recursiveQuery(systemActionGroup, '#user');
+      expect(loginButton).to.exist;
+
+      const logo = recursiveQuery(systemActionGroup, 'svg');
+      expect(logo).to.exist;
+    });
+
+    it('not logged in, site does not have authentication enabled', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockFetchStatusSuccess()
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroupsArray = [...actionGroups];
+      expect(actionGroupsArray.length).to.equal(3);
+
+      const systemActionGroup = actionGroupsArray[2];
+
+      const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
+      expect(propertiesButton).to.exist;
+
+      const loginButton = recursiveQuery(systemActionGroup, '#user');
       expect(loginButton).to.exist;
       expect(loginButton.className === '').to.be.true;
 
@@ -756,7 +755,7 @@ describe('Plugin action bar', () => {
       const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
       expect(propertiesButton).to.exist;
 
-      const loginButton = recursiveQuery(systemActionGroup, 'login-button');
+      const loginButton = recursiveQuery(systemActionGroup, '#user');
       expect(loginButton).to.exist;
       expect(loginButton.classList.length).to.equal(0);
 
