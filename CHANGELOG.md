@@ -1,3 +1,10 @@
+# [1.21.0](https://github.com/adobe/aem-sidekick/compare/v1.20.3...v1.21.0) (2024-04-30)
+
+
+### Features
+
+* plugin menu and adaptable width ([#129](https://github.com/adobe/aem-sidekick/issues/129)) ([602c8be](https://github.com/adobe/aem-sidekick/commit/602c8be3a2412bda1d0e09e21c93c73c163346ae))
+
 ## [1.20.3](https://github.com/adobe/aem-sidekick/compare/v1.20.2...v1.20.3) (2024-04-27)
 
 
