@@ -62,7 +62,7 @@ export const style = css`
   }
 
   @media (max-width: 500px) {
-    #properties, #user {
+    #properties {
       display: none;
     }
   }

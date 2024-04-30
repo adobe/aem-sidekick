@@ -54,6 +54,13 @@ export class LoginButton extends ConnectedElement {
       margin: 0 8px;
     }
 
+    sp-icon.loading {
+      opacity: 0.4;
+      width: 18px;
+      height: 18px;
+      margin: 0 7px;
+    }
+
     :host {
       display: flex;
       align-items: center;
@@ -114,12 +121,14 @@ export class LoginButton extends ConnectedElement {
     const { profile } = this.appStore.status;
     const authenticated = this.appStore.isAuthenticated();
 
-    if (!this.appStore.status.webPath && this.appStore.status?.status !== 401) {
-      return html``;
-    }
-    if (this.appStore.state === STATE.LOGGING_IN
+    if ((!this.appStore.status.webPath && this.appStore.status?.status !== 401)
+      || this.appStore.state === STATE.LOGGING_IN
       || this.appStore.state === STATE.LOGGING_OUT) {
-      return html`<sp-progress-circle size="s" indeterminate></sp-progress-circle>`;
+      return html`
+        <sp-icon slot="icon" class="loading" size="l">
+          ${ICONS.USER_ICON}
+        </sp-icon>
+      `;
     }
 
     if (!authenticated) {
