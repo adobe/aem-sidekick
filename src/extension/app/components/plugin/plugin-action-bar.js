@@ -195,6 +195,10 @@ export class PluginActionBar extends ConnectedElement {
    * @returns {TemplateResult|string} An array of Lit-html templates or strings, or a single empty string.
    */
   renderPluginMenu() {
+    if (this.appStore.state === STATE.TOAST) {
+      return html``;
+    }
+
     if (this.appStore.state !== STATE.READY) {
       return html`<sp-action-group></sp-action-group>`;
     }

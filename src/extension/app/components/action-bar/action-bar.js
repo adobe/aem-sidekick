@@ -43,6 +43,12 @@ export class ActionBar extends LitElement {
       border: 1px solid var(--spectrum2-color-info);
     }
 
+    :host(.positive) slot::slotted(sp-action-group),
+    :host(.negative) slot::slotted(sp-action-group),
+    :host(.info) slot::slotted(sp-action-group) {
+        width: 100%;
+    }
+
     @media (max-width: 700px) {
       .action-bar {
         border-radius: 0;
