@@ -28,7 +28,7 @@ export const style = css`
 
   :host #button,
   :host([quiet]) #button {
-      border-radius: 8px;
+    border-radius: var(--spectrum2-default-border-radius);
   }
 
   :host(.env-edit) #button #label,
