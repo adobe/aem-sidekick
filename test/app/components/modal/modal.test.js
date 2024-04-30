@@ -342,7 +342,7 @@ describe('Modals', () => {
     await sidekickTest.awaitEnvSwitcher();
 
     const modal = appStore.showModal({
-      type: MODALS.PLUGIN_LIST,
+      type: MODALS.DELETE,
     });
 
     await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));

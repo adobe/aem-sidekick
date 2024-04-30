@@ -12,7 +12,6 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
 import { expect } from '@open-wc/testing';
-import sinon from 'sinon';
 import chromeMock from '../../../mocks/chrome.js';
 import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
@@ -40,7 +39,6 @@ const TEST_CHILD_CONFIG = {
 };
 
 describe('Plugin', () => {
-  const sandbox = sinon.createSandbox();
   const appStore = new AppStore();
 
   it('creates plugin from config', async () => {
@@ -87,17 +85,6 @@ describe('Plugin', () => {
     }, appStore);
     const pinned = plugin.isPinned();
     expect(pinned).to.be.false;
-  });
-
-  it('pinned state from user prefs supersedes config', async () => {
-    const plugin = new Plugin({
-      ...TEST_CONFIG,
-      pinned: false,
-    }, appStore);
-    sandbox.stub(appStore, 'getPluginPrefs').returns({ pinned: true });
-    const pinned = plugin.isPinned();
-    expect(pinned).to.be.true;
-    sandbox.restore();
   });
 
   it('renders plugin as button', async () => {

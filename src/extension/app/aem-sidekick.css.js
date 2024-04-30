@@ -38,7 +38,7 @@ export const style = css`
     bottom: 55px;
     pointer-events: auto;
     z-index: 1;
-    min-width: var(--sidekick-min-width);
+    width: 90vw;
     max-width: var(--sidekick-max-width);
   }
 
@@ -55,5 +55,13 @@ export const style = css`
     width: 100%;
     height: 100%;
     pointer-events: auto;
+  }
+
+  @media (max-width: 700px) {
+    plugin-action-bar {
+      width: 100vw;
+      max-width: unset;
+      bottom: 0;
+    }
   }
 `;
