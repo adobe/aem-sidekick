@@ -121,11 +121,6 @@ export class SidekickTest {
    * Destroy the sidekick test instance
    */
   destroy() {
-    if (!navigator.userAgent.includes('HeadlessChrome')) {
-      // debugging in browser, leave sidekick in DOM
-      return;
-    }
-
     const { body } = document;
     if (body.contains(this.sidekick)) {
       body.removeChild(this.sidekick);
