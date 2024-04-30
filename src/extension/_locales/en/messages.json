@@ -650,10 +650,10 @@
       "message": "Sign in to continue"
     },
     "logging_in_state": {
-      "message": "Signing in...."
+      "message": "Signing in..."
     },
     "logging_out_state": {
-      "message": "Signing out...."
+      "message": "Signing out..."
     },
     "unauthorized_state": {
       "message": "Account not authorized"
