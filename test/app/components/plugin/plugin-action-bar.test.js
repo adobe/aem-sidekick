@@ -609,10 +609,10 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport narrower
-      await resizeWindow({ width: 400, height: 600 });
+      await resizeWindow({ width: 450, height: 600 });
       await aTimeout(100);
 
-      // check if library plugin moved to plugin menu
+      // check if library plugin and tools container moved to plugin menu
       expectInActionBar([
         'env-switcher',
         'edit-preview',
