@@ -84,7 +84,7 @@ async function enableDisableProject(tab) {
  */
 async function openViewDocSource({ id }) {
   chrome.windows.create({
-    url: chrome.runtime.getURL(`/view-doc-source/index.html?tabId=${id}`),
+    url: chrome.runtime.getURL(`/views/doc-source/index.html?tabId=${id}`),
     type: 'popup',
     width: 740,
   });

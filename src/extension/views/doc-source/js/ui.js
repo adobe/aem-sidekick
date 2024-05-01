@@ -18,7 +18,7 @@ import {
   addMetadataBlock,
 } from './blocks.js';
 
-import sampleRUM from '../../rum.js';
+import sampleRUM from '../../../rum.js';
 
 /**
  * Returns the current tab
@@ -34,7 +34,7 @@ const getCurrentTab = async () => {
 /**
  * Sends a message to the content window
  * @param {Object} message The message to send
- * @returns {Promise<Object} The response result
+ * @returns {Promise<Object>} The response result
  */
 const sendMessage = async (message) => {
   const tab = await getCurrentTab();
@@ -220,7 +220,7 @@ const load = async () => {
 
   await chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    files: ['/view-doc-source/js/content.js'],
+    files: ['/views/doc-source/js/content.js'],
   });
 
   loadEditor(tab.url);
