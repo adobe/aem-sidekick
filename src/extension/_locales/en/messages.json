@@ -339,6 +339,9 @@
     "edit": {
       "message": "Edit"
     },
+    "open_in": {
+      "message": "Open in $1"
+    },
     "edit_date": {
       "message": "Edited: "
     },
@@ -577,8 +580,14 @@
     "yesterday_at": {
       "message": "Yesterday at $1"
     },
-    "navigate_to": {
-      "message": "Navigate to"
+    "environments": {
+      "message": "Environments"
+    },
+    "notifications": {
+      "message": "Notifications"
+    },
+    "publish_outdated": {
+      "message": "Preview has been updated"
     },
     "preview_last_updated": {
       "message": "Last updated $1"

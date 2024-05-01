@@ -156,6 +156,7 @@ export const style = css`
   }
 
   sp-overlay sp-popover {
+    min-width: 256px !important;
     backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
   }
 `;

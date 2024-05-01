@@ -70,6 +70,15 @@ export const style = css`
     color: var(--spectrum2-live-content-default);
   }
 
+  :host(.env-edit) {
+    margin-bottom: 7px;
+  }
+
+  ::slotted([slot=icon]) {
+    margin-left: auto;
+    margin-inline-end: 0;
+  }
+
   sp-status-light {
     position: absolute;
     top: 0;

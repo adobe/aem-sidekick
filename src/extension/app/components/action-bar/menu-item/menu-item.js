@@ -51,10 +51,10 @@ class MenuItem extends SPMenuItem {
     }
 
     return html`
-      <slot name="icon"></slot>
       <slot name="avatar"></slot>
       <div id="label">
           <slot id="slot"></slot>
+          <slot name="icon"></slot>
       </div>
       <slot name="description"></slot>
       <slot name="value"></slot>

@@ -17,6 +17,8 @@ import { style } from './env-switcher.css.js';
 import { createTag, newTab } from '../../../utils/browser.js';
 import { getTimeAgo } from '../../../utils/i18n.js';
 import { ConnectedElement } from '../../connected-element/connected-element.js';
+import { ICONS } from '../../../constants.js';
+import { createPublishPlugin } from '../../../plugins/publish/publish.js';
 
 /**
  * @typedef {import('../../action-bar/picker/picker.js').Picker} Picker
@@ -120,14 +122,14 @@ export class EnvironmentSwitcher extends ConnectedElement {
    *
    * @param {string} id - The id of the plugin
    * @param {Object} attrs - Additional HTML attributes to be applied to the menu item
-   * @param {string} lastModified - The last mod date of the env. If undefined, item is disabled.
+   * @param {string} [lastModified] - The last mod date of the env. If undefined, item is disabled.
    * @returns {HTMLElement} - The created menu item
    */
   createMenuItem(id, attrs, lastModified) {
     if (this.currentEnv === id) {
       attrs.disabled = '';
     }
-    const label = this.envNames[id];
+    const label = id === 'edit' ? this.appStore.i18n('open_in').replace('$1', this.appStore.getContentSourceLabel()) : this.envNames[id];
     const menuItem = createTag({
       tag: 'sp-menu-item',
       text: label,
@@ -139,31 +141,44 @@ export class EnvironmentSwitcher extends ConnectedElement {
     });
 
     // Disable menu item if lastModified is undefined
-    if (!lastModified) {
+    if (!lastModified && id !== 'edit') {
       menuItem.setAttribute('disabled', '');
     }
 
-    const description = createTag({
-      tag: 'span',
-      text: this.getLastModifiedLabel(id, lastModified),
-      attrs: {
-        slot: 'description',
-      },
-    });
+    if (id !== 'edit') {
+      const description = createTag({
+        tag: 'span',
+        text: this.getLastModifiedLabel(id, lastModified),
+        attrs: {
+          slot: 'description',
+        },
+      });
 
-    menuItem.appendChild(description);
+      menuItem.appendChild(description);
+    } else {
+      const docIcon = createTag({
+        tag: 'sp-icon',
+        attrs: {
+          slot: 'icon',
+        },
+      });
+
+      docIcon.innerHTML = ICONS.DOC_ICON.strings.join('');
+      menuItem.appendChild(docIcon);
+    }
 
     return menuItem;
   }
 
   /**
-   * Creates a "Navigate to" header
+   * Creates a "Environments" header
+   * @param {string} key - The key to translate
    * @returns {HTMLElement} The created header
    */
-  createNavigateToHeader() {
+  createHeader(key) {
     const menuItem = createTag({
       tag: 'div',
-      text: this.appStore.i18n('navigate_to'),
+      text: this.appStore.i18n(key),
       attrs: {
         class: 'heading',
       },
@@ -180,38 +195,63 @@ export class EnvironmentSwitcher extends ConnectedElement {
     return createTag({ tag: 'sp-menu-divider' });
   }
 
+  createPublishNotification() {
+    const menuItem = createTag({
+      tag: 'div',
+      text: this.appStore.i18n('publish_outdated'),
+      attrs: {
+        class: 'notification-item',
+        value: 'publish',
+      },
+    });
+
+    const publishButton = createTag({
+      tag: 'sp-action-button',
+      text: this.appStore.i18n('publish'),
+      attrs: {
+        slot: 'description',
+        emphasized: '',
+        selected: '',
+      },
+    });
+
+    publishButton.addEventListener('click', (evt) => {
+      createPublishPlugin(this.appStore).onButtonClick(evt);
+    });
+
+    menuItem.appendChild(publishButton);
+
+    return menuItem;
+  }
+
   /**
    * Renders the environment switcher menu
    */
   renderMenu() {
     const { picker } = this;
     const { status } = this.appStore;
+    let showNotification = false;
 
     // Reset contents of picker
     picker.innerHTML = '';
 
     // Pull mod dates from status
-    const editLastMod = status.edit?.lastModified;
     const previewLastMod = status.preview?.lastModified;
     const liveLastMod = status.live?.lastModified;
 
-    const navToHeader = this.createNavigateToHeader();
+    const environmentsHeader = this.createHeader('environments');
     const divider = this.createDivider();
     const devMenuItem = this.createMenuItem('dev', {}, previewLastMod);
-    const editMenuItem = this.createMenuItem('edit', {}, editLastMod);
+    const editMenuItem = this.createMenuItem('edit', {});
     const previewMenuItem = this.createMenuItem('preview', {}, previewLastMod);
     const liveMenuItem = this.createMenuItem('live', {}, liveLastMod);
     const prodMenuItem = this.createMenuItem('prod', {}, liveLastMod);
 
-    // Check if edit is newer than preview, if so add update flag
-    if (editLastMod && (!previewLastMod || new Date(editLastMod) > new Date(previewLastMod))) {
-      previewMenuItem.setAttribute('update', 'true');
-    }
-
     // Check if preview is newer than live, if so add update flag
     if (status.live?.status === 200
       && (!liveLastMod || (liveLastMod && new Date(liveLastMod) < new Date(previewLastMod)))) {
-      liveMenuItem.setAttribute('update', 'true');
+      showNotification = true;
+      this.picker.classList.add('notification');
     }
 
     let showProd = false;
@@ -222,14 +262,22 @@ export class EnvironmentSwitcher extends ConnectedElement {
       showProd = true;
     }
 
+    if (showNotification) {
+      const notificationHeader = this.createHeader('notifications');
+      picker.append(
+        notificationHeader,
+        this.createPublishNotification(),
+        divider,
+      );
+    }
+
     switch (this.currentEnv) {
       case 'dev':
         devMenuItem.classList.add('current-env');
         picker.append(
-          devMenuItem,
-          divider,
-          navToHeader,
+          environmentsHeader,
           editMenuItem,
+          devMenuItem,
           previewMenuItem,
           liveMenuItem,
         );
@@ -237,8 +285,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       case 'edit':
         editMenuItem.classList.add('current-env');
         picker.append(
-          editMenuItem,
-          navToHeader,
+          environmentsHeader,
           previewMenuItem,
           liveMenuItem,
         );
@@ -246,32 +293,29 @@ export class EnvironmentSwitcher extends ConnectedElement {
       case 'preview':
         previewMenuItem.classList.add('current-env');
         picker.append(
-          previewMenuItem,
-          divider,
-          navToHeader,
+          environmentsHeader,
           editMenuItem,
+          previewMenuItem,
           liveMenuItem,
         );
         break;
       case 'live':
         liveMenuItem.classList.add('current-env');
         picker.append(
-          liveMenuItem,
-          divider,
-          navToHeader,
+          environmentsHeader,
           editMenuItem,
           previewMenuItem,
+          liveMenuItem,
         );
         break;
       case 'prod':
         prodMenuItem.classList.add('current-env');
         picker.append(
-          prodMenuItem,
-          divider,
-          navToHeader,
+          environmentsHeader,
           editMenuItem,
           previewMenuItem,
           liveMenuItem,
+          prodMenuItem,
         );
         break;
       default:

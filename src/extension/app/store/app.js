@@ -573,6 +573,15 @@ export class AppStore {
   }
 
   /**
+   * Returns a label for the content source
+   * @returns {string} The content source label
+   */
+  getContentSourceLabel() {
+    const { preview } = this.status;
+    return preview?.sourceLocation.includes('onedrive:') ? 'SharePoint' : 'Google Drive';
+  }
+
+  /**
    * Creates a modal and appends it to the sidekick.
    * If a modal is already open, it will be replaced.
    * @param {Modal} modal The modal to display
@@ -772,79 +781,81 @@ export class AppStore {
      * Fetches the status for the current resource.
      * @fires Sidekick#statusfetched
      * @param {boolean} [refreshLocation] Refresh the sidekick's location (optional)
+     * @param {boolean} [fetchEdit] Should the edit url be fetched (optional)
+     * @returns {Promise<Object> | undefined} The status object
      */
-  fetchStatus(refreshLocation) {
+  async fetchStatus(refreshLocation, fetchEdit = false) {
+    let status;
     if (refreshLocation) {
       this.location = getLocation();
     }
     const { owner, repo, ref } = this.siteStore;
     if (!owner || !repo || !ref) {
-      return;
+      return status;
     }
     if (!this.status.apiUrl || refreshLocation) {
-      const { href, pathname } = this.location;
+      const { pathname, href } = this.location;
       const isDM = this.isEditor() || this.isAdmin(); // is document management
       const apiUrl = getAdminUrl(
         this.siteStore,
         'status',
         isDM ? '' : pathname,
       );
-      apiUrl.searchParams.append('editUrl', isDM ? href : 'auto');
+
+      if (isDM || fetchEdit) {
+        apiUrl.searchParams.append('editUrl', isDM ? href : 'auto');
+      }
+
       this.status.apiUrl = apiUrl;
     }
 
     this.setState(STATE.FETCHING_STATUS);
-    fetch(this.status.apiUrl, {
-      ...getAdminFetchOptions(),
-    })
-      .then((resp) => {
-        // check for error status
-        if (!resp.ok) {
-          let errorKey = '';
-          switch (resp.status) {
-            case 401:
-              // unauthorized, ask user to log in
-              return {
-                json: () => ({
-                  status: 401,
-                }),
-              };
-            case 404:
-              errorKey = this.isEditor()
-                ? 'error_status_404_document'
-                : 'error_status_404_content';
-              break;
-            default:
-              errorKey = `error_status_${resp.status}`;
-          }
-          throw new Error(errorKey);
+
+    try {
+      let resp = await fetch(this.status.apiUrl, { ...getAdminFetchOptions() });
+      if (!resp.ok) {
+        let errorKey = '';
+        switch (resp.status) {
+          case 401:
+            // unauthorized, ask user to log in
+            resp = {
+              // @ts-ignore
+              json: () => ({ status: 401 }),
+            };
+            break;
+          case 404:
+            errorKey = this.isEditor()
+              ? 'error_status_404_document'
+              : 'error_status_404_content';
+            throw new Error(errorKey);
+          default:
+            errorKey = `error_status_${resp.status}`;
+            throw new Error(errorKey);
         }
-        return resp;
-      })
-      .then(async (resp) => {
-        try {
-          return resp.json();
-        } catch (e) {
-          /* istanbul ignore next */
-          throw new Error('error_status_invalid');
-        }
-      })
-      .then((json) => {
-        this.updateStatus(json);
-        return json;
-      })
-      .then((json) => this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, json))
-      .catch(({ message }) => {
-        const error = this.i18n(message) || this.i18n('error_status_fatal');
-        this.status.error = error;
-        this.showToast(error, 'negative');
-      })
-      .finally(() => {
-        // Don't set a state if a toast is shown
-        if (!this.toast) {
-          this.setState();
-        }
-      });
+      }
+
+      try {
+        status = await resp.json();
+      } catch (e) {
+        /* istanbul ignore next */
+        throw new Error('error_status_invalid');
+      }
+
+      this.updateStatus(status);
+
+      this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, status);
+
+      // Don't set a state if a toast is shown
+      if (!this.toast) {
+        this.setState();
+      }
+    } catch ({ message }) {
+      const error = this.i18n(message) || this.i18n('error_status_fatal');
+      this.status.error = error;
+      this.showToast(error, 'negative');
+    }
+
+    return status;
   }
 
   /**
@@ -1174,7 +1185,7 @@ export class AppStore {
    * @param {boolean} [open] true if environment should be opened in new tab
    * @fires Sidekick#envswitched
    */
-  switchEnv(targetEnv, open = false) {
+  async switchEnv(targetEnv, open = false) {
     const hostType = ENVS[targetEnv];
     if (!hostType) {
       // eslint-disable-next-line no-console
@@ -1206,7 +1217,8 @@ export class AppStore {
     }
 
     if (targetEnv === 'edit') {
-      envUrl = status.edit && status.edit.url;
+      const statusEditUrl = await this.fetchStatus(false, true);
+      envUrl = statusEditUrl.edit && statusEditUrl.edit.url;
     }
 
     const [customView] = this.findViews(VIEWS.CUSTOM);
