@@ -65,8 +65,7 @@ export const spectrum2 = css`
     --spectrum2-color-negative: #D73220;
     --spectrum2-color-info: #3B63FB;
 
-    --sidekick-min-width: 620px;
-    --sidekick-max-width: 800px;
+    --sidekick-max-width: 640px;
 
     --spectrum2-edit-content-default: var(--edit-content-default-dark);
     --spectrum2-edit-background-default: var(--edit-background-default-dark);

@@ -59,7 +59,7 @@ export const style = css`
   .toast-container .actions sp-action-button.close {
     color: #fff;
   }
-  
+
   .toast-container .actions sp-action-button.action {
     --highcontrast-actionbutton-background-color-default: #fff2;
     height: 100%;

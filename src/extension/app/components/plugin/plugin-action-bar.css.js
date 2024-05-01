@@ -17,22 +17,53 @@ import { css } from 'lit';
 export const style = css`
   action-bar sp-action-group {
     padding: 12px;
+    flex-wrap: nowrap;
   }
 
-  action-bar sp-action-group:first-of-type {
-    flex-grow: 1;
+  action-bar sp-action-group:nth-of-type(2) {
+    margin-left: auto;
+    padding: 12px 0;
   }
 
   action-bar sp-action-group.not-authorized {
-    padding: 0px;
+    padding: 0;
   }
 
   action-bar .plugin-container {
     width: auto;
   }
 
-  action-bar sp-action-group > svg {
+  action-bar sp-action-group:last-of-type > svg {
     width: 32px;
     height: 32px;
+  }
+
+  action-bar sp-action-group .filler {
+    flex-grow: 1;
+  }
+
+  #plugin-menu {
+    width: max-content;
+    margin: 0 12px;
+  }
+
+  action-bar action-bar-picker sp-menu-item {
+    min-width: 120px;
+  }
+
+  #plugin-menu sp-menu-group [slot="header"] {
+    text-transform: uppercase;
+    font-size: var(--spectrum-global-dimension-font-size-75);
+    color: var(--spectrum-global-color-gray-600);
+  }
+
+  #plugin-menu sp-menu-group sp-menu-item {
+    padding-left: 24px;
+  }
+
+  @media (max-width: 500px) {
+    #properties {
+      display: none;
+    }
   }
 `;

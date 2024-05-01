@@ -22,8 +22,13 @@ export const style = css`
     --mod-divider-thickness: 1px;
   }
 
-  :host #button {
-    border-radius: 8px;
+  :host([quiet]:hover) {
+    background-color: var(--highcontrast-actionbutton-background-color-hover, var(--mod-actionbutton-background-color-hover, var(--spectrum-actionbutton-background-color-hover)))
+  }
+
+  :host #button,
+  :host([quiet]) #button {
+    border-radius: var(--spectrum2-default-border-radius);
   }
 
   :host(.env-edit) #button #label,
@@ -137,17 +142,36 @@ export const style = css`
     border: 1px solid var(--spectrum2-live-border-open);
   }
 
-  sp-menu-divider {
-    background-color: #f30;
-  }
-
-
   :host(.plugin-container) #button {
     background-color: transparent;
   }
 
   :host(.plugin-container) #button[aria-expanded="true"] {
     background-color: var(--spectrum-gray-400);
+  }
+
+  :host([chevron="false"]) #button sp-icon-chevron100 {
+    display: none;
+  }
+
+  :host([quiet]) #button {
+    margin-top: 0;
+  }
+
+  :host([quiet]) #button:hover {
+    background-color: var(--spectrum2-edit-background-hover);
+  }
+
+  :host([quiet]) #button #label {
+    margin-top: 0;
+    margin-block-end: 0;
+    padding: 0 12px;
+    font-size: var(--spectrum-global-dimension-font-size-100);
+  }
+
+  :host([quiet]) #button .picker {
+    margin-inline-start: 0;
+    margin-inline-end: 8px;
   }
 
   sp-menu {
@@ -158,5 +182,6 @@ export const style = css`
   sp-overlay sp-popover {
     min-width: 256px !important;
     backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
+    padding: 0;
   }
 `;

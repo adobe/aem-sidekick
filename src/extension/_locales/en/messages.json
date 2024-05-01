@@ -480,11 +480,8 @@
     "please_wait": {
       "message": "Please wait..."
     },
-    "plugins_empty": {
-      "message": "No actions found for this page"
-    },
-    "plugins_loading": {
-      "message": "Loading actions..."
+    "plugins_more": {
+      "message": "More plugins..."
     },
     "preview": {
       "message": "Preview"
@@ -646,63 +643,39 @@
     "destructive_confirmation_invalid": {
       "message": "Sorry, please enter the text exactly as displayed to confirm."
     },
-    "plugins": {
-      "message": "Plugins"
-    },
-    "plugins_manage": {
-      "message": "Manage plugins"
-    },
-    "plugins_filter": {
-      "message": "Search plugins..."
-    },
-    "plugins_navigate": {
-      "message": "Navigate"
-    },
-    "plugins_select": {
-      "message": "Select"
-    },
-    "plugin_pin": {
-      "message": "Pin this plugin"
-    },
-    "plugin_unpin": {
-      "message": "Unpin this plugin"
-    },
-    "back": {
-      "message": "Back"
-    }, 
-    "reload_success": {
+        "reload_success": {
       "message": "Preview successfully updated, reloading..."
-    }, 
+    },
     "preview_success": {
       "message": "Preview successfully updated, opening Preview..."
-    }, 
+    },
     "publish_success": {
       "message": "Publication successful, opening $1..."
-    }, 
+    },
     "fetching_status_state": {
       "message": "Loading status..."
-    }, 
+    },
     "login_required_state": {
       "message": "Sign in to continue"
-    }, 
+    },
     "logging_in_state": {
-      "message": "Signing in...."
-    }, 
+      "message": "Signing in..."
+    },
     "logging_out_state": {
-      "message": "Signing out...."
-    }, 
+      "message": "Signing out..."
+    },
     "unauthorized_state": {
       "message": "Account not authorized"
-    }, 
+    },
     "previewing_state": {
       "message": "Updating Preview..."
-    }, 
+    },
     "publishing_state": {
       "message": "Publishing..."
-    }, 
+    },
     "unpublishing_state": {
       "message": "Unpublishing..."
-    }, 
+    },
     "deleting_state": {
       "message": "Deleting..."
     }

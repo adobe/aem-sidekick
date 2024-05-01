@@ -109,11 +109,7 @@ export class Plugin {
    * @returns {boolean} True if plugin is pinned, else false
    */
   isPinned() {
-    const prefs = this.appStore.getPluginPrefs(this.getId());
-    if (typeof prefs.pinned === 'boolean') {
-      // use user preference if defined
-      return prefs.pinned;
-    } else if (typeof this.config.pinned === 'boolean') {
+    if (typeof this.config.pinned === 'boolean') {
       // use default from config if defined
       return this.config.pinned;
     } else {
@@ -206,6 +202,7 @@ export class Plugin {
         if (childPlugins.length > 0) {
           return html`
             <action-bar-picker
+              quiet
               class=${`plugin-container ${this.getId()}`}
               label=${this.getButtonText()}
               @change=${(e) => this.onChange(e)}
@@ -220,6 +217,7 @@ export class Plugin {
           <sp-menu-item
             .disabled=${!this.isEnabled()}
             value=${this.getId()}
+            class=${this.getId()}
             @click=${(evt) => this.onButtonClick(evt)}
           >${this.getButtonText()}</sp-menu-item>
         `;

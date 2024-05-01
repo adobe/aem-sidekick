@@ -50,6 +50,23 @@ export class LoginButton extends ConnectedElement {
       justify-content: center;
     }
 
+    sp-progress-circle[size="s"] {
+      margin: 0 8px;
+    }
+
+    sp-icon.loading {
+      opacity: 0.4;
+      width: 18px;
+      height: 18px;
+      margin: 0 7px;
+    }
+
+    :host {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     :host(.no-login) {
       display: none;
     }
@@ -107,7 +124,11 @@ export class LoginButton extends ConnectedElement {
     if ((!this.appStore.status.webPath && this.appStore.status?.status !== 401)
       || this.appStore.state === STATE.LOGGING_IN
       || this.appStore.state === STATE.LOGGING_OUT) {
-      return html``;
+      return html`
+        <sp-icon slot="icon" class="loading" size="l">
+          ${ICONS.USER_ICON}
+        </sp-icon>
+      `;
     }
 
     if (!authenticated) {
