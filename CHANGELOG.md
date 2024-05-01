@@ -1,3 +1,10 @@
+## [1.21.1](https://github.com/adobe/aem-sidekick/compare/v1.21.0...v1.21.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* move view-doc-source and fix json view ([#131](https://github.com/adobe/aem-sidekick/issues/131)) ([0947ba3](https://github.com/adobe/aem-sidekick/commit/0947ba36a22300116bc4f347896e7d6ba6fc2577))
+
 # [1.21.0](https://github.com/adobe/aem-sidekick/compare/v1.20.3...v1.21.0) (2024-04-30)
 
 
