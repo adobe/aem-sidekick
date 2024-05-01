@@ -85,8 +85,8 @@ describe('Delete plugin', () => {
       let appStore;
 
       const statusUrl = contentType === HelixMockContentType.SHEET
-        ? 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/placeholders.json?editUrl=auto'
-        : 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=auto';
+        ? 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/placeholders.json'
+        : 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/';
       let deleteStub;
       let loadPageStub;
       let showModalSpy;
@@ -106,8 +106,6 @@ describe('Delete plugin', () => {
         showModalSpy = sandbox.spy(appStore, 'showModal');
         showToastSpy = sandbox.spy(appStore, 'showToast');
         closeToastSpy = sandbox.spy(appStore, 'closeToast');
-
-        sidekick = sidekickTest.createSidekick();
       });
 
       afterEach(() => {
@@ -119,6 +117,8 @@ describe('Delete plugin', () => {
         // @ts-ignore
         sandbox.stub(appStore, 'showView').returns();
         sidekickTest.mockFetchStatusSuccess(false, null, null, statusUrl);
+        sidekick = sidekickTest.createSidekick();
+        await sidekickTest.awaitEnvSwitcher();
         await expectDeletePlugin(sidekick, false);
       });
 
@@ -134,10 +134,14 @@ describe('Delete plugin', () => {
             // preview delete permission is granted
             preview: {
               status: 200,
+              sourceLocation: 'gdrive:drive-id',
               permissions: ['read', 'write', 'delete'],
             },
           }, null, statusUrl,
           );
+
+        sidekick = sidekickTest.createSidekick();
+        await sidekickTest.awaitEnvSwitcher();
 
         await clickDeletePlugin(sidekick);
 
@@ -165,11 +169,15 @@ describe('Delete plugin', () => {
             // preview delete permission is granted
             preview: {
               status: 200,
+              sourceLocation: 'gdrive:drive-id',
               permissions: ['read', 'write', 'delete'],
             },
             // user not authenticated
             profile: null,
           }, null, statusUrl);
+
+        sidekick = sidekickTest.createSidekick();
+        await sidekickTest.awaitEnvSwitcher();
 
         await clickDeletePlugin(sidekick);
 
@@ -186,6 +194,7 @@ describe('Delete plugin', () => {
             // preview delete permission is granted
             preview: {
               status: 200,
+              sourceLocation: 'gdrive:drive-id',
               permissions: ['read', 'write', 'delete'],
             },
             // user authenticated
@@ -194,6 +203,9 @@ describe('Delete plugin', () => {
               name: 'Peter Parker',
             },
           }, null, statusUrl);
+
+        sidekick = sidekickTest.createSidekick();
+        await sidekickTest.awaitEnvSwitcher();
 
         await clickDeletePlugin(sidekick);
 
@@ -212,9 +224,13 @@ describe('Delete plugin', () => {
             // preview delete permission is granted
             preview: {
               status: 200,
+              sourceLocation: 'gdrive:drive-id',
               permissions: ['read', 'write', 'delete'],
             },
           }, null, statusUrl);
+
+        sidekick = sidekickTest.createSidekick();
+        await sidekickTest.awaitEnvSwitcher();
 
         deleteStub.resolves({ ok: false, status: 500, headers: { 'x-error': 'something went wrong' } });
 

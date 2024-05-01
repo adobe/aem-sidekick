@@ -88,7 +88,7 @@ describe('Environment Switcher', () => {
       expect(picker.getAttribute('open')).to.not.be.null;
       expect(overlay.getAttribute('open')).to.not.be.null;
 
-      const switchEnvStub = sidekickTest.sandbox.stub(appStore, 'switchEnv').returns();
+      const switchEnvStub = sidekickTest.sandbox.stub(appStore, 'switchEnv').resolves();
       const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
       liveButton.click();
 
@@ -178,7 +178,7 @@ describe('Environment Switcher', () => {
       // Simulate pressing the key
       await sendKeys({ down: 'Meta' });
 
-      const switchEnvStub = sidekickTest.sandbox.stub(appStore, 'switchEnv').returns();
+      const switchEnvStub = sidekickTest.sandbox.stub(appStore, 'switchEnv').resolves();
       const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
       liveButton.click();
 
@@ -192,13 +192,14 @@ describe('Environment Switcher', () => {
       expect(switchEnvStub.calledWith('live', true)).to.be.true;
     }).timeout(20000);
 
-    it('live out of date - should show status light', async () => {
+    it('live out of date - should show status light and publish from notification', async () => {
       sidekickTest
         .mockFetchSidekickConfigSuccess(false)
         .mockFetchStatusSuccess(false, {
           preview: {
             lastModified: 'Tue, 19 Dec 2024 15:42:34 GMT',
             sourceLastModified: 'Wed, 01 Nov 2024 17:22:52 GMT',
+            sourceLocation: 'onedrive:id',
           },
           live: {
             status: 200,
@@ -209,6 +210,8 @@ describe('Environment Switcher', () => {
 
       sidekick = sidekickTest.createSidekick();
 
+      const publishSpy = sidekickTest.sandbox.stub(appStore, 'publish').resolves();
+
       await sidekickTest.awaitEnvSwitcher();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
@@ -217,8 +220,15 @@ describe('Environment Switcher', () => {
 
       await waitUntil(() => recursiveQuery(picker, 'sp-menu-item.env-live'));
 
-      const liveMenuItem = recursiveQuery(picker, 'sp-menu-item.env-live');
-      expect(liveMenuItem.getAttribute('update')).to.eq('true');
-    });
+      expect(picker.classList.contains('notification')).to.eq(true);
+
+      const notificationItem = recursiveQuery(picker, '.notification-item');
+      expect(notificationItem).to.not.be.null;
+
+      const publishButton = recursiveQuery(notificationItem, 'sp-action-button');
+      publishButton.click();
+
+      await waitUntil(() => publishSpy.called);
+    }).timeout(20000);
   });
 });

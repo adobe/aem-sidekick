@@ -81,7 +81,7 @@ describe('Test App Store', () => {
   async function testDefaultConfig() {
     expect(appStore.languageDict.add).to.equal('Add');
     expect(appStore.location.hostname).to.equal('localhost');
-    expect(appStore.status.apiUrl.href).to.equal('https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=auto');
+    expect(appStore.status.apiUrl.href).to.equal('https://admin.hlx.page/status/adobe/aem-boilerplate/main/');
     expect(appStore.languageDict.title).to.equal('AEM Sidekick - NextGen');
 
     await waitUntil(() => appStore.status.webPath, 'Status never loaded');
@@ -378,13 +378,25 @@ describe('Test App Store', () => {
       expect(appStore.status.error).to.equal('500 Internal server error: Failed to fetch the page status. Please try again later.');
     });
 
+    it('status returns 429', async () => {
+      sidekickTest
+        .mockFetchStatus429();
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      await waitUntil(
+        () => appStore.status.error,
+        'Status never loaded',
+      );
+
+      expect(appStore.status.error).to.equal('Apologies, we seem to be having problems at the moment. Please try again later. Error: Rate limit exceeded');
+    });
+
     it('empty config returns no status', async () => {
       sidekickTest
         .mockFetchStatusError();
       const fetchStatusSpy = sidekickTest.sandbox.spy(appStore, 'fetchStatus');
       // @ts-ignore
       await appStore.loadContext(sidekickElement, {});
-      expect(fetchStatusSpy.returnValues[0]).to.be.undefined;
+      expect(await fetchStatusSpy.returnValues[0]).to.be.undefined;
     });
   });
 
@@ -471,7 +483,7 @@ describe('Test App Store', () => {
     });
 
     afterEach(() => {
-      sidekickTest.sandbox.restore();
+      sidekickTest.destroy();
     });
 
     it('switches from editor to preview', async () => {
@@ -482,10 +494,14 @@ describe('Test App Store', () => {
     });
 
     it('switches from preview to editor', async () => {
+      const fetchStatusSpy = sidekickTest.sandbox.spy(instance, 'fetchStatus');
+      sidekickTest.mockFetchStatusSuccess(false, {}, HelixMockContentSources.SHAREPOINT, 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=auto');
+
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
       await instance.switchEnv('edit');
       expect(loadPage.calledWith(mockStatus.edit.url)).to.be.true;
+      expect(fetchStatusSpy.calledWith(false, true)).to.be.true;
     });
 
     it('switches from live to preview', async () => {

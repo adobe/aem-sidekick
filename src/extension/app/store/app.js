@@ -713,6 +713,8 @@ export class AppStore {
      */
   async fetchStatus(refreshLocation, fetchEdit = false) {
     let status;
+    let resp;
+
     if (refreshLocation) {
       this.location = getLocation();
     }
@@ -739,7 +741,7 @@ export class AppStore {
     this.setState(STATE.FETCHING_STATUS);
 
     try {
-      let resp = await fetch(this.status.apiUrl, { ...getAdminFetchOptions() });
+      resp = await fetch(this.status.apiUrl, { ...getAdminFetchOptions() });
       if (!resp.ok) {
         let errorKey = '';
         switch (resp.status) {
@@ -777,7 +779,7 @@ export class AppStore {
         this.setState();
       }
     } catch ({ message }) {
-      const error = this.i18n(message) || this.i18n('error_status_fatal');
+      const error = this.i18n(message) || this.i18n('error_status_fatal').replace('$1', resp.headers.get('x-error'));
       this.status.error = error;
       this.showToast(error, 'negative');
     }
