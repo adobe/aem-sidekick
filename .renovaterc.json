@@ -11,11 +11,15 @@
     "@spectrum-web-components/icon",
     "@spectrum-web-components/icons",
     "@spectrum-web-components/icons-workflow",
+    "@spectrum-web-components/illustrated-message",
     "@spectrum-web-components/menu",
     "@spectrum-web-components/overlay",
     "@spectrum-web-components/picker",
     "@spectrum-web-components/progress-circle",
+    "@spectrum-web-components/search",
     "@spectrum-web-components/status-light",
+    "@spectrum-web-components/table",
+    "@spectrum-web-components/textfield",
     "@spectrum-web-components/theme",
     "@spectrum-web-components/toast"
   ]
