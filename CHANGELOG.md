@@ -1,3 +1,10 @@
+## [1.21.2](https://github.com/adobe/aem-sidekick/compare/v1.21.1...v1.21.2) (2024-05-02)
+
+
+### Bug Fixes
+
+* ignore new spectrum packages in renovate ([#133](https://github.com/adobe/aem-sidekick/issues/133)) ([39b8e4c](https://github.com/adobe/aem-sidekick/commit/39b8e4c5e8b19fb9dd20fc9a55e485e0363fbee1))
+
 ## [1.21.1](https://github.com/adobe/aem-sidekick/compare/v1.21.0...v1.21.1) (2024-05-01)
 
 
