@@ -421,9 +421,6 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'iframe'));
       expect(recursiveQuery(sidekick, 'iframe').src).to.equal('http://localhost:3000/tools/loc');
-      // close palette
-      recursiveQuery(sidekick, 'palette-container')
-        .dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     });
 
     it('overrides core plugin', async () => {
