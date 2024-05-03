@@ -363,7 +363,7 @@ describe('Plugin action bar', () => {
       )).to.be.true;
     });
 
-    it('clicks custom plugin', async () => {
+    it('custom plugin clicked', async () => {
       const { sandbox } = sidekickTest;
       sidekickTest
         .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
@@ -401,6 +401,29 @@ describe('Plugin action bar', () => {
 
       expect(fireEventStub.calledWithMatch('custom:preflight')).to.be.true;
       expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, { id: 'preflight' })).to.be.true;
+    });
+
+    it('custom plugin clicked in dev mode opens dev url', async () => {
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
+        .mockFetchSidekickConfigSuccess(false, true, null, true)
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR);
+
+      sidekick = sidekickTest.createSidekick({
+        ...defaultSidekickConfig,
+        devMode: true,
+      });
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const customPlugin = recursiveQuery(sidekick, '.localize');
+      customPlugin.click();
+
+      await waitUntil(() => recursiveQuery(sidekick, 'iframe'));
+      expect(recursiveQuery(sidekick, 'iframe').src).to.equal('http://localhost:3000/tools/loc');
+      // close palette
+      recursiveQuery(sidekick, 'palette-container')
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     });
 
     it('overrides core plugin', async () => {
