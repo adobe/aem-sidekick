@@ -251,7 +251,6 @@ export class EnvironmentSwitcher extends ConnectedElement {
     if (status.live?.status === 200
       && (!liveLastMod || (liveLastMod && new Date(liveLastMod) < new Date(previewLastMod)))) {
       showNotification = true;
-      this.picker.classList.add('notification');
     }
 
     let showProd = false;
@@ -262,7 +261,9 @@ export class EnvironmentSwitcher extends ConnectedElement {
       showProd = true;
     }
 
-    if (showNotification) {
+    if (showNotification && this.currentEnv !== 'edit') {
+      this.picker.classList.add('notification');
+
       const notificationHeader = this.createHeader('notifications');
       picker.append(
         notificationHeader,

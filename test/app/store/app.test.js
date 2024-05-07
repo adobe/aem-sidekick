@@ -86,7 +86,7 @@ describe('Test App Store', () => {
 
     await waitUntil(() => appStore.status.webPath, 'Status never loaded');
     expect(appStore.status.webPath).to.equal('/');
-    expect(appStore.status.edit.status).to.equal(200);
+    expect(appStore.status.edit.status).to.equal(undefined);
     expect(appStore.status.live.status).to.equal(200);
   }
 

@@ -31,8 +31,8 @@ export const style = css`
   action-bar-picker sp-menu-divider {
     margin-top: 6px;
     margin-bottom: 4px;
-    margin-left: -8px;
-    margin-right: -8px;
+    margin-left: -12px;
+    margin-right: -12px;
   }
 
   action-bar-picker.notification::after {

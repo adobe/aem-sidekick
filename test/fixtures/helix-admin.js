@@ -186,14 +186,7 @@ export const defaultSharepointStatusResponse = {
       'write',
     ],
   },
-  edit: {
-    url: 'https://adobe-my.sharepoint.com/:w:/r/personal/user_adobe_com/_layouts/15/Doc.aspx?sourcedoc={89B9F732-7067-458B-BF05-C64013503F33}',
-    name: 'index',
-    contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    lastModified: 'Wed, 29 Dec 2023 17:22:52 GMT',
-    sourceLocation: 'onedrive:/drives/drive-id/items/item-id',
-    status: 200,
-  },
+  edit: {},
   code: {
     status: 400,
     permissions: [
@@ -239,14 +232,7 @@ export const defaultSharepointSheetStatusResponse = {
       'write',
     ],
   },
-  edit: {
-    url: 'https://adobe-my.sharepoint.com/:w:/r/personal/user_adobe_com/_layouts/15/Doc.aspx?sourcedoc={89B9F732-7067-458B-BF05-C64013503F33}',
-    name: 'index',
-    contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    lastModified: 'Wed, 29 Dec 2023 17:22:52 GMT',
-    sourceLocation: 'onedrive:/drives/drive-id/items/item-id',
-    status: 200,
-  },
+  edit: {},
   code: {
     status: 400,
     permissions: [
@@ -292,21 +278,7 @@ export const defaultGdriveStatusResponse = {
       'write',
     ],
   },
-  edit: {
-    url: 'https://docs.google.com/document/d/doc-id/edit',
-    name: 'index',
-    contentType: 'application/vnd.google-apps.document',
-    folders: [
-      {
-        name: '',
-        url: 'https://drive.google.com/drive/u/0/folders/folder-id',
-        path: '/',
-      },
-    ],
-    lastModified: 'Wed, 29 Dec 2023 17:22:52 GMT',
-    sourceLocation: 'gdrive:drive-id',
-    status: 200,
-  },
+  edit: {},
   code: {
     status: 400,
     permissions: [
