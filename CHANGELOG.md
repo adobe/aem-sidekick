@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/adobe/aem-sidekick/compare/v1.21.2...v1.22.0) (2024-05-07)
+
+
+### Features
+
+* load local resources in dev mode ([#135](https://github.com/adobe/aem-sidekick/issues/135)) ([a4abdd4](https://github.com/adobe/aem-sidekick/commit/a4abdd41efda0998b62908fae5334b1a28af7a13))
+
 ## [1.21.2](https://github.com/adobe/aem-sidekick/compare/v1.21.1...v1.21.2) (2024-05-02)
 
 
