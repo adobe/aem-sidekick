@@ -732,7 +732,7 @@ export class AppStore {
       return status;
     }
     if (!this.status.apiUrl || refreshLocation) {
-      const { pathname, href } = this.location;
+      const { href, pathname } = this.location;
       const isDM = this.isEditor() || this.isAdmin(); // is document management
       const apiUrl = getAdminUrl(
         this.siteStore,

@@ -140,12 +140,12 @@ export class EnvironmentSwitcher extends ConnectedElement {
       },
     });
 
-    // Disable menu item if lastModified is undefined
-    if (!lastModified && id !== 'edit') {
-      menuItem.setAttribute('disabled', '');
-    }
-
     if (id !== 'edit') {
+      // Disable menu item if lastModified is undefined
+      if (!lastModified) {
+        menuItem.setAttribute('disabled', '');
+      }
+
       const description = createTag({
         tag: 'span',
         text: this.getLastModifiedLabel(id, lastModified),
