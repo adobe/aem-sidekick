@@ -162,28 +162,6 @@ describe('Delete plugin', () => {
         )).to.be.true;
       });
 
-      it('refuses to delete if user unauthenticated and source file still exists', async () => {
-        sidekickTest
-          .mockFetchStatusSuccess(false, {
-            webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
-            // preview delete permission is granted
-            preview: {
-              status: 200,
-              sourceLocation: 'gdrive:drive-id',
-              permissions: ['read', 'write', 'delete'],
-            },
-            // user not authenticated
-            profile: null,
-          }, null, statusUrl);
-
-        sidekick = sidekickTest.createSidekick();
-        await sidekickTest.awaitEnvSwitcher();
-
-        await clickDeletePlugin(sidekick);
-
-        expect(showToastSpy.called).to.be.true;
-      });
-
       it('allows authenticated user to delete if source file still exists', async () => {
         sidekickTest
           .mockFetchStatusSuccess(false, {

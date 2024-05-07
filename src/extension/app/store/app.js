@@ -717,9 +717,10 @@ export class AppStore {
      * @fires Sidekick#statusfetched
      * @param {boolean} [refreshLocation] Refresh the sidekick's location (optional)
      * @param {boolean} [fetchEdit] Should the edit url be fetched (optional)
+     * @param {boolean} [transient] Should we persist the status in the store (optional)
      * @returns {Promise<Object> | undefined} The status object
      */
-  async fetchStatus(refreshLocation, fetchEdit = false) {
+  async fetchStatus(refreshLocation, fetchEdit = false, transient = false) {
     let status;
     let resp;
 
@@ -778,13 +779,15 @@ export class AppStore {
         throw new Error('error_status_invalid');
       }
 
-      this.updateStatus(status);
+      // Do we want to update the store with the new status?
+      if (!transient) {
+        this.updateStatus(status);
+        this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, status);
 
-      this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, status);
-
-      // Don't set a state if a toast is shown
-      if (!this.toast) {
-        this.setState();
+        // Don't set a state if a toast is shown
+        if (!this.toast) {
+          this.setState();
+        }
       }
     } catch ({ message }) {
       const error = this.i18n(message) || this.i18n('error_status_fatal').replace('$1', resp.headers.get('x-error'));

@@ -23,7 +23,9 @@ import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 import { STATE } from '../../../src/extension/app/constants.js';
 import {
   HelixMockContentSources,
+  HelixMockContentType,
   HelixMockEnvironments,
+  getDefaultEditorEnviromentLocations,
   restoreEnvironment,
 } from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
@@ -487,7 +489,10 @@ describe('Test App Store', () => {
     });
 
     it('switches from editor to preview', async () => {
-      instance.location = new URL(mockStatus.edit.url);
+      instance.location = new URL(getDefaultEditorEnviromentLocations(
+        HelixMockContentSources.SHAREPOINT,
+        HelixMockContentType.DOC),
+      );
       instance.status = mockStatus;
       await instance.switchEnv('preview');
       expect(openPage.calledWith(mockStatus.preview.url)).to.be.true;

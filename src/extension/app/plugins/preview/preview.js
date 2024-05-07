@@ -43,7 +43,8 @@ export function createPreviewPlugin(appStore) {
     button: {
       text: appStore.i18n('preview'),
       action: async () => {
-        const { status, location } = appStore;
+        const { location } = appStore;
+        const status = await appStore.fetchStatus(false, true, true);
         if (status.edit && status.edit.sourceLocation
             && status.edit.sourceLocation.startsWith('onedrive:')
             && !location.pathname.startsWith('/:x:/')) {

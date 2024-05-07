@@ -48,15 +48,6 @@ export function createDeletePlugin(appStore) {
         const isPage = status.webPath.split('/').pop().indexOf('.') === -1;
         const hasSrc = status.edit?.status === 200;
 
-        // double check
-        if (hasSrc && !appStore.isAuthenticated()) {
-          const message = isPage
-            ? appStore.i18n('delete_page_source_exists')
-            : appStore.i18n('delete_file_source_exists');
-          appStore.showToast(message, 'negative');
-          return;
-        }
-
         // get user confirmation
         const message = isPage
           ? appStore.i18n(hasSrc ? 'delete_page_confirm' : 'delete_page_no_source_confirm')
