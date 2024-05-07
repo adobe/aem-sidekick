@@ -390,6 +390,9 @@
     "error_status_invalid": {
       "message": "Invalid server response. Check your Sidekick configuration or URL."
     },
+    "error_status_preview_404": {
+      "message": "404 Not found: Source document does not exist, failed to preview."
+    },
     "extensions": {
       "message": "Extensions"
     },

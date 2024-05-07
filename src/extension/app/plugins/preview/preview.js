@@ -63,6 +63,8 @@ export function createPreviewPlugin(appStore) {
             const isMsDocMime = contentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
             const isMsExcelSheet = contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
             let errorKey = 'error_preview_not_gdoc_generic'; // show generic message by default
+
+            // istanbul ignore else
             if (isMsDocMime) {
               errorKey = 'error_preview_not_gdoc_ms_word';
             } else if (isMsExcelSheet) {

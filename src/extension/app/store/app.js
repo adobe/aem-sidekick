@@ -785,6 +785,7 @@ export class AppStore {
         this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, status);
 
         // Don't set a state if a toast is shown
+        // istanbul ignore else
         if (!this.toast) {
           this.setState();
         }

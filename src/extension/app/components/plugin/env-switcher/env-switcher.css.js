@@ -36,7 +36,7 @@ export const style = css`
   }
 
   action-bar-picker.notification::after {
-    content: ''; /* Necessary to generate the element */
+    content: '';
     position: absolute;
     top: -2px;
     right: -2px;
@@ -69,7 +69,7 @@ export const style = css`
 
 
   action-bar-picker .notification-item::after {
-    content: ''; /* Necessary to generate the element */
+    content: '';
     position: absolute;
     top: -2px;
     right: 2px;
