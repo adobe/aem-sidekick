@@ -1,3 +1,24 @@
+# [1.22.0](https://github.com/adobe/aem-sidekick/compare/v1.21.2...v1.22.0) (2024-05-07)
+
+
+### Features
+
+* load local resources in dev mode ([#135](https://github.com/adobe/aem-sidekick/issues/135)) ([a4abdd4](https://github.com/adobe/aem-sidekick/commit/a4abdd41efda0998b62908fae5334b1a28af7a13))
+
+## [1.21.2](https://github.com/adobe/aem-sidekick/compare/v1.21.1...v1.21.2) (2024-05-02)
+
+
+### Bug Fixes
+
+* ignore new spectrum packages in renovate ([#133](https://github.com/adobe/aem-sidekick/issues/133)) ([39b8e4c](https://github.com/adobe/aem-sidekick/commit/39b8e4c5e8b19fb9dd20fc9a55e485e0363fbee1))
+
+## [1.21.1](https://github.com/adobe/aem-sidekick/compare/v1.21.0...v1.21.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* move view-doc-source and fix json view ([#131](https://github.com/adobe/aem-sidekick/issues/131)) ([0947ba3](https://github.com/adobe/aem-sidekick/commit/0947ba36a22300116bc4f347896e7d6ba6fc2577))
+
 # [1.21.0](https://github.com/adobe/aem-sidekick/compare/v1.20.3...v1.21.0) (2024-04-30)
 
 

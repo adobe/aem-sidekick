@@ -104,7 +104,7 @@ export const defaultConfigPlugins = {
         en: 'Localize project',
       },
       environments: ['edit'],
-      url: 'https://main--aem-boilerplate--adobe.hlx.page/tools/loc',
+      url: '/tools/loc',
       isPalette: true,
     },
     {

@@ -233,7 +233,12 @@ export class AppStore {
     this.customPlugins = {};
 
     if (this.siteStore.authorized) {
-      const { location, siteStore: { lang, plugins, innerHost } = {} } = this;
+      const {
+        location,
+        siteStore: {
+          lang, plugins, innerHost, devMode, devUrl,
+        },
+      } = this;
       if (plugins && Array.isArray(plugins)) {
         plugins.forEach((cfg, i) => {
           const {
@@ -288,7 +293,7 @@ export class AppStore {
               text: (titleI18n && titleI18n[lang]) || title,
               action: () => {
                 if (url) {
-                  const target = url.startsWith('/') ? new URL(url, `https://${innerHost}/`) : new URL(url);
+                  const target = devMode ? new URL(url, devUrl) : new URL(url, `https://${innerHost}/`);
                   if (passConfig) {
                     target.searchParams.append('ref', this.siteStore.ref);
                     target.searchParams.append('repo', this.siteStore.repo);
@@ -302,7 +307,10 @@ export class AppStore {
                   if (isPalette) {
                     EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_PALETTE, {
                       detail: {
-                        plugin: cfg,
+                        plugin: {
+                          ...cfg,
+                          url: target.toString(),
+                        },
                       },
                     }));
                   } else {
