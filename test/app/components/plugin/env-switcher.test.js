@@ -236,6 +236,52 @@ describe('Environment Switcher', () => {
       await waitUntil(() => publishSpy.called);
     }).timeout(20000);
 
+    it('live out of date - publish button in notification is hidden', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(false, false, {
+          plugins: [
+            {
+              id: 'publish',
+              excludePaths: ['/**'],
+            },
+          ],
+        })
+        .mockFetchStatusSuccess(false, {
+          preview: {
+            lastModified: 'Tue, 19 Dec 2024 15:42:34 GMT',
+            sourceLastModified: 'Wed, 01 Nov 2024 17:22:52 GMT',
+            sourceLocation: 'onedrive:id',
+          },
+          live: {
+            status: 200,
+            lastModified: 'Tue, 12 Dec 2024 15:42:34 GMT',
+            permissions: [
+              'read',
+              'write',
+            ],
+          },
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+
+      await waitUntil(() => recursiveQuery(picker, 'sp-menu-item.env-live'));
+
+      expect(picker.classList.contains('notification')).to.eq(true);
+
+      const notificationItem = recursiveQuery(picker, '.notification-item');
+      expect(notificationItem).to.not.be.null;
+
+      const publishButton = recursiveQuery(notificationItem, 'sp-action-button');
+      expect(publishButton).to.be.undefined;
+    }).timeout(20000);
+
     it('live out of date - user not authorized to publish, publish button should be disabled', async () => {
       sidekickTest
         .mockFetchSidekickConfigSuccess(false)

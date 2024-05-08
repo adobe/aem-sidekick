@@ -25,6 +25,10 @@ import { createPublishPlugin } from '../../../plugins/publish/publish.js';
  */
 
 /**
+ * @typedef {import('../../plugin/plugin.js').Plugin} Plugin
+ */
+
+/**
  * Environment Switcher component
  * @element env-switcher
  * @class EnvironmentSwitcher
@@ -195,7 +199,12 @@ export class EnvironmentSwitcher extends ConnectedElement {
     return createTag({ tag: 'sp-menu-divider' });
   }
 
-  createPublishNotification(enabled) {
+  /**
+   * Creates a publish notification menu item
+   * @param {Plugin} publishPlugin The publish plugin
+   * @returns {HTMLElement} The created menu item
+   */
+  createPublishNotification(publishPlugin) {
     const menuItem = createTag({
       tag: 'div',
       text: this.appStore.i18n('publish_outdated'),
@@ -205,25 +214,27 @@ export class EnvironmentSwitcher extends ConnectedElement {
       },
     });
 
-    const publishButton = createTag({
-      tag: 'sp-action-button',
-      text: this.appStore.i18n('publish'),
-      attrs: {
-        slot: 'description',
-        emphasized: '',
-        selected: '',
-      },
-    });
+    if (publishPlugin.isVisible()) {
+      const publishButton = createTag({
+        tag: 'sp-action-button',
+        text: this.appStore.i18n('publish'),
+        attrs: {
+          slot: 'description',
+          emphasized: '',
+          selected: '',
+        },
+      });
 
-    if (!enabled) {
-      publishButton.setAttribute('disabled', '');
+      if (!publishPlugin.isEnabled()) {
+        publishButton.setAttribute('disabled', '');
+      }
+
+      publishButton.addEventListener('click', (evt) => {
+        createPublishPlugin(this.appStore).onButtonClick(evt);
+      });
+
+      menuItem.appendChild(publishButton);
     }
-
-    publishButton.addEventListener('click', (evt) => {
-      createPublishPlugin(this.appStore).onButtonClick(evt);
-    });
-
-    menuItem.appendChild(publishButton);
 
     return menuItem;
   }
@@ -272,7 +283,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       const notificationHeader = this.createHeader('notifications');
       picker.append(
         notificationHeader,
-        this.createPublishNotification(publishPlugin.isEnabled()),
+        this.createPublishNotification(publishPlugin),
         divider,
       );
     }
