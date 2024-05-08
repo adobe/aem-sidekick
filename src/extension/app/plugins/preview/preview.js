@@ -79,7 +79,7 @@ export function createPreviewPlugin(appStore) {
         }
         if (location.pathname.startsWith('/:x:/')) {
           // refresh excel with preview param
-          window.sessionStorage.setItem('hlx-sk-preview', JSON.stringify({
+          window.sessionStorage.setItem('aem-sk-preview', JSON.stringify({
             previewPath: status.webPath,
             previewTimestamp: Date.now(),
           }));
@@ -93,8 +93,8 @@ export function createPreviewPlugin(appStore) {
     },
     callback: () => {
       const { previewPath, previewTimestamp } = JSON
-        .parse(window.sessionStorage.getItem('hlx-sk-preview') || '{}');
-      window.sessionStorage.removeItem('hlx-sk-preview');
+        .parse(window.sessionStorage.getItem('aem-sk-preview') || '{}');
+      window.sessionStorage.removeItem('aem-sk-preview');
       if (previewTimestamp < Date.now() + 60000) {
         const { status } = appStore;
         /* istanbul ignore else  */

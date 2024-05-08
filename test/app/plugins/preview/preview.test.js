@@ -116,8 +116,8 @@ describe('Preview plugin', () => {
       // Simulate a reload
       document.body.removeChild(sidekick);
 
-      // Make sure the hlx-sk-preview flag is set
-      expect(window.sessionStorage.getItem('hlx-sk-preview')).to.not.be.null;
+      // Make sure the aem-sk-preview flag is set
+      expect(window.sessionStorage.getItem('aem-sk-preview')).to.not.be.null;
 
       // Reset the environment
       sidekick = sidekickTest.createSidekick();
@@ -125,8 +125,8 @@ describe('Preview plugin', () => {
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
 
-      // Make sure the hlx-sk-preview flag is unset
-      expect(window.sessionStorage.getItem('hlx-sk-preview')).to.be.null;
+      // Make sure the aem-sk-preview flag is unset
+      expect(window.sessionStorage.getItem('aem-sk-preview')).to.be.null;
     });
 
     it('previewing from gdrive editor - doc', async () => {
