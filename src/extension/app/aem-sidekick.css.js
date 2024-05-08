@@ -42,7 +42,7 @@ export const style = css`
     max-width: var(--sidekick-max-width);
   }
 
-  .hlx-sk-special-view {
+  .aem-sk-special-view {
     position: fixed;
     top: 0;
     left: 0;
@@ -50,7 +50,7 @@ export const style = css`
     height: 100vh;
   }
 
-  .hlx-sk-special-view iframe {
+  .aem-sk-special-view iframe {
     border: 0;
     width: 100%;
     height: 100%;

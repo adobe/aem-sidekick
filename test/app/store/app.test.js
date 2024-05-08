@@ -1160,7 +1160,7 @@ describe('Test App Store', () => {
     it('returns an existing view without creating a new one', async () => {
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       const existingView = document.createElement('div');
-      existingView.classList.add('hlx-sk-special-view');
+      existingView.classList.add('aem-sk-special-view');
       sidekickElement.shadowRoot.appendChild(existingView);
 
       const view = instance.getViewOverlay(false);
@@ -1170,8 +1170,8 @@ describe('Test App Store', () => {
     it('creates and returns a new view when none exists and create is true', async () => {
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
       const view = instance.getViewOverlay(true);
-      expect(view.classList.contains('hlx-sk-special-view')).to.be.true;
-      expect(instance.sidekick.shadowRoot.querySelector('.hlx-sk-special-view')).to.equal(view);
+      expect(view.classList.contains('aem-sk-special-view')).to.be.true;
+      expect(instance.sidekick.shadowRoot.querySelector('.aem-sk-special-view')).to.equal(view);
     });
 
     it('adds an iframe to the new view with the correct attributes', async () => {
@@ -1212,7 +1212,7 @@ describe('Test App Store', () => {
       eventListenerCallback(messageEvent);
 
       await aTimeout(1000);
-      expect(instance.sidekick.shadowRoot.querySelector('.hlx-sk-special-view')).to.be.null;
+      expect(instance.sidekick.shadowRoot.querySelector('.aem-sk-special-view')).to.be.null;
       expect(sibling.style.display).to.equal('initial');
     }).timeout(5000);
   });
@@ -1279,7 +1279,7 @@ describe('Test App Store', () => {
       await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
 
       const overlayContainer = document.createElement('div');
-      overlayContainer.className = 'hlx-sk-special-view';
+      overlayContainer.className = 'aem-sk-special-view';
 
       const frame = document.createElement('iframe');
       frame.className = 'container';

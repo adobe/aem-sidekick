@@ -315,7 +315,7 @@ export class AppStore {
                     }));
                   } else {
                     // open url in new window
-                    this.openPage(target.toString(), `hlx-sk-${id}`);
+                    this.openPage(target.toString(), `aem-sk-${id}`);
                   }
                 } else if (eventName) {
                   // fire custom event
@@ -1022,11 +1022,11 @@ export class AppStore {
    * @returns {Element} The view overlay
    */
   getViewOverlay(create) {
-    let view = this.sidekick.shadowRoot.querySelector('.hlx-sk-special-view');
+    let view = this.sidekick.shadowRoot.querySelector('.aem-sk-special-view');
 
     if (create && !view) {
       view = document.createElement('div');
-      view.classList.add('hlx-sk-special-view');
+      view.classList.add('aem-sk-special-view');
       this.sidekick.shadowRoot.append(view);
 
       const iframe = document.createElement('iframe');
@@ -1154,7 +1154,7 @@ export class AppStore {
     // switch or open env
     if (open || this.isEditor()) {
       this.openPage(envUrl, open
-        ? '' : `hlx-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
+        ? '' : `aem-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
     } else {
       this.loadPage(envUrl);
     }

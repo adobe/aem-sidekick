@@ -67,7 +67,7 @@
         const { config } = event.detail;
 
         // Store the selected config in session storage
-        window.sessionStorage.setItem('hlx-sk-project', JSON.stringify(config));
+        window.sessionStorage.setItem('aem-sk-project', JSON.stringify(config));
 
         loadSidekick(config);
 
@@ -98,7 +98,7 @@
           await import('./lib/polyfills.min.js');
 
           // Check session storage for previously stored project
-          const storedProject = JSON.parse(window.sessionStorage.getItem('hlx-sk-project') || null);
+          const storedProject = JSON.parse(window.sessionStorage.getItem('aem-sk-project') || null);
 
           // First check if there is only one config match, if so load it
           if (configMatches.length === 1) {
