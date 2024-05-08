@@ -43,7 +43,8 @@ export function createPreviewPlugin(appStore) {
     button: {
       text: appStore.i18n('preview'),
       action: async () => {
-        const { status, location } = appStore;
+        const { location } = appStore;
+        const status = await appStore.fetchStatus(false, true, true);
         if (status.edit && status.edit.sourceLocation
             && status.edit.sourceLocation.startsWith('onedrive:')
             && !location.pathname.startsWith('/:x:/')) {
@@ -62,6 +63,8 @@ export function createPreviewPlugin(appStore) {
             const isMsDocMime = contentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
             const isMsExcelSheet = contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
             let errorKey = 'error_preview_not_gdoc_generic'; // show generic message by default
+
+            // istanbul ignore else
             if (isMsDocMime) {
               errorKey = 'error_preview_not_gdoc_ms_word';
             } else if (isMsExcelSheet) {

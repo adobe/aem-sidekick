@@ -59,7 +59,7 @@ export class Plugin {
   /**
    * The plugin configuration
    * @property
-   * @type {Object}
+   * @type {CorePlugin}
    */
   config;
 

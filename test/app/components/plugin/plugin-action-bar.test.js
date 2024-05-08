@@ -150,7 +150,7 @@ describe('Plugin action bar', () => {
         'tools',
       ]);
 
-      expectEnvPlugin(['edit', 'preview', 'prod']);
+      expectEnvPlugin(['preview', 'prod']);
 
       // Should fallback to id for label if title not provided
       const assetLibraryPlugin = recursiveQuery(sidekick, '.assets');
@@ -239,7 +239,7 @@ describe('Plugin action bar', () => {
         'edit-preview',
       ]);
 
-      expectEnvPlugin(['edit', 'preview', 'live']);
+      expectEnvPlugin(['preview', 'live']);
     });
 
     it('isEditor - custom config with prod host', async () => {
@@ -256,7 +256,7 @@ describe('Plugin action bar', () => {
         'edit-preview',
       ]);
 
-      expectEnvPlugin(['edit', 'preview', 'prod']);
+      expectEnvPlugin(['preview', 'prod']);
     });
 
     it('isPreview - custom config with prod host', async () => {
@@ -425,7 +425,7 @@ describe('Plugin action bar', () => {
 
     it('overrides core plugin', async () => {
       sidekickTest
-        .mockFetchStatusSuccess(false, {}, HelixMockContentSources.SHAREPOINT, 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/en/drafts/test?editUrl=auto')
+        .mockFetchStatusSuccess(false, {}, HelixMockContentSources.SHAREPOINT, 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/en/drafts/test')
         .mockFetchSidekickConfigSuccess(true, true)
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW, undefined, 'https://main--aem-boilerplate--adobe.aem.page/en/drafts/test');
 

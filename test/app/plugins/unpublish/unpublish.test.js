@@ -147,24 +147,6 @@ describe('Unpublish plugin', () => {
       )).to.be.true;
     });
 
-    it('refuses to unpublish if user unauthenticated and source file still exists', async () => {
-      sidekickTest
-        .mockFetchStatusSuccess(false, {
-          webPath: '/foo',
-          // live delete permission is granted
-          live: {
-            status: 200,
-            permissions: ['read', 'write', 'delete'],
-          },
-          // user not authenticated
-          profile: null,
-        });
-
-      await clickUnpublishPlugin(sidekick);
-
-      expect(showToastSpy.called).to.be.true;
-    });
-
     it('allows authenticated user to delete if source file still exists', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {

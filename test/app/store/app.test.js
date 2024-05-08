@@ -23,7 +23,9 @@ import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 import { STATE } from '../../../src/extension/app/constants.js';
 import {
   HelixMockContentSources,
+  HelixMockContentType,
   HelixMockEnvironments,
+  getDefaultEditorEnviromentLocations,
   restoreEnvironment,
 } from '../../mocks/environment.js';
 import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
@@ -81,12 +83,12 @@ describe('Test App Store', () => {
   async function testDefaultConfig() {
     expect(appStore.languageDict.add).to.equal('Add');
     expect(appStore.location.hostname).to.equal('localhost');
-    expect(appStore.status.apiUrl.href).to.equal('https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=auto');
+    expect(appStore.status.apiUrl.href).to.equal('https://admin.hlx.page/status/adobe/aem-boilerplate/main/');
     expect(appStore.languageDict.title).to.equal('AEM Sidekick - NextGen');
 
     await waitUntil(() => appStore.status.webPath, 'Status never loaded');
     expect(appStore.status.webPath).to.equal('/');
-    expect(appStore.status.edit.status).to.equal(200);
+    expect(appStore.status.edit.status).to.equal(undefined);
     expect(appStore.status.live.status).to.equal(200);
   }
 
@@ -378,13 +380,25 @@ describe('Test App Store', () => {
       expect(appStore.status.error).to.equal('500 Internal server error: Failed to fetch the page status. Please try again later.');
     });
 
+    it('status returns 429', async () => {
+      sidekickTest
+        .mockFetchStatus429();
+      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      await waitUntil(
+        () => appStore.status.error,
+        'Status never loaded',
+      );
+
+      expect(appStore.status.error).to.equal('Apologies, we seem to be having problems at the moment. Please try again later. Error: Rate limit exceeded');
+    });
+
     it('empty config returns no status', async () => {
       sidekickTest
         .mockFetchStatusError();
       const fetchStatusSpy = sidekickTest.sandbox.spy(appStore, 'fetchStatus');
       // @ts-ignore
       await appStore.loadContext(sidekickElement, {});
-      expect(fetchStatusSpy.returnValues[0]).to.be.undefined;
+      expect(await fetchStatusSpy.returnValues[0]).to.be.undefined;
     });
   });
 
@@ -471,21 +485,28 @@ describe('Test App Store', () => {
     });
 
     afterEach(() => {
-      sidekickTest.sandbox.restore();
+      sidekickTest.destroy();
     });
 
     it('switches from editor to preview', async () => {
-      instance.location = new URL(mockStatus.edit.url);
+      instance.location = new URL(getDefaultEditorEnviromentLocations(
+        HelixMockContentSources.SHAREPOINT,
+        HelixMockContentType.DOC),
+      );
       instance.status = mockStatus;
       await instance.switchEnv('preview');
       expect(openPage.calledWith(mockStatus.preview.url)).to.be.true;
     });
 
     it('switches from preview to editor', async () => {
+      const fetchStatusSpy = sidekickTest.sandbox.spy(instance, 'fetchStatus');
+      sidekickTest.mockFetchStatusSuccess(false, {}, HelixMockContentSources.SHAREPOINT, 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=auto');
+
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
       await instance.switchEnv('edit');
       expect(loadPage.calledWith(mockStatus.edit.url)).to.be.true;
+      expect(fetchStatusSpy.calledWith(false, true)).to.be.true;
     });
 
     it('switches from live to preview', async () => {

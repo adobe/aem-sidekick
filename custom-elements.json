@@ -13,14 +13,10 @@
           "members": [
             {
               "kind": "field",
-              "name": "accessor",
+              "name": "appStore",
               "type": {
                 "text": "AppStore"
               }
-            },
-            {
-              "kind": "field",
-              "name": "appStore"
             }
           ],
           "superclass": {
