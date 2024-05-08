@@ -195,7 +195,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
     return createTag({ tag: 'sp-menu-divider' });
   }
 
-  createPublishNotification() {
+  createPublishNotification(enabled) {
     const menuItem = createTag({
       tag: 'div',
       text: this.appStore.i18n('publish_outdated'),
@@ -214,6 +214,10 @@ export class EnvironmentSwitcher extends ConnectedElement {
         selected: '',
       },
     });
+
+    if (!enabled) {
+      publishButton.setAttribute('disabled', '');
+    }
 
     publishButton.addEventListener('click', (evt) => {
       createPublishPlugin(this.appStore).onButtonClick(evt);
@@ -261,13 +265,14 @@ export class EnvironmentSwitcher extends ConnectedElement {
       showProd = true;
     }
 
+    const publishPlugin = this.appStore.corePlugins.publish;
     if (showNotification && this.currentEnv !== 'edit') {
       this.picker.classList.add('notification');
 
       const notificationHeader = this.createHeader('notifications');
       picker.append(
         notificationHeader,
-        this.createPublishNotification(),
+        this.createPublishNotification(publishPlugin.isEnabled()),
         divider,
       );
     }

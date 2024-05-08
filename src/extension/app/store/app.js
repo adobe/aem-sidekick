@@ -1158,8 +1158,8 @@ export class AppStore {
     }
 
     if (targetEnv === 'edit') {
-      const statusEditUrl = await this.fetchStatus(false, true);
-      envUrl = statusEditUrl.edit && statusEditUrl.edit.url;
+      const updatedStatus = await this.fetchStatus(false, true);
+      envUrl = updatedStatus.edit && updatedStatus.edit.url;
     }
 
     const [customView] = this.findViews(VIEWS.CUSTOM);
