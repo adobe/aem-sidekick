@@ -24,7 +24,7 @@
  */
 export function getAdminUrl({
   owner, repo, ref, adminVersion,
-}, api, path = '') {
+}, api, path = '', searchParams = new URLSearchParams()) {
   const adminUrl = new URL([
     'https://admin.hlx.page/',
     api,
@@ -34,16 +34,19 @@ export function getAdminUrl({
     path,
   ].join(''));
   if (adminVersion) {
-    adminUrl.searchParams.append('hlx-admin-version', adminVersion);
+    searchParams.append('hlx-admin-version', adminVersion);
   }
+  searchParams.forEach((value, key) => {
+    adminUrl.searchParams.append(key, value);
+  });
   return adminUrl;
 }
 
 /**
-   * Returns the fetch options for admin requests
-   * @param {boolean} omitCredentials Should we omit the credentials
-   * @returns {object}
-   */
+ * Returns the fetch options for admin requests
+ * @param {boolean} omitCredentials Should we omit the credentials
+ * @returns {object}
+ */
 export function getAdminFetchOptions(omitCredentials = false) {
   const opts = {
     cache: 'no-store',
@@ -51,4 +54,39 @@ export function getAdminFetchOptions(omitCredentials = false) {
     headers: {},
   };
   return opts;
+}
+
+/**
+ * Calls an Admin URL for an API and path.
+ * @private
+ * @param {SiteStore} siteStore The sidekick config object
+ * @param {Object} opts The options
+ * @param {string} [opts.api] The API endpoint to call
+ * @param {string} [opts.path] The current path
+ * @param {URLSearchParams} [opts.searchParams] The search parameters
+ * @param {string} [opts.method] The method to use
+ * @param {Object} [opts.body] The body to send
+ * @param {boolean} [opts.omitCredentials] Should we omit the credentials
+ * @returns {Promise<Response>} The admin response
+ */
+export async function callAdmin(siteStore, {
+  api = 'status',
+  path = '',
+  searchParams = new URLSearchParams(),
+  method = 'GET',
+  body,
+  omitCredentials = false,
+}) {
+  const url = getAdminUrl(siteStore, api, path, searchParams);
+  const resp = await fetch(url, {
+    cache: 'no-store',
+    credentials: omitCredentials ? 'omit' : 'include',
+    headers: {},
+    method,
+    body,
+  });
+  if (!resp.ok) {
+    // error handling
+  }
+  return resp;
 }
