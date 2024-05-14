@@ -13,6 +13,10 @@
 import { css } from 'lit';
 
 export const style = css`
+  :host {
+    position: relative;
+  }
+ 
   action-bar-picker {
     width: auto;
   }
@@ -21,15 +25,57 @@ export const style = css`
     color: var(--spectrum-menu-item-description-color-default);
     font-size: 12px;
     line-height: 130%;
-    padding-left: 12px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding-bottom: 8px;
   }
 
   action-bar-picker sp-menu-divider {
     margin-top: 6px;
     margin-bottom: 4px;
-    margin-left: -8px;
-    margin-right: -8px;
+    margin-left: -12px;
+    margin-right: -12px;
+  }
+
+  action-bar-picker.notification::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 9px;
+    height: 9px;
+    background-color: #3B63FB;
+    border-radius: 50%;
+  }
+
+  action-bar-picker.notification.env-edit::after {
+    border: 1px solid var(--spectrum2-edit-background-default);
+  }
+
+  action-bar-picker.notification.env-preview::after {
+    border: 1px solid var(--spectrum2-preview-background-default);
+  }
+
+  action-bar-picker.notification.env-live::after {
+    border: 1px solid var(--spectrum2-live-background-default);
+  }
+
+  action-bar-picker .notification-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+
+
+  action-bar-picker .notification-item::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: 2px;
+    width: 9px;
+    height: 9px;
+    background-color: #3B63FB;
+    border-radius: 50%;
   }
 `;

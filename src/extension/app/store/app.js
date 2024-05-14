@@ -315,7 +315,7 @@ export class AppStore {
                     }));
                   } else {
                     // open url in new window
-                    this.openPage(target.toString(), `hlx-sk-${id}`);
+                    this.openPage(target.toString(), `aem-sk-${id}`);
                   }
                 } else if (eventName) {
                   // fire custom event
@@ -527,6 +527,15 @@ export class AppStore {
   }
 
   /**
+   * Returns a label for the content source
+   * @returns {string} The content source label
+   */
+  getContentSourceLabel() {
+    const { preview } = this.status;
+    return preview?.sourceLocation.includes('onedrive:') ? 'SharePoint' : 'Google Drive';
+  }
+
+  /**
    * Creates a modal and appends it to the sidekick.
    * If a modal is already open, it will be replaced.
    * @param {Modal} modal The modal to display
@@ -707,14 +716,20 @@ export class AppStore {
      * Fetches the status for the current resource.
      * @fires Sidekick#statusfetched
      * @param {boolean} [refreshLocation] Refresh the sidekick's location (optional)
+     * @param {boolean} [fetchEdit] Should the edit url be fetched (optional)
+     * @param {boolean} [transient] Should we persist the status in the store (optional)
+     * @returns {Promise<Object> | undefined} The status object
      */
-  fetchStatus(refreshLocation) {
+  async fetchStatus(refreshLocation, fetchEdit = false, transient = false) {
+    let status;
+    let resp;
+
     if (refreshLocation) {
       this.location = getLocation();
     }
     const { owner, repo, ref } = this.siteStore;
     if (!owner || !repo || !ref) {
-      return;
+      return status;
     }
     if (!this.status.apiUrl || refreshLocation) {
       const { href, pathname } = this.location;
@@ -724,62 +739,64 @@ export class AppStore {
         'status',
         isDM ? '' : pathname,
       );
-      apiUrl.searchParams.append('editUrl', isDM ? href : 'auto');
+
+      if (isDM || fetchEdit) {
+        apiUrl.searchParams.append('editUrl', isDM ? href : 'auto');
+      }
+
       this.status.apiUrl = apiUrl;
     }
 
     this.setState(STATE.FETCHING_STATUS);
-    fetch(this.status.apiUrl, {
-      ...getAdminFetchOptions(),
-    })
-      .then((resp) => {
-        // check for error status
-        if (!resp.ok) {
-          let errorKey = '';
-          switch (resp.status) {
-            case 401:
-              // unauthorized, ask user to log in
-              return {
-                json: () => ({
-                  status: 401,
-                }),
-              };
-            case 404:
-              errorKey = this.isEditor()
-                ? 'error_status_404_document'
-                : 'error_status_404_content';
-              break;
-            default:
-              errorKey = `error_status_${resp.status}`;
-          }
-          throw new Error(errorKey);
+
+    try {
+      resp = await fetch(this.status.apiUrl, { ...getAdminFetchOptions() });
+      if (!resp.ok) {
+        let errorKey = '';
+        switch (resp.status) {
+          case 401:
+            // unauthorized, ask user to log in
+            resp = {
+              // @ts-ignore
+              json: () => ({ status: 401 }),
+            };
+            break;
+          case 404:
+            errorKey = this.isEditor()
+              ? 'error_status_404_document'
+              : 'error_status_404_content';
+            throw new Error(errorKey);
+          default:
+            errorKey = `error_status_${resp.status}`;
+            throw new Error(errorKey);
         }
-        return resp;
-      })
-      .then(async (resp) => {
-        try {
-          return resp.json();
-        } catch (e) {
-          /* istanbul ignore next */
-          throw new Error('error_status_invalid');
-        }
-      })
-      .then((json) => {
-        this.updateStatus(json);
-        return json;
-      })
-      .then((json) => this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, json))
-      .catch(({ message }) => {
-        const error = this.i18n(message) || this.i18n('error_status_fatal');
-        this.status.error = error;
-        this.showToast(error, 'negative');
-      })
-      .finally(() => {
+      }
+
+      try {
+        status = await resp.json();
+      } catch (e) {
+        /* istanbul ignore next */
+        throw new Error('error_status_invalid');
+      }
+
+      // Do we want to update the store with the new status?
+      if (!transient) {
+        this.updateStatus(status);
+        this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, status);
+
         // Don't set a state if a toast is shown
+        // istanbul ignore else
         if (!this.toast) {
           this.setState();
         }
-      });
+      }
+    } catch ({ message }) {
+      const error = this.i18n(message) || this.i18n('error_status_fatal').replace('$1', resp.headers.get('x-error'));
+      this.status.error = error;
+      this.showToast(error, 'negative');
+    }
+
+    return status;
   }
 
   /**
@@ -1022,11 +1039,11 @@ export class AppStore {
    * @returns {Element} The view overlay
    */
   getViewOverlay(create) {
-    let view = this.sidekick.shadowRoot.querySelector('.hlx-sk-special-view');
+    let view = this.sidekick.shadowRoot.querySelector('.aem-sk-special-view');
 
     if (create && !view) {
       view = document.createElement('div');
-      view.classList.add('hlx-sk-special-view');
+      view.classList.add('aem-sk-special-view');
       this.sidekick.shadowRoot.append(view);
 
       const iframe = document.createElement('iframe');
@@ -1109,7 +1126,7 @@ export class AppStore {
    * @param {boolean} [open] true if environment should be opened in new tab
    * @fires Sidekick#envswitched
    */
-  switchEnv(targetEnv, open = false) {
+  async switchEnv(targetEnv, open = false) {
     const hostType = ENVS[targetEnv];
     if (!hostType) {
       // eslint-disable-next-line no-console
@@ -1141,7 +1158,8 @@ export class AppStore {
     }
 
     if (targetEnv === 'edit') {
-      envUrl = status.edit && status.edit.url;
+      const updatedStatus = await this.fetchStatus(false, true);
+      envUrl = updatedStatus.edit && updatedStatus.edit.url;
     }
 
     const [customView] = this.findViews(VIEWS.CUSTOM);
@@ -1154,7 +1172,7 @@ export class AppStore {
     // switch or open env
     if (open || this.isEditor()) {
       this.openPage(envUrl, open
-        ? '' : `hlx-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
+        ? '' : `aem-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
     } else {
       this.loadPage(envUrl);
     }

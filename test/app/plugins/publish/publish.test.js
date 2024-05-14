@@ -65,7 +65,7 @@ describe('Publish plugin', () => {
         .mockFetchSidekickConfigSuccess(false, false);
 
       const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
-      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').returns();
+      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').resolves();
       const showToastSpy = sandbox.spy(appStore, 'showToast');
 
       sidekick = sidekickTest.createSidekick();

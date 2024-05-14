@@ -48,7 +48,7 @@ import enMessages from '../src/extension/_locales/en/messages.json' assert { typ
 /**
  * Status API
  */
-export const defaultStatusUrl = 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=auto';
+export const defaultStatusUrl = 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/';
 
 /**
  * Status editUrl API
@@ -343,6 +343,21 @@ export class SidekickTest {
   mockFetchStatusError(statusUrl = defaultStatusUrl) {
     fetchMock.get(statusUrl, {
       status: 500,
+    }, { overwriteRoutes: true });
+    return this;
+  }
+
+  /**
+   * Mocks a 429 response from the status endpoint
+   * @param {string} statusUrl The status URL
+   * @returns {SidekickTest}
+   */
+  mockFetchStatus429(statusUrl = defaultStatusUrl) {
+    fetchMock.get(statusUrl, {
+      status: 429,
+      headers: {
+        'x-error': 'Rate limit exceeded',
+      },
     }, { overwriteRoutes: true });
     return this;
   }

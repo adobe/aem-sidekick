@@ -65,13 +65,18 @@ describe('Preview plugin', () => {
           HelixMockContentSources.SHAREPOINT,
         ).mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT,
           HelixMockContentType.DOC,
+          {
+            edit: {
+              status: 200,
+              sourceLocation: 'onedrive:driveid',
+              contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            },
+          },
         );
 
       sidekick = sidekickTest.createSidekick();
 
       const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
-      // @ts-ignore
-      const tipToast = sandbox.stub(appStore, 'showToast').returns();
 
       await sidekickTest.awaitEnvSwitcher();
 
@@ -83,7 +88,6 @@ describe('Preview plugin', () => {
 
       await waitUntil(() => updatePreviewSpy.calledOnce);
       expect(updatePreviewSpy.calledOnce).to.be.true;
-      expect(tipToast.calledOnce).to.be.true;
     });
 
     it('previewing from sharepoint editor - sheet', async () => {
@@ -95,6 +99,13 @@ describe('Preview plugin', () => {
       sidekickTest
         .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT,
           HelixMockContentType.SHEET,
+          {
+            edit: {
+              status: 200,
+              sourceLocation: 'onedrive:driveid',
+              contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            },
+          },
         ).mockEditorAdminEnvironment(
           EditorMockEnvironments.EDITOR,
           HelixMockContentType.SHEET,
@@ -116,8 +127,8 @@ describe('Preview plugin', () => {
       // Simulate a reload
       document.body.removeChild(sidekick);
 
-      // Make sure the hlx-sk-preview flag is set
-      expect(window.sessionStorage.getItem('hlx-sk-preview')).to.not.be.null;
+      // Make sure the aem-sk-preview flag is set
+      expect(window.sessionStorage.getItem('aem-sk-preview')).to.not.be.null;
 
       // Reset the environment
       sidekick = sidekickTest.createSidekick();
@@ -125,8 +136,8 @@ describe('Preview plugin', () => {
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
 
-      // Make sure the hlx-sk-preview flag is unset
-      expect(window.sessionStorage.getItem('hlx-sk-preview')).to.be.null;
+      // Make sure the aem-sk-preview flag is unset
+      expect(window.sessionStorage.getItem('aem-sk-preview')).to.be.null;
     });
 
     it('previewing from gdrive editor - doc', async () => {
@@ -138,6 +149,13 @@ describe('Preview plugin', () => {
         ).mockFetchEditorStatusSuccess(
           HelixMockContentSources.GDRIVE,
           HelixMockContentType.DOC,
+          {
+            edit: {
+              status: 200,
+              sourceLocation: 'gdrive:driveid',
+              contentType: 'application/vnd.google-apps.document',
+            },
+          },
         );
 
       const { sandbox } = sidekickTest;
@@ -164,6 +182,13 @@ describe('Preview plugin', () => {
         ).mockFetchEditorStatusSuccess(
           HelixMockContentSources.GDRIVE,
           HelixMockContentType.DOC,
+          {
+            edit: {
+              status: 200,
+              sourceLocation: 'gdrive:driveid',
+              contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            },
+          },
         );
 
       const { sandbox } = sidekickTest;
@@ -195,6 +220,13 @@ describe('Preview plugin', () => {
         ).mockFetchEditorStatusSuccess(
           HelixMockContentSources.GDRIVE,
           HelixMockContentType.DOC,
+          {
+            edit: {
+              status: 200,
+              sourceLocation: 'gdrive:driveid',
+              contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            },
+          },
         );
 
       const { sandbox } = sidekickTest;
@@ -203,8 +235,6 @@ describe('Preview plugin', () => {
       sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitEnvSwitcher();
-
-      appStore.status.edit.contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 
@@ -223,6 +253,13 @@ describe('Preview plugin', () => {
         ).mockFetchEditorStatusSuccess(
           HelixMockContentSources.GDRIVE,
           HelixMockContentType.DOC,
+          {
+            edit: {
+              status: 200,
+              sourceLocation: 'gdrive:driveid',
+              contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            },
+          },
         );
 
       const { sandbox } = sidekickTest;
@@ -231,8 +268,6 @@ describe('Preview plugin', () => {
       sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitEnvSwitcher();
-
-      appStore.status.edit.contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 

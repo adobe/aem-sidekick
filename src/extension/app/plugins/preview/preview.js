@@ -43,7 +43,8 @@ export function createPreviewPlugin(appStore) {
     button: {
       text: appStore.i18n('preview'),
       action: async () => {
-        const { status, location } = appStore;
+        const { location } = appStore;
+        const status = await appStore.fetchStatus(false, true, true);
         if (status.edit && status.edit.sourceLocation
             && status.edit.sourceLocation.startsWith('onedrive:')
             && !location.pathname.startsWith('/:x:/')) {
@@ -62,6 +63,8 @@ export function createPreviewPlugin(appStore) {
             const isMsDocMime = contentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
             const isMsExcelSheet = contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
             let errorKey = 'error_preview_not_gdoc_generic'; // show generic message by default
+
+            // istanbul ignore else
             if (isMsDocMime) {
               errorKey = 'error_preview_not_gdoc_ms_word';
             } else if (isMsExcelSheet) {
@@ -79,7 +82,7 @@ export function createPreviewPlugin(appStore) {
         }
         if (location.pathname.startsWith('/:x:/')) {
           // refresh excel with preview param
-          window.sessionStorage.setItem('hlx-sk-preview', JSON.stringify({
+          window.sessionStorage.setItem('aem-sk-preview', JSON.stringify({
             previewPath: status.webPath,
             previewTimestamp: Date.now(),
           }));
@@ -93,8 +96,8 @@ export function createPreviewPlugin(appStore) {
     },
     callback: () => {
       const { previewPath, previewTimestamp } = JSON
-        .parse(window.sessionStorage.getItem('hlx-sk-preview') || '{}');
-      window.sessionStorage.removeItem('hlx-sk-preview');
+        .parse(window.sessionStorage.getItem('aem-sk-preview') || '{}');
+      window.sessionStorage.removeItem('aem-sk-preview');
       if (previewTimestamp < Date.now() + 60000) {
         const { status } = appStore;
         /* istanbul ignore else  */

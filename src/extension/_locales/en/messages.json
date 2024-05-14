@@ -339,6 +339,9 @@
     "edit": {
       "message": "Edit"
     },
+    "open_in": {
+      "message": "Open in $1"
+    },
     "edit_date": {
       "message": "Edited: "
     },
@@ -385,10 +388,13 @@
       "message": "504 Gateway timeout: Failed to fetch the page status. Please try again later."
     },
     "error_status_fatal": {
-      "message": "Apologies, we seem to be having problems at the moment. Please check here for more information:"
+      "message": "Apologies, we seem to be having problems at the moment. Please try again later. Error: $1"
     },
     "error_status_invalid": {
       "message": "Invalid server response. Check your Sidekick configuration or URL."
+    },
+    "error_status_preview_404": {
+      "message": "404 Not found: Source document does not exist, failed to preview."
     },
     "extensions": {
       "message": "Extensions"
@@ -577,8 +583,14 @@
     "yesterday_at": {
       "message": "Yesterday at $1"
     },
-    "navigate_to": {
-      "message": "Navigate to"
+    "environments": {
+      "message": "Environments"
+    },
+    "notifications": {
+      "message": "Notifications"
+    },
+    "publish_outdated": {
+      "message": "Preview has been updated"
     },
     "preview_last_updated": {
       "message": "Last updated $1"

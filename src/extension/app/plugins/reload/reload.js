@@ -39,10 +39,11 @@ export function createReloadPlugin(appStore) {
         try {
           const resp = await appStore.update();
           if (!resp.ok && resp.status >= 400) {
-            // eslint-disable-next-line no-console
-            console.error(resp);
-            appStore.showToast(resp.headers['x-error'], 'negative');
-            throw new Error(resp.headers['x-error'] || resp.status);
+            if (resp.status === 404) {
+              appStore.showToast(appStore.i18n('error_status_preview_404'), 'negative');
+              return;
+            }
+            throw new Error();
           }
           const closeHandler = () => {
             appStore.closeToast();
@@ -57,8 +58,7 @@ export function createReloadPlugin(appStore) {
           appStore.showToast(appStore.i18n('reload_failure'), 'negative');
         }
       },
-      isEnabled: (store) => store.isAuthorized('preview', 'write')
-        && store.status.edit && store.status.edit.url, // enable only if edit url exists
+      isEnabled: (store) => store.isAuthorized('preview', 'write'),
     },
   },
   appStore);

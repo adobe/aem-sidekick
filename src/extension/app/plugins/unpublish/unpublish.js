@@ -47,12 +47,6 @@ export function createUnpublishPlugin(appStore) {
         const { location, status } = appStore;
         const hasSrc = status.edit?.status === 200;
 
-        // double check
-        if (hasSrc && !appStore.isAuthenticated()) {
-          appStore.showToast(appStore.i18n('unpublish_page_source_exists'), 'negative');
-          return;
-        }
-
         // get user confirmation
         const message = hasSrc
           ? appStore.i18n('unpublish_page_confirm')

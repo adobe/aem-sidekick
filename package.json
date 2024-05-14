@@ -66,7 +66,7 @@
     "@adobe/fetch": "4.1.2",
     "@babel/eslint-parser": "7.24.5",
     "@babel/plugin-proposal-decorators": "7.24.1",
-    "@custom-elements-manifest/analyzer": "0.9.8",
+    "@custom-elements-manifest/analyzer": "0.10.2",
     "@open-wc/eslint-config": "12.0.3",
     "@open-wc/testing": "4.0.0",
     "@rollup/plugin-babel": "6.0.4",
@@ -75,7 +75,7 @@
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
-    "@types/chrome": "0.0.267",
+    "@types/chrome": "0.0.268",
     "@types/mocha": "10.0.6",
     "@web/rollup-plugin-html": "2.3.0",
     "@web/rollup-plugin-import-meta-assets": "2.2.1",
@@ -95,13 +95,13 @@
     "lint-staged": "15.2.2",
     "nock": "13.5.4",
     "request": "2.88.2",
-    "rimraf": "5.0.5",
+    "rimraf": "5.0.6",
     "rollup": "4.17.2",
     "rollup-plugin-copy": "3.5.0",
     "rollup-plugin-esbuild": "6.1.1",
-    "semantic-release": "23.0.8",
+    "semantic-release": "23.1.1",
     "semantic-release-react-native": "1.10.0",
-    "sinon": "17.0.1"
+    "sinon": "17.0.2"
   },
   "lint-staged": {
     "*.js": "eslint"
