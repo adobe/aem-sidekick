@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-/* eslint-disable no-restricted-globals */
+/* eslint-disable no-restricted-globals, no-nested-ternary */
 
 import { observable, action } from 'mobx';
 import { createContext } from '@lit/context';
@@ -534,12 +534,20 @@ export class AppStore {
     const { preview } = this.status;
     const { sourceLocation } = preview;
 
-    // No sourceLocation on preview for JSON files
-    if (!sourceLocation) {
-      return this.i18n('editor');
+    if (sourceLocation) {
+      return sourceLocation.includes('onedrive:')
+        ? 'SharePoint'
+        : sourceLocation.includes('gdrive:')
+          ? 'Google Drive'
+          : 'BYOM';
     }
 
-    return sourceLocation.includes('onedrive:') ? 'SharePoint' : 'Google Drive';
+    const { mountpoint } = this.siteStore;
+    return mountpoint.includes('.sharepoint.com')
+      ? 'SharePoint'
+      : mountpoint.includes('.google.com')
+        ? 'Google Drive'
+        : 'BYOM';
   }
 
   /**

@@ -320,9 +320,9 @@ describe('Environment Switcher', () => {
       expect(publishButton.hasAttribute('disabled')).to.be.true;
     }).timeout(20000);
 
-    it('viewing json file should say open in editor', async () => {
+    it('should not show edit if byom sourceLocation', async () => {
       sidekickTest
-        .mockFetchSidekickConfigSuccess(true)
+        .mockFetchSidekickConfigSuccess()
         .mockFetchStatusSuccess(false, {
           webPath: '/query-index.json',
           resourcePath: '/query-index.json',
@@ -331,6 +331,7 @@ describe('Environment Switcher', () => {
             status: 200,
             contentBusId: 'helix-content-bus/cbid/preview/query-index.json',
             contentType: 'application/json',
+            sourceLocation: 'markup:https://byom.adobeioruntime.net/api/v1/web/convert/main/index.html?wcmmode=disabled',
             lastModified: 'Tue, 12 Sep 2023 19:38:51 GMT',
             permissions: [
               'read',
@@ -344,7 +345,7 @@ describe('Environment Switcher', () => {
       await sidekickTest.awaitEnvSwitcher();
 
       const editPlugin = recursiveQuery(sidekick, '.env-edit');
-      expect(editPlugin.textContent.trim()).to.eq('Open in Editor');
+      expect(editPlugin).to.be.undefined;
     });
   });
 });
