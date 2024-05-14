@@ -11,18 +11,93 @@
  */
 
 /**
+ * @typedef {import('../store/app.js').AppStore} AppStore
+ */
+
+/**
  * @typedef {import('../store/site.js').SiteStore} SiteStore
  */
 
 /**
- * Creates an Admin URL for an API and path.
+ * Enumeration of rate limiting sources.
  * @private
+ * @type {Object<string, string>}}
+ */
+const RATE_LIMITER = {
+  NONE: '',
+  ADMIN: 'AEM',
+  ONEDRIVE: 'Microsoft SharePoint',
+};
+
+/**
+ * Returns an error message from the server response.
+ * @param {Response} resp The response
+ * @returns {string} The error message or an empty string
+ */
+export function getServerError(resp) {
+  return resp?.headers?.get('x-error') || '';
+}
+
+/**
+ * Checks if the request has been rate-limited and returns the source.
+ * @param {Response} resp The response
+ * @returns {string} The rate limiter (see {@link RATE_LIMITER})
+ */
+function getRateLimiter(resp) {
+  if (resp.status === 429) {
+    return RATE_LIMITER.ADMIN;
+  }
+  const error = getServerError(resp);
+  if (resp.status === 503 && error.includes('(429)')) {
+    if (error.includes('onedrive')) {
+      return RATE_LIMITER.ONEDRIVE;
+    }
+  }
+  return RATE_LIMITER.NONE;
+}
+
+/**
+ * Handle an error from the server.
+ * @param {AppStore} appStore The app store
+ * @param {string} api The API endpoint called
+ * @param {Response} resp The response object
+ */
+function handleServerError(appStore, api, resp) {
+  if (resp.ok) {
+    return;
+  }
+
+  const limiter = getRateLimiter(resp);
+  if (limiter) {
+    appStore.showToast(appStore.i18n('error_429').replace('$1', limiter), 'warning');
+  }
+
+  let errorKey = '';
+  const errorLevel = resp.status < 500 ? 'warning' : 'negative';
+  switch (resp.status) {
+    case 404:
+      if (api === 'status') {
+        errorKey = appStore.isEditor()
+          ? 'error_status_404_document'
+          : 'error_status_404_content';
+      } else {
+        errorKey = `error_${api}_404`;
+      }
+      break;
+    default:
+      errorKey = `error_${api}_${resp.status}`;
+  }
+  appStore.showToast(appStore.i18n(errorKey), errorLevel);
+}
+
+/**
+ * Creates an Admin URL for an API and path.
  * @param {SiteStore} siteStore The sidekick config object
  * @param {string} api The API endpoint to call
  * @param {string} path The current path
  * @returns {URL} The admin URL
  */
-export function getAdminUrl({
+function getAdminUrl({
   owner, repo, ref, adminVersion,
 }, api, path = '', searchParams = new URLSearchParams()) {
   const adminUrl = new URL([
@@ -43,33 +118,18 @@ export function getAdminUrl({
 }
 
 /**
- * Returns the fetch options for admin requests
- * @param {boolean} omitCredentials Should we omit the credentials
- * @returns {object}
- */
-export function getAdminFetchOptions(omitCredentials = false) {
-  const opts = {
-    cache: 'no-store',
-    credentials: omitCredentials ? 'omit' : 'include',
-    headers: {},
-  };
-  return opts;
-}
-
-/**
- * Calls an Admin URL for an API and path.
- * @private
- * @param {SiteStore} siteStore The sidekick config object
+ * Calls an Admin URL for an API and path and returns the response.
+ * @param {AppStore} appStore The app store
  * @param {Object} opts The options
  * @param {string} [opts.api] The API endpoint to call
- * @param {string} [opts.path] The current path
+ * @param {string} [opts.path] The resource path
  * @param {URLSearchParams} [opts.searchParams] The search parameters
  * @param {string} [opts.method] The method to use
  * @param {Object} [opts.body] The body to send
  * @param {boolean} [opts.omitCredentials] Should we omit the credentials
  * @returns {Promise<Response>} The admin response
  */
-export async function callAdmin(siteStore, {
+async function callAdmin(appStore, {
   api = 'status',
   path = '',
   searchParams = new URLSearchParams(),
@@ -77,7 +137,7 @@ export async function callAdmin(siteStore, {
   body,
   omitCredentials = false,
 }) {
-  const url = getAdminUrl(siteStore, api, path, searchParams);
+  const url = getAdminUrl(appStore.siteStore, api, path, searchParams);
   const resp = await fetch(url, {
     cache: 'no-store',
     credentials: omitCredentials ? 'omit' : 'include',
@@ -86,7 +146,67 @@ export async function callAdmin(siteStore, {
     body,
   });
   if (!resp.ok) {
-    // error handling
+    handleServerError(appStore, api, resp);
   }
   return resp;
+}
+
+/**
+ * Admin API allows interaction with the [AEM Admin API]{@link https://www.aem.live/docs/admin.html}.
+ * @param {AppStore} appStore The app store
+ * @returns {AdminAPI} The Admin API
+ */
+export class AdminAPI {
+  constructor(appStore) {
+    this.appStore = appStore;
+    this.siteStore = appStore.siteStore;
+  }
+
+  /**
+   * Returns the status of a resource.
+   * @see https://www.aem.live/docs/admin.html#tag/status/operation/status
+   * @param {string} path The resource path
+   * @param {boolean} [includeEditUrl] True if the edit URL should be included
+   * @returns {Promise<Object>} The JSON response
+   */
+  async getStatus(path, includeEditUrl = false) {
+    const resp = await callAdmin(this.appStore, {
+      path,
+      searchParams: includeEditUrl
+        ? new URLSearchParams(
+          [['editUrl', this.appStore.isEditor() ? window.location.href : 'auto']])
+        : undefined,
+    });
+    return resp.ok ? resp.json() : { status: resp.status };
+  }
+
+  /**
+   * Updates the preview resource.
+   * @see https://www.aem.live/docs/admin.html#tag/preview/operation/updatePreview
+   * @param {string} path The resource path
+   * @returns {Promise<Object>} The JSON response
+   */
+  async updatePreview(path) {
+    const resp = await callAdmin(this.appStore, {
+      path,
+      api: 'preview',
+      method: 'POST',
+    });
+    return resp.ok ? resp.json() : {};
+  }
+
+  /**
+   * Publishes a preview resource.
+   * @see https://www.aem.live/docs/admin.html#tag/publish/operation/publishResource
+   * @param {string} path The resource path
+   * @returns {Promise<Object>} The JSON response
+   */
+  async updateLive(path) {
+    const resp = await callAdmin(this.appStore, {
+      path,
+      api: 'live',
+      method: 'POST',
+    });
+    return resp.ok ? resp.json() : {};
+  }
 }

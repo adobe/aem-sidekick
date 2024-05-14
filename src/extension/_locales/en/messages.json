@@ -342,6 +342,9 @@
     "edit_date": {
       "message": "Edited: "
     },
+    "error_429": {
+      "message": "429 Too many requests: Your project is being throttled by $1. Please wait and try again later."
+    },
     "error_config_failure": {
       "message": "Failed to activate configuration: "
     },
