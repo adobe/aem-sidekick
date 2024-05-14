@@ -681,5 +681,8 @@
     },
     "deleting_state": {
       "message": "Deleting..."
+    },
+    "editor": {
+      "message": "Editor"
     }
 }

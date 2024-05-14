@@ -319,5 +319,32 @@ describe('Environment Switcher', () => {
       const publishButton = recursiveQuery(notificationItem, 'sp-action-button');
       expect(publishButton.hasAttribute('disabled')).to.be.true;
     }).timeout(20000);
+
+    it('viewing json file should say open in editor', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true)
+        .mockFetchStatusSuccess(false, {
+          webPath: '/query-index.json',
+          resourcePath: '/query-index.json',
+          preview: {
+            url: 'https://main--blog--adobecom.hlx.page/query-index.json',
+            status: 200,
+            contentBusId: 'helix-content-bus/cbid/preview/query-index.json',
+            contentType: 'application/json',
+            lastModified: 'Tue, 12 Sep 2023 19:38:51 GMT',
+            permissions: [
+              'read',
+              'write',
+            ],
+          },
+        }, HelixMockContentSources.SHAREPOINT, 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/placeholders.json')
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW, HelixMockContentType.SHEET);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      const editPlugin = recursiveQuery(sidekick, '.env-edit');
+      expect(editPlugin.textContent.trim()).to.eq('Open in Editor');
+    });
   });
 });

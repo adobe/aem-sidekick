@@ -536,7 +536,7 @@ export class AppStore {
 
     // No sourceLocation on preview for JSON files
     if (!sourceLocation) {
-      return 'Editor';
+      return this.i18n('editor');
     }
 
     return sourceLocation.includes('onedrive:') ? 'SharePoint' : 'Google Drive';
