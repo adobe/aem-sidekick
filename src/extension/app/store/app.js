@@ -532,7 +532,14 @@ export class AppStore {
    */
   getContentSourceLabel() {
     const { preview } = this.status;
-    return preview?.sourceLocation.includes('onedrive:') ? 'SharePoint' : 'Google Drive';
+    const { sourceLocation } = preview;
+
+    // No sourceLocation on preview for JSON files
+    if (!sourceLocation) {
+      return 'Editor';
+    }
+
+    return sourceLocation.includes('onedrive:') ? 'SharePoint' : 'Google Drive';
   }
 
   /**
