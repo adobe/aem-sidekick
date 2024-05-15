@@ -535,18 +535,18 @@ export class AppStore {
     const { sourceLocation } = preview;
 
     if (sourceLocation) {
-      return sourceLocation.includes('onedrive:')
+      return sourceLocation.startsWith('onedrive:')
         ? 'SharePoint'
-        : sourceLocation.includes('gdrive:')
+        : sourceLocation.startsWith('gdrive:')
           ? 'Google Drive'
           : 'BYOM';
     }
 
     const { mountpoint } = this.siteStore;
-    return mountpoint.includes('.sharepoint.com')
-      ? 'SharePoint'
-      : mountpoint.includes('.google.com')
-        ? 'Google Drive'
+    return mountpoint.includes('.google.com')
+      ? 'Google Drive'
+      : mountpoint.includes('.sharepoint.com') || mountpoint.includes('/Shared%20Documents/sites/')
+        ? 'SharePoint'
         : 'BYOM';
   }
 

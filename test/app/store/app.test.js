@@ -1561,6 +1561,12 @@ describe('Test App Store', () => {
       expect(instance.getContentSourceLabel()).to.equal('SharePoint');
     });
 
+    it('should return "SharePoint" if mountpoint does not include ".sharepoint.com" but does contain /Shared%20Documents/sites/', () => {
+      instance.siteStore = { mountpoint: 'https://example.com/Shared%20Documents/sites/aem-boilerplate' };
+      instance.status = { preview: { sourceLocation: '' } };
+      expect(instance.getContentSourceLabel()).to.equal('SharePoint');
+    });
+
     it('should return "Google Drive" if mountpoint includes ".google.com"', () => {
       instance.siteStore = { mountpoint: 'https://drive.google.com' };
       instance.status = { preview: { sourceLocation: '' } };
