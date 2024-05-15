@@ -57,12 +57,28 @@ function getRateLimiter(resp) {
 }
 
 /**
- * Handle an error from the server.
- * @param {AppStore} appStore The app store
+ * Returns the action name based on API and nature of request.
  * @param {string} api The API endpoint called
+ * @param {boolean} [del] True if the request was destructive
+ */
+function getAction(api, del) {
+  let action = api;
+  if (api === 'preview' && del) {
+    action = 'delete';
+  }
+  if (api === 'live') {
+    action = del ? 'unpublish' : 'publish';
+  }
+  return action;
+}
+
+/**
+ * Shows a toast if the server returned an error.
+ * @param {AppStore} appStore The app store
+ * @param {string} action The action
  * @param {Response} resp The response object
  */
-function handleServerError(appStore, api, resp) {
+function handleServerError(appStore, action, resp) {
   if (resp.ok) {
     return;
   }
@@ -72,22 +88,40 @@ function handleServerError(appStore, api, resp) {
     appStore.showToast(appStore.i18n('error_429').replace('$1', limiter), 'warning');
   }
 
-  let errorKey = '';
-  const errorLevel = resp.status < 500 ? 'warning' : 'negative';
-  switch (resp.status) {
-    case 404:
-      if (api === 'status') {
-        errorKey = appStore.isEditor()
-          ? 'error_status_404_document'
-          : 'error_status_404_content';
-      } else {
-        errorKey = `error_${api}_404`;
-      }
-      break;
-    default:
-      errorKey = `error_${api}_${resp.status}`;
+  let message = '';
+  if (action === 'status' && resp.status === 404) {
+    // special handling for status
+    message = appStore.i18n(appStore.isEditor()
+      ? 'error_status_404_document'
+      : 'error_status_404_content');
+  } else {
+    // error key fallbacks
+    message = appStore.i18n(`error_${action}_${resp.status}`)
+      || appStore.i18n(`error_${action}`)
+      || appStore.i18n('error_fatal');
   }
-  appStore.showToast(appStore.i18n(errorKey), errorLevel);
+
+  appStore.showToast(
+    message.replace('$1', getServerError(resp)),
+    resp.status < 500 ? 'warning' : 'negative',
+    () => appStore.closeToast(),
+  );
+}
+
+/**
+ * Shows a toast if the request failed or did not contain valid JSON.
+ * @param {AppStore} appStore The app store
+ * @param {string} action The action
+ */
+function handleFatalError(appStore, action) {
+  // use standard error key fallbacks
+  const msg = appStore.i18n(`error_${action}_fatal`)
+      || appStore.i18n('error_fatal');
+  appStore.showToast(
+    msg.replace('$1', 'https://aemstatus.net/'),
+    'negative',
+    () => appStore.closeToast(),
+  );
 }
 
 /**
@@ -97,7 +131,7 @@ function handleServerError(appStore, api, resp) {
  * @param {string} path The current path
  * @returns {URL} The admin URL
  */
-function getAdminUrl({
+export function getAdminUrl({
   owner, repo, ref, adminVersion,
 }, api, path = '', searchParams = new URLSearchParams()) {
   const adminUrl = new URL([
@@ -133,22 +167,18 @@ async function callAdmin(appStore, {
   api = 'status',
   path = '',
   searchParams = new URLSearchParams(),
-  method = 'GET',
+  method = 'get',
   body,
   omitCredentials = false,
 }) {
   const url = getAdminUrl(appStore.siteStore, api, path, searchParams);
-  const resp = await fetch(url, {
+  return fetch(url, {
     cache: 'no-store',
     credentials: omitCredentials ? 'omit' : 'include',
     headers: {},
     method,
     body,
   });
-  if (!resp.ok) {
-    handleServerError(appStore, api, resp);
-  }
-  return resp;
 }
 
 /**
@@ -170,43 +200,97 @@ export class AdminAPI {
    * @returns {Promise<Object>} The JSON response
    */
   async getStatus(path, includeEditUrl = false) {
-    const resp = await callAdmin(this.appStore, {
-      path,
-      searchParams: includeEditUrl
-        ? new URLSearchParams(
-          [['editUrl', this.appStore.isEditor() ? window.location.href : 'auto']])
-        : undefined,
-    });
-    return resp.ok ? resp.json() : { status: resp.status };
+    let resp;
+    try {
+      resp = await callAdmin(this.appStore, {
+        path,
+        searchParams: includeEditUrl ? new URLSearchParams(
+          [['editUrl', this.appStore.isEditor() ? this.appStore.location.href : 'auto']],
+        ) : undefined,
+      });
+      if (resp.ok) {
+        return resp.json();
+      } else if (resp.status === 401) {
+        return { status: 401 };
+      } else {
+        handleServerError(this.appStore, getAction('status'), resp);
+      }
+    } catch (e) {
+      handleFatalError(this.appStore, getAction('status'));
+    }
+    return null;
+  }
+
+  /**
+   * Returns the user profile.
+   * @see https://www.aem.live/docs/admin.html#tag/profile
+   * @returns {Promise<Object>} The JSON response
+   */
+  async getProfile() {
+    try {
+      const resp = await callAdmin(this.appStore, {
+        api: 'profile',
+      });
+      if (resp.ok) {
+        return resp.json();
+      }
+    } catch (e) {
+      // ignore
+    }
+    return null;
   }
 
   /**
    * Updates the preview resource.
    * @see https://www.aem.live/docs/admin.html#tag/preview/operation/updatePreview
    * @param {string} path The resource path
+   * @param {boolean} [del] True if the preview should be deleted
    * @returns {Promise<Object>} The JSON response
    */
-  async updatePreview(path) {
-    const resp = await callAdmin(this.appStore, {
-      path,
-      api: 'preview',
-      method: 'POST',
-    });
-    return resp.ok ? resp.json() : {};
+  async updatePreview(path, del) {
+    const api = 'preview';
+    const method = del ? 'delete' : 'post';
+    try {
+      const resp = await callAdmin(this.appStore, {
+        path,
+        api,
+        method,
+      });
+      if (resp.ok) {
+        return resp.json();
+      } else {
+        handleServerError(this.appStore, getAction(api, del), resp);
+      }
+    } catch (e) {
+      handleFatalError(this.appStore, getAction(api, del));
+    }
+    return null;
   }
 
   /**
    * Publishes a preview resource.
    * @see https://www.aem.live/docs/admin.html#tag/publish/operation/publishResource
    * @param {string} path The resource path
+   * @param {boolean} [del] True if the preview should be deleted
    * @returns {Promise<Object>} The JSON response
    */
-  async updateLive(path) {
-    const resp = await callAdmin(this.appStore, {
-      path,
-      api: 'live',
-      method: 'POST',
-    });
-    return resp.ok ? resp.json() : {};
+  async updateLive(path, del) {
+    const api = 'live';
+    const method = del ? 'delete' : 'post';
+    try {
+      const resp = await callAdmin(this.appStore, {
+        path,
+        api,
+        method,
+      });
+      if (resp.ok) {
+        return resp.json();
+      } else {
+        handleServerError(this.appStore, getAction(api, del), resp);
+      }
+    } catch (e) {
+      handleFatalError(this.appStore, getAction(api, del));
+    }
+    return null;
   }
 }

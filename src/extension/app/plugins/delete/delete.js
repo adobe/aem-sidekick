@@ -63,28 +63,19 @@ export function createDeletePlugin(appStore) {
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
           // perform delete
           appStore.setState(STATE.DELETING);
-          try {
-            const resp = await appStore.delete();
-            if (resp.ok) {
-              // show success toast
-              appStore.showToast(
-                isPage
-                  ? appStore.i18n('delete_page_success')
-                  : appStore.i18n('delete_file_success'),
-                'positive',
-                () => {
-                  log.info(`redirecting to ${location.origin}/`);
-                  appStore.loadPage(`${location.origin}/`);
-                },
-              );
-            } else {
-              throw new Error(resp.headers?.['x-error']);
-            }
-          } catch (e) {
+
+          const res = await appStore.delete();
+          if (res) {
+            // show success toast
             appStore.showToast(
-              appStore.i18n('delete_failure'),
-              'negative',
-              () => appStore.closeToast(),
+              isPage
+                ? appStore.i18n('delete_page_success')
+                : appStore.i18n('delete_file_success'),
+              'positive',
+              () => {
+                log.info(`redirecting to ${location.origin}/`);
+                appStore.loadPage(`${location.origin}/`);
+              },
             );
           }
         });

@@ -63,27 +63,17 @@ export function createUnpublishPlugin(appStore) {
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
           // perform unpublish
           appStore.setState(STATE.UNPUBLISHING);
-          try {
-            const resp = await appStore.unpublish();
-            if (resp.ok) {
-              // show success toast
-              appStore.showToast(
-                appStore.i18n('unpublish_page_success'),
-                'positive',
-                () => {
-                  log.info(`redirecting to ${location.origin}/`);
-                  appStore.loadPage(`${location.origin}/`);
-                },
-              );
-            } else {
-              throw new Error(resp.headers?.['x-error']);
-            }
-          } catch (e) {
-            // eslint-disable-next-line no-console
+
+          const res = await appStore.unpublish();
+          if (res) {
+            // show success toast
             appStore.showToast(
-              appStore.i18n('unpublish_failure'),
-              'negative',
-              () => appStore.closeToast(),
+              appStore.i18n('unpublish_page_success'),
+              'positive',
+              () => {
+                log.info(`redirecting to ${location.origin}/`);
+                appStore.loadPage(`${location.origin}/`);
+              },
             );
           }
         });
