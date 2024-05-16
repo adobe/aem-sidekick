@@ -543,9 +543,10 @@ export class AppStore {
     }
 
     const { mountpoint } = this.siteStore;
-    return mountpoint.includes('.google.com')
+    const mountpointUrl = new URL(mountpoint);
+    return mountpointUrl.host.includes('.google.com')
       ? 'Google Drive'
-      : mountpoint.includes('.sharepoint.com') || mountpoint.includes('/Shared%20Documents/sites/')
+      : mountpointUrl.host.includes('.sharepoint.com') || mountpointUrl.pathname.includes('/Shared%20Documents/sites/')
         ? 'SharePoint'
         : 'BYOM';
   }
