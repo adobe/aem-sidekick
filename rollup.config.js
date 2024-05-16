@@ -120,10 +120,10 @@ function createExtension(browser) {
 }
 
 export default [
-  ...createExtension('chrome'),
-  ...createExtension('safari'),
   {
     input: 'src/extension/views/json/json.js',
     ...viewBuild('chrome', '/views/json'),
   },
+  ...createExtension('chrome'),
+  ...createExtension('safari'),
 ];
