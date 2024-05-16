@@ -108,10 +108,8 @@ export class AdminAPI {
       return this.RATE_LIMITER.ADMIN;
     }
     const error = this.getServerError(resp);
-    if (resp.status === 503 && error.includes('(429)')) {
-      if (error.includes('onedrive')) {
-        return this.RATE_LIMITER.ONEDRIVE;
-      }
+    if (resp.status === 503 && error.includes('(429)') && error.includes('onedrive')) {
+      return this.RATE_LIMITER.ONEDRIVE;
     }
     return this.RATE_LIMITER.NONE;
   }
@@ -123,14 +121,9 @@ export class AdminAPI {
    * @param {boolean} [del] True if the request was destructive
    */
   getAction(api, del) {
-    let action = api;
-    if (api === 'preview' && del) {
-      action = 'delete';
-    }
-    if (api === 'live') {
-      action = del ? 'unpublish' : 'publish';
-    }
-    return action;
+    if (api === 'preview' && del) return 'delete';
+    if (api === 'live') return del ? 'unpublish' : 'publish';
+    return api;
   }
 
   /**
