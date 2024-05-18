@@ -161,9 +161,6 @@
     "config_invalid_shareurl": {
       "message": "Invalid sharing URL"
     },
-    "config_manual_devMode": {
-      "message": "Test project configuration locally"
-    },
     "config_manual_devOrigin_placeholder": {
       "message": "Local Development URL: http://localhost:3000"
     },
