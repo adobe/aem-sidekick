@@ -17,7 +17,7 @@ import {
   setConfig,
 } from './config.js';
 import { urlCache } from './url-cache.js';
-import { callAdmin, createAdminUrl } from './utils/admin-api.js';
+import { callAdmin, createAdminUrl } from './utils/admin.js';
 
 export const GH_URL = 'https://github.com/';
 

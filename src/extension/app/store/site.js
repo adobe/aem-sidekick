@@ -13,7 +13,7 @@
 // import { property } from 'lit/decorators.js';
 import { observable, action } from 'mobx';
 import { log } from '../../log.js';
-import { callAdmin } from '../../utils/admin-api.js';
+import { callAdmin } from '../../utils/admin.js';
 import { getLanguage } from '../utils/i18n.js';
 
 /**

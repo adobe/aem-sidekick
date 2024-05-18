@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { callAdmin, createAdminUrl } from '../../utils/admin-api.js';
+import { callAdmin, createAdminUrl } from '../../utils/admin.js';
 
 /**
  * @typedef {import('../store/app.js').AppStore} AppStore

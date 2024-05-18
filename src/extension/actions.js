@@ -20,7 +20,7 @@ import {
   isValidProject,
   getProject,
 } from './project.js';
-import { ADMIN_ORIGIN } from './utils/admin-api.js';
+import { ADMIN_ORIGIN } from './utils/admin.js';
 
 /**
  * Updates the auth token via external messaging API (admin only).

@@ -12,7 +12,7 @@
 
 import { log } from './log.js';
 import { getConfig, setConfig } from './config.js';
-import { ADMIN_ORIGIN } from './utils/admin-api.js';
+import { ADMIN_ORIGIN } from './utils/admin.js';
 
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
 /**

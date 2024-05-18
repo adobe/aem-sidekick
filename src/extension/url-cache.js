@@ -12,7 +12,7 @@
 
 import { log } from './log.js';
 import { getConfig, setConfig } from './config.js';
-import { callAdmin } from './utils/admin-api.js';
+import { callAdmin } from './utils/admin.js';
 
 /**
  * @type {number} The time to remember matches from discovery in milliseconds
@@ -233,7 +233,7 @@ class UrlCache {
         let results = [];
         // discover project details from edit url
         const resp = await callAdmin(
-          {}, 'discover', '/', { searchParams: new URLSearchParams(`url=${info.url || url}`) },
+          {}, 'discover', '/', { searchParams: new URLSearchParams(`url=${info?.url || url}`) },
         );
         if (resp.ok) {
           results = await resp.json();
