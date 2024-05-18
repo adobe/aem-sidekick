@@ -15,7 +15,7 @@
 import { observable, action } from 'mobx';
 import { createContext } from '@lit/context';
 import { SiteStore } from './site.js';
-import { AdminAPI, getAdminUrl } from '../utils/helix-admin.js';
+import { AdminClient } from '../utils/admin-client.js';
 import sampleRUM from '../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
 import {
@@ -86,8 +86,8 @@ export class AppStore {
   sidekick;
 
   /**
-   * The Admin API
-   * @type AdminAPI
+   * The Admin API client
+   * @type AdminClient
    */
   api;
 
@@ -142,7 +142,7 @@ export class AppStore {
   constructor() {
     this.siteStore = new SiteStore(this);
     this.keyboardListener = new KeyboardListener();
-    this.api = new AdminAPI(this);
+    this.api = new AdminClient(this);
   }
 
   /**
@@ -243,7 +243,7 @@ export class AppStore {
       const {
         location,
         siteStore: {
-          lang, plugins, innerHost, devMode, devUrl,
+          lang, plugins, innerHost,
         },
       } = this;
       if (plugins && Array.isArray(plugins)) {
@@ -300,7 +300,7 @@ export class AppStore {
               text: (titleI18n && titleI18n[lang]) || title,
               action: () => {
                 if (url) {
-                  const target = devMode ? new URL(url, devUrl) : new URL(url, `https://${innerHost}/`);
+                  const target = new URL(url, `https://${innerHost}/`);
                   if (passConfig) {
                     target.searchParams.append('ref', this.siteStore.ref);
                     target.searchParams.append('repo', this.siteStore.repo);
@@ -1068,12 +1068,28 @@ export class AppStore {
   }
 
   /**
+   * Retrieves the profile of the current user.
+   * @returns {Promise<Object | false>} The response object
+   */
+  async getProfile() {
+    const response = await this.api.getProfile();
+    if (!response) {
+      return false;
+    }
+
+    if (response.status === 200) {
+      return response.profile;
+    }
+    return false;
+  }
+
+  /**
    * Logs the user in.
    * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
    */
   login(selectAccount) {
     this.setState(STATE.LOGGING_IN);
-    const loginUrl = getAdminUrl(this.siteStore, 'login');
+    const loginUrl = this.api.createUrl('login');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
     if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
@@ -1125,7 +1141,7 @@ export class AppStore {
    */
   logout() {
     this.setState(STATE.LOGGING_OUT);
-    const logoutUrl = getAdminUrl(this.siteStore, 'logout');
+    const logoutUrl = this.api.createUrl('logout');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
     if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
@@ -1142,7 +1158,7 @@ export class AppStore {
         const { siteStore } = this;
         attempts += 1;
         // try 5 times after login window has been closed
-        this.status.profile = await this.getProfile();
+        this.status.profile = await this.api.getProfile();
         if (!this.status.profile) {
           delete this.status.profile;
           delete this.siteStore.authTokenExpiry;

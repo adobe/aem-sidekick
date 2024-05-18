@@ -13,7 +13,7 @@
 // import { property } from 'lit/decorators.js';
 import { observable, action } from 'mobx';
 import { log } from '../../log.js';
-import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
+import { callAdmin } from '../../utils/admin-api.js';
 import { getLanguage } from '../utils/i18n.js';
 
 /**
@@ -121,12 +121,6 @@ export class SiteStore {
   stdOuterHost;
 
   /**
-   * Loads configuration and plugins from the development environment
-   * @type {boolean}
-   */
-  devMode;
-
-  /**
    * URL of the local development environment
    * @type {string}
    */
@@ -203,33 +197,28 @@ export class SiteStore {
       ref = 'main',
       giturl,
       mountpoints,
-      devMode,
       adminVersion,
-      _extended,
     } = config;
     let { devOrigin } = config;
     if (!devOrigin) {
       devOrigin = 'http://localhost:3000';
     }
-    if (owner && repo && !_extended) {
+    if (owner && repo) {
       // look for custom config in project
-      const configUrl = devMode
-        ? `${devOrigin}/tools/sidekick/config.json`
-        : getAdminUrl(config, 'sidekick', '/config.json');
       try {
-        const res = await fetch(configUrl, getAdminFetchOptions(true));
+        const res = await callAdmin({ owner, repo, ref }, 'sidekick', '/config.json');
+        this.authorized = res.status === 200;
         if (res.status === 200) {
           this.authorized = true;
           config = {
             ...config,
-            ...(await res.json()),
+            ...await res.json(),
             // no overriding below
             owner,
             repo,
             ref,
-            devMode,
+            mountpoints,
             adminVersion,
-            _extended: Date.now(),
           };
         } else if (res.status !== 404) {
           this.authorized = false;
@@ -275,9 +264,7 @@ export class SiteStore {
     this.giturl = giturl;
     this.mountpoints = mountpoints || [];
     [this.mountpoint] = this.mountpoints;
-    this.devMode = devMode;
     this.adminVersion = adminVersion;
-    this._extended = _extended;
 
     this.previewHost = previewHost;
     this.liveHost = liveHost;
@@ -316,7 +303,6 @@ export class SiteStore {
       liveHost: this.liveHost,
       outerHost: this.outerHost,
       stdOuterHost: this.stdOuterHost,
-      devMode: this.devMode,
       devOrigin: this.devOrigin,
       adminVersion: this.adminVersion,
       lang: this.lang,

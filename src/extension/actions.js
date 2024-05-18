@@ -20,6 +20,7 @@ import {
   isValidProject,
   getProject,
 } from './project.js';
+import { ADMIN_ORIGIN } from './utils/admin-api.js';
 
 /**
  * Updates the auth token via external messaging API (admin only).
@@ -36,7 +37,7 @@ async function updateAuthToken({
   const { url } = sender;
   if (owner) {
     try {
-      if (new URL(url).origin === 'https://admin.hlx.page'
+      if (new URL(url).origin === ADMIN_ORIGIN
         && authToken !== undefined) {
         await setAuthToken(owner, authToken, exp);
         return 'close';
@@ -95,11 +96,11 @@ async function openViewDocSource({ id }) {
  * @param {number} id The tab ID
  */
 export async function checkViewDocSource(id) {
-  const tab = await chrome.tabs.get(id);
-  if (!tab || !tab.url || !tab.active) {
-    return;
-  }
   try {
+    const tab = await chrome.tabs.get(id);
+    if (!tab || !tab.url || !tab.active) {
+      return;
+    }
     const u = new URL(tab.url);
     const vds = u.searchParams.get('view-doc-source');
     if (vds && vds === 'true') {
@@ -107,7 +108,7 @@ export async function checkViewDocSource(id) {
       await openViewDocSource({ id });
     }
   } catch (e) {
-    log.warn(`Error checking view document source for url: ${tab.url}`, e);
+    log.warn(`Error checking view document source for tab ${id}`, e);
   }
 }
 
