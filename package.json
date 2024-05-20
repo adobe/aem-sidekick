@@ -101,7 +101,7 @@
     "rollup-plugin-esbuild": "6.1.1",
     "semantic-release": "23.1.1",
     "semantic-release-react-native": "1.10.0",
-    "sinon": "17.0.2"
+    "sinon": "18.0.0"
   },
   "lint-staged": {
     "*.js": "eslint"
