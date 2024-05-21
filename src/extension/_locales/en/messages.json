@@ -342,9 +342,6 @@
     "error_429": {
       "message": "429 Too many requests: Your project is being throttled by $1. Please wait and try again later."
     },
-    "error_config_failure": {
-      "message": "Failed to activate configuration: "
-    },
     "error_delete": {
       "message": "Deletion failed. Please try again later."
     },
@@ -495,9 +492,6 @@
     "preview": {
       "message": "Preview"
     },
-    "preview_config_success": {
-      "message": "Configuration successfully activated."
-    },
     "preview_date": {
       "message": "Previewed: "
     },
@@ -515,12 +509,6 @@
     },
     "publish_date": {
       "message": "Published: "
-    },
-    "push_down_content": {
-      "message": "Push down content instead of overlaying"
-    },
-    "push_down_content_description": {
-      "message": "Note: Depending on the site's structure, this may require custom project configuration to work as expected."
     },
     "reload": {
       "message": "Reload"
