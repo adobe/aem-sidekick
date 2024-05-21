@@ -1,3 +1,10 @@
+## [1.22.2](https://github.com/adobe/aem-sidekick/compare/v1.22.1...v1.22.2) (2024-05-21)
+
+
+### Bug Fixes
+
+* change build order ([#143](https://github.com/adobe/aem-sidekick/issues/143)) ([fbf9656](https://github.com/adobe/aem-sidekick/commit/fbf9656ac50ee1b217abcd391e98ed78169d8dea))
+
 ## [1.22.1](https://github.com/adobe/aem-sidekick/compare/v1.22.0...v1.22.1) (2024-05-16)
 
 
