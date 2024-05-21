@@ -18,6 +18,7 @@ import sinon from 'sinon';
 import chromeMock from './mocks/chrome.js';
 import checkTab from '../src/extension/tab.js';
 import { error } from './test-utils.js';
+import { log } from '../src/extension/log.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -187,6 +188,16 @@ describe('Test check-tab', () => {
     expect(executeScriptSpy.callCount).to.equal(1);
   });
 
+  it('checkTab: tab no longer exists', async () => {
+    const logSpy = sandbox.spy(log, 'warn');
+    getTabSpy.restore();
+    getTabSpy = sandbox.stub(chrome.tabs, 'get').rejects();
+    await checkTab(1);
+
+    expect(logSpy.callCount).to.equal(1);
+    expect(logSpy.args[0][0]).to.equal('checkTab: error checking tab 1');
+  });
+
   it('checkTab: script injection fails', async () => {
     sandbox.stub(chrome.storage.local, 'get').withArgs('display').resolves({ display: true });
     executeScriptSpy.restore();
@@ -197,14 +208,14 @@ describe('Test check-tab', () => {
   it('checkTab: tab no longer exists upon script injection', async () => {
     let counter = 0;
     getTabSpy.restore();
-    getTabSpy = sandbox.stub(chrome.tabs, 'get').callsFake(async (id) => {
+    getTabSpy = sandbox.stub(chrome.tabs, 'get').callsFake(async (id) => new Promise((resolve, reject) => {
       counter += 1;
       if (counter === 1) {
-        return TABS[id];
+        resolve(TABS[id]);
       } else {
-        return null;
+        reject();
       }
-    });
+    }));
     await checkTab(1);
     expect(executeScriptSpy.callCount).to.equal(0);
   });
