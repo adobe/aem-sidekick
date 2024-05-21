@@ -747,7 +747,7 @@ export class AppStore {
     status = await this.api.getStatus(path, includeEdit);
 
     // Do we want to update the store with the new status?
-    if (!transient) {
+    if (status && !transient) {
       this.updateStatus(status);
       this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, status);
 
@@ -795,7 +795,6 @@ export class AppStore {
         // bust client cache
         await fetch(`https://${siteStore.innerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
       }
-
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED, path);
     }
 
@@ -804,7 +803,6 @@ export class AppStore {
 
   async updatePreview(ranBefore) {
     this.setState(STATE.PREVIEWING);
-    const { status } = this;
 
     const res = await this.update();
     if (!res && !ranBefore) {
@@ -816,19 +814,15 @@ export class AppStore {
       return;
     }
 
-    // handle special case /.helix/*
-    if (status.webPath.startsWith('/.helix/')) {
-      this.showToast(this.i18n('preview_config_success'), 'positive');
-      return;
+    if (res) {
+      /* istanbul ignore next 4 */
+      const actionCallback = () => {
+        this.setState();
+        this.switchEnv('preview');
+      };
+
+      this.showToast(this.i18n('preview_success'), 'positive', undefined, actionCallback, 'Open');
     }
-
-    /* istanbul ignore next 4 */
-    const actionCallback = () => {
-      this.setState();
-      this.switchEnv('preview');
-    };
-
-    this.showToast(this.i18n('preview_success'), 'positive', undefined, actionCallback, 'Open');
   }
 
   /**
@@ -842,7 +836,7 @@ export class AppStore {
 
     // delete content only
     if (!this.isContent()) {
-      return null;
+      return false;
     }
 
     // delete preview
@@ -863,20 +857,13 @@ export class AppStore {
    * @returns {Promise<boolean>} True if the page was published successfully, false otherwise
    */
   async publish() {
-    const { siteStore, status, location } = this;
+    const { siteStore, status } = this;
     const path = status.webPath;
 
     // publish content only
     if (!this.isContent()) {
-      return null;
+      return false;
     }
-
-    const purgeURL = new URL(path, this.isEditor()
-      ? `https://${siteStore.innerHost}/`
-      : location.href);
-
-    // eslint-disable-next-line no-console
-    console.log(`publishing ${purgeURL.pathname}`);
 
     // update live
     const resp = await this.api.updateLive(path);
@@ -884,11 +871,11 @@ export class AppStore {
       // bust client cache for live and production
       if (siteStore.outerHost) {
         // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
-        await fetch(`https://${siteStore.outerHost}${purgeURL.pathname}`, { cache: 'reload', mode: 'no-cors' });
+        await fetch(`https://${siteStore.outerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
       }
       if (siteStore.host) {
         // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
-        await fetch(`https://${siteStore.host}${purgeURL.pathname}`, { cache: 'reload', mode: 'no-cors' });
+        await fetch(`https://${siteStore.host}${path}`, { cache: 'reload', mode: 'no-cors' });
       }
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
     }
@@ -904,7 +891,7 @@ export class AppStore {
   async unpublish() {
     // unpublish content only
     if (!this.isContent()) {
-      return null;
+      return false;
     }
     const { status } = this;
     const path = status.webPath;
@@ -1109,7 +1096,7 @@ export class AppStore {
         const { siteStore, status } = this;
         attempts += 1;
         // try 5 times after login window has been closed
-        this.status.profile = await this.api.getProfile();
+        this.status.profile = await this.getProfile();
         if (this.status.profile) {
           // logged in, stop checking
           delete status.status;
@@ -1158,7 +1145,7 @@ export class AppStore {
         const { siteStore } = this;
         attempts += 1;
         // try 5 times after login window has been closed
-        this.status.profile = await this.api.getProfile();
+        this.status.profile = await this.getProfile();
         if (!this.status.profile) {
           delete this.status.profile;
           delete this.siteStore.authTokenExpiry;
