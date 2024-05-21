@@ -272,18 +272,14 @@ export async function getProjectEnv({
  */
 export async function addProject(input) {
   const config = assembleProject(input);
-  const { owner, repo, ref } = config;
+  const { owner, repo } = config;
   const env = await getProjectEnv(config);
   if (env.unauthorized && !input.authToken) {
     // defer adding project and have user sign in
-    const loginUrl = createAdminUrl(
-      { owner, repo, ref },
-      'login',
-      '',
-      new URLSearchParams(`extensionId=${chrome.runtime.id}`),
-    ).toString();
+    const loginUrl = createAdminUrl(config, 'login');
+    loginUrl.searchParams.set('extensionId', chrome.runtime.id);
     const { id: loginTabId } = await chrome.tabs.create({
-      url: loginUrl,
+      url: loginUrl.toString(),
       active: true,
     });
     return new Promise((resolve) => {
