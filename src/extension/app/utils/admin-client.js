@@ -105,10 +105,6 @@ export class AdminClient {
    * @param {Response} resp The response object
    */
   handleServerError(action, resp) {
-    if (resp.ok) {
-      return;
-    }
-
     // handle rate limiting
     const limiter = this.getRateLimiter(resp);
     if (limiter) {
@@ -128,15 +124,18 @@ export class AdminClient {
     } else {
       // error key fallbacks
       message = this.appStore.i18n(`error_${action}_${resp.status}`)
-        || this.appStore.i18n(`error_${action}`)
-        || this.appStore.i18n('error_fatal');
+        || this.appStore.i18n(`error_${action}`);
     }
 
-    this.appStore.showToast(
-      message.replace('$1', this.getServerError(resp)),
-      resp.status < 500 ? 'warning' : 'negative',
-      () => this.appStore.closeToast(),
-    );
+    if (message) {
+      this.appStore.showToast(
+        message.replace('$1', this.getServerError(resp)),
+        resp.status < 500 ? 'warning' : 'negative',
+        () => this.appStore.closeToast(),
+      );
+    } else {
+      this.handleFatalError(action);
+    }
   }
 
   /**
@@ -189,10 +188,12 @@ export class AdminClient {
       );
       if (resp.ok) {
         return resp.json();
-      } else if (resp.status === 401) {
-        return { status: 401 };
       } else {
-        this.handleServerError(this.getAction('status'), resp);
+        if (resp.status !== 401) {
+          // special handling for 401
+          this.handleServerError(this.getAction('status'), resp);
+        }
+        return { status: resp.status };
       }
     } catch (e) {
       this.handleFatalError(this.getAction('status'));
