@@ -61,7 +61,7 @@ export function createAdminUrl(
  */
 export async function callAdmin(
   config,
-  api = 'status',
+  api,
   path = '',
   {
     method = 'get',
