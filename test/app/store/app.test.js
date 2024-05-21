@@ -715,7 +715,6 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(setStateStub.calledWith(STATE.PREVIEWING)).is.true;
-      // expect(addEventListenerSpy.called).is.true;
       expect(fetchStatusStub.called).is.true;
 
       instance.sidekick.dispatchEvent(new CustomEvent('statusfetched', { detail: { status: { webPath: '/somepath' } } }));
