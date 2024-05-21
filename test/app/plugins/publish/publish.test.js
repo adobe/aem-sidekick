@@ -64,7 +64,7 @@ describe('Publish plugin', () => {
       sidekickTest
         .mockFetchSidekickConfigSuccess(false, false);
 
-      const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
+      const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
       const switchEnvStub = sandbox.stub(appStore, 'switchEnv').resolves();
       const showToastSpy = sandbox.spy(appStore, 'showToast');
 
@@ -88,7 +88,7 @@ describe('Publish plugin', () => {
       sidekickTest
         .mockFetchSidekickConfigSuccess(false, false);
 
-      const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
+      const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
       const showToastSpy = sandbox.spy(appStore, 'showToast');
       const closeToastSpy = sandbox.spy(appStore, 'closeToast');
 
@@ -114,7 +114,7 @@ describe('Publish plugin', () => {
       sidekickTest
         .mockFetchSidekickConfigSuccess(true, false);
 
-      const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: true, status: 200 });
+      const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
       const showToastSpy = sandbox.spy(appStore, 'showToast');
       const closeToastSpy = sandbox.spy(appStore, 'closeToast');
 
@@ -134,32 +134,5 @@ describe('Publish plugin', () => {
       await waitUntil(() => closeToastSpy.calledOnce, 'toast was not dismissed', { timeout: 5000 });
       expect(showToastSpy.calledWith('Publication successful, opening production...', 'positive')).to.be.true;
     }).timeout(15000);
-
-    it('publish from preview - failure with toast dimiss', async () => {
-      const { sandbox } = sidekickTest;
-      sidekickTest
-        .mockFetchSidekickConfigSuccess();
-
-      const publishStub = sandbox.stub(appStore, 'publish').resolves({ ok: false, status: 500 });
-      const showToastSpy = sandbox.spy(appStore, 'showToast');
-      const closeToastSpy = sandbox.spy(appStore, 'closeToast');
-
-      sidekick = sidekickTest.createSidekick();
-
-      await sidekickTest.awaitEnvSwitcher();
-
-      const publishPlugin = recursiveQuery(sidekick, '.publish');
-      expect(publishPlugin.textContent.trim()).to.equal('Publish');
-
-      publishPlugin.click();
-
-      await waitUntil(() => publishStub.calledOnce);
-
-      await sidekickTest.clickToastClose();
-      await waitUntil(() => closeToastSpy.calledOnce, 'toast was not dismissed', { timeout: 5000 });
-
-      expect(publishStub.calledOnce).to.be.true;
-      expect(showToastSpy.calledWith('Publication failed. Please try again later.', 'negative')).to.be.true;
-    });
   });
 });

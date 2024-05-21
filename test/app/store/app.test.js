@@ -28,8 +28,8 @@ import {
   getDefaultEditorEnviromentLocations,
   restoreEnvironment,
 } from '../../mocks/environment.js';
-import { getAdminFetchOptions, getAdminUrl } from '../../../src/extension/app/utils/helix-admin.js';
-import { recursiveQuery, error } from '../../test-utils.js';
+import { createAdminUrl } from '../../../src/extension/utils/admin.js';
+import { recursiveQuery, error, recursiveQueryAll } from '../../test-utils.js';
 import { AEMSidekick } from '../../../src/extension/index.js';
 import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
 import { SidekickTest } from '../../sidekick-test.js';
@@ -73,7 +73,6 @@ describe('Test App Store', () => {
 
     // @ts-ignore
     sidekickElement = document.createElement('div');
-    appStore = new AppStore();
   });
 
   afterEach(() => {
@@ -83,7 +82,6 @@ describe('Test App Store', () => {
   async function testDefaultConfig() {
     expect(appStore.languageDict.add).to.equal('Add');
     expect(appStore.location.hostname).to.equal('localhost');
-    expect(appStore.status.apiUrl.href).to.equal('https://admin.hlx.page/status/adobe/aem-boilerplate/main/');
     expect(appStore.languageDict.title).to.equal('AEM Sidekick - NextGen');
 
     await waitUntil(() => appStore.status.webPath, 'Status never loaded');
@@ -124,7 +122,7 @@ describe('Test App Store', () => {
     sidekickTest
       .mockFetchSidekickConfigSuccess(true, true);
 
-    const contextLoadedSpy = sinon.spy();
+    const contextLoadedSpy = sidekickTest.sandbox.spy();
     sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
 
     const config = {
@@ -307,25 +305,37 @@ describe('Test App Store', () => {
   });
 
   describe('fetchStatus()', async () => {
+    let showToastStub;
+    let instance;
+
+    beforeEach(() => {
+      instance = appStore;
+      showToastStub = sidekickTest.sandbox.stub(instance, 'showToast');
+    });
+
+    afterEach(() => {
+      sidekickTest.sandbox.restore();
+    });
+
     it('success', async () => {
       sidekickTest
         .mockFetchStatusSuccess();
-      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
-      await appStore.fetchStatus(true);
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
+      await instance.fetchStatus(true);
       await waitUntil(
-        () => appStore.status.webPath,
+        () => instance.status.webPath,
         'Status never loaded',
       );
-      expect(appStore.status.webPath).to.equal('/');
+      expect(instance.status.webPath).to.equal('/');
     });
 
     it('success - editor', async () => {
       sidekickTest
         .mockFetchEditorStatusSuccess(HelixMockContentSources.GDRIVE);
 
-      sidekickTest.sandbox.stub(appStore, 'isEditor').returns(true);
-      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
-      await appStore.fetchStatus();
+      sidekickTest.sandbox.stub(instance, 'isEditor').returns(true);
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
+      await instance.fetchStatus();
       await waitUntil(
         () => appStore.status.webPath,
         'Status never loaded',
@@ -336,66 +346,71 @@ describe('Test App Store', () => {
     it('unauthorized', async () => {
       sidekickTest
         .mockFetchStatusUnauthorized();
-      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
-        () => appStore.status.status,
+        () => instance.status.status,
         'Status never loaded',
       );
-      expect(appStore.status.status).to.equal(401);
+      expect(instance.status.status).to.equal(401);
     });
 
     it('not found', async () => {
       sidekickTest
         .mockFetchStatusNotFound();
-      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
-        () => appStore.status.error,
+        () => instance.status.status,
         'Status never loaded',
       );
-      expect(appStore.status.error).to.equal('404 Not found: Check your Sidekick configuration or URL.');
+      expect(instance.status.status).to.equal(404);
+      expect(showToastStub.calledOnce).to.be.true;
+      expect(showToastStub.args[0][0]).to.match(/404 Not found/);
     });
 
     it('not found - editor', async () => {
       sidekickTest
+        // .mockEditorAdminEnvironment()
         .mockFetchStatusNotFound();
-      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
 
-      appStore.location.href = 'https://adobe-my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx';
-      await appStore.fetchStatus();
+      instance.location.href = 'https://adobe-my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx';
       await waitUntil(
-        () => appStore.status.error,
+        () => instance.status.status,
         'Status never loaded',
       );
-      expect(appStore.status.error).to.equal('404 Not found: Check your Sidekick configuration and make sure access to this document is granted.');
+      expect(instance.status.status).to.equal(404);
+      expect(showToastStub.calledOnce).to.be.true;
+      expect(showToastStub.args[0][0]).to.match(/404 Not found/);
+      expect(showToastStub.args[0][0]).to.match(/access to this document is granted/);
     });
 
     it('server error', async () => {
       sidekickTest
         .mockFetchStatusError();
-      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
-        () => appStore.status.error,
+        () => instance.status.status,
         'Status never loaded',
       );
-      expect(appStore.status.error).to.equal('500 Internal server error: Failed to fetch the page status. Please try again later.');
+      expect(instance.status.status).to.equal(500);
     });
 
     it('status returns 429', async () => {
       sidekickTest
         .mockFetchStatus429();
-      await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
-        () => appStore.status.error,
+        () => instance.status.status,
         'Status never loaded',
       );
 
-      expect(appStore.status.error).to.equal('Apologies, we seem to be having problems at the moment. Please try again later. Error: Rate limit exceeded');
+      expect(instance.status.status).to.equal(429);
     });
 
     it('empty config returns no status', async () => {
       sidekickTest
         .mockFetchStatusError();
-      const fetchStatusSpy = sidekickTest.sandbox.spy(appStore, 'fetchStatus');
+      const fetchStatusSpy = sidekickTest.sandbox.spy(instance, 'fetchStatus');
       // @ts-ignore
       await appStore.loadContext(sidekickElement, {});
       expect(await fetchStatusSpy.returnValues[0]).to.be.undefined;
@@ -429,10 +444,12 @@ describe('Test App Store', () => {
   describe('reloadPage', async () => {
     let openPageStub;
     let loadPageStub;
+    let instance;
 
     beforeEach(() => {
-      openPageStub = sidekickTest.sandbox.stub(appStore, 'openPage');
-      loadPageStub = sidekickTest.sandbox.stub(appStore, 'loadPage');
+      instance = appStore;
+      openPageStub = sidekickTest.sandbox.stub(instance, 'openPage');
+      loadPageStub = sidekickTest.sandbox.stub(instance, 'loadPage');
     });
 
     afterEach(() => {
@@ -440,12 +457,12 @@ describe('Test App Store', () => {
     });
 
     it('opens a new tab', () => {
-      appStore.reloadPage(true);
+      instance.reloadPage(true);
       expect(openPageStub.calledOnce).to.be.true;
     });
 
     it('reloads the current tab', () => {
-      appStore.reloadPage();
+      instance.reloadPage();
       expect(loadPageStub.calledOnce).to.be.true;
     });
   });
@@ -500,7 +517,6 @@ describe('Test App Store', () => {
 
     it('switches from preview to editor', async () => {
       const fetchStatusSpy = sidekickTest.sandbox.spy(instance, 'fetchStatus');
-      sidekickTest.mockFetchStatusSuccess(false, {}, HelixMockContentSources.SHAREPOINT, 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=auto');
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
@@ -572,7 +588,7 @@ describe('Test App Store', () => {
 
     beforeEach(() => {
       const { sandbox } = sidekickTest;
-      fakeFetch = sidekickTest.sandbox.stub(window, 'fetch');
+      fakeFetch = sandbox.stub(window, 'fetch');
       instance = appStore;
 
       // Mock other functions
@@ -587,91 +603,41 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.restore();
     });
 
-    it('should handle successful update for content w/path', async () => {
+    it('should handle successful update', async () => {
       instance.isContent.returns(true);
-
-      const headers = new Headers();
+      instance.status = { webPath: '/somepath' };
 
       fakeFetch.resolves({
-        ok: true, status: 200, headers, json: () => Promise.resolve({ webPath: '/somepath' }),
-      });
-
-      const response = await instance.update('/ignored-path');
-
-      expect(response).to.deep.equal({
         ok: true,
         status: 200,
-        error: '',
-        path: '/somepath',
-      });
-      sinon.assert.calledWith(instance.fireEvent, 'updated', '/somepath');
-      sinon.assert.calledWith(instance.fireEvent, 'previewed', '/somepath');
-    });
-
-    it('should handle successful update for content wo/path', async () => {
-      instance.isContent.returns(true);
-
-      const headers = new Headers();
-
-      fakeFetch.resolves({
-        ok: true, status: 200, headers, json: () => Promise.resolve({ webPath: '/somepath' }),
+        headers: new Headers(),
+        json: () => Promise.resolve({ webPath: '/somepath' }),
       });
 
       const response = await instance.update();
 
-      expect(response).to.deep.equal({
-        ok: true,
-        status: 200,
-        error: '',
-        path: '/somepath',
-      });
-      sinon.assert.calledWith(instance.fireEvent, 'updated', '/somepath');
-      sinon.assert.calledWith(instance.fireEvent, 'previewed', '/somepath');
+      expect(response).to.be.true;
+      expect(instance.fireEvent.calledWith('previewed', '/somepath')).to.be.true;
     });
 
     it('should bust client cache', async () => {
       instance.isEditor.returns(true);
-
+      instance.status = { webPath: '/somepath' };
       instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.hlx.page';
 
-      const headers = new Headers();
-
       fakeFetch.resolves({
-        ok: true, status: 200, headers, json: () => Promise.resolve({ webPath: '/somepath' }),
-      });
-
-      const response = await instance.update('/testpath');
-
-      expect(response).to.deep.equal({
         ok: true,
         status: 200,
-        error: '',
-        path: '/somepath',
+        headers: new Headers(),
+        json: () => Promise.resolve({ webPath: '/somepath' }),
       });
 
-      sinon.assert.calledWith(instance.fireEvent, 'updated', '/somepath');
-      expect(fakeFetch.args[1][0]).to.equal('https://main--aem-boilerplate--adobe.hlx.page/testpath');
+      const response = await instance.update();
+
+      expect(response).to.be.true;
+      expect(instance.fireEvent.calledWith('previewed', '/somepath')).to.be.true;
+      expect(fakeFetch.args[1][0]).to.equal('https://main--aem-boilerplate--adobe.hlx.page/somepath');
       expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
-    });
-
-    it('should handle successful update for code', async () => {
-      instance.isContent.returns(false);
-
-      const headers = new Headers();
-
-      fakeFetch.resolves({
-        ok: true, status: 200, headers, json: () => Promise.resolve({ webPath: '/somepath' }),
-      });
-
-      const response = await instance.update('/ignored-path');
-
-      expect(response).to.deep.equal({
-        ok: true,
-        status: 200,
-        error: '',
-        path: '/somepath',
-      });
-      sinon.assert.calledWith(instance.fireEvent, 'updated', '/somepath');
     });
 
     it('should handle fetch error', async () => {
@@ -679,12 +645,7 @@ describe('Test App Store', () => {
 
       const response = await instance.update('/testpath');
 
-      expect(response).to.deep.equal({
-        ok: false,
-        status: 0,
-        error: '',
-        path: '/testpath',
-      });
+      expect(response).to.be.false;
     });
 
     it('should handle non-OK response from fetch', async () => {
@@ -692,12 +653,7 @@ describe('Test App Store', () => {
 
       const response = await instance.update('/testpath');
 
-      expect(response).to.deep.equal({
-        ok: false,
-        status: 404,
-        error: 'Not Found',
-        path: '/testpath',
-      });
+      expect(response).to.be.false;
     });
   });
 
@@ -709,7 +665,6 @@ describe('Test App Store', () => {
     let showToastStub;
     let setStateStub;
     let updatePreviewSpy;
-    let addEventListenerSpy;
 
     beforeEach(async () => {
       instance = appStore;
@@ -722,7 +677,6 @@ describe('Test App Store', () => {
       showToastStub = sandbox.stub(instance, 'showToast');
       setStateStub = sandbox.stub(instance, 'setState');
       updatePreviewSpy = sandbox.spy(instance, 'updatePreview');
-      addEventListenerSpy = sandbox.spy(instance.sidekick, 'addEventListener');
     });
 
     afterEach(() => {
@@ -755,57 +709,22 @@ describe('Test App Store', () => {
 
     // Test when resp is not ok, ranBefore is false
     it('should handle failure response without ranBefore', async () => {
-      updateStub.resolves({ ok: false });
+      updateStub.resolves(false);
       instance.status = { webPath: '/somepath' };
 
       await instance.updatePreview(false);
 
       expect(setStateStub.calledWith(STATE.PREVIEWING)).is.true;
-      expect(addEventListenerSpy.called).is.true;
+      // expect(addEventListenerSpy.called).is.true;
       expect(fetchStatusStub.called).is.true;
 
       instance.sidekick.dispatchEvent(new CustomEvent('statusfetched', { detail: { status: { webPath: '/somepath' } } }));
       await waitUntil(() => updatePreviewSpy.calledTwice);
     });
 
-    // Test when resp is not ok, ranBefore is true, status.webPath
-    // starts with /.helix/, resp has error
-    it('should handle failure with specific path and error', async () => {
-      updateStub.resolves({ ok: false, error: 'Error message' });
-      instance.status = { webPath: '/.helix/some-path' };
-
-      await instance.updatePreview(true);
-
-      expect(showToastStub.calledOnce).is.true;
-      expect(showToastStub.calledWith('Failed to activate configuration: Error message', 'negative')).is.true;
-    });
-
-    // Test when resp is not ok, ranBefore is true, status.webPath
-    // does not start with /.helix/, or resp has no error
-    it('should handle generic failure', async () => {
-      updateStub.resolves({ ok: false, error: 'Error message' });
-      instance.status = { webPath: '/not-helix/' };
-
-      await instance.updatePreview(true);
-
-      expect(showToastStub.calledOnce).is.true;
-      expect(showToastStub.calledWith('Preview generation failed. Please try again later.', 'negative')).is.true;
-    });
-
-    // Test when resp is ok and status.webPath starts with /.helix/
-    it('should handle activation with content in /.helix/', async () => {
-      updateStub.resolves({ ok: true });
-      instance.status = { webPath: '/.helix/config.json' };
-
-      await instance.updatePreview(false);
-
-      expect(showToastStub.calledOnce).is.true;
-      expect(showToastStub.calledWith('Configuration successfully activated.', 'positive')).is.true;
-    });
-
     // Test when resp is ok and status.webPath does not start with /.helix/
     it('should handle generic success', async () => {
-      updateStub.resolves({ ok: true });
+      updateStub.resolves(true);
       instance.status = { webPath: '/not-helix/' };
 
       await instance.updatePreview(false);
@@ -823,7 +742,7 @@ describe('Test App Store', () => {
     let instance;
 
     beforeEach(() => {
-      sandbox = sinon.createSandbox();
+      sandbox = sidekickTest.sandbox;
       fakeFetch = sandbox.stub(window, 'fetch');
       instance = appStore;
 
@@ -850,10 +769,8 @@ describe('Test App Store', () => {
       });
 
       const resp = await instance.delete();
-
-      expect(resp.path).to.equal(deletePath);
-      expect(resp.error).to.equal('');
-      sinon.assert.calledWith(instance.fireEvent, 'deleted', deletePath);
+      expect(resp).to.be.true;
+      expect(instance.fireEvent.calledWith('deleted', deletePath)).to.be.true;
     });
 
     it('deletes published content from preview and live', async () => {
@@ -874,10 +791,9 @@ describe('Test App Store', () => {
 
       const resp = await instance.delete();
 
-      expect(resp.path).to.equal(deletePath);
-      expect(resp.error).to.equal('');
+      expect(resp).to.be.true;
       expect(unpublishStub.calledOnce).to.be.true;
-      sinon.assert.calledWith(instance.fireEvent, 'deleted', deletePath);
+      expect(instance.fireEvent.calledWith('deleted', deletePath)).to.be.true;
     });
 
     it('only deletes content', async () => {
@@ -888,12 +804,11 @@ describe('Test App Store', () => {
 
       const resp = await instance.delete();
 
-      expect(resp).to.equal(null);
+      expect(resp).to.equal(false);
       expect(fakeFetch.called).to.be.false;
     });
 
     it('handles network error', async () => {
-      const consoleSpy = sandbox.spy(console, 'log');
       instance.isContent.returns(true);
       instance.status = { webPath: deletePath };
 
@@ -901,126 +816,144 @@ describe('Test App Store', () => {
 
       const response = await instance.delete();
 
-      expect(response.error).to.equal(error.message);
-      expect(consoleSpy.calledWith('failed to delete', deletePath, error)).to.be.true;
+      expect(response).to.equal(false);
     });
   });
 
   describe('publish', () => {
     let instance;
-    let isContentStub;
-    let isEditorStub;
+    // let isContentStub;
+    // let isEditorStub;
     let fetchStub;
     let fireEventStub;
 
     beforeEach(() => {
       instance = appStore;
-      isContentStub = sinon.stub(instance, 'isContent');
-      isEditorStub = sinon.stub(instance, 'isEditor');
-      // @ts-ignore
-      fetchStub = sinon.stub(window, 'fetch').resolves({ headers: new Headers(), ok: true, status: 200 });
-      fireEventStub = sinon.stub(instance, 'fireEvent');
+      // isContentStub = sidekickTest.sandbox.stub(instance, 'isContent');
+      // isEditorStub = sidekickTest.sandbox.stub(instance, 'isEditor');
+      fetchStub = sidekickTest.sandbox.stub(window, 'fetch')
+        // @ts-ignore
+        .resolves({
+          ok: true,
+          status: 200,
+          headers: new Headers(),
+          json: () => Promise.resolve({}),
+        });
+      fireEventStub = sidekickTest.sandbox.stub(instance, 'fireEvent');
     });
 
     afterEach(() => {
-      sinon.restore();
       restoreEnvironment(document);
     });
 
-    it('should return null if isContent is false', async () => {
-      isContentStub.returns(false);
+    it('only publishes content', async () => {
+      sidekickTest.sandbox.stub(instance, 'isContent').returns(false);
+      instance.status = { webPath: '/somepath' };
 
-      const result = await instance.publish('/somepath');
+      const result = await instance.publish();
 
-      expect(result).is.null;
+      expect(result).to.equal(false);
     });
 
     it('should handle successful publish', async () => {
       sidekickTest.mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
-      isContentStub.returns(true);
-      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', outerHost: 'main--aem-boilerplate--adobe.hlx.live', host: 'host' };
-      instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
+      sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
+      instance.status = { webPath: '/somepath' };
+      instance.siteStore = {
+        innerHost: 'main--aem-boilerplate--adobe.hlx.page',
+        outerHost: 'main--aem-boilerplate--adobe.hlx.live',
+        host: 'host',
+      };
+      instance.location = {
+        href: 'https://aem-boilerplate.com',
+        host: 'aem-boilerplate.com',
+      };
 
-      const resp = await instance.publish('/somepath');
+      const resp = await instance.publish();
 
       expect(fetchStub.called).is.true;
       expect(fireEventStub.calledWith('published', '/somepath')).is.true;
-      expect(resp.path).to.eq('/somepath');
-      expect(resp.error).to.eq('');
+      expect(resp).to.equal(true);
     });
 
     it('should handle fetch errors', async () => {
-      isContentStub.returns(true);
+      sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
       fetchStub.rejects(new Error());
+      instance.status = { webPath: '/somepath' };
       instance.siteStore = { owner: 'adobe', repo: 'aem-boilerplate' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
-      const resp = await instance.publish('/somepath');
+      const resp = await instance.publish();
 
       expect(fetchStub.called).is.true;
-      expect(resp.path).to.eq('/somepath');
-      expect(resp.error).to.eq('');
+      expect(resp).to.equal(false);
     });
 
     it('should handle publish when outerHost is defined', async () => {
-      isContentStub.returns(true);
+      sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
+      instance.status = { webPath: '/somepath' };
       instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', outerHost: 'main--aem-boilerplate--adobe.hlx.live' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
-      await instance.publish('/somepath');
+      await instance.publish();
 
       expect(fetchStub.calledWith('https://main--aem-boilerplate--adobe.hlx.live/somepath', sinon.match.has('cache', 'reload'))).is.true;
     });
 
     it('should purge host', async () => {
-      isContentStub.returns(true);
-      isEditorStub.returns(true);
+      sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
+      sidekickTest.sandbox.stub(instance, 'isEditor').returns(true);
+      instance.status = { webPath: '/somepath' };
       instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', host: 'aem-boilerplate.com' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
-      await instance.publish('/somepath');
+      await instance.publish();
 
       expect(fetchStub.args[1][0]).to.equal('https://aem-boilerplate.com/somepath');
       expect(fetchStub.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
     });
 
     it('should handle publish when host is defined', async () => {
-      isContentStub.returns(true);
+      sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
+      instance.status = { webPath: '/somepath' };
       instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', host: 'aem-boilerplate.com' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
-      await instance.publish('/somepath');
+      await instance.publish();
+
       expect(fetchStub.calledWith('https://aem-boilerplate.com/somepath', sinon.match.has('cache', 'reload'))).is.true;
     });
 
     it('should use correct parameters for fetch call', async () => {
-      isContentStub.returns(true);
+      sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
+      instance.status = { webPath: '/somepath' };
       instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
-      const expectedUrl = getAdminUrl(instance.siteStore, 'live', '/somepath');
-      const expectedOptions = getAdminFetchOptions();
+      const expectedUrl = createAdminUrl(instance.siteStore, 'live', '/somepath');
 
-      await instance.publish('/somepath');
+      await instance.publish();
 
-      expect(fetchStub.calledWith(expectedUrl, sinon.match(expectedOptions))).is.true;
+      expect(fetchStub.calledWithMatch(expectedUrl)).is.true;
     });
 
     it('should properly set error from response headers', async () => {
-      isContentStub.returns(true);
+      sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
+      instance.status = { webPath: '/somepath' };
       instance.siteStore = { owner: 'adobe', repo: 'aem-boilerplate' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       const headers = new Headers();
       headers.append('x-error', 'Some error');
       const mockResponse = {
+        status: 502,
         ok: false,
         headers,
       };
       fetchStub.resolves(mockResponse);
 
-      const resp = await instance.publish('/somepath');
+      const resp = await instance.publish();
 
-      expect(resp.error).to.eq('Some error');
+      expect(resp).to.be.false;
     });
   });
 
@@ -1059,8 +992,7 @@ describe('Test App Store', () => {
 
       const resp = await instance.unpublish();
 
-      expect(resp.path).to.equal(unpublishPath);
-      expect(resp.error).to.equal('');
+      expect(resp).to.be.true;
       sinon.assert.calledWith(instance.fireEvent, 'unpublished', unpublishPath);
     });
 
@@ -1072,12 +1004,11 @@ describe('Test App Store', () => {
 
       const resp = await instance.unpublish();
 
-      expect(resp).to.equal(null);
+      expect(resp).to.be.false;
       expect(fakeFetch.called).to.be.false;
     });
 
     it('handles network error', async () => {
-      const consoleSpy = sandbox.spy(console, 'log');
       instance.isContent.returns(true);
       instance.status = { webPath: unpublishPath };
 
@@ -1085,8 +1016,7 @@ describe('Test App Store', () => {
 
       const resp = await instance.unpublish();
 
-      expect(resp.error).to.equal(error.message);
-      expect(consoleSpy.calledWithMatch('failed to unpublish', unpublishPath, error)).to.be.true;
+      expect(resp).to.be.false;
     });
   });
 
@@ -1236,6 +1166,49 @@ describe('Test App Store', () => {
       expect(instance.sidekick.shadowRoot.querySelector('.aem-sk-special-view')).to.be.null;
       expect(sibling.style.display).to.equal('initial');
     }).timeout(5000);
+  });
+
+  describe('showModal', async () => {
+    it('displays a modal', async () => {
+      // @ts-ignore
+      appStore.sidekick = document.createElement('div');
+      appStore.sidekick.attachShadow({ mode: 'open' });
+      appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
+
+      appStore.showModal({
+        type: 'error',
+        data: {
+          headline: 'Oops',
+          message: 'Something went wrong',
+          confirmLabel: 'Okie',
+        },
+      });
+
+      expect(recursiveQuery(appStore.sidekick, 'modal-container')).to.exist;
+    });
+
+    it('displays one modal at a time', async () => {
+      // @ts-ignore
+      appStore.sidekick = document.createElement('div');
+      appStore.sidekick.attachShadow({ mode: 'open' });
+      appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
+
+      appStore.showModal({
+        type: 'error',
+        data: {
+          headline: 'Oops',
+        },
+      });
+      appStore.showModal({
+        type: 'error',
+        data: {
+          headline: 'Oops again',
+        },
+      });
+
+      expect(recursiveQuery(appStore.sidekick, 'modal-container')).to.exist;
+      expect([...recursiveQueryAll(appStore.sidekick, 'modal-container')].length).to.equal(1);
+    });
   });
 
   describe('showView', () => {

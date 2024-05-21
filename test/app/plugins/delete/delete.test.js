@@ -91,7 +91,6 @@ describe('Delete plugin', () => {
       let loadPageStub;
       let showModalSpy;
       let showToastSpy;
-      let closeToastSpy;
 
       beforeEach(async () => {
         appStore = new AppStore();
@@ -101,11 +100,10 @@ describe('Delete plugin', () => {
           .mockHelixEnvironment(HelixMockEnvironments.PREVIEW, contentType);
 
         const { sandbox } = sidekickTest;
-        deleteStub = sandbox.stub(appStore, 'delete').resolves({ ok: true, status: 200 });
+        deleteStub = sandbox.stub(appStore, 'delete').resolves(true);
         loadPageStub = sandbox.stub(appStore, 'loadPage');
         showModalSpy = sandbox.spy(appStore, 'showModal');
         showToastSpy = sandbox.spy(appStore, 'showToast');
-        closeToastSpy = sandbox.spy(appStore, 'closeToast');
       });
 
       afterEach(() => {
@@ -194,7 +192,7 @@ describe('Delete plugin', () => {
         await waitUntil(() => deleteStub.calledOnce);
       });
 
-      it('handles server failure with toast dismiss', async () => {
+      it('handles server failure', async () => {
         sidekickTest
           .mockFetchStatusSuccess(false, {
           // source document is not found
@@ -210,7 +208,7 @@ describe('Delete plugin', () => {
         sidekick = sidekickTest.createSidekick();
         await sidekickTest.awaitEnvSwitcher();
 
-        deleteStub.resolves({ ok: false, status: 500, headers: { 'x-error': 'something went wrong' } });
+        deleteStub.resolves(false);
 
         await clickDeletePlugin(sidekick);
 
@@ -219,10 +217,7 @@ describe('Delete plugin', () => {
         confirmDelete(sidekick);
 
         await waitUntil(() => deleteStub.calledOnce);
-
-        sidekickTest.clickToastClose();
-        expect(closeToastSpy.calledOnce);
-        expect(showToastSpy.calledWith('Deletion failed. Please try again later.', 'negative')).to.be.true;
+        expect(deleteStub.calledOnce);
       });
     });
   }

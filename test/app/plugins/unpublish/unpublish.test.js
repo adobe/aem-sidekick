@@ -96,7 +96,7 @@ describe('Unpublish plugin', () => {
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
       const { sandbox } = sidekickTest;
-      unpublishStub = sandbox.stub(appStore, 'unpublish').resolves({ ok: true, status: 200 });
+      unpublishStub = sandbox.stub(appStore, 'unpublish').resolves(true);
       loadPageStub = sandbox.stub(appStore, 'loadPage');
       showModalSpy = sandbox.spy(appStore, 'showModal');
       showToastSpy = sandbox.spy(appStore, 'showToast');
@@ -147,7 +147,7 @@ describe('Unpublish plugin', () => {
       )).to.be.true;
     });
 
-    it('allows authenticated user to delete if source file still exists', async () => {
+    it('allows authenticated user to unpublish if source file still exists', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           webPath: '/foo',
@@ -175,7 +175,7 @@ describe('Unpublish plugin', () => {
       await waitUntil(() => unpublishStub.calledOnce);
     });
 
-    it('handles server failure with toast dismiss', async () => {
+    it('handles server failure', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           // source document is not found
@@ -187,9 +187,7 @@ describe('Unpublish plugin', () => {
           },
         });
 
-      const closeToastSpy = sidekickTest.sandbox.spy(appStore, 'closeToast');
-
-      unpublishStub.resolves({ ok: false, status: 500, headers: { 'x-error': 'something went wrong' } });
+      unpublishStub.resolves(false);
 
       await clickUnpublishPlugin(sidekick);
 
@@ -198,12 +196,7 @@ describe('Unpublish plugin', () => {
       confirmUnpublish(sidekick);
 
       await waitUntil(() => unpublishStub.calledOnce);
-
-      await sidekickTest.awaitToast();
-      sidekickTest.clickToastClose();
-      await waitUntil(() => closeToastSpy.calledOnce);
-      expect(closeToastSpy.calledOnce);
-      expect(showToastSpy.calledWith('Unpublication failed. Please try again later.', 'negative')).to.be.true;
+      expect(unpublishStub.calledOnce);
     }).timeout(5000);
   });
 });

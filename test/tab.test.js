@@ -124,10 +124,10 @@ describe('Test check-tab', () => {
   });
 
   it('checkTab: url from configured project (display on)', async () => {
-    sandbox.stub(chrome.storage.local, 'get').withArgs('display').returns({ display: true });
+    sandbox.stub(chrome.storage.local, 'get').withArgs('display').resolves({ display: true });
     const tab = TABS[1];
     await checkTab(tab.id);
-    expect(executeScriptSpy.callCount).to.equal(2);
+    expect(executeScriptSpy.callCount).to.equal(1);
     expect(executeScriptSpy.calledWith({
       target: { tabId: tab.id },
       files: ['./content.js'],
@@ -135,10 +135,10 @@ describe('Test check-tab', () => {
   });
 
   it('checkTab: url from configured project (display off)', async () => {
-    sandbox.stub(chrome.storage.local, 'get').withArgs('display').returns({ display: false });
+    sandbox.stub(chrome.storage.local, 'get').withArgs('display').resolves({ display: false });
     const tab = TABS[1];
     await checkTab(tab.id);
-    expect(executeScriptSpy.callCount).to.equal(1);
+    expect(executeScriptSpy.callCount).to.equal(0);
     expect(executeScriptSpy.calledWith({
       target: { tabId: tab.id },
       files: ['./content.js'],
@@ -188,7 +188,7 @@ describe('Test check-tab', () => {
   });
 
   it('checkTab: script injection fails', async () => {
-    sandbox.stub(chrome.storage.local, 'get').withArgs('display').returns({ display: true });
+    sandbox.stub(chrome.storage.local, 'get').withArgs('display').resolves({ display: true });
     executeScriptSpy.restore();
     executeScriptSpy = sandbox.stub(chrome.scripting, 'executeScript').throws(error);
     await checkTab(1);
@@ -206,6 +206,6 @@ describe('Test check-tab', () => {
       }
     });
     await checkTab(1);
-    expect(executeScriptSpy.callCount).to.equal(1);
+    expect(executeScriptSpy.callCount).to.equal(0);
   });
 });
