@@ -29,7 +29,7 @@ import {
   restoreEnvironment,
 } from '../../mocks/environment.js';
 import { createAdminUrl } from '../../../src/extension/utils/admin.js';
-import { recursiveQuery, error, recursiveQueryAll } from '../../test-utils.js';
+import { recursiveQuery, error } from '../../test-utils.js';
 import { AEMSidekick } from '../../../src/extension/index.js';
 import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
 import { SidekickTest } from '../../sidekick-test.js';
@@ -76,7 +76,7 @@ describe('Test App Store', () => {
   });
 
   afterEach(() => {
-    sidekickTest.destroy();
+    // sidekickTest.destroy();
   });
 
   async function testDefaultConfig() {
@@ -821,15 +821,11 @@ describe('Test App Store', () => {
 
   describe('publish', () => {
     let instance;
-    // let isContentStub;
-    // let isEditorStub;
     let fetchStub;
     let fireEventStub;
 
     beforeEach(() => {
       instance = appStore;
-      // isContentStub = sidekickTest.sandbox.stub(instance, 'isContent');
-      // isEditorStub = sidekickTest.sandbox.stub(instance, 'isEditor');
       fetchStub = sidekickTest.sandbox.stub(window, 'fetch')
         // @ts-ignore
         .resolves({
@@ -1174,6 +1170,8 @@ describe('Test App Store', () => {
       appStore.sidekick.attachShadow({ mode: 'open' });
       appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
 
+      document.body.appendChild(appStore.sidekick);
+
       appStore.showModal({
         type: 'error',
         data: {
@@ -1183,14 +1181,22 @@ describe('Test App Store', () => {
         },
       });
 
-      expect(recursiveQuery(appStore.sidekick, 'modal-container')).to.exist;
+      const modal = recursiveQuery(appStore.sidekick, 'modal-container');
+      expect(modal).to.exist;
+
+      await waitUntil(() => recursiveQuery(modal, 'h2'));
+      expect(recursiveQuery(modal, 'h2').textContent.trim()).to.equal('Oops');
+      expect(recursiveQuery(modal, 'sp-dialog-wrapper').textContent.trim()).to.equal('Something went wrong');
+      expect(recursiveQuery(modal, 'sp-button').textContent.trim()).to.equal('Okie');
     });
 
-    it('displays one modal at a time', async () => {
+    it('removes old modal before showing new one', async () => {
       // @ts-ignore
       appStore.sidekick = document.createElement('div');
       appStore.sidekick.attachShadow({ mode: 'open' });
       appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
+
+      document.body.appendChild(appStore.sidekick);
 
       appStore.showModal({
         type: 'error',
@@ -1205,8 +1211,11 @@ describe('Test App Store', () => {
         },
       });
 
-      expect(recursiveQuery(appStore.sidekick, 'modal-container')).to.exist;
-      expect([...recursiveQueryAll(appStore.sidekick, 'modal-container')].length).to.equal(1);
+      const modal = recursiveQuery(appStore.sidekick, 'modal-container');
+      expect(modal).to.exist;
+
+      await waitUntil(() => recursiveQuery(modal, 'h2'));
+      expect(recursiveQuery(modal, 'h2').textContent.trim()).to.equal('Oops again');
     });
   });
 
