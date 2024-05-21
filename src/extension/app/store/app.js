@@ -56,10 +56,6 @@ import { ModalContainer } from '../components/modal/modal-container.js';
  */
 
 /**
- * @typedef {import('@Types').AdminResponse} AdminResponse
- */
-
-/**
  * @typedef {import('@Types').Modal} Modal
  */
 

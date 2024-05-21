@@ -183,13 +183,4 @@
  * @prop {number} timeout The time the toast is shown (default: 6000)
  */
 
-/**
- * @typedef {Object} AdminResponse
- * @property {boolean} ok Is the response ok?
- * @property {number} status The HTTP status code
- * @property {Headers} [headers] The response headers
- * @property {string} [error] The error message
- * @property {string} [path] The path of the response
- */
-
 export const Types = {};
