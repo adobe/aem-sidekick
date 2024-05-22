@@ -239,7 +239,7 @@ export class AdminClient {
         { method },
       );
       if (resp.ok) {
-        return resp.json();
+        return del ? { status: resp.status } : resp.json();
       } else {
         this.handleServerError(this.getAction(api, del), resp);
       }
@@ -267,7 +267,7 @@ export class AdminClient {
         { method },
       );
       if (resp.ok) {
-        return resp.json();
+        return del ? { status: resp.status } : resp.json();
       } else {
         this.handleServerError(this.getAction(api, del), resp);
       }
