@@ -133,7 +133,15 @@ export class EnvironmentSwitcher extends ConnectedElement {
     if (this.currentEnv === id) {
       attrs.disabled = '';
     }
-    const label = id === 'edit' ? this.appStore.i18n('open_in').replace('$1', this.appStore.getContentSourceLabel()) : this.envNames[id];
+
+    const contentSourceLabel = this.appStore.getContentSourceLabel();
+    if (id === 'edit' && contentSourceLabel === 'BYOM') {
+      return createTag({
+        tag: 'span',
+      });
+    }
+
+    const label = id === 'edit' ? this.appStore.i18n('open_in').replace('$1', contentSourceLabel) : this.envNames[id];
     const menuItem = createTag({
       tag: 'sp-menu-item',
       text: label,
