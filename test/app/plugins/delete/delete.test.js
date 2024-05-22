@@ -20,7 +20,6 @@ import { AppStore } from '../../../../src/extension/app/store/app.js';
 import {
   HelixMockContentType,
   HelixMockEnvironments,
-  getDefaultHelixEnviromentLocations,
 } from '../../../mocks/environment.js';
 import { MODALS } from '../../../../src/extension/app/constants.js';
 import { SidekickTest } from '../../../sidekick-test.js';
@@ -88,7 +87,7 @@ describe('Delete plugin', () => {
         ? 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/placeholders.json'
         : 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/';
       let deleteStub;
-      let loadPageStub;
+      let reloadPageStub;
       let showModalSpy;
       let showToastSpy;
 
@@ -101,7 +100,7 @@ describe('Delete plugin', () => {
 
         const { sandbox } = sidekickTest;
         deleteStub = sandbox.stub(appStore, 'delete').resolves(true);
-        loadPageStub = sandbox.stub(appStore, 'loadPage');
+        reloadPageStub = sandbox.stub(appStore, 'reloadPage');
         showModalSpy = sandbox.spy(appStore, 'showModal');
         showToastSpy = sandbox.spy(appStore, 'showToast');
       });
@@ -120,7 +119,7 @@ describe('Delete plugin', () => {
         await expectDeletePlugin(sidekick, false);
       });
 
-      it('asks for user confirmation and redirects to the site root', async () => {
+      it('asks for user confirmation and reloads the page', async () => {
         const { sandbox } = sidekickTest;
         // @ts-ignore
         sandbox.stub(appStore, 'showView').returns();
@@ -149,15 +148,45 @@ describe('Delete plugin', () => {
 
         await waitUntil(() => deleteStub.calledOnce);
 
-        sidekickTest.clickToastClose();
+        sidekickTest.clickToastAction();
 
         expect(deleteStub.calledOnce).to.be.true;
         expect(showToastSpy.calledOnce).to.be.true;
 
-        await waitUntil(() => loadPageStub.calledOnce);
-        expect(loadPageStub.calledWith(
-          `${getDefaultHelixEnviromentLocations(HelixMockContentType.DOC, 'hlx').preview}/`,
-        )).to.be.true;
+        await waitUntil(() => reloadPageStub.calledOnce);
+        expect(reloadPageStub.calledOnce).to.be.true;
+      });
+
+      it('skips reloading if toast manually closed', async () => {
+        const { sandbox } = sidekickTest;
+        // @ts-ignore
+        sandbox.stub(appStore, 'showView').returns();
+        sidekickTest
+          .mockFetchStatusSuccess(false, {
+            webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
+            // source document is not found
+            edit: { status: 404 },
+            // preview delete permission is granted
+            preview: {
+              status: 200,
+              sourceLocation: 'gdrive:drive-id',
+              permissions: ['read', 'write', 'delete'],
+            },
+          }, null, statusUrl,
+          );
+
+        sidekick = sidekickTest.createSidekick();
+        await sidekickTest.awaitEnvSwitcher();
+
+        await clickDeletePlugin(sidekick);
+        confirmDelete(sidekick);
+
+        await waitUntil(() => deleteStub.calledOnce);
+
+        expect(showToastSpy.calledOnce).to.be.true;
+
+        sidekickTest.clickToastClose();
+        expect(reloadPageStub.calledOnce).to.be.false;
       });
 
       it('allows authenticated user to delete if source file still exists', async () => {

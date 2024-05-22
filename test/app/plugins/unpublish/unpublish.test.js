@@ -18,9 +18,7 @@ import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import '../../../../src/extension/index.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
 import {
-  HelixMockContentType,
   HelixMockEnvironments,
-  getDefaultHelixEnviromentLocations,
 } from '../../../mocks/environment.js';
 import { MODALS } from '../../../../src/extension/app/constants.js';
 import { SidekickTest } from '../../../sidekick-test.js';
@@ -84,7 +82,7 @@ describe('Unpublish plugin', () => {
     let appStore;
 
     let unpublishStub;
-    let loadPageStub;
+    let reloadPageStub;
     let showModalSpy;
     let showToastSpy;
 
@@ -97,7 +95,7 @@ describe('Unpublish plugin', () => {
 
       const { sandbox } = sidekickTest;
       unpublishStub = sandbox.stub(appStore, 'unpublish').resolves(true);
-      loadPageStub = sandbox.stub(appStore, 'loadPage');
+      reloadPageStub = sandbox.stub(appStore, 'reloadPage');
       showModalSpy = sandbox.spy(appStore, 'showModal');
       showToastSpy = sandbox.spy(appStore, 'showToast');
 
@@ -116,7 +114,7 @@ describe('Unpublish plugin', () => {
       await expectUnpublishPlugin(sidekick, false);
     });
 
-    it('asks for user confirmation and redirects to the site root', async () => {
+    it('asks for user confirmation and reloads the page', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           webPath: '/foo',
@@ -140,11 +138,34 @@ describe('Unpublish plugin', () => {
       expect(unpublishStub.calledOnce).to.be.true;
       expect(showToastSpy.calledOnce).to.be.true;
 
+      await sidekickTest.clickToastAction();
+
+      expect(reloadPageStub.calledOnce).to.be.true;
+    });
+
+    it('skips reloading if toast manually closed', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          webPath: '/foo',
+          // source document is not found
+          edit: { status: 404 },
+          // live delete permission is granted
+          live: {
+            status: 200,
+            permissions: ['read', 'write', 'delete'],
+          },
+        });
+
+      await clickUnpublishPlugin(sidekick);
+      confirmUnpublish(sidekick);
+
+      await waitUntil(() => unpublishStub.calledOnce);
+
+      expect(showToastSpy.calledOnce).to.be.true;
+
       await sidekickTest.clickToastClose();
 
-      expect(loadPageStub.calledWith(
-        `${getDefaultHelixEnviromentLocations(HelixMockContentType.DOC, 'hlx').preview}/`,
-      )).to.be.true;
+      expect(reloadPageStub.calledOnce).to.be.false;
     });
 
     it('allows authenticated user to unpublish if source file still exists', async () => {
