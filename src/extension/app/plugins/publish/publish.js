@@ -49,7 +49,13 @@ export function createPublishPlugin(appStore) {
 
           const { host } = siteStore;
           const targetEnv = host ? 'production' : 'live';
-          appStore.showToast(appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv).toLowerCase()), 'positive', closeCallback, actionCallback, appStore.i18n('open'));
+          appStore.showToast(
+            appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv).toLowerCase()),
+            'positive',
+            closeCallback,
+            actionCallback,
+            appStore.i18n('open'),
+          );
         }
       },
       isEnabled: (store) => store.isAuthorized('live', 'write') // only enable if authorized

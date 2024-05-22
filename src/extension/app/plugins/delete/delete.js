@@ -10,7 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-import { log } from '../../../log.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import {
   MODALS,
@@ -18,6 +17,7 @@ import {
   RESTRICTED_PATHS,
   STATE,
 } from '../../constants.js';
+import { newTab } from '../../utils/browser.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -43,8 +43,8 @@ export function createDeletePlugin(appStore) {
     pinned: false,
     button: {
       text: appStore.i18n('delete'),
-      action: async () => {
-        const { location, status } = appStore;
+      action: async (evt) => {
+        const { status } = appStore;
         const isPage = status.webPath.split('/').pop().indexOf('.') === -1;
         const hasSrc = status.edit?.status === 200;
 
@@ -66,16 +66,23 @@ export function createDeletePlugin(appStore) {
 
           const res = await appStore.delete();
           if (res) {
+            const actionCallback = () => {
+              appStore.reloadPage(newTab(evt));
+            };
+
+            const closeCallback = () => {
+              appStore.closeToast();
+            };
+
             // show success toast
             appStore.showToast(
               isPage
                 ? appStore.i18n('delete_page_success')
                 : appStore.i18n('delete_file_success'),
               'positive',
-              () => {
-                log.info(`redirecting to ${location.origin}/`);
-                appStore.loadPage(`${location.origin}/`);
-              },
+              closeCallback,
+              actionCallback,
+              appStore.i18n('reload'),
             );
           }
         });

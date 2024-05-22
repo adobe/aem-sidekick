@@ -316,7 +316,7 @@
       "message": "This page still has a source document and cannot be deleted."
     },
     "delete_page_success": {
-      "message": "Page successfully deleted."
+      "message": "Page successfully deleted, reloading..."
     },
     "description": {
       "message": "AEM Sidekick allows authors of AEM sites to easily preview and publish content."
@@ -548,7 +548,7 @@
       "message": "This page no longer has a source document, unpublishing it cannot be undone!\n\nAre you sure you want to unpublish it?"
     },
     "unpublish_page_success": {
-      "message": "Page successfully unpublished."
+      "message": "Page successfully unpublished, reloading..."
     },
     "user_login": {
       "message": "Sign in"
@@ -631,7 +631,7 @@
     "destructive_confirmation_invalid": {
       "message": "Sorry, please enter the text exactly as displayed to confirm."
     },
-        "reload_success": {
+    "reload_success": {
       "message": "Preview successfully updated, reloading..."
     },
     "preview_success": {
