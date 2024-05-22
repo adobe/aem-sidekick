@@ -535,7 +535,7 @@ export class AppStore {
    */
   getContentSourceLabel() {
     const { preview } = this.status;
-    return preview?.sourceLocation.includes('onedrive:') ? 'SharePoint' : 'Google Drive';
+    return preview?.sourceLocation?.includes('onedrive:') ? 'SharePoint' : 'Google Drive';
   }
 
   /**
