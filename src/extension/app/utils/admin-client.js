@@ -34,10 +34,9 @@ import { callAdmin, createAdminUrl } from '../../utils/admin.js';
 export class AdminClient {
   /**
    * Enumeration of rate limiting sources.
-   * @private
    * @type {RateLimiter}
    */
-  RATE_LIMITER = {
+  #RATE_LIMITER = {
     NONE: '',
     ADMIN: 'AEM',
     ONEDRIVE: 'Microsoft SharePoint',
@@ -45,34 +44,31 @@ export class AdminClient {
 
   /**
    * The app store.
-   * @private
    * @type {AppStore}
    */
-  appStore;
+  #appStore;
 
   /**
    * The site store
-   * @private
    * @type {SiteStore}
    */
-  siteStore;
+  #siteStore;
 
   /**
    * Returns an Admin Client.
    * @param {AppStore} appStore The app store
    */
   constructor(appStore) {
-    this.appStore = appStore;
-    this.siteStore = appStore.siteStore;
+    this.#appStore = appStore;
+    this.#siteStore = appStore.siteStore;
   }
 
   /**
    * Returns the action name based on API and nature of request.
-   * @private
    * @param {string} api The API endpoint called
    * @param {boolean} [del] True if the request was destructive
    */
-  getAction(api, del) {
+  #getAction(api, del) {
     if (api === 'preview' && del) return 'delete';
     if (api === 'live') return del ? 'unpublish' : 'publish';
     return api;
@@ -80,43 +76,40 @@ export class AdminClient {
 
   /**
    * Returns an error message from the server response.
-   * @abstract
    * @param {Response} resp The response
    * @returns {string} The error message or an empty string
    */
-  getServerError(resp) {
+  #getServerError(resp) {
     return resp?.headers?.get('x-error') || '';
   }
 
   /**
    * Checks if the request has been rate-limited and returns the source.
-   * @abstract
    * @param {Response} resp The response
-   * @returns {string} The rate limiter (see {@link RATE_LIMITER})
+   * @returns {string} The rate limiter (see {@link #RATE_LIMITER})
    */
-  getRateLimiter(resp) {
+  #getRateLimiter(resp) {
     if (resp.status === 429) {
-      return this.RATE_LIMITER.ADMIN;
+      return this.#RATE_LIMITER.ADMIN;
     }
-    const error = this.getServerError(resp);
+    const error = this.#getServerError(resp);
     if (resp.status === 503 && error.includes('(429)') && error.includes('onedrive')) {
-      return this.RATE_LIMITER.ONEDRIVE;
+      return this.#RATE_LIMITER.ONEDRIVE;
     }
-    return this.RATE_LIMITER.NONE;
+    return this.#RATE_LIMITER.NONE;
   }
 
   /**
    * Shows a toast if the server returned an error.
-   * @private
    * @param {string} action The action
    * @param {Response} resp The response object
    */
-  handleServerError(action, resp) {
+  #handleServerError(action, resp) {
     // handle rate limiting
-    const limiter = this.getRateLimiter(resp);
+    const limiter = this.#getRateLimiter(resp);
     if (limiter) {
-      this.appStore.showToast(
-        this.appStore.i18n('error_429').replace('$1', limiter),
+      this.#appStore.showToast(
+        this.#appStore.i18n('error_429').replace('$1', limiter),
         'warning',
       );
       return;
@@ -125,39 +118,38 @@ export class AdminClient {
     let message = '';
     if (action === 'status' && resp.status === 404) {
       // special handling for status
-      message = this.appStore.i18n(this.appStore.isEditor()
+      message = this.#appStore.i18n(this.#appStore.isEditor()
         ? 'error_status_404_document'
         : 'error_status_404_content');
     } else {
       // error key fallbacks
-      message = this.appStore.i18n(`error_${action}_${resp.status}`)
-        || this.appStore.i18n(`error_${action}`);
+      message = this.#appStore.i18n(`error_${action}_${resp.status}`)
+        || this.#appStore.i18n(`error_${action}`);
     }
 
     if (message) {
-      this.appStore.showToast(
-        message.replace('$1', this.getServerError(resp)),
+      this.#appStore.showToast(
+        message.replace('$1', this.#getServerError(resp)),
         resp.status < 500 ? 'warning' : 'negative',
-        () => this.appStore.closeToast(),
+        () => this.#appStore.closeToast(),
       );
     } else {
-      this.handleFatalError(action);
+      this.#handleFatalError(action);
     }
   }
 
   /**
    * Shows a toast if the request failed or did not contain valid JSON.
-   * @private
    * @param {string} action The action
    */
-  handleFatalError(action) {
+  #handleFatalError(action) {
     // use standard error key fallbacks
-    const msg = this.appStore.i18n(`error_${action}_fatal`)
-        || this.appStore.i18n('error_fatal');
-    this.appStore.showToast(
+    const msg = this.#appStore.i18n(`error_${action}_fatal`)
+        || this.#appStore.i18n('error_fatal');
+    this.#appStore.showToast(
       msg.replace('$1', 'https://aemstatus.net/'),
       'negative',
-      () => this.appStore.closeToast(),
+      () => this.#appStore.closeToast(),
     );
   }
 
@@ -168,7 +160,7 @@ export class AdminClient {
    * @param {URLSearchParams} [searchParams] The search parameters
    */
   createUrl(api, path, searchParams) {
-    return createAdminUrl(this.siteStore, api, path, searchParams);
+    return createAdminUrl(this.#siteStore, api, path, searchParams);
   }
 
   /**
@@ -182,13 +174,13 @@ export class AdminClient {
     let resp;
     try {
       resp = await callAdmin(
-        this.siteStore,
+        this.#siteStore,
         'status',
         path,
         {
           searchParams: includeEditUrl
             ? new URLSearchParams(
-              [['editUrl', this.appStore.isEditor() ? this.appStore.location.href : 'auto']],
+              [['editUrl', this.#appStore.isEditor() ? this.#appStore.location.href : 'auto']],
             )
             : undefined,
         },
@@ -198,12 +190,12 @@ export class AdminClient {
       } else {
         if (resp.status !== 401) {
           // special handling for 401
-          this.handleServerError(this.getAction('status'), resp);
+          this.#handleServerError(this.#getAction('status'), resp);
         }
         return { status: resp.status };
       }
     } catch (e) {
-      this.handleFatalError(this.getAction('status'));
+      this.#handleFatalError(this.#getAction('status'));
     }
     return null;
   }
@@ -216,7 +208,7 @@ export class AdminClient {
   async getProfile() {
     try {
       const resp = await callAdmin(
-        this.siteStore,
+        this.#siteStore,
         'profile',
       );
       if (resp.ok) {
@@ -240,7 +232,7 @@ export class AdminClient {
     const method = del ? 'delete' : 'post';
     try {
       const resp = await callAdmin(
-        this.siteStore,
+        this.#siteStore,
         api,
         path,
         { method },
@@ -248,10 +240,10 @@ export class AdminClient {
       if (resp.ok) {
         return del ? { status: resp.status } : resp.json();
       } else {
-        this.handleServerError(this.getAction(api, del), resp);
+        this.#handleServerError(this.#getAction(api, del), resp);
       }
     } catch (e) {
-      this.handleFatalError(this.getAction(api, del));
+      this.#handleFatalError(this.#getAction(api, del));
     }
     return null;
   }
@@ -268,7 +260,7 @@ export class AdminClient {
     const method = del ? 'delete' : 'post';
     try {
       const resp = await callAdmin(
-        this.siteStore,
+        this.#siteStore,
         api,
         path,
         { method },
@@ -276,10 +268,10 @@ export class AdminClient {
       if (resp.ok) {
         return del ? { status: resp.status } : resp.json();
       } else {
-        this.handleServerError(this.getAction(api, del), resp);
+        this.#handleServerError(this.#getAction(api, del), resp);
       }
     } catch (e) {
-      this.handleFatalError(this.getAction(api, del));
+      this.#handleFatalError(this.#getAction(api, del));
     }
     return null;
   }
