@@ -50,7 +50,7 @@ export function createPublishPlugin(appStore) {
           const { host } = siteStore;
           const targetEnv = host ? 'production' : 'live';
           appStore.showToast(
-            appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv).toLowerCase()),
+            appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv)),
             'positive',
             closeCallback,
             actionCallback,
