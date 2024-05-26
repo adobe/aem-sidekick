@@ -11,6 +11,14 @@
  */
 
 /**
+ * @typedef {Object} AdminUrlConfig
+ * @property {string} owner The owner of the repository.
+ * @property {string} repo The name of the repository.
+ * @property {string} [ref='main'] The reference branch, defaults to 'main'.
+ * @property {string} [adminVersion] - The version of the admin to use
+ */
+
+/**
  * The origin of the Admin API.
  * @type {string}
  */
@@ -18,7 +26,7 @@ export const ADMIN_ORIGIN = 'https://admin.hlx.page';
 
 /**
  * Creates an Admin API URL for an API and path.
- * @param {Object} config The sidekick config object
+ * @param {AdminUrlConfig} config The sidekick config object
  * @param {string} api The API endpoint to call
  * @param {string} [path] The resource path
  * @param {URLSearchParams} [searchParams] The search parameters
@@ -49,7 +57,7 @@ export function createAdminUrl(
 /**
  * Makes a call to the [AEM Admin API]{@link https://www.aem.live/docs/admin.html}
  * and returns the response.
- * @param {Object} config The sidekick config object
+ * @param {AdminUrlConfig} config The sidekick config object
  * @param {string} api The API endpoint to call
  * @param {string} [path] The resource path
  * @param {Object} [opts] The request options

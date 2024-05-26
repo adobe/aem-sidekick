@@ -21,6 +21,13 @@ import { callAdmin, createAdminUrl } from '../../utils/admin.js';
  */
 
 /**
+ * @typedef {Object} RateLimiter
+ * @property {string} NONE - No rate limiter.
+ * @property {string} ADMIN - Rate limiter for admin
+ * @property {string} ONEDRIVE - Rate limiter for OneDrive
+ */
+
+/**
  * Facilitates calls to the [AEM Admin API]{@link https://www.aem.live/docs/admin.html}
  * and displays localized error messages.
  */
@@ -28,7 +35,7 @@ export class AdminClient {
   /**
    * Enumeration of rate limiting sources.
    * @private
-   * @type {Object<string, string>}}
+   * @type {RateLimiter}
    */
   RATE_LIMITER = {
     NONE: '',
