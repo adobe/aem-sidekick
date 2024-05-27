@@ -193,4 +193,10 @@
  * @property {string} [path] The path of the response
  */
 
+/**
+ * @typedef {Object<string, string>[]} BulkSelection
+ * @property {string} path The resource path
+ * @property {string} type The resource
+ */
+
 export const Types = {};

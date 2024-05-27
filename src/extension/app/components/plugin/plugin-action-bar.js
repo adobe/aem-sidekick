@@ -19,6 +19,7 @@ import { ICONS, STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import '../action-bar/activity-action/activity-action.js';
+import '../action-bar/bulk-info/bulk-info.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} Plugin
@@ -74,6 +75,24 @@ export class PluginActionBar extends ConnectedElement {
   accessor actionGroups;
 
   /**
+   * Set up the bar and menu plugins in this environment and updates the component.
+   */
+  setupPlugins() {
+    this.visiblePlugins = [
+      ...Object.values(this.appStore.corePlugins),
+      ...Object.values(this.appStore.customPlugins),
+    ].filter((plugin) => plugin.isVisible());
+
+    this.barPlugins = this.visiblePlugins
+      .filter((plugin) => plugin.isPinned());
+
+    this.menuPlugins = this.visiblePlugins
+      .filter((plugin) => !plugin.isPinned());
+
+    this.requestUpdate();
+  }
+
+  /**
    * Loads the user preferences for plugins in this environment.
    */
   async connectedCallback() {
@@ -82,17 +101,6 @@ export class PluginActionBar extends ConnectedElement {
     reaction(
       () => this.appStore.state,
       async () => {
-        this.visiblePlugins = [
-          ...Object.values(this.appStore.corePlugins),
-          ...Object.values(this.appStore.customPlugins),
-        ].filter((plugin) => plugin.isVisible());
-
-        this.barPlugins = this.visiblePlugins
-          .filter((plugin) => plugin.isPinned());
-
-        this.menuPlugins = this.visiblePlugins
-          .filter((plugin) => !plugin.isPinned());
-
         const actionBar = await this.actionBar;
         if (actionBar) {
           if (this.appStore.state === STATE.TOAST) {
@@ -112,7 +120,14 @@ export class PluginActionBar extends ConnectedElement {
           }
         }
 
-        this.requestUpdate();
+        this.setupPlugins();
+      },
+    );
+
+    reaction(
+      () => this.appStore.selection,
+      () => {
+        this.setupPlugins();
       },
     );
   }
@@ -240,6 +255,7 @@ export class PluginActionBar extends ConnectedElement {
 
     return html`
       <sp-action-group>
+        <bulk-info></bulk-info>
         ${this.barPlugins.length > 0 ? this.barPlugins.map((p) => p.render()) : ''}
       </sp-action-group>`;
   }

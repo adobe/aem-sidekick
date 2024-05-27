@@ -31,7 +31,14 @@ import {
 } from '../constants.js';
 // eslint-disable-next-line import/no-cycle
 import { Plugin } from '../components/plugin/plugin.js';
-import { pluginFactory } from '../plugins/plugin-factory.js';
+import { createEnvPlugin } from '../plugins/env/env.js';
+import { createPreviewPlugin } from '../plugins/preview/preview.js';
+import { createReloadPlugin } from '../plugins/reload/reload.js';
+import { createDeletePlugin } from '../plugins/delete/delete.js';
+import { createPublishPlugin } from '../plugins/publish/publish.js';
+import { createUnpublishPlugin } from '../plugins/unpublish/unpublish.js';
+import { createBulkPreviewPlugin } from '../plugins/preview/bulk-preview.js';
+import { createBulkPublishPlugin } from '../plugins/publish/bulk-publish.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
 
@@ -57,6 +64,10 @@ import { ModalContainer } from '../components/modal/modal-container.js';
 
 /**
  * @typedef {import('@Types').AdminResponse} AdminResponse
+ */
+
+/**
+ * @typedef {import('@Types').BulkSelection} BulkSelection
  */
 
 /**
@@ -128,6 +139,12 @@ export class AppStore {
   @observable accessor state = STATE.INITIALIZING;
 
   /**
+   * The bulk selection (admin mode only)
+   * @type {BulkSelection}
+   */
+  @observable accessor selection = [];
+
+  /**
    * Toast data
    * @type {import('@Types').Toast}
    */
@@ -168,6 +185,16 @@ export class AppStore {
     });
 
     this.showView();
+
+    if (this.isAdmin()) {
+      // listen for selection changes
+      const listener = () => window.setTimeout(() => this.updateBulkSelection(), 100);
+      const rootEl = document.querySelector(this.isSharePointFolder(this.location) ? '#appRoot' : 'body');
+      if (rootEl) {
+        rootEl.addEventListener('click', listener);
+        rootEl.addEventListener('keyup', listener);
+      }
+    }
   }
 
   /**
@@ -209,12 +236,14 @@ export class AppStore {
     this.corePlugins = {};
 
     if (this.siteStore.ready && this.siteStore.authorized) {
-      const envPlugin = pluginFactory.createEnvPlugin(this);
-      const previewPlugin = pluginFactory.createPreviewPlugin(this);
-      const reloadPlugin = pluginFactory.createReloadPlugin(this);
-      const deletePlugin = pluginFactory.createDeletePlugin(this);
-      const publishPlugin = pluginFactory.createPublishPlugin(this);
-      const unpublishPlugin = pluginFactory.createUnpublishPlugin(this);
+      const envPlugin = createEnvPlugin(this);
+      const previewPlugin = createPreviewPlugin(this);
+      const reloadPlugin = createReloadPlugin(this);
+      const deletePlugin = createDeletePlugin(this);
+      const publishPlugin = createPublishPlugin(this);
+      const unpublishPlugin = createUnpublishPlugin(this);
+      const bulkPreviewPlugin = createBulkPreviewPlugin(this);
+      const bulkPublishPlugin = createBulkPublishPlugin(this);
 
       this.corePlugins[envPlugin.id] = envPlugin;
       this.corePlugins[previewPlugin.id] = previewPlugin;
@@ -222,6 +251,8 @@ export class AppStore {
       this.corePlugins[deletePlugin.id] = deletePlugin;
       this.corePlugins[publishPlugin.id] = publishPlugin;
       this.corePlugins[unpublishPlugin.id] = unpublishPlugin;
+      this.corePlugins[bulkPreviewPlugin.id] = bulkPreviewPlugin;
+      this.corePlugins[bulkPublishPlugin.id] = bulkPublishPlugin;
     }
   }
 
@@ -524,6 +555,63 @@ export class AppStore {
       return dotIndex > 0; // must contain a dot
     }
     return false;
+  }
+
+  /**
+   * Scans the DOM for selected items and updates the bulk selection.
+   */
+  updateBulkSelection() {
+    const { location } = this;
+    if (this.isSharePointFolder(location)) {
+      this.selection = [...document.querySelectorAll('#appRoot [role="presentation"] div[aria-selected="true"]')]
+        // exclude folders
+        .filter((row) => !row.querySelector('img')?.getAttribute('src').includes('/foldericons/')
+          && !row.querySelector('img')?.getAttribute('src').endsWith('folder.svg')
+          && !row.querySelector('svg')?.parentElement.className.toLowerCase().includes('folder'))
+        // extract file name and type
+        .map((row) => {
+          const info = row.getAttribute('aria-label') || row.querySelector('span')?.textContent;
+          // info format: bla.docx, docx File, Private, Modified 8/28/2023, edited by Jane, 1 KB
+          const type = info.match(/, ([a-z0-9]+) [A-Za-z]+,/)?.[1];
+          const path = type && info.split(`, ${type}`)[0];
+          return {
+            path,
+            type,
+          };
+        })
+        // validate selection
+        .filter(({ type, path }) => path && type);
+    } else {
+      // gdrive
+      this.selection = [...document.querySelectorAll('#drive_main_page [role="row"][aria-selected="true"]')]
+        // extract file name and type
+        .map((row) => {
+          const typeHint = (row.querySelector(':scope div[role="gridcell"] > div:nth-child(2) > div:nth-child(1)') // list layout
+            || row.querySelector(':scope div[role="gridcell"]'))?.getAttribute('aria-label'); // grid layout
+          let type = 'unknown';
+          if (typeHint) {
+            if (typeHint.includes('Google Drive')) {
+              type = 'folder';
+            } else if (typeHint.includes('Google Docs')) {
+              type = 'document';
+            } else if (typeHint.includes('Google Sheets')) {
+              type = 'spreadsheet';
+            } else if (['Image', 'Video', 'PDF']
+              .find((hint) => typeHint.includes(hint))) {
+              type = 'media';
+            }
+          }
+          const path = row.querySelector(':scope > div > div:nth-of-type(2)')?.textContent.trim() // list layout
+            || (row.querySelector(':scope > div > div > div:nth-of-type(4)') // grid layout (file)
+            || row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(4) > div'))?.textContent.trim(); // grid layout (folder)
+          return {
+            type,
+            path,
+          };
+        })
+        // validate selection, exclude folders
+        .filter(({ type, path }) => type && type !== 'folder' && path);
+    }
   }
 
   /**

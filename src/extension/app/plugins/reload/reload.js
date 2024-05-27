@@ -13,7 +13,6 @@
 import { STATE } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
-import { i18n } from '../../utils/i18n.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -33,7 +32,7 @@ export function createReloadPlugin(appStore) {
     id: 'reload',
     condition: (store) => store.isPreview() || store.isDev(),
     button: {
-      text: i18n(appStore.languageDict, 'reload'),
+      text: appStore.i18n('reload'),
       action: async (evt) => {
         appStore.setState(STATE.PREVIEWING);
         try {
@@ -53,7 +52,7 @@ export function createReloadPlugin(appStore) {
             appStore.reloadPage(newTab(evt));
           };
 
-          appStore.showToast(i18n(appStore.languageDict, 'reload_success'), 'positive', closeHandler, actionHandler, appStore.i18n('open'));
+          appStore.showToast(appStore.i18n('reload_success'), 'positive', closeHandler, actionHandler, appStore.i18n('open'));
         } catch (e) {
           appStore.showToast(appStore.i18n('reload_failure'), 'negative');
         }
