@@ -50,6 +50,7 @@ export class ActivityAction extends ConnectedElement {
       case 'positive':
         return ICONS.CHECKMARK;
       case 'negative':
+      case 'warning':
         return ICONS.ALERT_TRIANGLE;
       case 'info':
         return ICONS.INFO;

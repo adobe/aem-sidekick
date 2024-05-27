@@ -12,9 +12,11 @@
 
 import { log } from './log.js';
 import { getConfig, setConfig } from './config.js';
+import { ADMIN_ORIGIN } from './utils/admin.js';
 
+const { host: adminHost } = new URL(ADMIN_ORIGIN);
 /**
- * Sets the x-auth-token header for all requests to admin.hlx.page if project config
+ * Sets the x-auth-token header for all requests to the Admin API if project config
  * has an auth token.
  * @returns {Promise<void>}
  */
@@ -42,8 +44,8 @@ export async function addAuthTokenHeaders() {
           }],
         },
         condition: {
-          regexFilter: `^https://admin.hlx.page/[a-z]+/${owner}/.*`,
-          requestDomains: ['admin.hlx.page'],
+          regexFilter: `^https://${adminHost}/[a-z]+/${owner}/.*`,
+          requestDomains: [adminHost],
           requestMethods: ['get', 'post', 'delete'],
           resourceTypes: ['xmlhttprequest'],
         },

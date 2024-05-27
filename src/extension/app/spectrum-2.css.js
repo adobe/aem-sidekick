@@ -62,6 +62,7 @@ export const spectrum2 = css`
     --sidekick-border-color-dark: #393939;
     --sidekick-border-color-light: #DADADA;
     --spectrum2-color-positive: #05834E;
+    --spectrum2-color-warning: #e67316;
     --spectrum2-color-info: #3B63FB;
     --spectrum2-action-button-selected-light: #292929FF;
     --spectrum2-action-button-selected-dark: #DADADAFF;

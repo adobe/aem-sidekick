@@ -39,7 +39,6 @@
         'previewHost',
         'liveHost',
         'host',
-        'devMode',
         'devOrigin',
         'adminVersion',
         'authTokenExpiry',

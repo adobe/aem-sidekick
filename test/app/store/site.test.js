@@ -120,21 +120,6 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.outerHost).to.equal('main--aem-boilerplate--adobe.aem.live');
     });
 
-    it('dev mode', async () => {
-      sidekickTest
-        .mockFetchSidekickConfigSuccess(false, false, {}, true);
-
-      /**
-       * @type {SidekickOptionsConfig}
-       */
-      const config = {
-        ...defaultConfig,
-        devMode: true,
-      };
-      await appStore.loadContext(sidekickElement, config);
-      expect(appStore.siteStore.devMode).to.eq(true);
-    });
-
     it('special views ', async () => {
       /**
        * @type {SidekickOptionsConfig | ClientConfig}
