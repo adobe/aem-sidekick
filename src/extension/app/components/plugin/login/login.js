@@ -83,6 +83,12 @@ export class LoginButton extends ConnectedElement {
       margin: 0 7px;
     }
 
+    sp-icon.loading > svg {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+    }
+
     :host {
       display: flex;
       align-items: center;
@@ -147,7 +153,7 @@ export class LoginButton extends ConnectedElement {
       || this.appStore.state === STATE.LOGGING_IN
       || this.appStore.state === STATE.LOGGING_OUT) {
       return html`
-        <sp-icon slot="icon" class="loading" size="xl">
+        <sp-icon slot="icon" class="loading" size="l">
           ${ICONS.USER_ICON}
         </sp-icon>
       `;
@@ -162,7 +168,7 @@ export class LoginButton extends ConnectedElement {
           placement="top"
           quiet
         >
-          <sp-icon slot="icon" size="xl">
+          <sp-icon slot="icon" size="l">
             ${profile.picture ? html`<img src=${profile.picture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
           <sp-menu-item class="user" value="user">

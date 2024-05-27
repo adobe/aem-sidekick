@@ -27,6 +27,12 @@ export const style = css`
     border-radius: var(--spectrum2-default-border-radius);
   }
 
+  :host([focused]) {
+    box-shadow: unset;
+    outline: 2px solid #4B75FF;
+    border-radius: var(--spectrum2-xlarge-border-radius );
+  }
+
   :host(.current-env.env-edit[aria-disabled="true"]) #label,
   :host(.current-env.env-edit[disabled]) #label,
   :host(.current-env.env-edit[aria-disabled="true"]) [name="description"]::slotted(*),
@@ -70,7 +76,9 @@ export const style = css`
   }
 
   :host(.env-edit) {
-    margin-bottom: 7px;
+    display: flex;
+    height: 40px;
+    padding-top: 7px;
   }
 
   ::slotted([slot=icon]) {

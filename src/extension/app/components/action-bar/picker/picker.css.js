@@ -170,13 +170,20 @@ export const style = css`
   }
 
   sp-menu {
-    padding: 12px;
+    padding: 8px;
     gap: 4px;
   }
 
-  sp-overlay sp-popover {
-    min-width: 256px !important;
+  sp-popover {
     backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
     padding: 0;
+  }
+
+  :host(.env-switcher) sp-popover {
+    min-width: 256px !important;
+  }
+
+  :host(#plugin-menu) sp-popover {
+    min-width: 100px;
   }
 `;

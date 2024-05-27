@@ -175,7 +175,14 @@ export class EnvironmentSwitcher extends ConnectedElement {
         },
       });
 
-      docIcon.innerHTML = ICONS.DOC_ICON.strings.join('');
+      const { status } = this.appStore;
+      // eslint-disable-next-line no-nested-ternary
+      docIcon.innerHTML = status.resourcePath.endsWith('.json')
+        ? ICONS.SHEET_ICON.strings.join('')
+        : status.resourcePath.endsWith('.pdf')
+          ? ICONS.PDF_ICON.strings.join('')
+          : ICONS.DOC_ICON.strings.join('');
+
       menuItem.appendChild(docIcon);
     }
 
@@ -300,8 +307,8 @@ export class EnvironmentSwitcher extends ConnectedElement {
       case 'dev':
         devMenuItem.classList.add('current-env');
         picker.append(
-          environmentsHeader,
           editMenuItem,
+          environmentsHeader,
           devMenuItem,
           previewMenuItem,
           liveMenuItem,
@@ -318,8 +325,8 @@ export class EnvironmentSwitcher extends ConnectedElement {
       case 'preview':
         previewMenuItem.classList.add('current-env');
         picker.append(
-          environmentsHeader,
           editMenuItem,
+          environmentsHeader,
           previewMenuItem,
           liveMenuItem,
         );
@@ -327,8 +334,8 @@ export class EnvironmentSwitcher extends ConnectedElement {
       case 'live':
         liveMenuItem.classList.add('current-env');
         picker.append(
-          environmentsHeader,
           editMenuItem,
+          environmentsHeader,
           previewMenuItem,
           liveMenuItem,
         );
@@ -336,8 +343,8 @@ export class EnvironmentSwitcher extends ConnectedElement {
       case 'prod':
         prodMenuItem.classList.add('current-env');
         picker.append(
-          environmentsHeader,
           editMenuItem,
+          environmentsHeader,
           previewMenuItem,
           liveMenuItem,
           prodMenuItem,
@@ -377,6 +384,6 @@ export class EnvironmentSwitcher extends ConnectedElement {
   }
 
   render() {
-    return html`<action-bar-picker icons="none" @change=${this.onChange} .disabled=${!this.ready}></action-bar-picker>`;
+    return html`<action-bar-picker class="env-switcher" icons="none" @change=${this.onChange} .disabled=${!this.ready}></action-bar-picker>`;
   }
 }

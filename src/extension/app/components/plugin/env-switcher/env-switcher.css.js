@@ -26,6 +26,7 @@ export const style = css`
     font-size: 12px;
     line-height: 130%;
     padding-bottom: 8px;
+    padding-left: 9px;
   }
 
   action-bar-picker sp-menu-divider {

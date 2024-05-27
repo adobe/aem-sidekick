@@ -61,13 +61,14 @@ export const spectrum2 = css`
     --sidekick-background-pasteboard-light: #ffffff;
     --sidekick-border-color-dark: #393939;
     --sidekick-border-color-light: #DADADA;
-    --spectrum2-color-positive: #05834E;
+    --spectrum2-color-positive-light: #05834E;
+    --spectrum2-color-positive-dark: #047C4B;
     --spectrum2-color-warning: #e67316;
     --spectrum2-color-info: #3B63FB;
     --spectrum2-action-button-selected-light: #292929FF;
     --spectrum2-action-button-selected-dark: #DADADAFF;
     --spectrum2-color-negative-light: #D73220;
-    --spectrum2-color-negative-dark: #FC432E;
+    --spectrum2-color-negative-dark: #CD2E1D;
     --spectrum2-menu-item-background-color-hover-light: rgba(0, 0, 0, 0.05);
     --spectrum2-menu-item-background-color-hover-dark: rgba(255, 255, 255, 0.05);
     --sidekick-max-width: 640px;
@@ -79,6 +80,7 @@ export const spectrum2 = css`
     --spectrum2-edit-border-hover: var(--edit-border-hover-dark);
     --spectrum2-edit-border-open: var(--edit-border-open-dark);
     --spectrum2-color-negative: var(--spectrum2-color-negative-dark);
+    --spectrum2-color-positive: var(--spectrum2-color-positive-dark);
 
     --spectrum2-preview-background-default: var(--preview-background-default-dark);
     --spectrum2-preview-background-hover: var(--preview-background-hover-dark);
@@ -165,6 +167,7 @@ export const spectrum2 = css`
       --spectrum2-action-button-selected: var(--spectrum2-action-button-selected-light);
 
       --spectrum2-color-negative: var(--spectrum2-color-negative-light);
+      --spectrum2-color-positive: var(--spectrum2-color-positive-light);
     }
   }
 `;

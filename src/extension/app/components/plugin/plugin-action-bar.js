@@ -206,21 +206,24 @@ export class PluginActionBar extends ConnectedElement {
     return html`
       <sp-action-group>
         ${this.transientPlugins.length > 0 || this.menuPlugins.length > 0 ? html`
-          <action-bar-picker
+          <sp-action-menu
             id="plugin-menu"
             chevron="false"
             placement="top"
-            label="⋯"
+            label=""
             title="${this.appStore.i18n('plugins_more')}"
             quiet
             @change=${this.onPluginMenuSelect}
             .disabled=${this.appStore.state !== STATE.READY}>
+            <sp-icon slot="icon" size="m">
+              ${ICONS.MORE_ICON}
+            </sp-icon>
             ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
             ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0
               ? html`<sp-menu-divider size="s"></sp-menu-divider>`
               : ''}
             ${this.menuPlugins.map((p) => this.renderPluginMenuItem(p))}
-          </action-bar-picker>
+          </sp-action-menu>
         ` : ''}
       </sp-action-group>
       `;
