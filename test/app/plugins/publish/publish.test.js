@@ -80,7 +80,7 @@ describe('Publish plugin', () => {
       await waitUntil(() => publishStub.calledOnce);
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
 
-      expect(showToastSpy.calledWith('Publication successful, opening live...', 'positive')).to.be.true;
+      expect(showToastSpy.calledWith('Publication successful, opening Live...', 'positive')).to.be.true;
     }).timeout(15000);
 
     it('publish from preview - docx with toast dismiss', async () => {
@@ -106,7 +106,7 @@ describe('Publish plugin', () => {
       await sidekickTest.clickToastClose();
 
       await waitUntil(() => closeToastSpy.calledOnce, 'toast was not dismissed', { timeout: 5000 });
-      expect(showToastSpy.calledWith('Publication successful, opening live...', 'positive')).to.be.true;
+      expect(showToastSpy.calledWith('Publication successful, opening Live...', 'positive')).to.be.true;
     }).timeout(15000);
 
     it('publish from preview - docx with host and toast dismiss', async () => {
@@ -132,7 +132,7 @@ describe('Publish plugin', () => {
       await sidekickTest.clickToastClose();
 
       await waitUntil(() => closeToastSpy.calledOnce, 'toast was not dismissed', { timeout: 5000 });
-      expect(showToastSpy.calledWith('Publication successful, opening production...', 'positive')).to.be.true;
+      expect(showToastSpy.calledWith('Publication successful, opening Production...', 'positive')).to.be.true;
     }).timeout(15000);
   });
 });
