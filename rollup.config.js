@@ -73,28 +73,28 @@ function extensionPlugins(browser) {
   ];
 }
 
-export function extensionBuild(browser) {
+function extensionBuild(browser) {
   return {
     ...shared(browser),
     plugins: [...commonPlugins(), ...extensionPlugins(browser)],
   };
 }
 
-export function scriptBuild(browser) {
+function scriptBuild(browser) {
   return {
     ...shared(browser),
     plugins: [...commonPlugins()],
   };
 }
 
-function viewBuild(browser, path) {
+export function viewBuild(browser, path) {
   return {
     ...shared(browser, path),
     plugins: [...commonPlugins()],
   };
 }
 
-function createExtension(browser) {
+export function createExtension(browser) {
   return [
     {
       input: 'src/extension/index.js',

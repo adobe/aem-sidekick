@@ -13,19 +13,12 @@
 
 /* eslint-disable import/no-extraneous-dependencies */
 
-import { extensionBuild, scriptBuild } from './rollup.config.js';
+import { createExtension, viewBuild } from './rollup.config.js';
 
 export default [
   {
-    input: 'src/extension/index.js',
-    ...extensionBuild('chrome'),
+    input: 'src/extension/views/json/json.js',
+    ...viewBuild('chrome', '/views/json'),
   },
-  {
-    input: 'src/extension/background.js',
-    ...scriptBuild('chrome'),
-  },
-  {
-    input: 'src/extension/content.js',
-    ...scriptBuild('chrome'),
-  },
+  ...createExtension('chrome'),
 ];
