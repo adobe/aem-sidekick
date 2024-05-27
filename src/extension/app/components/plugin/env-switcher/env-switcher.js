@@ -295,9 +295,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
     if (showNotification && this.currentEnv !== 'edit') {
       this.picker.classList.add('notification');
 
-      const notificationHeader = this.createHeader('notifications');
       picker.append(
-        notificationHeader,
         this.createPublishNotification(publishPlugin),
         divider,
       );

@@ -172,6 +172,7 @@ export const style = css`
   sp-menu {
     padding: 8px;
     gap: 4px;
+    overflow-x: hidden;
   }
 
   sp-popover {
