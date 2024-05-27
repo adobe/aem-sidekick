@@ -10,7 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-import { log } from '../../../log.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import {
   MODALS,
@@ -18,6 +17,7 @@ import {
   RESTRICTED_PATHS,
   STATE,
 } from '../../constants.js';
+import { newTab } from '../../utils/browser.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -43,8 +43,8 @@ export function createUnpublishPlugin(appStore) {
     pinned: false,
     button: {
       text: appStore.i18n('unpublish'),
-      action: async () => {
-        const { location, status } = appStore;
+      action: async (evt) => {
+        const { status } = appStore;
         const hasSrc = status.edit?.status === 200;
 
         // get user confirmation
@@ -63,27 +63,24 @@ export function createUnpublishPlugin(appStore) {
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
           // perform unpublish
           appStore.setState(STATE.UNPUBLISHING);
-          try {
-            const resp = await appStore.unpublish();
-            if (resp.ok) {
-              // show success toast
-              appStore.showToast(
-                appStore.i18n('unpublish_page_success'),
-                'positive',
-                () => {
-                  log.info(`redirecting to ${location.origin}/`);
-                  appStore.loadPage(`${location.origin}/`);
-                },
-              );
-            } else {
-              throw new Error(resp.headers?.['x-error']);
-            }
-          } catch (e) {
-            // eslint-disable-next-line no-console
+
+          const res = await appStore.unpublish();
+          if (res) {
+            const actionCallback = () => {
+              appStore.reloadPage(newTab(evt));
+            };
+
+            const closeCallback = () => {
+              appStore.closeToast();
+            };
+
+            // show success toast
             appStore.showToast(
-              appStore.i18n('unpublish_failure'),
-              'negative',
-              () => appStore.closeToast(),
+              appStore.i18n('unpublish_page_success'),
+              'positive',
+              closeCallback,
+              actionCallback,
+              appStore.i18n('reload'),
             );
           }
         });

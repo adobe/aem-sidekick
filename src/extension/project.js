@@ -17,6 +17,7 @@ import {
   setConfig,
 } from './config.js';
 import { urlCache } from './url-cache.js';
+import { callAdmin, createAdminUrl } from './utils/admin.js';
 
 export const GH_URL = 'https://github.com/';
 
@@ -227,21 +228,11 @@ export async function getProjectEnv({
   owner,
   repo,
   ref = 'main',
-  authToken,
 }) {
   const env = {};
   let res;
   try {
-    /**
-     * @type {RequestInit}
-     */
-    const options = {
-      cache: 'no-store',
-      credentials: 'include',
-      headers: authToken ? { 'x-auth-token': authToken } : {},
-    };
-
-    res = await fetch(`https://admin.hlx.page/sidekick/${owner}/${repo}/${ref}/env.json`, options);
+    res = await callAdmin({ owner, repo, ref }, 'sidekick', '/env.json');
   } catch (e) {
     log.warn(`getProjectEnv: unable to retrieve project config: ${e}`);
   }
@@ -281,12 +272,14 @@ export async function getProjectEnv({
  */
 export async function addProject(input) {
   const config = assembleProject(input);
-  const { owner, repo, ref } = config;
+  const { owner, repo } = config;
   const env = await getProjectEnv(config);
   if (env.unauthorized && !input.authToken) {
     // defer adding project and have user sign in
+    const loginUrl = createAdminUrl(config, 'login');
+    loginUrl.searchParams.set('extensionId', chrome.runtime.id);
     const { id: loginTabId } = await chrome.tabs.create({
-      url: `https://admin.hlx.page/login/${owner}/${repo}/${ref}?extensionId=${chrome.runtime.id}`,
+      url: loginUrl.toString(),
       active: true,
     });
     return new Promise((resolve) => {

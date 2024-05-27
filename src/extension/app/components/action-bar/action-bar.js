@@ -32,6 +32,11 @@ export class ActionBar extends LitElement {
       background-color: var(--spectrum2-color-positive);
       border: 1px solid var(--spectrum2-color-positive);
     }
+    :host(.warning) .action-bar {
+      transition: background-color 500ms;
+      background-color: var(--spectrum2-color-warning);
+      border: 1px solid var(--spectrum2-color-warning);
+    }
     :host(.negative) .action-bar {
       transition: background-color 500ms;
       background-color: var(--spectrum2-color-negative);
@@ -44,6 +49,7 @@ export class ActionBar extends LitElement {
     }
 
     :host(.positive) slot::slotted(sp-action-group),
+    :host(.warning) slot::slotted(sp-action-group),
     :host(.negative) slot::slotted(sp-action-group),
     :host(.info) slot::slotted(sp-action-group) {
         width: 100%;

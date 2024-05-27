@@ -40,7 +40,6 @@
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
- * @prop {boolean} [devMode] Loads client configuration and plugins from the development environment
  * @prop {string} [devOrigin] The origin of the local development environment
  * @prop {string} [adminVersion] The specific version of admin service to use
  * @prop {boolean} [disabled] Is the project disabled?
@@ -182,15 +181,6 @@
  * @prop {function} actionCallback The function to call on action
  * @prop {string} actionLabel The action label
  * @prop {number} timeout The time the toast is shown (default: 6000)
- */
-
-/**
- * @typedef {Object} AdminResponse
- * @property {boolean} ok Is the response ok?
- * @property {number} status The HTTP status code
- * @property {Headers} [headers] The response headers
- * @property {string} [error] The error message
- * @property {string} [path] The path of the response
  */
 
 export const Types = {};

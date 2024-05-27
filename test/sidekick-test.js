@@ -289,7 +289,9 @@ export class SidekickTest {
     contentSource = HelixMockContentSources.SHAREPOINT,
     statusUrl = defaultStatusUrl,
   ) {
-    const body = defaultStatusResponse(contentSource, withProfile, overrides);
+    const body = defaultStatusResponse(
+      contentSource, withProfile, overrides, new URL(statusUrl).searchParams.get('editUrl'),
+    );
     fetchMock.get(statusUrl, {
       status: 200,
       body,
