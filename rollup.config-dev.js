@@ -9,21 +9,23 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+// @ts-nocheck
 
-/* eslint-disable no-console */
-// eslint-disable-next-line import/no-extraneous-dependencies
-import chokidar from 'chokidar';
-import { exec } from 'child_process';
+/* eslint-disable import/no-extraneous-dependencies */
 
-chokidar.watch(['src/'])
-  .on('change', () => {
-    exec('npm run build:dev', (error, stdout, stderr) => {
-      if (error) {
-        console.error(`${error.name}: ${error.message}`);
-        console.error(`[STACK] ${error.stack}`);
-      }
+import { extensionBuild, scriptBuild } from './rollup.config.js';
 
-      console.log(stdout);
-      console.log(stderr);
-    });
-  });
+export default [
+  {
+    input: 'src/extension/index.js',
+    ...extensionBuild('chrome'),
+  },
+  {
+    input: 'src/extension/background.js',
+    ...scriptBuild('chrome'),
+  },
+  {
+    input: 'src/extension/content.js',
+    ...scriptBuild('chrome'),
+  },
+];
