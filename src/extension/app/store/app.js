@@ -41,6 +41,13 @@ import { createBulkPreviewPlugin } from '../plugins/preview/bulk-preview.js';
 import { createBulkPublishPlugin } from '../plugins/publish/bulk-publish.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
+import {
+  getGoogleDriveBulkSelection,
+  getSharepointBulkSelection,
+  validateBulkSelection,
+  illegalPathPrefix,
+  doBulkOperation,
+} from '../utils/bulk.js';
 
 /**
  * The sidekick configuration object type
@@ -64,6 +71,10 @@ import { ModalContainer } from '../components/modal/modal-container.js';
 
 /**
  * @typedef {import('@Types').AdminResponse} AdminResponse
+ */
+
+/**
+ * @typedef {import('@Types').AdminJobDetails} AdminJobDetails
  */
 
 /**
@@ -562,55 +573,33 @@ export class AppStore {
    */
   updateBulkSelection() {
     const { location } = this;
-    if (this.isSharePointFolder(location)) {
-      this.selection = [...document.querySelectorAll('#appRoot [role="presentation"] div[aria-selected="true"]')]
-        // exclude folders
-        .filter((row) => !row.querySelector('img')?.getAttribute('src').includes('/foldericons/')
-          && !row.querySelector('img')?.getAttribute('src').endsWith('folder.svg')
-          && !row.querySelector('svg')?.parentElement.className.toLowerCase().includes('folder'))
-        // extract file name and type
-        .map((row) => {
-          const info = row.getAttribute('aria-label') || row.querySelector('span')?.textContent;
-          // info format: bla.docx, docx File, Private, Modified 8/28/2023, edited by Jane, 1 KB
-          const type = info.match(/, ([a-z0-9]+) [A-Za-z]+,/)?.[1];
-          const path = type && info.split(`, ${type}`)[0];
-          return {
-            path,
-            type,
-          };
-        })
-        // validate selection
-        .filter(({ type, path }) => path && type);
+    this.selection = this.isSharePointFolder(location)
+      ? getSharepointBulkSelection(document)
+      : getGoogleDriveBulkSelection(document);
+  }
+
+  /**
+   * Validates the files in the bulk selection and returns their paths.
+   * @returns {Promise<string[]>} The selected and validated paths
+   */
+  async getBulkSelection() {
+    const status = await this.fetchStatus(false, true, true);
+    const paths = validateBulkSelection(this.selection, status.webPath);
+
+    // check for illegal paths
+    const illegalPaths = paths
+      .filter((path) => path.startsWith(illegalPathPrefix))
+      .map((path) => path.substring(10));
+
+    if (illegalPaths.length > 0) {
+      this.showToast(
+        this.i18n(`bulk_error_illegal_file_name${illegalPaths.length === 1 ? '' : 's'}`)
+          .replace('$1', illegalPaths.join(', ')),
+        'warning',
+      );
+      return [];
     } else {
-      // gdrive
-      this.selection = [...document.querySelectorAll('#drive_main_page [role="row"][aria-selected="true"]')]
-        // extract file name and type
-        .map((row) => {
-          const typeHint = (row.querySelector(':scope div[role="gridcell"] > div:nth-child(2) > div:nth-child(1)') // list layout
-            || row.querySelector(':scope div[role="gridcell"]'))?.getAttribute('aria-label'); // grid layout
-          let type = 'unknown';
-          if (typeHint) {
-            if (typeHint.includes('Google Drive')) {
-              type = 'folder';
-            } else if (typeHint.includes('Google Docs')) {
-              type = 'document';
-            } else if (typeHint.includes('Google Sheets')) {
-              type = 'spreadsheet';
-            } else if (['Image', 'Video', 'PDF']
-              .find((hint) => typeHint.includes(hint))) {
-              type = 'media';
-            }
-          }
-          const path = row.querySelector(':scope > div > div:nth-of-type(2)')?.textContent.trim() // list layout
-            || (row.querySelector(':scope > div > div > div:nth-of-type(4)') // grid layout (file)
-            || row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(4) > div'))?.textContent.trim(); // grid layout (folder)
-          return {
-            type,
-            path,
-          };
-        })
-        // validate selection, exclude folders
-        .filter(({ type, path }) => type && type !== 'folder' && path);
+      return paths;
     }
   }
 
@@ -1135,6 +1124,24 @@ export class AppStore {
     resp.path = path;
     resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
     return resp;
+  }
+
+  /**
+   * Runs a bulk preview operation on the bulk selection.
+   * @returns {Promise<AdminJobDetails>} The job details once stopped
+   */
+  async bulkPreview() {
+    return doBulkOperation(this, 'preview');
+  }
+
+  /**
+   * Runs a bulk publish operation on the bulk selection.
+   * @returns {Promise<AdminJobDetails>} The job details once stopped
+   */
+  async bulkPublish() {
+    return doBulkOperation(this, 'publish', {
+      route: 'live',
+    });
   }
 
   /**

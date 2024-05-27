@@ -185,18 +185,36 @@
  */
 
 /**
+ * @typedef {Object<string, string>[]} BulkSelection
+ * @property {string} path The resource path
+ * @property {string} type The resource
+ */
+
+/**
+ * @typedef {Object} BulkResource
+ * @property {string} path The resource path
+ * @property {string} status The status code
+ */
+
+/**
+ * @typedef {Object} AdminJobDetails
+ * @property {string} name The job name
+ * @property {string} phase The job phase
+ * @property {string} state The job state
+ * @property {string} startTime The job start time as UTC string
+ * @property {string} stopTime The job stop time as UTC string
+ * @property {Object} data The job data
+ * @property {BulkResource[]} data.resources The resources
+ * @property {Object} data.progress The action
+ */
+
+/**
  * @typedef {Object} AdminResponse
  * @property {boolean} ok Is the response ok?
  * @property {number} status The HTTP status code
  * @property {Headers} [headers] The response headers
  * @property {string} [error] The error message
  * @property {string} [path] The path of the response
- */
-
-/**
- * @typedef {Object<string, string>[]} BulkSelection
- * @property {string} path The resource path
- * @property {string} type The resource
  */
 
 export const Types = {};

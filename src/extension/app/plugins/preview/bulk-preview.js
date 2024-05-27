@@ -11,6 +11,7 @@
  */
 
 import { Plugin } from '../../components/plugin/plugin.js';
+import { getBulkConfirmText } from '../../utils/bulk.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -31,7 +32,33 @@ export function createBulkPreviewPlugin(appStore) {
     condition: (store) => store.isAdmin() && store.selection.length > 0,
     button: {
       text: appStore.i18n('preview'),
-      action: () => {},
+      action: async () => {
+        const confirmText = getBulkConfirmText(appStore, 'preview');
+        if (appStore.showModal({
+          type: 'confirm',
+          data: {
+            headline: appStore.i18n('preview'),
+            message: confirmText,
+            confirmLabel: appStore.i18n('preview'),
+          },
+        })) {
+          const res = await appStore.bulkPreview();
+          if (res) {
+            const { siteStore } = appStore;
+            appStore.showToast(
+              appStore.i18n('bulk_preview_success'),
+              'positive',
+              () => appStore.closeToast(),
+              () => {
+                res.data.resources.forEach(({ path }) => {
+                  appStore.openPage(`${siteStore.previewHost}${path}`);
+                });
+              },
+            );
+          }
+        }
+      },
+      isEnabled: (s) => s.isAuthorized('preview', 'write') && s.status.webPath,
     },
   },
   appStore);
