@@ -21,7 +21,7 @@ export const style = css`
   }
 
   .container span {
-    padding: 0 12px 2px;
+    padding: 0 2px 2px 6px;
   }
 
   .container sp-menu-divider {
