@@ -24,7 +24,6 @@ export const style = css`
   }
 
   :host(:hover) {
-    background-color: var(--spectrum2-preview-background-hover);
     border-radius: var(--spectrum2-default-border-radius);
   }
 
@@ -85,38 +84,62 @@ export const style = css`
     right: 0;
   }
 
-  :host(.user) {
-    border-bottom: 1px solid var(--spectrum-global-color-gray-300);
-  }
-
   .user-item {
     display: flex;
+    align-items: center;
     gap: 6px;
+    height: 46px;
+    padding-right: 12px;
   }
 
   .user-item > slot {
     display: flex;
-    padding-top: 3px;
   }
 
   .user-item .info {
     display: flex;
     flex-direction: column;
+    padding-top: 5.5px;
+    padding-bottom: 7.5px;
+  }
+
+  .user-item .info #label {
+    height: 18px;
+    font-weight: 600;
+  }
+
+  .user-item #image {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
   }
 
   .user-item slot::slotted(img) {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-left: unset;
+    margin-top: 3px;
   }
 
   .logout-item {
     display: flex;
-    gap: 6px;
     align-items: center;
+    height: 23px;
+    gap: 10px;
   }
 
-  .logout-item > slot::slotted(sp-icon-log-out) {
-    width: 32px;
+  .logout-item #label,
+  .logout-item slot::slotted(sp-icon) {
+    color: var(--spectrum2-color-negative);
+  }
+
+  .logout-item > slot::slotted(sp-icon) {
+    margin-left: 12px;
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
   }
 
   @media (prefers-color-scheme: light) {
@@ -127,9 +150,9 @@ export const style = css`
       color: var(--spectrum-gray-800);
     }
 
-    :host(:not(.env-edit, .current-env)[class]),
-    :host(:not(.env-edit, .current-env)[class]) #label,
-    :host(:not(.env-edit, .current-env)[class]) [name="description"]::slotted(*) {
+    :host(:not(.env-edit, .current-env, .logout)[class]),
+    :host(:not(.env-edit, .current-env, .logout)[class]) #label,
+    :host(:not(.env-edit, .current-env, .logout)[class]) [name="description"]::slotted(*) {
       color: var(--spectrum-gray-800);
     }
   }

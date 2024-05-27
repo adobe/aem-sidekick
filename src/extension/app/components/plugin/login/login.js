@@ -33,13 +33,12 @@ export class LoginButton extends ConnectedElement {
   static styles = css`
     sp-action-menu {
       --mod-popover-content-area-spacing-vertical: 0;
-      --mod-popover-animation-distance: 15px;
     }
 
     sp-action-menu sp-menu-item {
-      min-height: 56px;
-      padding-inline-start: 12px;
-      min-width: 240px;
+      padding-inline-start: 0;
+      min-width: 202px;
+      margin: 8px;
     }
 
     sp-action-menu sp-menu-item .no-picture {
@@ -50,14 +49,37 @@ export class LoginButton extends ConnectedElement {
       justify-content: center;
     }
 
+    sp-action-menu sp-menu-item.user {
+      pointer-events: none;
+      --mod-menu-item-bottom-edge-to-text: 0;
+      --mod-menu-item-top-edge-to-text: 0;
+    }
+
+    sp-action-menu sp-menu-item.user[focused] {
+      box-shadow: unset;
+      background-color: unset;
+    }
+
+    sp-action-menu > sp-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    sp-action-menu > sp-icon > img,
+    sp-action-menu > sp-icon > svg {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
     sp-progress-circle[size="s"] {
       margin: 0 8px;
     }
 
     sp-icon.loading {
       opacity: 0.4;
-      width: 18px;
-      height: 18px;
+      width: 24px;
+      height: 24px;
       margin: 0 7px;
     }
 
@@ -125,7 +147,7 @@ export class LoginButton extends ConnectedElement {
       || this.appStore.state === STATE.LOGGING_IN
       || this.appStore.state === STATE.LOGGING_OUT) {
       return html`
-        <sp-icon slot="icon" class="loading" size="l">
+        <sp-icon slot="icon" class="loading" size="xl">
           ${ICONS.USER_ICON}
         </sp-icon>
       `;
@@ -140,17 +162,20 @@ export class LoginButton extends ConnectedElement {
           placement="top"
           quiet
         >
-          <sp-icon slot="icon" size="l">
-            ${ICONS.USER_ICON}
+          <sp-icon slot="icon" size="xl">
+            ${profile.picture ? html`<img src=${profile.picture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
           <sp-menu-item class="user" value="user">
             ${profile.picture ? html`<img src=${profile.picture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon"><sp-icon-user size="xl"></sp-icon-user></div>`}
             ${profile.name}
             <span slot="description">${profile.email}</span>
           </sp-menu-item>
-          <sp-menu-item class="logout" value="logourt" @click=${this.logout}>
-            <sp-icon-log-out slot="icon" size="xl"></sp-icon-log-out>
-            Logout
+          <sp-divider size="s"></sp-divider>
+          <sp-menu-item class="logout" value="logout" @click=${this.logout}>
+            <sp-icon slot="icon" size="xl">
+              ${ICONS.SIGN_OUT}
+            </sp-icon>
+            ${this.appStore.i18n('user_logout')}
           </sp-menu-item>
         </sp-action-menu>
       `;

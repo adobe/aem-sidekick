@@ -62,9 +62,13 @@ export const spectrum2 = css`
     --sidekick-border-color-dark: #393939;
     --sidekick-border-color-light: #DADADA;
     --spectrum2-color-positive: #05834E;
-    --spectrum2-color-negative: #D73220;
     --spectrum2-color-info: #3B63FB;
-
+    --spectrum2-action-button-selected-light: #292929FF;
+    --spectrum2-action-button-selected-dark: #DADADAFF;
+    --spectrum2-color-negative-light: #D73220;
+    --spectrum2-color-negative-dark: #FC432E;
+    --spectrum2-menu-item-background-color-hover-light: rgba(0, 0, 0, 0.05);
+    --spectrum2-menu-item-background-color-hover-dark: rgba(255, 255, 255, 0.05);
     --sidekick-max-width: 640px;
 
     --spectrum2-edit-content-default: var(--edit-content-default-dark);
@@ -73,6 +77,7 @@ export const spectrum2 = css`
     --spectrum2-edit-border-default: var(--edit-border-default-dark);
     --spectrum2-edit-border-hover: var(--edit-border-hover-dark);
     --spectrum2-edit-border-open: var(--edit-border-open-dark);
+    --spectrum2-color-negative: var(--spectrum2-color-negative-dark);
 
     --spectrum2-preview-background-default: var(--preview-background-default-dark);
     --spectrum2-preview-background-hover: var(--preview-background-hover-dark);
@@ -88,13 +93,16 @@ export const spectrum2 = css`
     --spectrum2-live-border-hover: var(--live-border-hover-dark);
     --spectrum2-live-border-open: var(--live-border-open-dark);
 
+    --spectrum2-action-button-selected: var(--spectrum2-action-button-selected-dark);
+
     --spectrum2-small-border-radius: 4px;
     --spectrum2-default-border-radius: 8px;
     --spectrum2-medium-border-radius: 10px;
     --spectrum2-large-border-radius: 12px;
-    --spectrum2-xlarge-border-radius: 16px;
+    --spectrum2-xlarge-border-radius: 14px;
+    --spectrum2-xxlarge-border-radius: 16px;
     --spectrum2-form-input-border-radius: var(--spectrum2-medium-border-radius);
-    --spectrum2-dialog-border-radius: var(--spectrum2-xlarge-border-radius);
+    --spectrum2-dialog-border-radius: var(--spectrum2-xxlarge-border-radius);
     --spectrum2-sidekick-border-radius: var(--spectrum2-large-border-radius);
 
     --spectrum2-sidekick-background: var(--sidekick-background-dark);
@@ -102,7 +110,8 @@ export const spectrum2 = css`
     --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-dark);
     --spectrum2-sidekick-background-pasteboard: var(--sidekick-background-pasteboard-dark);
     --spectrum2-sidekick-border-color: var(--sidekick-border-color-dark);
-    --spectrum2-sidekick-backdrop-filter: blur(12px);
+    --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-menu-item-background-color-hover-dark);
+    --spectrum2-sidekick-backdrop-filter: blur(24px);
     --spectrum2-sidekick-box-shadow:
       0px 0px 3px 0px rgba(0, 0, 0, 0.12),
       0px 3px 8px 0px rgba(0, 0, 0, 0.04),
@@ -112,6 +121,14 @@ export const spectrum2 = css`
     --mod-toast-divider-color: transparent;
     --mod-toast-max-inline-size: var(--sidekick-max-width);
     --mod-actionbutton-border-radius: var(--spectrum2-default-border-radius);
+
+    --mod-popover-corner-radius: var(--spectrum2-xlarge-border-radius);
+    --mod-popover-animation-distance: 20px;
+    --mod-popover-background-color: var(--spectrum2-sidekick-background);
+    --mod-popover-border-color: var(--spectrum2-sidekick-border-color);
+    --mod-menu-item-background-color-hover: var(--spectrum2-sidekick-menu-item-background-color-hover);
+
+    --mod-divider-background-color: var(--spectrum2-sidekick-border-color);
   }
 
   @media (prefers-color-scheme: light) {
@@ -142,6 +159,11 @@ export const spectrum2 = css`
       --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-light);
       --spectrum2-sidekick-background-pasteboard: var(--sidekick-background-pasteboard-light);
       --spectrum2-sidekick-border-color: var(--sidekick-border-color-light);
+      --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-menu-item-background-color-hover-light);
+
+      --spectrum2-action-button-selected: var(--spectrum2-action-button-selected-light);
+
+      --spectrum2-color-negative: var(--spectrum2-color-negative-light);
     }
   }
 `;

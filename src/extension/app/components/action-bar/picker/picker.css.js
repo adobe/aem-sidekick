@@ -14,11 +14,6 @@ import { css } from 'lit';
 
 export const style = css`
   :host {
-    --mod-popover-animation-distance: 13px;
-    --mod-popover-background-color: var(--spectrum2-sidekick-background);
-    --mod-popover-border-color: var(--spectrum2-sidekick-border-color);
-    --mod-popover-corner-radius: var(--spectrum2-sidekick-border-radius);
-    --mod-popover-filter: var(--spectrum2-sidekick-backdrop-filter);
     --mod-divider-thickness: 1px;
   }
 
