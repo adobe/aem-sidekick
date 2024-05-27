@@ -30,10 +30,25 @@
     "bulk_confirm_publish_single": {
       "message": "Are you sure you want to publish this file?"
     },
-    "bulk_progress_preview_multiple": {
+    "bulk_error": {
+      "message": "Bulk operation failed. Please try again later."
+    },
+    "bulk_error_illegal_file_name": {
+      "message": "Only normalized, small latin letters, digits and hyphens are allowed in file names. The following file name contains illegal characters: $1"
+    },
+    "bulk_error_illegal_file_names": {
+      "message": "Only normalized, small latin letters, digits and hyphens are allowed in file names. The following file names contain illegal characters: $1"
+    },
+    "bulk_error_preview_login_required": {
+      "message": "You need to sign in to generate the preview of more than 100 files."
+    },
+    "bulk_error_publish_login_required": {
+      "message": "You need to sign in to publish more than 100 files."
+    },
+    "bulk_progress_preview": {
       "message": "Preview for $1 of $2 files generated..."
     },
-    "bulk_progress_publish_multiple": {
+    "bulk_progress_publish": {
       "message": "$1 of $2 files published..."
     },
     "bulk_result_preview_multiple_failure": {
@@ -50,6 +65,15 @@
     },
     "bulk_result_preview_single_error_no_xlsx": {
       "message": "Microsoft Excel document, convert to Google Sheets first"
+    },
+    "bulk_result_preview_single_error_not_supported": {
+      "message": "File type not supported. Refer to the documentation for supported file types."
+    },
+    "bulk_result_preview_single_error_too_large": {
+      "message": "File too large. Refer to the documentation for file size limits."
+    },
+    "bulk_result_preview_single_error_svg_invalid": {
+      "message": "SVG invalid. Make sure it is valid XML and contains no scripts."
     },
     "bulk_result_preview_single_failure": {
       "message": "Failed to generate preview of this file:"
