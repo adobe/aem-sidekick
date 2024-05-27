@@ -56,18 +56,6 @@ function commonPlugins() {
 
 function extensionPlugins(browser) {
   return [
-    /** Resolve bare module imports */
-    nodeResolve(),
-    /** Transform decorators with babel */
-    babel({ babelHelpers: 'bundled' }),
-    /** Minify JS, compile JS to a lower language target */
-    esbuild({
-      minify: true,
-      target: ['chrome64', 'firefox67', 'safari11.1'],
-    }),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify('production'),
-    }),
     /** Bundle assets references via import.meta.url */
     importMetaAssets(),
     /** Copy static assets */
@@ -81,9 +69,6 @@ function extensionPlugins(browser) {
         { src: 'src/extension/rum.js', dest: `./dist/${browser}` },
       ],
     }),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify('production'),
-    }),
     sidekickManifestBuildPlugin(browser),
   ];
 }
@@ -95,14 +80,21 @@ function extensionBuild(browser) {
   };
 }
 
-function viewBuild(browser, path) {
+function scriptBuild(browser) {
+  return {
+    ...shared(browser),
+    plugins: [...commonPlugins()],
+  };
+}
+
+export function viewBuild(browser, path) {
   return {
     ...shared(browser, path),
     plugins: [...commonPlugins()],
   };
 }
 
-function createExtension(browser) {
+export function createExtension(browser) {
   return [
     {
       input: 'src/extension/index.js',
@@ -110,11 +102,11 @@ function createExtension(browser) {
     },
     {
       input: 'src/extension/background.js',
-      ...extensionBuild(browser),
+      ...scriptBuild(browser),
     },
     {
       input: 'src/extension/content.js',
-      ...extensionBuild(browser),
+      ...scriptBuild(browser),
     },
   ];
 }
