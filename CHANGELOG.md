@@ -1,3 +1,10 @@
+## [1.23.1](https://github.com/adobe/aem-sidekick/compare/v1.23.0...v1.23.1) (2024-05-27)
+
+
+### Bug Fixes
+
+* improve built time in dev mode ([#153](https://github.com/adobe/aem-sidekick/issues/153)) ([0b53c60](https://github.com/adobe/aem-sidekick/commit/0b53c60079017edc6fb1cc2e36f5ed1ca126c970))
+
 # [1.23.0](https://github.com/adobe/aem-sidekick/compare/v1.22.2...v1.23.0) (2024-05-27)
 
 
