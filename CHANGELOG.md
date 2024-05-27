@@ -1,3 +1,10 @@
+# [1.23.0](https://github.com/adobe/aem-sidekick/compare/v1.22.2...v1.23.0) (2024-05-27)
+
+
+### Features
+
+* centralized admin calls and error handling ([#139](https://github.com/adobe/aem-sidekick/issues/139)) ([57af9d6](https://github.com/adobe/aem-sidekick/commit/57af9d6d4820d5bb53f3efc495e6a4c43de5dc89))
+
 ## [1.22.2](https://github.com/adobe/aem-sidekick/compare/v1.22.1...v1.22.2) (2024-05-21)
 
 
