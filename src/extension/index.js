@@ -26,8 +26,6 @@ import '@spectrum-web-components/status-light/sp-status-light.js';
 import '@spectrum-web-components/textfield/sp-textfield.js';
 import '@spectrum-web-components/icon/sp-icon.js';
 
-import '@spectrum-web-components/icons-workflow/icons/sp-icon-user.js';
-
 import './app/components/action-bar/action-bar.js';
 import './app/components/action-bar/picker/picker.js';
 import './app/components/action-bar/menu-item/menu-item.js';

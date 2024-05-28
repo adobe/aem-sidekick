@@ -83,7 +83,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
     // Set up the locale aware environment names
     this.envNames = {
       dev: this.appStore.i18n('development'),
-      edit: this.appStore.i18n('edit'),
+      edit: this.appStore.i18n('source'),
       preview: this.appStore.i18n('preview'),
       live: this.appStore.i18n('live'),
       prod: this.appStore.i18n('production'),
@@ -176,8 +176,9 @@ export class EnvironmentSwitcher extends ConnectedElement {
       });
 
       const { status } = this.appStore;
+
       // eslint-disable-next-line no-nested-ternary
-      docIcon.innerHTML = status.resourcePath.endsWith('.json')
+      docIcon.innerHTML = status.resourcePath?.endsWith('.json')
         ? ICONS.SHEET_ICON.strings.join('')
         : status.resourcePath.endsWith('.pdf')
           ? ICONS.PDF_ICON.strings.join('')

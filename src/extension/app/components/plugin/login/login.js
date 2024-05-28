@@ -49,6 +49,11 @@ export class LoginButton extends ConnectedElement {
       justify-content: center;
     }
 
+    sp-action-menu sp-menu-item .no-picture svg {
+      width: 20px;
+      height: 20px;
+    }
+
     sp-action-menu sp-menu-item.user {
       pointer-events: none;
       --mod-menu-item-bottom-edge-to-text: 0;
@@ -65,13 +70,12 @@ export class LoginButton extends ConnectedElement {
       height: 24px;
     }
 
-    sp-action-menu > sp-icon > img,
-    sp-action-menu > sp-icon > svg {
+    sp-action-menu > sp-icon > img {
       width: 24px;
       height: 24px;
       border-radius: 50%;
     }
-
+    
     sp-progress-circle[size="s"] {
       margin: 0 8px;
     }
@@ -83,7 +87,8 @@ export class LoginButton extends ConnectedElement {
       margin: 0 7px;
     }
 
-    sp-icon.loading > svg {
+    sp-icon.loading > svg,
+    sp-action-menu > sp-icon > svg {
       width: 20px;
       height: 20px;
       margin-top: 2px;
@@ -172,7 +177,7 @@ export class LoginButton extends ConnectedElement {
             ${profile.picture ? html`<img src=${profile.picture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
           <sp-menu-item class="user" value="user">
-            ${profile.picture ? html`<img src=${profile.picture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon"><sp-icon-user size="xl"></sp-icon-user></div>`}
+            ${profile.picture ? html`<img src=${profile.picture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
             ${profile.name}
             <span slot="description">${profile.email}</span>
           </sp-menu-item>

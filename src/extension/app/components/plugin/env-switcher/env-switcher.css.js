@@ -25,6 +25,7 @@ export const style = css`
     color: var(--spectrum-menu-item-description-color-default);
     font-size: 12px;
     line-height: 130%;
+    padding-top: 8px;
     padding-bottom: 8px;
     padding-left: 9px;
   }

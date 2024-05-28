@@ -30,7 +30,7 @@ export const style = css`
   :host([focused]) {
     box-shadow: unset;
     outline: 2px solid #4B75FF;
-    border-radius: var(--spectrum2-xlarge-border-radius );
+    border-radius: var(--spectrum2-xlarge-border-radius);
   }
 
   :host(.current-env.env-edit[aria-disabled="true"]) #label,
