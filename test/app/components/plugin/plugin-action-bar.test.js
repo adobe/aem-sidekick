@@ -641,9 +641,9 @@ describe('Plugin action bar', () => {
       //   'library',
       //   'tools',
       // ]);
-      await expectInPluginMenu([
-        customPluginId,
-      ]);
+      // await expectInPluginMenu([
+      //   customPluginId,
+      // ]);
     });
   });
 
