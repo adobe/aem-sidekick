@@ -40,7 +40,6 @@
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
- * @prop {boolean} [devMode] Loads client configuration and plugins from the development environment
  * @prop {string} [devOrigin] The origin of the local development environment
  * @prop {string} [adminVersion] The specific version of admin service to use
  * @prop {boolean} [disabled] Is the project disabled?

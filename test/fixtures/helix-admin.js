@@ -249,6 +249,27 @@ export const defaultSharepointSheetStatusResponse = {
   },
 };
 
+export const defaultSharepointEditInfo = {
+  status: 200,
+  url: 'https://adobe.sharepoint.com/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7B207F9725-D73A-4C98-A87D-DC6AD4360373%7D&file=bar.docx&action=default&mobileredirect=true',
+  name: 'bar.docx',
+  contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  folders: [
+    {
+      name: 'foo',
+      url: 'https://adobe.sharepoint.com/sites/foo/Shared%20Documents/site/foo',
+      path: '/foo',
+    },
+    {
+      name: 'site',
+      url: 'https://adobe.sharepoint.com/sites/foo/Shared%20Documents/site',
+      path: '/',
+    },
+  ],
+  lastModified: 'Fri, 21 Jul 2023 19:58:27 GMT',
+  sourceLocation: 'onedrive:/drives/b!SRYzYQL770qsQPbhXU8sWMnBDDbKRg1Npp5iKHaWz7cyd_ev_i2JTI5LB0GcN0hc/items/01HFRI53JFS57SAOWXTBGKQ7O4NLKDMA3T',
+};
+
 export const defaultGdriveStatusResponse = {
   webPath: '/',
   resourcePath: '/index.md',
@@ -315,15 +336,17 @@ export const defaultProfileResponse = {
   },
 };
 
-export function defaultStatusResponse(contentSource = 'sharepoint', withProfile = false, overrides = {}) {
+export function defaultStatusResponse(contentSource = 'sharepoint', withProfile = false, overrides = {}, editUrl = undefined) {
   const status = (contentSource === 'sharepoint') ? defaultSharepointStatusResponse : defaultGdriveStatusResponse;
   const profile = withProfile ? defaultProfileResponse : {};
+  const edit = editUrl ? { edit: defaultSharepointEditInfo } : {};
   if (withProfile) {
     status.preview.permissions.push('delete');
     status.live.permissions.push('delete');
   }
   return {
     ...status,
+    ...edit,
     ...profile,
     ...overrides,
   };

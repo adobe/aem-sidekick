@@ -15,7 +15,7 @@
 import { observable, action } from 'mobx';
 import { createContext } from '@lit/context';
 import { SiteStore } from './site.js';
-import { getAdminUrl, getAdminFetchOptions } from '../utils/helix-admin.js';
+import { AdminClient } from '../utils/admin-client.js';
 import sampleRUM from '../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
 import {
@@ -108,6 +108,12 @@ export class AppStore {
   sidekick;
 
   /**
+   * The Admin API client
+   * @type AdminClient
+   */
+  api;
+
+  /**
    * Status of the current document
    * @type {Object}
    */
@@ -164,6 +170,7 @@ export class AppStore {
   constructor() {
     this.siteStore = new SiteStore(this);
     this.keyboardListener = new KeyboardListener();
+    this.api = new AdminClient(this);
   }
 
   /**
@@ -278,7 +285,7 @@ export class AppStore {
       const {
         location,
         siteStore: {
-          lang, plugins, innerHost, devMode, devUrl,
+          lang, plugins, innerHost,
         },
       } = this;
       if (plugins && Array.isArray(plugins)) {
@@ -335,7 +342,7 @@ export class AppStore {
               text: (titleI18n && titleI18n[lang]) || title,
               action: () => {
                 if (url) {
-                  const target = devMode ? new URL(url, devUrl) : new URL(url, `https://${innerHost}/`);
+                  const target = new URL(url, `https://${innerHost}/`);
                   if (passConfig) {
                     target.searchParams.append('ref', this.siteStore.ref);
                     target.searchParams.append('repo', this.siteStore.repo);
@@ -815,78 +822,33 @@ export class AppStore {
      */
   async fetchStatus(refreshLocation, fetchEdit = false, transient = false) {
     let status;
-    let resp;
 
     if (refreshLocation) {
       this.location = getLocation();
     }
+
     const { owner, repo, ref } = this.siteStore;
     if (!owner || !repo || !ref) {
       return status;
     }
-    if (!this.status.apiUrl || refreshLocation) {
-      const { href, pathname } = this.location;
-      const isDM = this.isEditor() || this.isAdmin(); // is document management
-      const apiUrl = getAdminUrl(
-        this.siteStore,
-        'status',
-        isDM ? '' : pathname,
-      );
-
-      if (isDM || fetchEdit) {
-        apiUrl.searchParams.append('editUrl', isDM ? href : 'auto');
-      }
-
-      this.status.apiUrl = apiUrl;
-    }
 
     this.setState(STATE.FETCHING_STATUS);
+    const isDM = this.isEditor() || this.isAdmin();
+    const includeEdit = isDM || fetchEdit;
+    const path = isDM ? '' : this.location.pathname;
 
-    try {
-      resp = await fetch(this.status.apiUrl, { ...getAdminFetchOptions() });
-      if (!resp.ok) {
-        let errorKey = '';
-        switch (resp.status) {
-          case 401:
-            // unauthorized, ask user to log in
-            resp = {
-              // @ts-ignore
-              json: () => ({ status: 401 }),
-            };
-            break;
-          case 404:
-            errorKey = this.isEditor()
-              ? 'error_status_404_document'
-              : 'error_status_404_content';
-            throw new Error(errorKey);
-          default:
-            errorKey = `error_status_${resp.status}`;
-            throw new Error(errorKey);
-        }
+    status = await this.api.getStatus(path, includeEdit);
+
+    // Do we want to update the store with the new status?
+    if (status && !transient) {
+      this.updateStatus(status);
+      this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, status);
+
+      // Don't set a state if a toast is shown
+      // istanbul ignore else
+      if (!this.toast) {
+        this.setState();
       }
-
-      try {
-        status = await resp.json();
-      } catch (e) {
-        /* istanbul ignore next */
-        throw new Error('error_status_invalid');
-      }
-
-      // Do we want to update the store with the new status?
-      if (!transient) {
-        this.updateStatus(status);
-        this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, status);
-
-        // Don't set a state if a toast is shown
-        // istanbul ignore else
-        if (!this.toast) {
-          this.setState();
-        }
-      }
-    } catch ({ message }) {
-      const error = this.i18n(message) || this.i18n('error_status_fatal').replace('$1', resp.headers.get('x-error'));
-      this.status.error = error;
-      this.showToast(error, 'negative');
     }
 
     return status;
@@ -912,218 +874,128 @@ export class AppStore {
 
   /**
    * Updates the preview or code of the current resource.
-   * @fires Sidekick#updated
    * @fires Sidekick#previewed
-   * @returns {Promise<AdminResponse>} The response object
+   * @returns {Promise<boolean>} True if the preview was updated successfully, false otherwise
    */
-  async update(path) {
+  async update() {
     const { siteStore, status } = this;
-    path = path || status.webPath;
-    let resp;
-    let respPath;
-    try {
-      // update preview
-      resp = await fetch(
-        getAdminUrl(siteStore, this.isContent() ? 'preview' : 'code', path),
-        {
-          method: 'POST',
-          ...getAdminFetchOptions(),
-        },
-      );
-      if (resp.ok) {
-        if (this.isEditor() || this.isPreview() || this.isDev()) {
-          // bust client cache
-          await fetch(`https://${siteStore.innerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
-        }
-        respPath = (await resp.json()).webPath;
+    const path = status.webPath;
 
-        // @deprecated for content, use for code only
-        this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UPDATED, respPath);
-        if (this.isContent()) {
-          this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED, respPath);
-        }
+    // update preview
+    const previewStatus = await this.api.updatePreview(path);
+    if (previewStatus) {
+      if (this.isEditor() || this.isPreview() || this.isDev()) {
+        // bust client cache
+        await fetch(`https://${siteStore.innerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
       }
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('failed to update', path, e);
+      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED, path);
     }
-    return {
-      ok: (resp && resp.ok) || false,
-      status: (resp && resp.status) || 0,
-      error: (resp && resp.headers.get('x-error')) || '',
-      path: respPath || path,
-    };
+
+    return !!previewStatus;
   }
 
   async updatePreview(ranBefore) {
     this.setState(STATE.PREVIEWING);
-    const { status } = this;
-    const resp = await this.update();
-    if (!resp.ok) {
-      if (!ranBefore) {
-        // assume document has been renamed, re-fetch status and try again
-        this.sidekick.addEventListener('statusfetched', async () => {
-          this.updatePreview(true);
-        }, { once: true });
-        this.fetchStatus();
-      } else if (status.webPath.startsWith('/.helix/') && resp.error) {
-        this.showToast(`${this.i18n('error_config_failure')}${resp.error}`, 'negative');
-      } else {
-        // eslint-disable-next-line no-console
-        console.error(resp);
-        this.showToast(`${this.i18n('error_preview_failure')}`, 'negative');
-      }
-      return;
-    }
-    // handle special case /.helix/*
-    if (status.webPath.startsWith('/.helix/')) {
-      this.showToast(this.i18n('preview_config_success'), 'positive');
+
+    const res = await this.update();
+    if (!res && !ranBefore) {
+      // assume document has been renamed, re-fetch status and try again
+      this.sidekick.addEventListener('statusfetched', async () => {
+        this.updatePreview(true);
+      }, { once: true });
+      this.fetchStatus();
       return;
     }
 
-    /* istanbul ignore next 4 */
-    const actionCallback = () => {
-      this.setState();
-      this.switchEnv('preview');
-    };
+    if (res) {
+      /* istanbul ignore next 4 */
+      const actionCallback = () => {
+        this.setState();
+        this.switchEnv('preview');
+      };
 
-    this.showToast(this.i18n('preview_success'), 'positive', undefined, actionCallback, 'Open');
+      this.showToast(this.i18n('preview_success'), 'positive', undefined, actionCallback, 'Open');
+    }
   }
 
   /**
    * Deletes the current resource from preview and unpublishes it if published.
    * @fires Sidekick#deleted
-   * @returns {Promise<AdminResponse>} The response object
+   * @returns {Promise<boolean>} True if the resource was deleted successfully, false otherwise
    */
   async delete() {
-    const { siteStore, status } = this;
+    const { status } = this;
     const path = status.webPath;
 
     // delete content only
     if (!this.isContent()) {
-      return null;
+      return false;
     }
 
-    /**
-     * @type {AdminResponse}
-     */
-    let resp = {};
-    try {
-      // delete preview
-      resp = await fetch(
-        getAdminUrl(siteStore, 'preview', path),
-        {
-          method: 'DELETE',
-          ...getAdminFetchOptions(),
-        },
-      );
-      // also unpublish if published
-      if (status.live && status.live.lastModified) {
-        await this.unpublish();
-      }
-      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED, path);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log('failed to delete', path, e);
-      resp.error = e.message;
+    // delete preview
+    const resp = await this.api.updatePreview(path, true);
+
+    // also unpublish if published
+    if (resp && status.live && status.live.lastModified) {
+      await this.unpublish();
     }
-    return {
-      ok: resp.ok || false,
-      status: resp.status || 0,
-      error: (resp.headers && resp.headers.get('x-error')) || resp.error || '',
-      path,
-    };
+    this.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED, path);
+
+    return !!resp;
   }
 
   /**
    * Publishes the page at the specified path if <code>config.host</code> is defined.
-   * @param {string} path The path of the page to publish
    * @fires Sidekick#published
-   * @returns {Promise<AdminResponse>} The response object
+   * @returns {Promise<boolean>} True if the page was published successfully, false otherwise
    */
-  async publish(path) {
-    const { siteStore, location } = this;
+  async publish() {
+    const { siteStore, status } = this;
+    const path = status.webPath;
 
     // publish content only
     if (!this.isContent()) {
-      return null;
+      return false;
     }
 
-    const purgeURL = new URL(path, this.isEditor()
-      ? `https://${siteStore.innerHost}/`
-      : location.href);
-
-    // eslint-disable-next-line no-console
-    console.log(`publishing ${purgeURL.pathname}`);
-
-    /**
-     * @type {AdminResponse}
-     */
-    let resp = {};
-    try {
-      resp = await fetch(
-        getAdminUrl(siteStore, 'live', purgeURL.pathname),
-        {
-          method: 'POST',
-          ...getAdminFetchOptions(),
-        },
-      );
-
+    // update live
+    const resp = await this.api.updateLive(path);
+    if (resp) {
       // bust client cache for live and production
       if (siteStore.outerHost) {
         // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
-        await fetch(`https://${siteStore.outerHost}${purgeURL.pathname}`, { cache: 'reload', mode: 'no-cors' });
+        await fetch(`https://${siteStore.outerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
       }
       if (siteStore.host) {
         // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
-        await fetch(`https://${siteStore.host}${purgeURL.pathname}`, { cache: 'reload', mode: 'no-cors' });
+        await fetch(`https://${siteStore.host}${path}`, { cache: 'reload', mode: 'no-cors' });
       }
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log('failed to publish', path, e);
-      resp.error = e.message;
     }
-    resp.path = path;
-    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
-    return resp;
+
+    return !!resp;
   }
 
   /**
    * Unpublishes the current page.
    * @fires Sidekick#unpublished
-   * @returns {Promise<AdminResponse>} The response object
+   * @returns {Promise<boolean>} True if the page was unpublished successfully, false otherwise
    */
   async unpublish() {
     // unpublish content only
     if (!this.isContent()) {
-      return null;
+      return false;
     }
-    const { siteStore, status } = this;
+    const { status } = this;
     const path = status.webPath;
 
-    /**
-     * @type {AdminResponse}
-     */
-    let resp = {};
-    try {
-      // delete live
-      resp = await fetch(
-        getAdminUrl(siteStore, 'live', path),
-        {
-          method: 'DELETE',
-          ...getAdminFetchOptions(),
-        },
-      );
+    // delete live
+    const resp = await this.api.updateLive(path, true);
+    if (resp) {
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, path);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log('failed to unpublish', path, e);
-      resp.error = e.message;
     }
-    resp.path = path;
-    resp.error = (resp.headers && resp.headers.get('x-error')) || resp.error || '';
-    return resp;
+
+    return !!resp;
   }
 
   /**
@@ -1298,25 +1170,15 @@ export class AppStore {
    * @returns {Promise<Object | false>} The response object
    */
   async getProfile() {
-    try {
-      const url = getAdminUrl(this.siteStore, 'profile');
-      const opts = getAdminFetchOptions();
-      const res = await fetch(url, opts);
-
-      if (!res.ok) {
-        return false;
-      }
-
-      const response = await res.json();
-      if (response.status === 200) {
-        return response.profile;
-      }
-      return false;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to fetch profile:', error);
+    const response = await this.api.getProfile();
+    if (!response) {
       return false;
     }
+
+    if (response.status === 200) {
+      return response.profile;
+    }
+    return false;
   }
 
   /**
@@ -1325,7 +1187,7 @@ export class AppStore {
    */
   login(selectAccount) {
     this.setState(STATE.LOGGING_IN);
-    const loginUrl = getAdminUrl(this.siteStore, 'login');
+    const loginUrl = this.api.createUrl('login');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
     if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
@@ -1377,7 +1239,7 @@ export class AppStore {
    */
   logout() {
     this.setState(STATE.LOGGING_OUT);
-    const logoutUrl = getAdminUrl(this.siteStore, 'logout');
+    const logoutUrl = this.api.createUrl('logout');
     let extensionId = window.chrome?.runtime?.id;
     // istanbul ignore next 3
     if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
@@ -1405,7 +1267,7 @@ export class AppStore {
           return;
         }
         if (attempts >= 5) {
-          this.showToast(this.i18n('error_logout_error'), 'negative');
+          this.showToast(this.i18n('error_logout'), 'negative');
           return;
         }
       }

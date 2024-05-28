@@ -75,7 +75,7 @@ describe('Reload plugin', () => {
   it('reload calls appStore.update() and reloads window with toast action', async () => {
     const { sandbox } = sidekickTest;
     const updateStub = sandbox.stub(appStore, 'update')
-      .resolves(new Response('', { status: 200, headers: {} }));
+      .resolves(true);
 
     await sidekickTest.awaitEnvSwitcher();
 
@@ -99,7 +99,7 @@ describe('Reload plugin', () => {
   it('reload calls appStore.update() and reloads window with toast close', async () => {
     const { sandbox } = sidekickTest;
     const updateStub = sandbox.stub(appStore, 'update')
-      .resolves(new Response('', { status: 200, headers: {} }));
+      .resolves(true);
 
     await sidekickTest.awaitEnvSwitcher();
 
@@ -124,7 +124,7 @@ describe('Reload plugin', () => {
   it('reload handles failure', async () => {
     const { sandbox } = sidekickTest;
     const updateStub = sandbox.stub(appStore, 'update')
-      .resolves(new Response('Error Message', { status: 500, headers: {} }));
+      .resolves(false);
 
     await sidekickTest.awaitEnvSwitcher();
 
@@ -135,25 +135,6 @@ describe('Reload plugin', () => {
     await waitUntil(() => updateStub.calledOnce);
 
     expect(updateStub.calledOnce).to.be.true;
-    expect(showToastSpy.calledWith('Reloading failed. Please try again later.', 'negative')).to.be.true;
-    expect(reloaded).to.be.false;
-  });
-
-  it('reload handles 404', async () => {
-    const { sandbox } = sidekickTest;
-    const updateStub = sandbox.stub(appStore, 'update')
-      .resolves(new Response('Error Message', { status: 404, headers: {} }));
-
-    await sidekickTest.awaitEnvSwitcher();
-
-    const reloadPlugin = recursiveQuery(sidekick, '.reload');
-
-    reloadPlugin.click();
-
-    await waitUntil(() => updateStub.calledOnce);
-
-    expect(updateStub.calledOnce).to.be.true;
-    expect(showToastSpy.calledWith('404 Not found: Source document does not exist, failed to preview.', 'negative')).to.be.true;
     expect(reloaded).to.be.false;
   });
 });

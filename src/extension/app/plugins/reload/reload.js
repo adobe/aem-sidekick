@@ -35,15 +35,9 @@ export function createReloadPlugin(appStore) {
       text: appStore.i18n('reload'),
       action: async (evt) => {
         appStore.setState(STATE.PREVIEWING);
-        try {
-          const resp = await appStore.update();
-          if (!resp.ok && resp.status >= 400) {
-            if (resp.status === 404) {
-              appStore.showToast(appStore.i18n('error_status_preview_404'), 'negative');
-              return;
-            }
-            throw new Error();
-          }
+
+        const res = await appStore.update();
+        if (res) {
           const closeHandler = () => {
             appStore.closeToast();
           };
@@ -53,8 +47,6 @@ export function createReloadPlugin(appStore) {
           };
 
           appStore.showToast(appStore.i18n('reload_success'), 'positive', closeHandler, actionHandler, appStore.i18n('open'));
-        } catch (e) {
-          appStore.showToast(appStore.i18n('reload_failure'), 'negative');
         }
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write'),

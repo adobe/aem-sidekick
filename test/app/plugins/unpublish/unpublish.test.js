@@ -18,9 +18,7 @@ import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import '../../../../src/extension/index.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
 import {
-  HelixMockContentType,
   HelixMockEnvironments,
-  getDefaultHelixEnviromentLocations,
 } from '../../../mocks/environment.js';
 import { MODALS } from '../../../../src/extension/app/constants.js';
 import { SidekickTest } from '../../../sidekick-test.js';
@@ -84,7 +82,7 @@ describe('Unpublish plugin', () => {
     let appStore;
 
     let unpublishStub;
-    let loadPageStub;
+    let reloadPageStub;
     let showModalSpy;
     let showToastSpy;
 
@@ -96,8 +94,8 @@ describe('Unpublish plugin', () => {
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
       const { sandbox } = sidekickTest;
-      unpublishStub = sandbox.stub(appStore, 'unpublish').resolves({ ok: true, status: 200 });
-      loadPageStub = sandbox.stub(appStore, 'loadPage');
+      unpublishStub = sandbox.stub(appStore, 'unpublish').resolves(true);
+      reloadPageStub = sandbox.stub(appStore, 'reloadPage');
       showModalSpy = sandbox.spy(appStore, 'showModal');
       showToastSpy = sandbox.spy(appStore, 'showToast');
 
@@ -116,7 +114,7 @@ describe('Unpublish plugin', () => {
       await expectUnpublishPlugin(sidekick, false);
     });
 
-    it('asks for user confirmation and redirects to the site root', async () => {
+    it('asks for user confirmation and reloads the page', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           webPath: '/foo',
@@ -140,14 +138,37 @@ describe('Unpublish plugin', () => {
       expect(unpublishStub.calledOnce).to.be.true;
       expect(showToastSpy.calledOnce).to.be.true;
 
-      await sidekickTest.clickToastClose();
+      await sidekickTest.clickToastAction();
 
-      expect(loadPageStub.calledWith(
-        `${getDefaultHelixEnviromentLocations(HelixMockContentType.DOC, 'hlx').preview}/`,
-      )).to.be.true;
+      expect(reloadPageStub.calledOnce).to.be.true;
     });
 
-    it('allows authenticated user to delete if source file still exists', async () => {
+    it('skips reloading if toast manually closed', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          webPath: '/foo',
+          // source document is not found
+          edit: { status: 404 },
+          // live delete permission is granted
+          live: {
+            status: 200,
+            permissions: ['read', 'write', 'delete'],
+          },
+        });
+
+      await clickUnpublishPlugin(sidekick);
+      confirmUnpublish(sidekick);
+
+      await waitUntil(() => unpublishStub.calledOnce);
+
+      expect(showToastSpy.calledOnce).to.be.true;
+
+      await sidekickTest.clickToastClose();
+
+      expect(reloadPageStub.calledOnce).to.be.false;
+    });
+
+    it('allows authenticated user to unpublish if source file still exists', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           webPath: '/foo',
@@ -175,7 +196,7 @@ describe('Unpublish plugin', () => {
       await waitUntil(() => unpublishStub.calledOnce);
     });
 
-    it('handles server failure with toast dismiss', async () => {
+    it('handles server failure', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           // source document is not found
@@ -187,9 +208,7 @@ describe('Unpublish plugin', () => {
           },
         });
 
-      const closeToastSpy = sidekickTest.sandbox.spy(appStore, 'closeToast');
-
-      unpublishStub.resolves({ ok: false, status: 500, headers: { 'x-error': 'something went wrong' } });
+      unpublishStub.resolves(false);
 
       await clickUnpublishPlugin(sidekick);
 
@@ -198,12 +217,7 @@ describe('Unpublish plugin', () => {
       confirmUnpublish(sidekick);
 
       await waitUntil(() => unpublishStub.calledOnce);
-
-      await sidekickTest.awaitToast();
-      sidekickTest.clickToastClose();
-      await waitUntil(() => closeToastSpy.calledOnce);
-      expect(closeToastSpy.calledOnce);
-      expect(showToastSpy.calledWith('Unpublication failed. Please try again later.', 'negative')).to.be.true;
+      expect(unpublishStub.calledOnce);
     }).timeout(5000);
   });
 });

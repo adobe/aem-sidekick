@@ -12,6 +12,7 @@
 
 import { log } from './log.js';
 import { getConfig, setConfig } from './config.js';
+import { callAdmin } from './utils/admin.js';
 
 /**
  * @type {number} The time to remember matches from discovery in milliseconds
@@ -231,9 +232,9 @@ class UrlCache {
 
         let results = [];
         // discover project details from edit url
-        const discoveryUrl = new URL('https://admin.hlx.page/discover/');
-        discoveryUrl.searchParams.append('url', info?.url || url);
-        const resp = await fetch(discoveryUrl);
+        const resp = await callAdmin(
+          {}, 'discover', '/', { searchParams: new URLSearchParams(`url=${info?.url || url}`) },
+        );
         if (resp.ok) {
           results = await resp.json();
           if (Array.isArray(results) && results.length > 0) {

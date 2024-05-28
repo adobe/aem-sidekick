@@ -185,9 +185,6 @@
     "config_invalid_shareurl": {
       "message": "Invalid sharing URL"
     },
-    "config_manual_devMode": {
-      "message": "Test project configuration locally"
-    },
     "config_manual_devOrigin_placeholder": {
       "message": "Local Development URL: http://localhost:3000"
     },
@@ -321,9 +318,6 @@
     "delete": {
       "message": "Delete"
     },
-    "delete_failure": {
-      "message": "Deletion failed. Please try again later."
-    },
     "delete_file_confirm": {
       "message": "Are you sure you want to delete this file?"
     },
@@ -346,7 +340,7 @@
       "message": "This page still has a source document and cannot be deleted."
     },
     "delete_page_success": {
-      "message": "Page successfully deleted."
+      "message": "Page successfully deleted, reloading..."
     },
     "description": {
       "message": "AEM Sidekick allows authors of AEM sites to easily preview and publish content."
@@ -369,8 +363,14 @@
     "edit_date": {
       "message": "Edited: "
     },
-    "error_config_failure": {
-      "message": "Failed to activate configuration: "
+    "error_429": {
+      "message": "429 Too many requests: Your project is being throttled by $1. Please wait and try again later."
+    },
+    "error_delete": {
+      "message": "Deletion failed. Please try again later."
+    },
+    "error_fatal": {
+      "message": "Apologies, we seem to be having problems at the moment. Please try again later."
     },
     "error_login_aborted": {
       "message": "Sign in aborted."
@@ -378,11 +378,14 @@
     "error_login_timeout": {
       "message": "Sign in timed out. Please try again later."
     },
-    "error_logout_error": {
+    "error_logout": {
       "message": "Sign out failed. Please try again later."
     },
-    "error_preview_failure": {
+    "error_preview": {
       "message": "Preview generation failed. Please try again later."
+    },
+    "error_preview_404": {
+      "message": "404 Not found: Source document does not exist, preview generation failed."
     },
     "error_preview_not_gdoc_generic": {
       "message": "Preview generation failed. Must be Google document or spreadsheet."
@@ -392,6 +395,9 @@
     },
     "error_preview_not_gsheet_ms_excel": {
       "message": "This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets"
+    },
+    "error_publish": {
+      "message": "Publication failed. Please try again later."
     },
     "error_status_404_content": {
       "message": "404 Not found: Check your Sidekick configuration or URL."
@@ -408,14 +414,11 @@
     "error_status_504": {
       "message": "504 Gateway timeout: Failed to fetch the page status. Please try again later."
     },
-    "error_status_fatal": {
-      "message": "Apologies, we seem to be having problems at the moment. Please try again later. Error: $1"
-    },
     "error_status_invalid": {
       "message": "Invalid server response. Check your Sidekick configuration or URL."
     },
-    "error_status_preview_404": {
-      "message": "404 Not found: Source document does not exist, failed to preview."
+    "error_unpublish": {
+      "message": "Unpublication failed. Please try again later."
     },
     "extensions": {
       "message": "Extensions"
@@ -513,9 +516,6 @@
     "preview": {
       "message": "Preview"
     },
-    "preview_config_success": {
-      "message": "Configuration successfully activated."
-    },
     "preview_date": {
       "message": "Previewed: "
     },
@@ -534,20 +534,8 @@
     "publish_date": {
       "message": "Published: "
     },
-    "publish_failure": {
-      "message": "Publication failed. Please try again later."
-    },
-    "push_down_content": {
-      "message": "Push down content instead of overlaying"
-    },
-    "push_down_content_description": {
-      "message": "Note: Depending on the site's structure, this may require custom project configuration to work as expected."
-    },
     "reload": {
       "message": "Reload"
-    },
-    "reload_failure": {
-      "message": "Reloading failed. Please try again later."
     },
     "save": {
       "message": "Save"
@@ -574,9 +562,6 @@
     "unpublish": {
       "message": "Unpublish"
     },
-    "unpublish_failure": {
-      "message": "Unpublication failed. Please try again later."
-    },
     "unpublish_page_confirm": {
       "message": "Are you sure you want to unpublish this page?"
     },
@@ -587,7 +572,7 @@
       "message": "This page no longer has a source document, unpublishing it cannot be undone!\n\nAre you sure you want to unpublish it?"
     },
     "unpublish_page_success": {
-      "message": "Page successfully unpublished."
+      "message": "Page successfully unpublished, reloading..."
     },
     "user_login": {
       "message": "Sign in"
@@ -670,7 +655,7 @@
     "destructive_confirmation_invalid": {
       "message": "Sorry, please enter the text exactly as displayed to confirm."
     },
-        "reload_success": {
+    "reload_success": {
       "message": "Preview successfully updated, reloading..."
     },
     "preview_success": {
