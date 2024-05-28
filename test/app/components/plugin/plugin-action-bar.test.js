@@ -630,7 +630,7 @@ describe('Plugin action bar', () => {
 
       // make viewport wider again
       await resizeWindow({ width: 600, height: 600 });
-      await resizeWindow({ width: 800, height: 600 });
+      await resizeWindow({ width: 850, height: 600 });
       await aTimeout(100);
 
       // check if all plugins moved back to bar
