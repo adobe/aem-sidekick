@@ -572,7 +572,6 @@ describe('Plugin action bar', () => {
       sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitEnvSwitcher();
-      await resizeWindow({ width: 800, height: 584 });
       await aTimeout(100);
 
       const customPluginId = 'custom-plugin-9'; // generated id
