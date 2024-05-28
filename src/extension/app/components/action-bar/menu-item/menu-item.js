@@ -29,7 +29,9 @@ class MenuItem extends SPMenuItem {
     if (this.classList.contains('user')) {
       return html`
         <div class="user-item">
-          <slot name="icon"></slot>
+          <div id="image">
+            <slot name="icon"></slot>
+          </div>
           <div class="info">
             <div id="label">
               <slot id="slot"></slot>

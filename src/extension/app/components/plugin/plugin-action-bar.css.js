@@ -18,6 +18,7 @@ export const style = css`
   action-bar sp-action-group {
     padding: 12px;
     flex-wrap: nowrap;
+    align-items: center;
   }
 
   action-bar sp-action-group:nth-of-type(2) {
@@ -34,8 +35,8 @@ export const style = css`
   }
 
   action-bar sp-action-group:last-of-type > svg {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
   }
 
   action-bar sp-action-group .filler {
@@ -45,10 +46,17 @@ export const style = css`
   #plugin-menu {
     width: max-content;
     margin: 0 12px;
+    width: 32px;
+    height: 32px;
+    --mod-popover-content-area-spacing-vertical: 0;
   }
 
   action-bar action-bar-picker sp-menu-item {
     min-width: 120px;
+  }
+
+  action-bar sp-action-menu#plugin-menu sp-menu-item {
+    margin: 8px;
   }
 
   #plugin-menu sp-menu-group [slot="header"] {

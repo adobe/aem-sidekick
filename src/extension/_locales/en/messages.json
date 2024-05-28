@@ -330,8 +330,8 @@
     "docs": {
       "message": "https://www.hlx.live/docs/sidekick"
     },
-    "edit": {
-      "message": "Edit"
+    "source": {
+      "message": "Source"
     },
     "open_in": {
       "message": "Open in $1"
