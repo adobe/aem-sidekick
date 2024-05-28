@@ -46,16 +46,21 @@ export const style = css`
   #plugin-menu {
     width: max-content;
     margin: 0 12px;
-    width: 32px;
-    height: 32px;
-    --mod-popover-content-area-spacing-vertical: 0;
   }
 
   action-bar action-bar-picker sp-menu-item {
     min-width: 120px;
   }
 
-  action-bar sp-action-menu#plugin-menu sp-menu-item {
+  action-bar sp-action-menu#plugin-menu sp-menu-group {
+    margin: 8px;
+  }
+
+  action-bar sp-action-menu#properties-menu sp-menu-group {
+    margin: 8px;
+  }
+
+  action-bar sp-action-menu#properties-menu > sp-menu-item{
     margin: 8px;
   }
 
@@ -63,10 +68,6 @@ export const style = css`
     text-transform: uppercase;
     font-size: var(--spectrum-global-dimension-font-size-75);
     color: var(--spectrum-global-color-gray-600);
-  }
-
-  #plugin-menu sp-menu-group sp-menu-item {
-    padding-left: 24px;
   }
 
   @media (max-width: 500px) {

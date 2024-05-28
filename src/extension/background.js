@@ -59,6 +59,11 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (tab && tab.url && typeof internalActions[actionFromTab] === 'function') {
     resp = await internalActions[actionFromTab](message, sender);
   }
+
+  if (actionFromTab === 'updateUI') {
+    checkTab(tab.id);
+  }
+
   sendResponse(resp);
 });
 

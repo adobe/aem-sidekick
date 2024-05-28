@@ -30,7 +30,7 @@ export const style = css`
   :host([focused]) {
     box-shadow: unset;
     outline: 2px solid #4B75FF;
-    border-radius: var(--spectrum2-xlarge-border-radius);
+    border-radius: var(--spectrum2-medium-border-radius);
   }
 
   :host(.current-env.env-edit[aria-disabled="true"]) #label,
@@ -131,6 +131,18 @@ export const style = css`
     margin-top: 3px;
   }
 
+  .icon-item {
+    display: flex;
+    align-items: center;
+    height: 18px;
+    gap: 7px;
+  }
+
+  :host(.icon-item.destructive) {
+    color: var(--spectrum2-foreground-color-negative);
+    --highcontrast-menu-item-color-default: var(--spectrum2-foreground-color-negative);
+  }
+
   .logout-item {
     display: flex;
     align-items: center;
@@ -140,7 +152,7 @@ export const style = css`
 
   .logout-item #label,
   .logout-item slot::slotted(sp-icon) {
-    color: var(--spectrum2-color-negative);
+    color: var(--spectrum2-foreground-color-negative);
   }
 
   .logout-item > slot::slotted(sp-icon) {

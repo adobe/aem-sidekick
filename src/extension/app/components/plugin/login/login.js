@@ -31,10 +31,6 @@ export class LoginButton extends ConnectedElement {
   accessor ready = false;
 
   static styles = css`
-    sp-action-menu {
-      --mod-popover-content-area-spacing-vertical: 0;
-    }
-
     sp-action-menu sp-menu-item {
       padding-inline-start: 0;
       min-width: 202px;
@@ -169,7 +165,6 @@ export class LoginButton extends ConnectedElement {
     } else {
       return html`
         <sp-action-menu
-          selects="single"
           placement="top"
           quiet
         >

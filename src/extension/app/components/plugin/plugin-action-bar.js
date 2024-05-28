@@ -73,6 +73,9 @@ export class PluginActionBar extends ConnectedElement {
   @queryAll('sp-action-group')
   accessor actionGroups;
 
+  @queryAsync('sp-action-menu#properties-menu')
+  accessor propertiesMenu;
+
   /**
    * Loads the user preferences for plugins in this environment.
    */
@@ -218,11 +221,13 @@ export class PluginActionBar extends ConnectedElement {
             <sp-icon slot="icon" size="m">
               ${ICONS.MORE_ICON}
             </sp-icon>
-            ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
-            ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0
-              ? html`<sp-menu-divider size="s"></sp-menu-divider>`
-              : ''}
-            ${this.menuPlugins.map((p) => this.renderPluginMenuItem(p))}
+            <sp-menu-group>
+              ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
+              ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0
+                ? html`<sp-menu-divider size="s"></sp-menu-divider>`
+                : ''}
+              ${this.menuPlugins.map((p) => this.renderPluginMenuItem(p))}
+            </sp-menu-group>
           </sp-action-menu>
         ` : ''}
       </sp-action-group>
@@ -247,6 +252,20 @@ export class PluginActionBar extends ConnectedElement {
       </sp-action-group>`;
   }
 
+  async onPropertyMenuSelection(event) {
+    const { value } = event.target;
+
+    const menu = await this.propertiesMenu;
+    menu.removeAttribute('open');
+
+    if (value === 'open-help') {
+      this.appStore.openPage('https://www.aem.live/docs/sidekick');
+      return;
+    }
+
+    this.appStore.fireEvent(value);
+  }
+
   renderSystemPlugins() {
     const { siteStore } = this.appStore;
 
@@ -257,11 +276,42 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     const properties = html`
-      <sp-action-button id="properties" quiet>
+      <sp-action-menu id="properties-menu" placement="top" quiet @change=${this.onPropertyMenuSelection}>
         <sp-icon slot="icon" size="l">
-          ${ICONS.PROPERTIES}
+          ${ICONS.HAMBURGER_ICON}
         </sp-icon>
-      </sp-action-button>`;
+        <sp-menu-group>
+          ${siteStore.transient ? html`
+              <sp-menu-item class="icon-item" value="projectadded">
+                <sp-icon slot="icon" size="m">
+                  ${ICONS.PLUS_ICON}
+                </sp-icon>
+                Add Project
+              </sp-menu-item>
+            ` : html`
+              <sp-menu-item class="icon-item destructive" value="projectadded">
+                <sp-icon slot="icon" size="m">
+                  ${ICONS.TRASH_ICON}
+                </sp-icon>
+                Remove Project
+              </sp-menu-item>
+            `
+          }
+          <sp-menu-item class="icon-item" value="open-help">
+            <sp-icon slot="icon" size="m">
+              ${ICONS.HELP_ICON}
+            </sp-icon>
+            Help & Documentation
+          </sp-menu-item>
+        </sp-menu-group>
+        <sp-divider size="s"></sp-divider>
+        <sp-menu-item class="icon-item" value="hidden">
+          <sp-icon slot="icon" size="m">
+            ${ICONS.CLOSE_X}
+          </sp-icon>
+          Close extension
+        </sp-menu-item>
+      </sp-action-menu>`;
     systemPlugins.push(properties);
 
     const buttonType = siteStore.authorized ? '' : 'not-authorized';

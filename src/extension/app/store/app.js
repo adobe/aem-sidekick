@@ -647,6 +647,7 @@ export class AppStore {
         'helpdismissed',
         'helpacknowlegded',
         'helpoptedout',
+        'projectadded',
       ];
       if (name.startsWith('custom:') || userEvents.includes(name)) {
         /* istanbul ignore next */
