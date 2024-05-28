@@ -1,3 +1,10 @@
+## [1.23.2](https://github.com/adobe/aem-sidekick/compare/v1.23.1...v1.23.2) (2024-05-28)
+
+
+### Bug Fixes
+
+* design updates ([#154](https://github.com/adobe/aem-sidekick/issues/154)) ([db8e3b9](https://github.com/adobe/aem-sidekick/commit/db8e3b9578d6863f2da8aaf8069e89b12db3a9cb))
+
 ## [1.23.1](https://github.com/adobe/aem-sidekick/compare/v1.23.0...v1.23.1) (2024-05-27)
 
 
