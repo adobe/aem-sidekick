@@ -44,9 +44,9 @@ import { ModalContainer } from '../components/modal/modal-container.js';
 import {
   getGoogleDriveBulkSelection,
   getSharepointBulkSelection,
-  validateBulkSelection,
-  illegalPathPrefix,
   doBulkOperation,
+  bulkSelectionToPath,
+  mockAdminJobDetails,
 } from '../utils/bulk.js';
 
 /**
@@ -74,7 +74,11 @@ import {
  */
 
 /**
- * @typedef {import('@Types').AdminJobDetails} AdminJobDetails
+ * @typedef {import('@Types').AdminJob} AdminJob
+ */
+
+/**
+ * @typedef {import('@Types').AdminJobProgress} AdminJobProgress
  */
 
 /**
@@ -159,7 +163,13 @@ export class AppStore {
    * The bulk selection (admin mode only)
    * @type {BulkSelection}
    */
-  @observable accessor selection = [];
+  @observable accessor bulkSelection = [];
+
+  /**
+   * The bulk job progress (admin mode only)
+   * @type {AdminJobProgress}
+   */
+  @observable accessor bulkProgress = null;
 
   /**
    * Toast data
@@ -580,34 +590,9 @@ export class AppStore {
    */
   updateBulkSelection() {
     const { location } = this;
-    this.selection = this.isSharePointFolder(location)
+    this.bulkSelection = this.isSharePointFolder(location)
       ? getSharepointBulkSelection(document)
       : getGoogleDriveBulkSelection(document);
-  }
-
-  /**
-   * Validates the files in the bulk selection and returns their paths.
-   * @returns {Promise<string[]>} The selected and validated paths
-   */
-  async getBulkSelection() {
-    const status = await this.fetchStatus(false, true, true);
-    const paths = validateBulkSelection(this.selection, status.webPath);
-
-    // check for illegal paths
-    const illegalPaths = paths
-      .filter((path) => path.startsWith(illegalPathPrefix))
-      .map((path) => path.substring(10));
-
-    if (illegalPaths.length > 0) {
-      this.showToast(
-        this.i18n(`bulk_error_illegal_file_name${illegalPaths.length === 1 ? '' : 's'}`)
-          .replace('$1', illegalPaths.join(', ')),
-        'warning',
-      );
-      return [];
-    } else {
-      return paths;
-    }
   }
 
   /**
@@ -752,7 +737,15 @@ export class AppStore {
    * @param {string} [actionLabel] The action label
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
-  showToast(message, variant = 'info', closeCallback = undefined, actionCallback = undefined, actionLabel = 'Ok', timeout = 3000) {
+  showToast(
+    message,
+    variant = 'info',
+    closeCallback = undefined,
+    actionCallback = undefined,
+    actionLabel = 'Ok',
+    timeout = 3000,
+    actionOnTimeout = true,
+  ) {
     if (this.toast) {
       this.toast = null;
       this.setState();
@@ -765,6 +758,7 @@ export class AppStore {
       actionCallback,
       actionLabel,
       timeout,
+      actionOnTimeout,
     };
     this.setState(STATE.TOAST);
   }
@@ -834,10 +828,10 @@ export class AppStore {
 
     this.setState(STATE.FETCHING_STATUS);
     const isDM = this.isEditor() || this.isAdmin();
-    const includeEdit = isDM || fetchEdit;
+    const editUrl = isDM ? this.location.href : (fetchEdit ? 'auto' : '');
     const path = isDM ? '' : this.location.pathname;
 
-    status = await this.api.getStatus(path, includeEdit);
+    status = await this.api.getStatus(path, editUrl);
 
     // Do we want to update the store with the new status?
     if (status && !transient) {
@@ -875,11 +869,14 @@ export class AppStore {
   /**
    * Updates the preview or code of the current resource.
    * @fires Sidekick#previewed
+   * @param {string} [path] The path to update (defaults to <code>status.webPath</code>)
    * @returns {Promise<boolean>} True if the preview was updated successfully, false otherwise
    */
-  async update() {
+  async update(path) {
     const { siteStore, status } = this;
-    const path = status.webPath;
+    path = path || status.webPath;
+
+    this.setState(STATE.PREVIEWING);
 
     // update preview
     const previewStatus = await this.api.updatePreview(path);
@@ -932,6 +929,8 @@ export class AppStore {
       return false;
     }
 
+    this.setState(STATE.DELETING);
+
     // delete preview
     const resp = await this.api.updatePreview(path, true);
 
@@ -947,16 +946,19 @@ export class AppStore {
   /**
    * Publishes the page at the specified path if <code>config.host</code> is defined.
    * @fires Sidekick#published
+   * @param {string} [path] The path to update (defaults to <code>status.webPath</code>)
    * @returns {Promise<boolean>} True if the page was published successfully, false otherwise
    */
-  async publish() {
+  async publish(path) {
     const { siteStore, status } = this;
-    const path = status.webPath;
+    path = path || status.webPath;
 
     // publish content only
     if (!this.isContent()) {
       return false;
     }
+
+    this.setState(STATE.PUBLISHNG);
 
     // update live
     const resp = await this.api.updateLive(path);
@@ -986,6 +988,9 @@ export class AppStore {
     if (!this.isContent()) {
       return false;
     }
+
+    this.setState(STATE.UNPUBLISHING);
+
     const { status } = this;
     const path = status.webPath;
 
@@ -1000,20 +1005,66 @@ export class AppStore {
 
   /**
    * Runs a bulk preview operation on the bulk selection.
-   * @returns {Promise<AdminJobDetails>} The job details once stopped
+   * @returns {Promise<AdminJob>} The job details once stopped
    */
   async bulkPreview() {
-    return doBulkOperation(this, 'preview');
+    if (this.bulkSelection.length === 0) {
+      return null;
+    }
+
+    await this.fetchStatus(true, true);
+
+    if (this.bulkSelection.length === 1) {
+      // single preview
+      const path = bulkSelectionToPath(this.bulkSelection, this.status.webPath)[0];
+      const res = await this.update(path);
+      if (res) {
+        return mockAdminJobDetails(path);
+      }
+      return null;
+    } else {
+      // bulk preview
+      this.setState(STATE.BULK_PREVIEWING);
+
+      const res = await doBulkOperation(this, 'preview');
+      if (!res) {
+        this.setState();
+      }
+      return res;
+    }
   }
 
   /**
    * Runs a bulk publish operation on the bulk selection.
-   * @returns {Promise<AdminJobDetails>} The job details once stopped
+   * @returns {Promise<AdminJob>} The job details once stopped
    */
   async bulkPublish() {
-    return doBulkOperation(this, 'publish', {
-      route: 'live',
-    });
+    if (this.bulkSelection.length === 0) {
+      return null;
+    }
+
+    await this.fetchStatus(true, true);
+
+    if (this.bulkSelection.length === 1) {
+      // single publish
+      const path = bulkSelectionToPath(this.bulkSelection, this.status.webPath)[0];
+      const res = await this.publish(path);
+      if (res) {
+        return mockAdminJobDetails(path);
+      }
+      return null;
+    } else {
+      // bulk preview
+      this.setState(STATE.BULK_PUBLISHING);
+
+      const res = await doBulkOperation(this, 'publish', {
+        route: 'live',
+      });
+      if (!res) {
+        this.setState();
+      }
+      return res;
+    }
   }
 
   /**

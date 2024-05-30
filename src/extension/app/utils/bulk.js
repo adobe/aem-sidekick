@@ -11,22 +11,26 @@
  */
 
 /**
- * @typedef {import('@Types').BulkSelection} BulkSelection
- */
-
-/**
  * @typedef {import('@AppStore').AppStore} AppStore
  */
 
 /**
- * @typedef {import('@Types').AdminJobDetails} AdminJobDetails
+ * @typedef {import('@Types').BulkSelection} BulkSelection
+ */
+
+/**
+ * @typedef {import('@Types').BulkResource} BulkResource
+ */
+
+/**
+ * @typedef {import('@Types').AdminJob} AdminJob
  */
 
 /**
  * The path prefix for illegal file names.
  * @type {string}
  */
-export const illegalPathPrefix = '!ILLEGAL!_';
+const illegalPathPrefix = '!ILLEGAL!_';
 
 /**
  * The file types in Google Drive. IDs represent the last 4 characters
@@ -46,6 +50,33 @@ const gdriveFileTypes = {
 };
 
 /**
+ * Validates and normalizes a bulk resource.
+ * @param {BulkResource} item The bulk resource
+ * @returns {BulkResource} The validated bulk resource
+ */
+function validateBulkResource(item) {
+  // detect illegal characters in file name
+  const { file, type } = item;
+  if (['/', '*', '\\', '!', '?'].find((char) => file.includes(char))) {
+    return {
+      type,
+      file: `${illegalPathPrefix}${file}`,
+    };
+  }
+
+  // normalize file name
+  return {
+    type,
+    file: file
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, ''),
+  };
+}
+
+/**
  * Extracts selected files from the Sharepoint DOM.
  * @param {Document} document The document
  * @returns {BulkSelection} The selection
@@ -61,14 +92,16 @@ export function getSharepointBulkSelection(document) {
       const info = row.getAttribute('aria-label') || row.querySelector('span')?.textContent;
       // info format: bla.docx, docx File, Private, Modified 8/28/2023, edited by Jane, 1 KB
       const type = info.match(/, ([a-z0-9]+) [A-Za-z]+,/)?.[1];
-      const path = type && info.split(`, ${type}`)[0];
+      const file = type && info.split(`, ${type}`)[0];
       return {
-        path,
+        file,
         type,
       };
     })
-    // validate selection
-    .filter(({ type, path }) => path && type);
+    // remove empty entries
+    .filter(({ type, file }) => file && type)
+    // return validated resources
+    .map(validateBulkResource);
 }
 
 /**
@@ -100,43 +133,72 @@ export function getGoogleDriveBulkSelection(document) {
           type = 'media';
         }
       }
-      const path = row.querySelector(':scope > div > div:nth-of-type(2)')?.textContent.trim() // list layout
+      const file = row.querySelector(':scope > div > div:nth-of-type(2)')?.textContent.trim() // list layout
         || (row.querySelector(':scope > div > div > div:nth-of-type(4)') // grid layout (file)
         || row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(4) > div'))?.textContent.trim(); // grid layout (folder)
       return {
         type,
-        path,
+        file,
       };
     })
-    // exclude folders and emtpy paths
-    .filter(({ type, path }) => type !== 'folder' && path);
+    // exclude folders and emtpy entries
+    .filter(({ type, file }) => type && type !== 'folder' && file)
+    // return validated resources
+    .map(validateBulkResource);
 }
 
 /**
- * Validates and normalizes a bulk selection and returns file paths.
- * @param {BulkSelection} selection The selection
- * @param {string} folder The folder path
- * @returns {string[]} The file paths
+ * Returns the bulk confirmation text for a given action.
+ * @param {AppStore} appStore The app store
+ * @param {string} operation The bulk operation
+ * @param {number} total The total number of files
+ * @returns {string} The bulk confirmation text
  */
-export function validateBulkSelection(selection, folder) {
+export function getBulkConfirmText(appStore, operation, total) {
+  const suffix = total > 1 ? 'multiple' : 'single';
+  return appStore.i18n(`bulk_confirm_${operation}_${suffix}`)
+    .replace('$1', `${total}`);
+}
+
+/**
+ * Returns the bulk success text for a given action.
+ * @param {AppStore} appStore The app store
+ * @param {string} operation The bulk operation
+ * @param {number} total The total number of files
+ * @returns {string} The bulk progress text
+ */
+export function getBulkSuccessText(appStore, operation, total) {
+  const type = total > 1 ? 'multiple' : 'single';
+  const i18nKey = `bulk_result_${operation}_${type}_success`;
+  return appStore.i18n(i18nKey)
+    .replace('$1', `${total}`);
+}
+
+/**
+ * Creates a canonical path for each item in a bulk selection,
+ * adding or removing the file extension where appropriate.
+ * @param {BulkSelection} selection The bulk selection
+ * @param {string} folder The parent folder path
+ * @returns {string[]} The canonicalized paths
+ */
+export function bulkSelectionToPath(selection, folder) {
+  if (!folder) {
+    return [];
+  }
+
   return selection.map((item) => {
-    // detect illegal characters in file name
-    const { path, type } = item;
-    if (['/', '*', '\\', '!', '?'].find((pattern) => path.includes(pattern))) {
-      return `${illegalPathPrefix}${path}`;
-    }
+    const { file, type } = item;
 
-    let file = path;
+    let filename = file;
     let ext = '';
-    const lastDot = path.lastIndexOf('.');
+    const lastDot = file.lastIndexOf('.');
     if (lastDot > 0) {
-      // cut off extension
-      file = path.substring(0, lastDot);
-      ext = path.substring(lastDot + 1);
+      filename = file.substring(0, lastDot);
+      ext = file.substring(lastDot + 1);
     }
 
-    if (this.isSharePointFolder(this.location) && type === 'docx') {
-      // omit docx extension on sharepoint
+    if (type === 'docx') {
+      // omit docx extension
       ext = '';
     }
 
@@ -145,48 +207,13 @@ export function validateBulkSelection(selection, folder) {
       ext = '.json';
     }
 
-    if (file === 'index') {
+    if (filename === 'index') {
       // folder root
-      file = '';
+      filename = '';
     }
 
-    // normalize file name
-    file = file
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-
-    return `${folder}${folder.endsWith('/') ? '' : '/'}${file}${ext}`;
+    return `${folder}${folder.endsWith('/') ? '' : '/'}${filename}${ext}`;
   });
-}
-
-/**
- * Returns the bulk confirmation text for a given action.
- * @param {AppStore} appStore The app store
- * @param {string} operation The bulk operation
- * @returns {string} The bulk confirmation text
- */
-export function getBulkConfirmText(appStore, operation) {
-  const total = appStore.selection.length;
-  const suffix = total > 1 ? 'multiple' : 'single';
-  return appStore.i18n(`bulk_confirm_${operation}_${suffix}`)
-    .replace('$1', `${total}`);
-}
-
-/**
- * Returns the bulk progress text for a given action.
- * @param {AppStore} appStore The app store
- * @param {string} operation The bulk operation
- * @param {number} num The number of processed files
- * @param {number} total The total number of files
- * @returns {string} The bulk progress text
- */
-export function getBulkProgressText(appStore, operation, num, total) {
-  return appStore.i18n(`bulk_progress_${operation}`)
-    .replace('$1', `${num}`)
-    .replace('$2', `${total}`);
 }
 
 /**
@@ -196,16 +223,87 @@ export function getBulkProgressText(appStore, operation, num, total) {
  * @param {Object} [opts] The options
  * @param {string} [opts.route=operation] The route
  * @param {string} [opts.method='POST'] The method
- * @returns {Promise<AdminJobDetails>} The job details
+ * @returns {Promise<AdminJob>} The job details
  */
 export async function doBulkOperation(appStore, operation, {
   route = operation,
-  method = 'POST',
 } = {}) {
-  console.log('doBulkOperation', operation, route, method);
-  const paths = await appStore.getBulkSelection();
-  if (paths.length === 0) {
+  const { bulkSelection: selection, status, api } = appStore;
+
+  // check for illegal file names
+  const illegalNames = selection
+    .filter(({ file }) => file.startsWith(illegalPathPrefix))
+    .map(({ file }) => file.substring(10));
+  if (illegalNames.length > 0) {
+    appStore.showToast(
+      appStore.i18n(`bulk_error_illegal_file_name${illegalNames.length === 1 ? '' : 's'}`)
+        .replace('$1', illegalNames.join(', ')),
+      'warning',
+    );
     return null;
   }
+
+  const paths = bulkSelectionToPath(selection, status.webPath);
+
+  // set initial bulk progress
+  appStore.bulkProgress = {
+    total: paths.length,
+    processed: 0,
+    failed: 0,
+  };
+
+  const resp = await api.startBulkJob(route, paths);
+  if (resp) {
+    return new Promise((resolve) => {
+      const { job } = resp;
+      if (job) {
+        const { topic, name } = job;
+        // poll job state and resolve when stopped
+        const jobStatusPoll = window.setInterval(async () => {
+          const jobStatus = await api.getJob(topic, name);
+          if (jobStatus) {
+            const { state, progress } = jobStatus;
+            if (state === 'stopped') {
+              // stop polling
+              window.clearInterval(jobStatusPoll);
+              // delayed reset of bulk progress
+              window.setTimeout(() => {
+                appStore.bulkProgress = null;
+              }, 1000);
+              // return job details
+              resolve(api.getJob(topic, name, true));
+            } else if (progress) {
+              // update bulk progress
+              appStore.bulkProgress = progress;
+            }
+          }
+        }, 1000);
+      }
+    });
+  }
   return null;
+}
+
+/**
+ * Creates mock admin job details.
+ * @param {string} path The resource path
+ * @returns {AdminJob} The job details
+ */
+export function mockAdminJobDetails(path) {
+  return {
+    name: 'single',
+    state: 'completed',
+    startTime: new Date().toUTCString(),
+    progress: {
+      total: 1,
+      processed: 1,
+      failed: 0,
+    },
+    data: {
+      resources: [{
+        path,
+        status: 200,
+      }],
+    },
+  };
 }

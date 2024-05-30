@@ -10,7 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-import { STATE } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 
@@ -35,8 +34,6 @@ export function createPublishPlugin(appStore) {
       text: appStore.i18n('publish'),
       action: async (evt) => {
         const { siteStore } = appStore;
-        appStore.setState(STATE.PUBLISHNG);
-
         const res = await appStore.publish();
         if (res) {
           const actionCallback = () => {

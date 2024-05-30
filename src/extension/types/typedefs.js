@@ -155,7 +155,7 @@
  * @prop {string} [id] The unique view ID
  * @prop {string} path The path or globbing pattern where to apply this view
  * @prop {string} viewer The URL to render this view
- * @prop {string | function} [title] The title of the view
+ * @prop {string | Function} [title] The title of the view
  * @description A custom view configuration.
  */
 
@@ -170,6 +170,7 @@
  * @prop {string} [headline] The modal headline
  * @prop {string} [message] The modal message
  * @prop {string} [confirmLabel] The confirm button label
+ * @prop {Function} [confirmCallback] The function to call on confirm
  * @prop {string} [action] The action type (delete or unpublish)
  */
 
@@ -177,34 +178,46 @@
  * @typedef {Object} Toast
  * @prop {string} message The toast message
  * @prop {string} variant The toast variant
- * @prop {function} closeCallback The function to call on close
- * @prop {function} actionCallback The function to call on action
+ * @prop {Function} closeCallback The function to call on close
+ * @prop {Function} actionCallback The function to call on action
  * @prop {string} actionLabel The action label
  * @prop {number} timeout The time the toast is shown (default: 6000)
- */
-
-/**
- * @typedef {Object<string, string>[]} BulkSelection
- * @property {string} path The resource path
- * @property {string} type The resource
+ * @prop {boolean} [actionOnTimeout=true] Execute action on timeout
  */
 
 /**
  * @typedef {Object} BulkResource
- * @property {string} path The resource path
- * @property {string} status The status code
+ * @property {string} type The file type
+ * @property {string} file The file name
+ * @property {string} [path] The file path
  */
 
 /**
- * @typedef {Object} AdminJobDetails
+ * @typedef {BulkResource[]} BulkSelection
+ */
+
+/**
+ * @typedef {Object} AdminJobResource
+ * @property {string} path The resource path
+ * @property {number} status The status code
+ */
+
+/**
+ * @typedef {Object} AdminJobProgress
+ * @property {number} failed The number of failed operations
+ * @property {number} processed The number of processed resources
+ * @property {number} total The total number of resources
+ */
+
+/**
+ * @typedef {Object} AdminJob
  * @property {string} name The job name
- * @property {string} phase The job phase
  * @property {string} state The job state
+ * @property {AdminJobProgress} progress The progress info
  * @property {string} startTime The job start time as UTC string
- * @property {string} stopTime The job stop time as UTC string
- * @property {Object} data The job data
- * @property {BulkResource[]} data.resources The resources
- * @property {Object} data.progress The action
+ * @property {string} [stopTime] The job stop time as UTC string
+ * @property {Object} [data] The job data
+ * @property {AdminJobResource[]} [data.resources] The resources
  */
 
 /**

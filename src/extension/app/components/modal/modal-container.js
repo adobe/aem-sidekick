@@ -194,6 +194,13 @@ export class ModalContainer extends LitElement {
           </div>
         `;
         break;
+      case MODALS.CONFIRM:
+        options.underlay = true;
+        options.headline = data?.headline ?? this.appStore.i18n('confirm');
+        options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('ok');
+        options.cancelLabel = this.appStore.i18n('cancel');
+        options.content = html`${data?.message || ''}`;
+        break;
       default:
         this.cleanup();
         return html``;

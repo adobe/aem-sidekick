@@ -27,20 +27,27 @@ import { defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
 // @ts-ignore
 window.chrome = chromeMock;
 
-function mockFetchSuccess(method, api) {
-  fetchMock[method](`https://admin.hlx.page/${api}/adobe/aem-boilerplate/main/`, {
-    status: 200,
-    body: {
-      status: 'ok',
-      body: {
-        [api]: defaultSharepointStatusResponse[api],
-      },
-    },
-  }, { overwriteRoutes: true });
+function mockFetchSuccess({
+  method = 'get', api = 'status', path = '/', editUrl = '',
+} = {}) {
+  const url = new URL(`https://admin.hlx.page/${api}/adobe/aem-boilerplate/main${path}`);
+  if (editUrl) {
+    url.searchParams.append('editUrl', editUrl);
+  }
+  const body = api === 'status'
+    ? defaultSharepointStatusResponse
+    : { [api]: defaultSharepointStatusResponse[api] };
+  fetchMock[method](url, body, { overwriteRoutes: true });
 }
 
-function mockFetchError(method, api, status, headers = {}) {
-  fetchMock[method](`https://admin.hlx.page/${api}/adobe/aem-boilerplate/main/`, {
+function mockFetchError({
+  method = 'get', api = 'status', path = '/', editUrl = '', status = 502, headers = {},
+} = {}) {
+  const url = new URL(`https://admin.hlx.page/${api}/adobe/aem-boilerplate/main${path}`);
+  if (editUrl) {
+    url.searchParams.append('editUrl', editUrl);
+  }
+  fetchMock[method](url, {
     status,
     headers,
   }, { overwriteRoutes: true });
@@ -88,22 +95,29 @@ describe('Test Admin Client', () => {
 
   describe('getStatus', () => {
     it('returns status JSON', async () => {
+      mockFetchSuccess();
       const res = await adminClient.getStatus('/');
+      expect(res.webPath).to.equal('/');
+    });
+
+    it('returns status JSON with editUrl', async () => {
+      mockFetchSuccess({ editUrl: 'auto' });
+      const res = await adminClient.getStatus('/', 'auto');
       expect(res.webPath).to.equal('/');
     });
 
     it('returns status in case of error', async () => {
       const opts = { status: 404 };
-      fetchMock.get('https://admin.hlx.page/status/adobe/aem-boilerplate/main/foo', opts);
-      const res = await adminClient.getStatus('/foo');
+      mockFetchError(opts);
+      const res = await adminClient.getStatus('/');
       expect(res).to.be.deep.equal(opts);
       expect(showToastStub.calledOnce).to.be.true;
     });
 
     it('returns status in case of 401', async () => {
       const opts = { status: 401 };
-      fetchMock.get('https://admin.hlx.page/status/adobe/aem-boilerplate/main/foo', opts);
-      const res = await adminClient.getStatus('/foo');
+      mockFetchError(opts);
+      const res = await adminClient.getStatus('/');
       expect(res).to.be.deep.equal(opts);
       expect(showToastStub.calledOnce).to.be.false;
     });
@@ -137,44 +151,70 @@ describe('Test Admin Client', () => {
 
   describe('updatePreview', () => {
     it('returns preview JSON', async () => {
-      mockFetchSuccess('post', 'preview');
+      mockFetchSuccess({
+        method: 'post',
+        api: 'preview',
+      });
       const res = await adminClient.updatePreview('/');
       expect(res).to.be.instanceOf(Object);
     });
 
     it('returns null if not 200', async () => {
-      mockFetchError('post', 'preview', 404);
+      mockFetchError({
+        method: 'post',
+        api: 'preview',
+        status: 404,
+      });
       const res = await adminClient.updatePreview('/');
       expect(res).to.be.null;
     });
 
     it('returns null if fetch fails', async () => {
-      const res = await adminClient.updatePreview('/');
+      mockFetchError({
+        method: 'post',
+        api: 'preview',
+      });
       sandbox.stub(window, 'fetch').throws(error);
+      const res = await adminClient.updatePreview('/');
       expect(res).to.be.null;
     });
   });
 
   describe('updateLive', () => {
     it('returns live JSON', async () => {
-      mockFetchSuccess('post', 'live');
+      mockFetchSuccess({
+        method: 'post',
+        api: 'live',
+      });
       const res = await adminClient.updateLive('/');
       expect(res).to.be.instanceOf(Object);
     });
 
     it('deletes live resource', async () => {
-      mockFetchSuccess('delete', 'live');
+      mockFetchSuccess({
+        method: 'delete',
+        api: 'live',
+      });
       const res = await adminClient.updateLive('/', true);
       expect(res).to.be.instanceOf(Object);
     });
 
     it('returns null if not 200', async () => {
-      mockFetchError('post', 'live', 404);
+      mockFetchError({
+        method: 'post',
+        api: 'live',
+        status: 404,
+      });
       const res = await adminClient.updateLive('/');
       expect(res).to.be.null;
     });
 
     it('returns null if fetch fails', async () => {
+      mockFetchError({
+        method: 'post',
+        api: 'live',
+        status: 404,
+      });
       const res = await adminClient.updateLive('/');
       sandbox.stub(window, 'fetch').throws(error);
       expect(res).to.be.null;
@@ -183,7 +223,11 @@ describe('Test Admin Client', () => {
 
   describe('should handle rate limiting', () => {
     it('should handle 429 error', async () => {
-      mockFetchError('post', 'preview', 429);
+      mockFetchError({
+        method: 'post',
+        api: 'preview',
+        status: 429,
+      });
       await adminClient.updatePreview('/');
       expect(showToastStub.calledOnce).to.be.true;
       expect(showToastStub.args[0][0]).to.match(/429/);
@@ -192,8 +236,13 @@ describe('Test Admin Client', () => {
     });
 
     it('should handle 503 error with 429 in x-error header', async () => {
-      mockFetchError('post', 'preview', 503, {
-        'x-error': 'unable to handle onedrive (429)',
+      mockFetchError({
+        method: 'post',
+        api: 'preview',
+        status: 503,
+        headers: {
+          'x-error': 'unable to handle onedrive (429)',
+        },
       });
       await adminClient.updatePreview('/');
       expect(showToastStub.calledOnce).to.be.true;
@@ -216,8 +265,9 @@ describe('Test Admin Client', () => {
 
     it('should handle 4xx status errors', async () => {
       // content URL
-      sandbox.stub(appStore, 'isEditor').returns(false);
-      mockFetchError('get', 'status', 404);
+      mockFetchError({
+        status: 404,
+      });
       await adminClient.getStatus('/');
       expect(showToastStub.calledOnce).to.be.true;
       expect(toast.message).to.match(/404/);
@@ -228,9 +278,12 @@ describe('Test Admin Client', () => {
       expect(closeToastStub.calledOnce).to.be.true;
 
       // editor
-      appStore.isEditor.returns(true);
-      mockFetchError('get', 'status', 404);
-      await adminClient.getStatus('/');
+      sandbox.stub(appStore, 'isEditor').returns(true);
+      mockFetchError({
+        status: 404,
+        editUrl: 'https://adobe.sharepoint.com/sites/foo',
+      });
+      await adminClient.getStatus('/', 'https://adobe.sharepoint.com/sites/foo');
       expect(showToastStub.calledTwice).to.be.true;
       expect(toast.message).to.match(/404/);
       expect(toast.message).to.match(/make sure access to this document is granted/);
@@ -241,7 +294,11 @@ describe('Test Admin Client', () => {
     });
 
     it('should handle 5xx preview error', async () => {
-      mockFetchError('post', 'preview', 500);
+      mockFetchError({
+        method: 'post',
+        api: 'preview',
+        status: 500,
+      });
       await adminClient.updatePreview('/');
       expect(showToastStub.calledOnce).to.be.true;
       expect(toast.message).to.match(/Preview generation failed/);
@@ -252,7 +309,11 @@ describe('Test Admin Client', () => {
     });
 
     it('should handle 5xx live error', async () => {
-      mockFetchError('post', 'live', 500);
+      mockFetchError({
+        method: 'post',
+        api: 'live',
+        status: 500,
+      });
       await adminClient.updateLive('/');
       expect(showToastStub.calledOnce).to.be.true;
       expect(toast.message).to.match(/Publication failed/);
@@ -263,6 +324,10 @@ describe('Test Admin Client', () => {
     });
 
     it('should handle fatal error', async () => {
+      mockFetchError({
+        method: 'post',
+        api: 'preview',
+      });
       sandbox.stub(window, 'fetch').throws(error);
       await adminClient.updatePreview('preview', '/');
       expect(showToastStub.calledOnce).to.be.true;

@@ -10,7 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-import { STATE } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
 
@@ -34,8 +33,6 @@ export function createReloadPlugin(appStore) {
     button: {
       text: appStore.i18n('reload'),
       action: async (evt) => {
-        appStore.setState(STATE.PREVIEWING);
-
         const res = await appStore.update();
         if (res) {
           const closeHandler = () => {

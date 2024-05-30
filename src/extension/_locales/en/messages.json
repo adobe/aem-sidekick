@@ -45,10 +45,10 @@
     "bulk_error_publish_login_required": {
       "message": "You need to sign in to publish more than 100 files."
     },
-    "bulk_progress_preview": {
+    "bulk_previewing_state": {
       "message": "Preview for $1 of $2 files generated..."
     },
-    "bulk_progress_publish": {
+    "bulk_publishing_state": {
       "message": "$1 of $2 files published..."
     },
     "bulk_result_preview_multiple_failure": {
@@ -279,6 +279,10 @@
     "config_ux": {
       "message": "User experience"
     },
+    "confirm": {
+      "message": "Please confirm",
+      "description": "Confirmation modal heading"
+    },
     "copied": {
       "message": "Copied"
     },
@@ -499,7 +503,7 @@
       "message": "Open URL"
     },
     "open_urls": {
-      "message": "Open URLs"
+      "message": "Open $1 URLs"
     },
     "open": {
       "message": "Open"

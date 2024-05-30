@@ -11,6 +11,8 @@
  */
 
 import { Plugin } from '../../components/plugin/plugin.js';
+import { MODAL_EVENTS } from '../../constants.js';
+import { getBulkConfirmText, getBulkSuccessText } from '../../utils/bulk.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -28,10 +30,62 @@ import { Plugin } from '../../components/plugin/plugin.js';
 export function createBulkPublishPlugin(appStore) {
   return new Plugin({
     id: 'bulk-publish',
-    condition: (store) => store.isAdmin() && store.selection.length > 0,
+    condition: (store) => store.isAdmin() && store.bulkSelection.length > 0,
     button: {
       text: appStore.i18n('publish'),
-      action: () => {},
+      action: () => {
+        const confirmText = getBulkConfirmText(appStore, 'publish', appStore.bulkSelection.length);
+        const modal = appStore.showModal({
+          type: 'confirm',
+          data: {
+            headline: appStore.i18n('publish'),
+            message: confirmText,
+            confirmLabel: appStore.i18n('publish'),
+          },
+        });
+        modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
+          const res = await appStore.bulkPublish();
+          if (res) {
+            const { siteStore } = appStore;
+            const paths = (res.data?.resources || []).map(({ path }) => path);
+
+            const actionLabel = paths.length > 1
+              ? appStore.i18n('open_urls').replace('$1', `${paths.length}`)
+              : appStore.i18n('open_url');
+
+            const actionCallback = () => {
+              const openUrls = () => paths.forEach((path) => {
+                appStore.openPage(`https://${siteStore.host || siteStore.liveHost}${path}`);
+              });
+              if (paths.length <= 10) {
+                openUrls();
+              } else {
+                appStore.showModal({
+                  type: 'confirm',
+                  data: {
+                    headline: actionLabel,
+                    message: appStore.i18n('open_urls_confirm').replace('$1', `${paths.length}`),
+                    confirmLabel: appStore.i18n('open'),
+                    confirmCallback: openUrls,
+                  },
+                });
+              }
+              appStore.closeToast();
+            };
+
+            // show success toast
+            appStore.showToast(
+              getBulkSuccessText(appStore, 'publish', res.data?.resources?.length),
+              'positive',
+              () => appStore.closeToast(),
+              actionCallback,
+              actionLabel,
+              30000,
+              false,
+            );
+          }
+        }, { once: true });
+      },
     },
   },
   appStore);

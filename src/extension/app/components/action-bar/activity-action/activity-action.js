@@ -35,6 +35,13 @@ export class ActivityAction extends ConnectedElement {
         this.requestUpdate();
       },
     );
+
+    reaction(
+      () => this.appStore.bulkProgress,
+      () => {
+        this.requestUpdate();
+      },
+    );
   }
 
   handleCloseToast() {
@@ -71,6 +78,19 @@ export class ActivityAction extends ConnectedElement {
       case STATE.DELETING:
         return html`
           <sp-progress-circle size="s" indeterminate></sp-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
+        `;
+      case STATE.BULK_PREVIEWING:
+      case STATE.BULK_PUBLISHING:
+        return html`
+          <sp-progress-circle size="s" indeterminate></sp-progress-circle>
+          <span>
+            ${this.appStore.bulkProgress
+              ? this.appStore.i18n(this.appStore.state)
+                  .replace('$1', `${this.appStore.bulkProgress.processed}`)
+                  .replace('$2', `${this.appStore.bulkProgress.total}`)
+              // show generic state if bulk progress not available
+              : this.appStore.i18n(this.appStore.state.replace('bulk_', ''))}
+          </span>
         `;
       case STATE.LOGIN_REQUIRED:
         return html`

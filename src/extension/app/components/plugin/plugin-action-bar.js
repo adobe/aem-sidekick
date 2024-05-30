@@ -108,7 +108,7 @@ export class PluginActionBar extends ConnectedElement {
 
             setTimeout(() => {
               actionBar.className = '';
-              if (this.appStore.toast?.actionCallback) {
+              if (this.appStore.toast?.actionCallback && this.appStore.toast?.actionOnTimeout) {
                 this.appStore.toast?.actionCallback();
               }
               this.appStore.closeToast();
@@ -125,7 +125,7 @@ export class PluginActionBar extends ConnectedElement {
     );
 
     reaction(
-      () => this.appStore.selection,
+      () => this.appStore.bulkSelection,
       () => {
         this.setupPlugins();
       },
