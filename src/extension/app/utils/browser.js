@@ -57,22 +57,6 @@ export function getLocation() {
 }
 
 /**
- * Checks if the URL has changed.
- * @param {string} url The URL to check
- * @returns {boolean} True if URL has changed, else false
- */
-export function isNewLocation(url) {
-  const $test = document.getElementById('sidekick_test_location');
-  if ($test) {
-    // @ts-ignore
-    return $test.value !== url;
-  }
-
-  const href = getResourceURL(new URL(window.location.href)).toString();
-  return href !== url;
-}
-
-/**
  * Retrieves project details from a host name.
  * @private
  * @param {string} host The host name
