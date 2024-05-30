@@ -303,7 +303,6 @@ export class AdminClient {
           method: 'post',
           body: {
             paths,
-            forceUpdate: true,
             delete: !!del,
           },
         },
