@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/adobe/aem-sidekick/compare/v1.23.2...v1.24.0) (2024-05-30)
+
+
+### Features
+
+* add project should fetch from config.json ([#157](https://github.com/adobe/aem-sidekick/issues/157)) ([f095ccc](https://github.com/adobe/aem-sidekick/commit/f095cccf8749467f36186eba14830e694ccd23be))
+
 ## [1.23.2](https://github.com/adobe/aem-sidekick/compare/v1.23.1...v1.23.2) (2024-05-28)
 
 
