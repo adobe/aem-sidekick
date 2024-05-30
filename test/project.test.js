@@ -86,19 +86,12 @@ const CONFIGS = [
   },
 ];
 
-const ENV_JSON = {
-  version: 1,
-  prod: {
-    host: 'business.adobe.com',
-    routes: [],
-  },
-  preview: {
-    host: 'preview.example.com',
-  },
-  live: {
-    host: 'live.example.com',
-  },
+const CONFIG_JSON = {
+  host: 'business.adobe.com',
+  previewHost: 'preview.example.com',
+  liveHost: 'live.example.com',
   project: 'Adobe Business Website',
+  mountpoints: ['https://adobe.sharepoint.com/:f:/s/Dummy/Alk9MSH25LpBuUWA_N6DOL8BuI6Vrdyrr87gne56dz3QeQ'],
   contentSourceUrl: 'https://adobe.sharepoint.com/:f:/s/Dummy/Alk9MSH25LpBuUWA_N6DOL8BuI6Vrdyrr87gne56dz3QeQ',
   contentSourceType: 'onedrive',
 };
@@ -174,7 +167,7 @@ describe('Test project', () => {
   it('getProjectEnv', async () => {
     sinon.stub(window, 'fetch')
       .onFirstCall()
-      .resolves(new Response(JSON.stringify(ENV_JSON)))
+      .resolves(new Response(JSON.stringify(CONFIG_JSON)))
       .onSecondCall()
       .resolves(new Response(JSON.stringify({})))
       .onThirdCall()
@@ -188,6 +181,9 @@ describe('Test project', () => {
     expect(host).to.equal('business.adobe.com');
     expect(project).to.equal('Adobe Business Website');
     expect(mountpoints[0]).to.equal('https://adobe.sharepoint.com/:f:/s/Dummy/Alk9MSH25LpBuUWA_N6DOL8BuI6Vrdyrr87gne56dz3QeQ');
+
+    // Check that mountpoints is an array
+    expect(Array.isArray(mountpoints)).to.be.true;
     // testing else paths
     const empty = await getProjectEnv({
       owner: 'adobe',
@@ -226,14 +222,14 @@ describe('Test project', () => {
     const spy = sinon.spy(chrome.storage.sync, 'set');
     sinon.stub(window, 'fetch')
       .onCall(1)
-      .resolves(new Response(JSON.stringify(ENV_JSON)))
+      .resolves(new Response(JSON.stringify(CONFIG_JSON)))
       .onCall(2)
       .resolves(new Response('', { status: 401 }))
       .onCall(3)
-      .resolves(new Response(JSON.stringify(ENV_JSON)))
+      .resolves(new Response(JSON.stringify(CONFIG_JSON)))
       .onCall(4)
       .resolves(new Response('', { status: 401 }))
-      .resolves(new Response(JSON.stringify(ENV_JSON)));
+      .resolves(new Response(JSON.stringify(CONFIG_JSON)));
 
     // add project
     const added = await addProject({

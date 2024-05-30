@@ -95,7 +95,7 @@ describe('Test UI: updateContextMenu', () => {
   });
 
   it('updateContextMenu: project added and enabled', async () => {
-    fetchMock.get('https://admin.hlx.page/sidekick/adobe/aem-boilerplate/main/env.json', {
+    fetchMock.get('https://admin.hlx.page/sidekick/adobe/aem-boilerplate/main/config.json', {
       status: 200,
       body: {
         version: 1,
