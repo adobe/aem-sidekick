@@ -821,6 +821,7 @@ describe('Plugin action bar', () => {
       expect(addProjectButton).to.exist;
 
       addProjectButton.click();
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'));
 
       waitUntil(() => toggleProjectSpy.calledOnce);
     });
@@ -847,6 +848,7 @@ describe('Plugin action bar', () => {
       expect(closeButton).to.exist;
 
       closeButton.click();
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'));
       waitUntil(() => closeSpy.calledOnce);
     });
 
@@ -866,10 +868,14 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
 
-      sandbox.stub(sidekickTest.appStore, 'openPage').returns(null);
+      const openPageStub = sandbox.stub(sidekickTest.appStore, 'openPage').returns(null);
       const helpButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="open-help"]');
       expect(helpButton).to.exist;
       helpButton.click();
+
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'));
+
+      expect(openPageStub.calledOnce).to.be.true;
     });
   });
 });
