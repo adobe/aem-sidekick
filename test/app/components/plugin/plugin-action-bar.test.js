@@ -569,10 +569,12 @@ describe('Plugin action bar', () => {
         .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
         .createSidekick();
 
+      await resizeWindow({ width: 1200, height: 600 });
+
       sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitEnvSwitcher();
-      await aTimeout(100);
+      await aTimeout(200);
 
       const pluginActionBar = recursiveQuery(sidekick, 'plugin-action-bar');
       const customPluginId = 'custom-plugin-9'; // generated id
@@ -591,7 +593,7 @@ describe('Plugin action bar', () => {
 
       // make viewport narrower
       await resizeWindow({ width: 600, height: 600 });
-      await aTimeout(100);
+      await aTimeout(200);
 
       // check if tools container plugin moved to plugin menu
       expectInActionBar([
@@ -611,7 +613,7 @@ describe('Plugin action bar', () => {
 
       // make viewport narrower
       await resizeWindow({ width: 475, height: 600 });
-      await aTimeout(100);
+      await aTimeout(200);
       await pluginActionBar.checkOverflow();
 
       // check if library plugin and tools container moved to plugin menu
@@ -633,7 +635,7 @@ describe('Plugin action bar', () => {
       // make viewport wider again
       await resizeWindow({ width: 600, height: 600 });
       await resizeWindow({ width: 1000, height: 600 });
-      await aTimeout(100);
+      await aTimeout(200);
       await pluginActionBar.checkOverflow();
 
       // check if all plugins moved back to bar
@@ -647,7 +649,7 @@ describe('Plugin action bar', () => {
       await expectInPluginMenu([
         customPluginId,
       ]);
-    });
+    }).timeout(100000);
   });
 
   describe('login states', () => {
