@@ -614,8 +614,10 @@ describe('Plugin action bar', () => {
       // make viewport narrower
       await resizeWindow({ width: 200, height: 600 });
       await resizeWindow({ width: 550, height: 600 });
-      await aTimeout(200);
+      await aTimeout(300);
       await pluginActionBar.checkOverflow();
+      pluginActionBar.requestUpdate();
+      await aTimeout(300);
 
       // check if library plugin and tools container moved to plugin menu
       expectInActionBar([
