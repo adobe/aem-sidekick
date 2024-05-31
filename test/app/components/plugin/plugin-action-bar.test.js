@@ -796,9 +796,9 @@ describe('Plugin action bar', () => {
 
       addProjectButton.click();
 
-      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'));
-      waitUntil(() => toggleProjectSpy.calledOnce);
-    });
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
+      expect(toggleProjectSpy.calledOnce).to.be.true;
+    }).timeout(10000);
 
     it('not transient mode', async () => {
       sidekick = sidekickTest.createSidekick({
@@ -822,10 +822,10 @@ describe('Plugin action bar', () => {
       expect(addProjectButton).to.exist;
 
       addProjectButton.click();
-      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'));
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
 
-      waitUntil(() => toggleProjectSpy.calledOnce);
-    });
+      expect(toggleProjectSpy.calledOnce).to.be.true;
+    }).timeout(10000);
 
     it('close extension', async () => {
       sidekick = sidekickTest.createSidekick({
@@ -849,9 +849,9 @@ describe('Plugin action bar', () => {
       expect(closeButton).to.exist;
 
       closeButton.click();
-      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'));
-      waitUntil(() => closeSpy.calledOnce);
-    });
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
+      expect(closeSpy.calledOnce).to.be.true;
+    }).timeout(10000);
 
     it('open documentation', async () => {
       const { sandbox } = sidekickTest;
@@ -874,9 +874,8 @@ describe('Plugin action bar', () => {
       expect(helpButton).to.exist;
       helpButton.click();
 
-      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'));
-
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
       expect(openPageStub.calledOnce).to.be.true;
-    });
+    }).timeout(10000);
   });
 });
