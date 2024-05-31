@@ -612,7 +612,8 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport narrower
-      await resizeWindow({ width: 475, height: 600 });
+      await resizeWindow({ width: 200, height: 600 });
+      await resizeWindow({ width: 550, height: 600 });
       await aTimeout(200);
       await pluginActionBar.checkOverflow();
 
