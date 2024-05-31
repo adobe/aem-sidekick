@@ -56,11 +56,11 @@ export const style = css`
     margin: 8px;
   }
 
-  action-bar sp-action-menu#properties-menu sp-menu-group {
+  action-bar sp-action-menu#sidekick-menu sp-menu-group {
     margin: 8px;
   }
 
-  action-bar sp-action-menu#properties-menu > sp-menu-item{
+  action-bar sp-action-menu#sidekick-menu > sp-menu-item{
     margin: 8px;
   }
 

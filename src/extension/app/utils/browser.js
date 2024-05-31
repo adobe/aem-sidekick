@@ -44,10 +44,10 @@ export function getLocation() {
   // use window location by default
   let url = new URL(window.location.href);
   // first check if there is a test location
-  const $test = document.getElementById('sidekick_test_location');
-  if ($test && $test instanceof HTMLInputElement) {
+  const test = document.getElementById('sidekick_test_location');
+  if (test && test instanceof HTMLInputElement) {
     try {
-      url = new URL($test.value);
+      url = new URL(test.value);
     } catch (e) {
       return null;
     }

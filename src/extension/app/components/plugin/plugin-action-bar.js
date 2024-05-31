@@ -73,8 +73,8 @@ export class PluginActionBar extends ConnectedElement {
   @queryAll('sp-action-group')
   accessor actionGroups;
 
-  @queryAsync('sp-action-menu#properties-menu')
-  accessor propertiesMenu;
+  @queryAsync('sp-action-menu#sidekick-menu')
+  accessor sidekickMenu;
 
   /**
    * Loads the user preferences for plugins in this environment.
@@ -252,10 +252,10 @@ export class PluginActionBar extends ConnectedElement {
       </sp-action-group>`;
   }
 
-  async onPropertyMenuSelection(event) {
+  async onSidekickMenuSelection(event) {
     const { value } = event.target;
 
-    const menu = await this.propertiesMenu;
+    const menu = await this.sidekickMenu;
     menu.removeAttribute('open');
 
     if (value === 'open-help') {
@@ -276,20 +276,20 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     const properties = html`
-      <sp-action-menu id="properties-menu" placement="top" quiet @change=${this.onPropertyMenuSelection}>
+      <sp-action-menu id="sidekick-menu" placement="top" quiet @change=${this.onSidekickMenuSelection}>
         <sp-icon slot="icon" size="l">
           ${ICONS.HAMBURGER_ICON}
         </sp-icon>
         <sp-menu-group>
           ${siteStore.transient ? html`
-              <sp-menu-item class="icon-item" value="projectadded">
+              <sp-menu-item class="icon-item add-project" value="projectadded">
                 <sp-icon slot="icon" size="m">
                   ${ICONS.PLUS_ICON}
                 </sp-icon>
                 Add Project
               </sp-menu-item>
             ` : html`
-              <sp-menu-item class="icon-item destructive" value="projectadded">
+              <sp-menu-item class="icon-item remove-project destructive" value="projectadded">
                 <sp-icon slot="icon" size="m">
                   ${ICONS.TRASH_ICON}
                 </sp-icon>

@@ -33,7 +33,7 @@ export const style = css`
     position: absolute;
     left: 50%;
     transform: translate(-50%, 0px);
-    bottom: 150px;
+    bottom: 55px;
     pointer-events: auto;
   }
 
