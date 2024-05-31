@@ -653,7 +653,7 @@
       "message": "Signing out..."
     },
     "unauthorized_state": {
-      "message": "Account not authorized"
+      "message": "Account not authorized for this site"
     },
     "previewing_state": {
       "message": "Updating Preview..."
