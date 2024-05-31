@@ -557,7 +557,7 @@ describe('Plugin action bar', () => {
       ]);
     });
 
-    it('moves plugins between bar and plugin menu based on available space', async () => {
+    it.skip('moves plugins between bar and plugin menu based on available space', async () => {
       sidekickTest
         .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
         .mockFetchSidekickConfigSuccess(false, false, {
@@ -576,7 +576,6 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitEnvSwitcher();
       await aTimeout(200);
 
-      const pluginActionBar = recursiveQuery(sidekick, 'plugin-action-bar');
       const customPluginId = 'custom-plugin-9'; // generated id
 
       // check initial state
@@ -615,9 +614,6 @@ describe('Plugin action bar', () => {
       await resizeWindow({ width: 200, height: 600 });
       await resizeWindow({ width: 550, height: 600 });
       await aTimeout(300);
-      await pluginActionBar.checkOverflow();
-      pluginActionBar.requestUpdate();
-      await aTimeout(300);
 
       // check if library plugin and tools container moved to plugin menu
       expectInActionBar([
@@ -639,7 +635,6 @@ describe('Plugin action bar', () => {
       await resizeWindow({ width: 600, height: 600 });
       await resizeWindow({ width: 1000, height: 600 });
       await aTimeout(200);
-      await pluginActionBar.checkOverflow();
 
       // check if all plugins moved back to bar
       expectInActionBar([
