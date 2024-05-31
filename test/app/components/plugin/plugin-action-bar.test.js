@@ -796,6 +796,7 @@ describe('Plugin action bar', () => {
 
       addProjectButton.click();
 
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'));
       waitUntil(() => toggleProjectSpy.calledOnce);
     });
 
