@@ -574,6 +574,7 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitEnvSwitcher();
       await aTimeout(100);
 
+      const pluginActionBar = recursiveQuery(sidekick, 'plugin-action-bar');
       const customPluginId = 'custom-plugin-9'; // generated id
 
       // check initial state
@@ -611,6 +612,7 @@ describe('Plugin action bar', () => {
       // make viewport narrower
       await resizeWindow({ width: 475, height: 600 });
       await aTimeout(100);
+      await pluginActionBar.checkOverflow();
 
       // check if library plugin and tools container moved to plugin menu
       expectInActionBar([
@@ -632,18 +634,19 @@ describe('Plugin action bar', () => {
       await resizeWindow({ width: 600, height: 600 });
       await resizeWindow({ width: 1000, height: 600 });
       await aTimeout(100);
+      await pluginActionBar.checkOverflow();
 
       // check if all plugins moved back to bar
-      // expectInActionBar([
-      //   'env-switcher',
-      //   'edit-preview',
-      //   'assets',
-      //   'library',
-      //   'tools',
-      // ]);
-      // await expectInPluginMenu([
-      //   customPluginId,
-      // ]);
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+        'assets',
+        'library',
+        'tools',
+      ]);
+      await expectInPluginMenu([
+        customPluginId,
+      ]);
     });
   });
 
