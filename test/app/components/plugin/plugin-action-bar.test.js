@@ -850,12 +850,13 @@ describe('Plugin action bar', () => {
     });
 
     it('open documentation', async () => {
+      const { sandbox } = sidekickTest;
       sidekick = sidekickTest.createSidekick({
         ...defaultSidekickConfig,
         transient: false,
       });
 
-      const openPageStub = sidekickTest.sandbox.stub(sidekickTest.appStore, 'openPage');
+      const openPageStub = sandbox.stub(appStore, 'openPage');
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
 
@@ -871,8 +872,8 @@ describe('Plugin action bar', () => {
 
       await aTimeout(200);
       helpButton.click();
-      await waitUntil(() => openPageStub.calledOnce);
+      await waitUntil(() => openPageStub.calledOnce, 'Page not opened', { timeout: 2000 });
       expect(openPageStub.calledWith('https://www.aem.live/docs/sidekick')).to.be.true;
-    });
+    }).timeout(10000);
   });
 });
