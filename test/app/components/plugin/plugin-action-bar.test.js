@@ -557,7 +557,7 @@ describe('Plugin action bar', () => {
       ]);
     });
 
-    it.skip('moves plugins between bar and plugin menu based on available space', async () => {
+    it('moves plugins between bar and plugin menu based on available space', async () => {
       sidekickTest
         .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
         .mockFetchSidekickConfigSuccess(false, false, {
@@ -592,7 +592,7 @@ describe('Plugin action bar', () => {
 
       // make viewport narrower
       await resizeWindow({ width: 600, height: 600 });
-      await aTimeout(200);
+      await aTimeout(300);
 
       // check if tools container plugin moved to plugin menu
       expectInActionBar([
@@ -611,8 +611,7 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport narrower
-      await resizeWindow({ width: 200, height: 600 });
-      await resizeWindow({ width: 550, height: 600 });
+      await resizeWindow({ width: 500, height: 600 });
       await aTimeout(300);
 
       // check if library plugin and tools container moved to plugin menu
@@ -634,7 +633,7 @@ describe('Plugin action bar', () => {
       // make viewport wider again
       await resizeWindow({ width: 600, height: 600 });
       await resizeWindow({ width: 1000, height: 600 });
-      await aTimeout(200);
+      await aTimeout(300);
 
       // check if all plugins moved back to bar
       expectInActionBar([
