@@ -136,6 +136,7 @@ export const style = css`
     align-items: center;
     height: 18px;
     gap: 7px;
+    padding-top: 1px;
   }
 
   :host(.icon-item.destructive) {
