@@ -252,7 +252,7 @@ export class PluginActionBar extends ConnectedElement {
       </sp-action-group>`;
   }
 
-  async onSidekickMenuSelection(event) {
+  async handleItemSelection(event) {
     const { value } = event.target;
 
     const menu = await this.sidekickMenu;
@@ -276,20 +276,20 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     const properties = html`
-      <sp-action-menu id="sidekick-menu" placement="top" quiet @change=${this.onSidekickMenuSelection}>
+      <sp-action-menu id="sidekick-menu" placement="top" quiet>
         <sp-icon slot="icon" size="l">
           ${ICONS.HAMBURGER_ICON}
         </sp-icon>
         <sp-menu-group>
           ${siteStore.transient ? html`
-              <sp-menu-item class="icon-item add-project" value="projectadded">
+              <sp-menu-item class="icon-item add-project" value="projectadded" @click=${this.handleItemSelection}>
                 <sp-icon slot="icon" size="m">
                   ${ICONS.PLUS_ICON}
                 </sp-icon>
                 Add Project
               </sp-menu-item>
             ` : html`
-              <sp-menu-item class="icon-item remove-project destructive" value="projectadded">
+              <sp-menu-item class="icon-item remove-project destructive" value="projectadded" @click=${this.handleItemSelection}>
                 <sp-icon slot="icon" size="m">
                   ${ICONS.TRASH_ICON}
                 </sp-icon>
@@ -297,7 +297,7 @@ export class PluginActionBar extends ConnectedElement {
               </sp-menu-item>
             `
           }
-          <sp-menu-item class="icon-item" value="open-help">
+          <sp-menu-item class="icon-item" value="open-help"  @click=${this.handleItemSelection}>
             <sp-icon slot="icon" size="m">
               ${ICONS.HELP_ICON}
             </sp-icon>
@@ -305,7 +305,7 @@ export class PluginActionBar extends ConnectedElement {
           </sp-menu-item>
         </sp-menu-group>
         <sp-divider size="s"></sp-divider>
-        <sp-menu-item class="icon-item" value="hidden">
+        <sp-menu-item class="icon-item" value="hidden" @click=${this.handleItemSelection}>
           <sp-icon slot="icon" size="m">
             ${ICONS.CLOSE_X}
           </sp-icon>

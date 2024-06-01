@@ -820,8 +820,8 @@ describe('Plugin action bar', () => {
 
       const addProjectButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item.remove-project');
       expect(addProjectButton).to.exist;
-
       addProjectButton.click();
+
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
 
       expect(toggleProjectSpy.calledOnce).to.be.true;
@@ -833,10 +833,7 @@ describe('Plugin action bar', () => {
         transient: false,
       });
 
-      const closeSpy = sidekickTest.sandbox.spy();
-      sidekick.addEventListener('hidden', closeSpy);
-
-      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+      await sidekickTest.awaitEnvSwitcher();
 
       const sidekickMenuButton = recursiveQuery(sidekick, '#sidekick-menu');
       expect(sidekickMenuButton).to.exist;
@@ -845,11 +842,15 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
 
+      const closeSpy = sidekickTest.sandbox.spy();
+      sidekick.addEventListener('hidden', closeSpy);
+
       const closeButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="hidden"]');
       expect(closeButton).to.exist;
-
       closeButton.click();
-      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
+
+      await waitUntil(() => closeSpy.called, 'sidekick did not close', { timeout: 3000 });
+
       expect(closeSpy.calledOnce).to.be.true;
     }).timeout(10000);
 
@@ -874,6 +875,7 @@ describe('Plugin action bar', () => {
       expect(helpButton).to.exist;
       helpButton.click();
 
+      await aTimeout(200);
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
       expect(openPageStub.calledOnce).to.be.true;
     }).timeout(10000);
