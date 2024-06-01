@@ -82,7 +82,7 @@
     "@web/rollup-plugin-import-meta-assets": "2.2.1",
     "@web/test-runner": "0.18.2",
     "@web/test-runner-commands": "0.9.0",
-    "ajv": "8.13.0",
+    "ajv": "8.14.0",
     "archiver": "7.0.1",
     "babel-plugin-istanbul": "6.1.1",
     "chokidar": "3.6.0",
