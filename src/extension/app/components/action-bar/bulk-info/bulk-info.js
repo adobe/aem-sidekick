@@ -39,26 +39,24 @@ export class BulkInfo extends ConnectedElement {
   }
 
   render() {
-    return this.appStore.isAdmin()
-      ? html`
-        <div class="container">
-          <span>
-            ${
-            // eslint-disable-next-line no-nested-ternary
-            this.appStore.bulkSelection.length > 0
-              ? (this.appStore.bulkSelection.length === 1
-                ? this.appStore.i18n('bulk_selection_single')
-                : this.appStore.i18n('bulk_selection_multiple')
-                  .replace('$1', `${this.appStore.bulkSelection.length}`))
-              : this.appStore.i18n('bulk_selection_empty')
-            }
-          </span>
-          ${this.appStore.bulkSelection.length > 0
-            ? html`<sp-menu-divider size="s" vertical></sp-menu-divider>`
-            : ''
+    return html`
+      <div class="container">
+        <span>
+          ${
+          // eslint-disable-next-line no-nested-ternary
+          this.appStore.bulkSelection.length > 0
+            ? (this.appStore.bulkSelection.length === 1
+              ? this.appStore.i18n('bulk_selection_single')
+              : this.appStore.i18n('bulk_selection_multiple')
+                .replace('$1', `${this.appStore.bulkSelection.length}`))
+            : this.appStore.i18n('bulk_selection_empty')
           }
-        </div>
-      `
-      : html``;
+        </span>
+        ${this.appStore.bulkSelection.length > 0
+          ? html`<sp-menu-divider size="s" vertical></sp-menu-divider>`
+          : ''
+        }
+      </div>
+    `;
   }
 }

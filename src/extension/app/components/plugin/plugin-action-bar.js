@@ -255,7 +255,7 @@ export class PluginActionBar extends ConnectedElement {
 
     return html`
       <sp-action-group>
-        <bulk-info></bulk-info>
+        ${this.appStore.isAdmin() ? html`<bulk-info></bulk-info>` : ''}
         ${this.barPlugins.length > 0 ? this.barPlugins.map((p) => p.render()) : ''}
       </sp-action-group>`;
   }
