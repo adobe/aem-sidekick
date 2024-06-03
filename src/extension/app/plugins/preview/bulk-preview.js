@@ -55,7 +55,7 @@ export function createBulkPreviewPlugin(appStore) {
 
             const actionCallback = () => {
               const openUrls = () => paths.forEach((path) => {
-                appStore.openPage(`https://${siteStore.previewHost}${path}`);
+                appStore.openPage(`https://${siteStore.innerHost}${path}`);
               });
               if (paths.length <= 10) {
                 openUrls();
