@@ -286,14 +286,14 @@ export class PluginActionBar extends ConnectedElement {
                 <sp-icon slot="icon" size="m">
                   ${ICONS.PLUS_ICON}
                 </sp-icon>
-                ${this.appStore.i18n('add_project')}
+                ${this.appStore.i18n('config_project_add')}
               </sp-menu-item>
             ` : html`
               <sp-menu-item class="icon-item remove-project destructive" value="projectaddremoved" @click=${this.handleItemSelection}>
                 <sp-icon slot="icon" size="m">
                   ${ICONS.TRASH_ICON}
                 </sp-icon>
-                ${this.appStore.i18n('remove_project')}
+                ${this.appStore.i18n('config_project_remove')}
               </sp-menu-item>
             `
           }
