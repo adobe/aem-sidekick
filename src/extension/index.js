@@ -18,7 +18,6 @@ import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/divider/sp-divider.js';
 import '@spectrum-web-components/progress-circle/sp-progress-circle.js';
-import '@spectrum-web-components/menu/sp-menu-group.js';
 import '@spectrum-web-components/menu/sp-menu-divider.js';
 import '@spectrum-web-components/overlay/sp-overlay.js';
 import '@spectrum-web-components/picker/sp-picker.js';
@@ -38,6 +37,7 @@ import './app/components/plugin/env-switcher/env-switcher.js';
 import './app/components/plugin/login/login.js';
 import './app/components/dialog-wrapper/dialog-wrapper.js';
 import './app/components/spectrum/action-menu/action-menu.js';
+import './app/components/spectrum/menu-group/menu-group.js';
 
 import { AEMSidekick } from './app/aem-sidekick.js';
 import { AEMConfigPicker } from './app/config-picker.js';

@@ -16,6 +16,7 @@ import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { style } from './config-picker.css.js';
 import { fetchLanguageDict, getLanguage, i18n } from './utils/i18n.js';
+import { spectrum2 } from './spectrum-2.css.js';
 
 /**
  * The modal type
@@ -39,7 +40,7 @@ export class AEMConfigPicker extends LitElement {
   accessor ctaLabel;
 
   static get styles() {
-    return [style];
+    return [spectrum2, style];
   }
 
   constructor(matchedConfigs) {

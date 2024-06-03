@@ -24,7 +24,7 @@ import sampleRUM from '../../../rum.js';
  * Returns the current tab
  * @returns {Promise<chrome.tabs.Tab>} The current tab
  */
-const getCurrentTab = async () => {
+export const getCurrentTab = async () => {
   const u = new URL(window.location.href);
   const tabId = parseInt(u.searchParams.get('tabId'), 10);
   const tab = await chrome.tabs.get(tabId);

@@ -10,9 +10,10 @@
  * governing permissions and limitations under the License.
  */
 
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { html, css } from 'lit';
+import { ifDefined } from '@spectrum-web-components/base/src/directives.js';
 import { ConnectedElement } from '../../connected-element/connected-element.js';
 import { ICONS, STATE } from '../../../constants.js';
 
@@ -30,11 +31,14 @@ export class LoginButton extends ConnectedElement {
   @property({ type: Boolean })
   accessor ready = false;
 
-  static styles = css`
-    sp-action-menu {
-      --mod-popover-content-area-spacing-vertical: 0;
-    }
+  /**
+   * Are we ready to enable?
+   * @type {String}
+   */
+  @state()
+  accessor profilePicture;
 
+  static styles = css`
     sp-action-menu sp-menu-item {
       padding-inline-start: 0;
       min-width: 202px;
@@ -66,6 +70,16 @@ export class LoginButton extends ConnectedElement {
     }
 
     sp-action-menu > sp-icon {
+      width: 20px;
+      height: 24px;
+    }
+
+    sp-action-menu > sp-icon {
+      width: 20px;
+      height: 24px;
+    }
+
+    sp-action-menu > sp-icon.picture {
       width: 24px;
       height: 24px;
     }
@@ -82,7 +96,7 @@ export class LoginButton extends ConnectedElement {
 
     sp-icon.loading {
       opacity: 0.4;
-      width: 24px;
+      width: 20px;
       height: 24px;
       margin: 0 7px;
     }
@@ -136,7 +150,18 @@ export class LoginButton extends ConnectedElement {
     // As soon as there is any change to the profile we want to be notified
     reaction(
       () => this.appStore.status.profile,
-      () => {
+      async () => {
+        const { profile } = this.appStore.status;
+        if (profile) {
+          const { picture } = profile;
+          if (picture && picture.startsWith('https://admin.hlx.page/')) {
+            const resp = await fetch(picture, { credentials: 'include' });
+            this.profilePicture = resp.ok ? URL.createObjectURL(await resp.blob()) : null;
+          } else {
+            this.profilePicture = picture;
+          }
+        }
+
         this.requestUpdate();
       },
     );
@@ -169,15 +194,14 @@ export class LoginButton extends ConnectedElement {
     } else {
       return html`
         <sp-action-menu
-          selects="single"
           placement="top"
           quiet
         >
-          <sp-icon slot="icon" size="l">
-            ${profile.picture ? html`<img src=${profile.picture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
+          <sp-icon slot="icon" size="l" class=${ifDefined(profile.picture && this.profilePicture ? 'picture' : undefined)}>
+            ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
           <sp-menu-item class="user" value="user">
-            ${profile.picture ? html`<img src=${profile.picture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
+            ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
             ${profile.name}
             <span slot="description">${profile.email}</span>
           </sp-menu-item>

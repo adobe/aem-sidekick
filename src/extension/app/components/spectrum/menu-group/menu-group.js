@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Adobe. All rights reserved.
+ * Copyright 2024 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,17 +10,23 @@
  * governing permissions and limitations under the License.
  */
 
-import { css } from 'lit';
+// @ts-nocheck
+/* istanbul ignore file */
 
-export const style = css`
-    :host {
-      --mod-modal-background-color: var(--spectrum2-sidekick-background);
-    }
+import { css } from '@spectrum-web-components/base';
+import { MenuGroup as SPMenuGroup } from '@spectrum-web-components/menu';
 
-    .modal {
-      border-radius: var(--spectrum2-dialog-border-radius);
-      box-shadow: var(--sidekick-box-shadow);
-      backdrop-filter: var(--sidekick-backdrop-filter);
-      -webkit-backdrop-filter: var(--sidekick-backdrop-filter);
-    }
- `;
+export class MenuGroup extends SPMenuGroup {
+  static get styles() {
+    return [
+      ...super.styles,
+      css`
+        sp-menu {
+          gap: 4px;
+        }
+      `,
+    ];
+  }
+}
+
+customElements.define('sp-menu-group', MenuGroup);

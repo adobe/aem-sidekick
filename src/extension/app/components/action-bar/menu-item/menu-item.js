@@ -50,6 +50,14 @@ class MenuItem extends SPMenuItem {
           </div>
           <slot name="value"></slot>
         </div>`;
+    } else if (this.classList.contains('icon-item')) {
+      return html`
+        <div class="icon-item">
+          <slot name="icon"></slot>
+          <div id="label">
+            <slot id="slot"></slot>
+          </div>
+        </div>`;
     }
 
     return html`

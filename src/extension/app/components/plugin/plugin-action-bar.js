@@ -19,6 +19,7 @@ import { ICONS, STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import '../action-bar/activity-action/activity-action.js';
+import sampleRUM from '../../../rum.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} Plugin
@@ -72,6 +73,9 @@ export class PluginActionBar extends ConnectedElement {
 
   @queryAll('sp-action-group')
   accessor actionGroups;
+
+  @queryAsync('sp-action-menu#sidekick-menu')
+  accessor sidekickMenu;
 
   /**
    * Loads the user preferences for plugins in this environment.
@@ -218,11 +222,13 @@ export class PluginActionBar extends ConnectedElement {
             <sp-icon slot="icon" size="m">
               ${ICONS.MORE_ICON}
             </sp-icon>
-            ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
-            ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0
-              ? html`<sp-menu-divider size="s"></sp-menu-divider>`
-              : ''}
-            ${this.menuPlugins.map((p) => this.renderPluginMenuItem(p))}
+            <sp-menu-group>
+              ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
+              ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0
+                ? html`<sp-menu-divider size="s"></sp-menu-divider>`
+                : ''}
+              ${this.menuPlugins.map((p) => this.renderPluginMenuItem(p))}
+            </sp-menu-group>
           </sp-action-menu>
         ` : ''}
       </sp-action-group>
@@ -247,6 +253,27 @@ export class PluginActionBar extends ConnectedElement {
       </sp-action-group>`;
   }
 
+  async handleItemSelection(event) {
+    const { value } = event.target;
+
+    const menu = await this.sidekickMenu;
+    menu.removeAttribute('open');
+
+    if (value === 'open-help') {
+      sampleRUM('sidekick:open-help');
+      this.appStore.openPage('https://www.aem.live/docs/sidekick');
+      return;
+    }
+
+    if (value === 'project-added' || value === 'project-removed') {
+      sampleRUM(`sidekick:${value}`);
+      chrome.runtime.sendMessage({ action: 'addRemoveProject' });
+      return;
+    }
+
+    this.appStore.fireEvent(value);
+  }
+
   renderSystemPlugins() {
     const { siteStore } = this.appStore;
 
@@ -257,11 +284,42 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     const properties = html`
-      <sp-action-button id="properties" quiet>
+      <sp-action-menu id="sidekick-menu" placement="top" quiet>
         <sp-icon slot="icon" size="l">
-          ${ICONS.PROPERTIES}
+          ${ICONS.HAMBURGER_ICON}
         </sp-icon>
-      </sp-action-button>`;
+        <sp-menu-group>
+          ${siteStore.transient ? html`
+              <sp-menu-item class="icon-item" value="project-added" @click=${this.handleItemSelection}>
+                <sp-icon slot="icon" size="m">
+                  ${ICONS.PLUS_ICON}
+                </sp-icon>
+                ${this.appStore.i18n('config_project_add')}
+              </sp-menu-item>
+            ` : html`
+              <sp-menu-item class="icon-item destructive" value="project-removed" @click=${this.handleItemSelection}>
+                <sp-icon slot="icon" size="m">
+                  ${ICONS.TRASH_ICON}
+                </sp-icon>
+                ${this.appStore.i18n('config_project_remove')}
+              </sp-menu-item>
+            `
+          }
+          <sp-menu-item class="icon-item" value="open-help"  @click=${this.handleItemSelection}>
+            <sp-icon slot="icon" size="m">
+              ${ICONS.HELP_ICON}
+            </sp-icon>
+            ${this.appStore.i18n('help_documentation')}
+          </sp-menu-item>
+        </sp-menu-group>
+        <sp-divider size="s"></sp-divider>
+        <sp-menu-item class="icon-item" value="hidden" @click=${this.handleItemSelection}>
+          <sp-icon slot="icon" size="m">
+            ${ICONS.CLOSE_X}
+          </sp-icon>
+          ${this.appStore.i18n('close_sidekick')}
+        </sp-menu-item>
+      </sp-action-menu>`;
     systemPlugins.push(properties);
 
     const buttonType = siteStore.authorized ? '' : 'not-authorized';

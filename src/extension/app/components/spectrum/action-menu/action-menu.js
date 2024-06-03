@@ -26,7 +26,7 @@ export class ActionMenu extends SPActionMenu {
             0px 0px 3px rgba(0, 0, 0, 0.12), 
             0px 3px 8px rgba(0, 0, 0, 0.04), 
             0px 4px 16px rgba(0, 0, 0, 0.08);
-          backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
+          backdrop-filter: var(--sidekick-backdrop-filter);
           filter: unset;
         }
 

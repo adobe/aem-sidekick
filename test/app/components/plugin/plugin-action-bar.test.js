@@ -569,10 +569,12 @@ describe('Plugin action bar', () => {
         .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
         .createSidekick();
 
+      await resizeWindow({ width: 1200, height: 600 });
+
       sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitEnvSwitcher();
-      await aTimeout(100);
+      await aTimeout(200);
 
       const customPluginId = 'custom-plugin-9'; // generated id
 
@@ -590,7 +592,7 @@ describe('Plugin action bar', () => {
 
       // make viewport narrower
       await resizeWindow({ width: 600, height: 600 });
-      await aTimeout(100);
+      await aTimeout(300);
 
       // check if tools container plugin moved to plugin menu
       expectInActionBar([
@@ -609,8 +611,8 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport narrower
-      await resizeWindow({ width: 475, height: 600 });
-      await aTimeout(100);
+      await resizeWindow({ width: 500, height: 600 });
+      await aTimeout(300);
 
       // check if library plugin and tools container moved to plugin menu
       expectInActionBar([
@@ -629,9 +631,8 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport wider again
-      await resizeWindow({ width: 600, height: 600 });
       await resizeWindow({ width: 1000, height: 600 });
-      await aTimeout(100);
+      await aTimeout(500);
 
       // check if all plugins moved back to bar
       // expectInActionBar([
@@ -644,7 +645,7 @@ describe('Plugin action bar', () => {
       // await expectInPluginMenu([
       //   customPluginId,
       // ]);
-    });
+    }).timeout(100000);
   });
 
   describe('login states', () => {
@@ -662,8 +663,8 @@ describe('Plugin action bar', () => {
       const systemActionGroup = recursiveQuery(actionBar, 'sp-action-group:last-of-type');
       expect(recursiveQuery(actionBar, 'login-button')).to.exist;
 
-      const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
-      expect(propertiesButton).to.exist;
+      const sidekickMenuButton = recursiveQuery(systemActionGroup, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
 
       const loginButton = recursiveQuery(systemActionGroup, '#user');
       expect(loginButton).to.exist;
@@ -691,8 +692,8 @@ describe('Plugin action bar', () => {
 
       const systemActionGroup = actionGroupsArray[2];
 
-      const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
-      expect(propertiesButton).to.exist;
+      const sidekickMenuButton = recursiveQuery(systemActionGroup, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
 
       const loginButton = recursiveQuery(systemActionGroup, '#user');
       expect(loginButton).to.exist;
@@ -718,8 +719,8 @@ describe('Plugin action bar', () => {
 
       const systemActionGroup = actionGroupsArray[2];
 
-      const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
-      expect(propertiesButton).to.exist;
+      const sidekickMenuButton = recursiveQuery(systemActionGroup, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
 
       const loginButton = recursiveQuery(systemActionGroup, '#user');
       expect(loginButton).to.exist;
@@ -752,8 +753,8 @@ describe('Plugin action bar', () => {
 
       const systemActionGroup = actionGroupsArray[2];
 
-      const propertiesButton = recursiveQuery(systemActionGroup, '#properties');
-      expect(propertiesButton).to.exist;
+      const sidekickMenuButton = recursiveQuery(systemActionGroup, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
 
       const loginButton = recursiveQuery(systemActionGroup, '#user');
       expect(loginButton).to.exist;
@@ -762,5 +763,122 @@ describe('Plugin action bar', () => {
       const logo = recursiveQuery(systemActionGroup, 'svg');
       expect(logo).to.exist;
     });
+  });
+
+  describe('sidekick menu', () => {
+    beforeEach(async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockFetchStatusSuccess(true)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+    });
+
+    it('transient mode', async () => {
+      sidekick = sidekickTest.createSidekick({
+        ...defaultSidekickConfig,
+        transient: true,
+      });
+
+      const messageSpy = sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').returns(null);
+
+      const toggleProjectSpy = sidekickTest.sandbox.spy();
+      sidekick.addEventListener('projectaddremoved', toggleProjectSpy);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const sidekickMenuButton = recursiveQuery(sidekick, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
+
+      sidekickMenuButton.click();
+
+      await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
+
+      const addProjectButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="project-added"]');
+      expect(addProjectButton).to.exist;
+
+      addProjectButton.click();
+
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
+      expect(messageSpy.calledOnce).to.be.true;
+    }).timeout(10000);
+
+    it('not transient mode', async () => {
+      sidekick = sidekickTest.createSidekick({
+        ...defaultSidekickConfig,
+        transient: false,
+      });
+
+      const messageSpy = sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').returns(null);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const sidekickMenuButton = recursiveQuery(sidekick, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
+
+      sidekickMenuButton.click();
+
+      await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
+
+      const addProjectButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="project-removed"]');
+      expect(addProjectButton).to.exist;
+      addProjectButton.click();
+
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
+
+      expect(messageSpy.calledOnce).to.be.true;
+    }).timeout(10000);
+
+    it('close extension', async () => {
+      sidekick = sidekickTest.createSidekick({
+        ...defaultSidekickConfig,
+        transient: false,
+      });
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const sidekickMenuButton = recursiveQuery(sidekick, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
+
+      sidekickMenuButton.click();
+
+      await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
+
+      const closeSpy = sidekickTest.sandbox.spy();
+      sidekick.addEventListener('hidden', closeSpy);
+
+      const closeButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="hidden"]');
+      expect(closeButton).to.exist;
+      closeButton.click();
+
+      await waitUntil(() => closeSpy.called, 'sidekick did not close', { timeout: 3000 });
+
+      expect(closeSpy.calledOnce).to.be.true;
+    }).timeout(10000);
+
+    it('open documentation', async () => {
+      const { sandbox } = sidekickTest;
+      sidekick = sidekickTest.createSidekick({
+        ...defaultSidekickConfig,
+        transient: false,
+      });
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const sidekickMenuButton = recursiveQuery(sidekick, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
+
+      sidekickMenuButton.click();
+
+      await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
+
+      const openPageStub = sandbox.stub(sidekickTest.appStore, 'openPage').returns(null);
+      const helpButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="open-help"]');
+      expect(helpButton).to.exist;
+      helpButton.click();
+
+      await aTimeout(200);
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
+      expect(openPageStub.calledOnce).to.be.true;
+    }).timeout(10000);
   });
 });

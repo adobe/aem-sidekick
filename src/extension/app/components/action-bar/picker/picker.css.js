@@ -176,7 +176,7 @@ export const style = css`
   }
 
   sp-popover {
-    backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
+    backdrop-filter: var(--sidekick-backdrop-filter);
     padding: 0;
   }
 
