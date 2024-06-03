@@ -21,6 +21,7 @@ import {
   getProject,
 } from './project.js';
 import { ADMIN_ORIGIN } from './utils/admin.js';
+import sampleRUM from './rum.js';
 
 /**
  * Updates the auth token via external messaging API (admin only).
@@ -60,8 +61,10 @@ async function addRemoveProject(tab) {
     const project = await getProject(config);
     if (!project) {
       await addProject(config);
+      sampleRUM('sidekick:project-added');
     } else {
       await deleteProject(`${owner}/${repo}`);
+      sampleRUM('sidekick:project-removed');
     }
     await chrome.tabs.reload(tab.id, { bypassCache: true });
   }

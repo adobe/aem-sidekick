@@ -14,7 +14,7 @@ import { log } from './log.js';
 import {
   toggleDisplay,
 } from './display.js';
-import checkTab from './tab.js';
+import checkTab, { getCurrentTab } from './tab.js';
 import {
   externalActions,
   internalActions,
@@ -50,6 +50,15 @@ chrome.runtime.onMessageExternal.addListener(async (message, sender, sendRespons
   sendResponse(resp);
 });
 
+// Listen for changes in display state in local storage.
+// If the state changes we need to call checkTab to update the extension UI.
+chrome.storage.onChanged.addListener(async (changes, storageArea) => {
+  if (storageArea === 'local' && changes.display) {
+    const tab = await getCurrentTab();
+    checkTab(tab.id);
+  }
+});
+
 // internal messaging API to execute actions
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   const { action: actionFromTab } = message;
@@ -58,10 +67,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   // check if message contains action and is sent from tab
   if (tab && tab.url && typeof internalActions[actionFromTab] === 'function') {
     resp = await internalActions[actionFromTab](message, sender);
-  }
-
-  if (actionFromTab === 'updateUI') {
-    checkTab(tab.id);
   }
 
   sendResponse(resp);

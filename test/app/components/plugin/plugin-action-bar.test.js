@@ -780,7 +780,7 @@ describe('Plugin action bar', () => {
       });
 
       const toggleProjectSpy = sidekickTest.sandbox.spy();
-      sidekick.addEventListener('projectadded', toggleProjectSpy);
+      sidekick.addEventListener('projectaddremoved', toggleProjectSpy);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
 
@@ -807,7 +807,7 @@ describe('Plugin action bar', () => {
       });
 
       const toggleProjectSpy = sidekickTest.sandbox.spy();
-      sidekick.addEventListener('projectadded', toggleProjectSpy);
+      sidekick.addEventListener('projectaddremoved', toggleProjectSpy);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
 

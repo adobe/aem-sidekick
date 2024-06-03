@@ -282,18 +282,18 @@ export class PluginActionBar extends ConnectedElement {
         </sp-icon>
         <sp-menu-group>
           ${siteStore.transient ? html`
-              <sp-menu-item class="icon-item add-project" value="projectadded" @click=${this.handleItemSelection}>
+              <sp-menu-item class="icon-item add-project" value="projectaddremoved" @click=${this.handleItemSelection}>
                 <sp-icon slot="icon" size="m">
                   ${ICONS.PLUS_ICON}
                 </sp-icon>
-                Add Project
+                ${this.appStore.i18n('add_project')}
               </sp-menu-item>
             ` : html`
-              <sp-menu-item class="icon-item remove-project destructive" value="projectadded" @click=${this.handleItemSelection}>
+              <sp-menu-item class="icon-item remove-project destructive" value="projectaddremoved" @click=${this.handleItemSelection}>
                 <sp-icon slot="icon" size="m">
                   ${ICONS.TRASH_ICON}
                 </sp-icon>
-                Remove Project
+                ${this.appStore.i18n('remove_project')}
               </sp-menu-item>
             `
           }
@@ -301,7 +301,7 @@ export class PluginActionBar extends ConnectedElement {
             <sp-icon slot="icon" size="m">
               ${ICONS.HELP_ICON}
             </sp-icon>
-            Help & Documentation
+            ${this.appStore.i18n('help_documentation')}
           </sp-menu-item>
         </sp-menu-group>
         <sp-divider size="s"></sp-divider>
@@ -309,7 +309,7 @@ export class PluginActionBar extends ConnectedElement {
           <sp-icon slot="icon" size="m">
             ${ICONS.CLOSE_X}
           </sp-icon>
-          Close extension
+          ${this.appStore.i18n('close_sidekick')}
         </sp-menu-item>
       </sp-action-menu>`;
     systemPlugins.push(properties);

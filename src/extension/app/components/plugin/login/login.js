@@ -69,7 +69,7 @@ export class LoginButton extends ConnectedElement {
     }
 
     sp-action-menu > sp-icon {
-      width: 24px;
+      width: 20px;
       height: 24px;
     }
 
@@ -85,7 +85,7 @@ export class LoginButton extends ConnectedElement {
 
     sp-icon.loading {
       opacity: 0.4;
-      width: 24px;
+      width: 20px;
       height: 24px;
       margin: 0 7px;
     }

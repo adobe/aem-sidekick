@@ -16,7 +16,7 @@ import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
 import chromeMock from './mocks/chrome.js';
-import checkTab from '../src/extension/tab.js';
+import checkTab, { getCurrentTab } from '../src/extension/tab.js';
 import { error } from './test-utils.js';
 import { log } from '../src/extension/log.js';
 
@@ -218,5 +218,12 @@ describe('Test check-tab', () => {
     }));
     await checkTab(1);
     expect(executeScriptSpy.callCount).to.equal(0);
+  });
+
+  it('getCurrentTab', async () => {
+    // @ts-ignore
+    sandbox.stub(chrome.tabs, 'query').withArgs({ active: true, currentWindow: true }).resolves([TABS[1]]);
+    const tab = await getCurrentTab();
+    expect(tab).to.equal(TABS[1]);
   });
 });

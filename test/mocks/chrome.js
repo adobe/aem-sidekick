@@ -74,6 +74,7 @@ export default {
   tabs: {
     create: async ({ url }) => ({ url, id: 7 }),
     get: async () => {},
+    query: async () => [],
     sendMessage: async () => {},
     remove: async () => {},
     reload: async () => {},
