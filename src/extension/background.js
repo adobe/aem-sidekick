@@ -66,7 +66,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   let resp = null;
   // check if message contains action and is sent from tab
   if (tab && tab.url && typeof internalActions[actionFromTab] === 'function') {
-    resp = await internalActions[actionFromTab](message, sender);
+    resp = await internalActions[actionFromTab](tab);
   }
 
   sendResponse(resp);

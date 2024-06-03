@@ -267,7 +267,7 @@ export class PluginActionBar extends ConnectedElement {
 
     if (value === 'project-added' || value === 'project-removed') {
       sampleRUM(`sidekick:${value}`);
-      chrome.runtime.sendMessage({ action: 'addRemoveProject', url: window.location.href });
+      chrome.runtime.sendMessage({ action: 'addRemoveProject' });
       return;
     }
 
