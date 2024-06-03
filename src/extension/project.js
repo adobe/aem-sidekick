@@ -18,6 +18,7 @@ import {
 } from './config.js';
 import { urlCache } from './url-cache.js';
 import { callAdmin, createAdminUrl } from './utils/admin.js';
+import sampleRUM from './rum.js';
 
 export const GH_URL = 'https://github.com/';
 
@@ -302,6 +303,7 @@ export async function addProject(input) {
   if (!project) {
     project = await updateProject({ ...config, ...env });
     log.info('added project', config);
+    sampleRUM('sidekick:project-added');
     // todo: alert(i18n('config_add_success'));
     return true;
   } else {
@@ -339,6 +341,7 @@ export async function deleteProject(project) {
     projects.splice(i, 1);
     await setConfig('sync', { projects });
     log.info('project deleted', handle);
+    sampleRUM('sidekick:project-removed');
     // todo: alert
     return true;
   } else {
