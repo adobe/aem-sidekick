@@ -51,12 +51,6 @@
     document.body.prepend(sidekick);
     window.hlx.sidekick = sidekick;
 
-    // Listen for add/remove project events from application and send message to background script
-    // to remove the project from the list of projects
-    sidekick.addEventListener('projectaddremoved', () => {
-      chrome.runtime.sendMessage({ action: 'addRemoveProject', url: window.location.href });
-    });
-
     // Listen for display toggle events from application
     sidekick.addEventListener('hidden', () => {
       toggleDisplay();

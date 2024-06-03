@@ -19,6 +19,7 @@ import { ICONS, STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import '../action-bar/activity-action/activity-action.js';
+import sampleRUM from '../../../rum.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} Plugin
@@ -259,7 +260,14 @@ export class PluginActionBar extends ConnectedElement {
     menu.removeAttribute('open');
 
     if (value === 'open-help') {
+      sampleRUM('sidekick:open-help');
       this.appStore.openPage('https://www.aem.live/docs/sidekick');
+      return;
+    }
+
+    if (value === 'project-added' || value === 'project-removed') {
+      sampleRUM(`sidekick:${value}`);
+      chrome.runtime.sendMessage({ action: 'addRemoveProject', url: window.location.href });
       return;
     }
 
@@ -282,14 +290,14 @@ export class PluginActionBar extends ConnectedElement {
         </sp-icon>
         <sp-menu-group>
           ${siteStore.transient ? html`
-              <sp-menu-item class="icon-item add-project" value="projectaddremoved" @click=${this.handleItemSelection}>
+              <sp-menu-item class="icon-item" value="project-added" @click=${this.handleItemSelection}>
                 <sp-icon slot="icon" size="m">
                   ${ICONS.PLUS_ICON}
                 </sp-icon>
                 ${this.appStore.i18n('config_project_add')}
               </sp-menu-item>
             ` : html`
-              <sp-menu-item class="icon-item remove-project destructive" value="projectaddremoved" @click=${this.handleItemSelection}>
+              <sp-menu-item class="icon-item destructive" value="project-removed" @click=${this.handleItemSelection}>
                 <sp-icon slot="icon" size="m">
                   ${ICONS.TRASH_ICON}
                 </sp-icon>

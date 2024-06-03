@@ -779,6 +779,8 @@ describe('Plugin action bar', () => {
         transient: true,
       });
 
+      const messageSpy = sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').returns(null);
+
       const toggleProjectSpy = sidekickTest.sandbox.spy();
       sidekick.addEventListener('projectaddremoved', toggleProjectSpy);
 
@@ -791,13 +793,13 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
 
-      const addProjectButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item.add-project');
+      const addProjectButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="project-added"]');
       expect(addProjectButton).to.exist;
 
       addProjectButton.click();
 
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
-      expect(toggleProjectSpy.calledOnce).to.be.true;
+      expect(messageSpy.calledOnce).to.be.true;
     }).timeout(10000);
 
     it('not transient mode', async () => {
@@ -806,8 +808,7 @@ describe('Plugin action bar', () => {
         transient: false,
       });
 
-      const toggleProjectSpy = sidekickTest.sandbox.spy();
-      sidekick.addEventListener('projectaddremoved', toggleProjectSpy);
+      const messageSpy = sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').returns(null);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
 
@@ -818,13 +819,13 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
 
-      const addProjectButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item.remove-project');
+      const addProjectButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="project-removed"]');
       expect(addProjectButton).to.exist;
       addProjectButton.click();
 
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
 
-      expect(toggleProjectSpy.calledOnce).to.be.true;
+      expect(messageSpy.calledOnce).to.be.true;
     }).timeout(10000);
 
     it('close extension', async () => {
