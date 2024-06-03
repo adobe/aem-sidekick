@@ -13,6 +13,7 @@
 import { customElement, property, state } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { html, css } from 'lit';
+import { ifDefined } from '@spectrum-web-components/base/src/directives.js';
 import { ConnectedElement } from '../../connected-element/connected-element.js';
 import { ICONS, STATE } from '../../../constants.js';
 
@@ -70,6 +71,16 @@ export class LoginButton extends ConnectedElement {
 
     sp-action-menu > sp-icon {
       width: 20px;
+      height: 24px;
+    }
+
+    sp-action-menu > sp-icon {
+      width: 20px;
+      height: 24px;
+    }
+
+    sp-action-menu > sp-icon.picture {
+      width: 24px;
       height: 24px;
     }
 
@@ -186,7 +197,7 @@ export class LoginButton extends ConnectedElement {
           placement="top"
           quiet
         >
-          <sp-icon slot="icon" size="l">
+          <sp-icon slot="icon" size="l" class=${ifDefined(profile.picture && this.profilePicture ? 'picture' : undefined)}>
             ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
           <sp-menu-item class="user" value="user">
