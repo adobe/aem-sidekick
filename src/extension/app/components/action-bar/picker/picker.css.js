@@ -14,11 +14,6 @@ import { css } from 'lit';
 
 export const style = css`
   :host {
-    --mod-popover-animation-distance: 13px;
-    --mod-popover-background-color: var(--spectrum2-sidekick-background);
-    --mod-popover-border-color: var(--spectrum2-sidekick-border-color);
-    --mod-popover-corner-radius: var(--spectrum2-sidekick-border-radius);
-    --mod-popover-filter: var(--spectrum2-sidekick-backdrop-filter);
     --mod-divider-thickness: 1px;
   }
 
@@ -175,13 +170,21 @@ export const style = css`
   }
 
   sp-menu {
-    padding: 12px;
+    padding: 8px;
     gap: 4px;
+    overflow-x: hidden;
   }
 
-  sp-overlay sp-popover {
-    min-width: 256px !important;
-    backdrop-filter: var(--spectrum2-sidekick-backdrop-filter);
+  sp-popover {
+    backdrop-filter: var(--sidekick-backdrop-filter);
     padding: 0;
+  }
+
+  :host(.env-switcher) sp-popover {
+    min-width: 256px !important;
+  }
+
+  :host(#plugin-menu) sp-popover {
+    min-width: 100px;
   }
 `;

@@ -10,9 +10,10 @@
  * governing permissions and limitations under the License.
  */
 
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { html, css } from 'lit';
+import { ifDefined } from '@spectrum-web-components/base/src/directives.js';
 import { ConnectedElement } from '../../connected-element/connected-element.js';
 import { ICONS, STATE } from '../../../constants.js';
 
@@ -30,16 +31,18 @@ export class LoginButton extends ConnectedElement {
   @property({ type: Boolean })
   accessor ready = false;
 
-  static styles = css`
-    sp-action-menu {
-      --mod-popover-content-area-spacing-vertical: 0;
-      --mod-popover-animation-distance: 15px;
-    }
+  /**
+   * Are we ready to enable?
+   * @type {String}
+   */
+  @state()
+  accessor profilePicture;
 
+  static styles = css`
     sp-action-menu sp-menu-item {
-      min-height: 56px;
-      padding-inline-start: 12px;
-      min-width: 240px;
+      padding-inline-start: 0;
+      min-width: 202px;
+      margin: 8px;
     }
 
     sp-action-menu sp-menu-item .no-picture {
@@ -50,15 +53,59 @@ export class LoginButton extends ConnectedElement {
       justify-content: center;
     }
 
+    sp-action-menu sp-menu-item .no-picture svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    sp-action-menu sp-menu-item.user {
+      pointer-events: none;
+      --mod-menu-item-bottom-edge-to-text: 0;
+      --mod-menu-item-top-edge-to-text: 0;
+    }
+
+    sp-action-menu sp-menu-item.user[focused] {
+      box-shadow: unset;
+      background-color: unset;
+    }
+
+    sp-action-menu > sp-icon {
+      width: 20px;
+      height: 24px;
+    }
+
+    sp-action-menu > sp-icon {
+      width: 20px;
+      height: 24px;
+    }
+
+    sp-action-menu > sp-icon.picture {
+      width: 24px;
+      height: 24px;
+    }
+
+    sp-action-menu > sp-icon > img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+    
     sp-progress-circle[size="s"] {
       margin: 0 8px;
     }
 
     sp-icon.loading {
       opacity: 0.4;
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 24px;
       margin: 0 7px;
+    }
+
+    sp-icon.loading > svg,
+    sp-action-menu > sp-icon > svg {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
     }
 
     :host {
@@ -103,7 +150,18 @@ export class LoginButton extends ConnectedElement {
     // As soon as there is any change to the profile we want to be notified
     reaction(
       () => this.appStore.status.profile,
-      () => {
+      async () => {
+        const { profile } = this.appStore.status;
+        if (profile) {
+          const { picture } = profile;
+          if (picture && picture.startsWith('https://admin.hlx.page/')) {
+            const resp = await fetch(picture, { credentials: 'include' });
+            this.profilePicture = resp.ok ? URL.createObjectURL(await resp.blob()) : null;
+          } else {
+            this.profilePicture = picture;
+          }
+        }
+
         this.requestUpdate();
       },
     );
@@ -136,21 +194,23 @@ export class LoginButton extends ConnectedElement {
     } else {
       return html`
         <sp-action-menu
-          selects="single"
           placement="top"
           quiet
         >
-          <sp-icon slot="icon" size="l">
-            ${ICONS.USER_ICON}
+          <sp-icon slot="icon" size="l" class=${ifDefined(profile.picture && this.profilePicture ? 'picture' : undefined)}>
+            ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
           <sp-menu-item class="user" value="user">
-            ${profile.picture ? html`<img src=${profile.picture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon"><sp-icon-user size="xl"></sp-icon-user></div>`}
+            ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
             ${profile.name}
             <span slot="description">${profile.email}</span>
           </sp-menu-item>
-          <sp-menu-item class="logout" value="logourt" @click=${this.logout}>
-            <sp-icon-log-out slot="icon" size="xl"></sp-icon-log-out>
-            Logout
+          <sp-divider size="s"></sp-divider>
+          <sp-menu-item class="logout" value="logout" @click=${this.logout}>
+            <sp-icon slot="icon" size="xl">
+              ${ICONS.SIGN_OUT}
+            </sp-icon>
+            ${this.appStore.i18n('user_logout')}
           </sp-menu-item>
         </sp-action-menu>
       `;

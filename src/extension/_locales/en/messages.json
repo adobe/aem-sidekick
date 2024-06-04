@@ -114,6 +114,9 @@
     "close": {
       "message": "Close"
     },
+    "close_sidekick": {
+      "message": "Close AEM Sidekick"
+    },
     "config_add_no_mountpoint": {
       "message": "Project added to Sidekick, but ...\n\nRetrieving the content URL has failed, so you won't be able to use Sidekick in edit mode yet. To add it manually, click the Edit button next to the project's configuration."
     },
@@ -358,8 +361,8 @@
     "docs": {
       "message": "https://www.hlx.live/docs/sidekick"
     },
-    "edit": {
-      "message": "Edit"
+    "source": {
+      "message": "Source"
     },
     "open_in": {
       "message": "Open in $1"
@@ -681,7 +684,7 @@
       "message": "Signing out..."
     },
     "unauthorized_state": {
-      "message": "Account not authorized"
+      "message": "Account not authorized for this site"
     },
     "previewing_state": {
       "message": "Updating Preview..."
@@ -694,5 +697,8 @@
     },
     "deleting_state": {
       "message": "Deleting..."
+    },
+    "help_documentation": {
+      "message": "Help & Documentation"
     }
 }

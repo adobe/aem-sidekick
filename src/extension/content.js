@@ -19,7 +19,7 @@
   // ensure hlx namespace
   window.hlx = window.hlx || {};
 
-  const { getDisplay } = await import('./display.js');
+  const { getDisplay, toggleDisplay } = await import('./display.js');
   const display = await getDisplay();
   let sidekick = document.querySelector('aem-sidekick');
 
@@ -42,6 +42,7 @@
         'devOrigin',
         'adminVersion',
         'authTokenExpiry',
+        'transient',
       ].includes(k)));
     curatedConfig.scriptUrl = chrome.runtime.getURL('index.js');
 
@@ -49,6 +50,11 @@
     sidekick.setAttribute('open', `${display}`);
     document.body.prepend(sidekick);
     window.hlx.sidekick = sidekick;
+
+    // Listen for display toggle events from application
+    sidekick.addEventListener('hidden', () => {
+      toggleDisplay();
+    });
   }
 
   /**

@@ -134,3 +134,12 @@ export default async function checkTab(id) {
     log.warn(`checkTab: error checking tab ${id}`, e);
   }
 }
+
+/**
+ * Get the current tab from a background script
+ * @returns {Promise<chrome.tabs.Tab>} The current tab
+ */
+export async function getCurrentTab() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  return tab;
+}

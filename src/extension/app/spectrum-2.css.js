@@ -14,6 +14,9 @@ import { css } from 'lit';
 
 export const spectrum2 = css`
   :host {
+    /* THEME TOKENS */
+
+    /* Environment tokens */
     --preview-background-default-light: #EEFAFEFF;
     --preview-background-default-dark: #002B3BFF;
     --preview-background-hover-light: #D9F4FDFF;
@@ -51,23 +54,7 @@ export const spectrum2 = css`
     --edit-border-open-light: #8F8F8FFF;
     --edit-border-open-dark: #8F8F8FFF;
 
-    --sidekick-background-light: #FFFFFFCC;
-    --sidekick-background-dark: #222222CC;
-    --sidekick-background-layer1-dark: #1B1B1B;
-    --sidekick-background-layer1-light: #F8F8F8;
-    --sidekick-background-layer2-dark: #2C2C2C;
-    --sidekick-background-layer2-light: #E9E9E9;
-    --sidekick-background-pasteboard-dark: #111111;
-    --sidekick-background-pasteboard-light: #ffffff;
-    --sidekick-border-color-dark: #393939;
-    --sidekick-border-color-light: #DADADA;
-    --spectrum2-color-positive: #05834E;
-    --spectrum2-color-warning: #e67316;
-    --spectrum2-color-negative: #D73220;
-    --spectrum2-color-info: #3B63FB;
-
-    --sidekick-max-width: 640px;
-
+    /* Enviroment alias tokens */
     --spectrum2-edit-content-default: var(--edit-content-default-dark);
     --spectrum2-edit-background-default: var(--edit-background-default-dark);
     --spectrum2-edit-background-hover: var(--edit-background-hover-dark);
@@ -89,34 +76,91 @@ export const spectrum2 = css`
     --spectrum2-live-border-hover: var(--live-border-hover-dark);
     --spectrum2-live-border-open: var(--live-border-open-dark);
 
+    /* Spectrum 2 color tokens */
+    --spectrum2-color-positive-light: #05834E;
+    --spectrum2-color-positive-dark: #047C4B;
+    --spectrum2-color-warning: #e67316;
+    --spectrum2-color-info: #3B63FB;
+    --spectrum2-action-button-selected-light: #292929FF;
+    --spectrum2-action-button-selected-dark: #DADADAFF;
+    --spectrum2-background-color-negative-light: #D73220;
+    --spectrum2-background-color-negative-dark: #CD2E1D;
+    --spectrum2-foreground-color-negative-light: #D73220;
+    --spectrum2-foreground-color-negative-dark: #FC432E;
+    --spectrum2-menu-item-background-color-hover-light: rgba(0, 0, 0, 0.05);
+    --spectrum2-menu-item-background-color-hover-dark: rgba(255, 255, 255, 0.05);
+
+    /* Sidekick theme tokens */
+    --sidekick-max-width: 640px;
+    --sidekick-background-light: #FFFFFFCC;
+    --sidekick-background-dark: #222222CC;
+    --sidekick-background-layer1-dark: #1B1B1B;
+    --sidekick-background-layer1-light: #F8F8F8;
+    --sidekick-background-layer2-dark: #2C2C2C;
+    --sidekick-background-layer2-light: #E9E9E9;
+    --sidekick-background-pasteboard-dark: #111111;
+    --sidekick-background-pasteboard-light: #ffffff;
+    --sidekick-border-color-dark: #393939;
+    --sidekick-border-color-light: #DADADA;
+    --sidekick-backdrop-filter: blur(24px);
+    --sidekick-box-shadow:
+      0px 0px 3px 0px rgba(0, 0, 0, 0.12),
+      0px 3px 8px 0px rgba(0, 0, 0, 0.04),
+      0px 4px 16px 0px rgba(0, 0, 0, 0.08);
+
+    /* Radius tokens */
     --spectrum2-small-border-radius: 4px;
     --spectrum2-default-border-radius: 8px;
     --spectrum2-medium-border-radius: 10px;
     --spectrum2-large-border-radius: 12px;
-    --spectrum2-xlarge-border-radius: 16px;
-    --spectrum2-form-input-border-radius: var(--spectrum2-medium-border-radius);
-    --spectrum2-dialog-border-radius: var(--spectrum2-xlarge-border-radius);
-    --spectrum2-sidekick-border-radius: var(--spectrum2-large-border-radius);
+    --spectrum2-xlarge-border-radius: 14px;
+    --spectrum2-xxlarge-border-radius: 16px;
 
+    /**
+     * SPECTRUM ALIAS TOKENS
+     */
+    --spectrum2-background-color-negative: var(--spectrum2-background-color-negative-dark);
+    --spectrum2-foreground-color-negative: var(--spectrum2-foreground-color-negative-dark);
+    --spectrum2-color-positive: var(--spectrum2-color-positive-dark);
+    --spectrum2-action-button-selected: var(--spectrum2-action-button-selected-dark);
+
+    --spectrum2-form-input-border-radius: var(--spectrum2-medium-border-radius);
+    --spectrum2-dialog-border-radius: var(--spectrum2-xxlarge-border-radius);
+
+    /**
+     * SIDEKICK ALIAS TOKENS
+     */
     --spectrum2-sidekick-background: var(--sidekick-background-dark);
     --spectrum2-sidekick-layer-1: var(--sidekick-background-layer1-dark);
     --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-dark);
     --spectrum2-sidekick-background-pasteboard: var(--sidekick-background-pasteboard-dark);
     --spectrum2-sidekick-border-color: var(--sidekick-border-color-dark);
-    --spectrum2-sidekick-backdrop-filter: blur(12px);
-    --spectrum2-sidekick-box-shadow:
-      0px 0px 3px 0px rgba(0, 0, 0, 0.12),
-      0px 3px 8px 0px rgba(0, 0, 0, 0.04),
-      0px 4px 16px 0px rgba(0, 0, 0, 0.08);
+    --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-menu-item-background-color-hover-dark);
+    --spectrum2-sidekick-border-radius: var(--spectrum2-large-border-radius);
 
+    /**
+     * SPECTRUM OVERRIDES
+     */
     --mod-toast-corner-radius: var(--spectrum2-large-border-radius);
     --mod-toast-divider-color: transparent;
     --mod-toast-max-inline-size: var(--sidekick-max-width);
+
+    --mod-popover-corner-radius: var(--spectrum2-xlarge-border-radius);
+    --mod-popover-animation-distance: 20px;
+    --mod-popover-background-color: var(--spectrum2-sidekick-background);
+    --mod-popover-border-color: var(--spectrum2-sidekick-border-color);
+    --mod-popover-content-area-spacing-vertical: 0;
+
+    --mod-menu-item-background-color-hover: var(--spectrum2-sidekick-menu-item-background-color-hover);
+
+    --mod-divider-background-color: var(--spectrum2-sidekick-border-color);
+
     --mod-actionbutton-border-radius: var(--spectrum2-default-border-radius);
   }
 
   @media (prefers-color-scheme: light) {
     :host {
+      /* Enviroment alias tokens */
       --spectrum2-preview-background-default: var(--preview-background-default-light);
       --spectrum2-preview-background-hover: var(--preview-background-hover-light);
       --spectrum2-preview-content-default: var(--preview-content-default-light);
@@ -138,11 +182,23 @@ export const spectrum2 = css`
       --spectrum2-edit-border-hover: var(--edit-border-hover-light);
       --spectrum2-edit-border-open: var(--edit-border-open-light);
 
+      /**
+       * SIDEKICK ALIAS TOKENS
+       */
       --spectrum2-sidekick-background: var(--sidekick-background-light);
       --spectrum2-sidekick-layer-1: var(--sidekick-background-layer1-light);
       --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-light);
       --spectrum2-sidekick-background-pasteboard: var(--sidekick-background-pasteboard-light);
       --spectrum2-sidekick-border-color: var(--sidekick-border-color-light);
+      --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-menu-item-background-color-hover-light);
+
+      /**
+       * SPECTRUM ALIAS TOKENS
+       */
+      --spectrum2-action-button-selected: var(--spectrum2-action-button-selected-light);
+      --spectrum2-background-color-negative: var(--spectrum2-background-color-negative-light);
+      --spectrum2-foreground-color-negative: var(--spectrum2-foreground-color-negative-light);
+      --spectrum2-color-positive: var(--spectrum2-color-positive-light);
     }
   }
 `;

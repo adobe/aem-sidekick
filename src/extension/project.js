@@ -232,26 +232,26 @@ export async function getProjectEnv({
   const env = {};
   let res;
   try {
-    res = await callAdmin({ owner, repo, ref }, 'sidekick', '/env.json');
+    res = await callAdmin({ owner, repo, ref }, 'sidekick', '/config.json');
   } catch (e) {
     log.warn(`getProjectEnv: unable to retrieve project config: ${e}`);
   }
   if (res && res.ok) {
     const {
-      preview,
-      live,
-      prod,
+      previewHost,
+      liveHost,
+      host,
       project,
       contentSourceUrl,
     } = await res.json();
-    if (preview && preview.host) {
-      env.previewHost = preview.host;
+    if (previewHost) {
+      env.previewHost = previewHost;
     }
-    if (live && live.host) {
-      env.liveHost = live.host;
+    if (liveHost) {
+      env.liveHost = liveHost;
     }
-    if (prod && prod.host) {
-      env.host = prod.host;
+    if (host) {
+      env.host = host;
     }
     if (project) {
       env.project = project;

@@ -165,6 +165,12 @@ export class SiteStore {
   authTokenExpiry;
 
   /**
+   * Is this site in transient mode?
+   * @type {boolean}
+   */
+  transient;
+
+  /**
    * Has the store been initialized?
    * @type {boolean}
    */
@@ -237,6 +243,7 @@ export class SiteStore {
       host,
       project = '',
       specialViews,
+      transient = false,
       scriptUrl = 'https://www.hlx.live/tools/sidekick/index.js',
     } = config;
     const publicHost = host && host.startsWith('http') ? new URL(host).host : host;
@@ -278,6 +285,7 @@ export class SiteStore {
     this.project = project;
     this.devUrl = devUrl;
     this.lang = lang || getLanguage();
+    this.transient = transient;
     this.setReady();
   }
 

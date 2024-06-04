@@ -25,7 +25,9 @@ export const style = css`
     color: var(--spectrum-menu-item-description-color-default);
     font-size: 12px;
     line-height: 130%;
+    padding-top: 8px;
     padding-bottom: 8px;
+    padding-left: 9px;
   }
 
   action-bar-picker sp-menu-divider {
@@ -64,15 +66,15 @@ export const style = css`
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
   }
-
 
   action-bar-picker .notification-item::after {
     content: '';
     position: absolute;
-    top: -2px;
-    right: 2px;
+    top: 5px;
+    right: 6px;
     width: 9px;
     height: 9px;
     background-color: #3B63FB;

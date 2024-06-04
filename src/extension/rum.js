@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-/* c8 ignore start */
+/* istanbul ignore file */
 // @ts-nocheck
 
 /**
@@ -79,4 +79,3 @@ export default function sampleRUM(checkpoint, data = {}) {
     // something went wrong
   }
 }
-/* c8 ignore end */

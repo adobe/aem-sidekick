@@ -411,6 +411,19 @@ export class SidekickTest {
   }
 
   /**
+   * Mocks the profile picture fetch
+   * @returns {SidekickTest}
+   */
+  mockFetchProfilePictureSuccess() {
+    fetchMock.get('https://admin.hlx.page/profile/adobe/aem-boilerplate/main/user-id/picture', {
+      status: 200,
+      body: new Blob(),
+    }, { overwriteRoutes: true });
+
+    return this;
+  }
+
+  /**
    * Sidekick Config Mocks
    */
 

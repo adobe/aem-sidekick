@@ -18,6 +18,7 @@ export const style = css`
   action-bar sp-action-group {
     padding: 12px;
     flex-wrap: nowrap;
+    align-items: center;
   }
 
   action-bar sp-action-group:nth-of-type(2) {
@@ -34,8 +35,8 @@ export const style = css`
   }
 
   action-bar sp-action-group:last-of-type > svg {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
   }
 
   action-bar sp-action-group .filler {
@@ -51,14 +52,22 @@ export const style = css`
     min-width: 120px;
   }
 
+  action-bar sp-action-menu#plugin-menu sp-menu-group {
+    margin: 8px;
+  }
+
+  action-bar sp-action-menu#sidekick-menu sp-menu-group {
+    margin: 8px;
+  }
+
+  action-bar sp-action-menu#sidekick-menu > sp-menu-item{
+    margin: 8px;
+  }
+
   #plugin-menu sp-menu-group [slot="header"] {
     text-transform: uppercase;
     font-size: var(--spectrum-global-dimension-font-size-75);
     color: var(--spectrum-global-color-gray-600);
-  }
-
-  #plugin-menu sp-menu-group sp-menu-item {
-    padding-left: 24px;
   }
 
   @media (max-width: 500px) {

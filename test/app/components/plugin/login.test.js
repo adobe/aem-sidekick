@@ -75,6 +75,7 @@ describe('Login', () => {
       sidekickTest
         .mockFetchStatusSuccess(true)
         .mockFetchSidekickConfigSuccess()
+        .mockFetchProfilePictureSuccess()
         .mockFetchProfileSuccess();
 
       expect(loginActionButton).to.exist;
@@ -90,6 +91,7 @@ describe('Login', () => {
     it('Successful login and logout with authentication enabled ', async () => {
       sidekickTest
         .mockFetchStatusUnauthorized()
+        .mockFetchProfilePictureSuccess()
         .mockFetchSidekickConfigNotFound();
 
       sidekick = sidekickTest.createSidekick();
@@ -113,6 +115,7 @@ describe('Login', () => {
       sidekickTest
         .mockFetchStatusUnauthorized()
         .mockFetchSidekickConfigForbidden()
+        .mockFetchProfilePictureSuccess()
         .mockFetchProfileUnauthorized();
 
       const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
@@ -126,6 +129,7 @@ describe('Login', () => {
     it('Successful login and logout without authentication enabled ', async () => {
       sidekickTest
         .mockFetchStatusSuccess()
+        .mockFetchProfilePictureSuccess()
         .mockFetchSidekickConfigSuccess();
 
       sidekick = sidekickTest.createSidekick();
@@ -160,6 +164,7 @@ describe('Login', () => {
     it('Successful login and logout with authentication enabled ', async () => {
       sidekickTest
         .mockFetchStatusSuccess()
+        .mockFetchProfilePictureSuccess()
         .mockFetchSidekickConfigSuccess();
 
       sidekick = sidekickTest.createSidekick();
@@ -213,6 +218,7 @@ describe('Login', () => {
 
       sidekickTest
         .mockFetchProfileSuccess()
+        .mockFetchProfilePictureSuccess()
         .mockFetchStatusForbiddenWithProfile()
         .mockFetchSidekickConfigForbidden();
       loginActionButton.click();
