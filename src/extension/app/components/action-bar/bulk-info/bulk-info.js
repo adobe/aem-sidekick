@@ -28,10 +28,10 @@ export class BulkInfo extends ConnectedElement {
   async connectedCallback() {
     super.connectedCallback();
 
-    this.appStore.updateBulkSelection();
+    this.appStore.bulkStore.updateBulkSelection();
 
     reaction(
-      () => this.appStore.bulkSelection,
+      () => this.appStore.bulkStore.selection,
       () => {
         this.requestUpdate();
       },
@@ -44,17 +44,18 @@ export class BulkInfo extends ConnectedElement {
         <span>
           ${
           // eslint-disable-next-line no-nested-ternary
-          this.appStore.bulkSelection.length > 0
-            ? (this.appStore.bulkSelection.length === 1
+          this.appStore.bulkStore?.selection.length > 0
+            ? (this.appStore.bulkStore.selection.length === 1
               ? this.appStore.i18n('bulk_selection_single')
               : this.appStore.i18n('bulk_selection_multiple')
-                .replace('$1', `${this.appStore.bulkSelection.length}`))
+                .replace('$1', `${this.appStore.bulkStore.selection.length}`))
             : this.appStore.i18n('bulk_selection_empty')
           }
         </span>
-        ${this.appStore.bulkSelection.length > 0
-          ? html`<sp-menu-divider size="s" vertical></sp-menu-divider>`
-          : ''
+        ${
+          this.appStore.bulkStore?.selection.length > 0
+            ? html`<sp-menu-divider size="s" vertical></sp-menu-divider>`
+            : ''
         }
       </div>
     `;

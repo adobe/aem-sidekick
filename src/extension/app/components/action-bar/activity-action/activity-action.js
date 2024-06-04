@@ -37,7 +37,7 @@ export class ActivityAction extends ConnectedElement {
     );
 
     reaction(
-      () => this.appStore.bulkProgress,
+      () => this.appStore.bulkStore.progress,
       () => {
         this.requestUpdate();
       },
@@ -84,10 +84,10 @@ export class ActivityAction extends ConnectedElement {
         return html`
           <sp-progress-circle size="s" indeterminate></sp-progress-circle>
           <span>
-            ${this.appStore.bulkProgress
+            ${this.appStore.bulkStore?.progress
               ? this.appStore.i18n(this.appStore.state)
-                  .replace('$1', `${this.appStore.bulkProgress.processed}`)
-                  .replace('$2', `${this.appStore.bulkProgress.total}`)
+                  .replace('$1', `${this.appStore.bulkStore.progress.processed}`)
+                  .replace('$2', `${this.appStore.bulkStore.progress.total}`)
               // show generic state if bulk progress not available
               : this.appStore.i18n(this.appStore.state.replace('bulk_', ''))}
           </span>

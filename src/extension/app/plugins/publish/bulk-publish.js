@@ -12,7 +12,6 @@
 
 import { Plugin } from '../../components/plugin/plugin.js';
 import { MODAL_EVENTS } from '../../constants.js';
-import { getBulkConfirmText, getBulkSuccessText } from '../../utils/bulk.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -30,11 +29,12 @@ import { getBulkConfirmText, getBulkSuccessText } from '../../utils/bulk.js';
 export function createBulkPublishPlugin(appStore) {
   return new Plugin({
     id: 'bulk-publish',
-    condition: (store) => store.isAdmin() && store.bulkSelection.length > 0,
+    condition: (store) => store.isAdmin() && store.bulkStore?.selection.length > 0,
     button: {
       text: appStore.i18n('publish'),
       action: () => {
-        const confirmText = getBulkConfirmText(appStore, 'publish', appStore.bulkSelection.length);
+        const { bulkStore } = appStore;
+        const confirmText = bulkStore.getConfirmText('publish', bulkStore.selection.length);
         const modal = appStore.showModal({
           type: 'confirm',
           data: {
@@ -44,7 +44,7 @@ export function createBulkPublishPlugin(appStore) {
           },
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
-          const res = await appStore.bulkPublish();
+          const res = await bulkStore.publish();
           if (res) {
             const { siteStore } = appStore;
             const paths = (res.data?.resources || []).map(({ path }) => path);
@@ -75,7 +75,7 @@ export function createBulkPublishPlugin(appStore) {
 
             // show success toast
             appStore.showToast(
-              getBulkSuccessText(appStore, 'publish', res.data?.resources?.length),
+              bulkStore.getSuccessText('publish', res.data?.resources?.length),
               'positive',
               () => appStore.closeToast(),
               actionCallback,
@@ -86,6 +86,7 @@ export function createBulkPublishPlugin(appStore) {
           }
         }, { once: true });
       },
+      isEnabled: (store) => store.isAuthorized('live', 'write'), // only enable if authorized
     },
   },
   appStore);

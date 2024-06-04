@@ -12,7 +12,6 @@
 
 import { Plugin } from '../../components/plugin/plugin.js';
 import { MODAL_EVENTS } from '../../constants.js';
-import { getBulkConfirmText, getBulkSuccessText } from '../../utils/bulk.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -30,11 +29,12 @@ import { getBulkConfirmText, getBulkSuccessText } from '../../utils/bulk.js';
 export function createBulkPreviewPlugin(appStore) {
   return new Plugin({
     id: 'bulk-preview',
-    condition: (store) => store.isAdmin() && store.bulkSelection.length > 0,
+    condition: (store) => store.isAdmin() && store.bulkStore?.selection.length > 0,
     button: {
       text: appStore.i18n('preview'),
       action: async () => {
-        const confirmText = getBulkConfirmText(appStore, 'preview', appStore.bulkSelection.length);
+        const { bulkStore } = appStore;
+        const confirmText = bulkStore.getConfirmText('preview', bulkStore.selection.length);
         const modal = appStore.showModal({
           type: 'confirm',
           data: {
@@ -44,7 +44,7 @@ export function createBulkPreviewPlugin(appStore) {
           },
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
-          const res = await appStore.bulkPreview();
+          const res = await bulkStore.preview();
           if (res) {
             const { siteStore } = appStore;
             const paths = (res.data?.resources || []).map(({ path }) => path);
@@ -75,7 +75,7 @@ export function createBulkPreviewPlugin(appStore) {
 
             // show success toast
             appStore.showToast(
-              getBulkSuccessText(appStore, 'preview', res.data?.resources?.length),
+              bulkStore.getSuccessText('preview', res.data?.resources?.length),
               'positive',
               () => appStore.closeToast(),
               actionCallback,
@@ -86,7 +86,7 @@ export function createBulkPreviewPlugin(appStore) {
           }
         }, { once: true });
       },
-      isEnabled: (s) => s.isAuthorized('preview', 'write') && s.status.webPath,
+      isEnabled: (store) => store.isAuthorized('preview', 'write'), // only enable if authorized
     },
   },
   appStore);

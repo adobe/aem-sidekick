@@ -125,7 +125,7 @@ export class PluginActionBar extends ConnectedElement {
     );
 
     reaction(
-      () => this.appStore.bulkSelection,
+      () => this.appStore.bulkStore.selection,
       () => {
         this.setupPlugins();
       },

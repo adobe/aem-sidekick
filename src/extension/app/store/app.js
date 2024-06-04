@@ -15,6 +15,7 @@
 import { observable, action } from 'mobx';
 import { createContext } from '@lit/context';
 import { SiteStore } from './site.js';
+import { BulkStore } from './bulk.js';
 import { AdminClient } from '../utils/admin-client.js';
 import sampleRUM from '../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
@@ -41,13 +42,6 @@ import { createBulkPreviewPlugin } from '../plugins/preview/bulk-preview.js';
 import { createBulkPublishPlugin } from '../plugins/publish/bulk-publish.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
-import {
-  getGoogleDriveBulkSelection,
-  getSharepointBulkSelection,
-  doBulkOperation,
-  bulkSelectionToPath,
-  mockAdminJobDetails,
-} from '../utils/bulk.js';
 
 /**
  * The sidekick configuration object type
@@ -78,14 +72,6 @@ import {
  */
 
 /**
- * @typedef {import('@Types').AdminJobProgress} AdminJobProgress
- */
-
-/**
- * @typedef {import('@Types').BulkSelection} BulkSelection
- */
-
-/**
  * @typedef {import('@Types').Modal} Modal
  */
 
@@ -110,6 +96,18 @@ export class AppStore {
    * @type {AEMSidekick}
    */
   sidekick;
+
+  /**
+   * The site store
+   * @type {SiteStore}
+   */
+  siteStore;
+
+  /**
+   * The bulk store (admin only)
+   * @type {BulkStore}
+   */
+  bulkStore;
 
   /**
    * The Admin API client
@@ -160,18 +158,6 @@ export class AppStore {
   @observable accessor state = STATE.INITIALIZING;
 
   /**
-   * The bulk selection (admin mode only)
-   * @type {BulkSelection}
-   */
-  @observable accessor bulkSelection = [];
-
-  /**
-   * The bulk job progress (admin mode only)
-   * @type {AdminJobProgress}
-   */
-  @observable accessor bulkProgress = null;
-
-  /**
    * Toast data
    * @type {import('@Types').Toast}
    */
@@ -179,6 +165,7 @@ export class AppStore {
 
   constructor() {
     this.siteStore = new SiteStore(this);
+    this.bulkStore = new BulkStore(this);
     this.keyboardListener = new KeyboardListener();
     this.api = new AdminClient(this);
   }
@@ -195,6 +182,10 @@ export class AppStore {
     this.location = getLocation();
 
     await this.siteStore.initStore(inputConfig);
+
+    if (this.isAdmin()) {
+      this.bulkStore.initStore(this.location);
+    }
 
     // load dictionary based on user language
     this.languageDict = await fetchLanguageDict(this.siteStore);
@@ -213,16 +204,6 @@ export class AppStore {
     });
 
     this.showView();
-
-    if (this.isAdmin()) {
-      // listen for selection changes
-      const listener = () => window.setTimeout(() => this.updateBulkSelection(), 100);
-      const rootEl = document.querySelector(this.isSharePointFolder(this.location) ? '#appRoot' : 'body');
-      if (rootEl) {
-        rootEl.addEventListener('click', listener);
-        rootEl.addEventListener('keyup', listener);
-      }
-    }
   }
 
   /**
@@ -583,16 +564,6 @@ export class AppStore {
       return dotIndex > 0; // must contain a dot
     }
     return false;
-  }
-
-  /**
-   * Scans the DOM for selected items and updates the bulk selection.
-   */
-  updateBulkSelection() {
-    const { location } = this;
-    this.bulkSelection = this.isSharePointFolder(location)
-      ? getSharepointBulkSelection(document)
-      : getGoogleDriveBulkSelection(document);
   }
 
   /**
@@ -1001,70 +972,6 @@ export class AppStore {
     }
 
     return !!resp;
-  }
-
-  /**
-   * Runs a bulk preview operation on the bulk selection.
-   * @returns {Promise<AdminJob>} The job details once stopped
-   */
-  async bulkPreview() {
-    if (this.bulkSelection.length === 0) {
-      return null;
-    }
-
-    await this.fetchStatus(true, true);
-
-    if (this.bulkSelection.length === 1) {
-      // single preview
-      const path = bulkSelectionToPath(this.bulkSelection, this.status.webPath)[0];
-      const res = await this.update(path);
-      if (res) {
-        return mockAdminJobDetails(path);
-      }
-      return null;
-    } else {
-      // bulk preview
-      this.setState(STATE.BULK_PREVIEWING);
-
-      const res = await doBulkOperation(this, 'preview');
-      if (!res) {
-        this.setState();
-      }
-      return res;
-    }
-  }
-
-  /**
-   * Runs a bulk publish operation on the bulk selection.
-   * @returns {Promise<AdminJob>} The job details once stopped
-   */
-  async bulkPublish() {
-    if (this.bulkSelection.length === 0) {
-      return null;
-    }
-
-    await this.fetchStatus(true, true);
-
-    if (this.bulkSelection.length === 1) {
-      // single publish
-      const path = bulkSelectionToPath(this.bulkSelection, this.status.webPath)[0];
-      const res = await this.publish(path);
-      if (res) {
-        return mockAdminJobDetails(path);
-      }
-      return null;
-    } else {
-      // bulk preview
-      this.setState(STATE.BULK_PUBLISHING);
-
-      const res = await doBulkOperation(this, 'publish', {
-        route: 'live',
-      });
-      if (!res) {
-        this.setState();
-      }
-      return res;
-    }
   }
 
   /**
