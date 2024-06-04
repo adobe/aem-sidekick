@@ -85,7 +85,7 @@ export class BulkStore {
   appStore;
 
   /**
-   * Validates and normalizes a bulk resource.
+   * Validates a bulk resource.
    * @param {BulkResource} item The bulk resource
    * @returns {BulkResource} The validated bulk resource
    */
@@ -99,16 +99,24 @@ export class BulkStore {
       };
     }
 
-    // normalize file name
     return {
       type,
-      file: file
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, ''),
+      file,
     };
+  }
+
+  /**
+   * Normalizes a file name.
+   * @param {string} file The file name
+   * @returns {string} The sanitized file name
+   */
+  #normalize(file) {
+    return file
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
   }
 
   /**
@@ -230,7 +238,7 @@ export class BulkStore {
         filename = '';
       }
 
-      return `${folder}${folder.endsWith('/') ? '' : '/'}${filename}${ext}`;
+      return `${folder}${folder.endsWith('/') ? '' : '/'}${this.#normalize(filename)}${ext}`;
     });
   }
 
