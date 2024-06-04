@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/adobe/aem-sidekick/compare/v1.24.0...v1.25.0) (2024-06-04)
+
+
+### Features
+
+* sidekick menu ([#155](https://github.com/adobe/aem-sidekick/issues/155)) ([f8fa698](https://github.com/adobe/aem-sidekick/commit/f8fa69851a63bcee8ed31ba3263293bf1bdf7cfd))
+
 # [1.24.0](https://github.com/adobe/aem-sidekick/compare/v1.23.2...v1.24.0) (2024-05-30)
 
 
