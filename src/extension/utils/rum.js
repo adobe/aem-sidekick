@@ -68,7 +68,7 @@ export default function sampleRUM(checkpoint, data = {}) {
         lazy: () => {
           // use classic script to avoid CORS issues
           const script = document.createElement('script');
-          script.src = 'https://rum.hlx.page/.rum/@adobe/helix-rum-enhancer@^1/src/index.js';
+          script.src = chrome.runtime.getURL('utils/rum-enhancer.js');
           document.head.appendChild(script);
           return true;
         },

@@ -14,7 +14,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { html, css } from 'lit';
 import { EventBus } from '../../utils/event-bus.js';
 import { EVENTS } from '../../constants.js';
-import sampleRUM from '../../utils/rum.js';
+import sampleRUM from '../../../utils/rum.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 
 /**
