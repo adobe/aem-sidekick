@@ -219,6 +219,7 @@ describe('Delete plugin', () => {
         confirmDelete(sidekick);
 
         await waitUntil(() => deleteStub.calledOnce);
+        sidekickTest.clickToastClose();
       });
 
       it('handles server failure', async () => {
