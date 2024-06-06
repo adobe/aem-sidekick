@@ -41,6 +41,7 @@
       {
         "resources": [
           "_locales/*",
+          "bulk-result.js",
           "content.js",
           "index.js",
           "*.js.map",

@@ -106,6 +106,46 @@ export class AdminClient {
   }
 
   /**
+   * Returns a localized error message based on action, status code and error message.
+   * @param {string} action The action
+   * @param {number} status The status code
+   * @param {string} [error] The error message
+   * @returns {string} The localized error message
+   */
+  getLocalizedError(action, status, error) {
+    let message = '';
+    if (action === 'status' && status === 404) {
+      // special handling for status
+      message = this.appStore.i18n(this.appStore.isEditor()
+        ? 'error_status_404_document'
+        : 'error_status_404_content');
+    } else if (status === 400 && (error?.includes('script or event handler')
+      || error?.includes('XML'))) {
+      // preview: invalid svg
+      message = this.appStore.i18n('error_preview_svg_invalid');
+    } else if (status === 413) {
+      // preview: resource too large
+      message = this.appStore.i18n('error_preview_too_large');
+    } else if (status === 415) {
+      if (error?.includes('docx with google not supported')) {
+        // preview: docx in gdrive
+        message = this.appStore.i18n('error_preview_no_docx');
+      } else if (error?.includes('xlsx with google not supported')) {
+        // preview: xlsx in gdrive
+        message = this.appStore.i18n('error_preview_no_xlsx');
+      } else {
+        // preview: unsupported file type
+        message = this.appStore.i18n('error_preview_not_supported');
+      }
+    } else {
+      // error key fallbacks
+      message = this.appStore.i18n(`error_${action}_${status}`)
+        || this.appStore.i18n(`error_${action}`);
+    }
+    return message;
+  }
+
+  /**
    * Shows a toast if the server returned an error.
    * @private
    * @param {string} action The action
@@ -122,18 +162,7 @@ export class AdminClient {
       return;
     }
 
-    let message = '';
-    if (action === 'status' && resp.status === 404) {
-      // special handling for status
-      message = this.appStore.i18n(this.appStore.isEditor()
-        ? 'error_status_404_document'
-        : 'error_status_404_content');
-    } else {
-      // error key fallbacks
-      message = this.appStore.i18n(`error_${action}_${resp.status}`)
-        || this.appStore.i18n(`error_${action}`);
-    }
-
+    const message = this.getLocalizedError(action, resp.status, this.getServerError(resp));
     if (message) {
       this.appStore.showToast(
         message.replace('$1', this.getServerError(resp)),

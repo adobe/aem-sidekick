@@ -52,11 +52,6 @@ export class BulkInfo extends ConnectedElement {
             : this.appStore.i18n('bulk_selection_empty')
           }
         </span>
-        ${
-          this.appStore.bulkStore?.selection.length > 0
-            ? html`<sp-menu-divider size="s" vertical></sp-menu-divider>`
-            : ''
-        }
       </div>
     `;
   }

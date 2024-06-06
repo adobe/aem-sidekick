@@ -10,9 +10,9 @@
  * governing permissions and limitations under the License.
  */
 
-import { action, observable } from 'mobx';
+import { observable } from 'mobx';
 import { log } from '../../log.js';
-import { STATE } from '../constants.js';
+import { MODALS, STATE } from '../constants.js';
 
 /**
  * @typedef {import('./app.js').AppStore} AppStore
@@ -27,11 +27,19 @@ import { STATE } from '../constants.js';
  */
 
 /**
- * @typedef {import('@Types').AdminJob} BulkJob
+ * @typedef {import('@Types').BulkSummary} BulkSummary
  */
 
 /**
- * @typedef {import('@Types').AdminJobProgress} BulkProgress
+ * @typedef {import('@Types').AdminJob} AdminJob
+ */
+
+/**
+ * @typedef {import('@Types').AdminJobProgress} AdminJobProgress
+ */
+
+/**
+ * @typedef {import('@Types').AdminJobResource} AdminJobResource
  */
 
 /**
@@ -69,20 +77,19 @@ export class BulkStore {
 
   /**
    * The bulk progress
-   * @type {BulkProgress}
+   * @type {AdminJobProgress}
    */
   @observable accessor progress = null;
-
-  /**
-   * Has the store been initialized?
-   * @type {boolean}
-   */
-  @observable accessor ready = false;
 
   /**
    * @type {AppStore}
    */
   appStore;
+
+  /**
+   * @type {BulkSummary}
+   */
+  summary;
 
   /**
    * Validates a bulk resource.
@@ -220,7 +227,7 @@ export class BulkStore {
       const lastDot = file.lastIndexOf('.');
       if (lastDot > 0) {
         filename = file.substring(0, lastDot);
-        ext = file.substring(lastDot + 1);
+        ext = file.substring(lastDot);
       }
 
       if (type === 'docx') {
@@ -248,7 +255,7 @@ export class BulkStore {
    * @param {Object} [opts] The options
    * @param {string} [opts.route=operation] The route
    * @param {string} [opts.method='POST'] The method
-   * @returns {Promise<BulkJob>} The job details
+   * @returns {Promise<AdminJob>} The job details
    */
   async #doBulkOperation(operation, {
     route = operation,
@@ -313,7 +320,7 @@ export class BulkStore {
   /**
    * Creates mock admin job details.
    * @param {string} path The resource path
-   * @returns {BulkJob} The job details
+   * @returns {AdminJob} The job details
    */
   #mockAdminJobDetails(path) {
     return {
@@ -336,7 +343,7 @@ export class BulkStore {
 
   /**
    * Runs a bulk preview operation on the bulk selection.
-   * @returns {Promise<BulkJob>} The job details once stopped
+   * @returns {Promise<AdminJob>} The job details once stopped
    */
   async preview() {
     if (this.selection.length === 0) {
@@ -370,7 +377,7 @@ export class BulkStore {
 
   /**
    * Runs a bulk publish operation on the bulk selection.
-   * @returns {Promise<BulkJob>} The job details once stopped
+   * @returns {Promise<AdminJob>} The job details once stopped
    */
   async publish() {
     if (this.selection.length === 0) {
@@ -415,24 +422,95 @@ export class BulkStore {
   }
 
   /**
-   * Returns the bulk success text for a given action.
+   * Returns the summary text for a bulk operation.
    * @param {string} operation The bulk operation
    * @param {number} total The total number of files
-   * @returns {string} The bulk progress text
+   * @param {number} [failed] The number of failed files
+   * @returns {string} The bulk report text
    */
-  getSuccessText(operation, total) {
+  #getSummaryText(operation, total, failed) {
     const type = total > 1 ? 'multiple' : 'single';
-    const i18nKey = `bulk_result_${operation}_${type}_success`;
+    let outcome = 'success';
+    if (total >= 1 && failed === total) {
+      // all failed
+      outcome = 'failure';
+    } else if (total > 1 && failed >= 1 && failed < total) {
+      // some failed
+      outcome = 'partial_success';
+    }
+    const i18nKey = `bulk_result_${operation}_${type}_${outcome}`;
     return this.appStore.i18n(i18nKey)
-      .replace('$1', `${total}`);
+      .replace('$1', `${total - failed}`)
+      .replace('$2', `${failed}`);
   }
 
   /**
-   * Set as initialized.
+   * Displays a toast with the bulk operation summary.
+   * @param {string} operation The bulk operation ("preview" or "publish")
+   * @param {AdminJobResource[]} resources The resources
+   * @param {string} host The host name to use for URLs
    */
-  @action
-  setReady() {
-    this.ready = true;
+  showSummary(operation, resources, host) {
+    this.summary = {
+      operation,
+      resources,
+      host,
+    };
+
+    const failed = resources.filter(({ status }) => status >= 400);
+    const message = this.#getSummaryText(operation, resources.length, failed.length);
+    // eslint-disable-next-line no-nested-ternary
+    const variant = (failed.length !== resources.length) ? 'positive' : 'negative';
+
+    const urls = resources
+      .filter(({ status }) => status < 400)
+      .map(({ path }) => `https://${host}${path}`);
+    const openUrls = () => urls.forEach((url) => this.appStore.openPage(url));
+    // const copyUrls = () => navigator.clipboard.writeText(urls.join('\n'));
+
+    const openLabel = this.appStore.i18n('open');
+    const openCallback = () => {
+      if (urls.length <= 10) {
+        openUrls();
+      } else {
+        // ask for confirmation if more than 10 URLs
+        this.appStore.showModal({
+          type: MODALS.CONFIRM,
+          data: {
+            headline: this.appStore.i18n('open_urls').replace('$1', `${resources.length}`),
+            message: this.appStore.i18n('open_urls_confirm').replace('$1', `${resources.length}`),
+            confirmLabel: openLabel,
+            confirmCallback: openUrls,
+          },
+        });
+      }
+    };
+
+    const actionLabel = this.appStore.i18n('bulk_result_details');
+
+    // show bulk details modal
+    const actionCallback = () => {
+      this.appStore.showModal({
+        type: MODALS.BULK_DETAILS,
+        data: {
+          headline: message,
+          confirmLabel: openLabel,
+          confirmCallback: openCallback,
+        },
+      });
+      this.appStore.closeToast();
+    };
+
+    // show result toast
+    this.appStore.showToast(
+      message,
+      variant,
+      () => this.appStore.closeToast(),
+      actionCallback,
+      actionLabel,
+      30000,
+      false,
+    );
   }
 
   /**

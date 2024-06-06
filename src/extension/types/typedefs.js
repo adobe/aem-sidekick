@@ -197,9 +197,17 @@
  */
 
 /**
+ * @typedef {Object} BulkSummary
+ * @property {string} operation The bulk operation
+ * @property {string} host The host name for URLs
+ * @property {AdminJobResource[]} resources The resource details
+ */
+
+/**
  * @typedef {Object} AdminJobResource
  * @property {string} path The resource path
  * @property {number} status The status code
+ * @property {string} [error] The error message
  */
 
 /**

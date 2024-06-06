@@ -87,6 +87,11 @@ export class ModalContainer extends LitElement {
     EventBus.instance.addEventListener(MODAL_EVENTS.CLOSE, () => {
       this.cleanup();
     });
+
+    // Load bulk result component if needed
+    if (this.modal.type === MODALS.BULK_DETAILS) {
+      await import('../bulk/bulk-result/bulk-result.js');
+    }
   }
 
   async firstUpdated() {
@@ -201,6 +206,19 @@ export class ModalContainer extends LitElement {
         options.cancelLabel = this.appStore.i18n('cancel');
         options.content = html`${data?.message || ''}`;
         break;
+      case MODALS.BULK_DETAILS:
+        options.underlay = true;
+        options.headline = data?.headline ?? this.appStore.i18n('bulk_result_details');
+        options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('open');
+        options.confirmCallback = data?.confirmCallback
+          ? () => {
+            data.confirmCallback();
+            this.onConfirm();
+          }
+          : this.onConfirm;
+        options.cancelLabel = this.appStore.i18n('close');
+        options.content = html`<bulk-result data-details="${data?.message || '[]'}"></bulk-result>`;
+        break;
       default:
         this.cleanup();
         return html``;
@@ -219,7 +237,7 @@ export class ModalContainer extends LitElement {
             .underlay=${options.underlay}
             .closeOnUnderlayClick=${options.closeOnUnderlayClick}
             .error=${options.error}
-            @confirm=${this.onConfirm}
+            @confirm=${options.confirmCallback || this.onConfirm}
             @cancel=${this.onCancel}>
             ${options.content}
         </sp-dialog-wrapper>

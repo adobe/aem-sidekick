@@ -25,6 +25,6 @@ export const style = css`
   }
 
   .container sp-menu-divider {
-    height:100%;
+    height: 100%;
   }
 `;

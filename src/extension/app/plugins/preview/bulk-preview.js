@@ -46,42 +46,8 @@ export function createBulkPreviewPlugin(appStore) {
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
           const res = await bulkStore.preview();
           if (res) {
-            const { siteStore } = appStore;
-            const paths = (res.data?.resources || []).map(({ path }) => path);
-
-            const actionLabel = paths.length > 1
-              ? appStore.i18n('open_urls').replace('$1', `${paths.length}`)
-              : appStore.i18n('open_url');
-
-            const actionCallback = () => {
-              const openUrls = () => paths.forEach((path) => {
-                appStore.openPage(`https://${siteStore.innerHost}${path}`);
-              });
-              if (paths.length <= 10) {
-                openUrls();
-              } else {
-                appStore.showModal({
-                  type: 'confirm',
-                  data: {
-                    headline: actionLabel,
-                    message: appStore.i18n('open_urls_confirm').replace('$1', `${paths.length}`),
-                    confirmLabel: appStore.i18n('open'),
-                    confirmCallback: openUrls,
-                  },
-                });
-              }
-              appStore.closeToast();
-            };
-
-            // show success toast
-            appStore.showToast(
-              bulkStore.getSuccessText('preview', res.data?.resources?.length),
-              'positive',
-              () => appStore.closeToast(),
-              actionCallback,
-              actionLabel,
-              30000,
-              false,
+            bulkStore.showSummary(
+              'preview', res.data?.resources || [], appStore.siteStore.innerHost,
             );
           }
         }, { once: true });

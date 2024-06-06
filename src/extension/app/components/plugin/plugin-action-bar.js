@@ -19,7 +19,7 @@ import { ICONS, STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import '../action-bar/activity-action/activity-action.js';
-import '../action-bar/bulk-info/bulk-info.js';
+import '../bulk/bulk-info/bulk-info.js';
 import sampleRUM from '../../../rum.js';
 
 /**
@@ -264,7 +264,9 @@ export class PluginActionBar extends ConnectedElement {
 
     return html`
       <sp-action-group>
-        ${this.appStore.isAdmin() ? html`<bulk-info></bulk-info>` : ''}
+        ${this.appStore.isAdmin()
+          ? html`<bulk-info></bulk-info><sp-menu-divider size="s" vertical></sp-menu-divider>`
+          : ''}
         ${this.barPlugins.length > 0 ? this.barPlugins.map((p) => p.render()) : ''}
       </sp-action-group>`;
   }
