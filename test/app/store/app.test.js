@@ -1497,9 +1497,9 @@ describe('Test App Store', () => {
       expect(instance.login.called).to.be.false;
     });
 
-    it('should re-login and show wait if token is expired', async () => {
-      const futureTime = now + 1000; // Ensure the token is considered expired
-      instance.status = { profile: { exp: futureTime } };
+    it('should re-login if token is expired', async () => {
+      const futureTime = now - 1000; // Ensure the token is considered expired
+      instance.status = { profile: { exp: futureTime / 1000 } };
       instance.sidekick.addEventListener.callsFake((event, callback) => callback());
 
       await instance.validateSession();
@@ -1507,8 +1507,8 @@ describe('Test App Store', () => {
     });
 
     it('should resolve immediately if token is not expired', async () => {
-      const pastTime = now - 1000; // Ensure the token is not considered expired
-      instance.status = { profile: { exp: pastTime } };
+      const pastTime = now + 10000; // Ensure the token is not considered expired
+      instance.status = { profile: { exp: pastTime / 1000 } };
       await instance.validateSession();
       expect(instance.login.called).to.be.false;
     });
