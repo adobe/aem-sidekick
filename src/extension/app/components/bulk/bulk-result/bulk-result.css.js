@@ -19,43 +19,52 @@ export const style = css`
     max-height: 284px;
     overflow-y: scroll;
     user-select: text;
+    background-color: var(--spectrum2-sidekick-background);
   }
 
-  .container .resource {
-    min-height: 36px;
+  .container .row {
+    min-height: 40px;
     white-space: nowrap;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
+    padding: 2px 8px;
     gap: 8px;
+    border-bottom: 1px solid var(--spectrum2-sidekick-border-color);
   }
 
-  .container .resource .status {
-    flex-shrink: 1;
+  .container .row.header {
+    min-height: 36px;
+    font-weight: bold;
+    color: var(--spectrum2-foreground-color-strong);
+  }
+
+  .container .row .status {
+    width: 20px;
     display: flex;
     align-items: center;
     color: var(--spectrum2-color-positive);
   }
 
-  .container .resource .status.error {
+  .container .row .status.error {
     color: var(--spectrum2-foreground-color-negative);
   }
 
-  .container .resource .path {
+  .container .row .path {
     text-overflow: ellipsis;
   }
 
-  .container .resource .path a:any-link {
+  .container .row .path a:any-link {
     color: currentColor;
     text-decoration: none;
   }
 
-  .container .resource .path a:hover {
+  .container .row .path a:hover {
     text-decoration: underline;
   }
 
-  .container .resource .error {
+  .container .row .error {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -63,8 +72,12 @@ export const style = css`
     white-space: normal;
   }
 
-  .container .resource .error svg {
+  .container .row .error svg {
     margin-right: 4px;
+  }
+
+  .container sp-menu-divider:first-child {
+    fill: red;
   }
 
   .container sp-menu-divider:last-child {

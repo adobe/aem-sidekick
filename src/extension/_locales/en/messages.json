@@ -54,6 +54,9 @@
     "bulk_result_details": {
       "message": "Details"
     },
+    "bulk_result_path": {
+      "message": "Path"
+    },
     "bulk_result_preview_multiple_failure": {
       "message": "Failed to generate preview of all files."
     },

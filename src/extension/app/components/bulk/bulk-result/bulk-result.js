@@ -30,8 +30,14 @@ export class BulkResult extends ConnectedElement {
 
     return summary ? html`
       <div class="container">
+        <div class="row header">
+          <div class="status"></div>
+          <div>
+            ${this.appStore.i18n('bulk_result_path')}
+          </div>
+        </div>
         ${summary.resources.map(({ status, path, error }) => html`
-          <div class="resource">
+          <div class="row">
             <div class="status ${status < 400 ? 'success' : 'error'}">
               ${status < 400 ? ICONS.CHECKMARK : ICONS.ALERT_TRIANGLE}
             </div>
@@ -52,7 +58,6 @@ export class BulkResult extends ConnectedElement {
               </div>
             </div>
           </div>
-          <sp-menu-divider></sp-menu-divider>
         `)}
       </div>
     ` : '';
