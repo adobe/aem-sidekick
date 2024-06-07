@@ -38,8 +38,14 @@ import { createReloadPlugin } from '../plugins/reload/reload.js';
 import { createDeletePlugin } from '../plugins/delete/delete.js';
 import { createPublishPlugin } from '../plugins/publish/publish.js';
 import { createUnpublishPlugin } from '../plugins/unpublish/unpublish.js';
-import { createBulkPreviewPlugin } from '../plugins/preview/bulk-preview.js';
-import { createBulkPublishPlugin } from '../plugins/publish/bulk-publish.js';
+import { createBulkPreviewPlugin } from '../plugins/bulk/bulk-preview.js';
+import { createBulkPublishPlugin } from '../plugins/bulk/bulk-publish.js';
+import {
+  createBulkCopyLiveUrlsPlugin,
+  createBulkCopyPreviewUrlsPlugin,
+  createBulkCopyProdUrlsPlugin,
+  createBulkCopyUrlsPlugin,
+} from '../plugins/bulk/bulk-copy-urls.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
 
@@ -230,6 +236,20 @@ export class AppStore {
   }
 
   /**
+   * Adds a plugin to the registry. or as a child to a container plugin.
+   * @private
+   * @param {Object} registry The plugin registry
+   * @param {*} plugin The plugin
+   */
+  registerPlugin(registry, plugin) {
+    if (plugin.isChild() && registry[plugin.getContainerId()]) {
+      registry[plugin.getContainerId()].append(plugin);
+    } else {
+      registry[plugin.id] = plugin;
+    }
+  }
+
+  /**
    * Sets up the plugins in a single call
    */
   setupPlugins() {
@@ -253,15 +273,23 @@ export class AppStore {
       const unpublishPlugin = createUnpublishPlugin(this);
       const bulkPreviewPlugin = createBulkPreviewPlugin(this);
       const bulkPublishPlugin = createBulkPublishPlugin(this);
+      const bulkCopyUrlsPlugin = createBulkCopyUrlsPlugin(this);
+      const bulkCopyPreviewUrlsPlugin = createBulkCopyPreviewUrlsPlugin(this);
+      const bulkCopyLiveUrlsPlugin = createBulkCopyLiveUrlsPlugin(this);
+      const bulkCopyProdUrlsPlugin = createBulkCopyProdUrlsPlugin(this);
 
-      this.corePlugins[envPlugin.id] = envPlugin;
-      this.corePlugins[previewPlugin.id] = previewPlugin;
-      this.corePlugins[reloadPlugin.id] = reloadPlugin;
-      this.corePlugins[deletePlugin.id] = deletePlugin;
-      this.corePlugins[publishPlugin.id] = publishPlugin;
-      this.corePlugins[unpublishPlugin.id] = unpublishPlugin;
-      this.corePlugins[bulkPreviewPlugin.id] = bulkPreviewPlugin;
-      this.corePlugins[bulkPublishPlugin.id] = bulkPublishPlugin;
+      this.registerPlugin(this.corePlugins, envPlugin);
+      this.registerPlugin(this.corePlugins, previewPlugin);
+      this.registerPlugin(this.corePlugins, reloadPlugin);
+      this.registerPlugin(this.corePlugins, deletePlugin);
+      this.registerPlugin(this.corePlugins, publishPlugin);
+      this.registerPlugin(this.corePlugins, unpublishPlugin);
+      this.registerPlugin(this.corePlugins, bulkPreviewPlugin);
+      this.registerPlugin(this.corePlugins, bulkPublishPlugin);
+      this.registerPlugin(this.corePlugins, bulkCopyUrlsPlugin);
+      this.registerPlugin(this.corePlugins, bulkCopyPreviewUrlsPlugin);
+      this.registerPlugin(this.corePlugins, bulkCopyLiveUrlsPlugin);
+      this.registerPlugin(this.corePlugins, bulkCopyProdUrlsPlugin);
     }
   }
 
@@ -376,11 +404,7 @@ export class AppStore {
           } else {
             // add custom plugin
             const customPlugin = new Plugin(plugin, this);
-            if (plugin.container) {
-              this.customPlugins[plugin.container]?.append(customPlugin);
-            } else {
-              this.customPlugins[plugin.id] = customPlugin;
-            }
+            this.registerPlugin(this.customPlugins, customPlugin);
           }
         });
       }

@@ -44,14 +44,7 @@ export function createBulkPublishPlugin(appStore) {
           },
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
-          const res = await bulkStore.publish();
-          if (res) {
-            bulkStore.showSummary(
-              'publish',
-              res.data?.resources || [],
-              appStore.siteStore.host || appStore.siteStore.outerHost,
-            );
-          }
+          bulkStore.publish();
         }, { once: true });
       },
       isEnabled: (store) => store.isAuthorized('live', 'write'), // only enable if authorized

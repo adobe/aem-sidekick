@@ -342,16 +342,29 @@ export class BulkStore {
   }
 
   /**
+   * Creates mock admin job resources.
+   * @param {string} path The resource path
+   * @returns {AdminJobResource[]} The admin job resources
+   */
+  #mockAdminJobResources(path) {
+    return [{
+      path,
+      status: 200,
+    }];
+  }
+
+  /**
    * Runs a bulk preview operation on the bulk selection.
-   * @returns {Promise<AdminJob>} The job details once stopped
    */
   async preview() {
     if (this.selection.length === 0) {
       log.debug('bulk preview: no selection');
-      return null;
+      return;
     }
 
     const status = await this.appStore.fetchStatus(true, true);
+    const host = this.appStore.siteStore.innerHost;
+    let resources = null;
 
     if (this.selection.length === 1) {
       // single preview
@@ -359,33 +372,39 @@ export class BulkStore {
       const path = this.#bulkSelectionToPath(this.selection, status.webPath)[0];
       const res = await this.appStore.update(path);
       if (res) {
-        return this.#mockAdminJobDetails(path);
+        resources = this.#mockAdminJobResources(path);
+      } else {
+        this.appStore.setState();
       }
-      return null;
     } else {
       // bulk preview
       log.debug(`bulk preview: performing bulk operation for ${this.selection.length} files`);
       this.appStore.setState(STATE.BULK_PREVIEWING);
 
       const res = await this.#doBulkOperation('preview');
-      if (!res) {
+      if (res) {
+        ({ resources } = res.data || {});
+      } else {
         this.appStore.setState();
       }
-      return res;
+    }
+    if (resources) {
+      this.showSummary('preview', resources, host);
     }
   }
 
   /**
    * Runs a bulk publish operation on the bulk selection.
-   * @returns {Promise<AdminJob>} The job details once stopped
    */
   async publish() {
     if (this.selection.length === 0) {
       log.debug('bulk publish: no selection');
-      return null;
+      return;
     }
 
     const status = await this.appStore.fetchStatus(true, true);
+    const host = this.appStore.siteStore.host || this.appStore.siteStore.outerHost;
+    let resources = null;
 
     if (this.selection.length === 1) {
       // single publish
@@ -393,20 +412,44 @@ export class BulkStore {
       const path = this.#bulkSelectionToPath(this.selection, status.webPath)[0];
       const res = await this.appStore.publish(path);
       if (res) {
-        return this.#mockAdminJobDetails(path);
+        resources = this.#mockAdminJobResources(path);
+      } else {
+        this.appStore.setState();
       }
-      return null;
     } else {
       // bulk preview
       log.debug(`bulk publish: performing bulk operation for ${this.selection.length} files`);
       this.appStore.setState(STATE.BULK_PUBLISHING);
 
       const res = await this.#doBulkOperation('publish', { route: 'live' });
-      if (!res) {
+      if (res) {
+        resources = res.data?.resources;
+      } else {
         this.appStore.setState();
       }
-      return res;
+      if (resources) {
+        this.showSummary('publish', resources, host);
+      }
     }
+  }
+
+  async copyUrls(host) {
+    if (this.selection.length === 0) {
+      log.debug('bulk copy urls: no selection');
+      return;
+    }
+
+    const status = await this.appStore.fetchStatus(true, true);
+    const paths = this.#bulkSelectionToPath(this.selection, status.webPath);
+
+    navigator.clipboard.writeText(
+      paths.map((path) => `https://${host}${path}`).join('\n'),
+    );
+
+    this.appStore.showToast(
+      this.appStore.i18n(`copied_url${paths.length !== 1 ? 's' : ''}`),
+      'positive',
+    );
   }
 
   /**
