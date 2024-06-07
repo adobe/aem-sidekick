@@ -12,7 +12,7 @@
 
 import { observable } from 'mobx';
 import { log } from '../../log.js';
-import { MODALS, STATE } from '../constants.js';
+import { MODALS, MODAL_EVENTS, STATE } from '../constants.js';
 
 /**
  * @typedef {import('./app.js').AppStore} AppStore
@@ -318,30 +318,6 @@ export class BulkStore {
   }
 
   /**
-   * Creates mock admin job details.
-   * @param {string} path The resource path
-   * @returns {AdminJob} The job details
-   */
-  #mockAdminJobDetails(path) {
-    return {
-      name: 'single',
-      state: 'completed',
-      startTime: new Date().toUTCString(),
-      progress: {
-        total: 1,
-        processed: 1,
-        failed: 0,
-      },
-      data: {
-        resources: [{
-          path,
-          status: 200,
-        }],
-      },
-    };
-  }
-
-  /**
    * Creates mock admin job resources.
    * @param {string} path The resource path
    * @returns {AdminJobResource[]} The admin job resources
@@ -362,35 +338,46 @@ export class BulkStore {
       return;
     }
 
-    const status = await this.appStore.fetchStatus(true, true);
-    const host = this.appStore.siteStore.innerHost;
-    let resources = null;
+    const modal = this.appStore.showModal({
+      type: 'confirm',
+      data: {
+        headline: this.appStore.i18n('preview'),
+        message: this.#getConfirmText('preview', this.selection.length),
+        confirmLabel: this.appStore.i18n('preview'),
+      },
+    });
 
-    if (this.selection.length === 1) {
-      // single preview
-      log.debug('bulk preview: performing single operation');
-      const path = this.#bulkSelectionToPath(this.selection, status.webPath)[0];
-      const res = await this.appStore.update(path);
-      if (res) {
-        resources = this.#mockAdminJobResources(path);
-      } else {
-        this.appStore.setState();
-      }
-    } else {
-      // bulk preview
-      log.debug(`bulk preview: performing bulk operation for ${this.selection.length} files`);
-      this.appStore.setState(STATE.BULK_PREVIEWING);
+    modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
+      const status = await this.appStore.fetchStatus(true, true);
+      const host = this.appStore.siteStore.innerHost;
+      let resources = null;
 
-      const res = await this.#doBulkOperation('preview');
-      if (res) {
-        ({ resources } = res.data || {});
+      if (this.selection.length === 1) {
+        // single preview
+        log.debug('bulk preview: performing single operation');
+        const path = this.#bulkSelectionToPath(this.selection, status.webPath)[0];
+        const res = await this.appStore.update(path);
+        if (res) {
+          resources = this.#mockAdminJobResources(path);
+        } else {
+          this.appStore.setState();
+        }
       } else {
-        this.appStore.setState();
+        // bulk preview
+        log.debug(`bulk preview: performing bulk operation for ${this.selection.length} files`);
+        this.appStore.setState(STATE.BULK_PREVIEWING);
+
+        const res = await this.#doBulkOperation('preview');
+        if (res) {
+          ({ resources } = res.data || {});
+        } else {
+          this.appStore.setState();
+        }
       }
-    }
-    if (resources) {
-      this.showSummary('preview', resources, host);
-    }
+      if (resources) {
+        this.showSummary('preview', resources, host);
+      }
+    }, { once: true });
   }
 
   /**
@@ -402,35 +389,46 @@ export class BulkStore {
       return;
     }
 
-    const status = await this.appStore.fetchStatus(true, true);
-    const host = this.appStore.siteStore.host || this.appStore.siteStore.outerHost;
-    let resources = null;
+    const modal = this.appStore.showModal({
+      type: 'confirm',
+      data: {
+        headline: this.appStore.i18n('publish'),
+        message: this.#getConfirmText('publish', this.selection.length),
+        confirmLabel: this.appStore.i18n('publish'),
+      },
+    });
 
-    if (this.selection.length === 1) {
-      // single publish
-      log.debug('bulk publish: performing single operation');
-      const path = this.#bulkSelectionToPath(this.selection, status.webPath)[0];
-      const res = await this.appStore.publish(path);
-      if (res) {
-        resources = this.#mockAdminJobResources(path);
-      } else {
-        this.appStore.setState();
-      }
-    } else {
-      // bulk preview
-      log.debug(`bulk publish: performing bulk operation for ${this.selection.length} files`);
-      this.appStore.setState(STATE.BULK_PUBLISHING);
+    modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
+      const status = await this.appStore.fetchStatus(true, true);
+      const host = this.appStore.siteStore.host || this.appStore.siteStore.outerHost;
+      let resources = null;
 
-      const res = await this.#doBulkOperation('publish', { route: 'live' });
-      if (res) {
-        resources = res.data?.resources;
+      if (this.selection.length === 1) {
+        // single publish
+        log.debug('bulk publish: performing single operation');
+        const path = this.#bulkSelectionToPath(this.selection, status.webPath)[0];
+        const res = await this.appStore.publish(path);
+        if (res) {
+          resources = this.#mockAdminJobResources(path);
+        } else {
+          this.appStore.setState();
+        }
       } else {
-        this.appStore.setState();
+        // bulk preview
+        log.debug(`bulk publish: performing bulk operation for ${this.selection.length} files`);
+        this.appStore.setState(STATE.BULK_PUBLISHING);
+
+        const res = await this.#doBulkOperation('publish', { route: 'live' });
+        if (res) {
+          resources = res.data?.resources;
+        } else {
+          this.appStore.setState();
+        }
+        if (resources) {
+          this.showSummary('publish', resources, host);
+        }
       }
-      if (resources) {
-        this.showSummary('publish', resources, host);
-      }
-    }
+    });
   }
 
   async copyUrls(host) {
@@ -458,7 +456,7 @@ export class BulkStore {
    * @param {number} total The total number of files
    * @returns {string} The bulk confirmation text
    */
-  getConfirmText(operation, total) {
+  #getConfirmText(operation, total) {
     const suffix = total > 1 ? 'multiple' : 'single';
     return this.appStore.i18n(`bulk_confirm_${operation}_${suffix}`)
       .replace('$1', `${total}`);

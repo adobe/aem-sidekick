@@ -11,7 +11,6 @@
  */
 
 import { Plugin } from '../../components/plugin/plugin.js';
-import { MODAL_EVENTS } from '../../constants.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -33,19 +32,7 @@ export function createBulkPublishPlugin(appStore) {
     button: {
       text: appStore.i18n('publish'),
       action: () => {
-        const { bulkStore } = appStore;
-        const confirmText = bulkStore.getConfirmText('publish', bulkStore.selection.length);
-        const modal = appStore.showModal({
-          type: 'confirm',
-          data: {
-            headline: appStore.i18n('publish'),
-            message: confirmText,
-            confirmLabel: appStore.i18n('publish'),
-          },
-        });
-        modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
-          bulkStore.publish();
-        }, { once: true });
+        appStore.bulkStore.publish();
       },
       isEnabled: (store) => store.isAuthorized('live', 'write'), // only enable if authorized
     },

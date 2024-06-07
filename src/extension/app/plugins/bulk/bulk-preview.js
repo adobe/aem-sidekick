@@ -11,7 +11,6 @@
  */
 
 import { Plugin } from '../../components/plugin/plugin.js';
-import { MODAL_EVENTS } from '../../constants.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -33,24 +32,7 @@ export function createBulkPreviewPlugin(appStore) {
     button: {
       text: appStore.i18n('preview'),
       action: async () => {
-        const { bulkStore } = appStore;
-        const confirmText = bulkStore.getConfirmText('preview', bulkStore.selection.length);
-        const modal = appStore.showModal({
-          type: 'confirm',
-          data: {
-            headline: appStore.i18n('preview'),
-            message: confirmText,
-            confirmLabel: appStore.i18n('preview'),
-          },
-        });
-        modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
-          const res = await bulkStore.preview();
-          if (res) {
-            bulkStore.showSummary(
-              'preview', res.data?.resources || [], appStore.siteStore.innerHost,
-            );
-          }
-        }, { once: true });
+        appStore.bulkStore.preview();
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write'), // only enable if authorized
     },
