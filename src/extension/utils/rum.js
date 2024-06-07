@@ -65,13 +65,6 @@ export default function sampleRUM(checkpoint, data = {}) {
       };
       sampleRUM.cases = sampleRUM.cases || {
         cwv: () => sampleRUM.cwv(data) || true,
-        lazy: () => {
-          // use classic script to avoid CORS issues
-          const script = document.createElement('script');
-          script.src = chrome.runtime.getURL('utils/rum-enhancer.js');
-          document.head.appendChild(script);
-          return true;
-        },
       };
       // @ts-ignore
       sendPing(data);
