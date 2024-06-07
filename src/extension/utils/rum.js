@@ -35,9 +35,6 @@ export default function sampleRUM(checkpoint, data = {}) {
           .filter(({ fnname }) => dfnname === fnname)
           .forEach(({ fnname, args }) => sampleRUM[fnname](...args));
       });
-  sampleRUM.on = (chkpnt, fn) => {
-    sampleRUM.cases[chkpnt] = fn;
-  };
   defer('observe');
   defer('cw');
   try {
@@ -63,14 +60,8 @@ export default function sampleRUM(checkpoint, data = {}) {
         // eslint-disable-next-line no-unused-expressions
         navigator.sendBeacon(url, body);
       };
-      sampleRUM.cases = sampleRUM.cases || {
-        cwv: () => sampleRUM.cwv(data) || true,
-      };
       // @ts-ignore
       sendPing(data);
-      if (sampleRUM.cases[checkpoint]) {
-        sampleRUM.cases[checkpoint]();
-      }
     }
   } catch (error) {
     // something went wrong
