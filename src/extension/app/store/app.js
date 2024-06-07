@@ -1190,7 +1190,7 @@ export class AppStore {
       }
       const now = Date.now();
       const { exp } = profile;
-      if (exp > now) {
+      if (now > exp * 1000) {
         // token is expired
         this.login(true);
         this.sidekick.addEventListener('statusfetched', () => {
