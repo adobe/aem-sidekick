@@ -1,3 +1,10 @@
+## [1.25.1](https://github.com/adobe/aem-sidekick/compare/v1.25.0...v1.25.1) (2024-06-07)
+
+
+### Bug Fixes
+
+* validate session ([#168](https://github.com/adobe/aem-sidekick/issues/168)) ([df4e43f](https://github.com/adobe/aem-sidekick/commit/df4e43fecb6e873761814cb64c93e3bba0a9077c))
+
 # [1.25.0](https://github.com/adobe/aem-sidekick/compare/v1.24.0...v1.25.0) (2024-06-04)
 
 
