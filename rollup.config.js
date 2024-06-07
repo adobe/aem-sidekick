@@ -67,7 +67,6 @@ function extensionPlugins(browser) {
         { src: 'src/extension/icons', dest: `./dist/${browser}` },
         { src: 'src/extension/_locales', dest: `./dist/${browser}` },
         { src: 'src/extension/utils/rum.js', dest: `./dist/${browser}/utils` },
-        { src: 'src/extension/utils/rum-enhancer.js', dest: `./dist/${browser}/utils` },
       ],
     }),
     sidekickManifestBuildPlugin(browser),
