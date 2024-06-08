@@ -171,6 +171,9 @@
  * @prop {string} [message] The modal message
  * @prop {string} [confirmLabel] The confirm button label
  * @prop {Function} [confirmCallback] The function to call on confirm
+ * @prop {string} [secondaryLabel] The secondary button label
+ * @prop {Function} [secondaryCallback] The function to call on secondary action
+ * @prop {string} [cancelLabel] The cancel button label
  * @prop {string} [action] The action type (delete or unpublish)
  */
 
@@ -181,6 +184,8 @@
  * @prop {Function} closeCallback The function to call on close
  * @prop {Function} actionCallback The function to call on action
  * @prop {string} actionLabel The action label
+ * @prop {Function} [secondaryCallback] The function to call on secondary action
+ * @prop {string} [secondaryLabel] The secondary actiom label
  * @prop {number} timeout The time the toast is shown (default: 6000)
  * @prop {boolean} [actionOnTimeout=true] Execute action on timeout
  */
