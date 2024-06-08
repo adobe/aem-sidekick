@@ -153,6 +153,15 @@ export class ModalContainer extends LitElement {
   }
 
   /**
+   * Called when the secondary button is clicked
+   */
+  onSecondary() {
+    // Announces that the "secondary" button has been clicked.
+    this.dispatchEvent(new CustomEvent(MODAL_EVENTS.SECONDARY));
+    this.cleanup();
+  }
+
+  /**
    * Cleanup the modal
    */
   cleanup() {
@@ -209,13 +218,20 @@ export class ModalContainer extends LitElement {
       case MODALS.BULK_DETAILS:
         options.underlay = true;
         options.headline = data?.headline ?? this.appStore.i18n('bulk_result_details');
-        options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('open');
+        options.confirmLabel = data?.confirmLabel;
         options.confirmCallback = data?.confirmCallback
           ? () => {
             data.confirmCallback();
             this.onConfirm();
           }
-          : this.onConfirm;
+          : undefined;
+        options.secondaryLabel = data?.secondaryLabel;
+        options.secondaryCallback = data?.secondaryCallback
+          ? () => {
+            data.secondaryCallback();
+            this.onSecondary();
+          }
+          : undefined;
         options.cancelLabel = this.appStore.i18n('close');
         options.content = html`<bulk-result data-details="${data?.message || '[]'}"></bulk-result>`;
         break;
@@ -238,6 +254,7 @@ export class ModalContainer extends LitElement {
             .closeOnUnderlayClick=${options.closeOnUnderlayClick}
             .error=${options.error}
             @confirm=${options.confirmCallback || this.onConfirm}
+            @secondary=${options.secondaryCallback || this.onSecondary}
             @cancel=${this.onCancel}>
             ${options.content}
         </sp-dialog-wrapper>
