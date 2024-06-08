@@ -727,9 +727,11 @@ export class AppStore {
    * Displays a toast message
    * @param {string} message The message to display
    * @param {string} [variant] The variant of the toast (optional)
-   * @param {function} [closeCallback] The close callback function
-   * @param {function} [actionCallback] The action callback function
+   * @param {Function} [closeCallback] The close callback function
+   * @param {Function} [actionCallback] The action callback function
    * @param {string} [actionLabel] The action label
+   * @param {Function} [secondaryCallback] The secondary action callback function
+   * @param {string} [secondaryLabel] The secondary action label
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
   showToast(
@@ -738,6 +740,8 @@ export class AppStore {
     closeCallback = undefined,
     actionCallback = undefined,
     actionLabel = 'Ok',
+    secondaryCallback = undefined,
+    secondaryLabel = undefined,
     timeout = 3000,
     actionOnTimeout = true,
   ) {
@@ -752,6 +756,8 @@ export class AppStore {
       closeCallback,
       actionCallback,
       actionLabel,
+      secondaryCallback,
+      secondaryLabel,
       timeout,
       actionOnTimeout,
     };

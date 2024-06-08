@@ -107,6 +107,11 @@ export class ActivityAction extends ConnectedElement {
               ${this.getToastIcon()}<span>${this.appStore.toast.message}</span>
             </div>
             <div class="actions">
+              ${this.appStore.toast.secondaryCallback && this.appStore.toast.secondaryLabel ? html`
+                <sp-action-button class="action" quiet @click=${this.appStore.toast.secondaryCallback}>
+                  ${this.appStore.toast.secondaryLabel}
+                </sp-action-button>
+              ` : html``}
               ${this.appStore.toast.actionCallback && this.appStore.toast.actionLabel ? html`
                 <sp-action-button class="action" quiet @click=${this.appStore.toast.actionCallback}>
                   ${this.appStore.toast.actionLabel}
