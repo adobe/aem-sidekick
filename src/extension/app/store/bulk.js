@@ -12,7 +12,12 @@
 
 import { observable } from 'mobx';
 import { log } from '../../log.js';
-import { MODALS, MODAL_EVENTS, STATE } from '../constants.js';
+import {
+  EXTERNAL_EVENTS,
+  MODALS,
+  MODAL_EVENTS,
+  STATE,
+} from '../constants.js';
 
 /**
  * @typedef {import('./app.js').AppStore} AppStore
@@ -330,6 +335,142 @@ export class BulkStore {
   }
 
   /**
+   * Returns the bulk confirmation text for a given action.
+   * @param {string} operation The bulk operation
+   * @param {number} total The total number of files
+   * @returns {string} The bulk confirmation text
+   */
+  #getConfirmText(operation, total) {
+    const suffix = total > 1 ? 'multiple' : 'single';
+    return this.appStore.i18n(`bulk_confirm_${operation}_${suffix}`)
+      .replace('$1', `${total}`);
+  }
+
+  /**
+   * Returns the summary text for a bulk operation.
+   * @param {string} operation The bulk operation
+   * @param {number} total The total number of files
+   * @param {number} [failed] The number of failed files
+   * @returns {string} The summary text
+   */
+  #getSummaryText(operation, total, failed) {
+    const type = total > 1 ? 'multiple' : 'single';
+    let outcome = 'success';
+    if (total >= 1 && failed === total) {
+      // all failed
+      outcome = 'failure';
+    } else if (total > 1 && failed >= 1 && failed < total) {
+      // some failed
+      outcome = 'partial_success';
+    }
+    const i18nKey = `bulk_result_${operation}_${type}_${outcome}`;
+    return this.appStore.i18n(i18nKey)
+      .replace('$1', `${total - failed}`)
+      .replace('$2', `${failed}`);
+  }
+
+  /**
+   * Returns the summary variant for a bulk operation.
+   * @param {number} total The total number of files
+   * @param {number} [failed] The number of failed files
+   * @returns {string} The summary variant
+   */
+  #getSummaryVariant(total, failed) {
+    if (failed > 0) {
+      if (total >= 1 && failed === total) {
+        // all failed
+        return 'negative';
+      } else if (total > 1 && failed >= 1 && failed < total) {
+        // some failed
+        return 'warning';
+      }
+    }
+    return 'positive';
+  }
+
+  /**
+   * Displays a toast with the bulk operation summary.
+   * @param {string} operation The bulk operation ("preview" or "publish")
+   * @param {AdminJobResource[]} resources The resources
+   * @param {string} host The host name to use for URLs
+   */
+  #showSummary(operation, resources, host) {
+    this.summary = {
+      operation,
+      resources,
+      host,
+    };
+
+    const failed = resources.filter(({ status }) => status >= 400);
+    const succeeded = resources.filter(({ status }) => status < 400);
+    const paths = succeeded.map(({ path }) => path);
+
+    const message = this.#getSummaryText(operation, resources.length, failed.length);
+    const variant = this.#getSummaryVariant(resources.length, failed.length);
+
+    const openUrlsLabel = this.appStore.i18n(`open_url${paths.length !== 1 ? 's' : ''}`);
+    const openUrlsCallback = () => {
+      if (paths.length <= 10) {
+        this.openUrls(host, paths);
+      } else {
+        // ask for user confirmation if more than 10 URLs
+        this.appStore.showModal({
+          type: MODALS.CONFIRM,
+          data: {
+            headline: openUrlsLabel,
+            message: this.appStore.i18n('open_urls_confirm').replace('$1', `${resources.length}`),
+            confirmLabel: openUrlsLabel,
+            confirmCallback: () => this.openUrls(host, paths),
+          },
+        });
+      }
+    };
+
+    const copyUrlsLabel = this.appStore.i18n(`copy_url${paths.length !== 1 ? 's' : ''}`);
+    const copyUrlsCallback = () => this.copyUrls(host, paths);
+
+    if (failed.length === 0) {
+      // show success toast with open and copy buttons
+      this.appStore.showToast(
+        message,
+        variant,
+        () => this.appStore.closeToast(),
+        openUrlsCallback,
+        openUrlsLabel,
+        copyUrlsCallback,
+        copyUrlsLabel,
+        6000,
+        false,
+      );
+    } else {
+      // show (partial) failure toast with details button
+      this.appStore.showToast(
+        message,
+        variant,
+        () => this.appStore.closeToast(),
+        () => {
+          this.appStore.showModal({
+            type: MODALS.BULK_DETAILS,
+            data: {
+              headline: message,
+              secondaryLabel: paths.length > 0 ? copyUrlsLabel : null,
+              secondaryCallback: paths.length > 0 ? copyUrlsCallback : null,
+              confirmLabel: paths.length > 0 ? openUrlsLabel : null,
+              confirmCallback: paths.length > 0 ? openUrlsCallback : null,
+            },
+          });
+          this.appStore.closeToast();
+        },
+        this.appStore.i18n('bulk_result_details'),
+        null, // no secondary callback
+        null, // no secondary label
+        60000,
+        false,
+      );
+    }
+  }
+
+  /**
    * Runs a bulk preview operation on the bulk selection.
    */
   async preview() {
@@ -370,12 +511,16 @@ export class BulkStore {
         const res = await this.#doBulkOperation('preview');
         if (res) {
           ({ resources } = res.data || {});
+          this.appStore.fireEvent(
+            EXTERNAL_EVENTS.RESOURCE_PREVIEWED,
+            resources.map(({ path }) => path),
+          );
         } else {
           this.appStore.setState();
         }
       }
       if (resources) {
-        this.showSummary('preview', resources, host);
+        this.#showSummary('preview', resources, host);
       }
     }, { once: true });
   }
@@ -420,25 +565,37 @@ export class BulkStore {
 
         const res = await this.#doBulkOperation('publish', { route: 'live' });
         if (res) {
-          resources = res.data?.resources;
+          ({ resources } = res.data || {});
+          this.appStore.fireEvent(
+            EXTERNAL_EVENTS.RESOURCE_PUBLISHED,
+            resources.map(({ path }) => path),
+          );
         } else {
           this.appStore.setState();
         }
-        if (resources) {
-          this.showSummary('publish', resources, host);
-        }
+      }
+      if (resources) {
+        this.#showSummary('publish', resources, host);
       }
     });
   }
 
-  async copyUrls(host) {
-    if (this.selection.length === 0) {
+  /**
+   * Creates URLs from paths and copies URLs to the clipboard.
+   * @param {string} [host] The host name (default: preview host)
+   * @param {string[]} [paths] The paths to use (default: paths created from selection)
+   */
+  async copyUrls(host, paths) {
+    host = host || this.appStore.siteStore.innerHost;
+    if (!paths) {
+      const status = await this.appStore.fetchStatus(true, true);
+      paths = this.#bulkSelectionToPath(this.selection, status.webPath);
+    }
+
+    if (paths.length === 0) {
       log.debug('bulk copy urls: no selection');
       return;
     }
-
-    const status = await this.appStore.fetchStatus(true, true);
-    const paths = this.#bulkSelectionToPath(this.selection, status.webPath);
 
     navigator.clipboard.writeText(
       paths.map((path) => `https://${host}${path}`).join('\n'),
@@ -451,107 +608,25 @@ export class BulkStore {
   }
 
   /**
-   * Returns the bulk confirmation text for a given action.
-   * @param {string} operation The bulk operation
-   * @param {number} total The total number of files
-   * @returns {string} The bulk confirmation text
+   * Creates URLs from paths and opens URLs in new browser windows.
+   * @param {string} [host] The host name (default: preview host)
+   * @param {string[]} [paths] The paths to use (default: paths created from selection)
    */
-  #getConfirmText(operation, total) {
-    const suffix = total > 1 ? 'multiple' : 'single';
-    return this.appStore.i18n(`bulk_confirm_${operation}_${suffix}`)
-      .replace('$1', `${total}`);
-  }
-
-  /**
-   * Returns the summary text for a bulk operation.
-   * @param {string} operation The bulk operation
-   * @param {number} total The total number of files
-   * @param {number} [failed] The number of failed files
-   * @returns {string} The bulk report text
-   */
-  #getSummaryText(operation, total, failed) {
-    const type = total > 1 ? 'multiple' : 'single';
-    let outcome = 'success';
-    if (total >= 1 && failed === total) {
-      // all failed
-      outcome = 'failure';
-    } else if (total > 1 && failed >= 1 && failed < total) {
-      // some failed
-      outcome = 'partial_success';
+  async openUrls(host, paths) {
+    host = host || this.appStore.siteStore.innerHost;
+    if (!paths) {
+      const status = await this.appStore.fetchStatus(true, true);
+      paths = this.#bulkSelectionToPath(this.selection, status.webPath);
     }
-    const i18nKey = `bulk_result_${operation}_${type}_${outcome}`;
-    return this.appStore.i18n(i18nKey)
-      .replace('$1', `${total - failed}`)
-      .replace('$2', `${failed}`);
-  }
 
-  /**
-   * Displays a toast with the bulk operation summary.
-   * @param {string} operation The bulk operation ("preview" or "publish")
-   * @param {AdminJobResource[]} resources The resources
-   * @param {string} host The host name to use for URLs
-   */
-  showSummary(operation, resources, host) {
-    this.summary = {
-      operation,
-      resources,
-      host,
-    };
+    if (paths.length === 0) {
+      log.debug('bulk open urls: no selection');
+      return;
+    }
 
-    const failed = resources.filter(({ status }) => status >= 400);
-    const message = this.#getSummaryText(operation, resources.length, failed.length);
-    // eslint-disable-next-line no-nested-ternary
-    const variant = (failed.length !== resources.length) ? 'positive' : 'negative';
-
-    const urls = resources
-      .filter(({ status }) => status < 400)
-      .map(({ path }) => `https://${host}${path}`);
-    const openUrls = () => urls.forEach((url) => this.appStore.openPage(url));
-    // const copyUrls = () => navigator.clipboard.writeText(urls.join('\n'));
-
-    const openLabel = this.appStore.i18n('open');
-    const openCallback = () => {
-      if (urls.length <= 10) {
-        openUrls();
-      } else {
-        // ask for confirmation if more than 10 URLs
-        this.appStore.showModal({
-          type: MODALS.CONFIRM,
-          data: {
-            headline: this.appStore.i18n('open_urls').replace('$1', `${resources.length}`),
-            message: this.appStore.i18n('open_urls_confirm').replace('$1', `${resources.length}`),
-            confirmLabel: openLabel,
-            confirmCallback: openUrls,
-          },
-        });
-      }
-    };
-
-    const actionLabel = this.appStore.i18n('bulk_result_details');
-
-    // show bulk details modal
-    const actionCallback = () => {
-      this.appStore.showModal({
-        type: MODALS.BULK_DETAILS,
-        data: {
-          headline: message,
-          confirmLabel: openLabel,
-          confirmCallback: openCallback,
-        },
-      });
-      this.appStore.closeToast();
-    };
-
-    // show result toast
-    this.appStore.showToast(
-      message,
-      variant,
-      () => this.appStore.closeToast(),
-      actionCallback,
-      actionLabel,
-      30000,
-      false,
-    );
+    paths
+      .map((path) => `https://${host}${path}`)
+      .forEach((url) => this.appStore.openPage(url));
   }
 
   /**

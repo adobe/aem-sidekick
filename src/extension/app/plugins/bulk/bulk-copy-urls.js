@@ -24,7 +24,7 @@ import { Plugin } from '../../components/plugin/plugin.js';
  * Creates an environment-specific plugin.
  * @param {AppStore} appStore The app store
  * @param {string} env The environment
- * @param {string} host The host
+ * @param {string} [host] The host name (default: preview host)
  * @param {Function} [condition] The condition function (expected to return a boolean)
  * @returns {Plugin} The plugin
  */
@@ -70,11 +70,9 @@ export function createBulkCopyUrlsPlugin(appStore) {
  * @returns {Plugin} The bulk copy preview URLs plugin
  */
 export function createBulkCopyPreviewUrlsPlugin(appStore) {
-  const { siteStore } = appStore;
   return createPlugin(
     appStore,
     'preview',
-    siteStore.innerHost,
   );
 }
 

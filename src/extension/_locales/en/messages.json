@@ -512,7 +512,7 @@
       "message": "Open URL"
     },
     "open_urls": {
-      "message": "Open $1 URLs"
+      "message": "Open URLs"
     },
     "open": {
       "message": "Open"
