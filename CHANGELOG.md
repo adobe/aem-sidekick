@@ -1,3 +1,10 @@
+## [1.26.1](https://github.com/adobe/aem-sidekick/compare/v1.26.0...v1.26.1) (2024-06-10)
+
+
+### Bug Fixes
+
+* build and zip extension after background script ([#177](https://github.com/adobe/aem-sidekick/issues/177)) ([3a4a205](https://github.com/adobe/aem-sidekick/commit/3a4a20517c1bbfbbfa4d0b0088fe1215703f2138))
+
 # [1.26.0](https://github.com/adobe/aem-sidekick/compare/v1.25.1...v1.26.0) (2024-06-10)
 
 
