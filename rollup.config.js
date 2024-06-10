@@ -97,16 +97,16 @@ export function viewBuild(browser, path) {
 export function createExtension(browser) {
   return [
     {
-      input: 'src/extension/index.js',
-      ...extensionBuild(browser),
-    },
-    {
       input: 'src/extension/background.js',
       ...scriptBuild(browser),
     },
     {
       input: 'src/extension/content.js',
       ...scriptBuild(browser),
+    },
+    {
+      input: 'src/extension/index.js',
+      ...extensionBuild(browser),
     },
   ];
 }
