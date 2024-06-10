@@ -69,6 +69,9 @@ describe('AEM Sidekick', () => {
     // expect(theme.getAttribute('color')).to.equal('light');
     const spTheme = recursiveQuery(theme, 'sp-theme');
     expect(spTheme).to.exist;
+
+    const { location } = sidekick;
+    expect(location.href).to.eq('https://main--aem-boilerplate--adobe.hlx.page/');
   });
 
   describe('color themes', () => {

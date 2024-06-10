@@ -33,7 +33,7 @@ import '../../app/components/search/search.js';
 import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';
 import { style } from './json.css.js';
 import { spectrum2 } from '../../app/spectrum-2.css.js';
-import sampleRUM from '../../rum.js';
+import sampleRUM from '../../utils/rum.js';
 
 /**
  * The lit template result type

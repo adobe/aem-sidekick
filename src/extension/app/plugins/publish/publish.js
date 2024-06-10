@@ -41,6 +41,7 @@ export function createPublishPlugin(appStore) {
         if (res) {
           const actionCallback = () => {
             appStore.switchEnv('prod', newTab(evt));
+            appStore.closeToast();
           };
 
           const closeCallback = () => {

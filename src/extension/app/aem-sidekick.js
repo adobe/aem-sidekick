@@ -43,6 +43,15 @@ export class AEMSidekick extends LitElement {
     });
   }
 
+  /**
+   * Allow the location the sidekick is working with the be accessed via
+   * the aem-sidekick element.
+   * @returns {URL}
+   */
+  get location() {
+    return this.appStore.location;
+  }
+
   render() {
     return html`
       <theme-wrapper>

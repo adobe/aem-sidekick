@@ -261,7 +261,7 @@ describe('Test UI: RUM collection when clicked', () => {
       menuItemId: 'openViewDocSource',
     }, tab);
     await aTimeout(1000);
-    expect(logSpy.calledWithMatch('sampleRUM', 'sidekick:context-menu:openViewDocSource')).to.be.true;
+    expect(logSpy.calledWith('sampleRUM', 'sidekick:context-menu:openViewDocSource')).to.be.true;
   });
 
   it('handles error', async () => {
@@ -269,7 +269,7 @@ describe('Test UI: RUM collection when clicked', () => {
       menuItemId: 'openViewDocSource', // provoke error in sampleRUM
     }, tab);
     await aTimeout(500);
-    expect(logSpy.calledWithMatch('Unable to collect RUM data', error)).to.be.true;
+    expect(logSpy.calledWith('Unable to collect RUM data', error)).to.be.true;
   });
 
   it('does nothing without tab url', async () => {

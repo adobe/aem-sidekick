@@ -50,7 +50,7 @@
           "sp-popover.js",
           "sp-tray.js",
           "views/json/*",
-          "rum.js"
+          "utils/rum.js"
         ],
         "matches": [
           "<all_urls>"
