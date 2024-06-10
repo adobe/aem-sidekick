@@ -1,3 +1,10 @@
+# [1.26.0](https://github.com/adobe/aem-sidekick/compare/v1.25.1...v1.26.0) (2024-06-10)
+
+
+### Features
+
+* package the rum enhancer ([#167](https://github.com/adobe/aem-sidekick/issues/167)) ([993b3bc](https://github.com/adobe/aem-sidekick/commit/993b3bc3644afe1d96a8b7e7f5e363d812341950))
+
 ## [1.25.1](https://github.com/adobe/aem-sidekick/compare/v1.25.0...v1.25.1) (2024-06-07)
 
 
