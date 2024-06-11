@@ -28,8 +28,6 @@ export class BulkInfo extends ConnectedElement {
   async connectedCallback() {
     super.connectedCallback();
 
-    this.appStore.bulkStore.updateBulkSelection();
-
     reaction(
       () => this.appStore.bulkStore.selection,
       () => {

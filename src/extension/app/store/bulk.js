@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { observable } from 'mobx';
+import { action, observable } from 'mobx';
 import { log } from '../../log.js';
 import {
   EXTERNAL_EVENTS,
@@ -58,7 +58,7 @@ const illegalPathPrefix = '!ILLEGAL!_';
  * of first path in the corresponding SVG icons.
  * @type {Object<string, string>}
  */
-const gdriveFileTypes = {
+export const gdriveFileTypes = {
   folder: '2-2z',
   sharedFolder: '2v1z',
   gdoc: '777z',
@@ -68,6 +68,7 @@ const gdriveFileTypes = {
   image: '1-4z',
   pdf: '666z',
   video: '3.2z',
+  svg: '11-4z',
 };
 
 /**
@@ -95,6 +96,11 @@ export class BulkStore {
    * @type {BulkSummary}
    */
   summary;
+
+  @action
+  setSelection(selection) {
+    this.selection = selection;
+  }
 
   /**
    * Validates a bulk resource.
@@ -186,6 +192,8 @@ export class BulkStore {
             gdriveFileTypes.pdf,
           ].find((hint) => typeHint.includes(hint))) {
             type = 'media';
+          } else if (typeHint === gdriveFileTypes.svg) {
+            type = 'svg';
           }
         }
         const file = row.querySelector(':scope > div > div:nth-of-type(2)')?.textContent.trim() // list layout
@@ -207,9 +215,9 @@ export class BulkStore {
    */
   updateBulkSelection() {
     const { location } = this.appStore;
-    this.selection = this.appStore.isSharePointFolder(location)
+    this.setSelection(this.appStore.isSharePointFolder(location)
       ? this.#getSharepointBulkSelection(document)
-      : this.#getGoogleDriveBulkSelection(document);
+      : this.#getGoogleDriveBulkSelection(document));
   }
 
   /**
@@ -290,7 +298,7 @@ export class BulkStore {
       failed: 0,
     };
 
-    const resp = await api.startBulkJob(route, paths);
+    const resp = await api.startJob(route, paths);
     if (resp) {
       return new Promise((resolve) => {
         const { job } = resp;
@@ -314,6 +322,13 @@ export class BulkStore {
                 // update bulk progress
                 this.progress = progress;
               }
+            } else {
+              // stop polling
+              window.clearInterval(jobStatusPoll);
+              // reset bulk progress
+              this.progress = null;
+              // return null
+              resolve(null);
             }
           }, 1000);
         }
@@ -634,6 +649,7 @@ export class BulkStore {
    * @param {URL} location The current location
    */
   initStore(location) {
+    this.updateBulkSelection();
     // listen for selection changes
     const listener = () => window.setTimeout(() => this.updateBulkSelection(), 100);
     const rootEl = document.querySelector(
