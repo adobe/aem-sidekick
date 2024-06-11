@@ -175,9 +175,8 @@ export class BulkStore {
       // extract file name and type
       .map((row) => {
         // use path in icon svg to determine type
-        const typeHint = (row.querySelector(':scope div[role="gridcell"] > div:nth-child(1) path:nth-child(1)') // list layout
-          || row.querySelector(':scope div[role="gridcell"] > div:nth-of-type(1) > div:nth-child(2) path:nth-child(1)')) // grid layout
-          .getAttribute('d').slice(-4);
+        const typeHint = row.querySelector(':scope div[role="gridcell"] > div path') // list & grid layout
+          ?.getAttribute('d').slice(-4);
         let type = 'unknown';
         if (typeHint) {
           if (typeHint === gdriveFileTypes.folder || typeHint === gdriveFileTypes.sharedFolder) {
