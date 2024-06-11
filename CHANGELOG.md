@@ -1,3 +1,10 @@
+## [1.26.2](https://github.com/adobe/aem-sidekick/compare/v1.26.1...v1.26.2) (2024-06-11)
+
+
+### Bug Fixes
+
+* don't build background and content script ([#178](https://github.com/adobe/aem-sidekick/issues/178)) ([2b0b118](https://github.com/adobe/aem-sidekick/commit/2b0b1180c07eb9b3da7fbc3fcc9b1fd96a6beaa5))
+
 ## [1.26.1](https://github.com/adobe/aem-sidekick/compare/v1.26.0...v1.26.1) (2024-06-10)
 
 
