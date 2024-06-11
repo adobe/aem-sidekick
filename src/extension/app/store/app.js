@@ -143,13 +143,13 @@ export class AppStore {
    * Dictionary of language keys
    * @type {Object.<string, Plugin>}
    */
-  @observable accessor corePlugins;
+  @observable accessor corePlugins = {};
 
   /**
    * Dictionary of language keys
    * @type {Object.<string, Plugin>}
    */
-  @observable accessor customPlugins;
+  @observable accessor customPlugins = {};
 
   /**
    * Keyboards listener
