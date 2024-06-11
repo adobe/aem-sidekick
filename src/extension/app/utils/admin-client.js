@@ -322,7 +322,7 @@ export class AdminClient {
    * @param {boolean} [del] True if the resources should be deleted
    * @returns {Promise<Object>} The JSON response
    */
-  async startBulkJob(api, paths, del) {
+  async startJob(api, paths, del) {
     try {
       const resp = await callAdmin(
         this.siteStore,
