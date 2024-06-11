@@ -213,7 +213,7 @@ export class BulkStore {
   /**
    * Scans the DOM for selected items and updates the bulk selection.
    */
-  updateBulkSelection() {
+  #updateBulkSelection() {
     const { location } = this.appStore;
     this.setSelection(this.appStore.isSharePointFolder(location)
       ? this.#getSharepointBulkSelection(document)
@@ -649,9 +649,9 @@ export class BulkStore {
    * @param {URL} location The current location
    */
   initStore(location) {
-    this.updateBulkSelection();
+    this.#updateBulkSelection();
     // listen for selection changes
-    const listener = () => window.setTimeout(() => this.updateBulkSelection(), 100);
+    const listener = () => window.setTimeout(() => this.#updateBulkSelection(), 100);
     const rootEl = document.querySelector(
       this.appStore.isSharePointFolder(location) ? '#appRoot' : 'body',
     );
