@@ -285,16 +285,16 @@ export class SidekickTest {
   }
 
   /**
-   * Mocks an admin environment to test bulk operations
+   * Mocks an admin DOM to test bulk operations
    * @param {string} [contentSource] The content source: "sharepoint" (default) or "gdrive"
    * @param {import('@Types').BulkSelection} [resources] The resources
    * @param {string} [viewType] The view type: "list" (default) or "grid"
    * @returns {SidekickTest}
    */
-  mockAdminEnvironment(
+  mockAdminDOM(
     contentSource,
-    resources,
     viewType,
+    resources,
   ) {
     if (!contentSource) {
       contentSource = HelixMockContentSources.SHAREPOINT;
@@ -337,7 +337,7 @@ export class SidekickTest {
   }
 
   /**
-   * Toggles files in the admin environment
+   * Toggles files in the admin DOM
    * @param {string[]} files The names of the files to toggle
    * @returns {SidekickTest}
    */

@@ -43,7 +43,7 @@ describe('Test Bulk Info', () => {
   });
 
   it('displays empty bulk selection message', async () => {
-    sidekickTest.mockAdminEnvironment(HelixMockContentSources.GDRIVE);
+    sidekickTest.mockAdminDOM(HelixMockContentSources.GDRIVE);
     await sidekickTest.awaitStatusFetched();
     const bulkInfo = recursiveQuery(sidekick, 'bulk-info');
     expect(bulkInfo).to.exist;
@@ -51,7 +51,7 @@ describe('Test Bulk Info', () => {
   }).timeout(5000);
 
   it('displays number of files in bulk selection', async () => {
-    sidekickTest.mockAdminEnvironment(HelixMockContentSources.GDRIVE);
+    sidekickTest.mockAdminDOM(HelixMockContentSources.GDRIVE);
 
     await sidekickTest.awaitStatusFetched();
 

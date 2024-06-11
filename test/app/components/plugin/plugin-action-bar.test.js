@@ -319,7 +319,7 @@ describe('Plugin action bar', () => {
       sidekickTest
         .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
         .mockFetchSidekickConfigSuccess(false, false)
-        .mockAdminEnvironment(EditorMockEnvironments.ADMIN)
+        .mockAdminDOM(EditorMockEnvironments.ADMIN)
         .toggleAdminFiles(['document'])
         .createSidekick();
 
@@ -474,6 +474,7 @@ describe('Plugin action bar', () => {
       // open plugin menu
       const pluginMenu = recursiveQuery(sidekick, '#plugin-menu');
       expect(pluginMenu).to.exist;
+      await aTimeout(100);
       pluginMenu.click();
       await aTimeout(100);
       expect(pluginMenu.hasAttribute('open')).to.be.true;
