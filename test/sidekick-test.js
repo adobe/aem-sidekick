@@ -44,6 +44,14 @@ import {
   defaultStatusLoggedInNotAuthorizedResponse,
 } from './fixtures/helix-admin.js';
 import enMessages from '../src/extension/_locales/en/messages.json' assert { type: 'json' };
+import {
+  DEFAULT_SHAREPOINT_BULK_SELECTION,
+  DEFAULT_GDRIVE_BULK_SELECTION,
+  mockGdriveFile,
+  mockGdriveRoot,
+  mockSharePointFile,
+  mockSharePointRoot,
+} from './fixtures/bulk.js';
 
 /**
  * Status API
@@ -90,6 +98,8 @@ export class SidekickTest {
 
   config;
 
+  bulkRoot;
+
   /**
    * Constructor
    * @param {Object} [config] The sidekick configuration
@@ -124,6 +134,9 @@ export class SidekickTest {
     const { body } = document;
     if (body.contains(this.sidekick)) {
       body.removeChild(this.sidekick);
+    }
+    if (body.contains(this.bulkRoot)) {
+      body.removeChild(this.bulkRoot);
     }
     restoreEnvironment(document);
     this.sandbox.restore();
@@ -267,6 +280,78 @@ export class SidekickTest {
   mockLocation(location) {
     // Mock the browsers location
     mockLocation(document, location);
+
+    return this;
+  }
+
+  /**
+   * Mocks an admin environment to test bulk operations
+   * @param {string} [contentSource] The content source: "sharepoint" (default) or "gdrive"
+   * @param {import('@Types').BulkSelection} [resources] The resources
+   * @param {string} [viewType] The view type: "list" (default) or "grid"
+   * @returns {SidekickTest}
+   */
+  mockAdminEnvironment(
+    contentSource,
+    resources,
+    viewType,
+  ) {
+    if (!contentSource) {
+      contentSource = HelixMockContentSources.SHAREPOINT;
+    }
+    if (!resources) {
+      resources = contentSource === HelixMockContentSources.SHAREPOINT
+        ? DEFAULT_SHAREPOINT_BULK_SELECTION
+        : DEFAULT_GDRIVE_BULK_SELECTION;
+    }
+
+    this.mockEditorAdminEnvironment(
+      EditorMockEnvironments.ADMIN,
+      HelixMockContentType.ADMIN,
+      contentSource,
+    );
+
+    let root;
+    if (contentSource === HelixMockContentSources.SHAREPOINT) {
+      // mock icon SVG requests
+      fetchMock.get(/.*\/icons\/.*/, {
+        status: 200,
+        body: '<svg></svg>',
+      }, { overwriteRoutes: true });
+
+      root = mockSharePointRoot();
+      root.innerHTML = resources
+        .map((resource) => mockSharePointFile(resource, viewType || 'list'))
+        .join('');
+      document.body.appendChild(root);
+    } else {
+      root = mockGdriveRoot();
+      root.innerHTML = resources
+        .map((resource) => mockGdriveFile(resource, viewType || 'list'))
+        .join('');
+      document.body.appendChild(root);
+    }
+    this.bulkRoot = root;
+
+    return this;
+  }
+
+  /**
+   * Toggles files in the admin environment
+   * @param {string[]} files The names of the files to toggle
+   * @returns {SidekickTest}
+   */
+  toggleAdminFiles(files) {
+    const allFiles = [...document.querySelectorAll('.file')];
+    files.forEach((file) => {
+      const element = allFiles.find((f) => f.textContent.includes(file));
+      if (element) {
+        const selected = element.getAttribute('aria-selected') === 'false' ? 'true' : 'false';
+        element.setAttribute('aria-selected', selected);
+      }
+    });
+    // trigger bulk selection update in sidekick
+    this.bulkRoot.click();
 
     return this;
   }

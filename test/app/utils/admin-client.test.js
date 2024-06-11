@@ -22,7 +22,12 @@ import { SidekickTest } from '../../sidekick-test.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 import chromeMock from '../../mocks/chrome.js';
 import { error } from '../../test-utils.js';
-import { defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
+import {
+  defaultJobDetailsResponse,
+  defaultJobStatusResponse,
+  defaultSharepointStatusResponse,
+  defaultStartJobResponse,
+} from '../../fixtures/helix-admin.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -34,9 +39,21 @@ function mockFetchSuccess({
   if (editUrl) {
     url.searchParams.append('editUrl', editUrl);
   }
-  const body = api === 'status'
-    ? defaultSharepointStatusResponse
-    : { [api]: defaultSharepointStatusResponse[api] };
+  let body = null;
+  if (api === 'status') {
+    body = defaultSharepointStatusResponse;
+  } else if (api === 'job') {
+    body = path.endsWith('/details')
+      ? defaultJobDetailsResponse
+      : defaultJobStatusResponse;
+  } else if (api === 'preview' || api === 'live') {
+    body = path.endsWith('/*')
+      ? defaultStartJobResponse
+      : defaultJobStatusResponse[api];
+  }
+  if (!body) {
+    body = defaultSharepointStatusResponse[api];
+  }
   fetchMock[method](url, body, { overwriteRoutes: true });
 }
 
@@ -221,6 +238,94 @@ describe('Test Admin Client', () => {
     });
   });
 
+  describe('startJob', () => {
+    it('should start preview job', async () => {
+      mockFetchSuccess({
+        method: 'post',
+        api: 'preview',
+        path: '/*',
+      });
+      const res = await adminClient.startJob('preview', ['/foo', '/bar']);
+      expect(res).to.be.instanceOf(Object);
+    });
+
+    it('should start publish job', async () => {
+      mockFetchSuccess({
+        method: 'post',
+        api: 'live',
+        path: '/*',
+      });
+      const res = await adminClient.startJob('live', ['/foo', '/bar']);
+      expect(res).to.be.instanceOf(Object);
+    });
+
+    it('should return null if not 200', async () => {
+      mockFetchError({
+        method: 'post',
+        api: 'preview',
+        path: '/*',
+        status: 502,
+        headers: {
+          'x-error': 'AWS timeout',
+        },
+      });
+      const res = await adminClient.startJob('preview', ['/foo', '/bar']);
+      expect(res).to.be.null;
+    });
+
+    it('should return null if fetch fails', async () => {
+      mockFetchError({
+        method: 'post',
+        api: 'job',
+        path: '/preview',
+      });
+      sandbox.stub(window, 'fetch').throws(error);
+      const res = await adminClient.startJob('preview', ['/foo', '/bar']);
+      expect(res).to.be.null;
+    });
+  });
+
+  describe('getJob', () => {
+    it('should get job status', async () => {
+      mockFetchSuccess({
+        api: 'job',
+        path: '/preview/123',
+      });
+      const res = await adminClient.getJob('preview', '123');
+      expect(res).to.be.instanceOf(Object);
+    });
+
+    it('should get job status with details', async () => {
+      mockFetchSuccess({
+        api: 'job',
+        path: '/preview/123/details',
+      });
+      const res = await adminClient.getJob('preview', '123', true);
+      expect(res).to.be.instanceOf(Object);
+      expect(res.data?.resources).to.exist;
+    });
+
+    it('should return null if not 200', async () => {
+      mockFetchError({
+        api: 'job',
+        path: '/preview/123',
+        status: 404,
+      });
+      const res = await adminClient.getJob('preview', '123');
+      expect(res).to.be.null;
+    });
+
+    it('should return null if fetch fails', async () => {
+      mockFetchError({
+        api: 'job',
+        path: '/preview/123',
+      });
+      sandbox.stub(window, 'fetch').throws(error);
+      const res = await adminClient.getJob('preview', '123');
+      expect(res).to.be.null;
+    });
+  });
+
   describe('should handle rate limiting', () => {
     it('should handle 429 error', async () => {
       mockFetchError({
@@ -329,13 +434,89 @@ describe('Test Admin Client', () => {
         api: 'preview',
       });
       sandbox.stub(window, 'fetch').throws(error);
-      await adminClient.updatePreview('preview', '/');
+      const res = await adminClient.updatePreview('/');
       expect(showToastStub.calledOnce).to.be.true;
       expect(toast.message).to.match(/Apologies/);
       expect(toast.variant).to.equal('negative');
+      expect(res).to.be.null;
 
       toast.closeCallback();
       expect(closeToastStub.calledOnce).to.be.true;
+    });
+
+    it('should handle start job error', async () => {
+      mockFetchError({
+        api: 'job',
+        path: '/publish/123',
+        status: 500,
+      });
+      const res = await adminClient.startJob('live', ['/foo', '/bar']);
+      expect(showToastStub.calledOnce).to.be.true;
+      expect(toast.message).to.match(/Apologies/);
+      expect(toast.variant).to.equal('negative');
+      expect(res).to.be.null;
+    });
+
+    it('should handle job status error', async () => {
+      mockFetchError({
+        api: 'job',
+        path: '/publish/123',
+        status: 404,
+      });
+      const res = await adminClient.getJob('publish', '123');
+      expect(showToastStub.calledOnce).to.be.true;
+      expect(toast.message).to.match(/404/);
+      expect(toast.variant).to.equal('warning');
+      expect(res).to.be.null;
+    });
+  });
+
+  describe('getLocalizedError', () => {
+    it('should return localized error for status 404 (editor)', () => {
+      sandbox.stub(appStore, 'isEditor').returns(true);
+      const res = adminClient.getLocalizedError('status', 404);
+      expect(res).to.match(/404/);
+      expect(res).to.match(/ make sure access to this document is granted/);
+    });
+
+    it('should return localized error for status 404 (content)', () => {
+      sandbox.stub(appStore, 'isEditor').returns(false);
+      const res = adminClient.getLocalizedError('status', 404);
+      expect(res).to.match(/404/);
+      expect(res).to.match(/Check your Sidekick configuration or URL/);
+    });
+
+    it('should return localized error for status 400', () => {
+      const res1 = adminClient.getLocalizedError('preview', 400, 'XML parsing error');
+      expect(res1).to.match(/SVG invalid/);
+
+      const res2 = adminClient.getLocalizedError('preview', 400, 'script or event handler');
+      expect(res2).to.match(/SVG invalid/);
+    });
+
+    it('should return localized error for status 413', () => {
+      const res = adminClient.getLocalizedError('preview', 413);
+      expect(res).to.match(/File too large/);
+    });
+
+    it('should return localized error for status 415', () => {
+      const res1 = adminClient.getLocalizedError('preview', 415, 'docx with google not supported');
+      expect(res1).to.match(/Microsoft Word document/);
+
+      const res2 = adminClient.getLocalizedError('preview', 415, 'xlsx with google not supported');
+      expect(res2).to.match(/Microsoft Excel document/);
+
+      const res3 = adminClient.getLocalizedError('preview', 415);
+      expect(res3).to.match(/File type not supported/);
+    });
+
+    it('should return localized error fallbacks', () => {
+      const res1 = adminClient.getLocalizedError('publish', 404);
+      expect(res1).to.match(/404/);
+      expect(res1).to.match(/Preview not generated yet/);
+
+      const res2 = adminClient.getLocalizedError('publish', 500);
+      expect(res2).to.match(/Publication failed/);
     });
   });
 });
