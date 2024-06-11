@@ -21,6 +21,8 @@ import {
   checkViewDocSource,
 } from './actions.js';
 import { addAuthTokenHeaders } from './auth.js';
+import { getProjectMatches, getProjects } from './project.js';
+import { updateIcon } from './ui.js';
 
 chrome.action.onClicked.addListener(async ({ id }) => {
   // toggle the sidekick when the action is clicked
@@ -55,7 +57,9 @@ chrome.runtime.onMessageExternal.addListener(async (message, sender, sendRespons
 chrome.storage.onChanged.addListener(async (changes, storageArea) => {
   if (storageArea === 'local' && changes.display) {
     const tab = await getCurrentTab();
-    checkTab(tab.id);
+    const projects = await getProjects();
+    const matches = await getProjectMatches(projects, tab);
+    await updateIcon({ matches });
   }
 });
 
