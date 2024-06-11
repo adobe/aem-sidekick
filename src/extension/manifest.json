@@ -42,15 +42,21 @@
         "resources": [
           "_locales/*",
           "content.js",
+          "context-menu.js",
           "index.js",
           "*.js.map",
           "display.js",
           "config.js",
-          "polyfills.min.js",
+          "lib/polyfills.min.js",
+          "log.js",
           "sp-popover.js",
           "sp-tray.js",
-          "views/json/*",
-          "utils/rum.js"
+          "tab.js",
+          "project.js",
+          "utis/admin.js",
+          "utils/rum.js",
+          "url-cache.js",
+          "views/json/*"
         ],
         "matches": [
           "<all_urls>"
