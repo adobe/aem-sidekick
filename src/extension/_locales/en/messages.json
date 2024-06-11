@@ -370,6 +370,9 @@
     "error_fatal": {
       "message": "Apologies, we seem to be having problems at the moment. Please try again later."
     },
+    "error_job_404": {
+      "message": "404 Not found: No such job"
+    },
     "error_login_aborted": {
       "message": "Sign in aborted."
     },
