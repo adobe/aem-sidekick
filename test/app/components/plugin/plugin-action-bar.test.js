@@ -91,7 +91,7 @@ describe('Plugin action bar', () => {
 
   function expectInActionBar(pluginIds) {
     const actionGroup = recursiveQuery(sidekickTest.sidekick, 'sp-action-group:first-of-type');
-    const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, action-bar-picker');
+    const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, bulk-info, action-bar-picker');
 
     expect(
       [...plugins].map((plugin) => plugin.className.replace('plugin-container ', '')
@@ -315,15 +315,21 @@ describe('Plugin action bar', () => {
       expect(actionSpy.calledOnce).to.be.true;
     });
 
-    it.skip('isAdmin - loads correct plugins', async () => {
+    it('isAdmin - loads correct plugins', async () => {
       sidekickTest
         .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
         .mockFetchSidekickConfigSuccess(false, false)
-        .mockEditorAdminEnvironment(EditorMockEnvironments.ADMIN)
+        .mockAdminEnvironment(EditorMockEnvironments.ADMIN)
+        .toggleAdminFiles(['document'])
         .createSidekick();
 
-      // TODO: Expand tests when bulk plugin is added
-      // expectPluginCount(0);
+      await aTimeout(100);
+      expectInActionBar([
+        'bulk-info',
+        'bulk-preview',
+        'bulk-publish',
+        'bulk-copy-urls',
+      ]);
     });
 
     it('custom container plugin', async () => {

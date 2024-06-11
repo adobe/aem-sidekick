@@ -51,7 +51,7 @@ import {
   mockGdriveRoot,
   mockSharePointFile,
   mockSharePointRoot,
-} from './fixtures/bulk.js';
+} from './fixtures/content-sources.js';
 
 /**
  * Status API
@@ -320,7 +320,7 @@ export class SidekickTest {
       }, { overwriteRoutes: true });
 
       root = mockSharePointRoot();
-      root.innerHTML = resources
+      root.firstElementChild.innerHTML = resources
         .map((resource) => mockSharePointFile(resource, viewType || 'list'))
         .join('');
       document.body.appendChild(root);

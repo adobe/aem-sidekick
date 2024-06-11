@@ -39,7 +39,7 @@ describe('Test Bulk Info', () => {
   });
 
   afterEach(() => {
-    // sidekickTest.destroy();
+    sidekickTest.destroy();
   });
 
   it('displays empty bulk selection message', async () => {

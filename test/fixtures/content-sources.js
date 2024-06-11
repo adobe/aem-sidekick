@@ -38,15 +38,15 @@ const spDescriptors = {
 
 export const DEFAULT_GDRIVE_BULK_SELECTION = [
   { path: '/foo/bar', file: 'bar', type: 'folder' },
-  { path: '/foo/document', file: 'document', type: 'document' },
-  { path: '/foo/spreadsheet', file: 'document', type: 'spreadsheet' },
+  { path: '/foo/document', file: 'document', type: 'gdoc' },
+  { path: '/foo/spreadsheet', file: 'spreadsheet', type: 'gsheet' },
   { path: '/foo/file.txt', file: 'file.txt', type: 'unknown' },
   { path: '/foo/file.pdf', file: 'file.pdf', type: 'pdf' },
   { path: '/foo/image.jpg', file: 'image.jpg', type: 'media' },
   { path: '/foo/video.mp4', file: 'video.mp4', type: 'video' },
   { path: '/foo/icon.svg', file: 'icon.svg', type: 'svg' },
-  { path: '/foo/document.docx', file: 'document.docx', type: 'docx' },
-  { path: '/foo/spreadsheet.xlsx', file: 'spreadsheet.xlsx', type: 'xlsx' },
+  { path: '/foo/word.docx', file: 'word.docx', type: 'docx' },
+  { path: '/foo/excel.xlsx', file: 'excel.xlsx', type: 'xlsx' },
 ];
 
 export const DEFAULT_SHAREPOINT_BULK_SELECTION = [
@@ -72,44 +72,6 @@ export function mockGdriveRoot() {
   const root = document.createElement('div');
   root.id = 'drive_main_page';
   return root;
-}
-
-/**
- * Generates markup mocking a file in the Google Drive admin view.
- * @param {import('@Types').BulkResource} resource
- * @param {string} viewType The view type: "list" (default) or "grid"
- * @returns {string} The markup for the resource
- */
-export function mockGdriveFile({ path, type }, viewType = 'list') {
-  const icon = gdriveIcons[type];
-  const descriptor = gdriveDescriptors[type];
-  const filename = path.split('/foo/').pop();
-
-  return viewType === 'list' ? `
-    <div class="file" id="file-${type}" role="row" aria-selected="false">
-      <div role="gridcell">
-        <div>
-          <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
-        </div>
-        <div>
-          <div data-tooltip="${descriptor}: ${filename}" aria-label="${filename} Shared ${descriptor}">${filename}</div>
-        </div>
-      </div>
-    </div>` : `
-    <div class="file" id="file-${type}" role="row" aria-selected="false">
-      <div role="gridcell" aria-label="${filename} ${descriptor} More info (Option + →)">
-        <div>
-          <div></div>
-          <div>
-            <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
-          </div>
-          <div></div>
-          <div>${filename}</div>
-        </div>
-        <div></div>
-      </div>
-    </div>
-    `;
 }
 
 /**
@@ -152,6 +114,47 @@ export function mockGdriveFolder(name, viewType = 'list') {
     </div>`;
 }
 
+/**
+ * Generates markup mocking a file in the Google Drive admin view.
+ * @param {import('@Types').BulkResource} resource
+ * @param {string} viewType The view type: "list" (default) or "grid"
+ * @returns {string} The markup for the resource
+ */
+export function mockGdriveFile({ path, type }, viewType = 'list') {
+  if (type === 'folder') {
+    return mockGdriveFolder(path.split('/foo/').pop(), viewType);
+  }
+  const icon = gdriveIcons[type] || '0000';
+  const descriptor = gdriveDescriptors[type];
+  const filename = path.split('/foo/').pop();
+
+  return viewType === 'list' ? `
+    <div class="file" id="file-${type}" role="row" aria-selected="false">
+      <div role="gridcell">
+        <div>
+          <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
+        </div>
+        <div>
+          <div data-tooltip="${descriptor}: ${filename}" aria-label="${filename} Shared ${descriptor}">${filename}</div>
+        </div>
+      </div>
+    </div>` : `
+    <div class="file" id="file-${type}" role="row" aria-selected="false">
+      <div role="gridcell" aria-label="${filename} ${descriptor} More info (Option + →)">
+        <div>
+          <div></div>
+          <div>
+            <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
+          </div>
+          <div></div>
+          <div>${filename}</div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+    `;
+}
+
 /*
  * SharePoint mocks
  */
@@ -163,31 +166,10 @@ export function mockGdriveFolder(name, viewType = 'list') {
 export function mockSharePointRoot() {
   const root = document.createElement('div');
   root.id = 'appRoot';
+  const container = document.createElement('div');
+  container.setAttribute('role', 'presentation');
+  root.appendChild(container);
   return root;
-}
-
-/**
- * Generates markup mocking a file in the SharePoint admin view.
- * @param {import('@Types').BulkResource} resource
- * @param {string} viewType The view type: "list" (default) or "grid"
- * @returns {string} The markup for the resource
- */
-export function mockSharePointFile({ path, type }, viewType = 'list') {
-  const descriptor = spDescriptors[type];
-  const filename = path.split('/foo/').pop();
-
-  return viewType === 'list' ? `
-    <div class="file" id="file-${type}" role="row" aria-selected="false" aria-label="${filename}, ${descriptor}, Private">
-      <img src="./icons/${type}.svg">
-      <button>${filename}</button>
-    </div>` : `
-    <div class="file" id="file-${type}" role="row" aria-selected="false">
-      <span>${filename}, ${descriptor}, Private</span>
-      <i data-icon-name="svg/${type}_16x1.svg" aria-label="${type}">
-        <img src="./icons/${type}.svg">
-      </i>
-      <div data-automationid="name">${filename}</div>
-    </div>`;
 }
 
 /**
@@ -209,5 +191,32 @@ export function mockSharePointFolder(name, viewType = 'list') {
         <img src="./icons/foldericons/folder.svg">
       </i>
       <div data-automationid="name">${name}</div>
+    </div>`;
+}
+
+/**
+ * Generates markup mocking a file in the SharePoint admin view.
+ * @param {import('@Types').BulkResource} resource
+ * @param {string} viewType The view type: "list" (default) or "grid"
+ * @returns {string} The markup for the resource
+ */
+export function mockSharePointFile({ path, type }, viewType = 'list') {
+  if (type === 'folder') {
+    return mockSharePointFolder(path.split('/foo/').pop(), viewType);
+  }
+  const descriptor = spDescriptors[type];
+  const filename = path.split('/foo/').pop();
+
+  return viewType === 'list' ? `
+    <div class="file" id="file-${type}" role="row" aria-selected="false" aria-label="${filename}, ${descriptor}, Private">
+      <img src="./icons/${type}.svg">
+      <button>${filename}</button>
+    </div>` : `
+    <div class="file" id="file-${type}" role="row" aria-selected="false">
+      <span>${filename}, ${descriptor}, Private</span>
+      <i data-icon-name="svg/${type}_16x1.svg" aria-label="${type}">
+        <img src="./icons/${type}.svg">
+      </i>
+      <div data-automationid="name">${filename}</div>
     </div>`;
 }
