@@ -65,6 +65,7 @@ export function createDeletePlugin(appStore) {
           if (res) {
             const actionCallback = () => {
               appStore.reloadPage(newTab(evt));
+              appStore.closeToast();
             };
 
             const closeCallback = () => {

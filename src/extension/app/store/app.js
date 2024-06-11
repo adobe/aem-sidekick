@@ -17,7 +17,7 @@ import { createContext } from '@lit/context';
 import { SiteStore } from './site.js';
 import { BulkStore } from './bulk.js';
 import { AdminClient } from '../utils/admin-client.js';
-import sampleRUM from '../utils/rum.js';
+import sampleRUM from '../../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
 import {
   getLocation, matchProjectHost, isSupportedFileExtension, globToRegExp,

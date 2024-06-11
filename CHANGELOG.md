@@ -1,3 +1,31 @@
+## [1.26.2](https://github.com/adobe/aem-sidekick/compare/v1.26.1...v1.26.2) (2024-06-11)
+
+
+### Bug Fixes
+
+* don't build background and content script ([#178](https://github.com/adobe/aem-sidekick/issues/178)) ([2b0b118](https://github.com/adobe/aem-sidekick/commit/2b0b1180c07eb9b3da7fbc3fcc9b1fd96a6beaa5))
+
+## [1.26.1](https://github.com/adobe/aem-sidekick/compare/v1.26.0...v1.26.1) (2024-06-10)
+
+
+### Bug Fixes
+
+* build and zip extension after background script ([#177](https://github.com/adobe/aem-sidekick/issues/177)) ([3a4a205](https://github.com/adobe/aem-sidekick/commit/3a4a20517c1bbfbbfa4d0b0088fe1215703f2138))
+
+# [1.26.0](https://github.com/adobe/aem-sidekick/compare/v1.25.1...v1.26.0) (2024-06-10)
+
+
+### Features
+
+* package the rum enhancer ([#167](https://github.com/adobe/aem-sidekick/issues/167)) ([993b3bc](https://github.com/adobe/aem-sidekick/commit/993b3bc3644afe1d96a8b7e7f5e363d812341950))
+
+## [1.25.1](https://github.com/adobe/aem-sidekick/compare/v1.25.0...v1.25.1) (2024-06-07)
+
+
+### Bug Fixes
+
+* validate session ([#168](https://github.com/adobe/aem-sidekick/issues/168)) ([df4e43f](https://github.com/adobe/aem-sidekick/commit/df4e43fecb6e873761814cb64c93e3bba0a9077c))
+
 # [1.25.0](https://github.com/adobe/aem-sidekick/compare/v1.24.0...v1.25.0) (2024-06-04)
 
 

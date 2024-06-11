@@ -20,7 +20,7 @@ import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import '../action-bar/activity-action/activity-action.js';
 import '../bulk/bulk-info/bulk-info.js';
-import sampleRUM from '../../../rum.js';
+import sampleRUM from '../../../utils/rum.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} Plugin

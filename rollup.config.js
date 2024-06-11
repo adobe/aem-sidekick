@@ -61,12 +61,9 @@ function extensionPlugins(browser) {
     /** Copy static assets */
     copy({
       targets: [
+        { src: 'src/extension/*', ignore: ['src/extension/app', 'src/extension/views', 'src/extension/types'], dest: `./dist/${browser}` },
         { src: 'src/extension/views/json/json.html', dest: `./dist/${browser}/views/json` },
-        { src: 'src/extension/views/doc-source/*', dest: `./dist/${browser}/views/doc-source` },
-        { src: 'src/extension/options.html', dest: `./dist/${browser}` },
-        { src: 'src/extension/icons', dest: `./dist/${browser}` },
-        { src: 'src/extension/_locales', dest: `./dist/${browser}` },
-        { src: 'src/extension/rum.js', dest: `./dist/${browser}` },
+        { src: 'src/extension/views/doc-source', dest: `./dist/${browser}/views/` },
       ],
     }),
     sidekickManifestBuildPlugin(browser),
@@ -77,13 +74,6 @@ function extensionBuild(browser) {
   return {
     ...shared(browser),
     plugins: [...commonPlugins(), ...extensionPlugins(browser)],
-  };
-}
-
-function scriptBuild(browser) {
-  return {
-    ...shared(browser),
-    plugins: [...commonPlugins()],
   };
 }
 
@@ -99,14 +89,6 @@ export function createExtension(browser) {
     {
       input: 'src/extension/index.js',
       ...extensionBuild(browser),
-    },
-    {
-      input: 'src/extension/background.js',
-      ...scriptBuild(browser),
-    },
-    {
-      input: 'src/extension/content.js',
-      ...scriptBuild(browser),
     },
   ];
 }

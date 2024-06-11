@@ -174,7 +174,7 @@ if (chrome.contextMenus) {
       target: { tabId: tab.id },
       func: async (menuItemIdVal) => {
         try {
-          const mod = await import(chrome.runtime.getURL('rum.js'));
+          const mod = await import(chrome.runtime.getURL('utils/rum.js'));
           const { default: sampleRUM } = mod;
 
           // Ensure window.hlx and window.hlx.sidekick exists
