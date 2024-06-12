@@ -132,9 +132,8 @@ export class SidekickTest {
    */
   destroy() {
     const { body } = document;
-    if (body.contains(this.sidekick)) {
-      body.removeChild(this.sidekick);
-    }
+    body.querySelectorAll('aem-sidekick').forEach((sidekick) => sidekick.replaceWith(''));
+    this.sidekick = null;
     if (body.contains(this.bulkRoot)) {
       body.removeChild(this.bulkRoot);
     }
@@ -313,10 +312,9 @@ export class SidekickTest {
 
     let root;
     if (contentSource === HelixMockContentSources.SHAREPOINT) {
-      // mock icon SVG requests
-      fetchMock.get(/.*\/icons\/.*/, {
+      // mock sharepoint icon requests
+      fetchMock.get('glob:http://localhost:2000/icons/**', {
         status: 200,
-        body: '<svg></svg>',
       }, { overwriteRoutes: true });
 
       root = mockSharePointRoot();
@@ -341,7 +339,7 @@ export class SidekickTest {
    * @param {string[]} files The names of the files to toggle
    * @returns {SidekickTest}
    */
-  toggleAdminFiles(files) {
+  toggleAdminItems(files) {
     const allFiles = [...document.querySelectorAll('.file')];
     files.forEach((file) => {
       const element = allFiles.find((f) => f.textContent.includes(file));
