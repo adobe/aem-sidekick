@@ -29,35 +29,35 @@ const spDescriptors = {
   folder: 'SharePoint Folder',
   docx: 'docx File',
   xlsx: 'xlsx File',
-  unknown: 'unknown',
+  unknown: 'unknown File',
   pdf: 'pdf File',
-  image: 'jpg File ',
+  image: 'jpg File',
   video: 'mp4 File',
   svg: 'svg File',
 };
 
 export const DEFAULT_GDRIVE_BULK_SELECTION = [
   { path: '/foo/bar', file: 'bar', type: 'folder' },
+  { path: '/foo/index', file: 'index', type: 'gdoc' },
   { path: '/foo/document', file: 'document', type: 'gdoc' },
   { path: '/foo/spreadsheet', file: 'spreadsheet', type: 'gsheet' },
-  { path: '/foo/file.txt', file: 'file.txt', type: 'unknown' },
-  { path: '/foo/file.pdf', file: 'file.pdf', type: 'pdf' },
-  { path: '/foo/image.jpg', file: 'image.jpg', type: 'media' },
-  { path: '/foo/video.mp4', file: 'video.mp4', type: 'video' },
-  { path: '/foo/icon.svg', file: 'icon.svg', type: 'svg' },
-  { path: '/foo/word.docx', file: 'word.docx', type: 'docx' },
-  { path: '/foo/excel.xlsx', file: 'excel.xlsx', type: 'xlsx' },
-];
-
-export const DEFAULT_SHAREPOINT_BULK_SELECTION = [
-  { path: '/foo/bar', file: 'bar', type: 'folder' },
-  { path: '/foo/document.docx', file: 'document.docx', type: 'docx' },
-  { path: '/foo/spreadsheet.xlsx', file: 'spreadsheet.xlsx', type: 'xlsx' },
-  { path: '/foo/file.txt', file: 'file.txt', type: 'unknown' },
   { path: '/foo/file.pdf', file: 'file.pdf', type: 'pdf' },
   { path: '/foo/image.jpg', file: 'image.jpg', type: 'image' },
   { path: '/foo/video.mp4', file: 'video.mp4', type: 'video' },
   { path: '/foo/icon.svg', file: 'icon.svg', type: 'svg' },
+  { path: '/foo/file.txt', file: 'file.txt', type: 'unknown' },
+];
+
+export const DEFAULT_SHAREPOINT_BULK_SELECTION = [
+  { path: '/foo/bar', file: 'bar', type: 'folder' },
+  { path: '/foo/index.docx', file: 'index.docx', type: 'docx' },
+  { path: '/foo/document.docx', file: 'document.docx', type: 'docx' },
+  { path: '/foo/spreadsheet.xlsx', file: 'spreadsheet.xlsx', type: 'xlsx' },
+  { path: '/foo/file.pdf', file: 'file.pdf', type: 'pdf' },
+  { path: '/foo/image.jpg', file: 'image.jpg', type: 'image' },
+  { path: '/foo/video.mp4', file: 'video.mp4', type: 'video' },
+  { path: '/foo/icon.svg', file: 'icon.svg', type: 'svg' },
+  { path: '/foo/file.txt', file: 'file.txt', type: 'unknown' },
 ];
 
 /*
@@ -98,17 +98,24 @@ export function mockGdriveFolder(name, viewType = 'list') {
     </div>` : `
     <div class="folder" id="folder-${name}" role="row" aria-selected="true">
       <div role="gridcell" aria-label="${name} ${descriptor}">
+        <i></i>
+        <i></i>
         <div>
           <div></div>
           <div>
-            <svg>
-              <path d="M16 0 0 0 0000.${icon}"></path>
-            </svg>
+            <div>
+              <svg>
+                <g>
+                  <path d="M16 0 0 0 0000.${icon}"></path>
+                </g>
+              </svg>
+            </div>
           </div>
           <div></div>
           <div>
             <div>${name}</div>
           </div>
+          <div></div>
         </div>
       </div>
     </div>`;
@@ -122,11 +129,11 @@ export function mockGdriveFolder(name, viewType = 'list') {
  */
 export function mockGdriveFile({ path, type }, viewType = 'list') {
   if (type === 'folder') {
-    return mockGdriveFolder(path.split('/foo/').pop(), viewType);
+    return mockGdriveFolder(path.split('/').pop(), viewType);
   }
   const icon = gdriveIcons[type] || '0000';
   const descriptor = gdriveDescriptors[type];
-  const filename = path.split('/foo/').pop();
+  const filename = path.split('/').pop();
 
   return viewType === 'list' ? `
     <div class="file" id="file-${type}" role="row" aria-selected="false">
@@ -202,13 +209,14 @@ export function mockSharePointFolder(name, viewType = 'list') {
  */
 export function mockSharePointFile({ path, type }, viewType = 'list') {
   if (type === 'folder') {
-    return mockSharePointFolder(path.split('/foo/').pop(), viewType);
+    return mockSharePointFolder(path.split('/').pop(), viewType);
   }
   const descriptor = spDescriptors[type];
-  const filename = path.split('/foo/').pop();
+  const filename = path.split('/').pop();
 
   return viewType === 'list' ? `
-    <div class="file" id="file-${type}" role="row" aria-selected="false" aria-label="${filename}, ${descriptor}, Private">
+    <div class="file" id="file-${type}" role="row" aria-selected="false"
+      aria-label="${filename}, ${descriptor}, Private, Modified 4/9/2023, edited by John Doe, 356 KB">
       <img src="./icons/${type}.svg">
       <button>${filename}</button>
     </div>` : `
