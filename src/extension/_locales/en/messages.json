@@ -63,6 +63,9 @@
     "bulk_result_preview_multiple_partial_success": {
       "message": "Preview of $1 files successfully generated, but $2 failed."
     },
+    "bulk_result_preview_multiple_partial_success_1": {
+      "message": "$1 file successfully generated, but $2 failed."
+    },
     "bulk_result_preview_multiple_success": {
       "message": "Preview of $1 files successfully generated."
     },
@@ -75,6 +78,12 @@
     "bulk_result_publish_multiple_failure": {
       "message": "Failed to publish all files."
     },
+    "bulk_result_publish_multiple_partial_success": {
+      "message": "$1 files successfully published, but $2 failed."
+    },
+    "bulk_result_publish_multiple_partial_success_1": {
+      "message": "1 file successfully published, but $2 failed."
+    },
     "bulk_result_publish_multiple_success": {
       "message": "$1 files successfully published."
     },
@@ -85,7 +94,7 @@
       "message": "Failed to publish this file."
     },
     "bulk_result_publish_single_success": {
-      "message": "1 file successfully published."
+      "message": "File successfully published."
     },
     "bulk_selection_empty": {
       "message": "Select files"

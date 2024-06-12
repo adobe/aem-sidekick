@@ -39,7 +39,7 @@ function createPlugin(appStore, env, host, condition = () => true) {
       text: appStore.i18n(`copy_${env}_urls`),
       action: async () => {
         const { bulkStore } = appStore;
-        bulkStore.copyUrls(host);
+        await bulkStore.copyUrls(host);
       },
     },
   },
@@ -58,7 +58,6 @@ export function createBulkCopyUrlsPlugin(appStore) {
     button: {
       isDropdown: true,
       text: appStore.i18n('copy_urls'),
-      action: () => {},
     },
   },
   appStore);

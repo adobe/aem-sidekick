@@ -66,9 +66,9 @@ export const gdriveFileTypes = {
   word: '888z',
   excel: '444z',
   image: '1-4z',
+  svg: '1-4z',
   pdf: '666z',
   video: '3.2z',
-  svg: '11-4z',
 };
 
 /**
@@ -174,6 +174,10 @@ export class BulkStore {
     return [...document.querySelectorAll('#drive_main_page [role="row"][aria-selected="true"]')]
       // extract file name and type
       .map((row) => {
+        const file = (row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(4)') // grid layout
+          || row.querySelector(':scope div[role="gridcell"] > div:nth-of-type(2)')) // list layout
+          ?.textContent.trim();
+
         // use path in icon svg to determine type
         const typeHint = row.querySelector(':scope div[role="gridcell"] > div path') // list & grid layout
           ?.getAttribute('d').slice(-4);
@@ -185,19 +189,16 @@ export class BulkStore {
             type = 'document';
           } else if (typeHint === gdriveFileTypes.gsheet || typeHint === gdriveFileTypes.excel) {
             type = 'spreadsheet';
+          } else if (typeHint === gdriveFileTypes.image && file.toLowerCase().endsWith('.svg')) {
+            type = 'svg';
           } else if ([
             gdriveFileTypes.image,
             gdriveFileTypes.video,
             gdriveFileTypes.pdf,
           ].find((hint) => typeHint.includes(hint))) {
             type = 'media';
-          } else if (typeHint === gdriveFileTypes.svg) {
-            type = 'svg';
           }
         }
-        const file = row.querySelector(':scope > div > div:nth-of-type(2)')?.textContent.trim() // list layout
-          || (row.querySelector(':scope > div > div > div:nth-of-type(4)') // grid layout (file)
-          || row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(4) > div'))?.textContent.trim(); // grid layout (folder)
         return {
           type,
           file,
@@ -227,10 +228,6 @@ export class BulkStore {
    * @returns {string[]} The canonicalized paths
    */
   #bulkSelectionToPath(selection, folder) {
-    if (!folder) {
-      return [];
-    }
-
     return selection.map((item) => {
       const { file, type } = item;
 
@@ -274,19 +271,6 @@ export class BulkStore {
   } = {}) {
     const { appStore, selection: bulkSelection } = this;
     const { status, api } = appStore;
-
-    // check for illegal file names
-    const illegalNames = bulkSelection
-      .filter(({ file }) => file.startsWith(illegalPathPrefix))
-      .map(({ file }) => file.substring(10));
-    if (illegalNames.length > 0) {
-      appStore.showToast(
-        appStore.i18n(`bulk_error_illegal_file_name${illegalNames.length === 1 ? '' : 's'}`)
-          .replace('$1', illegalNames.join(', ')),
-        'warning',
-      );
-      return null;
-    }
 
     const paths = this.#bulkSelectionToPath(bulkSelection, status.webPath);
 
@@ -375,7 +359,8 @@ export class BulkStore {
       outcome = 'failure';
     } else if (total > 1 && failed >= 1 && failed < total) {
       // some failed
-      outcome = 'partial_success';
+      const succeeded = total - failed;
+      outcome = `partial_success${succeeded === 1 ? '_1' : ''}`;
     }
     const i18nKey = `bulk_result_${operation}_${type}_${outcome}`;
     return this.appStore.i18n(i18nKey)
@@ -448,7 +433,7 @@ export class BulkStore {
       this.appStore.showToast(
         message,
         variant,
-        () => this.appStore.closeToast(),
+        null,
         openUrlsCallback,
         openUrlsLabel,
         copyUrlsCallback,
@@ -461,7 +446,7 @@ export class BulkStore {
       this.appStore.showToast(
         message,
         variant,
-        () => this.appStore.closeToast(),
+        null,
         () => {
           this.appStore.showModal({
             type: MODALS.BULK_DETAILS,
@@ -485,11 +470,35 @@ export class BulkStore {
   }
 
   /**
+   * Validates the selection before performing a bulk operation.
+   * @param {string} operation The bulk operation ("preview" or "publish")
+   * @returns {boolean} True if selection is valid, else false
+   */
+  #validateSelection(operation) {
+    if (this.selection.length === 0) {
+      log.debug(`bulk ${operation}: no selection`);
+      return false;
+    }
+
+    const illegalNames = this.selection
+      .filter(({ file }) => file.startsWith(illegalPathPrefix))
+      .map(({ file }) => file.substring(10));
+    if (illegalNames.length > 0) {
+      this.appStore.showToast(
+        this.appStore.i18n(`bulk_error_illegal_file_name${illegalNames.length === 1 ? '' : 's'}`)
+          .replace('$1', illegalNames.join(', ')),
+        'warning',
+      );
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Runs a bulk preview operation on the bulk selection.
    */
   async preview() {
-    if (this.selection.length === 0) {
-      log.debug('bulk preview: no selection');
+    if (!this.#validateSelection('preview')) {
       return;
     }
 
@@ -543,8 +552,7 @@ export class BulkStore {
    * Runs a bulk publish operation on the bulk selection.
    */
   async publish() {
-    if (this.selection.length === 0) {
-      log.debug('bulk publish: no selection');
+    if (!this.#validateSelection('preview')) {
       return;
     }
 
@@ -602,13 +610,11 @@ export class BulkStore {
   async copyUrls(host, paths) {
     host = host || this.appStore.siteStore.innerHost;
     if (!paths) {
+      if (!this.#validateSelection('copyUrls')) {
+        return;
+      }
       const status = await this.appStore.fetchStatus(true, true);
       paths = this.#bulkSelectionToPath(this.selection, status.webPath);
-    }
-
-    if (paths.length === 0) {
-      log.debug('bulk copy urls: no selection');
-      return;
     }
 
     navigator.clipboard.writeText(
@@ -629,13 +635,11 @@ export class BulkStore {
   async openUrls(host, paths) {
     host = host || this.appStore.siteStore.innerHost;
     if (!paths) {
+      if (!this.#validateSelection('openUrls')) {
+        return;
+      }
       const status = await this.appStore.fetchStatus(true, true);
       paths = this.#bulkSelectionToPath(this.selection, status.webPath);
-    }
-
-    if (paths.length === 0) {
-      log.debug('bulk open urls: no selection');
-      return;
     }
 
     paths
