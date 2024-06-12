@@ -57,10 +57,10 @@ describe('Test Bulk Info', () => {
 
     const bulkInfo = recursiveQuery(sidekick, 'bulk-info');
 
-    sidekickTest.toggleAdminFiles(['document']);
+    sidekickTest.toggleAdminItems(['document']);
     await waitUntil(() => recursiveQuery(bulkInfo, 'span').textContent.trim() === '1 file selected');
 
-    sidekickTest.toggleAdminFiles(['spreadsheet']);
+    sidekickTest.toggleAdminItems(['spreadsheet']);
     await waitUntil(() => recursiveQuery(bulkInfo, 'span').textContent.trim() === '2 files selected');
   }).timeout(5000);
 });

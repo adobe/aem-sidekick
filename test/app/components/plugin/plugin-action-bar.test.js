@@ -320,7 +320,7 @@ describe('Plugin action bar', () => {
         .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
         .mockFetchSidekickConfigSuccess(false, false)
         .mockAdminDOM(EditorMockEnvironments.ADMIN)
-        .toggleAdminFiles(['document'])
+        .toggleAdminItems(['document'])
         .createSidekick();
 
       await aTimeout(100);
