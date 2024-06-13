@@ -12,7 +12,7 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
-import { setViewport } from '@web/test-runner-commands';
+import { setViewport, sendKeys } from '@web/test-runner-commands';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
@@ -880,5 +880,75 @@ describe('Plugin action bar', () => {
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
       expect(openPageStub.calledOnce).to.be.true;
     }).timeout(10000);
+  });
+
+  describe('tab order', () => {
+    it('verify tab order through action-bar', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, true)
+        .mockFetchEditorStatusSuccess()
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+      await aTimeout(500);
+
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+        'assets',
+        'library',
+        'tools',
+      ]);
+
+      function createFocusSpy(element) {
+        const spy = sidekickTest.sandbox.spy();
+        element.addEventListener('focus', spy);
+        return spy;
+      }
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+
+      const envSwitcher = recursiveQuery(actionBar, 'env-switcher');
+      const envSwitcherSpy = createFocusSpy(envSwitcher);
+
+      await sendKeys({ press: 'Tab' });
+      await sendKeys({ press: 'Tab' });
+
+      const previewButton = recursiveQuery(actionBar, '.edit-preview');
+      const previewFocusSpy = createFocusSpy(previewButton);
+
+      const assetsButton = recursiveQuery(actionBar, '.assets');
+      const assetsFocusSpy = createFocusSpy(assetsButton);
+
+      const libraryButton = recursiveQuery(actionBar, '.library');
+      const libraryFocusSpy = createFocusSpy(libraryButton);
+
+      const toolsButton = recursiveQuery(actionBar, '.tools');
+      const toolsFocusSpy = createFocusSpy(toolsButton);
+
+      const sidekickMenu = recursiveQuery(actionBar, '#sidekick-menu');
+      const sidekickMenuFocusSpy = createFocusSpy(sidekickMenu);
+
+      const loginButton = recursiveQuery(actionBar, 'login-button');
+      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button.login');
+      const loginButtonFocusSpy = createFocusSpy(loginActionButton);
+
+      expect(envSwitcherSpy.calledOnce).to.be.true;
+      await sendKeys({ press: 'Tab' });
+      expect(previewFocusSpy.calledOnce).to.be.true;
+      await sendKeys({ press: 'Tab' });
+      expect(assetsFocusSpy.calledOnce).to.be.true;
+      await sendKeys({ press: 'Tab' });
+      expect(libraryFocusSpy.calledOnce).to.be.true;
+      await sendKeys({ press: 'Tab' });
+      expect(toolsFocusSpy.calledOnce).to.be.true;
+      await sendKeys({ press: 'Tab' });
+      expect(sidekickMenuFocusSpy.calledOnce).to.be.true;
+      await sendKeys({ press: 'Tab' });
+      expect(loginButtonFocusSpy.calledOnce).to.be.true;
+    });
   });
 });
