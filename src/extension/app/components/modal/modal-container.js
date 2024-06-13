@@ -212,6 +212,7 @@ export class ModalContainer extends LitElement {
         options.underlay = true;
         options.headline = data?.headline ?? this.appStore.i18n('confirm');
         options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('ok');
+        options.confirmCallback = data?.confirmCallback;
         options.cancelLabel = this.appStore.i18n('cancel');
         options.content = html`${data?.message || ''}`;
         break;
