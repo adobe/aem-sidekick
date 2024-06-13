@@ -106,6 +106,11 @@ export class EnvironmentSwitcher extends ConnectedElement {
     this.picker.classList.add(`env-${this.currentEnv}`);
 
     this.renderMenu();
+
+    // If this element gets focus, pass it onto the picker
+    this.addEventListener('focus', () => {
+      this.picker.focus();
+    });
   }
 
   /**

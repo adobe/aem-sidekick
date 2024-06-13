@@ -92,7 +92,7 @@ describe('Plugin action bar', () => {
   }
 
   function expectInActionBar(pluginIds) {
-    const actionGroup = recursiveQuery(sidekickTest.sidekick, 'sp-action-group:first-of-type');
+    const actionGroup = recursiveQuery(sidekickTest.sidekick, '.action-group:first-of-type');
     const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, action-bar-picker');
 
     expect(
@@ -591,7 +591,7 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport narrower
-      await resizeWindow({ width: 600, height: 600 });
+      await resizeWindow({ width: 540, height: 600 });
       await aTimeout(300);
 
       // check if tools container plugin moved to plugin menu
@@ -660,7 +660,7 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitActionBar();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const systemActionGroup = recursiveQuery(actionBar, 'sp-action-group:last-of-type');
+      const systemActionGroup = recursiveQuery(actionBar, '.action-group:last-of-type');
       expect(recursiveQuery(actionBar, 'login-button')).to.exist;
 
       const sidekickMenuButton = recursiveQuery(systemActionGroup, '#sidekick-menu');
@@ -686,7 +686,7 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitEnvSwitcher();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroups = recursiveQueryAll(actionBar, '.action-group');
       const actionGroupsArray = [...actionGroups];
       expect(actionGroupsArray.length).to.equal(3);
 
@@ -713,7 +713,7 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitEnvSwitcher();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroups = recursiveQueryAll(actionBar, '.action-group');
       const actionGroupsArray = [...actionGroups];
       expect(actionGroupsArray.length).to.equal(3);
 
@@ -747,7 +747,7 @@ describe('Plugin action bar', () => {
       await aTimeout(100);
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroups = recursiveQueryAll(actionBar, '.action-group');
       const actionGroupsArray = [...actionGroups];
       expect(actionGroupsArray.length).to.equal(3);
 

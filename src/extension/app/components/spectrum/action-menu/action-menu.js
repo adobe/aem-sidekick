@@ -34,6 +34,10 @@ export class ActionMenu extends SPActionMenu {
           background-color: rgba(0, 0, 0, 0.05);
           color: var(--spectrum2-action-button-selected);
         }
+
+        sp-menu {
+          gap: 4px;
+        }
       `,
     ];
   }
