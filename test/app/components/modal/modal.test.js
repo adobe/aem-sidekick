@@ -62,7 +62,7 @@ describe('Modals', () => {
   });
 
   afterEach(() => {
-    sidekickTest.destroy();
+    // sidekickTest.destroy();
   });
 
   it('displays error modal', async () => {
@@ -297,6 +297,57 @@ describe('Modals', () => {
       expect(confirmSpy.calledOnce).to.be.false;
       expect(cancelSpy.calledOnce).to.be.true;
       expect(recursiveQuery(modal, 'sp-dialog-wrapper')).to.be.undefined;
+    });
+  });
+
+  describe('confirmation modal', () => {
+    beforeEach(async () => {
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+    });
+
+    it('default text', async () => {
+      appStore.showModal({
+        type: MODALS.CONFIRM,
+        data: {
+          headline: 'Foo',
+          message: 'Lorem ipsum dolor sit amet?',
+        },
+      });
+
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+      const dialogHeading = recursiveQuery(dialogWrapper, 'h2');
+      expect(dialogHeading.textContent.trim()).to.eq('Foo');
+      expect(dialogWrapper.textContent.trim()).to.eq('Lorem ipsum dolor sit amet?');
+    });
+
+    it('custom confirm', async () => {
+      const confirmCallback = sidekickTest.sandbox.spy();
+      appStore.showModal({
+        type: MODALS.CONFIRM,
+        data: {
+          headline: 'Foo',
+          message: 'Lorem ipsum dolor sit amet?',
+          confirmLabel: 'Yes',
+          confirmCallback,
+        },
+      });
+
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+      const confirmButton = recursiveQuery(dialogWrapper, 'sp-button[variant="accent"]');
+      expect(confirmButton.textContent.trim()).to.eq('Yes');
+      confirmButton.click();
+      await waitUntil(() => confirmCallback.calledOnce);
     });
   });
 
