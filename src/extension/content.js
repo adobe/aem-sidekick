@@ -54,6 +54,7 @@
     // Listen for display toggle events from application
     sidekick.addEventListener('hidden', () => {
       toggleDisplay();
+      sidekick.setAttribute('open', 'false');
     });
   }
 
