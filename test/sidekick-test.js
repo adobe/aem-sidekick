@@ -43,7 +43,7 @@ import {
   defaultGdriveProfileResponse,
   defaultStatusLoggedInNotAuthorizedResponse,
 } from './fixtures/helix-admin.js';
-import enMessages from '../src/extension/_locales/en/messages.json' assert { type: 'json' };
+import enMessages from '../src/extension/_locales/en/messages.json' with { type: 'json' };
 
 /**
  * Status API
