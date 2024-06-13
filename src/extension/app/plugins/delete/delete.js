@@ -68,17 +68,13 @@ export function createDeletePlugin(appStore) {
               appStore.closeToast();
             };
 
-            const closeCallback = () => {
-              appStore.closeToast();
-            };
-
             // show success toast
             appStore.showToast(
               isPage
                 ? appStore.i18n('delete_page_success')
                 : appStore.i18n('delete_file_success'),
               'positive',
-              closeCallback,
+              null,
               actionCallback,
               appStore.i18n('reload'),
             );
