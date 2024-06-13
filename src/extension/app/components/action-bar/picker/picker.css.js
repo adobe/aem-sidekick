@@ -41,7 +41,6 @@ export const style = css`
   }
 
   :host(.env-edit) #button #label,
-  :host(.env-edit) #button:focus-visible #label,
   :host(.env-edit) #button sp-icon-chevron100,
   :host(.env-edit) #button:hover sp-icon-chevron100,
   :host(.env-edit[open]) #button:hover sp-icon-chevron100 {
@@ -65,7 +64,6 @@ export const style = css`
   }
 
   :host(.env-edit[disabled]) #button #label,
-  :host(.env-edit[disabled]) #button:focus-visible #label,
   :host(.env-edit[disabled]) #button sp-icon-chevron100,
   :host(.env-edit[disabled]) #button:hover sp-icon-chevron100 {
     color: var(--spectrum2-edit-border-default);
@@ -74,7 +72,6 @@ export const style = css`
 
 
   :host(.env-preview) #button #label,
-  :host(.env-preview) #button:focus-visible #label,
   :host(.env-preview) #button sp-icon-chevron100,
   :host(.env-preview) #button:hover sp-icon-chevron100,
   :host(.env-preview[open]) #button:hover sp-icon-chevron100 {
@@ -108,8 +105,6 @@ export const style = css`
     --spectrum-picker-icon-color-default-open: var(--spectrum2-preview-border-default);
   }
 
-  :host(.env-live) #button:focus-visible,
-  :host(.env-prod) #button:focus-visible,
   :host(.env-live) #button #label,
   :host(.env-prod) #button #label,
   :host(.env-live) #button sp-icon-chevron100,
