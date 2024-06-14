@@ -76,7 +76,7 @@ describe('Test App Store', () => {
   });
 
   afterEach(() => {
-    // sidekickTest.destroy();
+    sidekickTest.destroy();
   });
 
   async function testDefaultConfig() {
