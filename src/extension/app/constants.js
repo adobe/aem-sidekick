@@ -59,7 +59,7 @@ export const MODALS = {
   ERROR: 'error',
   CONFIRM: 'confirm',
   DELETE: 'delete',
-  BULK_DETAILS: 'bulk-details',
+  BULK: 'bulk',
 };
 
 /**

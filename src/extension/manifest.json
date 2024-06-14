@@ -41,7 +41,6 @@
       {
         "resources": [
           "_locales/*",
-          "bulk-result.js",
           "content.js",
           "context-menu.js",
           "index.js",

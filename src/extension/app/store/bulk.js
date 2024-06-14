@@ -223,11 +223,12 @@ export class BulkStore {
   /**
    * Creates a canonical path for each item in a bulk selection,
    * adding or removing the file extension where appropriate.
+   * @private
    * @param {BulkSelection} selection The bulk selection
    * @param {string} folder The parent folder path
    * @returns {string[]} The canonicalized paths
    */
-  #bulkSelectionToPath(selection, folder) {
+  bulkSelectionToPath(selection, folder) {
     return selection.map((item) => {
       const { file, type } = item;
 
@@ -272,7 +273,7 @@ export class BulkStore {
     const { appStore, selection: bulkSelection } = this;
     const { status, api } = appStore;
 
-    const paths = this.#bulkSelectionToPath(bulkSelection, status.webPath);
+    const paths = this.bulkSelectionToPath(bulkSelection, status.webPath);
 
     // set initial bulk progress
     this.progress = {
@@ -321,24 +322,13 @@ export class BulkStore {
   }
 
   /**
-   * Creates mock admin job resources.
-   * @param {string} path The resource path
-   * @returns {AdminJobResource[]} The admin job resources
-   */
-  #mockAdminJobResources(path) {
-    return [{
-      path,
-      status: 200,
-    }];
-  }
-
-  /**
    * Returns the bulk confirmation text for a given action.
+   * @private
    * @param {string} operation The bulk operation
    * @param {number} total The total number of files
    * @returns {string} The bulk confirmation text
    */
-  #getConfirmText(operation, total) {
+  getConfirmText(operation, total) {
     const suffix = total > 1 ? 'multiple' : 'single';
     return this.appStore.i18n(`bulk_confirm_${operation}_${suffix}`)
       .replace('$1', `${total}`);
@@ -351,7 +341,7 @@ export class BulkStore {
    * @param {number} [failed] The number of failed files
    * @returns {string} The summary text
    */
-  #getSummaryText(operation, total, failed) {
+  getSummaryText(operation, total, failed) {
     const type = total > 1 ? 'multiple' : 'single';
     let outcome = 'success';
     if (total >= 1 && failed === total) {
@@ -370,11 +360,12 @@ export class BulkStore {
 
   /**
    * Returns the summary variant for a bulk operation.
+   * @private
    * @param {number} total The total number of files
    * @param {number} [failed] The number of failed files
    * @returns {string} The summary variant
    */
-  #getSummaryVariant(total, failed) {
+  getSummaryVariant(total, failed) {
     if (failed > 0) {
       if (total >= 1 && failed === total) {
         // all failed
@@ -404,28 +395,15 @@ export class BulkStore {
     const succeeded = resources.filter(({ status }) => status < 400);
     const paths = succeeded.map(({ path }) => path);
 
-    const message = this.#getSummaryText(operation, resources.length, failed.length);
-    const variant = this.#getSummaryVariant(resources.length, failed.length);
+    const message = this.getSummaryText(operation, resources.length, failed.length);
+    const variant = this.getSummaryVariant(resources.length, failed.length);
 
-    const openUrlsLabel = this.appStore.i18n(`open_url${paths.length !== 1 ? 's' : ''}`);
-    const openUrlsCallback = () => {
-      if (paths.length <= 10) {
-        this.openUrls(host, paths);
-      } else {
-        // ask for user confirmation if more than 10 URLs
-        this.appStore.showModal({
-          type: MODALS.CONFIRM,
-          data: {
-            headline: openUrlsLabel,
-            message: this.appStore.i18n('open_urls_confirm').replace('$1', `${resources.length}`),
-            confirmLabel: openUrlsLabel,
-            confirmCallback: () => this.openUrls(host, paths),
-          },
-        });
-      }
-    };
+    const openUrlsLabel = this.appStore.i18n(`open_url${paths.length !== 1 ? 's' : ''}`)
+      .replace('$1', `${paths.length}`);
+    const openUrlsCallback = () => this.openUrls(host, paths);
 
-    const copyUrlsLabel = this.appStore.i18n(`copy_url${paths.length !== 1 ? 's' : ''}`);
+    const copyUrlsLabel = this.appStore.i18n(`copy_url${paths.length !== 1 ? 's' : ''}`)
+      .replace('$1', `${paths.length}`);
     const copyUrlsCallback = () => this.copyUrls(host, paths);
 
     if (failed.length === 0) {
@@ -449,14 +427,7 @@ export class BulkStore {
         null,
         () => {
           this.appStore.showModal({
-            type: MODALS.BULK_DETAILS,
-            data: {
-              headline: message,
-              secondaryLabel: paths.length > 0 ? copyUrlsLabel : null,
-              secondaryCallback: paths.length > 0 ? copyUrlsCallback : null,
-              confirmLabel: paths.length > 0 ? openUrlsLabel : null,
-              confirmCallback: paths.length > 0 ? openUrlsCallback : null,
-            },
+            type: MODALS.BULK,
           });
           this.appStore.closeToast();
         },
@@ -506,7 +477,7 @@ export class BulkStore {
       type: 'confirm',
       data: {
         headline: this.appStore.i18n('preview'),
-        message: this.#getConfirmText('preview', this.selection.length),
+        message: this.getConfirmText('preview', this.selection.length),
         confirmLabel: this.appStore.i18n('preview'),
       },
     });
@@ -519,10 +490,13 @@ export class BulkStore {
       if (this.selection.length === 1) {
         // single preview
         log.debug('bulk preview: performing single operation');
-        const path = this.#bulkSelectionToPath(this.selection, status.webPath)[0];
+        const path = this.bulkSelectionToPath(this.selection, status.webPath)[0];
         const res = await this.appStore.update(path);
         if (res) {
-          resources = this.#mockAdminJobResources(path);
+          resources = [{
+            path,
+            status: 200,
+          }];
         } else {
           this.appStore.setState();
         }
@@ -560,7 +534,7 @@ export class BulkStore {
       type: 'confirm',
       data: {
         headline: this.appStore.i18n('publish'),
-        message: this.#getConfirmText('publish', this.selection.length),
+        message: this.getConfirmText('publish', this.selection.length),
         confirmLabel: this.appStore.i18n('publish'),
       },
     });
@@ -573,10 +547,13 @@ export class BulkStore {
       if (this.selection.length === 1) {
         // single publish
         log.debug('bulk publish: performing single operation');
-        const path = this.#bulkSelectionToPath(this.selection, status.webPath)[0];
+        const path = this.bulkSelectionToPath(this.selection, status.webPath)[0];
         const res = await this.appStore.publish(path);
         if (res) {
-          resources = this.#mockAdminJobResources(path);
+          resources = [{
+            path,
+            status: 200,
+          }];
         } else {
           this.appStore.setState();
         }
@@ -614,7 +591,7 @@ export class BulkStore {
         return;
       }
       const status = await this.appStore.fetchStatus(true, true);
-      paths = this.#bulkSelectionToPath(this.selection, status.webPath);
+      paths = this.bulkSelectionToPath(this.selection, status.webPath);
     }
 
     navigator.clipboard.writeText(
@@ -628,7 +605,7 @@ export class BulkStore {
   }
 
   /**
-   * Creates URLs from paths and opens URLs in new browser windows.
+   * Creates URLs from paths and opens them in new browser windows.
    * @param {string} [host] The host name (default: preview host)
    * @param {string[]} [paths] The paths to use (default: paths created from selection)
    */
@@ -639,12 +616,25 @@ export class BulkStore {
         return;
       }
       const status = await this.appStore.fetchStatus(true, true);
-      paths = this.#bulkSelectionToPath(this.selection, status.webPath);
+      paths = this.bulkSelectionToPath(this.selection, status.webPath);
     }
 
-    paths
-      .map((path) => `https://${host}${path}`)
-      .forEach((url) => this.appStore.openPage(url));
+    const urls = paths.map((path) => `https://${host}${path}`);
+    if (urls.length <= 10) {
+      urls.forEach((url) => this.appStore.openPage(url));
+    } else {
+      const openUrlsLabel = this.appStore.i18n(`open_url${urls.length !== 1 ? 's' : ''}`)
+        .replace('$1', `${urls.length}`);
+      this.appStore.showModal({
+        type: MODALS.CONFIRM,
+        data: {
+          headline: openUrlsLabel,
+          message: this.appStore.i18n('open_urls_confirm').replace('$1', `${urls.length}`),
+          confirmLabel: openUrlsLabel,
+          confirmCallback: () => urls.forEach((url) => this.appStore.openPage(url)),
+        },
+      });
+    }
   }
 
   /**

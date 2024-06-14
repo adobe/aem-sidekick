@@ -320,7 +320,7 @@
       "message": "Copy URL"
     },
     "copy_urls": {
-      "message": "Copy URLs"
+      "message": "Copy $1 URLs"
     },
     "delete": {
       "message": "Delete"
@@ -524,7 +524,7 @@
       "message": "Open URL"
     },
     "open_urls": {
-      "message": "Open URLs"
+      "message": "Open $1 URLs"
     },
     "open": {
       "message": "Open"
