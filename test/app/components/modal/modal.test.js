@@ -62,7 +62,7 @@ describe('Modals', () => {
   });
 
   afterEach(() => {
-    // sidekickTest.destroy();
+    sidekickTest.destroy();
   });
 
   it('displays error modal', async () => {
@@ -348,6 +348,28 @@ describe('Modals', () => {
       expect(confirmButton.textContent.trim()).to.eq('Yes');
       confirmButton.click();
       await waitUntil(() => confirmCallback.calledOnce);
+    });
+
+    it('secondary action', async () => {
+      const secondaryCallback = sidekickTest.sandbox.fake();
+      appStore.showModal({
+        type: MODALS.CONFIRM,
+        data: {
+          secondaryLabel: 'Foo',
+          secondaryCallback,
+        },
+      });
+
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+      const secondaryButton = recursiveQuery(dialogWrapper, 'sp-button[variant="primary"]');
+      expect(secondaryButton.textContent.trim()).to.eq('Foo');
+      secondaryButton.click();
+      await waitUntil(() => secondaryCallback.calledOnce);
     });
   });
 
