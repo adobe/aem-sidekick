@@ -91,15 +91,17 @@ export class ModalContainer extends LitElement {
 
   async firstUpdated() {
     const dialogWrapper = await this.dialogWrapper;
-    dialogWrapper.addEventListener(MODAL_EVENTS.CLOSE, () => {
-      this.remove();
-    });
-    dialogWrapper.addEventListener(MODAL_EVENTS.CONFIRM, () => {
-      this.onConfirm();
-    });
-    dialogWrapper.addEventListener(MODAL_EVENTS.SECONDARY, () => {
-      this.onSecondary();
-    });
+    if (dialogWrapper) {
+      dialogWrapper.addEventListener(MODAL_EVENTS.CLOSE, () => {
+        this.remove();
+      });
+      dialogWrapper.addEventListener(MODAL_EVENTS.CONFIRM, () => {
+        this.onConfirm();
+      });
+      dialogWrapper.addEventListener(MODAL_EVENTS.SECONDARY, () => {
+        this.onSecondary();
+      });
+    }
   }
 
   disconnectedCallback() {
