@@ -284,7 +284,7 @@ describe('Test Bulk Store', () => {
           '/foo/spreadsheet.json',
           '/foo/other',
         ]));
-        await waitUntil(() => getJobStub.calledWith('preview', '123'));
+        await waitUntil(() => getJobStub.calledWith('preview', '123'), null, { timeout: 2000 });
         expect(bulkStore.progress.processed).to.equal(1);
 
         // now getJob() returns stopped job and includes details if requested
@@ -594,7 +594,7 @@ describe('Test Bulk Store', () => {
             ],
           } : undefined,
         }));
-        await waitUntil(() => getJobStub.calledWith('publish', '123'));
+        await waitUntil(() => getJobStub.calledWith('publish', '123'), null, { timeout: 2000 });
         await aTimeout(2000); // wait for polling to finish
         await waitUntil(() => getJobStub.calledWith('publish', '123', true));
 
