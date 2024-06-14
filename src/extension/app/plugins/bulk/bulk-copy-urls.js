@@ -57,7 +57,7 @@ export function createBulkCopyUrlsPlugin(appStore) {
     condition: (store) => store.isAdmin() && store.bulkStore?.selection.length > 0,
     button: {
       isDropdown: true,
-      text: appStore.i18n('copy_urls'),
+      text: appStore.i18n('copy_urls').replace('$1', ''),
     },
   },
   appStore);
