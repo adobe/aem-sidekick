@@ -372,7 +372,7 @@ describe('Test Bulk Store', () => {
         await confirmDialog(sidekickTest.sidekick);
 
         await waitUntil(() => startJobStub.calledWith('preview', ['/document', '/spreadsheet.json']));
-        await waitUntil(() => getJobStub.calledWith('preview', '123'));
+        await waitUntil(() => getJobStub.calledWith('preview', '123'), null, { timeout: 2000 });
         expect(bulkStore.progress.processed).to.equal(1);
 
         // now getJob() returns stopped job and includes details if requested
@@ -574,7 +574,7 @@ describe('Test Bulk Store', () => {
         await confirmDialog(sidekickTest.sidekick);
 
         await waitUntil(() => startJobStub.calledWith('live', ['/document', '/spreadsheet.json']));
-        await waitUntil(() => getJobStub.calledWith('publish', '123'));
+        await waitUntil(() => getJobStub.calledWith('publish', '123'), null, { timeout: 2000 });
         expect(bulkStore.progress.processed).to.equal(1);
 
         // now getJob() returns stopped job and includes details if requested
