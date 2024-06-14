@@ -64,7 +64,7 @@
       "message": "Preview of $1 files successfully generated, but $2 failed."
     },
     "bulk_result_preview_multiple_partial_success_1": {
-      "message": "$1 file successfully generated, but $2 failed."
+      "message": "Preview of $1 file successfully generated, but $2 failed."
     },
     "bulk_result_preview_multiple_success": {
       "message": "Preview of $1 files successfully generated."
