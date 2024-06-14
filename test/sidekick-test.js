@@ -122,9 +122,8 @@ export class SidekickTest {
    */
   destroy() {
     const { body } = document;
-    if (body.contains(this.sidekick)) {
-      body.removeChild(this.sidekick);
-    }
+    body.querySelectorAll('aem-sidekick').forEach((sidekick) => sidekick.replaceWith(''));
+    this.sidekick = null;
     restoreEnvironment(document);
     this.sandbox.restore();
     fetchMock.reset();

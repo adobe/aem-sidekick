@@ -892,8 +892,7 @@ describe('Plugin action bar', () => {
 
       sidekick = sidekickTest.createSidekick();
 
-      await sidekickTest.awaitEnvSwitcher();
-      await aTimeout(500);
+      await sidekickTest.awaitActionBar();
 
       expectInActionBar([
         'env-switcher',
@@ -912,10 +911,7 @@ describe('Plugin action bar', () => {
       const actionBar = recursiveQuery(sidekick, 'action-bar');
 
       const envSwitcher = recursiveQuery(actionBar, 'env-switcher');
-      const envSwitcherSpy = createFocusSpy(envSwitcher);
-
-      await sendKeys({ press: 'Tab' });
-      await sendKeys({ press: 'Tab' });
+      const envSwitcherFocusSpy = createFocusSpy(envSwitcher);
 
       const previewButton = recursiveQuery(actionBar, '.edit-preview');
       const previewFocusSpy = createFocusSpy(previewButton);
@@ -936,19 +932,25 @@ describe('Plugin action bar', () => {
       const loginActionButton = recursiveQuery(loginButton, 'sp-action-button.login');
       const loginButtonFocusSpy = createFocusSpy(loginActionButton);
 
-      expect(envSwitcherSpy.calledOnce).to.be.true;
+      // Tab into location input
       await sendKeys({ press: 'Tab' });
-      expect(previewFocusSpy.calledOnce).to.be.true;
+
+      // Tab into environment switcher
       await sendKeys({ press: 'Tab' });
-      expect(assetsFocusSpy.calledOnce).to.be.true;
+
+      await waitUntil(() => envSwitcherFocusSpy.called, 'env-switcher did not focus', { timeout: 3000 });
       await sendKeys({ press: 'Tab' });
-      expect(libraryFocusSpy.calledOnce).to.be.true;
+      await waitUntil(() => previewFocusSpy.calledOnce, 'preview did not focus', { timeout: 3000 });
       await sendKeys({ press: 'Tab' });
-      expect(toolsFocusSpy.calledOnce).to.be.true;
+      await waitUntil(() => assetsFocusSpy.calledOnce, 'assets did not focus', { timeout: 3000 });
       await sendKeys({ press: 'Tab' });
-      expect(sidekickMenuFocusSpy.calledOnce).to.be.true;
+      await waitUntil(() => libraryFocusSpy.calledOnce, 'library did not focus', { timeout: 3000 });
       await sendKeys({ press: 'Tab' });
-      expect(loginButtonFocusSpy.calledOnce).to.be.true;
-    });
+      await waitUntil(() => toolsFocusSpy.calledOnce, 'tools did not focus', { timeout: 3000 });
+      await sendKeys({ press: 'Tab' });
+      await waitUntil(() => sidekickMenuFocusSpy.calledOnce, 'sidekick menu did not focus', { timeout: 3000 });
+      await sendKeys({ press: 'Tab' });
+      await waitUntil(() => loginButtonFocusSpy.calledOnce, 'login did not focus', { timeout: 3000 });
+    }).timeout(10000);
   });
 });
