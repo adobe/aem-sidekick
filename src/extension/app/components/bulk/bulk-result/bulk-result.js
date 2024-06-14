@@ -26,7 +26,7 @@ export class BulkResult extends ConnectedElement {
    * Render the bulk results.
    */
   render() {
-    const { summary } = this.appStore.bulkStore || {};
+    const { summary } = this.appStore?.bulkStore || {};
 
     return summary ? html`
       <div class="container">
