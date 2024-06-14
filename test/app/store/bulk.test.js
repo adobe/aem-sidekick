@@ -170,6 +170,8 @@ describe('Test Bulk Store', () => {
     let updateStub;
     let publishStub;
     let openPageStub;
+    let writeTextStub;
+    let fireEventStub;
     let showToastSpy;
     let showModalSpy;
     let setStateSpy;
@@ -208,6 +210,8 @@ describe('Test Bulk Store', () => {
       updateStub = sidekickTest.sandbox.stub(appStore, 'update');
       publishStub = sidekickTest.sandbox.stub(appStore, 'publish');
       openPageStub = sidekickTest.sandbox.stub(appStore, 'openPage');
+      fireEventStub = sidekickTest.sandbox.stub(appStore, 'fireEvent');
+      writeTextStub = sidekickTest.sandbox.stub(navigator.clipboard, 'writeText');
       openUrlsSpy = sidekickTest.sandbox.spy(bulkStore, 'openUrls');
       copyUrlsSpy = sidekickTest.sandbox.spy(bulkStore, 'copyUrls');
       showToastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
@@ -226,31 +230,60 @@ describe('Test Bulk Store', () => {
       });
 
       it('rejects selection with illegal path', async () => {
-        // insert and select item with illegal file name
+        // insert items with illegal file names
         sidekickTest.bulkRoot.querySelector('#appRoot .file')
           .insertAdjacentHTML('beforebegin', mockSharePointFile({
             path: '/foo/image?.jpg',
             file: 'image?.jpg',
             type: 'image',
           }));
+        sidekickTest.bulkRoot.querySelector('#appRoot .file')
+          .insertAdjacentHTML('beforebegin', mockSharePointFile({
+            path: '/foo/video*.mp4',
+            file: 'video*.mp4',
+            type: 'video',
+          }));
+
+        // select 1st illegal item
         sidekickTest.toggleAdminItems(['image?.jpg']);
-        bulkStore.initStore(appStore.location);
         await waitUntil(() => bulkStore.selection.length === 1);
 
         await bulkStore.preview();
 
         expect(startJobStub.called).to.be.false;
         expect(showToastSpy.calledWithMatch('The following file name contains illegal characters:', 'warning')).to.be.true;
-      });
 
-      it('bulk previews selection and displays success toast', async () => {
-        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        // select 2nd illegal item
+        sidekickTest.toggleAdminItems(['video*.mp4']);
         await waitUntil(() => bulkStore.selection.length === 2);
 
         await bulkStore.preview();
-        await confirmDialog(sidekickTest.sidekick);
 
-        await waitUntil(() => startJobStub.calledWith('preview', ['/document', '/spreadsheet.json']));
+        expect(startJobStub.called).to.be.false;
+        expect(showToastSpy.calledWithMatch('The following file names contain illegal characters:', 'warning')).to.be.true;
+      });
+
+      it('bulk previews selection and displays success toast', async () => {
+        sidekickTest.mockFetchDirectoryStatusSuccess(HelixMockContentSources.SHAREPOINT, {
+          webPath: '/foo',
+        });
+        const statusFetched = sidekickTest.sandbox.spy(appStore, 'fetchStatus');
+        sidekickTest.toggleAdminItems([
+          'document',
+          'spreadsheet',
+          'other',
+        ]);
+        await waitUntil(() => bulkStore.selection.length === 3);
+
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+        await waitUntil(() => statusFetched.called);
+
+        await waitUntil(() => startJobStub.calledWith('preview', [
+          '/foo/document',
+          '/foo/spreadsheet.json',
+          '/foo/other',
+        ]));
         await waitUntil(() => getJobStub.calledWith('preview', '123'));
         expect(bulkStore.progress.processed).to.equal(1);
 
@@ -260,14 +293,15 @@ describe('Test Bulk Store', () => {
           name,
           state: 'stopped',
           progress: {
-            total: 2,
-            processed: 2,
+            total: 3,
+            processed: 3,
             failed: 0,
           },
           data: details ? {
             resources: [
-              { path: '/document', status: 200 },
-              { path: '/spreadsheet.json', status: 304 },
+              { path: '/foo/document', status: 200 },
+              { path: '/foo/spreadsheet.json', status: 304 },
+              { path: '/foo/other', status: 200 },
             ],
           } : undefined,
         }));
@@ -277,16 +311,17 @@ describe('Test Bulk Store', () => {
 
         await waitUntil(() => showToastSpy.called);
         expect(showToastSpy.calledWithMatch(
-          'Preview of 2 files successfully generated.',
+          'Preview of 3 files successfully generated.',
           'positive',
         )).to.be.true;
+        expect(fireEventStub.calledWithMatch('previewed')).to.be.true;
 
         // test toast actions
         const activityAction = recursiveQuery(sidekickTest.sidekick, 'activity-action');
         const copyUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(1)');
-        expect(copyUrlsButton.textContent.trim()).to.equal('Copy URLs');
+        expect(copyUrlsButton.textContent.trim()).to.equal('Copy 3 URLs');
         const openUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(2)');
-        expect(openUrlsButton.textContent.trim()).to.equal('Open URLs');
+        expect(openUrlsButton.textContent.trim()).to.equal('Open 3 URLs');
         copyUrlsButton.click();
         openUrlsButton.click();
         await waitUntil(() => copyUrlsSpy.calledWithMatch(appStore.siteStore.innerHost));
@@ -370,44 +405,73 @@ describe('Test Bulk Store', () => {
         expect(detailsButton.textContent.trim()).to.equal('Details');
         detailsButton.click();
         await waitUntil(() => showModalSpy.calledWithMatch({
-          type: MODALS.BULK_DETAILS,
+          type: MODALS.BULK,
         }));
       }).timeout(10000);
 
       it('start job fails', async () => {
+        startJobStub.resolves(null);
         sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
         await waitUntil(() => bulkStore.selection.length === 2);
 
         await bulkStore.preview();
         await confirmDialog(sidekickTest.sidekick);
 
-        await waitUntil(() => startJobStub.calledWith('preview', ['/document', '/spreadsheet.json']));
-        await waitUntil(() => getJobStub.calledWith('preview', '123'));
-        expect(bulkStore.progress.processed).to.equal(1);
+        await waitUntil(() => startJobStub.called);
+        await aTimeout(100);
 
-        // now getJob() returns stopped job and includes details if requested
-        getJobStub.callsFake(async (topic, name, details) => ({
-          topic,
-          name,
+        expect(setStateSpy.calledWith());
+        expect(getJobStub.called).to.be.false;
+        expect(showToastSpy.called).to.be.false;
+      }).timeout(10000);
+
+      it('start job response contains no job', async () => {
+        startJobStub.resolves({ job: null });
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => startJobStub.called);
+        await aTimeout(100);
+
+        expect(setStateSpy.calledWith());
+        expect(getJobStub.called).to.be.false;
+        expect(showToastSpy.called).to.be.false;
+      }).timeout(10000);
+
+      it('get job response contains no progress', async () => {
+        getJobStub.resolves({ state: 'running', progress: null });
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => getJobStub.calledTwice, '', { timeout: 3000 });
+
+        expect(bulkStore.progress.processed).to.equal(0);
+      }).timeout(10000);
+
+      it('get job details reponse contains no data', async () => {
+        getJobStub.resolves({
           state: 'stopped',
           progress: {
             total: 2,
             processed: 2,
-            failed: 2,
+            failed: 0,
           },
-          data: details ? {
-            resources: [
-              { path: '/document', status: 502 },
-              { path: '/spreadsheet.json', status: 404 },
-            ],
-          } : undefined,
-        }));
-        await waitUntil(() => getJobStub.calledWith('preview', '123'));
-        await aTimeout(2000); // wait for polling to finish
-        await waitUntil(() => getJobStub.calledWith('preview', '123', true));
+        });
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
 
-        await waitUntil(() => showToastSpy.called);
-        expect(showToastSpy.calledWithMatch('Failed to generate preview', 'negative')).to.be.true;
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => getJobStub.calledTwice, '', { timeout: 3000 });
+
+        expect(fireEventStub.calledWithMatch('previewed')).to.be.false;
       }).timeout(10000);
 
       it('single file does not start job', async () => {
@@ -469,13 +533,21 @@ describe('Test Bulk Store', () => {
       });
 
       it('rejects selection with illegal path', async () => {
-        // insert and select item with illegal file name
+        // insert items with illegal file names
         sidekickTest.bulkRoot.querySelector('#appRoot .file')
           .insertAdjacentHTML('beforebegin', mockSharePointFile({
             path: '/foo/image?.jpg',
             file: 'image?.jpg',
             type: 'image',
           }));
+        sidekickTest.bulkRoot.querySelector('#appRoot .file')
+          .insertAdjacentHTML('beforebegin', mockSharePointFile({
+            path: '/foo/video*.mp4',
+            file: 'video*.mp4',
+            type: 'video',
+          }));
+
+        // select 1st illegal item
         sidekickTest.toggleAdminItems(['image?.jpg']);
         await waitUntil(() => bulkStore.selection.length === 1);
 
@@ -483,6 +555,15 @@ describe('Test Bulk Store', () => {
 
         expect(startJobStub.called).to.be.false;
         expect(showToastSpy.calledWithMatch('The following file name contains illegal characters:', 'warning')).to.be.true;
+
+        // select 2nd illegal item
+        sidekickTest.toggleAdminItems(['video*.mp4']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.publish();
+
+        expect(startJobStub.called).to.be.false;
+        expect(showToastSpy.calledWithMatch('The following file names contain illegal characters:', 'warning')).to.be.true;
       });
 
       it('bulk publishes selection and displays success toast', async () => {
@@ -522,13 +603,14 @@ describe('Test Bulk Store', () => {
           '2 files successfully published.',
           'positive',
         )).to.be.true;
+        expect(fireEventStub.calledWithMatch('published')).to.be.true;
 
         // test toast actions
         const activityAction = recursiveQuery(sidekickTest.sidekick, 'activity-action');
         const copyUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(1)');
-        expect(copyUrlsButton.textContent.trim()).to.equal('Copy URLs');
+        expect(copyUrlsButton.textContent.trim()).to.equal('Copy 2 URLs');
         const openUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(2)');
-        expect(openUrlsButton.textContent.trim()).to.equal('Open URLs');
+        expect(openUrlsButton.textContent.trim()).to.equal('Open 2 URLs');
         copyUrlsButton.click();
         openUrlsButton.click();
         await waitUntil(() => copyUrlsSpy.calledWithMatch(appStore.siteStore.host || appStore.siteStore.outerHost));
@@ -607,7 +689,73 @@ describe('Test Bulk Store', () => {
         expect(showToastSpy.calledWithMatch('Failed to publish all files.', 'negative')).to.be.true;
       }).timeout(10000);
 
+      it('start job fails', async () => {
+        startJobStub.resolves(null);
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.publish();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => startJobStub.called);
+        await aTimeout(100);
+
+        expect(setStateSpy.calledWith());
+        expect(getJobStub.called).to.be.false;
+        expect(showToastSpy.called).to.be.false;
+      }).timeout(10000);
+
+      it('start job response contains no job', async () => {
+        startJobStub.resolves({ job: null });
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.publish();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => startJobStub.called);
+        await aTimeout(100);
+
+        expect(setStateSpy.calledWith());
+        expect(getJobStub.called).to.be.false;
+        expect(showToastSpy.called).to.be.false;
+      }).timeout(10000);
+
+      it('get job response contains no progress', async () => {
+        getJobStub.resolves({ state: 'running', progress: null });
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.publish();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => getJobStub.calledTwice, '', { timeout: 3000 });
+
+        expect(bulkStore.progress.processed).to.equal(0);
+      }).timeout(10000);
+
+      it('get job details reponse contains no data', async () => {
+        getJobStub.resolves({
+          state: 'stopped',
+          progress: {
+            total: 2,
+            processed: 2,
+            failed: 0,
+          },
+        });
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.publish();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => getJobStub.calledTwice, '', { timeout: 3000 });
+
+        expect(fireEventStub.calledWithMatch('published')).to.be.false;
+      }).timeout(10000);
+
       it('single file does not start job', async () => {
+        appStore.siteStore.host = null;
         sidekickTest.toggleAdminItems(['document']);
         await waitUntil(() => bulkStore.selection.length === 1);
 
@@ -656,8 +804,18 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => debugStub.called);
       });
 
+      it('handles single selection', async () => {
+        sidekickTest.toggleAdminItems(['document']);
+
+        await waitUntil(() => bulkStore.selection.length === 1);
+
+        await bulkStore.copyUrls();
+
+        await waitUntil(() => writeTextStub.called);
+        expect(writeTextStub.calledOnceWith(`https://${appStore.siteStore.innerHost}/document`)).to.be.true;
+      });
+
       it('creates urls from bulk selection and copies them to clipboard', async () => {
-        const writeTextStub = sidekickTest.sandbox.stub(navigator.clipboard, 'writeText');
         sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
         await waitUntil(() => bulkStore.selection.length === 2);
 
@@ -671,8 +829,6 @@ describe('Test Bulk Store', () => {
       });
 
       it('creates urls from paths and copies them to clipboard', async () => {
-        const writeTextStub = sidekickTest.sandbox.stub(navigator.clipboard, 'writeText');
-
         await bulkStore.copyUrls(host, ['/document', '/spreadsheet.json']);
 
         await waitUntil(() => writeTextStub.called);
@@ -694,6 +850,17 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => debugStub.called);
       });
 
+      it('handles single selection', async () => {
+        sidekickTest.toggleAdminItems(['document']);
+
+        await waitUntil(() => bulkStore.selection.length === 1);
+
+        await bulkStore.openUrls(host);
+
+        await waitUntil(() => openPageStub.called);
+        expect(openPageStub.calledOnceWith(`https://${host}/document`)).to.be.true;
+      });
+
       it('creates urls from bulk selection and opens them', async () => {
         sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
 
@@ -713,6 +880,80 @@ describe('Test Bulk Store', () => {
         expect(openPageStub.calledWith(`https://${host}/document`)).to.be.true;
         expect(openPageStub.calledWith(`https://${host}/spreadsheet.json`)).to.be.true;
       });
+
+      it('asks for confirmation before opening more than 10 urls', async () => {
+        await bulkStore.openUrls(null, [
+          '/document/1',
+          '/document/2',
+          '/document/3',
+          '/document/4',
+          '/document/5',
+          '/document/6',
+          '/document/7',
+          '/document/8',
+          '/document/9',
+          '/document/10',
+          '/document/11',
+        ]);
+
+        await waitUntil(() => recursiveQuery(sidekickTest.sidekick, 'sp-dialog-wrapper'));
+
+        expect(showModalSpy.calledWithMatch({
+          type: MODALS.CONFIRM,
+          data: {
+            message: 'Are you sure you want to open 11 URLs?',
+          },
+        })).to.be.true;
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => openPageStub.callCount === 11);
+        expect(openPageStub.calledWith(`https://${appStore.siteStore.innerHost}/document/11`)).to.be.true;
+      });
+    });
+  });
+
+  describe('more cases', () => {
+    beforeEach(() => {
+      appStore = new AppStore();
+      bulkStore = appStore.bulkStore;
+      sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+      sidekickTest
+        .mockFetchDirectoryStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, false);
+    });
+
+    it('unknown file type in gdrive', async () => {
+      // mock gdrive
+      sidekickTest
+        .mockLocation(getAdminLocation(HelixMockContentSources.GDRIVE))
+        .mockAdminDOM(HelixMockContentSources.GDRIVE);
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+
+      // delete file icon to simulate unknown file type
+      sidekickTest.toggleAdminItems(['document']);
+      sidekickTest.bulkRoot.querySelector('div.file[aria-selected="true"] svg').remove();
+      bulkStore.initStore(appStore.location);
+      await waitUntil(() => bulkStore.selection.length === 1);
+
+      expect(bulkStore.selection[0].type).to.equal('unknown');
+    });
+
+    it('getSummaryText: returns message based on succeeded vs failed', async () => {
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      expect(bulkStore.getSummaryText('preview', 4, 0))
+        .to.equal('Preview of 4 files successfully generated.');
+
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      expect(bulkStore.getSummaryText('preview', 4, 2))
+        .to.equal('Preview of 2 files successfully generated, but 2 failed.');
+
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      expect(bulkStore.getSummaryText('preview', 4, 3))
+        .to.equal('Preview of 1 file successfully generated, but 3 failed.');
+
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      expect(bulkStore.getSummaryText('preview', 4, 4))
+        .to.equal('Failed to generate preview of all files.');
     });
   });
 });

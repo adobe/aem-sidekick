@@ -57,7 +57,7 @@ export const DEFAULT_SHAREPOINT_BULK_SELECTION = [
   { path: '/foo/image.jpg', file: 'image.jpg', type: 'image' },
   { path: '/foo/video.mp4', file: 'video.mp4', type: 'video' },
   { path: '/foo/icon.svg', file: 'icon.svg', type: 'svg' },
-  { path: '/foo/file.txt', file: 'file.txt', type: 'unknown' },
+  { path: '/foo/other', file: 'other', type: 'unknown' },
 ];
 
 /*

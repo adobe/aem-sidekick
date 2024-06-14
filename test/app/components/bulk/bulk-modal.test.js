@@ -162,7 +162,7 @@ describe('Modals', () => {
 
       // check headline
       const dialogHeading = recursiveQuery(dialogWrapper, 'h2');
-      expect(dialogHeading.textContent.trim()).to.eq('1 file successfully generated, but 1 failed.');
+      expect(dialogHeading.textContent.trim()).to.eq('Preview of 1 file successfully generated, but 1 failed.');
       expect(recursiveQuery(dialogWrapper, 'bulk-result')).to.exist;
 
       // check buttons
