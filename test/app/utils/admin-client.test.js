@@ -276,8 +276,8 @@ describe('Test Admin Client', () => {
     it('should return null if fetch fails', async () => {
       mockFetchError({
         method: 'post',
-        api: 'job',
-        path: '/preview',
+        api: 'preview',
+        path: '/*',
       });
       sandbox.stub(window, 'fetch').throws(error);
       const res = await adminClient.startJob('preview', ['/foo', '/bar']);
@@ -446,8 +446,9 @@ describe('Test Admin Client', () => {
 
     it('should handle start job error', async () => {
       mockFetchError({
-        api: 'job',
-        path: '/publish/123',
+        method: 'post',
+        api: 'live',
+        path: '/*',
         status: 500,
       });
       const res = await adminClient.startJob('live', ['/foo', '/bar']);

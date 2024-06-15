@@ -222,7 +222,7 @@ describe('Test Bulk Store', () => {
       setStateSpy = sidekickTest.sandbox.spy(appStore, 'setState');
 
       // catch any stray job requests to admin api
-      fetchMock.any(
+      fetchMock.sticky(
         'glob:https://admin.hlx.page/job/*',
         { status: 200, body: {} },
         { overwriteRoutes: true },
