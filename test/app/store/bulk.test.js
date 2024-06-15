@@ -24,7 +24,7 @@ import {
 } from '../../mocks/environment.js';
 import chromeMock from '../../mocks/chrome.js';
 import { recursiveQuery } from '../../test-utils.js';
-import { MODALS, MODAL_EVENTS } from '../../../src/extension/app/constants.js';
+import { MODALS, MODAL_EVENTS, STATE } from '../../../src/extension/app/constants.js';
 import { log } from '../../../src/extension/log.js';
 import {
   DEFAULT_GDRIVE_BULK_SELECTION,
@@ -500,7 +500,11 @@ describe('Test Bulk Store', () => {
       });
 
       it('single file failure', async () => {
-        updateStub.resolves(false);
+        updateStub.callsFake(() => {
+          // admin client shows error toast
+          appStore.showToast('Failed to generate preview', 'negative');
+          return false;
+        });
         sidekickTest.toggleAdminItems(['document']);
         await waitUntil(() => bulkStore.selection.length === 1);
 
@@ -508,7 +512,8 @@ describe('Test Bulk Store', () => {
         await confirmDialog(sidekickTest.sidekick);
 
         await waitUntil(() => updateStub.called);
-        await waitUntil(() => setStateSpy.called);
+        // do not overwrite existing error toast
+        expect(appStore.state).to.equal(STATE.TOAST);
       });
 
       it('handles path transformations', async () => {
@@ -781,7 +786,11 @@ describe('Test Bulk Store', () => {
       });
 
       it('single file failure', async () => {
-        publishStub.resolves(false);
+        publishStub.callsFake(() => {
+          // admin client shows error toast
+          appStore.showToast('Publication failed', 'negative');
+          return false;
+        });
         sidekickTest.toggleAdminItems(['document']);
         await waitUntil(() => bulkStore.selection.length === 1);
 
@@ -789,7 +798,8 @@ describe('Test Bulk Store', () => {
         await confirmDialog(sidekickTest.sidekick);
 
         await waitUntil(() => publishStub.called);
-        await waitUntil(() => setStateSpy.called);
+        // do not overwrite existing error toast
+        expect(appStore.state).to.equal(STATE.TOAST);
       });
     });
 

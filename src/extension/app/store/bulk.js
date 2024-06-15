@@ -494,8 +494,6 @@ export class BulkStore {
             path,
             status: 200,
           }];
-        } else {
-          this.appStore.setState();
         }
       } else {
         // bulk preview
@@ -551,8 +549,6 @@ export class BulkStore {
             path,
             status: 200,
           }];
-        } else {
-          this.appStore.setState();
         }
       } else {
         // bulk preview
