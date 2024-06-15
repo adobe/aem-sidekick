@@ -13,6 +13,7 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, max-len */
 
 // @ts-ignore
+import fetchMock from 'fetch-mock/esm/client.js';
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { AppStore } from '../../../src/extension/app/store/app.js';
 import { SidekickTest } from '../../sidekick-test.js';
@@ -69,6 +70,7 @@ describe('Test Bulk Store', () => {
         bulkStore = appStore.bulkStore;
         sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
         sidekickTest
+          .mockFetchStatusSuccess()
           .mockFetchDirectoryStatusSuccess()
           .mockFetchSidekickConfigSuccess(true, false)
           .mockLocation(getAdminLocation(adminEnv));
@@ -183,6 +185,7 @@ describe('Test Bulk Store', () => {
       bulkStore = appStore.bulkStore;
       sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
       sidekickTest
+        .mockFetchStatusSuccess()
         .mockFetchDirectoryStatusSuccess()
         .mockFetchSidekickConfigSuccess(true, false)
         .mockLocation(getAdminLocation(HelixMockContentSources.SHAREPOINT))
@@ -217,6 +220,13 @@ describe('Test Bulk Store', () => {
       showToastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
       showModalSpy = sidekickTest.sandbox.spy(appStore, 'showModal');
       setStateSpy = sidekickTest.sandbox.spy(appStore, 'setState');
+
+      // catch any stray job requests to admin api
+      fetchMock.any(
+        'glob:https://admin.hlx.page/job/*',
+        { status: 200, body: {} },
+        { overwriteRoutes: true },
+      );
     });
 
     describe('preview', () => {
@@ -928,6 +938,7 @@ describe('Test Bulk Store', () => {
       bulkStore = appStore.bulkStore;
       sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
       sidekickTest
+        .mockFetchStatusSuccess()
         .mockFetchDirectoryStatusSuccess()
         .mockFetchSidekickConfigSuccess(true, false);
     });

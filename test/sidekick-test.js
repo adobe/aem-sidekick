@@ -220,6 +220,12 @@ export class SidekickTest {
       body: enMessages,
     }, { overwriteRoutes: true });
 
+    // other languages should return 404
+    fetchMock.get(`glob:${englishMessagesUrl.replace('/en/', '/*/')}`, {
+      status: 404,
+      body: '',
+    }, { overwriteRoutes: true });
+
     return this;
   }
 
