@@ -453,7 +453,7 @@ describe('Test Admin Client', () => {
       });
       const res = await adminClient.startJob('live', ['/foo', '/bar']);
       expect(showToastStub.calledOnce).to.be.true;
-      expect(toast.message).to.match(/Apologies/);
+      expect(toast.message).to.match(/Publication failed/);
       expect(toast.variant).to.equal('negative');
       expect(res).to.be.null;
     });
