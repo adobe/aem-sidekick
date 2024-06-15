@@ -451,6 +451,23 @@ describe('Test Bulk Store', () => {
         expect(showToastSpy.called).to.be.false;
       }).timeout(10000);
 
+      it('stops polling if get job fails', async () => {
+        const clearIntervalSpy = sidekickTest.sandbox.spy(window, 'clearInterval');
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => getJobStub.called, null, { timeout: 3000 });
+
+        // next get job call fails
+        getJobStub.resolves(null);
+
+        await waitUntil(() => getJobStub.called, null, { timeout: 3000 });
+        await waitUntil(() => clearIntervalSpy.called, null, { timeout: 3000 });
+      }).timeout(10000);
+
       it('get job response contains no progress', async () => {
         getJobStub.resolves({ state: 'running', progress: null });
         sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
@@ -734,6 +751,23 @@ describe('Test Bulk Store', () => {
         expect(setStateSpy.calledWith());
         expect(getJobStub.called).to.be.false;
         expect(showToastSpy.called).to.be.false;
+      }).timeout(10000);
+
+      it('stops polling if get job fails', async () => {
+        const clearIntervalSpy = sidekickTest.sandbox.spy(window, 'clearInterval');
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.publish();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => getJobStub.called, null, { timeout: 3000 });
+
+        // next get job call fails
+        getJobStub.resolves(null);
+
+        await waitUntil(() => getJobStub.called, null, { timeout: 3000 });
+        await waitUntil(() => clearIntervalSpy.called, null, { timeout: 3000 });
       }).timeout(10000);
 
       it('get job response contains no progress', async () => {
