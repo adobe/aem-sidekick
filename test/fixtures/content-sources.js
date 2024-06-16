@@ -14,8 +14,8 @@ import { gdriveFileTypes as gdriveIcons } from '../../src/extension/app/store/bu
 
 const gdriveDescriptors = {
   folder: 'Google Drive Folder',
-  document: 'Google Docs',
-  spreadsheet: 'Google Sheets',
+  gdoc: 'Google Docs',
+  gsheet: 'Google Sheets',
   unknown: 'unknown',
   pdf: 'PDF File',
   image: 'JPG Image File',

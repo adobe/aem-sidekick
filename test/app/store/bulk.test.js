@@ -150,17 +150,41 @@ describe('Test Bulk Store', () => {
       });
 
       describe('validation', () => {
-        beforeEach(() => {
+        it('flags invalid file name', async () => {
           sidekickTest.mockAdminDOM(adminEnv, 'list', [
             { path: '/foo/image?.jpg', type: 'image' },
           ]);
           sidekickTest.toggleAdminItems(['image?.jpg']);
-        });
-
-        it('flags invalid file name', async () => {
           bulkStore.initStore(appStore.location);
           expect(bulkStore.selection.length).to.equal(1);
           expect(bulkStore.selection[0].file).to.equal('!ILLEGAL!_image?.jpg');
+        });
+      });
+
+      describe('selection to path conversion', () => {
+        it('bulk previews selection and displays success toast', async () => {
+          sidekickTest.mockAdminDOM(adminEnv, 'list');
+          sidekickTest.mockFetchDirectoryStatusSuccess(adminEnv, {
+            webPath: '/foo',
+          });
+          const startJobStub = sidekickTest.sandbox.stub(appStore.api, 'startJob').resolves(null);
+          sidekickTest.toggleAdminItems([
+            'document',
+            'spreadsheet',
+            'index',
+          ]);
+          bulkStore.initStore(appStore.location);
+          await waitUntil(() => bulkStore.selection.length === 3);
+
+          await bulkStore.preview();
+          await confirmDialog(sidekickTest.sidekick);
+          await waitUntil(() => startJobStub.called);
+
+          const paths = startJobStub.args[0][1];
+          expect(paths.length).to.equal(3);
+          expect(paths.includes('/foo/document')).to.be.true;
+          expect(paths.includes('/foo/spreadsheet.json')).to.be.true;
+          expect(paths.includes('/foo/')).to.be.true;
         });
       });
     });
@@ -991,6 +1015,57 @@ describe('Test Bulk Store', () => {
       await waitUntil(() => bulkStore.selection.length === 1);
 
       expect(bulkStore.selection[0].type).to.equal('unknown');
+    });
+
+    it('docx in gdrive', async () => {
+      const updateStub = sidekickTest.sandbox.stub(appStore, 'update');
+
+      // mock gdrive
+      sidekickTest
+        .mockLocation(getAdminLocation(HelixMockContentSources.GDRIVE))
+        .mockAdminDOM(HelixMockContentSources.GDRIVE);
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+
+      // add .docx extension to file name
+      sidekickTest.bulkRoot
+        .querySelector('div#file-gdoc div[data-tooltip]')
+        .textContent = 'document.docx';
+      sidekickTest.toggleAdminItems(['document']);
+
+      bulkStore.initStore(appStore.location);
+      await waitUntil(() => bulkStore.selection.length === 1);
+
+      await bulkStore.preview();
+      await confirmDialog(sidekickTest.sidekick);
+
+      await waitUntil(() => updateStub.called);
+      expect(updateStub.calledWith('/document.docx')).to.be.true;
+    });
+
+    it('xlsx in gdrive', async () => {
+      const updateStub = sidekickTest.sandbox.stub(appStore, 'update');
+
+      // mock gdrive
+      sidekickTest
+        .mockLocation(getAdminLocation(HelixMockContentSources.GDRIVE))
+        .mockAdminDOM(HelixMockContentSources.GDRIVE);
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+
+      // add .xlsx extension to file name
+      sidekickTest.bulkRoot
+        .querySelector('div#file-gsheet div[data-tooltip]')
+        .textContent = 'spreadsheet.xlsx';
+      sidekickTest.toggleAdminItems(['spreadsheet']);
+
+      bulkStore.initStore(appStore.location);
+      await waitUntil(() => bulkStore.selection.length === 1);
+      console.log(bulkStore.selection[0]);
+
+      await bulkStore.preview();
+      await confirmDialog(sidekickTest.sidekick);
+
+      await waitUntil(() => updateStub.called);
+      expect(updateStub.calledWith('/spreadsheet.xlsx')).to.be.true;
     });
 
     it('getSummaryText: returns message based on succeeded vs failed', async () => {
