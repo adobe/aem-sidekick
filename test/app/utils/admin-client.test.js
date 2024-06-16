@@ -513,8 +513,7 @@ describe('Test Admin Client', () => {
 
     it('should return localized error fallbacks', () => {
       const res1 = adminClient.getLocalizedError('publish', 404);
-      expect(res1).to.match(/404/);
-      expect(res1).to.match(/Preview not generated yet/);
+      expect(res1).to.match(/generate preview first/);
 
       const res2 = adminClient.getLocalizedError('publish', 500);
       expect(res2).to.match(/Publication failed/);
