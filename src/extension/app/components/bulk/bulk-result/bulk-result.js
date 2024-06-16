@@ -48,7 +48,7 @@ export class BulkResult extends ConnectedElement {
                   : path}
               </div>
               <div class="error">
-                ${error
+                ${error || status >= 400
                   ? html`
                     <span>
                       ${this.appStore.api.getLocalizedError(summary.operation, status, error)}
