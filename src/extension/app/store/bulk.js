@@ -244,7 +244,7 @@ export class BulkStore {
         ext = '';
       }
 
-      if (type === 'xlsx' || type === 'spreadsheet') {
+      if (type === 'xlsx' || (type === 'spreadsheet' && ext !== '.xlsx')) {
         // use json extension for spreadsheets
         ext = '.json';
       }
