@@ -135,7 +135,7 @@ export class AdminClient {
         message = this.appStore.i18n('error_preview_no_xlsx');
       } else {
         // preview: unsupported file type
-        message = this.appStore.i18n('error_preview_not_supported');
+        message = this.appStore.i18n('error_preview_415');
       }
     } else {
       // error key fallbacks

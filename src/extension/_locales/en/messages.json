@@ -394,23 +394,23 @@
     "error_preview": {
       "message": "Preview generation failed. Please try again later."
     },
+    "error_preview_400": {
+      "message": "Preview generation failed. Check the file format, name or path."
+    },
     "error_preview_404": {
-      "message": "404 Not found: Source document does not exist, preview generation failed."
+      "message": "Source document does not exist, preview generation failed."
+    },
+    "error_preview_415": {
+      "message": "File type not supported. Refer to the documentation for supported file types."
     },
     "error_preview_not_gdoc_generic": {
       "message": "Preview generation failed. Must be Google document or spreadsheet."
-    },
-    "error_preview_invalid_folder_name": {
-      "message": "Only normalized, small latin letters, digits and hyphens are allowed in folder names."
     },
     "error_preview_no_docx": {
       "message": "This is a Microsoft Word document, please convert it to Google Docs first."
     },
     "error_preview_no_xlsx": {
       "message": "This is a Microsoft Excel document, please convert it to Google Sheets first."
-    },
-    "error_preview_not_supported": {
-      "message": "File type not supported. Refer to the documentation for supported file types."
     },
     "error_preview_too_large": {
       "message": "File too large. Refer to the documentation for file size limits."
