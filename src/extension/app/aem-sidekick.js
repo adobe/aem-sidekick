@@ -19,6 +19,8 @@ import { log } from '../log.js';
 import { style } from './aem-sidekick.css.js';
 import { spectrum2 } from './spectrum-2.css.js';
 import { AppStore, appStoreContext } from './store/app.js';
+import { getProjects } from '../project.js';
+import { MODALS } from './constants.js';
 
 @customElement('aem-sidekick')
 export class AEMSidekick extends LitElement {
@@ -41,6 +43,28 @@ export class AEMSidekick extends LitElement {
     this.addEventListener('contextloaded', (data) => {
       log.debug('contextloaded fired', data);
     });
+  }
+
+  async connectedCallback() {
+    super.connectedCallback();
+    if ((await getProjects()).length === 0) {
+      // look for current sidekick and propose project migration
+      chrome.runtime.sendMessage(
+        'knianjjbjheihkapgljeohldgdimdmmi',
+        { getProjects: true },
+        (projects) => {
+          if (projects && projects.length > 0) {
+            this.appStore.showModal({
+              type: MODALS.ERROR,
+              data: {
+                headline: 'Welcome to the new AEM Sidekick!',
+                message: `We found ${projects.length} projects in the old AEM Sidekick. Would you like us to migrate them to the new AEM Sidekick?`,
+              },
+            });
+          }
+        },
+      );
+    }
   }
 
   /**
