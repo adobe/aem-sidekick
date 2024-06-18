@@ -20,6 +20,7 @@ export const style = css`
     overflow-y: scroll;
     user-select: text;
     background-color: var(--spectrum2-sidekick-background);
+    border-radius: var(--spectrum2-medium-border-radius);
   }
 
   .container .row {
@@ -73,6 +74,7 @@ export const style = css`
 
   .container .row .error {
     display: flex;
+    padding-top: 2px;
     flex-direction: row;
     align-items: center;
     color: var(--spectrum2-foreground-color-negative);
