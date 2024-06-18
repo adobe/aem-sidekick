@@ -35,6 +35,13 @@ export class ActivityAction extends ConnectedElement {
         this.requestUpdate();
       },
     );
+
+    reaction(
+      () => this.appStore.bulkStore.progress,
+      () => {
+        this.requestUpdate();
+      },
+    );
   }
 
   handleCloseToast() {
@@ -72,6 +79,19 @@ export class ActivityAction extends ConnectedElement {
         return html`
           <sp-progress-circle size="s" indeterminate></sp-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
+      case STATE.BULK_PREVIEWING:
+      case STATE.BULK_PUBLISHING:
+        return html`
+          <sp-progress-circle size="s" indeterminate></sp-progress-circle>
+          <span>
+            ${this.appStore.bulkStore?.progress
+              ? this.appStore.i18n(this.appStore.state)
+                  .replace('$1', `${this.appStore.bulkStore.progress.processed}`)
+                  .replace('$2', `${this.appStore.bulkStore.progress.total}`)
+              // show generic state if bulk progress not available
+              : this.appStore.i18n(this.appStore.state.replace('bulk_', ''))}
+          </span>
+        `;
       case STATE.LOGIN_REQUIRED:
         return html`
           ${ICONS.INFO}<span>${this.appStore.i18n(this.appStore.state)}</span>
@@ -87,6 +107,11 @@ export class ActivityAction extends ConnectedElement {
               ${this.getToastIcon()}<span>${this.appStore.toast.message}</span>
             </div>
             <div class="actions">
+              ${this.appStore.toast.secondaryCallback && this.appStore.toast.secondaryLabel ? html`
+                <sp-action-button class="action" quiet @click=${this.appStore.toast.secondaryCallback}>
+                  ${this.appStore.toast.secondaryLabel}
+                </sp-action-button>
+              ` : html``}
               ${this.appStore.toast.actionCallback && this.appStore.toast.actionLabel ? html`
                 <sp-action-button class="action" quiet @click=${this.appStore.toast.actionCallback}>
                   ${this.appStore.toast.actionLabel}

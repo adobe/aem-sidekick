@@ -20,7 +20,7 @@ import { AEMConfigPicker } from '../src/extension/app/config-picker.js';
 import { matchingConfigs } from './fixtures/sidekick-config.js';
 import '../src/extension/index.js';
 import { recursiveQuery, recursiveQueryAll } from './test-utils.js';
-import enMessages from '../src/extension/_locales/en/messages.json' assert { type: 'json' };
+import enMessages from '../src/extension/_locales/en/messages.json' with { type: 'json' };
 
 // @ts-ignore
 window.chrome = chromeMock;

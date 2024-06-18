@@ -15,7 +15,6 @@ import {
   MODALS,
   MODAL_EVENTS,
   RESTRICTED_PATHS,
-  STATE,
 } from '../../constants.js';
 import { newTab } from '../../utils/browser.js';
 
@@ -62,8 +61,6 @@ export function createUnpublishPlugin(appStore) {
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
           // perform unpublish
-          appStore.setState(STATE.UNPUBLISHING);
-
           const res = await appStore.unpublish();
           if (res) {
             const actionCallback = () => {

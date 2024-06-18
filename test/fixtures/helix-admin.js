@@ -541,3 +541,41 @@ export const defaultDirectoryGdriveStatusResponse = {
     code: 'https://admin.hlx.page/code/adobe/aem-boilerplate/main/',
   },
 };
+
+export const defaultStartJobResponse = {
+  status: 202,
+  job: {
+    topic: 'topic',
+    name: '123',
+    state: 'created',
+    startTime: new Date().toUTCString(),
+  },
+};
+
+export const defaultJobStatusResponse = {
+  topic: 'topic',
+  name: '123',
+  state: 'complete',
+  startTime: new Date().toUTCString(),
+  progress: {
+    total: 10,
+    processed: 10,
+    failed: 0,
+  },
+};
+
+export const defaultJobDetailsResponse = {
+  ...defaultJobStatusResponse,
+  data: {
+    resources: [
+      {
+        status: 200,
+        path: '/foo',
+      },
+      {
+        status: 200,
+        path: '/bar',
+      },
+    ],
+  },
+};

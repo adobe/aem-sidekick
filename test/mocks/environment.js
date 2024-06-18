@@ -81,10 +81,14 @@ export const HelixMockContentSources = {
  * @param {string} location The location to mock
  */
 export function mockLocation(document, location) {
-  const input = document.createElement('input');
-  input.id = 'sidekick_test_location';
-  input.value = location;
-  document.body.appendChild(input);
+  let input = document.getElementById('sidekick_test_location');
+  if (!input) {
+    input = document.createElement('input');
+    input.setAttribute('type', 'hidden');
+    input.id = 'sidekick_test_location';
+    document.body.appendChild(input);
+  }
+  input.setAttribute('value', location);
 }
 
 /**
@@ -210,7 +214,8 @@ export function mockEditorAdminEnvironment(
   environment = EditorMockEnvironments.EDITOR,
   contentType = HelixMockContentType.DOC,
   contentSource = HelixMockContentSources.SHAREPOINT,
-  location = undefined) {
+  location = undefined,
+) {
   if (!environment) {
     throw new Error('environment is required');
   }

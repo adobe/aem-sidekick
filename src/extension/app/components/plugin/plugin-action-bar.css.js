@@ -39,6 +39,14 @@ export const style = css`
     height: 24px;
   }
 
+  action-bar sp-action-group sp-menu-divider {
+    height: 100%;
+  }
+
+  action-bar sp-action-group sp-menu-divider:last-child {
+    display: none;
+  }
+
   action-bar sp-action-group .filler {
     flex-grow: 1;
   }

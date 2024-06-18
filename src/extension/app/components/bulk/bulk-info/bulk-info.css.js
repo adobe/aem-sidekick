@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Adobe. All rights reserved.
+ * Copyright 2024 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,18 +10,21 @@
  * governing permissions and limitations under the License.
  */
 
-import { createEnvPlugin } from './env/env.js';
-import { createPreviewPlugin } from './preview/preview.js';
-import { createReloadPlugin } from './reload/reload.js';
-import { createDeletePlugin } from './delete/delete.js';
-import { createPublishPlugin } from './publish/publish.js';
-import { createUnpublishPlugin } from './unpublish/unpublish.js';
+import { css } from 'lit';
 
-export const pluginFactory = (() => ({
-  createEnvPlugin,
-  createPreviewPlugin,
-  createReloadPlugin,
-  createDeletePlugin,
-  createPublishPlugin,
-  createUnpublishPlugin,
-}))();
+export const style = css`
+  .container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    gap: 12px;
+  }
+
+  .container span {
+    padding: 0 6px 2px;
+  }
+
+  .container sp-menu-divider {
+    height: 100%;
+  }
+`;

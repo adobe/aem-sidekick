@@ -15,7 +15,6 @@ import {
   MODALS,
   MODAL_EVENTS,
   RESTRICTED_PATHS,
-  STATE,
 } from '../../constants.js';
 import { newTab } from '../../utils/browser.js';
 
@@ -62,16 +61,10 @@ export function createDeletePlugin(appStore) {
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
           // perform delete
-          appStore.setState(STATE.DELETING);
-
           const res = await appStore.delete();
           if (res) {
             const actionCallback = () => {
               appStore.reloadPage(newTab(evt));
-              appStore.closeToast();
-            };
-
-            const closeCallback = () => {
               appStore.closeToast();
             };
 
@@ -81,7 +74,7 @@ export function createDeletePlugin(appStore) {
                 ? appStore.i18n('delete_page_success')
                 : appStore.i18n('delete_file_success'),
               'positive',
-              closeCallback,
+              null,
               actionCallback,
               appStore.i18n('reload'),
             );
