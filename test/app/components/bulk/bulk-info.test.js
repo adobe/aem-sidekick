@@ -36,6 +36,8 @@ describe('Test Bulk Info', () => {
       .mockFetchDirectoryStatusSuccess()
       .mockFetchSidekickConfigSuccess(true, false);
     sidekick = sidekickTest.createSidekick();
+    sidekickTest.mockAdminDOM(HelixMockContentSources.GDRIVE);
+    await sidekickTest.awaitStatusFetched();
   });
 
   afterEach(() => {
@@ -43,18 +45,12 @@ describe('Test Bulk Info', () => {
   });
 
   it('displays empty bulk selection message', async () => {
-    sidekickTest.mockAdminDOM(HelixMockContentSources.GDRIVE);
-    await sidekickTest.awaitStatusFetched();
     const bulkInfo = recursiveQuery(sidekick, 'bulk-info');
     expect(bulkInfo).to.exist;
     await waitUntil(() => recursiveQuery(bulkInfo, 'span').textContent.trim() === 'Select files');
   }).timeout(5000);
 
   it('displays number of files in bulk selection', async () => {
-    sidekickTest.mockAdminDOM(HelixMockContentSources.GDRIVE);
-
-    await sidekickTest.awaitStatusFetched();
-
     const bulkInfo = recursiveQuery(sidekick, 'bulk-info');
 
     sidekickTest.toggleAdminItems(['document']);

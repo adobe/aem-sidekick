@@ -14,7 +14,7 @@ import { css } from 'lit';
 
 export const style = css`
   .container {
-    min-width: 360px;
+    min-width: 100%;
     max-width: 640px;
     max-height: 284px;
     overflow-y: scroll;
@@ -23,21 +23,28 @@ export const style = css`
   }
 
   .container .row {
-    min-height: 40px;
     white-space: nowrap;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    padding: 2px 8px;
     gap: 8px;
     border-bottom: 1px solid var(--spectrum2-sidekick-border-color);
   }
 
   .container .row.header {
     min-height: 36px;
+    padding: 0px 16px;
     font-weight: bold;
+    position: sticky;
+    top: 0;
     color: var(--spectrum2-foreground-color-strong);
+    background-color: var(--spectrum2-sidekick-background);
+  }
+
+  .container .row:not(.header) {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--spectrum2-sidekick-border-color);
   }
 
   .container .row .status {
@@ -45,8 +52,8 @@ export const style = css`
     display: flex;
     align-items: center;
     color: var(--spectrum2-color-positive);
+    padding-top: 1px;
   }
-
   .container .row .status.error {
     color: var(--spectrum2-foreground-color-negative);
   }

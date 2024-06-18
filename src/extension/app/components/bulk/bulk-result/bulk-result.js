@@ -47,14 +47,14 @@ export class BulkResult extends ConnectedElement {
                   ? html`<a href="https://${summary.host}${path}" target="_blank">${path}</a>`
                   : path}
               </div>
-              <div class="error">
-                ${error || status >= 400
-                  ? html`
-                    <span>
-                      ${this.appStore.api.getLocalizedError(summary.operation, status, error)}
-                    </span>
-                  `
-                  : ''}
+              ${error || status >= 400 ? html`
+                <div class="error">
+                  <span>
+                    ${this.appStore.api.getLocalizedError(summary.operation, status, error)}
+                  </span>
+                </div>
+                `
+                : ''}
               </div>
             </div>
           </div>

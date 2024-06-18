@@ -181,12 +181,12 @@
  * @typedef {Object} Toast
  * @prop {string} message The toast message
  * @prop {string} variant The toast variant
- * @prop {Function} closeCallback The function to call on close
- * @prop {Function} actionCallback The function to call on action
- * @prop {string} actionLabel The action label
+ * @prop {Function} [closeCallback] The function to call on close
+ * @prop {Function} [actionCallback] The function to call on action
+ * @prop {string} [actionLabel] The action label
  * @prop {Function} [secondaryCallback] The function to call on secondary action
  * @prop {string} [secondaryLabel] The secondary actiom label
- * @prop {number} timeout The time the toast is shown (default: 6000)
+ * @prop {number} [timeout] The time the toast is shown (default: 6000)
  * @prop {boolean} [actionOnTimeout=true] Execute action on timeout
  */
 
