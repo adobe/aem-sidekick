@@ -48,6 +48,10 @@ export const style = css`
     border-bottom: 1px solid var(--spectrum2-sidekick-border-color);
   }
 
+  .container .row:last-of-type {
+    border-bottom: none;
+  }
+
   .container .row .status {
     width: 20px;
     display: flex;
