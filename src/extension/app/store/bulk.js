@@ -587,14 +587,23 @@ export class BulkStore {
       paths = this.#bulkSelectionToPath(this.selection, status.webPath);
     }
 
-    navigator.clipboard.writeText(
-      paths.map((path) => `https://${host}${path}`).join('\n'),
-    );
+    try {
+      await navigator.clipboard.writeText(
+        paths.map((path) => `https://${host}${path}`).join('\n'),
+      );
 
-    this.appStore.showToast(
-      this.appStore.i18n(`copied_url${paths.length !== 1 ? 's' : ''}`),
-      'positive',
-    );
+      this.appStore.showToast(
+        this.appStore.i18n(`copied_url${paths.length !== 1 ? 's' : ''}`),
+        'positive',
+      );
+    } catch ({ message }) {
+      this.appStore.showToast(
+        this.appStore.i18n(message.includes('not focused')
+          ? 'copy_urls_error_focus'
+          : 'copy_urls_error'),
+        'negative',
+      );
+    }
   }
 
   /**

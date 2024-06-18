@@ -24,7 +24,7 @@ import {
   getDefaultEditorEnviromentLocations,
 } from '../../mocks/environment.js';
 import chromeMock from '../../mocks/chrome.js';
-import { recursiveQuery } from '../../test-utils.js';
+import { error, recursiveQuery } from '../../test-utils.js';
 import { MODALS, MODAL_EVENTS, STATE } from '../../../src/extension/app/constants.js';
 import { log } from '../../../src/extension/log.js';
 import {
@@ -915,6 +915,28 @@ describe('Test Bulk Store', () => {
           `https://${host}/spreadsheet.json`,
         ].join('\n'))).to.be.true;
       });
+
+      it('navigator.cliboard.writeText throws error due to missing document focus', async () => {
+        writeTextStub.throws(new Error('Document is not focused.'));
+        await bulkStore.copyUrls(host, ['/document', '/spreadsheet.json']);
+
+        await waitUntil(() => writeTextStub.called);
+        expect(showToastSpy.args[0][0])
+          .to.equal('Copy to clipboard failed. Please make sure the window remains focused.');
+        expect(showToastSpy.args[0][1])
+          .to.equal('negative');
+      });
+
+      it('navigator.cliboard.writeText throws error', async () => {
+        writeTextStub.throws(error);
+        await bulkStore.copyUrls(host, ['/document', '/spreadsheet.json']);
+
+        await waitUntil(() => writeTextStub.called);
+        expect(showToastSpy.args[0][0])
+          .to.equal('Copy to clipboard failed. Please try again.');
+        expect(showToastSpy.args[0][1])
+          .to.equal('negative');
+      });
     });
 
     describe('openUrls', () => {
@@ -1059,7 +1081,6 @@ describe('Test Bulk Store', () => {
 
       bulkStore.initStore(appStore.location);
       await waitUntil(() => bulkStore.selection.length === 1);
-      console.log(bulkStore.selection[0]);
 
       await bulkStore.preview();
       await confirmDialog(sidekickTest.sidekick);

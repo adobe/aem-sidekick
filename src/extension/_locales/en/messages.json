@@ -322,6 +322,12 @@
     "copy_urls": {
       "message": "Copy $1 URLs"
     },
+    "copy_urls_error": {
+      "message": "Copy to clipboard failed. Please try again."
+    },
+    "copy_urls_error_focus": {
+      "message": "Copy to clipboard failed. Please make sure the window remains focused."
+    },
     "delete": {
       "message": "Delete"
     },
