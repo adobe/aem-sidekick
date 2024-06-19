@@ -402,8 +402,11 @@ describe('Test project', () => {
     };
     const github = await getProjectFromUrl(mockTab('https://github.com/adobe/blog/tree/stage'));
     expect(github).to.eql(settings);
-    const share = await getProjectFromUrl(mockTab('https://www.aem.live/tools/sidekick/?giturl=https://github.com/adobe/blog/tree/stage'));
-    expect(share).to.eql(settings);
+    const share = await getProjectFromUrl(mockTab('https://www.aem.live/tools/sidekick/?giturl=https://github.com/adobe/blog/tree/stage&project=Blog'));
+    expect(share).to.eql({
+      project: 'Blog',
+      ...settings,
+    });
     const nomatch = await getProjectFromUrl(mockTab('https://blog.adobe.com'));
     expect(nomatch).to.eql({});
     urlCache.set(mockTab('https://blog.adobe.com'), settings);

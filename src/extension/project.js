@@ -149,7 +149,12 @@ export async function getProjectFromUrl(tab) {
   const shareSettings = getShareSettings(url);
   if (shareSettings.giturl) {
     // share url
-    return getGitHubSettings(shareSettings.giturl);
+    const ghSettings = getGitHubSettings(shareSettings.giturl);
+    delete shareSettings.giturl;
+    return {
+      ...shareSettings,
+      ...ghSettings,
+    };
   } else {
     // github url
     const ghSettings = getGitHubSettings(url);
