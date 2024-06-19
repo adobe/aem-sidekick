@@ -15,7 +15,6 @@ import {
   MODALS,
   MODAL_EVENTS,
   RESTRICTED_PATHS,
-  STATE,
 } from '../../constants.js';
 import { newTab } from '../../utils/browser.js';
 
@@ -46,12 +45,11 @@ export function createDeletePlugin(appStore) {
       action: async (evt) => {
         const { status } = appStore;
         const isPage = status.webPath.split('/').pop().indexOf('.') === -1;
-        const hasSrc = status.edit?.status === 200;
 
         // get user confirmation
         const message = isPage
-          ? appStore.i18n(hasSrc ? 'delete_page_confirm' : 'delete_page_no_source_confirm')
-          : appStore.i18n(hasSrc ? 'delete_file_confirm' : 'delete_file_no_source_confirm');
+          ? appStore.i18n('delete_page_confirm')
+          : appStore.i18n('delete_file_confirm');
         const modal = appStore.showModal({
           type: MODALS.DELETE,
           data: {
@@ -62,16 +60,10 @@ export function createDeletePlugin(appStore) {
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
           // perform delete
-          appStore.setState(STATE.DELETING);
-
           const res = await appStore.delete();
           if (res) {
             const actionCallback = () => {
               appStore.reloadPage(newTab(evt));
-              appStore.closeToast();
-            };
-
-            const closeCallback = () => {
               appStore.closeToast();
             };
 
@@ -81,7 +73,7 @@ export function createDeletePlugin(appStore) {
                 ? appStore.i18n('delete_page_success')
                 : appStore.i18n('delete_file_success'),
               'positive',
-              closeCallback,
+              null,
               actionCallback,
               appStore.i18n('reload'),
             );

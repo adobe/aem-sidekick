@@ -118,8 +118,6 @@ describe('Unpublish plugin', () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           webPath: '/foo',
-          // source document is not found
-          edit: { status: 404 },
           // live delete permission is granted
           live: {
             status: 200,
@@ -147,8 +145,6 @@ describe('Unpublish plugin', () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           webPath: '/foo',
-          // source document is not found
-          edit: { status: 404 },
           // live delete permission is granted
           live: {
             status: 200,
@@ -168,7 +164,7 @@ describe('Unpublish plugin', () => {
       expect(reloadPageStub.calledOnce).to.be.false;
     });
 
-    it('allows authenticated user to unpublish if source file still exists', async () => {
+    it('allows authenticated user to unpublish even if source file still exists', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           webPath: '/foo',
@@ -199,8 +195,6 @@ describe('Unpublish plugin', () => {
     it('handles server failure', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
-          // source document is not found
-          edit: { status: 404 },
           // live delete permission is granted
           live: {
             status: 200,

@@ -80,10 +80,10 @@ export async function callAdmin(
 ) {
   const url = createAdminUrl(config, api, path, searchParams);
   return fetch(url, {
+    method,
     cache: 'no-store',
     credentials: omitCredentials ? 'omit' : 'include',
-    headers: {},
-    method,
-    body,
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
   });
 }

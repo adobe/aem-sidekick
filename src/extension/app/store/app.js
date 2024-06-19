@@ -15,6 +15,7 @@
 import { observable, action } from 'mobx';
 import { createContext } from '@lit/context';
 import { SiteStore } from './site.js';
+import { BulkStore } from './bulk.js';
 import { AdminClient } from '../utils/admin-client.js';
 import sampleRUM from '../../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
@@ -31,7 +32,20 @@ import {
 } from '../constants.js';
 // eslint-disable-next-line import/no-cycle
 import { Plugin } from '../components/plugin/plugin.js';
-import { pluginFactory } from '../plugins/plugin-factory.js';
+import { createEnvPlugin } from '../plugins/env/env.js';
+import { createPreviewPlugin } from '../plugins/preview/preview.js';
+import { createReloadPlugin } from '../plugins/reload/reload.js';
+import { createDeletePlugin } from '../plugins/delete/delete.js';
+import { createPublishPlugin } from '../plugins/publish/publish.js';
+import { createUnpublishPlugin } from '../plugins/unpublish/unpublish.js';
+import { createBulkPreviewPlugin } from '../plugins/bulk/bulk-preview.js';
+import { createBulkPublishPlugin } from '../plugins/bulk/bulk-publish.js';
+import {
+  createBulkCopyLiveUrlsPlugin,
+  createBulkCopyPreviewUrlsPlugin,
+  createBulkCopyProdUrlsPlugin,
+  createBulkCopyUrlsPlugin,
+} from '../plugins/bulk/bulk-copy-urls.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
 
@@ -53,6 +67,14 @@ import { ModalContainer } from '../components/modal/modal-container.js';
 /**
  * The core plugin object type
  * @typedef {import('@Types').CorePlugin} CorePlugin
+ */
+
+/**
+ * @typedef {import('@Types').AdminResponse} AdminResponse
+ */
+
+/**
+ * @typedef {import('@Types').AdminJob} AdminJob
  */
 
 /**
@@ -82,6 +104,18 @@ export class AppStore {
   sidekick;
 
   /**
+   * The site store
+   * @type {SiteStore}
+   */
+  siteStore;
+
+  /**
+   * The bulk store (admin only)
+   * @type {BulkStore}
+   */
+  bulkStore;
+
+  /**
    * The Admin API client
    * @type AdminClient
    */
@@ -109,13 +143,13 @@ export class AppStore {
    * Dictionary of language keys
    * @type {Object.<string, Plugin>}
    */
-  @observable accessor corePlugins;
+  @observable accessor corePlugins = {};
 
   /**
    * Dictionary of language keys
    * @type {Object.<string, Plugin>}
    */
-  @observable accessor customPlugins;
+  @observable accessor customPlugins = {};
 
   /**
    * Keyboards listener
@@ -137,6 +171,7 @@ export class AppStore {
 
   constructor() {
     this.siteStore = new SiteStore(this);
+    this.bulkStore = new BulkStore(this);
     this.keyboardListener = new KeyboardListener();
     this.api = new AdminClient(this);
   }
@@ -153,6 +188,10 @@ export class AppStore {
     this.location = getLocation();
 
     await this.siteStore.initStore(inputConfig);
+
+    if (this.isAdmin()) {
+      this.bulkStore.initStore(this.location);
+    }
 
     // load dictionary based on user language
     this.languageDict = await fetchLanguageDict(this.siteStore);
@@ -197,6 +236,20 @@ export class AppStore {
   }
 
   /**
+   * Adds a plugin to the registry. or as a child to a container plugin.
+   * @private
+   * @param {Object} registry The plugin registry
+   * @param {*} plugin The plugin
+   */
+  registerPlugin(registry, plugin) {
+    if (plugin.isChild() && registry[plugin.getContainerId()]) {
+      registry[plugin.getContainerId()].append(plugin);
+    } else {
+      registry[plugin.id] = plugin;
+    }
+  }
+
+  /**
    * Sets up the plugins in a single call
    */
   setupPlugins() {
@@ -212,19 +265,31 @@ export class AppStore {
     this.corePlugins = {};
 
     if (this.siteStore.ready && this.siteStore.authorized) {
-      const envPlugin = pluginFactory.createEnvPlugin(this);
-      const previewPlugin = pluginFactory.createPreviewPlugin(this);
-      const reloadPlugin = pluginFactory.createReloadPlugin(this);
-      const deletePlugin = pluginFactory.createDeletePlugin(this);
-      const publishPlugin = pluginFactory.createPublishPlugin(this);
-      const unpublishPlugin = pluginFactory.createUnpublishPlugin(this);
+      const envPlugin = createEnvPlugin(this);
+      const previewPlugin = createPreviewPlugin(this);
+      const reloadPlugin = createReloadPlugin(this);
+      const deletePlugin = createDeletePlugin(this);
+      const publishPlugin = createPublishPlugin(this);
+      const unpublishPlugin = createUnpublishPlugin(this);
+      const bulkPreviewPlugin = createBulkPreviewPlugin(this);
+      const bulkPublishPlugin = createBulkPublishPlugin(this);
+      const bulkCopyUrlsPlugin = createBulkCopyUrlsPlugin(this);
+      const bulkCopyPreviewUrlsPlugin = createBulkCopyPreviewUrlsPlugin(this);
+      const bulkCopyLiveUrlsPlugin = createBulkCopyLiveUrlsPlugin(this);
+      const bulkCopyProdUrlsPlugin = createBulkCopyProdUrlsPlugin(this);
 
-      this.corePlugins[envPlugin.id] = envPlugin;
-      this.corePlugins[previewPlugin.id] = previewPlugin;
-      this.corePlugins[reloadPlugin.id] = reloadPlugin;
-      this.corePlugins[deletePlugin.id] = deletePlugin;
-      this.corePlugins[publishPlugin.id] = publishPlugin;
-      this.corePlugins[unpublishPlugin.id] = unpublishPlugin;
+      this.registerPlugin(this.corePlugins, envPlugin);
+      this.registerPlugin(this.corePlugins, previewPlugin);
+      this.registerPlugin(this.corePlugins, reloadPlugin);
+      this.registerPlugin(this.corePlugins, deletePlugin);
+      this.registerPlugin(this.corePlugins, publishPlugin);
+      this.registerPlugin(this.corePlugins, unpublishPlugin);
+      this.registerPlugin(this.corePlugins, bulkPreviewPlugin);
+      this.registerPlugin(this.corePlugins, bulkPublishPlugin);
+      this.registerPlugin(this.corePlugins, bulkCopyUrlsPlugin);
+      this.registerPlugin(this.corePlugins, bulkCopyPreviewUrlsPlugin);
+      this.registerPlugin(this.corePlugins, bulkCopyLiveUrlsPlugin);
+      this.registerPlugin(this.corePlugins, bulkCopyProdUrlsPlugin);
     }
   }
 
@@ -339,11 +404,7 @@ export class AppStore {
           } else {
             // add custom plugin
             const customPlugin = new Plugin(plugin, this);
-            if (plugin.container) {
-              this.customPlugins[plugin.container]?.append(customPlugin);
-            } else {
-              this.customPlugins[plugin.id] = customPlugin;
-            }
+            this.registerPlugin(this.customPlugins, customPlugin);
           }
         });
       }
@@ -666,12 +727,24 @@ export class AppStore {
    * Displays a toast message
    * @param {string} message The message to display
    * @param {string} [variant] The variant of the toast (optional)
-   * @param {function} [closeCallback] The close callback function
-   * @param {function} [actionCallback] The action callback function
+   * @param {Function} [closeCallback] The close callback function
+   * @param {Function} [actionCallback] The action callback function
    * @param {string} [actionLabel] The action label
+   * @param {Function} [secondaryCallback] The secondary action callback function
+   * @param {string} [secondaryLabel] The secondary action label
    * @param {number} [timeout] The timeout in milliseconds (optional)
    */
-  showToast(message, variant = 'info', closeCallback = undefined, actionCallback = undefined, actionLabel = 'Ok', timeout = 3000) {
+  showToast(
+    message,
+    variant = 'info',
+    closeCallback = undefined,
+    actionCallback = undefined,
+    actionLabel = 'Ok',
+    secondaryCallback = undefined,
+    secondaryLabel = undefined,
+    timeout = 3000,
+    actionOnTimeout = true,
+  ) {
     if (this.toast) {
       this.toast = null;
       this.setState();
@@ -683,7 +756,10 @@ export class AppStore {
       closeCallback,
       actionCallback,
       actionLabel,
+      secondaryCallback,
+      secondaryLabel,
       timeout,
+      actionOnTimeout,
     };
     this.setState(STATE.TOAST);
   }
@@ -753,10 +829,10 @@ export class AppStore {
 
     this.setState(STATE.FETCHING_STATUS);
     const isDM = this.isEditor() || this.isAdmin();
-    const includeEdit = isDM || fetchEdit;
+    const editUrl = isDM ? this.location.href : (fetchEdit ? 'auto' : '');
     const path = isDM ? '' : this.location.pathname;
 
-    status = await this.api.getStatus(path, includeEdit);
+    status = await this.api.getStatus(path, editUrl);
 
     // Do we want to update the store with the new status?
     if (status && !transient) {
@@ -794,11 +870,14 @@ export class AppStore {
   /**
    * Updates the preview or code of the current resource.
    * @fires Sidekick#previewed
+   * @param {string} [path] The path to update (defaults to <code>status.webPath</code>)
    * @returns {Promise<boolean>} True if the preview was updated successfully, false otherwise
    */
-  async update() {
+  async update(path) {
     const { siteStore, status } = this;
-    const path = status.webPath;
+    path = path || status.webPath;
+
+    this.setState(STATE.PREVIEWING);
 
     // update preview
     const previewStatus = await this.api.updatePreview(path);
@@ -851,6 +930,8 @@ export class AppStore {
       return false;
     }
 
+    this.setState(STATE.DELETING);
+
     // delete preview
     const resp = await this.api.updatePreview(path, true);
 
@@ -866,16 +947,19 @@ export class AppStore {
   /**
    * Publishes the page at the specified path if <code>config.host</code> is defined.
    * @fires Sidekick#published
+   * @param {string} [path] The path to update (defaults to <code>status.webPath</code>)
    * @returns {Promise<boolean>} True if the page was published successfully, false otherwise
    */
-  async publish() {
+  async publish(path) {
     const { siteStore, status } = this;
-    const path = status.webPath;
+    path = path || status.webPath;
 
     // publish content only
     if (!this.isContent()) {
       return false;
     }
+
+    this.setState(STATE.PUBLISHNG);
 
     // update live
     const resp = await this.api.updateLive(path);
@@ -905,6 +989,9 @@ export class AppStore {
     if (!this.isContent()) {
       return false;
     }
+
+    this.setState(STATE.UNPUBLISHING);
+
     const { status } = this;
     const path = status.webPath;
 

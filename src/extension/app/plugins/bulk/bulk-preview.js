@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Adobe. All rights reserved.
+ * Copyright 2024 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -11,7 +11,6 @@
  */
 
 import { Plugin } from '../../components/plugin/plugin.js';
-import { newTab } from '../../utils/browser.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -22,31 +21,20 @@ import { newTab } from '../../utils/browser.js';
  */
 
 /**
- * Creates the reload plugin
+ * Creates the bulk preview plugin
  * @param {AppStore} appStore The app store
- * @returns {Plugin} The reload plugin
+ * @returns {Plugin} The bulk preview plugin
  */
-export function createReloadPlugin(appStore) {
+export function createBulkPreviewPlugin(appStore) {
   return new Plugin({
-    id: 'reload',
-    condition: (store) => store.isPreview() || store.isDev(),
+    id: 'bulk-preview',
+    condition: (store) => store.isAdmin() && store.bulkStore?.selection.length > 0,
     button: {
-      text: appStore.i18n('reload'),
-      action: async (evt) => {
-        const res = await appStore.update();
-        if (res) {
-          const closeHandler = () => {
-            appStore.closeToast();
-          };
-
-          const actionHandler = () => {
-            appStore.reloadPage(newTab(evt));
-          };
-
-          appStore.showToast(appStore.i18n('reload_success'), 'positive', closeHandler, actionHandler, appStore.i18n('open'));
-        }
+      text: appStore.i18n('preview'),
+      action: async () => {
+        appStore.bulkStore.preview();
       },
-      isEnabled: (store) => store.isAuthorized('preview', 'write'),
+      isEnabled: (store) => store.isAuthorized('preview', 'write'), // only enable if authorized
     },
   },
   appStore);

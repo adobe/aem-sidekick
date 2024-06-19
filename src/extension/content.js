@@ -21,7 +21,6 @@
 
   const { getDisplay, toggleDisplay } = await import('./display.js');
   const display = await getDisplay();
-  let sidekick = document.querySelector('aem-sidekick');
 
   /**
    * Load the sidekick custom element and add it to the DOM
@@ -46,7 +45,7 @@
       ].includes(k)));
     curatedConfig.scriptUrl = chrome.runtime.getURL('index.js');
 
-    sidekick = new AEMSidekick(curatedConfig);
+    const sidekick = new AEMSidekick(curatedConfig);
     sidekick.setAttribute('open', `${display}`);
     document.body.prepend(sidekick);
     window.hlx.sidekick = sidekick;
@@ -54,6 +53,7 @@
     // Listen for display toggle events from application
     sidekick.addEventListener('hidden', () => {
       toggleDisplay();
+      sidekick.setAttribute('open', 'false');
     });
   }
 
@@ -85,43 +85,45 @@
     window.hlx.sidekick = configPicker;
   }
 
-  if (!sidekick) {
-    // wait for config matches
-    chrome.runtime.onMessage.addListener(async (message, { tab }) => {
-      // does the message contain config matches?
-      if (message.configMatches) {
-        const { configMatches } = message;
+  async function onMessageListener({ configMatches = [] }, { tab }) {
+    // only accept message from background script
+    if (tab) {
+      return;
+    }
 
-        // only accept message from background script
-        if (tab) {
-          return;
-        }
+    const sidekick = document.querySelector('aem-sidekick');
 
-        const { sidekick: storedSidekick } = window.hlx;
-        if (!storedSidekick) {
+    if (configMatches.length > 0) {
+      if (sidekick) {
+        // Toggle sidekick display
+        sidekick.setAttribute('open', `${display}`);
+      } else if (display) {
         // Load custom element polyfill
-          await import('./lib/polyfills.min.js');
+        await import('./lib/polyfills.min.js');
 
-          // Check session storage for previously stored project
-          const storedProject = JSON.parse(window.sessionStorage.getItem('aem-sk-project') || null);
+        // Check session storage for previously stored project
+        const storedProject = JSON.parse(window.sessionStorage.getItem('aem-sk-project') || null);
 
-          // First check if there is only one config match, if so load it
-          if (configMatches.length === 1) {
-          // load sidekick
-            const [config] = configMatches;
-            loadSidekick(config);
-            // If there is more than one config match, check if we previously stored a project
-          } else if (storedProject) {
-            loadSidekick(storedProject);
-          } else {
-            loadConfigPicker(configMatches);
-          }
+        // First check if there is only one config match, if so load it
+        if (configMatches.length === 1) {
+        // Load sidekick
+          const [cfg] = configMatches;
+          loadSidekick(cfg);
+          // If there is more than one config match, check if we previously stored a project
+        } else if (storedProject) {
+          loadSidekick(storedProject);
+        } else {
+          loadConfigPicker(configMatches);
         }
-      } else if (message === 'toggleDisplay') {
-        sidekick.setAttribute('open', `${await getDisplay()}`);
       }
-    });
-  } else {
-    sidekick.setAttribute('open', `${display}`);
+    } else if (sidekick) {
+      // Remove sidekick
+      sidekick.replaceWith(''); // remove() doesn't work for custom element
+      delete window.hlx.sidekick;
+    }
+    chrome.runtime.onMessage.removeListener(onMessageListener);
   }
+
+  // wait for config matches
+  chrome.runtime.onMessage.addListener(onMessageListener);
 })();

@@ -38,6 +38,7 @@ import './app/components/plugin/login/login.js';
 import './app/components/dialog-wrapper/dialog-wrapper.js';
 import './app/components/spectrum/action-menu/action-menu.js';
 import './app/components/spectrum/menu-group/menu-group.js';
+import './app/components/bulk/bulk-result/bulk-result.js';
 
 import { AEMSidekick } from './app/aem-sidekick.js';
 import { AEMConfigPicker } from './app/config-picker.js';

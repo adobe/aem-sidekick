@@ -1,6 +1,6 @@
 {
   "name": "@adobe/aem-sidekick",
-  "version": "1.26.2",
+  "version": "1.27.0",
   "description": "AEM Sidekick Extension",
   "type": "module",
   "scripts": {
@@ -60,7 +60,7 @@
     "@spectrum-web-components/theme": "0.40.3",
     "@spectrum-web-components/toast": "0.40.3",
     "lit": "3.1.4",
-    "mobx": "6.12.3"
+    "mobx": "6.12.4"
   },
   "devDependencies": {
     "@adobe/eslint-config-helix": "2.0.6",
@@ -88,12 +88,12 @@
     "chokidar": "3.6.0",
     "codecov": "3.8.3",
     "eslint": "8.57.0",
-    "eslint-plugin-mobx": "0.0.9",
+    "eslint-plugin-mobx": "0.0.10",
     "fetch-mock": "9.11.0",
     "fs-extra": "11.2.0",
     "husky": "9.0.11",
     "jsdoc-to-markdown": "8.0.1",
-    "lint-staged": "15.2.5",
+    "lint-staged": "15.2.7",
     "nock": "13.5.4",
     "request": "2.88.2",
     "rimraf": "5.0.7",

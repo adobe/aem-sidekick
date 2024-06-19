@@ -300,6 +300,79 @@ describe('Modals', () => {
     });
   });
 
+  describe('confirmation modal', () => {
+    beforeEach(async () => {
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+    });
+
+    it('default text', async () => {
+      appStore.showModal({
+        type: MODALS.CONFIRM,
+        data: {
+          headline: 'Foo',
+          message: 'Lorem ipsum dolor sit amet?',
+        },
+      });
+
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+      const dialogHeading = recursiveQuery(dialogWrapper, 'h2');
+      expect(dialogHeading.textContent.trim()).to.eq('Foo');
+      expect(dialogWrapper.textContent.trim()).to.eq('Lorem ipsum dolor sit amet?');
+    });
+
+    it('custom confirm', async () => {
+      const confirmCallback = sidekickTest.sandbox.spy();
+      appStore.showModal({
+        type: MODALS.CONFIRM,
+        data: {
+          headline: 'Foo',
+          message: 'Lorem ipsum dolor sit amet?',
+          confirmLabel: 'Yes',
+          confirmCallback,
+        },
+      });
+
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+      const confirmButton = recursiveQuery(dialogWrapper, 'sp-button[variant="accent"]');
+      expect(confirmButton.textContent.trim()).to.eq('Yes');
+      confirmButton.click();
+      await waitUntil(() => confirmCallback.calledOnce);
+    });
+
+    it('secondary action', async () => {
+      const secondaryCallback = sidekickTest.sandbox.fake();
+      appStore.showModal({
+        type: MODALS.CONFIRM,
+        data: {
+          secondaryLabel: 'Foo',
+          secondaryCallback,
+        },
+      });
+
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+      const secondaryButton = recursiveQuery(dialogWrapper, 'sp-button[variant="primary"]');
+      expect(secondaryButton.textContent.trim()).to.eq('Foo');
+      secondaryButton.click();
+      await waitUntil(() => secondaryCallback.calledOnce);
+    });
+  });
+
   it('displays error modal - default headline', async () => {
     sidekick = sidekickTest.createSidekick();
 

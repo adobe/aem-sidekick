@@ -76,7 +76,7 @@ describe('Test App Store', () => {
   });
 
   afterEach(() => {
-    // sidekickTest.destroy();
+    sidekickTest.destroy();
   });
 
   async function testDefaultConfig() {
@@ -418,7 +418,7 @@ describe('Test App Store', () => {
   });
 
   describe('show toast', async () => {
-    it('showToast()', async () => {
+    it('shows a toast with a primary action', async () => {
       // @ts-ignore
       appStore.sidekick = document.createElement('div');
       appStore.sidekick.attachShadow({ mode: 'open' });
@@ -435,6 +435,9 @@ describe('Test App Store', () => {
         message: 'test',
         timeout: 3000,
         variant: 'info',
+        secondaryCallback: undefined,
+        secondaryLabel: undefined,
+        actionOnTimeout: true,
       });
       expect(appStore.state).to.equal(STATE.TOAST);
       expect(toastSpy.calledOnce).to.be.true;

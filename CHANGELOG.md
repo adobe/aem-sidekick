@@ -1,3 +1,15 @@
+# [1.27.0](https://github.com/adobe/aem-sidekick/compare/v1.26.2...v1.27.0) (2024-06-18)
+
+
+### Bug Fixes
+
+* don't call checkTab if sidekick hidden from ui ([#180](https://github.com/adobe/aem-sidekick/issues/180)) ([15914fa](https://github.com/adobe/aem-sidekick/commit/15914fa099305a6ab469a31024d4495d69e0ea8a))
+
+
+### Features
+
+* bulk operations ([#152](https://github.com/adobe/aem-sidekick/issues/152)) ([dcc5ef1](https://github.com/adobe/aem-sidekick/commit/dcc5ef1eca73b2bec1020866bd6762262e78cfc9))
+
 ## [1.26.2](https://github.com/adobe/aem-sidekick/compare/v1.26.1...v1.26.2) (2024-06-11)
 
 
