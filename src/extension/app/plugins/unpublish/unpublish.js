@@ -43,13 +43,8 @@ export function createUnpublishPlugin(appStore) {
     button: {
       text: appStore.i18n('unpublish'),
       action: async (evt) => {
-        const { status } = appStore;
-        const hasSrc = status.edit?.status === 200;
-
         // get user confirmation
-        const message = hasSrc
-          ? appStore.i18n('unpublish_page_confirm')
-          : appStore.i18n('unpublish_page_no_source_confirm');
+        const message = appStore.i18n('unpublish_page_confirm');
         const modal = appStore.showModal({
           type: MODALS.DELETE,
           data: {
