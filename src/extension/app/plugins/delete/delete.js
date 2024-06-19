@@ -45,12 +45,11 @@ export function createDeletePlugin(appStore) {
       action: async (evt) => {
         const { status } = appStore;
         const isPage = status.webPath.split('/').pop().indexOf('.') === -1;
-        const hasSrc = status.edit?.status === 200;
 
         // get user confirmation
         const message = isPage
-          ? appStore.i18n(hasSrc ? 'delete_page_confirm' : 'delete_page_no_source_confirm')
-          : appStore.i18n(hasSrc ? 'delete_file_confirm' : 'delete_file_no_source_confirm');
+          ? appStore.i18n('delete_page_confirm')
+          : appStore.i18n('delete_file_confirm');
         const modal = appStore.showModal({
           type: MODALS.DELETE,
           data: {
