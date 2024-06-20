@@ -15,6 +15,7 @@
 /**
  * @typedef {Object} ServerConfig
  * @prop {string} contentSourceUrl The content source URL
+ * @prop {string} contentSourceType The content source type ("onedrive", "google" or "markup")
  * @prop {string} [preview.host] The host name of a custom preview CDN
  * @prop {string} [live.host] The host name of a custom live CDN
  * @prop {string} [prod.host] The production host name to publish content to
@@ -24,19 +25,21 @@
 /**
  * @private
  * @typedef {Object} ServerDerivedConfig
- * @prop {string[]} mountpoints The content source URL
+ * @prop {string} contentSourceUrl The content source URL
+ * @prop {string} contentSourceType The content source type ("onedrive", "google" or "markup")
+ * @prop {string[]} [mountpoints] The content source URL (deprecated)
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
- * @description The derived sidekick configuration from the from the server-side configuration
+ * @description The derived sidekick configuration from the server-side configuration
  */
 
 /**
  * @typedef {Object} OptionsConfig
  * @prop {string} id The id of the config
  * @prop {string} [project] The name of the project
- * @prop {string} giturl The url to the repository
- * @prop {string[]} mountpoints The content source URL
+ * @prop {string} [giturl] The url to the repository
+ * @prop {string[]} [mountpoints] The content source URL
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
@@ -49,7 +52,7 @@
 /**
  * @private
  * @typedef {Object} OptionsDerivedConfig
- * @prop {string[]} mountpoints The content source URL
+ * @prop {string[]} [mountpoints] The content source URL
  * @prop {string} owner The GitHub owner or organization
  * @prop {string} repo The GitHub repo
  * @prop {string} ref The Git reference or branch
