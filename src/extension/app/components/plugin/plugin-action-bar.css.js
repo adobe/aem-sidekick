@@ -82,6 +82,10 @@ export const style = css`
     margin: 0 8px 8px;
   }
 
+  action-bar sp-action-menu sp-menu-item:only-of-type {
+    margin: 8px;
+  }
+
   action-bar sp-action-menu sp-menu-item.close {
     margin: 4px 8px 8px;
   }
