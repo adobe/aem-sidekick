@@ -75,6 +75,9 @@ export class PluginActionBar extends ConnectedElement {
   @queryAll('sp-action-group')
   accessor actionGroups;
 
+  @queryAsync('sp-action-menu#plugin-menu')
+  accessor pluginMenu;
+
   @queryAsync('sp-action-menu#sidekick-menu')
   accessor sidekickMenu;
 
@@ -188,10 +191,13 @@ export class PluginActionBar extends ConnectedElement {
     this.checkOverflow();
   }
 
-  // istanbul ignore next 4
-  onPluginMenuSelect() {
+  // istanbul ignore next 7
+  async onPluginMenuSelect() {
     // @ts-ignore
-    this.shadowRoot.querySelector('#plugin-menu').value = '';
+    const pluginMenu = await this.pluginMenu;
+    if (pluginMenu) {
+      pluginMenu.value = '';
+    }
   }
 
   renderPluginMenuItem(plugin) {
