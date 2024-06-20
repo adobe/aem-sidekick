@@ -181,7 +181,7 @@ describe('Delete plugin', () => {
 
         expect(showToastSpy.calledOnce).to.be.true;
 
-        sidekickTest.clickToastClose();
+        await sidekickTest.clickToastClose();
         expect(reloadPageStub.calledOnce).to.be.false;
       });
 
