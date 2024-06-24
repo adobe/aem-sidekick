@@ -408,7 +408,7 @@ function getConfigDetails(host) {
  * @param {Object[]} configs The project configurations
  * @returns {Promise<chrome.tabs.Tab>} The tab with resolved proxy URL
  */
-async function resolveProxyUrl(tab, configs) {
+export async function resolveProxyUrl(tab, configs) {
   const { url } = tab;
 
   // check for dev URL
