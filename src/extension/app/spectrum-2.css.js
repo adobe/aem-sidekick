@@ -87,8 +87,8 @@ export const spectrum2 = css`
     --spectrum2-background-color-negative-dark: #CD2E1D;
     --spectrum2-foreground-color-negative-light: #D73220;
     --spectrum2-foreground-color-negative-dark: #FC432E;
-    --spectrum2-menu-item-background-color-hover-light: rgba(0, 0, 0, 0.05);
-    --spectrum2-menu-item-background-color-hover-dark: rgba(255, 255, 255, 0.05);
+    --spectrum2-background-color-hover-light: rgba(0, 0, 0, 0.05);
+    --spectrum2-background-color-hover-dark: rgba(255, 255, 255, 0.05);
 
     /* Sidekick theme tokens */
     --sidekick-max-width: 640px;
@@ -135,7 +135,7 @@ export const spectrum2 = css`
     --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-dark);
     --spectrum2-sidekick-background-pasteboard: var(--sidekick-background-pasteboard-dark);
     --spectrum2-sidekick-border-color: var(--sidekick-border-color-dark);
-    --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-menu-item-background-color-hover-dark);
+    --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-background-color-hover-dark);
     --spectrum2-sidekick-border-radius: var(--spectrum2-large-border-radius);
 
     /**
@@ -152,10 +152,13 @@ export const spectrum2 = css`
     --mod-popover-content-area-spacing-vertical: 0;
 
     --mod-menu-item-background-color-hover: var(--spectrum2-sidekick-menu-item-background-color-hover);
+    --mod-menu-item-top-edge-to-text: 7px;
 
     --mod-divider-background-color: var(--spectrum2-sidekick-border-color);
 
     --mod-actionbutton-border-radius: var(--spectrum2-default-border-radius);
+    --mod-actionbutton-focus-indicator-border-radius: var(--spectrum2-medium-border-radius);
+    --mod-actionbutton-background-color-focus: var(--spectrum2-background-color-hover-dark);
   }
 
   @media (prefers-color-scheme: light) {
@@ -190,7 +193,7 @@ export const spectrum2 = css`
       --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-light);
       --spectrum2-sidekick-background-pasteboard: var(--sidekick-background-pasteboard-light);
       --spectrum2-sidekick-border-color: var(--sidekick-border-color-light);
-      --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-menu-item-background-color-hover-light);
+      --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-background-color-hover-light);
 
       /**
        * SPECTRUM ALIAS TOKENS
@@ -199,6 +202,8 @@ export const spectrum2 = css`
       --spectrum2-background-color-negative: var(--spectrum2-background-color-negative-light);
       --spectrum2-foreground-color-negative: var(--spectrum2-foreground-color-negative-light);
       --spectrum2-color-positive: var(--spectrum2-color-positive-light);
+
+      --mod-actionbutton-background-color-focus: var(--spectrum2-background-color-hover-light);
     }
   }
 `;

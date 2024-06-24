@@ -39,6 +39,10 @@ export class LoginButton extends ConnectedElement {
   accessor profilePicture;
 
   static styles = css`
+    sp-action-menu {
+      --mod-actionbutton-edge-to-text: 8px;
+    }
+    
     sp-action-menu sp-menu-item {
       padding-inline-start: 0;
       min-width: 202px;
@@ -74,11 +78,6 @@ export class LoginButton extends ConnectedElement {
       height: 24px;
     }
 
-    sp-action-menu > sp-icon {
-      width: 20px;
-      height: 24px;
-    }
-
     sp-action-menu > sp-icon.picture {
       width: 24px;
       height: 24px;
@@ -96,15 +95,20 @@ export class LoginButton extends ConnectedElement {
 
     sp-icon.loading {
       opacity: 0.4;
-      width: 20px;
-      height: 24px;
-      margin: 0 7px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     sp-icon.loading > svg,
     sp-action-menu > sp-icon > svg {
       width: 20px;
       height: 20px;
+    }
+
+    sp-action-menu > sp-icon > svg {
       margin-top: 2px;
     }
 

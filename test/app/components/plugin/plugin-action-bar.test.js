@@ -12,7 +12,7 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
-import { setViewport } from '@web/test-runner-commands';
+import { setViewport, sendKeys } from '@web/test-runner-commands';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
@@ -90,7 +90,7 @@ describe('Plugin action bar', () => {
   }
 
   function expectInActionBar(pluginIds) {
-    const actionGroup = recursiveQuery(sidekickTest.sidekick, 'sp-action-group:first-of-type');
+    const actionGroup = recursiveQuery(sidekickTest.sidekick, '.action-group:first-of-type');
     const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, bulk-info, action-bar-picker');
 
     expect(
@@ -596,7 +596,7 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport narrower
-      await resizeWindow({ width: 600, height: 600 });
+      await resizeWindow({ width: 560, height: 600 });
       await aTimeout(300);
 
       // check if tools container plugin moved to plugin menu
@@ -665,7 +665,7 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitActionBar();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const systemActionGroup = recursiveQuery(actionBar, 'sp-action-group:last-of-type');
+      const systemActionGroup = recursiveQuery(actionBar, '.action-group:last-of-type');
       expect(recursiveQuery(actionBar, 'login-button')).to.exist;
 
       const sidekickMenuButton = recursiveQuery(systemActionGroup, '#sidekick-menu');
@@ -691,7 +691,7 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitEnvSwitcher();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroups = recursiveQueryAll(actionBar, '.action-group');
       const actionGroupsArray = [...actionGroups];
       expect(actionGroupsArray.length).to.equal(3);
 
@@ -718,7 +718,7 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitEnvSwitcher();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroups = recursiveQueryAll(actionBar, '.action-group');
       const actionGroupsArray = [...actionGroups];
       expect(actionGroupsArray.length).to.equal(3);
 
@@ -752,7 +752,7 @@ describe('Plugin action bar', () => {
       await aTimeout(100);
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const actionGroups = recursiveQueryAll(actionBar, 'sp-action-group');
+      const actionGroups = recursiveQueryAll(actionBar, '.action-group');
       const actionGroupsArray = [...actionGroups];
       expect(actionGroupsArray.length).to.equal(3);
 
@@ -884,6 +884,78 @@ describe('Plugin action bar', () => {
       await aTimeout(200);
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
       expect(openPageStub.calledOnce).to.be.true;
+    }).timeout(10000);
+  });
+
+  describe('tab order', () => {
+    it('verify tab order through action-bar', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, true)
+        .mockFetchEditorStatusSuccess()
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitActionBar();
+
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+        'assets',
+        'library',
+        'tools',
+      ]);
+
+      function createFocusSpy(element) {
+        const spy = sidekickTest.sandbox.spy();
+        element.addEventListener('focus', spy);
+        return spy;
+      }
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+
+      const envSwitcher = recursiveQuery(actionBar, 'env-switcher');
+      const envSwitcherFocusSpy = createFocusSpy(envSwitcher);
+
+      const previewButton = recursiveQuery(actionBar, '.edit-preview');
+      const previewFocusSpy = createFocusSpy(previewButton);
+
+      const assetsButton = recursiveQuery(actionBar, '.assets');
+      const assetsFocusSpy = createFocusSpy(assetsButton);
+
+      const libraryButton = recursiveQuery(actionBar, '.library');
+      const libraryFocusSpy = createFocusSpy(libraryButton);
+
+      const toolsButton = recursiveQuery(actionBar, '.tools');
+      const toolsFocusSpy = createFocusSpy(toolsButton);
+
+      const sidekickMenu = recursiveQuery(actionBar, '#sidekick-menu');
+      const sidekickMenuFocusSpy = createFocusSpy(sidekickMenu);
+
+      const loginButton = recursiveQuery(actionBar, 'login-button');
+      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button.login');
+      const loginButtonFocusSpy = createFocusSpy(loginActionButton);
+
+      // Tab into location input
+      await sendKeys({ press: 'Tab' });
+
+      // Tab into environment switcher
+      await sendKeys({ press: 'Tab' });
+
+      await waitUntil(() => envSwitcherFocusSpy.called, 'env-switcher did not focus', { timeout: 3000 });
+      await sendKeys({ press: 'Tab' });
+      await waitUntil(() => previewFocusSpy.calledOnce, 'preview did not focus', { timeout: 3000 });
+      await sendKeys({ press: 'Tab' });
+      await waitUntil(() => assetsFocusSpy.calledOnce, 'assets did not focus', { timeout: 3000 });
+      await sendKeys({ press: 'Tab' });
+      await waitUntil(() => libraryFocusSpy.calledOnce, 'library did not focus', { timeout: 3000 });
+      await sendKeys({ press: 'Tab' });
+      await waitUntil(() => toolsFocusSpy.calledOnce, 'tools did not focus', { timeout: 3000 });
+      await sendKeys({ press: 'Tab' });
+      await waitUntil(() => sidekickMenuFocusSpy.calledOnce, 'sidekick menu did not focus', { timeout: 3000 });
+      await sendKeys({ press: 'Tab' });
+      await waitUntil(() => loginButtonFocusSpy.calledOnce, 'login did not focus', { timeout: 3000 });
     }).timeout(10000);
   });
 });

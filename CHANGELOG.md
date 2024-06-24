@@ -1,3 +1,12 @@
+## [1.27.1](https://github.com/adobe/aem-sidekick/compare/v1.27.0...v1.27.1) (2024-06-20)
+
+
+### Bug Fixes
+
+* delete/unpublish claim source document is missing ([#187](https://github.com/adobe/aem-sidekick/issues/187)) ([0842079](https://github.com/adobe/aem-sidekick/commit/0842079a8e201ebb4976b319d9c6d4cfebf8cf78))
+* don't drop project name from share settings ([#188](https://github.com/adobe/aem-sidekick/issues/188)) ([361bb40](https://github.com/adobe/aem-sidekick/commit/361bb40094f38e31558f22e7fbe097d225d8233d))
+* tab order and other UI tweaks ([#182](https://github.com/adobe/aem-sidekick/issues/182)) ([71a2d8a](https://github.com/adobe/aem-sidekick/commit/71a2d8ad7cbbe19721a84f2699a765d6121697b0))
+
 # [1.27.0](https://github.com/adobe/aem-sidekick/compare/v1.26.2...v1.27.0) (2024-06-18)
 
 

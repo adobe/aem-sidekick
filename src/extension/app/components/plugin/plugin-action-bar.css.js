@@ -15,15 +15,26 @@
 import { css } from 'lit';
 
 export const style = css`
-  action-bar sp-action-group {
+  action-bar > div.action-group {
+    display: flex;
     padding: 12px;
+    gap: 8px;
     flex-wrap: nowrap;
     align-items: center;
   }
 
-  action-bar sp-action-group:nth-of-type(2) {
+  action-bar > div.activity-container,
+  action-bar > div.plugins-container {
+    width: 100%;
+  }
+
+  action-bar > div.action-group:not(.plugins-container):not(.activity-container):nth-of-type(1) {
     margin-left: auto;
     padding: 12px 0;
+  }
+
+  action-bar > div.plugin-menu-container {
+    width: 42px;
   }
 
   action-bar sp-action-group.not-authorized {
@@ -34,42 +45,57 @@ export const style = css`
     width: auto;
   }
 
-  action-bar sp-action-group:last-of-type > svg {
+  action-bar .logo {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  action-bar .logo > svg{
     width: 24px;
     height: 24px;
   }
 
-  action-bar sp-action-group sp-menu-divider {
-    height: 100%;
-  }
-
-  action-bar sp-action-group sp-menu-divider:last-child {
-    display: none;
-  }
-
-  action-bar sp-action-group .filler {
-    flex-grow: 1;
-  }
-
   #plugin-menu {
     width: max-content;
-    margin: 0 12px;
   }
 
   action-bar action-bar-picker sp-menu-item {
     min-width: 120px;
   }
 
-  action-bar sp-action-menu#plugin-menu sp-menu-group {
+  /**
+   * Work around the fact that we can't tab into sp-action-group
+   */
+
+  action-bar sp-action-menu sp-menu-item {
+    margin: 0 8px;
+  }
+
+  action-bar sp-action-menu sp-menu-item:first-of-type {
+    margin: 8px 8px 0;
+  }
+
+  action-bar sp-action-menu sp-menu-item:last-of-type {
+    margin: 0 8px 8px;
+  }
+
+  action-bar sp-action-menu sp-menu-item:only-of-type {
     margin: 8px;
   }
 
-  action-bar sp-action-menu#sidekick-menu sp-menu-group {
-    margin: 8px;
+  action-bar sp-action-menu sp-menu-item.close {
+    margin: 4px 8px 8px;
   }
 
-  action-bar sp-action-menu#sidekick-menu > sp-menu-item{
-    margin: 8px;
+  action-bar sp-action-menu sp-menu-divider {
+    margin: 0;
+  }
+
+  action-bar sp-action-menu sp-menu-group {
+    --mod-menu-group-gap: 0;
   }
 
   #plugin-menu sp-menu-group [slot="header"] {
