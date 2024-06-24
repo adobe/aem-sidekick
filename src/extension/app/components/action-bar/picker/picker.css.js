@@ -17,10 +17,6 @@ export const style = css`
     --mod-divider-thickness: 1px;
   }
 
-  :host([quiet]:hover) {
-    background-color: var(--highcontrast-actionbutton-background-color-hover, var(--mod-actionbutton-background-color-hover, var(--spectrum-actionbutton-background-color-hover)))
-  }
-
   :host #button,
   :host([quiet]) #button {
     border-radius: var(--spectrum2-default-border-radius);

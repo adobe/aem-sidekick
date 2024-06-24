@@ -83,6 +83,8 @@ export const spectrum2 = css`
     --spectrum2-color-positive-dark: #047C4B;
     --spectrum2-color-warning: #e67316;
     --spectrum2-color-info: #3B63FB;
+    --spectrum2-action-button-hover-light: #0000000D;
+    --spectrum2-action-button-hover-dark: #FFFFFF12;
     --spectrum2-action-button-selected-light: #292929FF;
     --spectrum2-action-button-selected-dark: #DADADAFF;
     --spectrum2-background-color-negative-light: #D73220;
@@ -163,6 +165,7 @@ export const spectrum2 = css`
     --mod-actionbutton-focus-indicator-border-radius: var(--spectrum2-medium-border-radius);
     --mod-actionbutton-focus-indicator-color: var(--spectrum2-color-focus-dark);
     --mod-actionbutton-background-color-focus: var(--spectrum2-background-color-hover-dark);
+    --mod-actionbutton-background-color-hover: var(--spectrum2-action-button-hover-dark);
 
     --mod-picker-focus-indicator-color: var(--spectrum2-color-focus);
     --mod-actionbutton-focus-indicator-color: var(--spectrum2-color-focus);
@@ -212,6 +215,7 @@ export const spectrum2 = css`
       --spectrum2-color-positive: var(--spectrum2-color-positive-light);
 
       --mod-actionbutton-background-color-focus: var(--spectrum2-background-color-hover-light);
+      --mod-actionbutton-background-color-hover: var(--spectrum2-action-button-hover-light);
     }
   }
 `;

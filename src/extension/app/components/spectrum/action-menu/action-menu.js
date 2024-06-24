@@ -48,7 +48,6 @@ export class ActionMenu extends SPActionMenu {
           --mod-actionbutton-border-color-hover: transparent;
           --mod-actionbutton-border-color-focus: transparent;
           --mod-actionbutton-background-color-default: transparent;
-          --mod-actionbutton-background-color-hover: var(--mod-actionbutton-background-color-focus);
         }
       `,
     ];
