@@ -19,42 +19,6 @@ import {
 import { urlCache } from './url-cache.js';
 import { updateUI } from './ui.js';
 
-export const DEV_URL = 'http://localhost:3000';
-
-/**
- * Retrieves the proxy URL from a local dev tab.
- * @param {chrome.tabs.Tab} tab The tab
- * @returns {Promise<string>} The proxy URL
- */
-async function getProxyUrl({ id, url: tabUrl }) {
-  return new Promise((resolve) => {
-    // inject proxy url retriever
-    chrome.scripting.executeScript({
-      target: { tabId: id },
-      func: () => {
-        let proxyUrl = null;
-        const meta = document.head.querySelector('meta[property="hlx:proxyUrl"]');
-        if (meta) {
-          proxyUrl = meta.getAttribute('content');
-        }
-        chrome.runtime.sendMessage({ proxyUrl });
-      },
-    });
-    // listen for proxy url from tab
-    const listener = ({ proxyUrl: proxyUrlFromTab }, { tab }) => {
-      // check if message contains proxy url and is sent from right tab
-      if (proxyUrlFromTab && tab && tab.url === tabUrl && tab.id === id) {
-        chrome.runtime.onMessage.removeListener(listener);
-        resolve(proxyUrlFromTab);
-      } else {
-        // fall back to tab url
-        resolve(tabUrl);
-      }
-    };
-    chrome.runtime.onMessage.addListener(listener);
-  });
-}
-
 /**
  * Loads the content script in the tab.
  * @param {number} tabId The ID of the tab
@@ -80,7 +44,7 @@ async function injectContentScript(tabId, matches) {
  * @param {number} id The tab ID
  * @returns {Promise<void>}
  */
-export default async function checkTab(id) {
+export async function checkTab(id) {
   try {
     const projects = await getProjects();
     const tab = await chrome.tabs.get(id);
@@ -89,19 +53,8 @@ export default async function checkTab(id) {
       return;
     }
 
-    let { url } = tab;
+    const { url } = tab;
 
-    // check for dev URL
-    const devUrls = [
-      DEV_URL,
-      ...projects
-        .filter((p) => !!p.devOrigin)
-        .map((p) => p.devOrigin),
-    ];
-    if (devUrls.find((devUrl) => url.startsWith(devUrl))) {
-      // retrieve proxy url
-      url = await getProxyUrl(tab);
-    }
     // fill url cache
     await urlCache.set(tab, projects);
 
