@@ -94,6 +94,10 @@ export const style = css`
     margin: 0;
   }
 
+  action-bar sp-menu-divider {
+    height: 56px;
+  }
+
   action-bar sp-action-menu sp-menu-group {
     --mod-menu-group-gap: 0;
   }
