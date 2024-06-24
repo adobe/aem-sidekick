@@ -143,7 +143,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
 
     const label = id === 'edit' ? this.appStore.i18n('open_in').replace('$1', contentSourceLabel) : this.envNames[id];
     const menuItem = createTag({
-      tag: 'sp-menu-item',
+      tag: 'sk-menu-item',
       text: label,
       attrs: {
         value: id,
@@ -232,7 +232,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
 
     if (publishPlugin.isVisible()) {
       const publishButton = createTag({
-        tag: 'sp-action-button',
+        tag: 'sk-action-button',
         text: this.appStore.i18n('publish'),
         attrs: {
           slot: 'description',

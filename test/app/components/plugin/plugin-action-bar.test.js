@@ -81,17 +81,17 @@ describe('Plugin action bar', () => {
 
     expect(envPlugin).to.exist;
     environments.forEach((env) => {
-      const envButton = recursiveQuery(picker, `sp-menu-item.env-${env}`);
+      const envButton = recursiveQuery(picker, `sk-menu-item.env-${env}`);
       expect(envButton, `Button for ${env} does not exist`).to.exist;
     });
 
-    const menuButtons = recursiveQueryAll(picker, 'sp-menu-item');
+    const menuButtons = recursiveQueryAll(picker, 'sk-menu-item');
     expect([...menuButtons].length).to.equal(environments.length);
   }
 
   function expectInActionBar(pluginIds) {
     const actionGroup = recursiveQuery(sidekickTest.sidekick, '.action-group:first-of-type');
-    const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, bulk-info, action-bar-picker');
+    const plugins = recursiveQueryAll(actionGroup, 'sk-action-button, env-switcher, bulk-info, action-bar-picker');
 
     expect(
       [...plugins].map((plugin) => plugin.className.replace('plugin-container ', '')
@@ -103,7 +103,7 @@ describe('Plugin action bar', () => {
     // wait for plugin menu
     await waitUntil(() => recursiveQuery(sidekick, '#plugin-menu'));
     const pluginMenu = recursiveQuery(sidekick, '#plugin-menu');
-    const plugins = recursiveQueryAll(pluginMenu, 'sp-menu-item');
+    const plugins = recursiveQueryAll(pluginMenu, 'sk-menu-item');
 
     expect([...plugins]
       .map((plugin) => plugin.className)).to.deep.equal(pluginIds);
@@ -354,7 +354,7 @@ describe('Plugin action bar', () => {
       ]);
 
       const toolsPlugin = recursiveQuery(sidekick, 'action-bar-picker.tools');
-      const plugins = recursiveQueryAll(toolsPlugin, 'sp-menu-item');
+      const plugins = recursiveQueryAll(toolsPlugin, 'sk-menu-item');
 
       expect([...plugins].length).to.equal(3);
       expect(plugins.values().next().value.textContent).to.equal('Tag Selector');
@@ -798,7 +798,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
 
-      const addProjectButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="project-added"]');
+      const addProjectButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="project-added"]');
       expect(addProjectButton).to.exist;
 
       addProjectButton.click();
@@ -824,7 +824,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
 
-      const addProjectButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="project-removed"]');
+      const addProjectButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="project-removed"]');
       expect(addProjectButton).to.exist;
       addProjectButton.click();
 
@@ -851,7 +851,7 @@ describe('Plugin action bar', () => {
       const closeSpy = sidekickTest.sandbox.spy();
       sidekick.addEventListener('hidden', closeSpy);
 
-      const closeButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="hidden"]');
+      const closeButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="hidden"]');
       expect(closeButton).to.exist;
       closeButton.click();
 
@@ -877,7 +877,7 @@ describe('Plugin action bar', () => {
       await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
 
       const openPageStub = sandbox.stub(sidekickTest.appStore, 'openPage').returns(null);
-      const helpButton = recursiveQuery(sidekickMenuButton, 'sp-menu-item[value="open-help"]');
+      const helpButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="open-help"]');
       expect(helpButton).to.exist;
       helpButton.click();
 
@@ -934,7 +934,7 @@ describe('Plugin action bar', () => {
       const sidekickMenuFocusSpy = createFocusSpy(sidekickMenu);
 
       const loginButton = recursiveQuery(actionBar, 'login-button');
-      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button.login');
+      const loginActionButton = recursiveQuery(loginButton, 'sk-action-button.login');
       const loginButtonFocusSpy = createFocusSpy(loginActionButton);
 
       // Tab into location input

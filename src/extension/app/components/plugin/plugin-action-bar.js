@@ -203,14 +203,14 @@ export class PluginActionBar extends ConnectedElement {
           <span slot="header">${plugin.getButtonText()}</span>
           ${Object.values(plugin.children).map((p) => p.render())}
         </sp-menu-group>`
-      : html`<sp-menu-item
+      : html`<sk-menu-item
           class="${plugin.id}"
           id="plugin-${plugin.id}"
           @click=${(evt) => plugin.onButtonClick(evt)}
           tabindex="0"
           .disabled=${!plugin.isEnabled()}>
           ${plugin.getButtonText()}
-        </sp-menu-item>`;
+        </sk-menu-item>`;
   }
 
   /**
@@ -311,34 +311,34 @@ export class PluginActionBar extends ConnectedElement {
         </sp-icon>
         ${siteStore.transient
           ? html`
-            <sp-menu-item class="icon-item" value="project-added" @click=${this.handleItemSelection}>
+            <sk-menu-item class="icon-item" value="project-added" @click=${this.handleItemSelection}>
               <sp-icon slot="icon" size="m">
                 ${ICONS.PLUS_ICON}
               </sp-icon>
               ${this.appStore.i18n('config_project_add')}
-            </sp-menu-item>
+            </sk-menu-item>
           ` : html`
-            <sp-menu-item class="icon-item destructive" value="project-removed" @click=${this.handleItemSelection}>
+            <sk-menu-item class="icon-item destructive" value="project-removed" @click=${this.handleItemSelection}>
               <sp-icon slot="icon" size="m">
                 ${ICONS.TRASH_ICON}
               </sp-icon>
               ${this.appStore.i18n('config_project_remove')}
-            </sp-menu-item>
+            </sk-menu-item>
           `
         }
-        <sp-menu-item class="icon-item" value="open-help"  @click=${this.handleItemSelection}>
+        <sk-menu-item class="icon-item" value="open-help"  @click=${this.handleItemSelection}>
           <sp-icon slot="icon" size="m">
             ${ICONS.HELP_ICON}
           </sp-icon>
           ${this.appStore.i18n('help_documentation')}
-        </sp-menu-item>
+        </sk-menu-item>
         <sp-divider size="s"></sp-divider>
-        <sp-menu-item class="close icon-item" value="hidden" @click=${this.handleItemSelection}>
+        <sk-menu-item class="close icon-item" value="hidden" @click=${this.handleItemSelection}>
           <sp-icon slot="icon" size="m">
             ${ICONS.CLOSE_X}
           </sp-icon>
           ${this.appStore.i18n('close_sidekick')}
-        </sp-menu-item>
+        </sk-menu-item>
       </sp-action-menu>`;
     systemPlugins.push(properties);
 
