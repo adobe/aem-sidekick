@@ -22,7 +22,7 @@ export class MenuGroup extends SPMenuGroup {
       ...super.styles,
       css`
         sp-menu {
-          gap: 4px;
+          gap: var(--mod-menu-group-gap, 4px);
         }
       `,
     ];

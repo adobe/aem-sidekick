@@ -26,6 +26,20 @@ export const style = css`
     border-radius: var(--spectrum2-default-border-radius);
   }
 
+  :host #button:focus-visible:after,
+  :host([quiet]) #button:focus-visible:after {
+    border-radius: var(--spectrum2-large-border-radius);
+  }
+
+  :host([quiet]) #button:focus-visible {
+    background-color: var(--mod-actionbutton-background-color-focus);
+  }
+
+  :host([quiet]) #button:focus-visible:after {
+    box-shadow: rgb(20, 122, 243) 0px 0px 0px 2px;
+    margin: -3px;
+  }
+
   :host(.env-edit) #button #label,
   :host(.env-edit) #button sp-icon-chevron100,
   :host(.env-edit) #button:hover sp-icon-chevron100,
@@ -91,7 +105,6 @@ export const style = css`
     --spectrum-picker-icon-color-default-open: var(--spectrum2-preview-border-default);
   }
 
-
   :host(.env-live) #button #label,
   :host(.env-prod) #button #label,
   :host(.env-live) #button sp-icon-chevron100,
@@ -154,7 +167,7 @@ export const style = css`
   }
 
   :host([quiet]) #button:hover {
-    background-color: var(--spectrum2-edit-background-hover);
+    background-color: var(--mod-actionbutton-background-color-focus);
   }
 
   :host([quiet]) #button #label {

@@ -51,6 +51,20 @@ export class Picker extends SPPicker {
     }
     return menu;
   }
+
+  handleKeydown = (event) => {
+    const { code } = event;
+    this.focused = true;
+    if (!code.startsWith('Arrow') || this.readonly || this.pending) {
+      return;
+    }
+    if (code === 'ArrowUp' || code === 'ArrowDown') {
+      this.toggle(true);
+      event.preventDefault();
+      return;
+    }
+    event.preventDefault();
+  };
 }
 
 customElements.define('action-bar-picker', Picker);
