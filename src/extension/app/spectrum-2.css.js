@@ -28,7 +28,7 @@ export const spectrum2 = css`
     --preview-border-hover-light: #5CC0FFFF;
     --preview-border-hover-dark: #046691FF;
     --preview-border-open-light: #30A7FEFF;
-    --preview-border-open-dark: #0b78b300;
+    --preview-border-open-dark: #0b78b3FF;
     --live-content-default-light: #079355FF;
     --live-content-default-dark: #2BD17DFF;
     --live-background-default-light: #EDFCF1FF;

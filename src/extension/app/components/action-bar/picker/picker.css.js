@@ -82,6 +82,8 @@ export const style = css`
   :host(.env-preview) #button {
     background-color: var(--spectrum2-preview-background-default);
     border: 1px solid var(--spectrum2-preview-border-default);
+    --mod-picker-background-color-hover-open: var(--spectrum2-preview-background-hover);
+    --mod-picker-border-color-hover-open: var(--spectrum2-preview-border-hover);
   }
 
   :host(.env-preview) #button:hover {
@@ -121,6 +123,8 @@ export const style = css`
   :host(.env-prod) #button {
     background-color: var(--spectrum2-live-background-default);
     border: 1px solid var(--spectrum2-live-border-default);
+    --mod-picker-background-color-hover-open: var(--spectrum2-live-background-hover);
+    --mod-picker-border-color-hover-open: var(--spectrum2-live-border-hover);
   }
 
   :host(.env-live[disabled]) #button,
