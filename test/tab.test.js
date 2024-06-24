@@ -16,7 +16,7 @@ import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
 import chromeMock from './mocks/chrome.js';
-import checkTab, { getCurrentTab } from '../src/extension/tab.js';
+import { checkTab, getCurrentTab } from '../src/extension/tab.js';
 import { error } from './test-utils.js';
 import { log } from '../src/extension/log.js';
 

@@ -30,6 +30,7 @@ import {
   getProjectMatches,
   getGitHubSettings,
   getProjectFromUrl,
+  resolveProxyUrl,
 } from '../src/extension/project.js';
 import { urlCache } from '../src/extension/url-cache.js';
 import { error, mockTab } from './test-utils.js';
@@ -419,5 +420,82 @@ describe('Test project', () => {
     // @ts-ignore
     const none = await getProjectFromUrl();
     expect(none).to.eql({});
+  });
+
+  describe('resolveProxyUrl', () => {
+    let tab;
+    let messageFromTab;
+
+    beforeEach(() => {
+      // stub message sender and intercept message
+      sinon.stub(chrome.runtime, 'sendMessage')
+        .callsFake(async (msg) => {
+          messageFromTab = msg;
+        });
+
+      afterEach(() => {
+        messageFromTab = null;
+      });
+
+      // stub message receiver and invoke callback
+      sinon.stub(chrome.runtime.onMessage, 'addListener')
+        .callsFake((func) => func(
+          messageFromTab,
+          {
+            tab,
+          },
+          null,
+        ));
+    });
+
+    it('resolveProxyUrl: dev url', async () => {
+      const proxyUrl = 'https://main--bar--foo.hlx.page/';
+      const tabUrl = 'http://localhost:3000/foo';
+
+      // add proxyUrl meta tag
+      const meta = document.createElement('meta');
+      meta.setAttribute('property', 'hlx:proxyUrl');
+      meta.setAttribute('content', proxyUrl);
+      document.head.append(meta);
+
+      tab = mockTab(tabUrl);
+
+      const res = await resolveProxyUrl(tab, []);
+      expect(res.url).to.equal(proxyUrl);
+      document.head.removeChild(meta);
+    });
+
+    it('resolveProxyUrl: non-dev url', async () => {
+      const tabUrl = 'https://main--bar--foo.hlx.page/';
+
+      tab = mockTab(tabUrl);
+
+      const res = await resolveProxyUrl(tab, []);
+      expect(res.url).to.equal(tabUrl);
+    });
+
+    it('resolveProxyUrl: dev url without meta tag', async () => {
+      const tabUrl = 'http://localhost:3000/foo';
+
+      tab = mockTab(tabUrl);
+
+      const res = await resolveProxyUrl(tab, []);
+      expect(res.url).to.equal(tabUrl);
+    });
+
+    it('resolveProxyUrl: dev url with meta tag but no proxyUrl', async () => {
+      const tabUrl = 'http://localhost:3000/foo';
+      // @ts-ignore
+      chrome.runtime.sendMessage.restore();
+      sinon.stub(chrome.runtime, 'sendMessage')
+        .callsFake(async () => {
+          messageFromTab = {};
+        });
+
+      tab = mockTab(tabUrl);
+
+      const res = await resolveProxyUrl(tab, []);
+      expect(res.url).to.equal(tabUrl);
+    });
   });
 });
