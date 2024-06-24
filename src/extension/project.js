@@ -435,15 +435,12 @@ async function resolveProxyUrl(tab, configs) {
       });
       // listen for proxy url from tab
       const listener = ({ proxyUrl: proxyUrlFromTab }, { tab: senderTab }) => {
+        chrome.runtime.onMessage.removeListener(listener);
         // check if message contains proxy url and is sent from right tab
         if (proxyUrlFromTab && senderTab && senderTab.url === tab.url && senderTab.id === tab.id) {
-          chrome.runtime.onMessage.removeListener(listener);
           tab.url = proxyUrlFromTab;
-          resolve(tab);
-        } else {
-          // fall back to original tab
-          resolve(tab);
         }
+        resolve(tab);
       };
       chrome.runtime.onMessage.addListener(listener);
     });
