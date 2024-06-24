@@ -193,6 +193,10 @@ export const style = css`
     padding: 0;
   }
 
+  sp-overlay:not(:defined) {
+    display: unset;
+  }
+
   :host(.env-switcher) sp-popover {
     min-width: 256px !important;
   }

@@ -204,13 +204,13 @@ export class LoginButton extends ConnectedElement {
           <sp-icon slot="icon" size="l" class=${ifDefined(profile.picture && this.profilePicture ? 'picture' : undefined)}>
             ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
-          <sp-menu-item class="user" value="user">
+          <sp-menu-item class="user" value="user" tabindex="-1" disabled>
             ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
             ${profile.name}
             <span slot="description">${profile.email}</span>
           </sp-menu-item>
           <sp-divider size="s"></sp-divider>
-          <sp-menu-item class="logout" value="logout" @click=${this.logout}>
+          <sp-menu-item class="logout" value="logout" @click=${this.logout} tabindex="0">
             <sp-icon slot="icon" size="xl">
               ${ICONS.SIGN_OUT}
             </sp-icon>

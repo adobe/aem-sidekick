@@ -29,7 +29,7 @@ export const style = css`
 
   :host([focused]) {
     box-shadow: unset;
-    outline: 2px solid #4B75FF;
+    outline: 2px solid var(--spectrum2-color-focus);
     border-radius: var(--spectrum2-medium-border-radius);
   }
 
@@ -78,12 +78,17 @@ export const style = css`
   :host(.env-edit) {
     display: flex;
     height: 40px;
-    padding-top: 7px;
   }
 
   ::slotted([slot=icon]) {
     margin-left: auto;
     margin-inline-end: 0;
+  }
+
+  :host(.env-edit) ::slotted([slot=icon]) {
+    position: absolute;
+    right: 7px;
+    top: 11px;
   }
 
   sp-status-light {
@@ -98,6 +103,9 @@ export const style = css`
     gap: 6px;
     height: 46px;
     padding-right: 12px;
+    --mod-menu-item-label-icon-color-disabled: var(--spectrum-gray-800);
+    --mod-menu-item-description-color-disabled: var(--spectrum-gray-800);
+    --mod-menu-item-label-content-color-disabled: var(--spectrum-gray-800);
   }
 
   .user-item > slot {

@@ -106,11 +106,6 @@ export class EnvironmentSwitcher extends ConnectedElement {
     this.picker.classList.add(`env-${this.currentEnv}`);
 
     this.renderMenu();
-
-    // If this element gets focus, pass it onto the picker
-    this.addEventListener('focus', () => {
-      this.picker.focus();
-    });
   }
 
   /**
@@ -387,7 +382,13 @@ export class EnvironmentSwitcher extends ConnectedElement {
     picker.value = this.currentEnv;
   }
 
+  keydown(event) {
+    if (event.key === 'Tab') {
+      this.picker.close();
+    }
+  }
+
   render() {
-    return html`<action-bar-picker class="env-switcher" icons="none" @change=${this.onChange} .disabled=${!this.ready}></action-bar-picker>`;
+    return html`<action-bar-picker class="env-switcher" icons="none" @change=${this.onChange} .disabled=${!this.ready} @keydown=${this.keydown}></action-bar-picker>`;
   }
 }

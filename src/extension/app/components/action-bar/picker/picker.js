@@ -32,8 +32,8 @@ export class Picker extends SPPicker {
           @change=${this.handleChange}
           id="menu"
           @keydown=${{
-              handleEvent: this.handleEnterKeydown,
-              capture: true,
+            handleEvent: this.handleEnterKeydown,
+            capture: true,
           }}
           role=${this.listRole}
           size=${this.size}
@@ -52,19 +52,50 @@ export class Picker extends SPPicker {
     return menu;
   }
 
-  handleKeydown = (event) => {
-    const { code } = event;
-    this.focused = true;
-    if (!code.startsWith('Arrow') || this.readonly || this.pending) {
+  handleBeforetoggle(event) {
+    if (event.composedPath()[0] !== event.target) {
       return;
     }
-    if (code === 'ArrowUp' || code === 'ArrowDown') {
-      this.toggle(true);
-      event.preventDefault();
-      return;
+    if (event.newState === 'closed') {
+      if (this.preventNextToggle === 'no') {
+        this.open = false;
+      } else if (!this.pointerdownState) {
+        // Prevent browser driven closure while opening the Picker
+        // and the expected event series has not completed.
+        this.overlayElement.manuallyKeepOpen();
+      }
     }
-    event.preventDefault();
-  };
+    if (!this.open && this.optionsMenu) {
+      this.optionsMenu.updateSelectedItemIndex();
+      this.optionsMenu.closeDescendentOverlays();
+    }
+  }
+
+  renderOverlay(menu) {
+    const container = this.renderContainer(menu);
+    this.dependencyManager.add('sp-overlay');
+
+    if (!this.dependencyManager.loaded || !this.open) {
+      return html``;
+    }
+    return html`
+        <sp-overlay
+            @slottable-request=${this.handleSlottableRequest}
+            @beforetoggle=${this.handleBeforetoggle}
+            .triggerElement=${this}
+            .offset=${0}
+            open=${this.open && this.dependencyManager.loaded}
+            .placement=${this.isMobile.matches ? undefined : this.placement}
+            .type=${this.isMobile.matches ? 'modal' : 'auto'}
+            .receivesFocus=${'true'}
+            .willPreventClose=${this.preventNextToggle !== 'no'
+            && this.open
+            && this.dependencyManager.loaded}
+        >
+            ${container}
+        </sp-overlay>
+    `;
+  }
 }
 
 customElements.define('action-bar-picker', Picker);
