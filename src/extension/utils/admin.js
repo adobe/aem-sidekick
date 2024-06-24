@@ -12,8 +12,8 @@
 
 /**
  * @typedef {Object} AdminUrlConfig
- * @property {string} owner The owner of the repository.
- * @property {string} repo The name of the repository.
+ * @property {string} [owner] The owner of the repository.
+ * @property {string} [repo] The name of the repository.
  * @property {string} [ref='main'] The reference branch, defaults to 'main'.
  * @property {string} [adminVersion] - The version of the admin to use
  */
