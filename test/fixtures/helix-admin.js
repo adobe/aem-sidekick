@@ -27,6 +27,8 @@
 
 export const defaultConfigJSON = {
   project: 'AEM Boilerplate',
+  contentSourceUrl: 'https://drive.google.com/drive/u/0/folders/1MGzOt7ubUh3gu7zhZIPb7R7dyRzG371j',
+  contentSourceType: 'google',
 };
 
 export const defaultConfigJSONWithHost = {
