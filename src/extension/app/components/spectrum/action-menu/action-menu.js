@@ -90,7 +90,7 @@ export class ActionMenu extends SPActionMenu {
             @beforetoggle=${this.handleBeforetoggle}
             .triggerElement=${this}
             .offset=${0}
-            open=${this.open && this.dependencyManager.loaded}
+            .open=${this.open && this.dependencyManager.loaded}
             .placement=${this.isMobile.matches ? undefined : this.placement}
             .type=${this.isMobile.matches ? 'modal' : 'auto'}
             .receivesFocus=${'true'}
