@@ -455,7 +455,7 @@ describe('Plugin action bar', () => {
       // close plugin menu
       pluginMenu.click();
       await aTimeout(100);
-      expect(pluginMenu.hasAttribute('open')).to.be.true;
+      expect(pluginMenu.hasAttribute('open')).to.be.false;
     });
 
     it('contains unpinned plugins', async () => {

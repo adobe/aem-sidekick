@@ -1,26 +1,3 @@
 {
-  "extends": ["github>adobe/helix-shared"],
-  "ignoreDeps": [
-    "@spectrum-web-components/action-button",
-    "@spectrum-web-components/action-group",
-    "@spectrum-web-components/action-menu",
-    "@spectrum-web-components/base",
-    "@spectrum-web-components/button",
-    "@spectrum-web-components/dialog",
-    "@spectrum-web-components/divider",
-    "@spectrum-web-components/icon",
-    "@spectrum-web-components/icons",
-    "@spectrum-web-components/icons-workflow",
-    "@spectrum-web-components/illustrated-message",
-    "@spectrum-web-components/menu",
-    "@spectrum-web-components/overlay",
-    "@spectrum-web-components/picker",
-    "@spectrum-web-components/progress-circle",
-    "@spectrum-web-components/search",
-    "@spectrum-web-components/status-light",
-    "@spectrum-web-components/table",
-    "@spectrum-web-components/textfield",
-    "@spectrum-web-components/theme",
-    "@spectrum-web-components/toast"
-  ]
+  "extends": ["github>adobe/helix-shared"]
 }

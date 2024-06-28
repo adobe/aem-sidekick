@@ -28,7 +28,7 @@ export const spectrum2 = css`
     --preview-border-hover-light: #5CC0FFFF;
     --preview-border-hover-dark: #046691FF;
     --preview-border-open-light: #30A7FEFF;
-    --preview-border-open-dark: #0b78b300;
+    --preview-border-open-dark: #0b78b3FF;
     --live-content-default-light: #079355FF;
     --live-content-default-dark: #2BD17DFF;
     --live-background-default-light: #EDFCF1FF;
@@ -77,10 +77,14 @@ export const spectrum2 = css`
     --spectrum2-live-border-open: var(--live-border-open-dark);
 
     /* Spectrum 2 color tokens */
+    --spectrum2-color-focus-light: #4B75FF;
+    --spectrum2-color-focus-dark: #456EFE;
     --spectrum2-color-positive-light: #05834E;
     --spectrum2-color-positive-dark: #047C4B;
     --spectrum2-color-warning: #e67316;
     --spectrum2-color-info: #3B63FB;
+    --spectrum2-action-button-hover-light: #0000000D;
+    --spectrum2-action-button-hover-dark: #FFFFFF12;
     --spectrum2-action-button-selected-light: #292929FF;
     --spectrum2-action-button-selected-dark: #DADADAFF;
     --spectrum2-background-color-negative-light: #D73220;
@@ -119,6 +123,7 @@ export const spectrum2 = css`
     /**
      * SPECTRUM ALIAS TOKENS
      */
+    --spectrum2-color-focus: var(--spectrum2-color-focus-dark);
     --spectrum2-background-color-negative: var(--spectrum2-background-color-negative-dark);
     --spectrum2-foreground-color-negative: var(--spectrum2-foreground-color-negative-dark);
     --spectrum2-color-positive: var(--spectrum2-color-positive-dark);
@@ -158,7 +163,12 @@ export const spectrum2 = css`
 
     --mod-actionbutton-border-radius: var(--spectrum2-default-border-radius);
     --mod-actionbutton-focus-indicator-border-radius: var(--spectrum2-medium-border-radius);
+    --mod-actionbutton-focus-indicator-color: var(--spectrum2-color-focus-dark);
     --mod-actionbutton-background-color-focus: var(--spectrum2-background-color-hover-dark);
+    --mod-actionbutton-background-color-hover: var(--spectrum2-action-button-hover-dark);
+
+    --mod-picker-focus-indicator-color: var(--spectrum2-color-focus);
+    --mod-actionbutton-focus-indicator-color: var(--spectrum2-color-focus);
   }
 
   @media (prefers-color-scheme: light) {
@@ -198,12 +208,14 @@ export const spectrum2 = css`
       /**
        * SPECTRUM ALIAS TOKENS
        */
+      --spectrum2-color-focus: var(--spectrum2-color-focus-light);
       --spectrum2-action-button-selected: var(--spectrum2-action-button-selected-light);
       --spectrum2-background-color-negative: var(--spectrum2-background-color-negative-light);
       --spectrum2-foreground-color-negative: var(--spectrum2-foreground-color-negative-light);
       --spectrum2-color-positive: var(--spectrum2-color-positive-light);
 
       --mod-actionbutton-background-color-focus: var(--spectrum2-background-color-hover-light);
+      --mod-actionbutton-background-color-hover: var(--spectrum2-action-button-hover-light);
     }
   }
 `;

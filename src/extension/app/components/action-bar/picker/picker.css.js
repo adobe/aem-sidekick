@@ -17,10 +17,6 @@ export const style = css`
     --mod-divider-thickness: 1px;
   }
 
-  :host([quiet]:hover) {
-    background-color: var(--highcontrast-actionbutton-background-color-hover, var(--mod-actionbutton-background-color-hover, var(--spectrum-actionbutton-background-color-hover)))
-  }
-
   :host #button,
   :host([quiet]) #button {
     border-radius: var(--spectrum2-default-border-radius);
@@ -82,6 +78,8 @@ export const style = css`
   :host(.env-preview) #button {
     background-color: var(--spectrum2-preview-background-default);
     border: 1px solid var(--spectrum2-preview-border-default);
+    --mod-picker-background-color-hover-open: var(--spectrum2-preview-background-hover);
+    --mod-picker-border-color-hover-open: var(--spectrum2-preview-border-hover);
   }
 
   :host(.env-preview) #button:hover {
@@ -121,6 +119,8 @@ export const style = css`
   :host(.env-prod) #button {
     background-color: var(--spectrum2-live-background-default);
     border: 1px solid var(--spectrum2-live-border-default);
+    --mod-picker-background-color-hover-open: var(--spectrum2-live-background-hover);
+    --mod-picker-border-color-hover-open: var(--spectrum2-live-border-hover);
   }
 
   :host(.env-live[disabled]) #button,
@@ -191,6 +191,10 @@ export const style = css`
   sp-popover {
     backdrop-filter: var(--sidekick-backdrop-filter);
     padding: 0;
+  }
+
+  sp-overlay:not(:defined) {
+    display: unset;
   }
 
   :host(.env-switcher) sp-popover {
