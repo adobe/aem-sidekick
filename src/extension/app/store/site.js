@@ -237,6 +237,8 @@ export class SiteStore {
 
     const {
       lang,
+      contentSourceUrl,
+      contentSourceType,
       previewHost,
       liveHost,
       outerHost: legacyLiveHost,
@@ -269,7 +271,9 @@ export class SiteStore {
     this.repo = repo;
     this.ref = ref;
     this.giturl = giturl;
-    this.mountpoints = mountpoints || [];
+    this.contentSourceUrl = contentSourceUrl;
+    this.contentSourceType = contentSourceType;
+    this.mountpoints = contentSourceUrl ? [contentSourceUrl] : (mountpoints || []);
     [this.mountpoint] = this.mountpoints;
     this.adminVersion = adminVersion;
 

@@ -1,3 +1,10 @@
+## [1.27.2](https://github.com/adobe/aem-sidekick/compare/v1.27.1...v1.27.2) (2024-06-24)
+
+
+### Bug Fixes
+
+* sidekick no longer opening in dev ([#194](https://github.com/adobe/aem-sidekick/issues/194)) ([1c779e2](https://github.com/adobe/aem-sidekick/commit/1c779e2a1d4c852c5f9488fbbcaca855cb80472e))
+
 ## [1.27.1](https://github.com/adobe/aem-sidekick/compare/v1.27.0...v1.27.1) (2024-06-20)
 
 

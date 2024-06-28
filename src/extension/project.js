@@ -19,6 +19,8 @@ import {
 import { urlCache } from './url-cache.js';
 import { callAdmin, createAdminUrl } from './utils/admin.js';
 
+export const DEV_URL = 'http://localhost:3000/';
+
 export const GH_URL = 'https://github.com/';
 
 /**
@@ -401,12 +403,60 @@ function getConfigDetails(host) {
 }
 
 /**
+ * Resolves the proxy URL in a dev tab and returns the tab with updated URL.
+ * @param {chrome.tabs.Tab} tab The tab
+ * @param {Object[]} configs The project configurations
+ * @returns {Promise<chrome.tabs.Tab>} The tab with resolved proxy URL
+ */
+export async function resolveProxyUrl(tab, configs) {
+  const { url } = tab;
+
+  // check for dev URL
+  const devUrls = [
+    DEV_URL,
+    ...configs
+      .filter((p) => !!p.devOrigin)
+      .map((p) => p.devOrigin),
+  ];
+  if (devUrls.find((devUrl) => url.startsWith(devUrl))) {
+    // retrieve proxy url
+    return new Promise((resolve) => {
+      // inject proxy url retriever
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => {
+          let proxyUrl = null;
+          const meta = document.head.querySelector('meta[property="hlx:proxyUrl"]');
+          if (meta) {
+            proxyUrl = meta.getAttribute('content');
+          }
+          chrome.runtime.sendMessage({ proxyUrl });
+        },
+      });
+      // listen for proxy url from tab
+      const listener = ({ proxyUrl: proxyUrlFromTab }, { tab: senderTab }) => {
+        chrome.runtime.onMessage.removeListener(listener);
+        // check if message contains proxy url and is sent from right tab
+        if (proxyUrlFromTab && senderTab && senderTab.url === tab.url && senderTab.id === tab.id) {
+          tab.url = proxyUrlFromTab;
+        }
+        resolve(tab);
+      };
+      chrome.runtime.onMessage.addListener(listener);
+    });
+  } else {
+    return tab;
+  }
+}
+
+/**
  * Returns matches from configured projects for a given tab URL.
  * @param {Object[]} configs The project configurations
  * @param {chrome.tabs.Tab} tab The tab
  * @returns {Promise<Object[]>} The matches
  */
 export async function getProjectMatches(configs, tab) {
+  tab = await resolveProxyUrl(tab, configs);
   const {
     host: checkHost,
   } = new URL(tab.url);

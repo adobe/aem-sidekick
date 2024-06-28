@@ -1525,41 +1525,17 @@ describe('Test App Store', () => {
     });
 
     it('should return "SharePoint" if sourceLocation includes "onedrive:"', () => {
-      instance.status = { preview: { sourceLocation: 'onedrive:example' } };
+      instance.siteStore.contentSourceType = 'onedrive';
       expect(instance.getContentSourceLabel()).to.equal('SharePoint');
     });
 
     it('should return "Google Drive" if sourceLocation includes "gdrive:"', () => {
-      instance.status = { preview: { sourceLocation: 'gdrive:example' } };
+      instance.siteStore.contentSourceType = 'google';
       expect(instance.getContentSourceLabel()).to.equal('Google Drive');
     });
 
-    it('should return "BYOM" if sourceLocation does not include known patterns', () => {
-      instance.status = { preview: { sourceLocation: 'dropbox:example' } };
-      expect(instance.getContentSourceLabel()).to.equal('BYOM');
-    });
-
-    it('should return "SharePoint" if mountpoint includes ".sharepoint.com"', () => {
-      instance.siteStore = { mountpoint: 'https://example.sharepoint.com' };
-      instance.status = { preview: { sourceLocation: '' } };
-      expect(instance.getContentSourceLabel()).to.equal('SharePoint');
-    });
-
-    it('should return "SharePoint" if mountpoint does not include ".sharepoint.com" but does contain /Shared%20Documents/sites/', () => {
-      instance.siteStore = { mountpoint: 'https://example.com/Shared%20Documents/sites/aem-boilerplate' };
-      instance.status = { preview: { sourceLocation: '' } };
-      expect(instance.getContentSourceLabel()).to.equal('SharePoint');
-    });
-
-    it('should return "Google Drive" if mountpoint includes ".google.com"', () => {
-      instance.siteStore = { mountpoint: 'https://drive.google.com' };
-      instance.status = { preview: { sourceLocation: '' } };
-      expect(instance.getContentSourceLabel()).to.equal('Google Drive');
-    });
-
-    it('should return "BYOM" if mountpoint does not include known patterns', () => {
-      instance.siteStore = { mountpoint: 'https://example.com' };
-      instance.status = { preview: { sourceLocation: '' } };
+    it('should return "BYOM" for everything else', () => {
+      instance.siteStore.contentSourceType = 'markup';
       expect(instance.getContentSourceLabel()).to.equal('BYOM');
     });
   });

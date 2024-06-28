@@ -14,7 +14,7 @@ import { log } from './log.js';
 import {
   toggleDisplay,
 } from './display.js';
-import checkTab, { getCurrentTab } from './tab.js';
+import { checkTab, getCurrentTab } from './tab.js';
 import {
   externalActions,
   internalActions,

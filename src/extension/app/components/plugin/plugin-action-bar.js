@@ -75,6 +75,9 @@ export class PluginActionBar extends ConnectedElement {
   @queryAll('div.action-group')
   accessor actionGroups;
 
+  @queryAsync('sp-action-menu#plugin-menu')
+  accessor pluginMenu;
+
   @queryAsync('sp-action-menu#sidekick-menu')
   accessor sidekickMenu;
 
@@ -189,10 +192,10 @@ export class PluginActionBar extends ConnectedElement {
   }
 
   // istanbul ignore next 7
-  onPluginMenuSelect() {
-    const pluginMenu = this.shadowRoot.querySelector('#plugin-menu');
+  async onPluginMenuSelect() {
+    // @ts-ignore
+    const pluginMenu = await this.pluginMenu;
     if (pluginMenu) {
-      // @ts-ignore
       pluginMenu.value = '';
     }
   }

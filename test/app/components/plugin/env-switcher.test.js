@@ -322,7 +322,10 @@ describe('Environment Switcher', () => {
 
     it('should not show edit if byom sourceLocation', async () => {
       sidekickTest
-        .mockFetchSidekickConfigSuccess()
+        .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceUrl: 'https://byom.adobeioruntime.net/api/v1/web/convert/main/index.html?wcmmode=disabled',
+          contentSourceType: 'markup',
+        })
         .mockFetchStatusSuccess(false, {
           webPath: '/query-index.json',
           resourcePath: '/query-index.json',

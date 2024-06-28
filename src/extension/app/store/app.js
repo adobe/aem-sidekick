@@ -595,24 +595,15 @@ export class AppStore {
    * @returns {string} The content source label
    */
   getContentSourceLabel() {
-    const { preview } = this.status;
-    const { sourceLocation } = preview;
+    const { contentSourceType } = this.siteStore;
 
-    if (sourceLocation) {
-      return sourceLocation.startsWith('onedrive:')
-        ? 'SharePoint'
-        : sourceLocation.startsWith('gdrive:')
-          ? 'Google Drive'
-          : 'BYOM';
+    if (contentSourceType === 'onedrive') {
+      return 'SharePoint';
+    } else if (contentSourceType === 'google') {
+      return 'Google Drive';
+    } else {
+      return 'BYOM';
     }
-
-    const { mountpoint } = this.siteStore;
-    const mountpointUrl = new URL(mountpoint);
-    return mountpointUrl.host.includes('.google.com')
-      ? 'Google Drive'
-      : mountpointUrl.host.includes('.sharepoint.com') || mountpointUrl.pathname.includes('/Shared%20Documents/sites/')
-        ? 'SharePoint'
-        : 'BYOM';
   }
 
   /**
