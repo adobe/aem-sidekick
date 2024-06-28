@@ -1,3 +1,10 @@
+## [1.27.3](https://github.com/adobe/aem-sidekick/compare/v1.27.2...v1.27.3) (2024-06-28)
+
+
+### Bug Fixes
+
+* update to latest version of SWC ([#195](https://github.com/adobe/aem-sidekick/issues/195)) ([33b2ca4](https://github.com/adobe/aem-sidekick/commit/33b2ca41001e4ad5fa26f3877f3a66e684618025))
+
 ## [1.27.2](https://github.com/adobe/aem-sidekick/compare/v1.27.1...v1.27.2) (2024-06-24)
 
 
