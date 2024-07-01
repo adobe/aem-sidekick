@@ -18,6 +18,7 @@ import {
   MODAL_EVENTS,
   STATE,
 } from '../constants.js';
+import { getLocation } from '../utils/browser.js';
 
 /**
  * @typedef {import('./app.js').AppStore} AppStore
@@ -392,48 +393,53 @@ export class BulkStore {
     const succeeded = resources.filter(({ status }) => status < 400);
     const paths = succeeded.map(({ path }) => path);
 
-    const message = this.getSummaryText(operation, resources.length, failed.length);
-    const variant = this.#getSummaryVariant(resources.length, failed.length);
-
-    const openUrlsLabel = this.appStore.i18n(`open_url${paths.length !== 1 ? 's' : ''}`)
-      .replace('$1', `${paths.length}`);
-    const openUrlsCallback = () => this.openUrls(host, paths);
-
-    const copyUrlsLabel = this.appStore.i18n(`copy_url${paths.length !== 1 ? 's' : ''}`)
-      .replace('$1', `${paths.length}`);
-    const copyUrlsCallback = () => this.copyUrls(host, paths);
-
-    if (failed.length === 0) {
-      // show success toast with open and copy buttons
-      this.appStore.showToast(
-        message,
-        variant,
-        null,
-        openUrlsCallback,
-        openUrlsLabel,
-        copyUrlsCallback,
-        copyUrlsLabel,
-        6000,
-        false,
-      );
+    if (paths.find((path) => path.startsWith('/.helix/'))) {
+      // special handling for config files
+      this.appStore.showToast(this.appStore.i18n('config_success'), 'positive');
     } else {
-      // show (partial) failure toast with details button
-      this.appStore.showToast(
-        message,
-        variant,
-        null,
-        () => {
-          this.appStore.showModal({
-            type: MODALS.BULK,
-          });
-          this.appStore.closeToast();
-        },
-        this.appStore.i18n('bulk_result_details'),
-        null, // no secondary callback
-        null, // no secondary label
-        60000,
-        false,
-      );
+      const message = this.getSummaryText(operation, resources.length, failed.length);
+      const variant = this.#getSummaryVariant(resources.length, failed.length);
+
+      const openUrlsLabel = this.appStore.i18n(`open_url${paths.length !== 1 ? 's' : ''}`)
+        .replace('$1', `${paths.length}`);
+      const openUrlsCallback = () => this.openUrls(host, paths);
+
+      const copyUrlsLabel = this.appStore.i18n(`copy_url${paths.length !== 1 ? 's' : ''}`)
+        .replace('$1', `${paths.length}`);
+      const copyUrlsCallback = () => this.copyUrls(host, paths);
+
+      if (failed.length === 0) {
+        // show success toast with open and copy buttons
+        this.appStore.showToast(
+          message,
+          variant,
+          null,
+          openUrlsCallback,
+          openUrlsLabel,
+          copyUrlsCallback,
+          copyUrlsLabel,
+          6000,
+          false,
+        );
+      } else {
+        // show (partial) failure toast with details button
+        this.appStore.showToast(
+          message,
+          variant,
+          null,
+          () => {
+            this.appStore.showModal({
+              type: MODALS.BULK,
+            });
+            this.appStore.closeToast();
+          },
+          this.appStore.i18n('bulk_result_details'),
+          null, // no secondary callback
+          null, // no secondary label
+          60000,
+          false,
+        );
+      }
     }
   }
 
@@ -480,14 +486,13 @@ export class BulkStore {
     });
 
     modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
-      const status = await this.appStore.fetchStatus(true, true);
       const host = this.appStore.siteStore.innerHost;
       let resources = null;
 
       if (this.selection.length === 1) {
         // single preview
         log.debug('bulk preview: performing single operation');
-        const path = this.#bulkSelectionToPath(this.selection, status.webPath)[0];
+        const path = this.#bulkSelectionToPath(this.selection, this.appStore.status.webPath)[0];
         const res = await this.appStore.update(path);
         if (res) {
           resources = [{
@@ -535,14 +540,13 @@ export class BulkStore {
     });
 
     modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
-      const status = await this.appStore.fetchStatus(true, true);
       const host = this.appStore.siteStore.host || this.appStore.siteStore.outerHost;
       let resources = null;
 
       if (this.selection.length === 1) {
         // single publish
         log.debug('bulk publish: performing single operation');
-        const path = this.#bulkSelectionToPath(this.selection, status.webPath)[0];
+        const path = this.#bulkSelectionToPath(this.selection, this.appStore.status.webPath)[0];
         const res = await this.appStore.publish(path);
         if (res) {
           resources = [{
@@ -653,6 +657,18 @@ export class BulkStore {
       rootEl.addEventListener('click', listener);
       rootEl.addEventListener('keyup', listener);
     }
+    // listen for url changes
+    const urlCheck = window.setInterval(() => {
+      if (this.appStore.sidekick.closest('body')) {
+        if (this.appStore.state !== STATE.FETCHING_STATUS
+          && this.appStore.location.href !== getLocation().href) {
+          this.selection = [];
+          this.appStore.fetchStatus(true, true);
+        }
+      } else {
+        window.clearInterval(urlCheck);
+      }
+    }, 500);
   }
 
   constructor(appStore) {

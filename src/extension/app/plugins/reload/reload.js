@@ -29,7 +29,7 @@ import { newTab } from '../../utils/browser.js';
 export function createReloadPlugin(appStore) {
   return new Plugin({
     id: 'reload',
-    condition: (store) => store.isPreview() || store.isDev(),
+    condition: (store) => store.isContent() && (store.isPreview() || store.isDev()),
     button: {
       text: appStore.i18n('reload'),
       action: async (evt) => {

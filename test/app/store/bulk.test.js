@@ -24,7 +24,7 @@ import {
   getDefaultEditorEnviromentLocations,
 } from '../../mocks/environment.js';
 import chromeMock from '../../mocks/chrome.js';
-import { error, recursiveQuery } from '../../test-utils.js';
+import { error, recursiveQuery, recursiveQueryAll } from '../../test-utils.js';
 import { MODALS, MODAL_EVENTS, STATE } from '../../../src/extension/app/constants.js';
 import { log } from '../../../src/extension/log.js';
 import {
@@ -167,6 +167,8 @@ describe('Test Bulk Store', () => {
           sidekickTest.mockFetchDirectoryStatusSuccess(adminEnv, {
             webPath: '/foo',
           });
+          await appStore.fetchStatus();
+
           const startJobStub = sidekickTest.sandbox.stub(appStore.api, 'startJob').resolves(null);
           sidekickTest.toggleAdminItems([
             'document',
@@ -301,7 +303,7 @@ describe('Test Bulk Store', () => {
         sidekickTest.mockFetchDirectoryStatusSuccess(HelixMockContentSources.SHAREPOINT, {
           webPath: '/foo',
         });
-        const statusFetched = sidekickTest.sandbox.spy(appStore, 'fetchStatus');
+        await appStore.loadContext(sidekickTest.sidekick, sidekickTest.config);
         sidekickTest.toggleAdminItems([
           'document',
           'spreadsheet',
@@ -311,7 +313,6 @@ describe('Test Bulk Store', () => {
 
         await bulkStore.preview();
         await confirmDialog(sidekickTest.sidekick);
-        await waitUntil(() => statusFetched.called);
 
         await waitUntil(() => startJobStub.calledWith('preview', [
           '/foo/document',
@@ -340,8 +341,7 @@ describe('Test Bulk Store', () => {
           } : undefined,
         }));
         await waitUntil(() => getJobStub.calledWith('preview', '123'));
-        await aTimeout(2000); // wait for polling to finish
-        await waitUntil(() => getJobStub.calledWith('preview', '123', true));
+        await waitUntil(() => getJobStub.calledWith('preview', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
         expect(showToastSpy.calledWithMatch(
@@ -362,6 +362,70 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => openUrlsSpy.calledWithMatch(appStore.siteStore.innerHost));
       }).timeout(10000);
 
+      it('bulk activated config files', async () => {
+        sidekickTest.mockFetchDirectoryStatusSuccess(HelixMockContentSources.SHAREPOINT, {
+          webPath: '/.helix',
+        });
+        await appStore.loadContext(sidekickTest.sidekick, sidekickTest.config);
+        sidekickTest.bulkRoot.querySelector('#appRoot .file')
+          .insertAdjacentHTML('beforebegin', mockSharePointFile({
+            path: 'config',
+            file: 'config,xslx',
+            type: 'xlsx',
+          }));
+        sidekickTest.bulkRoot.querySelector('#appRoot .file')
+          .insertAdjacentHTML('beforebegin', mockSharePointFile({
+            path: 'headers',
+            file: 'headers,xslx',
+            type: 'xlsx',
+          }));
+        sidekickTest.toggleAdminItems([
+          'config',
+          'headers',
+        ]);
+        await waitUntil(() => bulkStore.selection.length === 2);
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => startJobStub.calledWithMatch('preview', [
+          '/.helix/headers.json',
+          '/.helix/config.json',
+        ]));
+        await waitUntil(() => getJobStub.calledWith('preview', '123'), null, { timeout: 2000 });
+        expect(bulkStore.progress.processed).to.equal(1);
+
+        // now getJob() returns stopped job and includes details if requested
+        getJobStub.callsFake(async (topic, name, details) => ({
+          topic,
+          name,
+          state: 'stopped',
+          progress: {
+            total: 3,
+            processed: 3,
+            failed: 0,
+          },
+          data: details ? {
+            resources: [
+              { path: '/.helix/headers.json', status: 304 },
+              { path: '/.helix/config.json', status: 200 },
+            ],
+          } : undefined,
+        }));
+        await waitUntil(() => getJobStub.calledWith('preview', '123'));
+        await waitUntil(() => getJobStub.calledWith('preview', '123', true), null, { timeout: 2000 });
+
+        await waitUntil(() => showToastSpy.called);
+        expect(showToastSpy.calledWithMatch(
+          'Configuration successfully activated.',
+          'positive',
+        )).to.be.true;
+        expect(fireEventStub.calledWithMatch('previewed')).to.be.true;
+
+        // no toast actions
+        const buttons = [...recursiveQueryAll(sidekickTest.sidekick, 'sp-action-button:not(.close)')];
+        expect(buttons.length).to.equal(0);
+      }).timeout(10000);
+
       it('bulk previews selection and displays partial success toast', async () => {
         sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
         await waitUntil(() => bulkStore.selection.length === 2);
@@ -370,7 +434,7 @@ describe('Test Bulk Store', () => {
         await confirmDialog(sidekickTest.sidekick);
 
         await waitUntil(() => startJobStub.calledWith('preview', ['/document', '/spreadsheet.json']));
-        await waitUntil(() => getJobStub.calledWith('preview', '123'));
+        await waitUntil(() => getJobStub.calledWith('preview', '123'), null, { timeout: 2000 });
         expect(bulkStore.progress.processed).to.equal(1);
 
         // now getJob() returns stopped job and includes details if requested
@@ -391,8 +455,7 @@ describe('Test Bulk Store', () => {
           } : undefined,
         }));
         await waitUntil(() => getJobStub.calledWith('preview', '123'));
-        await aTimeout(2000); // wait for polling to finish
-        await waitUntil(() => getJobStub.calledWith('preview', '123', true));
+        await waitUntil(() => getJobStub.calledWith('preview', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
         expect(showToastSpy.calledWithMatch('but 1 failed', 'warning')).to.be.true;
@@ -427,8 +490,7 @@ describe('Test Bulk Store', () => {
           } : undefined,
         }));
         await waitUntil(() => getJobStub.calledWith('preview', '123'));
-        await aTimeout(2000); // wait for polling to finish
-        await waitUntil(() => getJobStub.calledWith('preview', '123', true));
+        await waitUntil(() => getJobStub.calledWith('preview', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
         expect(showToastSpy.calledWithMatch('Failed to generate preview', 'negative')).to.be.true;
@@ -490,6 +552,21 @@ describe('Test Bulk Store', () => {
 
         await waitUntil(() => getJobStub.called, null, { timeout: 3000 });
         await waitUntil(() => clearIntervalSpy.called, null, { timeout: 3000 });
+      }).timeout(10000);
+
+      it('get job returns null', async () => {
+        getJobStub.resolves(null);
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => getJobStub.calledOnce, '', { timeout: 3000 });
+        // make sure polling has stopped
+        await aTimeout(1100);
+
+        expect(getJobStub.callCount).to.equal(1);
       }).timeout(10000);
 
       it('get job response contains no progress', async () => {
@@ -651,8 +728,7 @@ describe('Test Bulk Store', () => {
           } : undefined,
         }));
         await waitUntil(() => getJobStub.calledWith('publish', '123'), null, { timeout: 2000 });
-        await aTimeout(2000); // wait for polling to finish
-        await waitUntil(() => getJobStub.calledWith('publish', '123', true));
+        await waitUntil(() => getJobStub.calledWith('publish', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
         expect(showToastSpy.calledWithMatch(
@@ -681,7 +757,7 @@ describe('Test Bulk Store', () => {
         await confirmDialog(sidekickTest.sidekick);
 
         await waitUntil(() => startJobStub.calledWith('live', ['/document', '/spreadsheet.json']));
-        await waitUntil(() => getJobStub.calledWith('publish', '123'));
+        await waitUntil(() => getJobStub.calledWith('publish', '123'), null, { timeout: 2000 });
         expect(bulkStore.progress.processed).to.equal(1);
 
         // now getJob() returns stopped job and includes details if requested
@@ -702,8 +778,7 @@ describe('Test Bulk Store', () => {
           } : undefined,
         }));
         await waitUntil(() => getJobStub.calledWith('publish', '123'));
-        await aTimeout(2000); // wait for polling to finish
-        await waitUntil(() => getJobStub.calledWith('publish', '123', true));
+        await waitUntil(() => getJobStub.calledWith('publish', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
         expect(showToastSpy.calledWithMatch('but 1 failed', 'warning')).to.be.true;
@@ -717,7 +792,7 @@ describe('Test Bulk Store', () => {
         await confirmDialog(sidekickTest.sidekick);
 
         await waitUntil(() => startJobStub.calledWith('live', ['/document', '/spreadsheet.json']));
-        await waitUntil(() => getJobStub.calledWith('publish', '123'));
+        await waitUntil(() => getJobStub.calledWith('publish', '123'), null, { timeout: 2000 });
         expect(bulkStore.progress.processed).to.equal(1);
 
         // now getJob() returns stopped job and includes details if requested
@@ -738,8 +813,7 @@ describe('Test Bulk Store', () => {
           } : undefined,
         }));
         await waitUntil(() => getJobStub.calledWith('publish', '123'));
-        await aTimeout(2000); // wait for polling to finish
-        await waitUntil(() => getJobStub.calledWith('publish', '123', true));
+        await waitUntil(() => getJobStub.calledWith('publish', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
         expect(showToastSpy.calledWithMatch('Failed to publish all files.', 'negative')).to.be.true;
@@ -1029,6 +1103,7 @@ describe('Test Bulk Store', () => {
         .mockLocation(getAdminLocation(HelixMockContentSources.GDRIVE))
         .mockAdminDOM(HelixMockContentSources.GDRIVE);
       await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      await aTimeout(500);
 
       // delete file icon to simulate unknown file type
       sidekickTest.toggleAdminItems(['document']);
@@ -1047,6 +1122,7 @@ describe('Test Bulk Store', () => {
         .mockLocation(getAdminLocation(HelixMockContentSources.GDRIVE))
         .mockAdminDOM(HelixMockContentSources.GDRIVE);
       await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      await aTimeout(500);
 
       // add .docx extension to file name
       sidekickTest.bulkRoot
@@ -1072,6 +1148,7 @@ describe('Test Bulk Store', () => {
         .mockLocation(getAdminLocation(HelixMockContentSources.GDRIVE))
         .mockAdminDOM(HelixMockContentSources.GDRIVE);
       await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      await aTimeout(500);
 
       // add .xlsx extension to file name
       sidekickTest.bulkRoot
@@ -1105,6 +1182,39 @@ describe('Test Bulk Store', () => {
       await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
       expect(bulkStore.getSummaryText('preview', 4, 4))
         .to.equal('Failed to generate preview of all files.');
+    });
+  });
+
+  describe('url change', () => {
+    let fetchStatusSpy;
+
+    beforeEach(async () => {
+      appStore = new AppStore();
+      bulkStore = appStore.bulkStore;
+      sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchDirectoryStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockLocation(getAdminLocation(HelixMockContentSources.SHAREPOINT))
+        .mockAdminDOM();
+      fetchStatusSpy = sidekickTest.sandbox.spy(appStore, 'fetchStatus');
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+    });
+
+    it('refetches status', async () => {
+      bulkStore.initStore(appStore.location);
+      sidekickTest.toggleAdminItems(['document']);
+      await waitUntil(() => bulkStore.selection.length === 1);
+
+      // change location
+      const input = document.getElementById('sidekick_test_location');
+      input.setAttribute('value', `${input.getAttribute('value')}&new=1`);
+      await aTimeout(500);
+
+      await waitUntil(() => fetchStatusSpy.called);
+      expect(fetchStatusSpy.callCount).to.be.greaterThan(1);
+      expect(bulkStore.selection.length).to.equal(0);
     });
   });
 });
