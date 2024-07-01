@@ -736,7 +736,7 @@ describe('Test App Store', () => {
     });
 
     // Test when resp is ok and status.webPath starts with /.helix/
-    it('should handle generic success', async () => {
+    it('should handle config success', async () => {
       updateStub.resolves(true);
       instance.status = { webPath: '/.helix/foo' };
 
