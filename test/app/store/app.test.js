@@ -734,6 +734,17 @@ describe('Test App Store', () => {
       expect(showToastStub.calledOnce).is.true;
       expect(showToastStub.calledWith('Preview successfully updated, opening Preview...', 'positive')).is.true;
     });
+
+    // Test when resp is ok and status.webPath starts with /.helix/
+    it('should handle generic success', async () => {
+      updateStub.resolves(true);
+      instance.status = { webPath: '/.helix/foo' };
+
+      await instance.updatePreview(false);
+
+      expect(showToastStub.calledOnce).is.true;
+      expect(showToastStub.calledWith('Configuration successfully activated.', 'positive')).is.true;
+    });
   });
 
   describe('delete', async () => {
