@@ -11,7 +11,8 @@
  */
 
 export const DISCOVER_JSON = [
-  { owner: 'foo', repo: 'bar1' },
+  { org: 'foo', site: 'bar1', originalSite: true },
+  { org: 'foo', site: 'bar2', originalSite: false },
 ];
 
 export const DRIVE_ITEM_FILE_JSON = {

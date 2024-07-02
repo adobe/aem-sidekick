@@ -204,9 +204,9 @@ class UrlCache {
       const entry = createCacheEntry(
         url,
         [{
-          owner,
-          repo,
-          originalRepository: true,
+          org: owner,
+          site: repo,
+          originalSite: true,
         }],
       );
       if (urlIndex >= 0) {
