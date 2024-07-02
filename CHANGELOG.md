@@ -1,3 +1,11 @@
+# [1.28.0](https://github.com/adobe/aem-sidekick/compare/v1.27.4...v1.28.0) (2024-07-02)
+
+
+### Features
+
+* ignore originalSite if single match ([#202](https://github.com/adobe/aem-sidekick/issues/202)) ([02d9cb3](https://github.com/adobe/aem-sidekick/commit/02d9cb3958a8878c0c87f5a4a507390dc2272316))
+* special handling for config files ([#199](https://github.com/adobe/aem-sidekick/issues/199)) ([20638ca](https://github.com/adobe/aem-sidekick/commit/20638cae83808aa9c15c15a07282e4d505db5f92))
+
 ## [1.27.4](https://github.com/adobe/aem-sidekick/compare/v1.27.3...v1.27.4) (2024-07-02)
 
 
