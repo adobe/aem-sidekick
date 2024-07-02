@@ -77,12 +77,12 @@ export class ActivityAction extends ConnectedElement {
       case STATE.UNPUBLISHING:
       case STATE.DELETING:
         return html`
-          <sp-progress-circle size="s" indeterminate></sp-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
+          <sk-progress-circle size="s" indeterminate></sk-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
       case STATE.BULK_PREVIEWING:
       case STATE.BULK_PUBLISHING:
         return html`
-          <sp-progress-circle size="s" indeterminate></sp-progress-circle>
+          <sk-progress-circle size="s" indeterminate></sk-progress-circle>
           <span>
             ${this.appStore.bulkStore?.progress
               ? this.appStore.i18n(this.appStore.state)
@@ -108,18 +108,18 @@ export class ActivityAction extends ConnectedElement {
             </div>
             <div class="actions">
               ${this.appStore.toast.secondaryCallback && this.appStore.toast.secondaryLabel ? html`
-                <sp-action-button class="action" quiet @click=${this.appStore.toast.secondaryCallback}>
+                <sk-action-button class="action" quiet @click=${this.appStore.toast.secondaryCallback}>
                   ${this.appStore.toast.secondaryLabel}
-                </sp-action-button>
+                </sk-action-button>
               ` : html``}
               ${this.appStore.toast.actionCallback && this.appStore.toast.actionLabel ? html`
-                <sp-action-button class="action" quiet @click=${this.appStore.toast.actionCallback}>
+                <sk-action-button class="action" quiet @click=${this.appStore.toast.actionCallback}>
                   ${this.appStore.toast.actionLabel}
-                </sp-action-button>
+                </sk-action-button>
               ` : html``}
-              <sp-action-button class="close" quiet @click=${this.handleCloseToast}>
+              <sk-action-button class="close" quiet @click=${this.handleCloseToast}>
                 <sp-icon slot="icon">${ICONS.CLOSE_X}</sp-icon>
-              </sp-action-button>
+              </sk-action-button>
             </div>
           </div>
         `;

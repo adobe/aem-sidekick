@@ -152,6 +152,7 @@ export const style = css`
 
   :host(.plugin-container) #button {
     background-color: transparent;
+    gap: 10px;
   }
 
   :host(.plugin-container) #button[aria-expanded="true"] {

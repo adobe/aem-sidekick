@@ -69,7 +69,7 @@ describe('Login', () => {
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
       const loginButton = recursiveQuery(sidekick, 'login-button');
 
-      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button');
+      const loginActionButton = recursiveQuery(loginButton, 'sk-action-button');
       await waitUntil(() => loginActionButton.getAttribute('disabled') === null);
 
       sidekickTest
@@ -118,7 +118,7 @@ describe('Login', () => {
         .mockFetchProfilePictureSuccess()
         .mockFetchProfileUnauthorized();
 
-      const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
+      const logoutButton = recursiveQuery(accountMenu, 'sk-menu-item.logout');
       logoutButton.click();
 
       await waitUntil(() => appStore.state === STATE.LOGGING_OUT);
@@ -153,7 +153,7 @@ describe('Login', () => {
         .mockFetchStatusSuccess()
         .mockFetchProfileUnauthorized();
 
-      const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
+      const logoutButton = recursiveQuery(accountMenu, 'sk-menu-item.logout');
       logoutButton.click();
 
       await waitUntil(() => appStore.state === STATE.LOGGING_OUT);
@@ -188,7 +188,7 @@ describe('Login', () => {
         .mockFetchStatusSuccess()
         .mockFetchProfileUnauthorized();
 
-      const logoutButton = recursiveQuery(accountMenu, 'sp-menu-item.logout');
+      const logoutButton = recursiveQuery(accountMenu, 'sk-menu-item.logout');
       logoutButton.click();
 
       await waitUntil(() => appStore.state === STATE.LOGGING_OUT);
@@ -210,7 +210,7 @@ describe('Login', () => {
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
       const loginButton = recursiveQuery(sidekick, 'login-button');
 
-      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button');
+      const loginActionButton = recursiveQuery(loginButton, 'sk-action-button');
       await waitUntil(() => loginActionButton.getAttribute('disabled') === null);
 
       expect(loginActionButton).to.exist;

@@ -43,13 +43,13 @@ export class LoginButton extends ConnectedElement {
       --mod-actionbutton-edge-to-text: 8px;
     }
     
-    sp-action-menu sp-menu-item {
+    sp-action-menu sk-menu-item {
       padding-inline-start: 0;
       min-width: 202px;
       margin: 8px;
     }
 
-    sp-action-menu sp-menu-item .no-picture {
+    sp-action-menu sk-menu-item .no-picture {
       display: flex;
       width: 32px;
       height: 32px;
@@ -57,18 +57,18 @@ export class LoginButton extends ConnectedElement {
       justify-content: center;
     }
 
-    sp-action-menu sp-menu-item .no-picture svg {
+    sp-action-menu sk-menu-item .no-picture svg {
       width: 20px;
       height: 20px;
     }
 
-    sp-action-menu sp-menu-item.user {
+    sp-action-menu sk-menu-item.user {
       pointer-events: none;
       --mod-menu-item-bottom-edge-to-text: 0;
       --mod-menu-item-top-edge-to-text: 0;
     }
 
-    sp-action-menu sp-menu-item.user[focused] {
+    sp-action-menu sk-menu-item.user[focused] {
       box-shadow: unset;
       background-color: unset;
     }
@@ -89,7 +89,7 @@ export class LoginButton extends ConnectedElement {
       border-radius: 50%;
     }
     
-    sp-progress-circle[size="s"] {
+    sk-progress-circle[size="s"] {
       margin: 0 8px;
     }
 
@@ -122,13 +122,13 @@ export class LoginButton extends ConnectedElement {
       display: none;
     }
 
-    :host(.not-authorized) sp-action-button.login {
+    :host(.not-authorized) sk-action-button.login {
       background-color: var(--spectrum-blue-600);
       color: #fff;
     }
 
     @media (prefers-color-scheme: light) {
-      :host(.not-authorized) sp-action-button.login {
+      :host(.not-authorized) sk-action-button.login {
         background-color: var(--spectrum-blue-900);
       }
     }
@@ -194,7 +194,7 @@ export class LoginButton extends ConnectedElement {
     }
 
     if (!authenticated) {
-      return html`<sp-action-button quiet class="login" @click=${this.login}>${this.appStore.i18n('user_login')}</sp-action-button>`;
+      return html`<sk-action-button quiet class="login" @click=${this.login}>${this.appStore.i18n('user_login')}</sk-action-button>`;
     } else {
       return html`
         <sp-action-menu
@@ -204,18 +204,18 @@ export class LoginButton extends ConnectedElement {
           <sp-icon slot="icon" size="l" class=${ifDefined(profile.picture && this.profilePicture ? 'picture' : undefined)}>
             ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
-          <sp-menu-item class="user" value="user" tabindex="-1" disabled>
+          <sk-menu-item class="user" value="user" tabindex="-1" disabled>
             ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
             ${profile.name}
             <span slot="description">${profile.email}</span>
-          </sp-menu-item>
+          </sk-menu-item>
           <sp-divider size="s"></sp-divider>
-          <sp-menu-item class="logout" value="logout" @click=${this.logout} tabindex="0">
+          <sk-menu-item class="logout" value="logout" @click=${this.logout} tabindex="0">
             <sp-icon slot="icon" size="xl">
               ${ICONS.SIGN_OUT}
             </sp-icon>
             ${this.appStore.i18n('user_logout')}
-          </sp-menu-item>
+          </sk-menu-item>
         </sp-action-menu>
       `;
     }

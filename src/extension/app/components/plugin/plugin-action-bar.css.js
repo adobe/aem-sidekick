@@ -62,7 +62,7 @@ export const style = css`
     width: max-content;
   }
 
-  action-bar action-bar-picker sp-menu-item {
+  action-bar action-bar-picker sk-menu-item {
     min-width: 120px;
   }
 
@@ -70,23 +70,23 @@ export const style = css`
    * Work around the fact that we can't tab into sp-action-group
    */
 
-  action-bar sp-action-menu sp-menu-item {
+  action-bar sp-action-menu sk-menu-item {
     margin: 0 8px;
   }
 
-  action-bar sp-action-menu sp-menu-item:first-of-type {
+  action-bar sp-action-menu sk-menu-item:first-of-type {
     margin: 8px 8px 0;
   }
 
-  action-bar sp-action-menu sp-menu-item:last-of-type {
+  action-bar sp-action-menu sk-menu-item:last-of-type {
     margin: 0 8px 8px;
   }
 
-  action-bar sp-action-menu sp-menu-item:only-of-type {
+  action-bar sp-action-menu sk-menu-item:only-of-type {
     margin: 8px;
   }
 
-  action-bar sp-action-menu sp-menu-item.close {
+  action-bar sp-action-menu sk-menu-item.close {
     margin: 4px 8px 8px;
   }
 

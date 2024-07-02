@@ -49,18 +49,18 @@ export const style = css`
     gap: 12px;
   }
 
-  .toast-container .actions sp-action-button {
+  .toast-container .actions sk-action-button {
     color: #fff;
     border-radius: 16px;
     --highcontrast-actionbutton-background-color-hover: #fff4;
     --highcontrast-actionbutton-background-color-active: #fff2;
   }
 
-  .toast-container .actions sp-action-button.close {
+  .toast-container .actions sk-action-button.close {
     color: #fff;
   }
 
-  .toast-container .actions sp-action-button.action {
+  .toast-container .actions sk-action-button.action {
     --highcontrast-actionbutton-background-color-default: #fff2;
     height: 100%;
     min-height: 32px;

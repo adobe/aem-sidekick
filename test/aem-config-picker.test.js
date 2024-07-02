@@ -48,7 +48,7 @@ describe('AEM Config Picker', () => {
 
     expect(actionBar).to.exist;
 
-    const configButtons = [...recursiveQueryAll(actionBar, 'sp-action-button')];
+    const configButtons = [...recursiveQueryAll(actionBar, 'sk-action-button')];
     expect(configButtons.length).to.equal(3);
 
     configPicker.addEventListener('configselected', configSelectedSpy);

@@ -67,7 +67,7 @@ describe('AEM Sidekick', () => {
     await emulateMedia({ colorScheme: 'light' });
     // todo: check if color scheme change is getting picked up
     // expect(theme.getAttribute('color')).to.equal('light');
-    const spTheme = recursiveQuery(theme, 'sp-theme');
+    const spTheme = recursiveQuery(theme, 'sk-theme');
     expect(spTheme).to.exist;
 
     const { location } = sidekick;
@@ -81,7 +81,7 @@ describe('AEM Sidekick', () => {
       await sidekickTest.awaitEnvSwitcher();
       const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
 
-      const spTheme = themeWrapper.shadowRoot.querySelector('sp-theme');
+      const spTheme = themeWrapper.shadowRoot.querySelector('sk-theme');
       expect(spTheme).to.exist;
 
       expect(spTheme.getAttribute('color')).to.equal('light');
@@ -93,7 +93,7 @@ describe('AEM Sidekick', () => {
       await sidekickTest.awaitEnvSwitcher();
       const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
 
-      const spTheme = themeWrapper.shadowRoot.querySelector('sp-theme');
+      const spTheme = themeWrapper.shadowRoot.querySelector('sk-theme');
       expect(spTheme).to.exist;
 
       // todo: check if color scheme change is getting picked up
