@@ -187,7 +187,7 @@ describe('Test url-cache', () => {
     it('known url', async () => {
       // known url
       const results = await urlCache.get(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'));
-      expect(results.length).to.equal(1);
+      expect(results.length).to.equal(2);
       expect(sessionGet.callCount).to.equal(1);
     });
 

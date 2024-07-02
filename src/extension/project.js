@@ -176,12 +176,12 @@ export async function getProjectFromUrl(tab) {
         };
       } else {
         // check if url is known in url cache
-        const { owner, repo } = (await urlCache.get(tab))
-          .find((r) => r.originalRepository) || {};
-        if (owner && repo) {
+        const { org, site } = (await urlCache.get(tab))
+          .find((r) => r.originalSite) || {};
+        if (org && site) {
           return {
-            owner,
-            repo,
+            owner: org,
+            repo: site,
             ref: 'main',
           };
         }
@@ -480,7 +480,7 @@ export async function getProjectMatches(configs, tab) {
   const cachedResults = await urlCache.get(tab);
   cachedResults.forEach((e) => {
     // add matches from url cache
-    matches.push(...configs.filter(({ owner, repo }) => e.owner === owner && e.repo === repo));
+    matches.push(...configs.filter(({ owner, repo }) => e.org === owner && e.site === repo));
   });
   // check if transient match can be derived from url or url cache
   if (matches.length === 0) {
@@ -495,11 +495,13 @@ export async function getProjectMatches(configs, tab) {
     }
   }
   if (matches.length === 0) {
-    const { owner, repo } = cachedResults.find((r) => r.originalRepository) || {};
-    if (owner && repo) {
+    const { org, site } = cachedResults.length === 1
+      ? cachedResults[0] // use single match from url cache
+      : (cachedResults.find((r) => r.originalSite) || {});
+    if (org && site) {
       matches.push({
-        owner,
-        repo,
+        owner: org,
+        repo: site,
         ref: 'main',
         transient: true,
       });
