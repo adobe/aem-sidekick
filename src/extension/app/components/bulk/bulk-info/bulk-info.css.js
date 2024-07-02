@@ -23,8 +23,4 @@ export const style = css`
   .container span {
     padding: 0 6px 2px;
   }
-
-  .container sp-menu-divider {
-    height: 100%;
-  }
 `;
