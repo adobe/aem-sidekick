@@ -41,10 +41,6 @@ export const style = css`
     padding: 0;
   }
 
-  action-bar .plugin-container {
-    width: auto;
-  }
-
   action-bar .logo {
     width: 32px;
     height: 32px;
@@ -94,8 +90,12 @@ export const style = css`
     margin: 0;
   }
 
-  action-bar sp-menu-divider {
+  action-bar > sp-menu-divider {
     height: 56px;
+  }
+
+  action-bar div.plugins-container > sp-menu-divider:last-child {
+    display: none;
   }
 
   action-bar sp-action-menu sp-menu-group {
