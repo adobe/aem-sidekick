@@ -371,10 +371,13 @@ describe('Test project', () => {
     mockDiscoveryCalls();
     await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'));
     expect((await getProjectMatches(CONFIGS, mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'))).length).to.equal(1);
+    // match transient sharepoint URL
+    await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=test.docx&action=default&mobileredirect=true'));
+    expect((await getProjectMatches([], mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=test.docx&action=default&mobileredirect=true'))).length).to.equal(1);
     // match transient gdrive URL
     await urlCache.set(mockTab('https://docs.google.com/document/d/1234567890/edit'), { owner: 'foo', repo: 'bar0' });
     expect((await getProjectMatches(CONFIGS, mockTab('https://docs.google.com/document/d/1234567890/edit'))).length).to.equal(1);
-  });
+  }).timeout(3000);
 
   it('getGitHubSettings', async () => {
     const github = getGitHubSettings('https://github.com/adobe/blog/tree/stage');

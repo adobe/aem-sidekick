@@ -23,7 +23,7 @@ let count;
  * @param {number[]} empty The numbers of calls where discovery should come up emtpy
  * @returns {Object} The stubbed fetch function
  */
-export function mockDiscoveryCalls(fail = [], empty = [20]) {
+export function mockDiscoveryCalls(fail = [], empty = []) {
   count = 0;
   const stub = sinon.stub(window, 'fetch')
     .callsFake(async (url) => {
