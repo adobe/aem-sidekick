@@ -495,7 +495,6 @@ export async function getProjectMatches(configs, tab) {
     }
   }
   if (matches.length === 0) {
-    console.log('---------', tab.url, ' no matches, check cache', cachedResults);
     const { org, site } = cachedResults.length === 1
       ? cachedResults[0] // use single match from url cache
       : (cachedResults.find((r) => r.originalSite) || {});

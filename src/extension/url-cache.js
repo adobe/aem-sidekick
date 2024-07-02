@@ -237,7 +237,6 @@ class UrlCache {
         );
         if (resp.ok) {
           results = await resp.json();
-          console.log('urlcache.set()', url, results);
           if (Array.isArray(results) && results.length > 0) {
             // when switching back to a sharepoint tab it can happen that the fetch call to the
             // sharepoint API is no longer authenticated, thus the info returned is null.
