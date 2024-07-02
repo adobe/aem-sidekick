@@ -370,13 +370,13 @@ describe('Test Bulk Store', () => {
         sidekickTest.bulkRoot.querySelector('#appRoot .file')
           .insertAdjacentHTML('beforebegin', mockSharePointFile({
             path: 'config',
-            file: 'config,xslx',
+            file: 'config.xslx',
             type: 'xlsx',
           }));
         sidekickTest.bulkRoot.querySelector('#appRoot .file')
           .insertAdjacentHTML('beforebegin', mockSharePointFile({
             path: 'headers',
-            file: 'headers,xslx',
+            file: 'headers.xslx',
             type: 'xlsx',
           }));
         sidekickTest.toggleAdminItems([
