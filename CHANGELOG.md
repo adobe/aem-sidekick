@@ -1,3 +1,10 @@
+## [1.27.4](https://github.com/adobe/aem-sidekick/compare/v1.27.3...v1.27.4) (2024-07-02)
+
+
+### Bug Fixes
+
+* dividers ([#201](https://github.com/adobe/aem-sidekick/issues/201)) ([ba7a128](https://github.com/adobe/aem-sidekick/commit/ba7a12898dd0d547fb6890bde40749270fc69bf9))
+
 ## [1.27.3](https://github.com/adobe/aem-sidekick/compare/v1.27.2...v1.27.3) (2024-06-28)
 
 
