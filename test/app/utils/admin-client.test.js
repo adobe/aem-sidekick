@@ -473,49 +473,57 @@ describe('Test Admin Client', () => {
   });
 
   describe('getLocalizedError', () => {
+    let path = '/foo';
+
     it('should return localized error for status 404 (editor)', () => {
       sandbox.stub(appStore, 'isEditor').returns(true);
-      const res = adminClient.getLocalizedError('status', 404);
+      const res = adminClient.getLocalizedError('status', path, 404);
       expect(res).to.match(/404/);
       expect(res).to.match(/ make sure access to this document is granted/);
     });
 
     it('should return localized error for status 404 (content)', () => {
       sandbox.stub(appStore, 'isEditor').returns(false);
-      const res = adminClient.getLocalizedError('status', 404);
+      const res = adminClient.getLocalizedError('status', path, 404);
       expect(res).to.match(/404/);
       expect(res).to.match(/Check your Sidekick configuration or URL/);
     });
 
     it('should return localized error for status 400', () => {
-      const res1 = adminClient.getLocalizedError('preview', 400, 'XML parsing error');
+      const res1 = adminClient.getLocalizedError('preview', path, 400, 'XML parsing error');
       expect(res1).to.match(/SVG invalid/);
 
-      const res2 = adminClient.getLocalizedError('preview', 400, 'script or event handler');
+      const res2 = adminClient.getLocalizedError('preview', path, 400, 'script or event handler');
       expect(res2).to.match(/SVG invalid/);
     });
 
     it('should return localized error for status 413', () => {
-      const res = adminClient.getLocalizedError('preview', 413);
+      const res = adminClient.getLocalizedError('preview', path, 413);
       expect(res).to.match(/File too large/);
     });
 
     it('should return localized error for status 415', () => {
-      const res1 = adminClient.getLocalizedError('preview', 415, 'docx with google not supported');
+      const res1 = adminClient.getLocalizedError('preview', path, 415, 'docx with google not supported');
       expect(res1).to.match(/Microsoft Word document/);
 
-      const res2 = adminClient.getLocalizedError('preview', 415, 'xlsx with google not supported');
+      const res2 = adminClient.getLocalizedError('preview', path, 415, 'xlsx with google not supported');
       expect(res2).to.match(/Microsoft Excel document/);
 
-      const res3 = adminClient.getLocalizedError('preview', 415);
+      const res3 = adminClient.getLocalizedError('preview', path, 415);
       expect(res3).to.match(/File type not supported/);
     });
 
+    it('should return localized error for failed config updates', () => {
+      path = '/.helix/config.json';
+      const res = adminClient.getLocalizedError('preview', path, 500, 'something went wrong');
+      expect(res).to.equal('Failed to activate configuration: something went wrong');
+    });
+
     it('should return localized error fallbacks', () => {
-      const res1 = adminClient.getLocalizedError('publish', 404);
+      const res1 = adminClient.getLocalizedError('publish', path, 404);
       expect(res1).to.match(/generate preview first/);
 
-      const res2 = adminClient.getLocalizedError('publish', 500);
+      const res2 = adminClient.getLocalizedError('publish', path, 500);
       expect(res2).to.match(/Publication failed/);
     });
   });

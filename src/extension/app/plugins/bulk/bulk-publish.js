@@ -28,7 +28,8 @@ import { Plugin } from '../../components/plugin/plugin.js';
 export function createBulkPublishPlugin(appStore) {
   return new Plugin({
     id: 'bulk-publish',
-    condition: (store) => store.isAdmin() && store.bulkStore?.selection.length > 0,
+    condition: (store) => store.isAdmin() && store.bulkStore?.selection.length > 0
+      && !store.status?.webPath?.startsWith('/.helix'),
     button: {
       text: appStore.i18n('publish'),
       action: () => {

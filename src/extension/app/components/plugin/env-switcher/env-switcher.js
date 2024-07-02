@@ -362,7 +362,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       liveMenuItem.remove();
     }
 
-    if (this.appStore.status?.webPath) {
+    if (this.appStore.status?.webPath && !this.appStore.status?.webPath.startsWith('/.helix')) {
       this.ready = true;
     }
   }

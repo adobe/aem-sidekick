@@ -232,7 +232,7 @@ export class ModalContainer extends LitElement {
         options.underlay = true;
         options.error = true;
         options.headline = data?.headline ?? this.appStore.i18n('destructive_confirmation').replace('$1', this.action);
-        options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('config_delete');
+        options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('delete');
         options.cancelLabel = this.appStore.i18n('cancel');
         options.content = html`
           ${data?.message || ''}

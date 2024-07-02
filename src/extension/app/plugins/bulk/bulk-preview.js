@@ -36,6 +36,14 @@ export function createBulkPreviewPlugin(appStore) {
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write'), // only enable if authorized
     },
+    callback: (store) => {
+      if (store.status.webPath) {
+        const { button } = store.corePlugins['bulk-preview'].config;
+        button.text = store.status.webPath.startsWith('/.helix')
+          ? store.i18n('activate') // special button text for config files
+          : store.i18n('preview');
+      }
+    },
   },
   appStore);
 }
