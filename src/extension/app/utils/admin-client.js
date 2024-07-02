@@ -112,13 +112,16 @@ export class AdminClient {
    * @param {string} [error] The error message
    * @returns {string} The localized error message
    */
-  getLocalizedError(action, status, error) {
+  getLocalizedError(action, path, status, error) {
     let message = '';
     if (action === 'status' && status === 404) {
       // special handling for status
       message = this.appStore.i18n(this.appStore.isEditor()
         ? 'error_status_404_document'
         : 'error_status_404_content');
+    } else if (path.startsWith('/.helix/') && error) {
+      // special error message for config files
+      message = this.appStore.i18n('error_preview_config').replace('$1', error);
     } else if (status === 400 && (error?.includes('script or event handler')
       || error?.includes('XML'))) {
       // preview: invalid svg
@@ -151,7 +154,7 @@ export class AdminClient {
    * @param {string} action The action
    * @param {Response} resp The response object
    */
-  handleServerError(action, resp) {
+  handleServerError(action, path, resp) {
     // handle rate limiting
     const limiter = this.getRateLimiter(resp);
     if (limiter) {
@@ -162,7 +165,7 @@ export class AdminClient {
       return;
     }
 
-    const message = this.getLocalizedError(action, resp.status, this.getServerError(resp));
+    const message = this.getLocalizedError(action, path, resp.status, this.getServerError(resp));
     if (message) {
       this.appStore.showToast(
         message.replace('$1', this.getServerError(resp)),
@@ -227,7 +230,7 @@ export class AdminClient {
       } else {
         if (resp.status !== 401) {
           // special handling for 401
-          this.handleServerError(this.getAction('status'), resp);
+          this.handleServerError(this.getAction('status'), path, resp);
         }
         return { status: resp.status };
       }
@@ -277,7 +280,7 @@ export class AdminClient {
       if (resp.ok) {
         return del ? { status: resp.status } : resp.json();
       } else {
-        this.handleServerError(this.getAction(api, del), resp);
+        this.handleServerError(this.getAction(api, del), path, resp);
       }
     } catch (e) {
       this.handleFatalError(this.getAction(api, del));
@@ -305,7 +308,7 @@ export class AdminClient {
       if (resp.ok) {
         return del ? { status: resp.status } : resp.json();
       } else {
-        this.handleServerError(this.getAction(api, del), resp);
+        this.handleServerError(this.getAction(api, del), path, resp);
       }
     } catch (e) {
       this.handleFatalError(this.getAction(api, del));
@@ -323,11 +326,12 @@ export class AdminClient {
    * @returns {Promise<Object>} The JSON response
    */
   async startJob(api, paths, del) {
+    const path = '/*';
     try {
       const resp = await callAdmin(
         this.siteStore,
         api,
-        '/*',
+        path,
         {
           method: 'post',
           body: {
@@ -339,7 +343,7 @@ export class AdminClient {
       if (resp.ok) {
         return resp.json();
       } else {
-        this.handleServerError(this.getAction(api, del), resp);
+        this.handleServerError(this.getAction(api, del), path, resp);
       }
     } catch (e) {
       this.handleFatalError(this.getAction(api, del));
@@ -367,7 +371,7 @@ export class AdminClient {
       if (resp.ok) {
         return resp.json();
       } else {
-        this.handleServerError(this.getAction(api), resp);
+        this.handleServerError(this.getAction(api), path, resp);
       }
     } catch (e) {
       this.handleFatalError(this.getAction(api));

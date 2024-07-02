@@ -897,13 +897,17 @@ export class AppStore {
     }
 
     if (res) {
-      /* istanbul ignore next 4 */
-      const actionCallback = () => {
-        this.setState();
-        this.switchEnv('preview');
-      };
-
-      this.showToast(this.i18n('preview_success'), 'positive', undefined, actionCallback, 'Open');
+      // special handling of config files
+      if (this.status.webPath.startsWith('/.helix/')) {
+        this.showToast(this.i18n('config_success'), 'positive');
+      } else {
+        /* istanbul ignore next 4 */
+        const actionCallback = () => {
+          this.setState();
+          this.switchEnv('preview');
+        };
+        this.showToast(this.i18n('preview_success'), 'positive', undefined, actionCallback, 'Open');
+      }
     }
   }
 
