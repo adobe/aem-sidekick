@@ -24,6 +24,7 @@ import { HelixMockEnvironments } from '../../../mocks/environment.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 import { STATE } from '../../../../src/extension/app/constants.js';
+import { defaultCodeStatusResponse } from '../../../fixtures/helix-admin.js';
 
 /**
  * The AEMSidekick object type
@@ -103,6 +104,16 @@ describe('Activity', () => {
       await waitUntil(() => recursiveQuery(activityAction, 'span')
         .textContent.trim() === 'Updating Preview...');
     }).timeout(5000);
+
+    it('renders code state', async () => {
+      sidekickTest.mockFetchStatusSuccess(false, defaultCodeStatusResponse);
+      sidekick = sidekickTest.createSidekick();
+
+      await waitUntil(() => recursiveQuery(sidekick, 'activity-action'));
+      const activityAction = recursiveQuery(sidekick, 'activity-action');
+      expect(recursiveQuery(activityAction, 'span').textContent.trim())
+        .to.equal('No actions available for code');
+    });
   });
 
   describe('Toasts', () => {
