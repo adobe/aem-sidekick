@@ -28,7 +28,8 @@ export const style = css`
     padding-bottom: 2px;
   }
 
-  .container span.code {
+  .container i.code {
+    user-select: none;
     margin: 0 -2px 0 2px;
     font-family: monospace;
     font-weight: bold;

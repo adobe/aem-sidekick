@@ -102,7 +102,7 @@ export class ActivityAction extends ConnectedElement {
         `;
       case STATE.CODE:
         return html`
-          <span class="code">&lt;/&gt;</span><span>${this.appStore.i18n(this.appStore.state)}</span>
+          <i class="code">&lt;/&gt;</i><span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
       case STATE.TOAST:
         return html`
