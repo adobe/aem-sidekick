@@ -100,6 +100,10 @@ export class ActivityAction extends ConnectedElement {
         return html`
           ${ICONS.ALERT_TRIANGLE}<span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
+      case STATE.CODE:
+        return html`
+          <span class="code">&lt;/&gt;</span><span>${this.appStore.i18n(this.appStore.state)}</span>
+        `;
       case STATE.TOAST:
         return html`
           <div class="toast-container">

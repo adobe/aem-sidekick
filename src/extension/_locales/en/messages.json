@@ -115,6 +115,9 @@
     "caution_side_effects": {
       "message": "Caution: unexpected side effects!"
     },
+    "code_state": {
+      "message": "No actions available for code"
+    },
     "close": {
       "message": "Close"
     },

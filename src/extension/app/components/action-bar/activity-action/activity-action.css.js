@@ -28,6 +28,14 @@ export const style = css`
     padding-bottom: 2px;
   }
 
+  .container span.code {
+    margin: 0 -2px 0 2px;
+    font-family: monospace;
+    font-weight: bold;
+    transform: scaleX(.75);
+    color: var(--spectrum-global-color-gray-500);
+  }
+
   .toast-container {
     color: #fff;
     display: flex;

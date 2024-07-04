@@ -225,11 +225,14 @@ export class AppStore {
 
     const { profile } = this.status;
     const { authorized } = this.siteStore;
+    const code = this.status?.code?.status === 200;
 
     if (!profile && !authorized) {
       this.state = STATE.LOGIN_REQUIRED;
     } else if (!authorized) {
       this.state = STATE.UNAUTHORIZED;
+    } else if (code) {
+      this.state = STATE.CODE;
     } else {
       this.state = STATE.READY;
     }
