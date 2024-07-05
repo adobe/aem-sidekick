@@ -112,7 +112,22 @@ describe('Activity', () => {
       await waitUntil(() => recursiveQuery(sidekick, 'activity-action'));
       const activityAction = recursiveQuery(sidekick, 'activity-action');
       expect(recursiveQuery(activityAction, 'span').textContent.trim())
-        .to.equal('No actions available for code');
+        .to.equal('No actions available for code files');
+    });
+
+    it('renders media state', async () => {
+      sidekickTest.mockFetchStatusSuccess(false, {
+        webPath: '/media_1234567890.png',
+        code: { status: 404 },
+        preview: { status: 404 },
+        live: { status: 404 },
+      });
+      sidekick = sidekickTest.createSidekick();
+
+      await waitUntil(() => recursiveQuery(sidekick, 'activity-action'));
+      const activityAction = recursiveQuery(sidekick, 'activity-action');
+      expect(recursiveQuery(activityAction, 'span').textContent.trim())
+        .to.equal('No actions available for media files');
     });
   });
 

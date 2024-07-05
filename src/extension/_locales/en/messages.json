@@ -116,7 +116,7 @@
       "message": "Caution: unexpected side effects!"
     },
     "code_state": {
-      "message": "No actions available for code"
+      "message": "No actions available for code files"
     },
     "close": {
       "message": "Close"
@@ -378,6 +378,9 @@
     },
     "live": {
       "message": "Live"
+    },
+    "media_state": {
+      "message": "No actions available for media files"
     },
     "minutes_ago": {
       "message": "$1 minutes ago"

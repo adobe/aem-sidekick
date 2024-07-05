@@ -226,11 +226,17 @@ export class AppStore {
     const { profile } = this.status;
     const { authorized } = this.siteStore;
     const code = this.status?.code?.status === 200;
+    const media = this.status?.webPath?.match(/\/media[_-]+\d+/)
+      && this.status?.preview?.status === 404
+      && this.status?.live?.status === 404
+      && this.status?.code?.status === 404;
 
     if (!profile && !authorized) {
       this.state = STATE.LOGIN_REQUIRED;
     } else if (!authorized) {
       this.state = STATE.UNAUTHORIZED;
+    } else if (media) {
+      this.state = STATE.MEDIA;
     } else if (code) {
       this.state = STATE.CODE;
     } else {
