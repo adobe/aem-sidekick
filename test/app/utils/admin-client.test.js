@@ -519,6 +519,12 @@ describe('Test Admin Client', () => {
       expect(res).to.equal('Failed to activate configuration: something went wrong');
     });
 
+    it('should return localized error for 401 on bulk operation', () => {
+      path = '/*';
+      const res = adminClient.getLocalizedError('publish', path, 401);
+      expect(res).to.equal('You need to sign in to publish more than 100 files.');
+    });
+
     it('should return localized error fallbacks', () => {
       const res1 = adminClient.getLocalizedError('publish', path, 404);
       expect(res1).to.match(/generate preview first/);

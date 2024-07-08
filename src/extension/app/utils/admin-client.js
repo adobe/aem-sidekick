@@ -140,6 +140,9 @@ export class AdminClient {
         // preview: unsupported file type
         message = this.appStore.i18n('error_preview_415');
       }
+    } else if (status === 401 && path === '/*') {
+      // bulk operation requires login
+      message = this.appStore.i18n(`bulk_error_${action}_login_required`);
     } else {
       // error key fallbacks
       message = this.appStore.i18n(`error_${action}_${status}`)
