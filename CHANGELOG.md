@@ -1,3 +1,10 @@
+## [1.28.2](https://github.com/adobe/aem-sidekick/compare/v1.28.1...v1.28.2) (2024-07-09)
+
+
+### Bug Fixes
+
+* special state for code and media resources ([#203](https://github.com/adobe/aem-sidekick/issues/203)) ([f40db50](https://github.com/adobe/aem-sidekick/commit/f40db5022a24a45fc1d275f5fc6f0eefa6ceedef))
+
 ## [1.28.1](https://github.com/adobe/aem-sidekick/compare/v1.28.0...v1.28.1) (2024-07-09)
 
 
