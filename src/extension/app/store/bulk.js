@@ -418,7 +418,7 @@ export class BulkStore {
           openUrlsLabel,
           copyUrlsCallback,
           copyUrlsLabel,
-          6000,
+          60000, // keep for 1 minute
           false,
         );
       } else {
@@ -436,7 +436,7 @@ export class BulkStore {
           this.appStore.i18n('bulk_result_details'),
           null, // no secondary callback
           null, // no secondary label
-          60000,
+          3600000, // keep for 1 hour
           false,
         );
       }
@@ -462,6 +462,12 @@ export class BulkStore {
         this.appStore.i18n(`bulk_error_illegal_file_name${illegalNames.length === 1 ? '' : 's'}`)
           .replace('$1', illegalNames.join(', ')),
         'warning',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        3600000, // keep for 1 hour
       );
       return false;
     }

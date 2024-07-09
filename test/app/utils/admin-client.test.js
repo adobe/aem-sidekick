@@ -379,7 +379,7 @@ describe('Test Admin Client', () => {
       expect(toast.message).to.match(/Check your Sidekick configuration/);
       expect(toast.variant).to.equal('warning');
 
-      toast.closeCallback();
+      appStore.closeToast();
       expect(closeToastStub.calledOnce).to.be.true;
 
       // editor
@@ -394,8 +394,7 @@ describe('Test Admin Client', () => {
       expect(toast.message).to.match(/make sure access to this document is granted/);
       expect(toast.variant).to.equal('warning');
 
-      toast.closeCallback();
-      expect(closeToastStub.calledTwice).to.be.true;
+      appStore.closeToast();
     });
 
     it('should handle 5xx preview error', async () => {
@@ -409,8 +408,7 @@ describe('Test Admin Client', () => {
       expect(toast.message).to.match(/Preview generation failed/);
       expect(toast.variant).to.equal('negative');
 
-      toast.closeCallback();
-      expect(closeToastStub.calledOnce).to.be.true;
+      appStore.closeToast();
     });
 
     it('should handle 5xx live error', async () => {
@@ -424,8 +422,7 @@ describe('Test Admin Client', () => {
       expect(toast.message).to.match(/Publication failed/);
       expect(toast.variant).to.equal('negative');
 
-      toast.closeCallback();
-      expect(closeToastStub.calledOnce).to.be.true;
+      appStore.closeToast();
     });
 
     it('should handle fatal error', async () => {
@@ -440,8 +437,7 @@ describe('Test Admin Client', () => {
       expect(toast.variant).to.equal('negative');
       expect(res).to.be.null;
 
-      toast.closeCallback();
-      expect(closeToastStub.calledOnce).to.be.true;
+      appStore.closeToast();
     });
 
     it('should handle start job error', async () => {

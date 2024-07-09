@@ -106,6 +106,24 @@ export class AdminClient {
   }
 
   /**
+   * Shows the error toast.
+   * @param {string} message The error message
+   * @param {string} variant The toast variant (positive, warning, negative)
+   */
+  showErrorToast(message, variant) {
+    this.appStore.showToast(
+      message,
+      variant,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      3600000, // keep for 1 hour
+    );
+  }
+
+  /**
    * Returns a localized error message based on action, status code and error message.
    * @param {string} action The action
    * @param {number} status The status code
@@ -158,7 +176,7 @@ export class AdminClient {
     // handle rate limiting
     const limiter = this.getRateLimiter(resp);
     if (limiter) {
-      this.appStore.showToast(
+      this.showErrorToast(
         this.appStore.i18n('error_429').replace('$1', limiter),
         'warning',
       );
@@ -167,10 +185,9 @@ export class AdminClient {
 
     const message = this.getLocalizedError(action, path, resp.status, this.getServerError(resp));
     if (message) {
-      this.appStore.showToast(
+      this.showErrorToast(
         message.replace('$1', this.getServerError(resp)),
         resp.status < 500 ? 'warning' : 'negative',
-        () => this.appStore.closeToast(),
       );
     } else {
       this.handleFatalError(action);
@@ -186,10 +203,9 @@ export class AdminClient {
     // use standard error key fallbacks
     const msg = this.appStore.i18n(`error_${action}_fatal`)
         || this.appStore.i18n('error_fatal');
-    this.appStore.showToast(
+    this.showErrorToast(
       msg.replace('$1', 'https://aemstatus.net/'),
       'negative',
-      () => this.appStore.closeToast(),
     );
   }
 
