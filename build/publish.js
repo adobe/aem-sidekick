@@ -12,11 +12,14 @@
 /* eslint-disable no-console, import/no-extraneous-dependencies, no-case-declarations */
 
 import fs from 'fs-extra';
+import shell from 'shelljs';
 import { h1 } from '@adobe/fetch';
 
 const { fetch } = h1();
 
 const supportedBrowsers = ['chrome'];
+const packageJson = './package.json';
+const manifestJson = './src/extension/manifest.json';
 
 const {
   GOOGLE_APP_ID,
@@ -26,6 +29,24 @@ const {
 } = process.env;
 
 async function publishExtension(browser) {
+  // sync version in manifest.json with package.json
+  try {
+    const { version } = fs.readJSONSync(packageJson);
+    const json = fs.readJSONSync(manifestJson);
+    const { version: oldVersion } = json;
+    json.version = version;
+    fs.writeJsonSync(manifestJson, json, { spaces: 2 });
+    const msg = `chore(release): update manifest version to ${version} [skip ci]`;
+    const { code, stderr } = shell.exec(`git add ${manifestJson} && git commit -m"${msg}" && git push`);
+    if (code > 0) {
+      throw new Error(stderr);
+    }
+    console.log(`manifest version updated from ${oldVersion} to ${version}`);
+  } catch (e) {
+    console.error(`failed to update manifest version: ${e.message}`);
+    process.exit(1);
+  }
+
   if (browser === 'chrome') {
     // get access token
     const tokenResp = await fetch('https://accounts.google.com/o/oauth2/token', {

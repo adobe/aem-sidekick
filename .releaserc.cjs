@@ -20,14 +20,14 @@ module.exports = {
       'assets': [
         'package.json',
         'CHANGELOG.md',
-        'src/safari/helix-sidekick-extension.xcodeproj/project.pbxproj'
+        // todo: add back when we have a safari project
+        // 'src/safari/helix-sidekick-extension.xcodeproj/project.pbxproj'
       ],
       'message': 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
     }],
     ['@semantic-release/github', {}],
     ['@semantic-release/exec', {
-      // todo: add back when we are ready for a chrome release
-      // publishCmd: 'npm run release:chrome',
+      publishCmd: 'npm run publish:chrome',
     }],
   ],
   branches: ['main'],
