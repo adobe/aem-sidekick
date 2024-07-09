@@ -18,6 +18,7 @@ export const style = css`
   }
 
   .container {
+    margin-left: 4px;
     display: flex;
     align-items: center;
     height: 100%;
@@ -26,6 +27,16 @@ export const style = css`
 
   .container span {
     padding-bottom: 2px;
+  }
+
+  .container i.code {
+    user-select: none;
+    margin-right: -5px;
+    font-family: monospace;
+    font-weight: bold;
+    font-style: normal;
+    transform: scaleX(.75);
+    color: var(--spectrum-global-color-gray-500);
   }
 
   .toast-container {

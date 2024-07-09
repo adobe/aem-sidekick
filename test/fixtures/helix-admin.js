@@ -251,6 +251,23 @@ export const defaultSharepointSheetStatusResponse = {
   },
 };
 
+export const defaultCodeStatusResponse = {
+  code: {
+    status: 200,
+    permissions: [
+      'delete',
+      'read',
+      'write',
+    ],
+    codeBusId: 'helix-code-bus/adobe/aem-boilerplate/main/scripts/scripts.js',
+    contentType: 'text/javascript; charset=utf-8',
+    lastModified: 'Thu, 06 Jun 2024 20:08:26 GMT',
+    contentLength: '2675',
+    sourceLastModified: 'Thu, 06 Jun 2024 19:54:13 GMT',
+    sourceLocation: 'https://raw.githubusercontent.com/adobecom/blog/main/scripts/scripts.js',
+  },
+};
+
 export const defaultSharepointEditInfo = {
   status: 200,
   url: 'https://adobe.sharepoint.com/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7B207F9725-D73A-4C98-A87D-DC6AD4360373%7D&file=bar.docx&action=default&mobileredirect=true',
