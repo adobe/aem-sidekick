@@ -1,3 +1,10 @@
+## [1.28.5](https://github.com/adobe/aem-sidekick/compare/v1.28.4...v1.28.5) (2024-07-12)
+
+
+### Bug Fixes
+
+* trigger ci build ([8bb2a90](https://github.com/adobe/aem-sidekick/commit/8bb2a907fc2789bae297bd420d11e1f87b6473bb))
+
 ## [1.28.4](https://github.com/adobe/aem-sidekick/compare/v1.28.3...v1.28.4) (2024-07-12)
 
 
