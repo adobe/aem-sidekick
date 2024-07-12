@@ -1,3 +1,10 @@
+## [1.28.9](https://github.com/adobe/aem-sidekick/compare/v1.28.8...v1.28.9) (2024-07-12)
+
+
+### Bug Fixes
+
+* build chrome before publishing ([#222](https://github.com/adobe/aem-sidekick/issues/222)) ([0ab6ffd](https://github.com/adobe/aem-sidekick/commit/0ab6ffd196b6a4cd108da489b096cc63f01a4c7e))
+
 ## [1.28.8](https://github.com/adobe/aem-sidekick/compare/v1.28.7...v1.28.8) (2024-07-12)
 
 
