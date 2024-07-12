@@ -16,7 +16,7 @@
     "build:analyze": "npm run analyze -- --globs src/extension/app/aem-sidekick.js",
     "build:safari": "node ./build/build-browser.js safari",
     "build:chrome": "node ./build/build-browser.js chrome",
-    "publish:chrome": "node ./build/publish.js chrome",
+    "publish:chrome": "npm run build:chrome && node ./build/publish.js chrome",
     "prepare": "husky install"
   },
   "repository": {
