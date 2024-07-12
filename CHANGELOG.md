@@ -1,3 +1,10 @@
+## [1.28.3](https://github.com/adobe/aem-sidekick/compare/v1.28.2...v1.28.3) (2024-07-12)
+
+
+### Bug Fixes
+
+* remove project on prod host not working ([#219](https://github.com/adobe/aem-sidekick/issues/219)) ([5f39736](https://github.com/adobe/aem-sidekick/commit/5f3973634b7521a41cf3cec6b38e3a449d987d75))
+
 ## [1.28.2](https://github.com/adobe/aem-sidekick/compare/v1.28.1...v1.28.2) (2024-07-09)
 
 
