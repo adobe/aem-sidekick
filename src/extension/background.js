@@ -80,3 +80,12 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 addAuthTokenHeaders();
 
 log.info('sidekick initialized');
+console.log('new sidekick');
+
+chrome.runtime.sendMessage(
+  'olciodlegapfmemadcjicljalmfmlehb',
+  { action: 'getProjects' },
+  (response) => {
+    console.log('response from old sidekick', response);
+  },
+);
