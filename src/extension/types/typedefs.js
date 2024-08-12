@@ -15,6 +15,7 @@
 /**
  * @typedef {Object} ServerConfig
  * @prop {string} contentSourceUrl The content source URL
+ * @prop {string} contentSourceType The content source type ("onedrive", "google" or "markup")
  * @prop {string} [preview.host] The host name of a custom preview CDN
  * @prop {string} [live.host] The host name of a custom live CDN
  * @prop {string} [prod.host] The production host name to publish content to
@@ -24,19 +25,21 @@
 /**
  * @private
  * @typedef {Object} ServerDerivedConfig
- * @prop {string[]} mountpoints The content source URL
+ * @prop {string} contentSourceUrl The content source URL
+ * @prop {string} contentSourceType The content source type ("onedrive", "google" or "markup")
+ * @prop {string[]} [mountpoints] The content source URL (deprecated)
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
- * @description The derived sidekick configuration from the from the server-side configuration
+ * @description The derived sidekick configuration from the server-side configuration
  */
 
 /**
  * @typedef {Object} OptionsConfig
  * @prop {string} id The id of the config
  * @prop {string} [project] The name of the project
- * @prop {string} giturl The url to the repository
- * @prop {string[]} mountpoints The content source URL
+ * @prop {string} [giturl] The url to the repository
+ * @prop {string[]} [mountpoints] The content source URL
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
@@ -49,7 +52,7 @@
 /**
  * @private
  * @typedef {Object} OptionsDerivedConfig
- * @prop {string[]} mountpoints The content source URL
+ * @prop {string[]} [mountpoints] The content source URL
  * @prop {string} owner The GitHub owner or organization
  * @prop {string} repo The GitHub repo
  * @prop {string} ref The Git reference or branch
@@ -155,7 +158,7 @@
  * @prop {string} [id] The unique view ID
  * @prop {string} path The path or globbing pattern where to apply this view
  * @prop {string} viewer The URL to render this view
- * @prop {string | function} [title] The title of the view
+ * @prop {string | Function} [title] The title of the view
  * @description A custom view configuration.
  */
 
@@ -170,6 +173,10 @@
  * @prop {string} [headline] The modal headline
  * @prop {string} [message] The modal message
  * @prop {string} [confirmLabel] The confirm button label
+ * @prop {Function} [confirmCallback] The function to call on confirm
+ * @prop {string} [secondaryLabel] The secondary button label
+ * @prop {Function} [secondaryCallback] The function to call on secondary action
+ * @prop {string} [cancelLabel] The cancel button label
  * @prop {string} [action] The action type (delete or unpublish)
  */
 
@@ -177,10 +184,65 @@
  * @typedef {Object} Toast
  * @prop {string} message The toast message
  * @prop {string} variant The toast variant
- * @prop {function} closeCallback The function to call on close
- * @prop {function} actionCallback The function to call on action
- * @prop {string} actionLabel The action label
- * @prop {number} timeout The time the toast is shown (default: 6000)
+ * @prop {Function} [closeCallback] The function to call on close
+ * @prop {Function} [actionCallback] The function to call on action
+ * @prop {string} [actionLabel] The action label
+ * @prop {Function} [secondaryCallback] The function to call on secondary action
+ * @prop {string} [secondaryLabel] The secondary actiom label
+ * @prop {number} [timeout] The time the toast is shown (default: 6000)
+ * @prop {boolean} [actionOnTimeout=true] Execute action on timeout
+ */
+
+/**
+ * @typedef {Object} BulkResource
+ * @property {string} type The file type
+ * @property {string} file The file name
+ * @property {string} [path] The file path
+ */
+
+/**
+ * @typedef {BulkResource[]} BulkSelection
+ */
+
+/**
+ * @typedef {Object} BulkSummary
+ * @property {string} operation The bulk operation
+ * @property {string} host The host name for URLs
+ * @property {AdminJobResource[]} resources The resource details
+ */
+
+/**
+ * @typedef {Object} AdminJobResource
+ * @property {string} path The resource path
+ * @property {number} status The status code
+ * @property {string} [error] The error message
+ */
+
+/**
+ * @typedef {Object} AdminJobProgress
+ * @property {number} failed The number of failed operations
+ * @property {number} processed The number of processed resources
+ * @property {number} total The total number of resources
+ */
+
+/**
+ * @typedef {Object} AdminJob
+ * @property {string} name The job name
+ * @property {string} state The job state
+ * @property {AdminJobProgress} progress The progress info
+ * @property {string} startTime The job start time as UTC string
+ * @property {string} [stopTime] The job stop time as UTC string
+ * @property {Object} [data] The job data
+ * @property {AdminJobResource[]} [data.resources] The resources
+ */
+
+/**
+ * @typedef {Object} AdminResponse
+ * @property {boolean} ok Is the response ok?
+ * @property {number} status The HTTP status code
+ * @property {Headers} [headers] The response headers
+ * @property {string} [error] The error message
+ * @property {string} [path] The path of the response
  */
 
 export const Types = {};

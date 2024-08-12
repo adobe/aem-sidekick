@@ -43,7 +43,15 @@ import {
   defaultGdriveProfileResponse,
   defaultStatusLoggedInNotAuthorizedResponse,
 } from './fixtures/helix-admin.js';
-import enMessages from '../src/extension/_locales/en/messages.json' assert { type: 'json' };
+import enMessages from '../src/extension/_locales/en/messages.json' with { type: 'json' };
+import {
+  DEFAULT_SHAREPOINT_BULK_SELECTION,
+  DEFAULT_GDRIVE_BULK_SELECTION,
+  mockGdriveFile,
+  mockGdriveRoot,
+  mockSharePointFile,
+  mockSharePointRoot,
+} from './fixtures/content-sources.js';
 
 /**
  * Status API
@@ -90,6 +98,8 @@ export class SidekickTest {
 
   config;
 
+  bulkRoot;
+
   /**
    * Constructor
    * @param {Object} [config] The sidekick configuration
@@ -122,8 +132,10 @@ export class SidekickTest {
    */
   destroy() {
     const { body } = document;
-    if (body.contains(this.sidekick)) {
-      body.removeChild(this.sidekick);
+    body.querySelectorAll('aem-sidekick').forEach((sidekick) => sidekick.replaceWith(''));
+    this.sidekick = null;
+    if (body.contains(this.bulkRoot)) {
+      body.removeChild(this.bulkRoot);
     }
     restoreEnvironment(document);
     this.sandbox.restore();
@@ -178,7 +190,7 @@ export class SidekickTest {
   async clickToastClose(variant = 'positive') {
     await this.awaitToast();
     await waitUntil(() => recursiveQuery(this.sidekick, `action-bar.${variant}`) !== null);
-    const closeButton = recursiveQuery(this.sidekick, 'sp-action-button.close');
+    const closeButton = recursiveQuery(this.sidekick, 'sk-action-button.close');
     closeButton.click();
   }
 
@@ -190,7 +202,7 @@ export class SidekickTest {
   async clickToastAction(variant = 'positive') {
     await this.awaitToast();
     await waitUntil(() => recursiveQuery(this.sidekick, `action-bar.${variant}`) !== null);
-    const closeButton = recursiveQuery(this.sidekick, 'sp-action-button.action');
+    const closeButton = recursiveQuery(this.sidekick, 'sk-action-button.action');
     closeButton.click();
   }
 
@@ -206,6 +218,12 @@ export class SidekickTest {
     fetchMock.get(englishMessagesUrl, {
       status: 200,
       body: enMessages,
+    }, { overwriteRoutes: true });
+
+    // other languages should return 404
+    fetchMock.get(`glob:${englishMessagesUrl.replace('/en/', '/*/')}`, {
+      status: 404,
+      body: '',
     }, { overwriteRoutes: true });
 
     return this;
@@ -267,6 +285,77 @@ export class SidekickTest {
   mockLocation(location) {
     // Mock the browsers location
     mockLocation(document, location);
+
+    return this;
+  }
+
+  /**
+   * Mocks an admin DOM to test bulk operations
+   * @param {string} [contentSource] The content source: "sharepoint" (default) or "gdrive"
+   * @param {import('@Types').BulkSelection} [resources] The resources
+   * @param {string} [viewType] The view type: "list" (default) or "grid"
+   * @returns {SidekickTest}
+   */
+  mockAdminDOM(
+    contentSource,
+    viewType,
+    resources,
+  ) {
+    if (!contentSource) {
+      contentSource = HelixMockContentSources.SHAREPOINT;
+    }
+    if (!resources) {
+      resources = contentSource === HelixMockContentSources.SHAREPOINT
+        ? DEFAULT_SHAREPOINT_BULK_SELECTION
+        : DEFAULT_GDRIVE_BULK_SELECTION;
+    }
+
+    this.mockEditorAdminEnvironment(
+      EditorMockEnvironments.ADMIN,
+      HelixMockContentType.ADMIN,
+      contentSource,
+    );
+
+    let root;
+    if (contentSource === HelixMockContentSources.SHAREPOINT) {
+      // mock sharepoint icon requests
+      fetchMock.get('glob:http://localhost:2000/icons/**', {
+        status: 200,
+      }, { overwriteRoutes: true });
+
+      root = mockSharePointRoot();
+      root.firstElementChild.innerHTML = resources
+        .map((resource) => mockSharePointFile(resource, viewType || 'list'))
+        .join('');
+      document.body.appendChild(root);
+    } else {
+      root = mockGdriveRoot();
+      root.innerHTML = resources
+        .map((resource) => mockGdriveFile(resource, viewType || 'list'))
+        .join('');
+      document.body.appendChild(root);
+    }
+    this.bulkRoot = root;
+
+    return this;
+  }
+
+  /**
+   * Toggles files in the admin DOM
+   * @param {string[]} files The names of the files to toggle
+   * @returns {SidekickTest}
+   */
+  toggleAdminItems(files) {
+    const allFiles = [...document.querySelectorAll('.file')];
+    files.forEach((file) => {
+      const element = allFiles.find((f) => f.textContent.includes(file));
+      if (element) {
+        const selected = element.getAttribute('aria-selected') === 'false' ? 'true' : 'false';
+        element.setAttribute('aria-selected', selected);
+      }
+    });
+    // trigger bulk selection update in sidekick
+    this.bulkRoot.click();
 
     return this;
   }

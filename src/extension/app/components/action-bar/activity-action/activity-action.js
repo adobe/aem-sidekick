@@ -35,6 +35,13 @@ export class ActivityAction extends ConnectedElement {
         this.requestUpdate();
       },
     );
+
+    reaction(
+      () => this.appStore.bulkStore.progress,
+      () => {
+        this.requestUpdate();
+      },
+    );
   }
 
   handleCloseToast() {
@@ -70,7 +77,20 @@ export class ActivityAction extends ConnectedElement {
       case STATE.UNPUBLISHING:
       case STATE.DELETING:
         return html`
-          <sp-progress-circle size="s" indeterminate></sp-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
+          <sk-progress-circle size="s" indeterminate></sk-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
+        `;
+      case STATE.BULK_PREVIEWING:
+      case STATE.BULK_PUBLISHING:
+        return html`
+          <sk-progress-circle size="s" indeterminate></sk-progress-circle>
+          <span>
+            ${this.appStore.bulkStore?.progress
+              ? this.appStore.i18n(this.appStore.state)
+                  .replace('$1', `${this.appStore.bulkStore.progress.processed}`)
+                  .replace('$2', `${this.appStore.bulkStore.progress.total}`)
+              // show generic state if bulk progress not available
+              : this.appStore.i18n(this.appStore.state.replace('bulk_', ''))}
+          </span>
         `;
       case STATE.LOGIN_REQUIRED:
         return html`
@@ -80,6 +100,14 @@ export class ActivityAction extends ConnectedElement {
         return html`
           ${ICONS.ALERT_TRIANGLE}<span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
+      case STATE.CODE:
+        return html`
+          ${ICONS.CODE_ICON}<span>${this.appStore.i18n(this.appStore.state)}</span>
+        `;
+      case STATE.MEDIA:
+        return html`
+          ${ICONS.MEDIA_ICON}<span>${this.appStore.i18n(this.appStore.state)}</span>
+        `;
       case STATE.TOAST:
         return html`
           <div class="toast-container">
@@ -87,14 +115,19 @@ export class ActivityAction extends ConnectedElement {
               ${this.getToastIcon()}<span>${this.appStore.toast.message}</span>
             </div>
             <div class="actions">
-              ${this.appStore.toast.actionCallback && this.appStore.toast.actionLabel ? html`
-                <sp-action-button class="action" quiet @click=${this.appStore.toast.actionCallback}>
-                  ${this.appStore.toast.actionLabel}
-                </sp-action-button>
+              ${this.appStore.toast.secondaryCallback && this.appStore.toast.secondaryLabel ? html`
+                <sk-action-button class="action" quiet @click=${this.appStore.toast.secondaryCallback}>
+                  ${this.appStore.toast.secondaryLabel}
+                </sk-action-button>
               ` : html``}
-              <sp-action-button class="close" quiet @click=${this.handleCloseToast}>
+              ${this.appStore.toast.actionCallback && this.appStore.toast.actionLabel ? html`
+                <sk-action-button class="action" quiet @click=${this.appStore.toast.actionCallback}>
+                  ${this.appStore.toast.actionLabel}
+                </sk-action-button>
+              ` : html``}
+              <sk-action-button class="close" quiet @click=${this.handleCloseToast}>
                 <sp-icon slot="icon">${ICONS.CLOSE_X}</sp-icon>
-              </sp-action-button>
+              </sk-action-button>
             </div>
           </div>
         `;

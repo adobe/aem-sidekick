@@ -85,4 +85,4 @@ class MenuItem extends SPMenuItem {
   }
 }
 
-customElements.define('sp-menu-item', MenuItem);
+customElements.define('sk-menu-item', MenuItem);

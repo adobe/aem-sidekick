@@ -18,6 +18,7 @@ export const style = css`
   }
 
   .container {
+    margin-left: 4px;
     display: flex;
     align-items: center;
     height: 100%;
@@ -26,6 +27,16 @@ export const style = css`
 
   .container span {
     padding-bottom: 2px;
+  }
+
+  .container i.code {
+    user-select: none;
+    margin-right: -5px;
+    font-family: monospace;
+    font-weight: bold;
+    font-style: normal;
+    transform: scaleX(.75);
+    color: var(--spectrum-global-color-gray-500);
   }
 
   .toast-container {
@@ -49,18 +60,18 @@ export const style = css`
     gap: 12px;
   }
 
-  .toast-container .actions sp-action-button {
+  .toast-container .actions sk-action-button {
     color: #fff;
     border-radius: 16px;
     --highcontrast-actionbutton-background-color-hover: #fff4;
     --highcontrast-actionbutton-background-color-active: #fff2;
   }
 
-  .toast-container .actions sp-action-button.close {
+  .toast-container .actions sk-action-button.close {
     color: #fff;
   }
 
-  .toast-container .actions sp-action-button.action {
+  .toast-container .actions sk-action-button.action {
     --highcontrast-actionbutton-background-color-default: #fff2;
     height: 100%;
     min-height: 32px;

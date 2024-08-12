@@ -18,43 +18,6 @@ import {
 } from './project.js';
 import { urlCache } from './url-cache.js';
 import { updateUI } from './ui.js';
-import { getDisplay } from './display.js';
-
-export const DEV_URL = 'http://localhost:3000';
-
-/**
- * Retrieves the proxy URL from a local dev tab.
- * @param {chrome.tabs.Tab} tab The tab
- * @returns {Promise<string>} The proxy URL
- */
-async function getProxyUrl({ id, url: tabUrl }) {
-  return new Promise((resolve) => {
-    // inject proxy url retriever
-    chrome.scripting.executeScript({
-      target: { tabId: id },
-      func: () => {
-        let proxyUrl = null;
-        const meta = document.head.querySelector('meta[property="hlx:proxyUrl"]');
-        if (meta && meta instanceof HTMLMetaElement && meta.content) {
-          proxyUrl = meta.content;
-        }
-        chrome.runtime.sendMessage({ proxyUrl });
-      },
-    });
-    // listen for proxy url from tab
-    const listener = ({ proxyUrl: proxyUrlFromTab }, { tab }) => {
-      // check if message contains proxy url and is sent from right tab
-      if (proxyUrlFromTab && tab && tab.url === tabUrl && tab.id === id) {
-        chrome.runtime.onMessage.removeListener(listener);
-        resolve(proxyUrlFromTab);
-      } else {
-        // fall back to tab url
-        resolve(tabUrl);
-      }
-    };
-    chrome.runtime.onMessage.addListener(listener);
-  });
-}
 
 /**
  * Loads the content script in the tab.
@@ -81,7 +44,7 @@ async function injectContentScript(tabId, matches) {
  * @param {number} id The tab ID
  * @returns {Promise<void>}
  */
-export default async function checkTab(id) {
+export async function checkTab(id) {
   try {
     const projects = await getProjects();
     const tab = await chrome.tabs.get(id);
@@ -90,19 +53,8 @@ export default async function checkTab(id) {
       return;
     }
 
-    let { url } = tab;
+    const { url } = tab;
 
-    // check for dev URL
-    const devUrls = [
-      DEV_URL,
-      ...projects
-        .filter((p) => !!p.devOrigin)
-        .map((p) => p.devOrigin),
-    ];
-    if (devUrls.find((devUrl) => url.startsWith(devUrl))) {
-      // retrieve proxy url
-      url = await getProxyUrl(tab);
-    }
     // fill url cache
     await urlCache.set(tab, projects);
 
@@ -112,20 +64,7 @@ export default async function checkTab(id) {
 
     const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(tab);
 
-    const display = await getDisplay();
-
-    // If we found matches and the sidekick is displayed, inject content script
-    if (matches.length > 0 && display) {
-      // inject content script and send matches to tab
-      await injectContentScript(id, matches);
-    } else {
-      try {
-        // The display might have been toggled off, so let the content script know to update
-        await chrome.tabs.sendMessage(id, 'toggleDisplay');
-      } catch (e) {
-        // ignore, content script might not be loaded
-      }
-    }
+    injectContentScript(id, matches);
 
     updateUI({
       id, url, config, matches,

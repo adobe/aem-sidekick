@@ -106,39 +106,91 @@ export class AdminClient {
   }
 
   /**
+   * Shows the error toast.
+   * @param {string} message The error message
+   * @param {string} variant The toast variant (positive, warning, negative)
+   */
+  showErrorToast(message, variant) {
+    this.appStore.showToast(
+      message,
+      variant,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      3600000, // keep for 1 hour
+    );
+  }
+
+  /**
+   * Returns a localized error message based on action, status code and error message.
+   * @param {string} action The action
+   * @param {number} status The status code
+   * @param {string} [error] The error message
+   * @returns {string} The localized error message
+   */
+  getLocalizedError(action, path, status, error) {
+    let message = '';
+    if (action === 'status' && status === 404) {
+      // special handling for status
+      message = this.appStore.i18n(this.appStore.isEditor()
+        ? 'error_status_404_document'
+        : 'error_status_404_content');
+    } else if (path.startsWith('/.helix/') && error) {
+      // special error message for config files
+      message = this.appStore.i18n('error_preview_config').replace('$1', error);
+    } else if (status === 400 && (error?.includes('script or event handler')
+      || error?.includes('XML'))) {
+      // preview: invalid svg
+      message = this.appStore.i18n('error_preview_svg_invalid');
+    } else if (status === 413) {
+      // preview: resource too large
+      message = this.appStore.i18n('error_preview_too_large');
+    } else if (status === 415) {
+      if (error?.includes('docx with google not supported')) {
+        // preview: docx in gdrive
+        message = this.appStore.i18n('error_preview_no_docx');
+      } else if (error?.includes('xlsx with google not supported')) {
+        // preview: xlsx in gdrive
+        message = this.appStore.i18n('error_preview_no_xlsx');
+      } else {
+        // preview: unsupported file type
+        message = this.appStore.i18n('error_preview_415');
+      }
+    } else if (status === 401 && path === '/*') {
+      // bulk operation requires login
+      message = this.appStore.i18n(`bulk_error_${action}_login_required`);
+    } else {
+      // error key fallbacks
+      message = this.appStore.i18n(`error_${action}_${status}`)
+        || this.appStore.i18n(`error_${action}`);
+    }
+    return message;
+  }
+
+  /**
    * Shows a toast if the server returned an error.
    * @private
    * @param {string} action The action
    * @param {Response} resp The response object
    */
-  handleServerError(action, resp) {
+  handleServerError(action, path, resp) {
     // handle rate limiting
     const limiter = this.getRateLimiter(resp);
     if (limiter) {
-      this.appStore.showToast(
+      this.showErrorToast(
         this.appStore.i18n('error_429').replace('$1', limiter),
         'warning',
       );
       return;
     }
 
-    let message = '';
-    if (action === 'status' && resp.status === 404) {
-      // special handling for status
-      message = this.appStore.i18n(this.appStore.isEditor()
-        ? 'error_status_404_document'
-        : 'error_status_404_content');
-    } else {
-      // error key fallbacks
-      message = this.appStore.i18n(`error_${action}_${resp.status}`)
-        || this.appStore.i18n(`error_${action}`);
-    }
-
+    const message = this.getLocalizedError(action, path, resp.status, this.getServerError(resp));
     if (message) {
-      this.appStore.showToast(
+      this.showErrorToast(
         message.replace('$1', this.getServerError(resp)),
         resp.status < 500 ? 'warning' : 'negative',
-        () => this.appStore.closeToast(),
       );
     } else {
       this.handleFatalError(action);
@@ -154,10 +206,9 @@ export class AdminClient {
     // use standard error key fallbacks
     const msg = this.appStore.i18n(`error_${action}_fatal`)
         || this.appStore.i18n('error_fatal');
-    this.appStore.showToast(
+    this.showErrorToast(
       msg.replace('$1', 'https://aemstatus.net/'),
       'negative',
-      () => this.appStore.closeToast(),
     );
   }
 
@@ -175,10 +226,10 @@ export class AdminClient {
    * Returns the status of a resource.
    * @see https://www.aem.live/docs/admin.html#tag/status/operation/status
    * @param {string} path The resource path
-   * @param {boolean} [includeEditUrl] True if the edit URL should be included
+   * @param {string} [editUrl] The edit URL to include
    * @returns {Promise<Object>} The JSON response
    */
-  async getStatus(path, includeEditUrl = false) {
+  async getStatus(path, editUrl) {
     let resp;
     try {
       resp = await callAdmin(
@@ -186,9 +237,9 @@ export class AdminClient {
         'status',
         path,
         {
-          searchParams: includeEditUrl
+          searchParams: editUrl
             ? new URLSearchParams(
-              [['editUrl', this.appStore.isEditor() ? this.appStore.location.href : 'auto']],
+              [['editUrl', editUrl]],
             )
             : undefined,
         },
@@ -198,7 +249,7 @@ export class AdminClient {
       } else {
         if (resp.status !== 401) {
           // special handling for 401
-          this.handleServerError(this.getAction('status'), resp);
+          this.handleServerError(this.getAction('status'), path, resp);
         }
         return { status: resp.status };
       }
@@ -229,7 +280,7 @@ export class AdminClient {
   }
 
   /**
-   * Updates the preview resource.
+   * Updates a preview resource.
    * @see https://www.aem.live/docs/admin.html#tag/preview/operation/updatePreview
    * @param {string} path The resource path
    * @param {boolean} [del] True if the preview should be deleted
@@ -248,7 +299,7 @@ export class AdminClient {
       if (resp.ok) {
         return del ? { status: resp.status } : resp.json();
       } else {
-        this.handleServerError(this.getAction(api, del), resp);
+        this.handleServerError(this.getAction(api, del), path, resp);
       }
     } catch (e) {
       this.handleFatalError(this.getAction(api, del));
@@ -257,7 +308,7 @@ export class AdminClient {
   }
 
   /**
-   * Publishes a preview resource.
+   * Publishes a resource.
    * @see https://www.aem.live/docs/admin.html#tag/publish/operation/publishResource
    * @param {string} path The resource path
    * @param {boolean} [del] True if the preview should be deleted
@@ -276,10 +327,73 @@ export class AdminClient {
       if (resp.ok) {
         return del ? { status: resp.status } : resp.json();
       } else {
-        this.handleServerError(this.getAction(api, del), resp);
+        this.handleServerError(this.getAction(api, del), path, resp);
       }
     } catch (e) {
       this.handleFatalError(this.getAction(api, del));
+    }
+    return null;
+  }
+
+  /**
+   * Starts a bulk job.
+   * @see https://www.aem.live/docs/admin.html#tag/preview/operation/bulkPreview
+   * @see https://www.aem.live/docs/admin.html#tag/publish/operation/bulkPublish
+   * @param {string} api The API endpoint to call
+   * @param {string[]} paths The resource paths
+   * @param {boolean} [del] True if the resources should be deleted
+   * @returns {Promise<Object>} The JSON response
+   */
+  async startJob(api, paths, del) {
+    const path = '/*';
+    try {
+      const resp = await callAdmin(
+        this.siteStore,
+        api,
+        path,
+        {
+          method: 'post',
+          body: {
+            paths,
+            delete: !!del,
+          },
+        },
+      );
+      if (resp.ok) {
+        return resp.json();
+      } else {
+        this.handleServerError(this.getAction(api, del), path, resp);
+      }
+    } catch (e) {
+      this.handleFatalError(this.getAction(api, del));
+    }
+    return null;
+  }
+
+  /**
+   * Returns the job status.
+   * @see https://www.aem.live/docs/admin.html#tag/job/operation/getJob
+   * @param {string} topic The job topic
+   * @param {string} name The job name
+   * @param {boolean} [includeDetails] Include job details
+   * @returns {Promise<Object>} The JSON response
+   */
+  async getJob(topic, name, includeDetails) {
+    const api = 'job';
+    const path = `/${topic}/${name}${includeDetails ? '/details' : ''}`;
+    try {
+      const resp = await callAdmin(
+        this.siteStore,
+        api,
+        path,
+      );
+      if (resp.ok) {
+        return resp.json();
+      } else {
+        this.handleServerError(this.getAction(api), path, resp);
+      }
+    } catch (e) {
+      this.handleFatalError(this.getAction(api));
     }
     return null;
   }

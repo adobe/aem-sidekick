@@ -12,8 +12,8 @@
 
 /**
  * @typedef {Object} AdminUrlConfig
- * @property {string} owner The owner of the repository.
- * @property {string} repo The name of the repository.
+ * @property {string} [owner] The owner of the repository.
+ * @property {string} [repo] The name of the repository.
  * @property {string} [ref='main'] The reference branch, defaults to 'main'.
  * @property {string} [adminVersion] - The version of the admin to use
  */
@@ -80,10 +80,10 @@ export async function callAdmin(
 ) {
   const url = createAdminUrl(config, api, path, searchParams);
   return fetch(url, {
+    method,
     cache: 'no-store',
     credentials: omitCredentials ? 'omit' : 'include',
-    headers: {},
-    method,
-    body,
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
   });
 }

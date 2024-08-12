@@ -55,7 +55,9 @@ async function updateAuthToken({
  * @param {chrome.tabs.Tab} tab The tab
  */
 async function addRemoveProject(tab) {
-  const config = await getProjectFromUrl(tab);
+  const matches = await getProjectMatches(await getProjects(), tab);
+  const config = matches.length === 1 && !matches[0].transient
+    ? matches[0] : await getProjectFromUrl(tab);
   if (isValidProject(config)) {
     const { owner, repo } = config;
     const project = await getProject(config);

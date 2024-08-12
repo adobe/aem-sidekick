@@ -63,7 +63,7 @@ describe('Palette container', () => {
     await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
     const toolsPlugin = recursiveQuery(sidekick, 'action-bar-picker.tools');
-    const plugins = recursiveQueryAll(toolsPlugin, 'sp-menu-item');
+    const plugins = recursiveQueryAll(toolsPlugin, 'sk-menu-item');
 
     const tagSelectorPlugin = plugins.values().next().value;
     expect(tagSelectorPlugin).to.exist;

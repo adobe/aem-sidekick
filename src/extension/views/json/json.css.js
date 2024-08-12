@@ -83,6 +83,7 @@ export const style = css`
     --mod-textfield-border-width: 2px;
     --mod-textfield-border-color: var(--spectrum2-sidekick-border-color);
     --mod-textfield-background-color: var(--spectrum2-sidekick-background-pasteboard);
+    --mod-textfield-focus-indicator-color: var(--spectrum2-color-focus);
   }
 
   .header button {

@@ -21,6 +21,7 @@ export const style = css`
     bottom: 0;
     pointer-events: none;
     z-index: 999999999999;
+    font-weight: initial;
   }
 
   :host([open='true']) {

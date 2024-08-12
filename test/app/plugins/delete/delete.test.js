@@ -126,8 +126,6 @@ describe('Delete plugin', () => {
         sidekickTest
           .mockFetchStatusSuccess(false, {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
-            // source document is not found
-            edit: { status: 404 },
             // preview delete permission is granted
             preview: {
               status: 200,
@@ -164,8 +162,6 @@ describe('Delete plugin', () => {
         sidekickTest
           .mockFetchStatusSuccess(false, {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
-            // source document is not found
-            edit: { status: 404 },
             // preview delete permission is granted
             preview: {
               status: 200,
@@ -185,11 +181,11 @@ describe('Delete plugin', () => {
 
         expect(showToastSpy.calledOnce).to.be.true;
 
-        sidekickTest.clickToastClose();
+        await sidekickTest.clickToastClose();
         expect(reloadPageStub.calledOnce).to.be.false;
       });
 
-      it('allows authenticated user to delete if source file still exists', async () => {
+      it('allows authenticated user to delete even if source file still exists', async () => {
         sidekickTest
           .mockFetchStatusSuccess(false, {
             webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
@@ -225,8 +221,6 @@ describe('Delete plugin', () => {
       it('handles server failure', async () => {
         sidekickTest
           .mockFetchStatusSuccess(false, {
-          // source document is not found
-            edit: { status: 404 },
             // preview delete permission is granted
             preview: {
               status: 200,

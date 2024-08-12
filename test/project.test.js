@@ -30,6 +30,7 @@ import {
   getProjectMatches,
   getGitHubSettings,
   getProjectFromUrl,
+  resolveProxyUrl,
 } from '../src/extension/project.js';
 import { urlCache } from '../src/extension/url-cache.js';
 import { error, mockTab } from './test-utils.js';
@@ -370,10 +371,13 @@ describe('Test project', () => {
     mockDiscoveryCalls();
     await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'));
     expect((await getProjectMatches(CONFIGS, mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'))).length).to.equal(1);
+    // match transient sharepoint URL
+    await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=test.docx&action=default&mobileredirect=true'));
+    expect((await getProjectMatches([], mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=test.docx&action=default&mobileredirect=true'))).length).to.equal(1);
     // match transient gdrive URL
     await urlCache.set(mockTab('https://docs.google.com/document/d/1234567890/edit'), { owner: 'foo', repo: 'bar0' });
     expect((await getProjectMatches(CONFIGS, mockTab('https://docs.google.com/document/d/1234567890/edit'))).length).to.equal(1);
-  });
+  }).timeout(3000);
 
   it('getGitHubSettings', async () => {
     const github = getGitHubSettings('https://github.com/adobe/blog/tree/stage');
@@ -402,8 +406,11 @@ describe('Test project', () => {
     };
     const github = await getProjectFromUrl(mockTab('https://github.com/adobe/blog/tree/stage'));
     expect(github).to.eql(settings);
-    const share = await getProjectFromUrl(mockTab('https://www.aem.live/tools/sidekick/?giturl=https://github.com/adobe/blog/tree/stage'));
-    expect(share).to.eql(settings);
+    const share = await getProjectFromUrl(mockTab('https://www.aem.live/tools/sidekick/?giturl=https://github.com/adobe/blog/tree/stage&project=Blog'));
+    expect(share).to.eql({
+      project: 'Blog',
+      ...settings,
+    });
     const nomatch = await getProjectFromUrl(mockTab('https://blog.adobe.com'));
     expect(nomatch).to.eql({});
     urlCache.set(mockTab('https://blog.adobe.com'), settings);
@@ -416,5 +423,82 @@ describe('Test project', () => {
     // @ts-ignore
     const none = await getProjectFromUrl();
     expect(none).to.eql({});
+  });
+
+  describe('resolveProxyUrl', () => {
+    let tab;
+    let messageFromTab;
+
+    beforeEach(() => {
+      // stub message sender and intercept message
+      sinon.stub(chrome.runtime, 'sendMessage')
+        .callsFake(async (msg) => {
+          messageFromTab = msg;
+        });
+
+      afterEach(() => {
+        messageFromTab = null;
+      });
+
+      // stub message receiver and invoke callback
+      sinon.stub(chrome.runtime.onMessage, 'addListener')
+        .callsFake((func) => func(
+          messageFromTab,
+          {
+            tab,
+          },
+          null,
+        ));
+    });
+
+    it('resolveProxyUrl: dev url', async () => {
+      const proxyUrl = 'https://main--bar--foo.hlx.page/';
+      const tabUrl = 'http://localhost:3000/foo';
+
+      // add proxyUrl meta tag
+      const meta = document.createElement('meta');
+      meta.setAttribute('property', 'hlx:proxyUrl');
+      meta.setAttribute('content', proxyUrl);
+      document.head.append(meta);
+
+      tab = mockTab(tabUrl);
+
+      const res = await resolveProxyUrl(tab, []);
+      expect(res.url).to.equal(proxyUrl);
+      document.head.removeChild(meta);
+    });
+
+    it('resolveProxyUrl: non-dev url', async () => {
+      const tabUrl = 'https://main--bar--foo.hlx.page/';
+
+      tab = mockTab(tabUrl);
+
+      const res = await resolveProxyUrl(tab, []);
+      expect(res.url).to.equal(tabUrl);
+    });
+
+    it('resolveProxyUrl: dev url without meta tag', async () => {
+      const tabUrl = 'http://localhost:3000/foo';
+
+      tab = mockTab(tabUrl);
+
+      const res = await resolveProxyUrl(tab, []);
+      expect(res.url).to.equal(tabUrl);
+    });
+
+    it('resolveProxyUrl: dev url with meta tag but no proxyUrl', async () => {
+      const tabUrl = 'http://localhost:3000/foo';
+      // @ts-ignore
+      chrome.runtime.sendMessage.restore();
+      sinon.stub(chrome.runtime, 'sendMessage')
+        .callsFake(async () => {
+          messageFromTab = {};
+        });
+
+      tab = mockTab(tabUrl);
+
+      const res = await resolveProxyUrl(tab, []);
+      expect(res.url).to.equal(tabUrl);
+    });
   });
 });

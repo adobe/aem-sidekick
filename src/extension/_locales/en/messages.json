@@ -1,4 +1,8 @@
 {
+    "activate": {
+      "message": "Activate",
+      "description": "Activate the configuration"
+    },
     "add": {
       "message": "Add"
     },
@@ -30,35 +34,59 @@
     "bulk_confirm_publish_single": {
       "message": "Are you sure you want to publish this file?"
     },
-    "bulk_progress_preview_multiple": {
+    "bulk_error": {
+      "message": "Bulk operation failed. Please try again later."
+    },
+    "bulk_error_illegal_file_name": {
+      "message": "Only normalized, small latin letters, digits and hyphens are allowed in file names. The following file name contains illegal characters: $1"
+    },
+    "bulk_error_illegal_file_names": {
+      "message": "Only normalized, small latin letters, digits and hyphens are allowed in file names. The following file names contain illegal characters: $1"
+    },
+    "bulk_error_preview_login_required": {
+      "message": "You need to sign in to generate the preview of more than 100 files."
+    },
+    "bulk_error_publish_login_required": {
+      "message": "You need to sign in to publish more than 100 files."
+    },
+    "bulk_previewing_state": {
       "message": "Preview for $1 of $2 files generated..."
     },
-    "bulk_progress_publish_multiple": {
+    "bulk_publishing_state": {
       "message": "$1 of $2 files published..."
     },
+    "bulk_result_details": {
+      "message": "Details"
+    },
+    "bulk_result_path": {
+      "message": "Path"
+    },
     "bulk_result_preview_multiple_failure": {
-      "message": "Failed to generate preview of $1 files:"
+      "message": "Failed to generate preview of all files."
+    },
+    "bulk_result_preview_multiple_partial_success": {
+      "message": "Preview of $1 files successfully generated, but $2 failed."
+    },
+    "bulk_result_preview_multiple_partial_success_1": {
+      "message": "Preview of $1 file successfully generated, but $2 failed."
     },
     "bulk_result_preview_multiple_success": {
       "message": "Preview of $1 files successfully generated."
     },
-    "bulk_result_preview_single_error_invalid_folder_name": {
-      "message": "Only normalized, small latin letters, digits and hyphens are allowed in folder names"
-    },
-    "bulk_result_preview_single_error_no_docx": {
-      "message": "Microsoft Word document, convert to Google Docs first"
-    },
-    "bulk_result_preview_single_error_no_xlsx": {
-      "message": "Microsoft Excel document, convert to Google Sheets first"
-    },
     "bulk_result_preview_single_failure": {
-      "message": "Failed to generate preview of this file:"
+      "message": "Failed to generate preview of this file."
     },
     "bulk_result_preview_single_success": {
       "message": "Preview of this file successfully generated."
     },
     "bulk_result_publish_multiple_failure": {
-      "message": "Failed to publish $1 files:"
+      "message": "Failed to publish all files."
+    },
+    "bulk_result_publish_multiple_partial_success": {
+      "message": "$1 files successfully published, but $2 failed."
+    },
+    "bulk_result_publish_multiple_partial_success_1": {
+      "message": "1 file successfully published, but $2 failed."
     },
     "bulk_result_publish_multiple_success": {
       "message": "$1 files successfully published."
@@ -67,13 +95,13 @@
       "message": "File must be previewed first"
     },
     "bulk_result_publish_single_failure": {
-      "message": "Failed to publish 1 file:"
+      "message": "Failed to publish this file."
     },
     "bulk_result_publish_single_success": {
-      "message": "1 file successfully published."
+      "message": "File successfully published."
     },
     "bulk_selection_empty": {
-      "message": "Select files below"
+      "message": "Select files"
     },
     "bulk_selection_multiple": {
       "message": "$1 files selected"
@@ -87,109 +115,17 @@
     "caution_side_effects": {
       "message": "Caution: unexpected side effects!"
     },
+    "code_state": {
+      "message": "No actions available for code files"
+    },
     "close": {
       "message": "Close"
     },
     "close_sidekick": {
       "message": "Close AEM Sidekick"
     },
-    "config_add_no_mountpoint": {
-      "message": "Project added to Sidekick, but ...\n\nRetrieving the content URL has failed, so you won't be able to use Sidekick in edit mode yet. To add it manually, click the Edit button next to the project's configuration."
-    },
     "config_add_success": {
       "message": "Project added to Sidekick"
-    },
-    "config_backup": {
-      "message": "Backup"
-    },
-    "config_delete": {
-      "message": "Delete"
-    },
-    "config_delete_all": {
-      "message": "Delete all settings"
-    },
-    "config_delete_all_confirm": {
-      "message": "Do you really want to delete all settings?"
-    },
-    "config_delete_all_description": {
-      "message": "Caution: This action cannot be undone!"
-    },
-    "config_delete_confirm": {
-      "message": "Do you really want to delete this project?"
-    },
-    "config_development": {
-      "message": "Development"
-    },
-    "config_edit": {
-      "message": "Edit"
-    },
-    "config_export": {
-      "message": "Export configuration"
-    },
-    "config_export_description": {
-      "message": "Back up your configuration to your computer."
-    },
-    "config_filter": {
-      "message": "Search ...",
-      "description": "Filter projects"
-    },
-    "config_filter_clear": {
-      "message": "Reset",
-      "description": "Reset project filter"
-    },
-    "config_import": {
-      "message": "Import configuration"
-    },
-    "config_import_confirm": {
-      "message": "Do you really want to import this configuration and overwrite the current one?"
-    },
-    "config_import_description": {
-      "message": "Import a configuration from your computer. Make sure you have a backup of your current configuration!"
-    },
-    "config_import_failure": {
-      "message": "Failed to import configuration"
-    },
-    "config_import_success": {
-      "message": "Configuration successfully imported"
-    },
-    "config_invalid_export": {
-      "message": "You don't have any configuration to export yet"
-    },
-    "config_invalid_giturl": {
-      "message": "Invalid repository URL"
-    },
-    "config_invalid_import": {
-      "message": "Choose a valid file to import"
-    },
-    "config_invalid_shareurl": {
-      "message": "Invalid sharing URL"
-    },
-    "config_manual_devOrigin_placeholder": {
-      "message": "Local Development URL: http://localhost:3000"
-    },
-    "config_manual_giturl_placeholder": {
-      "message": "Repository URL: https://github.com/..."
-    },
-    "config_manual_host_placeholder": {
-      "message": "Production Hostname (optional)"
-    },
-    "config_manual_liveHost_placeholder": {
-      "message": "Custom Live Hostname (optional)"
-    },
-    "config_manual_mountpoints_placeholder": {
-      "message": "Content URL: https://..."
-    },
-    "config_manual_previewHost_placeholder": {
-      "message": "Custom Preview Hostname (optional)"
-    },
-    "config_manual_project_placeholder": {
-      "message": "Project Name (optional)"
-    },
-    "config_manual_title": {
-      "message": "Add manually"
-    },
-    "config_picker_button_title": {
-      "message": "Press $1 to pick $2"
     },
     "config_project_add": {
       "message": "Add this project"
@@ -197,66 +133,24 @@
     "config_project_disable": {
       "message": "Disable this project"
     },
-    "config_project_empty": {
-      "message": "You haven't added any projects yet."
-    },
     "config_project_enable": {
       "message": "Enable this project"
     },
     "config_project_exists": {
       "message": "A configuration for this project already exists."
     },
-    "config_project_host": {
-      "message": "Production"
-    },
-    "config_project_innerhost": {
-      "message": "Preview"
-    },
-    "config_project_mountpoints": {
-      "message": "Content"
-    },
     "config_project_pick": {
       "message": "Pick a project"
-    },
-    "config_project_pick_more": {
-      "message": "More...",
-      "description": "More configurations"
     },
     "config_project_remove": {
       "message": "Remove this project"
     },
-    "config_projects": {
-      "message": "Projects"
+    "config_success": {
+      "message": "Configuration successfully activated."
     },
-    "config_reset": {
-      "message": "Reset"
-    },
-    "config_share": {
-      "message": "Share"
-    },
-    "config_shareurl_copied": {
-      "message": "Sharing URL for $1 copied to clipboard"
-    },
-    "config_shareurl_description": {
-      "message": "Ask someone with a Sidekick to share its URL with you by clicking the sharing icon on the right hand side."
-    },
-    "config_shareurl_placeholder": {
-      "message": "Sharing URL: https://www.hlx.live/sidekick..."
-    },
-    "config_shareurl_share_title": {
-      "message": "Sidekick configuration for $1"
-    },
-    "config_shareurl_title": {
-      "message": "Add via sharing URL"
-    },
-    "config_toggle_menu": {
-      "message": "Show/hide menu"
-    },
-    "config_unsupported_legacy": {
-      "message": "This site is no longer supported"
-    },
-    "config_ux": {
-      "message": "User experience"
+    "confirm": {
+      "message": "Please confirm",
+      "description": "Confirmation modal heading"
     },
     "copied": {
       "message": "Copied"
@@ -292,7 +186,13 @@
       "message": "Copy URL"
     },
     "copy_urls": {
-      "message": "Copy URLs"
+      "message": "Copy $1 URLs"
+    },
+    "copy_urls_error": {
+      "message": "Copy to clipboard failed. Please try again."
+    },
+    "copy_urls_error_focus": {
+      "message": "Copy to clipboard failed. Please make sure the window remains focused."
     },
     "delete": {
       "message": "Delete"
@@ -345,11 +245,17 @@
     "error_429": {
       "message": "429 Too many requests: Your project is being throttled by $1. Please wait and try again later."
     },
+    "error_preview_config": {
+      "message": "Failed to activate configuration: $1"
+    },
     "error_delete": {
       "message": "Deletion failed. Please try again later."
     },
     "error_fatal": {
       "message": "Apologies, we seem to be having problems at the moment. Please try again later."
+    },
+    "error_job_404": {
+      "message": "404 Not found: No such job."
     },
     "error_login_aborted": {
       "message": "Sign in aborted."
@@ -363,20 +269,35 @@
     "error_preview": {
       "message": "Preview generation failed. Please try again later."
     },
+    "error_preview_400": {
+      "message": "Preview generation failed. Check the file format, name or path."
+    },
     "error_preview_404": {
-      "message": "404 Not found: Source document does not exist, preview generation failed."
+      "message": "Source document does not exist, preview generation failed."
+    },
+    "error_preview_415": {
+      "message": "File type not supported. Refer to the documentation for supported file types."
     },
     "error_preview_not_gdoc_generic": {
       "message": "Preview generation failed. Must be Google document or spreadsheet."
     },
-    "error_preview_not_gdoc_ms_word": {
-      "message": "This is a Microsoft Word document. Please convert it to Google Docs: File > Save as Google Docs"
+    "error_preview_no_docx": {
+      "message": "This is a Microsoft Word document, please convert it to Google Docs first."
     },
-    "error_preview_not_gsheet_ms_excel": {
-      "message": "This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets"
+    "error_preview_no_xlsx": {
+      "message": "This is a Microsoft Excel document, please convert it to Google Sheets first."
+    },
+    "error_preview_too_large": {
+      "message": "File too large. Refer to the documentation for file size limits."
+    },
+    "error_preview_svg_invalid": {
+      "message": "SVG invalid. Make sure it is valid XML and contains no scripts."
     },
     "error_publish": {
       "message": "Publication failed. Please try again later."
+    },
+    "error_publish_404": {
+      "message": "Publication failed, generate preview first."
     },
     "error_status_404_content": {
       "message": "404 Not found: Check your Sidekick configuration or URL."
@@ -470,6 +391,9 @@
     "live": {
       "message": "Live"
     },
+    "media_state": {
+      "message": "No actions available for media files"
+    },
     "minutes_ago": {
       "message": "$1 minutes ago"
     },
@@ -490,7 +414,7 @@
       "message": "Open URL"
     },
     "open_urls": {
-      "message": "Open URLs"
+      "message": "Open $1 URLs"
     },
     "open": {
       "message": "Open"

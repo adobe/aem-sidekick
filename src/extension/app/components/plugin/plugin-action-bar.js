@@ -19,6 +19,7 @@ import { ICONS, STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import '../action-bar/activity-action/activity-action.js';
+import '../bulk/bulk-info/bulk-info.js';
 import sampleRUM from '../../../utils/rum.js';
 
 /**
@@ -71,11 +72,32 @@ export class PluginActionBar extends ConnectedElement {
   @queryAsync('action-bar')
   accessor actionBar;
 
-  @queryAll('sp-action-group')
+  @queryAll('div.action-group')
   accessor actionGroups;
+
+  @queryAsync('sp-action-menu#plugin-menu')
+  accessor pluginMenu;
 
   @queryAsync('sp-action-menu#sidekick-menu')
   accessor sidekickMenu;
+
+  /**
+   * Set up the bar and menu plugins in this environment and updates the component.
+   */
+  setupPlugins() {
+    this.visiblePlugins = [
+      ...Object.values(this.appStore.corePlugins),
+      ...Object.values(this.appStore.customPlugins),
+    ].filter((plugin) => plugin.isVisible());
+
+    this.barPlugins = this.visiblePlugins
+      .filter((plugin) => plugin.isPinned());
+
+    this.menuPlugins = this.visiblePlugins
+      .filter((plugin) => !plugin.isPinned());
+
+    this.requestUpdate();
+  }
 
   /**
    * Loads the user preferences for plugins in this environment.
@@ -86,17 +108,6 @@ export class PluginActionBar extends ConnectedElement {
     reaction(
       () => this.appStore.state,
       async () => {
-        this.visiblePlugins = [
-          ...Object.values(this.appStore.corePlugins),
-          ...Object.values(this.appStore.customPlugins),
-        ].filter((plugin) => plugin.isVisible());
-
-        this.barPlugins = this.visiblePlugins
-          .filter((plugin) => plugin.isPinned());
-
-        this.menuPlugins = this.visiblePlugins
-          .filter((plugin) => !plugin.isPinned());
-
         const actionBar = await this.actionBar;
         if (actionBar) {
           if (this.appStore.state === STATE.TOAST) {
@@ -104,7 +115,7 @@ export class PluginActionBar extends ConnectedElement {
 
             setTimeout(() => {
               actionBar.className = '';
-              if (this.appStore.toast?.actionCallback) {
+              if (this.appStore.toast?.actionCallback && this.appStore.toast?.actionOnTimeout) {
                 this.appStore.toast?.actionCallback();
               }
               this.appStore.closeToast();
@@ -116,7 +127,14 @@ export class PluginActionBar extends ConnectedElement {
           }
         }
 
-        this.requestUpdate();
+        this.setupPlugins();
+      },
+    );
+
+    reaction(
+      () => this.appStore.bulkStore.selection,
+      () => {
+        this.setupPlugins();
       },
     );
   }
@@ -173,25 +191,29 @@ export class PluginActionBar extends ConnectedElement {
     this.checkOverflow();
   }
 
-  // istanbul ignore next 4
-  onPluginMenuSelect() {
+  // istanbul ignore next 7
+  async onPluginMenuSelect() {
     // @ts-ignore
-    this.shadowRoot.querySelector('#plugin-menu').value = '';
+    const pluginMenu = await this.pluginMenu;
+    if (pluginMenu) {
+      pluginMenu.value = '';
+    }
   }
 
   renderPluginMenuItem(plugin) {
     return plugin.isContainer()
-      ? html`<sp-menu-group id="plugin-group-${plugin.id}">
+      ? html`<sp-menu-group id="plugin-group-${plugin.id}" selects="single">
           <span slot="header">${plugin.getButtonText()}</span>
           ${Object.values(plugin.children).map((p) => p.render())}
         </sp-menu-group>`
-      : html`<sp-menu-item
+      : html`<sk-menu-item
           class="${plugin.id}"
           id="plugin-${plugin.id}"
           @click=${(evt) => plugin.onButtonClick(evt)}
+          tabindex="0"
           .disabled=${!plugin.isEnabled()}>
           ${plugin.getButtonText()}
-        </sp-menu-item>`;
+        </sk-menu-item>`;
   }
 
   /**
@@ -204,11 +226,11 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     if (this.appStore.state !== STATE.READY) {
-      return html`<sp-action-group></sp-action-group>`;
+      return html`<div class="action-group"></div>`;
     }
 
     return html`
-      <sp-action-group>
+      <div class="action-group plugin-menu-container">
         ${this.transientPlugins.length > 0 || this.menuPlugins.length > 0 ? html`
           <sp-action-menu
             id="plugin-menu"
@@ -217,21 +239,20 @@ export class PluginActionBar extends ConnectedElement {
             label=""
             title="${this.appStore.i18n('plugins_more')}"
             quiet
+            tabindex="0"
             @change=${this.onPluginMenuSelect}
             .disabled=${this.appStore.state !== STATE.READY}>
             <sp-icon slot="icon" size="m">
               ${ICONS.MORE_ICON}
             </sp-icon>
-            <sp-menu-group>
-              ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
-              ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0
-                ? html`<sp-menu-divider size="s"></sp-menu-divider>`
-                : ''}
-              ${this.menuPlugins.map((p) => this.renderPluginMenuItem(p))}
-            </sp-menu-group>
+            ${this.transientPlugins.map((p) => this.renderPluginMenuItem(p))}
+            ${this.menuPlugins.length > 0 && this.transientPlugins.length > 0
+              ? html`<sp-menu-divider size="s"></sp-menu-divider>`
+              : ''}
+            ${this.menuPlugins.map((p) => this.renderPluginMenuItem(p))}
           </sp-action-menu>
         ` : ''}
-      </sp-action-group>
+      </div>
       `;
   }
 
@@ -242,15 +263,18 @@ export class PluginActionBar extends ConnectedElement {
   renderPlugins() {
     if (this.appStore.state !== STATE.READY) {
       return html`
-        <sp-action-group>
+        <div class="action-group activity-container">
           <activity-action></activity-action>
-        </sp-action-group>`;
+        </div>`;
     }
 
     return html`
-      <sp-action-group>
+      <div class="action-group plugins-container">
+        ${this.appStore.isAdmin()
+          ? html`<bulk-info></bulk-info><sp-menu-divider size="s" vertical></sp-menu-divider>`
+          : ''}
         ${this.barPlugins.length > 0 ? this.barPlugins.map((p) => p.render()) : ''}
-      </sp-action-group>`;
+      </div>`;
   }
 
   async handleItemSelection(event) {
@@ -284,41 +308,40 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     const properties = html`
-      <sp-action-menu id="sidekick-menu" placement="top" quiet>
+      <sp-action-menu id="sidekick-menu" placement="top" quiet tabindex="0">
         <sp-icon slot="icon" size="l">
           ${ICONS.HAMBURGER_ICON}
         </sp-icon>
-        <sp-menu-group>
-          ${siteStore.transient ? html`
-              <sp-menu-item class="icon-item" value="project-added" @click=${this.handleItemSelection}>
-                <sp-icon slot="icon" size="m">
-                  ${ICONS.PLUS_ICON}
-                </sp-icon>
-                ${this.appStore.i18n('config_project_add')}
-              </sp-menu-item>
-            ` : html`
-              <sp-menu-item class="icon-item destructive" value="project-removed" @click=${this.handleItemSelection}>
-                <sp-icon slot="icon" size="m">
-                  ${ICONS.TRASH_ICON}
-                </sp-icon>
-                ${this.appStore.i18n('config_project_remove')}
-              </sp-menu-item>
-            `
-          }
-          <sp-menu-item class="icon-item" value="open-help"  @click=${this.handleItemSelection}>
-            <sp-icon slot="icon" size="m">
-              ${ICONS.HELP_ICON}
-            </sp-icon>
-            ${this.appStore.i18n('help_documentation')}
-          </sp-menu-item>
-        </sp-menu-group>
+        ${siteStore.transient
+          ? html`
+            <sk-menu-item class="icon-item" value="project-added" @click=${this.handleItemSelection}>
+              <sp-icon slot="icon" size="m">
+                ${ICONS.PLUS_ICON}
+              </sp-icon>
+              ${this.appStore.i18n('config_project_add')}
+            </sk-menu-item>
+          ` : html`
+            <sk-menu-item class="icon-item destructive" value="project-removed" @click=${this.handleItemSelection}>
+              <sp-icon slot="icon" size="m">
+                ${ICONS.TRASH_ICON}
+              </sp-icon>
+              ${this.appStore.i18n('config_project_remove')}
+            </sk-menu-item>
+          `
+        }
+        <sk-menu-item class="icon-item" value="open-help"  @click=${this.handleItemSelection}>
+          <sp-icon slot="icon" size="m">
+            ${ICONS.HELP_ICON}
+          </sp-icon>
+          ${this.appStore.i18n('help_documentation')}
+        </sk-menu-item>
         <sp-divider size="s"></sp-divider>
-        <sp-menu-item class="icon-item" value="hidden" @click=${this.handleItemSelection}>
+        <sk-menu-item class="close icon-item" value="hidden" @click=${this.handleItemSelection}>
           <sp-icon slot="icon" size="m">
             ${ICONS.CLOSE_X}
           </sp-icon>
           ${this.appStore.i18n('close_sidekick')}
-        </sp-menu-item>
+        </sk-menu-item>
       </sp-action-menu>`;
     systemPlugins.push(properties);
 
@@ -327,9 +350,13 @@ export class PluginActionBar extends ConnectedElement {
       <login-button id="user" class=${buttonType}></login-button>
     `);
 
-    systemPlugins.push(ICONS.ADOBE_LOGO);
+    systemPlugins.push(html`
+      <div class="logo">
+        ${ICONS.ADOBE_LOGO}
+      </div>
+    `);
 
-    const actionGroup = html`<sp-action-group>${systemPlugins}</sp-action-group>`;
+    const actionGroup = html`<div class="action-group system-plugins-container">${systemPlugins}</div>`;
     const divider = html`<sp-menu-divider size="s" vertical></sp-menu-divider>`;
 
     return [divider, actionGroup];

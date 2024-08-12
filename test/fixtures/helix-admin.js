@@ -27,6 +27,8 @@
 
 export const defaultConfigJSON = {
   project: 'AEM Boilerplate',
+  contentSourceUrl: 'https://drive.google.com/drive/u/0/folders/1MGzOt7ubUh3gu7zhZIPb7R7dyRzG371j',
+  contentSourceType: 'google',
 };
 
 export const defaultConfigJSONWithHost = {
@@ -246,6 +248,23 @@ export const defaultSharepointSheetStatusResponse = {
     preview: 'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/placeholders.json',
     live: 'https://admin.hlx.page/live/adobe/aem-boilerplate/main/placeholders.json',
     code: 'https://admin.hlx.page/code/adobe/aem-boilerplate/main/placeholders.json',
+  },
+};
+
+export const defaultCodeStatusResponse = {
+  code: {
+    status: 200,
+    permissions: [
+      'delete',
+      'read',
+      'write',
+    ],
+    codeBusId: 'helix-code-bus/adobe/aem-boilerplate/main/scripts/scripts.js',
+    contentType: 'text/javascript; charset=utf-8',
+    lastModified: 'Thu, 06 Jun 2024 20:08:26 GMT',
+    contentLength: '2675',
+    sourceLastModified: 'Thu, 06 Jun 2024 19:54:13 GMT',
+    sourceLocation: 'https://raw.githubusercontent.com/adobecom/blog/main/scripts/scripts.js',
   },
 };
 
@@ -539,5 +558,43 @@ export const defaultDirectoryGdriveStatusResponse = {
     preview: 'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/',
     live: 'https://admin.hlx.page/live/adobe/aem-boilerplate/main/',
     code: 'https://admin.hlx.page/code/adobe/aem-boilerplate/main/',
+  },
+};
+
+export const defaultStartJobResponse = {
+  status: 202,
+  job: {
+    topic: 'topic',
+    name: '123',
+    state: 'created',
+    startTime: new Date().toUTCString(),
+  },
+};
+
+export const defaultJobStatusResponse = {
+  topic: 'topic',
+  name: '123',
+  state: 'complete',
+  startTime: new Date().toUTCString(),
+  progress: {
+    total: 10,
+    processed: 10,
+    failed: 0,
+  },
+};
+
+export const defaultJobDetailsResponse = {
+  ...defaultJobStatusResponse,
+  data: {
+    resources: [
+      {
+        status: 200,
+        path: '/foo',
+      },
+      {
+        status: 200,
+        path: '/bar',
+      },
+    ],
   },
 };

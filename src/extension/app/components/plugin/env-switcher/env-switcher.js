@@ -143,7 +143,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
 
     const label = id === 'edit' ? this.appStore.i18n('open_in').replace('$1', contentSourceLabel) : this.envNames[id];
     const menuItem = createTag({
-      tag: 'sp-menu-item',
+      tag: 'sk-menu-item',
       text: label,
       attrs: {
         value: id,
@@ -232,7 +232,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
 
     if (publishPlugin.isVisible()) {
       const publishButton = createTag({
-        tag: 'sp-action-button',
+        tag: 'sk-action-button',
         text: this.appStore.i18n('publish'),
         attrs: {
           slot: 'description',
@@ -362,7 +362,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       liveMenuItem.remove();
     }
 
-    if (this.appStore.status?.webPath) {
+    if (this.appStore.status?.webPath && !this.appStore.status?.webPath.startsWith('/.helix')) {
       this.ready = true;
     }
   }
@@ -382,7 +382,13 @@ export class EnvironmentSwitcher extends ConnectedElement {
     picker.value = this.currentEnv;
   }
 
+  keydown(event) {
+    if (event.key === 'Tab') {
+      this.picker.close();
+    }
+  }
+
   render() {
-    return html`<action-bar-picker class="env-switcher" icons="none" @change=${this.onChange} .disabled=${!this.ready}></action-bar-picker>`;
+    return html`<action-bar-picker class="env-switcher" icons="none" @change=${this.onChange} .disabled=${!this.ready} @keydown=${this.keydown}></action-bar-picker>`;
   }
 }

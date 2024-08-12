@@ -21,10 +21,11 @@
 export const defaultSidekickConfig = {
   id: 'adobe/aem-boilerplate/main',
   owner: 'adobe',
-  ref: 'main',
   repo: 'aem-boilerplate',
+  ref: 'main',
   giturl: 'https://github.com/adobe/aem-boilerplate',
-  mountpoints: ['https://drive.google.com/drive/folders/folder-id'],
+  contentSourceUrl: 'https://drive.google.com/drive/folders/folder-id',
+  contentSourceType: 'google',
 };
 
 export const matchingConfigs = [

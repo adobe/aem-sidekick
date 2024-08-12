@@ -82,9 +82,9 @@ describe('helix-admin', () => {
     });
 
     it('calls admin api with body', async () => {
-      await callAdmin(siteStore, 'preview', '/path/to/resource', { body: 'body' });
+      await callAdmin(siteStore, 'preview', '/path/to/resource', { body: '{}' });
       const options = fetchStub.getCall(0).args[1];
-      expect(options.body).to.equal('body');
+      expect(options.body).to.equal('"{}"');
     });
 
     it('calls admin api with omitCredentials', async () => {

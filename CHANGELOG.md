@@ -1,3 +1,123 @@
+## [1.28.10](https://github.com/adobe/aem-sidekick/compare/v1.28.9...v1.28.10) (2024-07-30)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([0127ea8](https://github.com/adobe/aem-sidekick/commit/0127ea888c1c47ef0c9bb6a21cc1847a75c9a82d))
+
+## [1.28.9](https://github.com/adobe/aem-sidekick/compare/v1.28.8...v1.28.9) (2024-07-12)
+
+
+### Bug Fixes
+
+* build chrome before publishing ([#222](https://github.com/adobe/aem-sidekick/issues/222)) ([0ab6ffd](https://github.com/adobe/aem-sidekick/commit/0ab6ffd196b6a4cd108da489b096cc63f01a4c7e))
+
+## [1.28.8](https://github.com/adobe/aem-sidekick/compare/v1.28.7...v1.28.8) (2024-07-12)
+
+
+### Bug Fixes
+
+* build chrome before publishing ([#221](https://github.com/adobe/aem-sidekick/issues/221)) ([31e031c](https://github.com/adobe/aem-sidekick/commit/31e031c8b062135fdb57c88ffa1d085f31314273))
+
+## [1.28.7](https://github.com/adobe/aem-sidekick/compare/v1.28.6...v1.28.7) (2024-07-12)
+
+
+### Bug Fixes
+
+* trigger ci build ([#220](https://github.com/adobe/aem-sidekick/issues/220)) ([db8c2a4](https://github.com/adobe/aem-sidekick/commit/db8c2a490ba6e822fd62713f1c361bcbb200fe36))
+
+## [1.28.6](https://github.com/adobe/aem-sidekick/compare/v1.28.5...v1.28.6) (2024-07-12)
+
+
+### Bug Fixes
+
+* trigger ci build ([457fa30](https://github.com/adobe/aem-sidekick/commit/457fa30507d99776b0b3e04d4be61544654da4fd))
+
+## [1.28.5](https://github.com/adobe/aem-sidekick/compare/v1.28.4...v1.28.5) (2024-07-12)
+
+
+### Bug Fixes
+
+* trigger ci build ([8bb2a90](https://github.com/adobe/aem-sidekick/commit/8bb2a907fc2789bae297bd420d11e1f87b6473bb))
+
+## [1.28.4](https://github.com/adobe/aem-sidekick/compare/v1.28.3...v1.28.4) (2024-07-12)
+
+
+### Bug Fixes
+
+* trigger ci build ([25decd8](https://github.com/adobe/aem-sidekick/commit/25decd8cea50564a7c1c7f0196b05a27682217c6))
+
+## [1.28.3](https://github.com/adobe/aem-sidekick/compare/v1.28.2...v1.28.3) (2024-07-12)
+
+
+### Bug Fixes
+
+* remove project on prod host not working ([#219](https://github.com/adobe/aem-sidekick/issues/219)) ([5f39736](https://github.com/adobe/aem-sidekick/commit/5f3973634b7521a41cf3cec6b38e3a449d987d75))
+
+## [1.28.2](https://github.com/adobe/aem-sidekick/compare/v1.28.1...v1.28.2) (2024-07-09)
+
+
+### Bug Fixes
+
+* special state for code and media resources ([#203](https://github.com/adobe/aem-sidekick/issues/203)) ([f40db50](https://github.com/adobe/aem-sidekick/commit/f40db5022a24a45fc1d275f5fc6f0eefa6ceedef))
+
+## [1.28.1](https://github.com/adobe/aem-sidekick/compare/v1.28.0...v1.28.1) (2024-07-09)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([0a8f65c](https://github.com/adobe/aem-sidekick/commit/0a8f65c197b75234229b41c4426aa18e50e7979f))
+
+# [1.28.0](https://github.com/adobe/aem-sidekick/compare/v1.27.4...v1.28.0) (2024-07-02)
+
+
+### Features
+
+* ignore originalSite if single match ([#202](https://github.com/adobe/aem-sidekick/issues/202)) ([02d9cb3](https://github.com/adobe/aem-sidekick/commit/02d9cb3958a8878c0c87f5a4a507390dc2272316))
+* special handling for config files ([#199](https://github.com/adobe/aem-sidekick/issues/199)) ([20638ca](https://github.com/adobe/aem-sidekick/commit/20638cae83808aa9c15c15a07282e4d505db5f92))
+
+## [1.27.4](https://github.com/adobe/aem-sidekick/compare/v1.27.3...v1.27.4) (2024-07-02)
+
+
+### Bug Fixes
+
+* dividers ([#201](https://github.com/adobe/aem-sidekick/issues/201)) ([ba7a128](https://github.com/adobe/aem-sidekick/commit/ba7a12898dd0d547fb6890bde40749270fc69bf9))
+
+## [1.27.3](https://github.com/adobe/aem-sidekick/compare/v1.27.2...v1.27.3) (2024-06-28)
+
+
+### Bug Fixes
+
+* update to latest version of SWC ([#195](https://github.com/adobe/aem-sidekick/issues/195)) ([33b2ca4](https://github.com/adobe/aem-sidekick/commit/33b2ca41001e4ad5fa26f3877f3a66e684618025))
+
+## [1.27.2](https://github.com/adobe/aem-sidekick/compare/v1.27.1...v1.27.2) (2024-06-24)
+
+
+### Bug Fixes
+
+* sidekick no longer opening in dev ([#194](https://github.com/adobe/aem-sidekick/issues/194)) ([1c779e2](https://github.com/adobe/aem-sidekick/commit/1c779e2a1d4c852c5f9488fbbcaca855cb80472e))
+
+## [1.27.1](https://github.com/adobe/aem-sidekick/compare/v1.27.0...v1.27.1) (2024-06-20)
+
+
+### Bug Fixes
+
+* delete/unpublish claim source document is missing ([#187](https://github.com/adobe/aem-sidekick/issues/187)) ([0842079](https://github.com/adobe/aem-sidekick/commit/0842079a8e201ebb4976b319d9c6d4cfebf8cf78))
+* don't drop project name from share settings ([#188](https://github.com/adobe/aem-sidekick/issues/188)) ([361bb40](https://github.com/adobe/aem-sidekick/commit/361bb40094f38e31558f22e7fbe097d225d8233d))
+* tab order and other UI tweaks ([#182](https://github.com/adobe/aem-sidekick/issues/182)) ([71a2d8a](https://github.com/adobe/aem-sidekick/commit/71a2d8ad7cbbe19721a84f2699a765d6121697b0))
+
+# [1.27.0](https://github.com/adobe/aem-sidekick/compare/v1.26.2...v1.27.0) (2024-06-18)
+
+
+### Bug Fixes
+
+* don't call checkTab if sidekick hidden from ui ([#180](https://github.com/adobe/aem-sidekick/issues/180)) ([15914fa](https://github.com/adobe/aem-sidekick/commit/15914fa099305a6ab469a31024d4495d69e0ea8a))
+
+
+### Features
+
+* bulk operations ([#152](https://github.com/adobe/aem-sidekick/issues/152)) ([dcc5ef1](https://github.com/adobe/aem-sidekick/commit/dcc5ef1eca73b2bec1020866bd6762262e78cfc9))
+
 ## [1.26.2](https://github.com/adobe/aem-sidekick/compare/v1.26.1...v1.26.2) (2024-06-11)
 
 

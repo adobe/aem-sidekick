@@ -214,22 +214,22 @@ export class Plugin {
         }
       } else if (this.isChild()) {
         return html`
-          <sp-menu-item
+          <sk-menu-item
             .disabled=${!this.isEnabled()}
             value=${this.getId()}
             class=${this.getId()}
             @click=${(evt) => this.onButtonClick(evt)}
-          >${this.getButtonText()}</sp-menu-item>
+          >${this.getButtonText()}</sk-menu-item>
         `;
       }
 
       return html`
-        <sp-action-button
+        <sk-action-button
           class=${this.getId()}
           .disabled=${!this.isEnabled()}
           quiet
           @click=${(evt) => this.onButtonClick(evt)}
-        >${this.getButtonText()}</sp-action-button>
+        >${this.getButtonText()}</sk-action-button>
       `;
     }
 

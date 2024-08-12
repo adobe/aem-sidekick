@@ -10,10 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
-import { STATE } from '../../constants.js';
 import { Plugin } from '../../components/plugin/plugin.js';
 import { newTab } from '../../utils/browser.js';
-import { i18n } from '../../utils/i18n.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -31,12 +29,10 @@ import { i18n } from '../../utils/i18n.js';
 export function createReloadPlugin(appStore) {
   return new Plugin({
     id: 'reload',
-    condition: (store) => store.isPreview() || store.isDev(),
+    condition: (store) => store.isContent() && (store.isPreview() || store.isDev()),
     button: {
-      text: i18n(appStore.languageDict, 'reload'),
+      text: appStore.i18n('reload'),
       action: async (evt) => {
-        appStore.setState(STATE.PREVIEWING);
-
         const res = await appStore.update();
         if (res) {
           const closeHandler = () => {
@@ -47,7 +43,7 @@ export function createReloadPlugin(appStore) {
             appStore.reloadPage(newTab(evt));
           };
 
-          appStore.showToast(i18n(appStore.languageDict, 'reload_success'), 'positive', closeHandler, actionHandler, appStore.i18n('open'));
+          appStore.showToast(appStore.i18n('reload_success'), 'positive', closeHandler, actionHandler, appStore.i18n('open'));
         }
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write'),

@@ -91,9 +91,17 @@ export class ModalContainer extends LitElement {
 
   async firstUpdated() {
     const dialogWrapper = await this.dialogWrapper;
-    dialogWrapper.addEventListener(MODAL_EVENTS.CLOSE, () => {
-      this.remove();
-    });
+    if (dialogWrapper) {
+      dialogWrapper.addEventListener(MODAL_EVENTS.CLOSE, () => {
+        this.remove();
+      });
+      dialogWrapper.addEventListener(MODAL_EVENTS.CONFIRM, () => {
+        this.onConfirm();
+      });
+      dialogWrapper.addEventListener(MODAL_EVENTS.SECONDARY, () => {
+        this.onSecondary();
+      });
+    }
   }
 
   disconnectedCallback() {
@@ -148,11 +156,53 @@ export class ModalContainer extends LitElement {
   }
 
   /**
+   * Called when the secondary button is clicked
+   */
+  onSecondary() {
+    // Announces that the "secondary" button has been clicked.
+    this.dispatchEvent(new CustomEvent(MODAL_EVENTS.SECONDARY));
+    this.cleanup();
+  }
+
+  /**
    * Cleanup the modal
    */
   cleanup() {
     this.modal = undefined;
     this.remove();
+  }
+
+  /**
+   * Returns the bulk modal options.
+   * @returns {Object} The bulk modal options
+   */
+  getBulkModalOptions() {
+    const { bulkStore } = this.appStore;
+    if (!bulkStore || !bulkStore.summary) {
+      return undefined;
+    }
+
+    const { operation, resources, host } = bulkStore.summary;
+    const failed = resources.filter((resource) => resource.status >= 400);
+    const succeeded = resources.filter(({ status }) => status < 400);
+    const paths = succeeded.map(({ path }) => path);
+    const openUrlsLabel = this.appStore.i18n(`open_url${paths.length !== 1 ? 's' : ''}`)
+      .replace('$1', `${paths.length}`);
+    const copyUrlsLabel = this.appStore.i18n(`copy_url${paths.length !== 1 ? 's' : ''}`)
+      .replace('$1', `${paths.length}`);
+
+    const options = {};
+    options.underlay = true;
+    options.headline = bulkStore.getSummaryText(operation, resources.length, failed.length);
+    if (paths.length > 0) {
+      options.confirmLabel = openUrlsLabel;
+      options.confirmCallback = () => bulkStore.openUrls(host, paths);
+      options.secondaryLabel = copyUrlsLabel;
+      options.secondaryCallback = () => bulkStore.copyUrls(host, paths);
+    }
+    options.cancelLabel = this.appStore.i18n('close');
+    options.content = html`<bulk-result></bulk-result>`;
+    return options;
   }
 
   /**
@@ -177,13 +227,12 @@ export class ModalContainer extends LitElement {
         `;
         break;
       case MODALS.DELETE:
-        // eslint-disable-next-line no-case-declarations
         this.action = data?.action ?? 'delete';
         options.negative = true;
         options.underlay = true;
         options.error = true;
         options.headline = data?.headline ?? this.appStore.i18n('destructive_confirmation').replace('$1', this.action);
-        options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('config_delete');
+        options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('delete');
         options.cancelLabel = this.appStore.i18n('cancel');
         options.content = html`
           ${data?.message || ''}
@@ -194,9 +243,26 @@ export class ModalContainer extends LitElement {
           </div>
         `;
         break;
+      case MODALS.CONFIRM:
+        options.underlay = true;
+        options.headline = data?.headline ?? this.appStore.i18n('confirm');
+        options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('ok');
+        options.confirmCallback = data?.confirmCallback;
+        options.secondaryLabel = data?.secondaryLabel;
+        options.secondaryCallback = data?.secondaryCallback;
+        options.cancelLabel = this.appStore.i18n('cancel');
+        options.content = html`${data?.message || ''}`;
+        break;
+      case MODALS.BULK:
+        Object.assign(options, this.getBulkModalOptions());
+        break;
       default:
-        this.cleanup();
-        return html``;
+      // do not render
+    }
+
+    if (Object.keys(options).length === 0) {
+      this.cleanup();
+      return html``;
     }
 
     return html`
@@ -212,7 +278,8 @@ export class ModalContainer extends LitElement {
             .underlay=${options.underlay}
             .closeOnUnderlayClick=${options.closeOnUnderlayClick}
             .error=${options.error}
-            @confirm=${this.onConfirm}
+            @confirm=${options.confirmCallback}
+            @secondary=${options.secondaryCallback}
             @cancel=${this.onCancel}>
             ${options.content}
         </sp-dialog-wrapper>

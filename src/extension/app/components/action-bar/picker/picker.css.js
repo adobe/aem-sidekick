@@ -17,13 +17,23 @@ export const style = css`
     --mod-divider-thickness: 1px;
   }
 
-  :host([quiet]:hover) {
-    background-color: var(--highcontrast-actionbutton-background-color-hover, var(--mod-actionbutton-background-color-hover, var(--spectrum-actionbutton-background-color-hover)))
-  }
-
   :host #button,
   :host([quiet]) #button {
     border-radius: var(--spectrum2-default-border-radius);
+  }
+
+  :host #button:focus-visible:after,
+  :host([quiet]) #button:focus-visible:after {
+    border-radius: var(--spectrum2-large-border-radius);
+  }
+
+  :host([quiet]) #button:focus-visible {
+    background-color: var(--mod-actionbutton-background-color-focus);
+  }
+
+  :host([quiet]) #button:focus-visible:after {
+    box-shadow: rgb(20, 122, 243) 0px 0px 0px 2px;
+    margin: -3px;
   }
 
   :host(.env-edit) #button #label,
@@ -68,6 +78,8 @@ export const style = css`
   :host(.env-preview) #button {
     background-color: var(--spectrum2-preview-background-default);
     border: 1px solid var(--spectrum2-preview-border-default);
+    --mod-picker-background-color-hover-open: var(--spectrum2-preview-background-hover);
+    --mod-picker-border-color-hover-open: var(--spectrum2-preview-border-hover);
   }
 
   :host(.env-preview) #button:hover {
@@ -91,7 +103,6 @@ export const style = css`
     --spectrum-picker-icon-color-default-open: var(--spectrum2-preview-border-default);
   }
 
-
   :host(.env-live) #button #label,
   :host(.env-prod) #button #label,
   :host(.env-live) #button sp-icon-chevron100,
@@ -108,6 +119,8 @@ export const style = css`
   :host(.env-prod) #button {
     background-color: var(--spectrum2-live-background-default);
     border: 1px solid var(--spectrum2-live-border-default);
+    --mod-picker-background-color-hover-open: var(--spectrum2-live-background-hover);
+    --mod-picker-border-color-hover-open: var(--spectrum2-live-border-hover);
   }
 
   :host(.env-live[disabled]) #button,
@@ -139,6 +152,7 @@ export const style = css`
 
   :host(.plugin-container) #button {
     background-color: transparent;
+    gap: 10px;
   }
 
   :host(.plugin-container) #button[aria-expanded="true"] {
@@ -154,7 +168,7 @@ export const style = css`
   }
 
   :host([quiet]) #button:hover {
-    background-color: var(--spectrum2-edit-background-hover);
+    background-color: var(--mod-actionbutton-background-color-focus);
   }
 
   :host([quiet]) #button #label {
@@ -178,6 +192,10 @@ export const style = css`
   sp-popover {
     backdrop-filter: var(--sidekick-backdrop-filter);
     padding: 0;
+  }
+
+  sp-overlay:not(:defined) {
+    display: unset;
   }
 
   :host(.env-switcher) sp-popover {

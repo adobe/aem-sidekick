@@ -89,7 +89,7 @@ describe('Environment Switcher', () => {
       expect(overlay.getAttribute('open')).to.not.be.null;
 
       const switchEnvStub = sidekickTest.sandbox.stub(appStore, 'switchEnv').resolves();
-      const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
+      const liveButton = recursiveQuery(picker, 'sk-menu-item.env-live');
       liveButton.click();
 
       picker.value = 'live';
@@ -140,7 +140,7 @@ describe('Environment Switcher', () => {
       expect(overlay.getAttribute('open')).to.not.be.null;
 
       const openPageStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns(null);
-      const previewButton = recursiveQuery(picker, 'sp-menu-item.env-preview');
+      const previewButton = recursiveQuery(picker, 'sk-menu-item.env-preview');
       previewButton.click();
 
       picker.value = 'preview';
@@ -179,7 +179,7 @@ describe('Environment Switcher', () => {
       await sendKeys({ down: 'Meta' });
 
       const switchEnvStub = sidekickTest.sandbox.stub(appStore, 'switchEnv').resolves();
-      const liveButton = recursiveQuery(picker, 'sp-menu-item.env-live');
+      const liveButton = recursiveQuery(picker, 'sk-menu-item.env-live');
       liveButton.click();
 
       picker.value = 'live';
@@ -223,14 +223,14 @@ describe('Environment Switcher', () => {
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
 
-      await waitUntil(() => recursiveQuery(picker, 'sp-menu-item.env-live'));
+      await waitUntil(() => recursiveQuery(picker, 'sk-menu-item.env-live'));
 
       expect(picker.classList.contains('notification')).to.eq(true);
 
       const notificationItem = recursiveQuery(picker, '.notification-item');
       expect(notificationItem).to.not.be.null;
 
-      const publishButton = recursiveQuery(notificationItem, 'sp-action-button');
+      const publishButton = recursiveQuery(notificationItem, 'sk-action-button');
       publishButton.click();
 
       await waitUntil(() => publishSpy.called);
@@ -271,14 +271,14 @@ describe('Environment Switcher', () => {
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
 
-      await waitUntil(() => recursiveQuery(picker, 'sp-menu-item.env-live'));
+      await waitUntil(() => recursiveQuery(picker, 'sk-menu-item.env-live'));
 
       expect(picker.classList.contains('notification')).to.eq(true);
 
       const notificationItem = recursiveQuery(picker, '.notification-item');
       expect(notificationItem).to.not.be.null;
 
-      const publishButton = recursiveQuery(notificationItem, 'sp-action-button');
+      const publishButton = recursiveQuery(notificationItem, 'sk-action-button');
       expect(publishButton).to.be.undefined;
     }).timeout(20000);
 
@@ -309,20 +309,23 @@ describe('Environment Switcher', () => {
       const envPlugin = recursiveQuery(actionBar, 'env-switcher');
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
 
-      await waitUntil(() => recursiveQuery(picker, 'sp-menu-item.env-live'));
+      await waitUntil(() => recursiveQuery(picker, 'sk-menu-item.env-live'));
 
       expect(picker.classList.contains('notification')).to.eq(true);
 
       const notificationItem = recursiveQuery(picker, '.notification-item');
       expect(notificationItem).to.not.be.null;
 
-      const publishButton = recursiveQuery(notificationItem, 'sp-action-button');
+      const publishButton = recursiveQuery(notificationItem, 'sk-action-button');
       expect(publishButton.hasAttribute('disabled')).to.be.true;
     }).timeout(20000);
 
     it('should not show edit if byom sourceLocation', async () => {
       sidekickTest
-        .mockFetchSidekickConfigSuccess()
+        .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceUrl: 'https://byom.adobeioruntime.net/api/v1/web/convert/main/index.html?wcmmode=disabled',
+          contentSourceType: 'markup',
+        })
         .mockFetchStatusSuccess(false, {
           webPath: '/query-index.json',
           resourcePath: '/query-index.json',

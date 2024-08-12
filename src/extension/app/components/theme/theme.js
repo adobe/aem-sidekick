@@ -53,13 +53,13 @@ export class ThemeWrapper extends LitElement {
 
   render() {
     return html`
-      <sp-theme
+      <sk-theme
         theme="spectrum"
         color=${this.theme === 'dark' ? 'dark' : 'light'}
         scale="medium"
       >
         <slot></slot>
-      </sp-theme>
+      </sk-theme>
     `;
   }
 }
