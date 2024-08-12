@@ -19,6 +19,7 @@ import {
   deleteProject,
   isValidProject,
   getProject,
+  importLegacyProjects,
 } from './project.js';
 import { ADMIN_ORIGIN } from './utils/admin.js';
 
@@ -80,6 +81,17 @@ async function enableDisableProject(tab) {
 }
 
 /**
+ * Imports projects from legacy sidekick.
+ * @param {chrome.tabs.Tab} tab The tab
+ */
+async function importProjects(tab) {
+  const imported = await importLegacyProjects();
+  if (imported > 0) {
+    await chrome.tabs.reload(tab.id, { bypassCache: true });
+  }
+}
+
+/**
  * Opens the view document source popup.
  * @param {chrome.tabs.Tab} tab The tab
  */
@@ -120,6 +132,7 @@ export const internalActions = {
   addRemoveProject,
   enableDisableProject,
   openViewDocSource,
+  importProjects,
 };
 
 /**

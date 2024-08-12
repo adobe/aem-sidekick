@@ -46,7 +46,7 @@ class Logger {
    * @constructor
    * @param {number} [level=0] The log level
    */
-  constructor(level = 2) {
+  constructor(level = 3) {
     /**
      * @member {number} LEVEL The log level (0 = error, 1 = warn, 2 = info, 3 = debug)
      */

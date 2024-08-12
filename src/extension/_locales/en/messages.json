@@ -449,6 +449,18 @@
     "homepage": {
       "message": "https://www.hlx.live/tools/sidekick/"
     },
+    "import_projects": {
+      "message": "Import projects from AEM Sidekick v6"
+    },
+    "import_projects_result_none": {
+      "message": "No new projects found to import from AEM Sidekick v6."
+    },
+    "import_projects_result_single": {
+      "message": "Imported 1 new project from AEM Sidekick v6."
+    },
+    "import_projects_result_multiple": {
+      "message": "Imported $1 new projects from AEM Sidekick v6."
+    },
     "info": {
       "message": "Information"
     },

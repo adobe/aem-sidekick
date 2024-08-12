@@ -455,3 +455,76 @@ export async function getProjectMatches(configs, tab) {
     .filter(({ owner, repo }) => !configs
       .find((cfg) => cfg.owner === owner && cfg.repo === repo && cfg.disabled));
 }
+
+/**
+ * Looks for a legacy sidekick and returns its extension ID if found.
+ * @returns {Promise<string>} The legacy sidekick ID
+ */
+export async function detectLegacySidekick() {
+  const extensionIds = chrome.runtime.getManifest().externally_connectable?.ids || [];
+  return (await Promise.all(
+    extensionIds.map(
+      async (id) => new Promise((resolve) => {
+        try {
+          chrome.runtime.lastError = null;
+          chrome.runtime.sendMessage(
+            id,
+            { action: 'ping' },
+            (pong) => {
+              if (chrome.runtime.lastError) {
+                resolve(null);
+              } else {
+                resolve(pong ? id : null);
+              }
+            },
+          );
+        } catch (e) {
+          resolve(null);
+        }
+      }),
+    ),
+  ))
+    .find((id) => id !== null);
+}
+
+/**
+ * Imports projects from legacy sidekick.
+ * @returns {Promise<number>} The imported projects
+ */
+export async function importLegacyProjects() {
+  // look for legacy sidekick id
+  const sidekickId = await detectLegacySidekick();
+  if (!sidekickId) {
+    return 0;
+  }
+  let importedProjects = 0;
+  try {
+    // fetch projects from legacy sidekick
+    chrome.runtime.sendMessage(
+      sidekickId,
+      { action: 'getProjects' },
+      async (legacyProjects) => {
+        if (Array.isArray(legacyProjects)
+          && legacyProjects.length > 0
+          && !chrome.runtime.lastError) {
+          log.info(`Importing projects from legacy sidekick (${sidekickId})`);
+          for (const legacyProject of legacyProjects) {
+            /* eslint-disable no-await-in-loop */
+            const existing = await getProject(legacyProject);
+            if (!existing) {
+              await updateProject(legacyProject);
+              importedProjects += 1;
+              log.info('imported project', legacyProject.id);
+            } else {
+              log.warn('skipping import of existing project', legacyProject.id);
+            }
+            /* eslint-enable no-await-in-loop */
+          }
+        }
+      },
+    );
+  } catch (e) {
+    log.warn(`Error importing projects from legacy sidekick (${sidekickId})`, e);
+  }
+  return importedProjects;
+}
