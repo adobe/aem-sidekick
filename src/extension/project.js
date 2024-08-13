@@ -275,7 +275,7 @@ export async function getProjectEnv({
 /**
  * Adds a project configuration.
  * @param {Object} input The project settings
- * @param {string} [loggedIn] True if user is logged in
+ * @param {boolean} [loggedIn] True if user is logged in, else false or empty (default)
  * @returns {Promise<Object>} The added project
  */
 export async function addProject(input, loggedIn) {
@@ -302,7 +302,7 @@ export async function addProject(input, loggedIn) {
           await new Promise((r) => {
             setTimeout(r, 500);
           });
-          added = await addProject(config, message.authToken);
+          added = await addProject(config, true);
         }
         // clean up
         chrome.runtime.onMessageExternal.removeListener(retryAddProjectListener);
