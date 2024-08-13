@@ -26,6 +26,27 @@ import {
 import { ADMIN_ORIGIN } from './utils/admin.js';
 
 /**
+ * Displays a browser notification.
+ * @param {*} message The message to display
+ * @param {number} [timeout=5000] Time to wait until notification is cleared
+ */
+export async function notify(message, timeout = 5000) {
+  const { name, icons } = chrome.runtime.getManifest();
+  const notificationId = await chrome.notifications.create(
+    {
+      type: 'basic',
+      iconUrl: icons['48'],
+      title: name,
+      message,
+    },
+  );
+  if (timeout > 0) {
+    // @ts-ignore
+    setTimeout(() => chrome.notifications.clear(notificationId), timeout);
+  }
+}
+
+/**
  * Updates the auth token via external messaging API (admin only).
  * @param {Object} message The message object
  * @param {string} message.owner The project owner
@@ -62,11 +83,16 @@ async function addRemoveProject(tab) {
     ? matches[0] : await getProjectFromUrl(tab);
   if (isValidProject(config)) {
     const { owner, repo } = config;
-    const project = await getProject(config);
+    let project = await getProject(config);
     if (!project) {
-      await addProject(config);
+      const success = await addProject(config);
+      project = await getProject(config);
+      const i18nKey = `config_project_add_${success ? 'success' : 'failed'}`;
+      await notify(chrome.i18n.getMessage(i18nKey, project.project || project.id));
     } else {
-      await deleteProject(`${owner}/${repo}`);
+      const success = await deleteProject(`${owner}/${repo}`);
+      const i18nKey = `config_project_remove_${success ? 'success' : 'failed'}`;
+      await notify(chrome.i18n.getMessage(i18nKey, project.project || project.id));
     }
     await chrome.tabs.reload(tab.id, { bypassCache: true });
   }
@@ -79,20 +105,25 @@ async function addRemoveProject(tab) {
 async function enableDisableProject(tab) {
   const { id } = tab;
   const cfg = await getProjectFromUrl(tab);
+  const project = await getProject(cfg);
   if (await toggleProject(cfg)) {
+    const i18nKey = project.disabled
+      ? 'config_project_enabled'
+      : 'config_project_disabled';
+    await notify(chrome.i18n.getMessage(i18nKey, project.project || project.id));
     await chrome.tabs.reload(id, { bypassCache: true });
   }
 }
 
 /**
  * Imports projects from legacy sidekick.
- * @param {chrome.tabs.Tab} tab The tab
  */
-async function importProjects(tab) {
+async function importProjects() {
   const imported = await importLegacyProjects();
-  if (imported > 0) {
-    await chrome.tabs.reload(tab.id, { bypassCache: true });
-  }
+  const i18nKey = imported > 0
+    ? `config_project_imported_${imported === 1 ? 'single' : 'multiple'}`
+    : 'config_project_imported_none';
+  await notify(chrome.i18n.getMessage(i18nKey, `${imported}`));
 }
 
 /**

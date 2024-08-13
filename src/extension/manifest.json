@@ -10,6 +10,7 @@
       "activeTab",
       "contextMenus",
       "declarativeNetRequest",
+      "notifications",
       "scripting",
       "storage"
     ],

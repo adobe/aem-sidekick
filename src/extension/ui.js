@@ -157,9 +157,8 @@ export async function updateContextMenu({
         });
       }
     }
-    // import legacy projects
     if (await detectLegacySidekick()) {
-      // legacy sidekick present
+      // import legacy projects
       await chrome.contextMenus.create({
         id: 'separator',
         type: 'separator',
@@ -169,7 +168,7 @@ export async function updateContextMenu({
       });
       await chrome.contextMenus.create({
         id: 'importProjects',
-        title: chrome.i18n.getMessage('import_projects'),
+        title: chrome.i18n.getMessage('config_project_import'),
         contexts: [
           'action',
         ],
