@@ -97,4 +97,8 @@ export default {
   windows: {
     create: async ({ url }) => ({ url, id: 11 }),
   },
+  notifications: {
+    create: () => {},
+    clear: () => {},
+  },
 };

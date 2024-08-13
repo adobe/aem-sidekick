@@ -31,12 +31,12 @@ import { ADMIN_ORIGIN } from './utils/admin.js';
  * @param {number} [timeout=5000] Time to wait until notification is cleared
  */
 export async function notify(message, timeout = 5000) {
-  const { name, icons } = chrome.runtime.getManifest();
+  const { name: title } = chrome.runtime.getManifest();
   const notificationId = await chrome.notifications.create(
     {
       type: 'basic',
-      iconUrl: icons['48'],
-      title: name,
+      iconUrl: 'icons/default/icon-48x48.png',
+      title,
       message,
     },
   );
