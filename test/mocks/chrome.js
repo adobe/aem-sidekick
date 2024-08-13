@@ -74,10 +74,11 @@ export default {
   tabs: {
     create: async ({ url }) => ({ url, id: 7 }),
     get: async () => {},
-    query: async () => [],
+    query: async () => [{ id: 0 }],
     sendMessage: async () => {},
     remove: async () => {},
     reload: async () => {},
+    update: async () => {},
   },
   scripting: {
     executeScript: async ({ func, args = [] }) => {
