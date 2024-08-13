@@ -30,7 +30,8 @@
     "__chrome__externally_connectable": {
       "ids": [
         "ccfggkjabjahcjoljmgmklhpaccedipo",
-        "olciodlegapfmemadcjicljalmfmlehb"
+        "olciodlegapfmemadcjicljalmfmlehb",
+        "ahahnfffoakmmahloojpkmlkjjffnial"
       ],
       "matches": [
         "http://localhost:3000/*",
