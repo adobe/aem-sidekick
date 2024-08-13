@@ -588,6 +588,7 @@ export async function importLegacyProjects() {
       );
     } catch (e) {
       log.warn(`Error importing projects from legacy sidekick (${sidekickId})`, e);
+      resolve(importedProjects);
     }
   });
 }
