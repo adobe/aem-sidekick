@@ -583,6 +583,8 @@ export async function importLegacyProjects() {
             }
             log.info(`Imported ${importedProjects} projects from legacy sidekick (${sidekickId})`);
             resolve(importedProjects);
+          } else {
+            resolve(importedProjects);
           }
         },
       );

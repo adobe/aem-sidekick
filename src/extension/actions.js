@@ -40,10 +40,8 @@ export async function notify(message, timeout = 5000) {
       message,
     },
   );
-  if (timeout > 0) {
-    // @ts-ignore
-    setTimeout(() => chrome.notifications.clear(notificationId), timeout);
-  }
+  // @ts-ignore
+  setTimeout(() => chrome.notifications.clear(notificationId), timeout);
 }
 
 /**
@@ -85,13 +83,13 @@ async function addRemoveProject(tab) {
     const { owner, repo } = config;
     let project = await getProject(config);
     if (!project) {
-      const success = await addProject(config);
+      await addProject(config);
       project = await getProject(config);
-      const i18nKey = `config_project_add_${success ? 'success' : 'failed'}`;
+      const i18nKey = 'config_project_added';
       await notify(chrome.i18n.getMessage(i18nKey, project.project || project.id));
     } else {
-      const success = await deleteProject(`${owner}/${repo}`);
-      const i18nKey = `config_project_remove_${success ? 'success' : 'failed'}`;
+      await deleteProject(`${owner}/${repo}`);
+      const i18nKey = 'config_project_removed';
       await notify(chrome.i18n.getMessage(i18nKey, project.project || project.id));
     }
     await chrome.tabs.reload(tab.id, { bypassCache: true });
