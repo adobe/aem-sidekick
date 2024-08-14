@@ -31,6 +31,8 @@ import {
   getGitHubSettings,
   getProjectFromUrl,
   resolveProxyUrl,
+  detectLegacySidekick,
+  importLegacyProjects,
 } from '../src/extension/project.js';
 import { urlCache } from '../src/extension/url-cache.js';
 import { error, mockTab } from './test-utils.js';
@@ -98,12 +100,18 @@ const CONFIG_JSON = {
 };
 
 describe('Test project', () => {
+  let sandbox;
+
   before(async () => {
     await setUserAgent('HeadlessChrome');
   });
 
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+  });
+
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
   });
 
   it('getProject', async () => {
@@ -111,7 +119,7 @@ describe('Test project', () => {
     const none = await getProject();
     expect(none).to.be.undefined;
     // get project with handle
-    const stub = sinon.stub(window.chrome.storage.sync, 'get');
+    const stub = sandbox.stub(window.chrome.storage.sync, 'get');
     await getProject('foo/bar1');
     expect(stub.withArgs('foo/bar1').callCount).to.equal(1);
     // get project with config object
@@ -120,7 +128,7 @@ describe('Test project', () => {
   }).timeout(5000);
 
   it('getProjects', async () => {
-    const fake = sinon.fake(async (prop) => {
+    const fake = sandbox.fake(async (prop) => {
       let value;
       switch (prop) {
         case 'projects':
@@ -139,13 +147,13 @@ describe('Test project', () => {
         });
       });
     });
-    sinon.replace(chrome.storage.sync, 'get', fake);
+    sandbox.replace(chrome.storage.sync, 'get', fake);
     let projects = await getProjects();
     expect(fake.callCount).to.equal(2);
     expect(projects.length).to.equal(1);
     // no projects yet
-    sinon.restore();
-    sinon.stub(chrome.storage.sync, 'get')
+    sandbox.restore();
+    sandbox.stub(chrome.storage.sync, 'get')
       .withArgs('projects')
       .resolves({})
       .withArgs('hlxSidekickProjects')
@@ -153,8 +161,8 @@ describe('Test project', () => {
     projects = await getProjects();
     expect(projects.length).to.equal(0);
     // legacy projects
-    sinon.restore();
-    sinon.stub(chrome.storage.sync, 'get')
+    sandbox.restore();
+    sandbox.stub(chrome.storage.sync, 'get')
       .withArgs('projects')
       .resolves({})
       .withArgs('hlxSidekickProjects')
@@ -166,7 +174,7 @@ describe('Test project', () => {
   });
 
   it('getProjectEnv', async () => {
-    sinon.stub(window, 'fetch')
+    sandbox.stub(window, 'fetch')
       .onFirstCall()
       .resolves(new Response(JSON.stringify(CONFIG_JSON)))
       .onSecondCall()
@@ -220,8 +228,8 @@ describe('Test project', () => {
   });
 
   it('addProject', async () => {
-    const spy = sinon.spy(chrome.storage.sync, 'set');
-    sinon.stub(window, 'fetch')
+    const spy = sandbox.spy(chrome.storage.sync, 'set');
+    sandbox.stub(window, 'fetch')
       .onCall(1)
       .resolves(new Response(JSON.stringify(CONFIG_JSON)))
       .onCall(2)
@@ -242,7 +250,7 @@ describe('Test project', () => {
     })).to.be.true;
 
     // add project with auth enabled
-    const callback = sinon.stub(chrome.runtime.onMessageExternal, 'addListener');
+    const callback = sandbox.stub(chrome.runtime.onMessageExternal, 'addListener');
     callback
       .onFirstCall()
       .callsFake(async (func, _) => {
@@ -271,7 +279,7 @@ describe('Test project', () => {
   });
 
   it('updateProject', async () => {
-    const set = sinon.spy(chrome.storage.sync, 'set');
+    const set = sandbox.spy(chrome.storage.sync, 'set');
     const project = {
       owner: 'test',
       repo: 'project',
@@ -289,7 +297,7 @@ describe('Test project', () => {
     expect(invalid).to.equal(null);
     // no projects yet
     set.resetHistory();
-    sinon.stub(chrome.storage.sync, 'get')
+    sandbox.stub(chrome.storage.sync, 'get')
       .withArgs('projects')
       .resolves({});
     await updateProject({ ...project });
@@ -299,8 +307,8 @@ describe('Test project', () => {
   });
 
   it('deleteProject', async () => {
-    const spy = sinon.spy(chrome.storage.sync, 'set');
-    let projectsStub = sinon.stub(chrome.storage.sync, 'get');
+    const spy = sandbox.spy(chrome.storage.sync, 'set');
+    let projectsStub = sandbox.stub(chrome.storage.sync, 'get');
     projectsStub
       .withArgs('projects')
       .resolves({
@@ -321,7 +329,7 @@ describe('Test project', () => {
     })).to.be.true;
     // delete inexistent project
     projectsStub.restore();
-    projectsStub = sinon.stub(chrome.storage.sync, 'get')
+    projectsStub = sandbox.stub(chrome.storage.sync, 'get')
       .withArgs('projects')
       .resolves([]);
     deleted = await deleteProject('test/project');
@@ -431,7 +439,7 @@ describe('Test project', () => {
 
     beforeEach(() => {
       // stub message sender and intercept message
-      sinon.stub(chrome.runtime, 'sendMessage')
+      sandbox.stub(chrome.runtime, 'sendMessage')
         .callsFake(async (msg) => {
           messageFromTab = msg;
         });
@@ -441,7 +449,7 @@ describe('Test project', () => {
       });
 
       // stub message receiver and invoke callback
-      sinon.stub(chrome.runtime.onMessage, 'addListener')
+      sandbox.stub(chrome.runtime.onMessage, 'addListener')
         .callsFake((func) => func(
           messageFromTab,
           {
@@ -490,7 +498,7 @@ describe('Test project', () => {
       const tabUrl = 'http://localhost:3000/foo';
       // @ts-ignore
       chrome.runtime.sendMessage.restore();
-      sinon.stub(chrome.runtime, 'sendMessage')
+      sandbox.stub(chrome.runtime, 'sendMessage')
         .callsFake(async () => {
           messageFromTab = {};
         });
@@ -499,6 +507,117 @@ describe('Test project', () => {
 
       const res = await resolveProxyUrl(tab, []);
       expect(res.url).to.equal(tabUrl);
+    });
+  });
+
+  describe('legacy project migration', () => {
+    const legacySidekickId = 'klmnopqrstuvwxyz';
+
+    function mockLegacySidekickResponse(extensionId, lastError, projects) {
+      const stub = sandbox.stub(chrome.runtime, 'sendMessage');
+      stub.callsFake(async (msgId, { action }, callback) => {
+        if (lastError) {
+          chrome.runtime.lastError = lastError;
+        }
+        switch (action) {
+          case 'ping':
+            callback(msgId === extensionId);
+            break;
+          case 'getProjects':
+            callback(msgId === extensionId ? projects : null);
+            break;
+          default:
+            callback();
+        }
+      });
+      return stub;
+    }
+
+    beforeEach(() => {
+      sandbox.stub(chrome.runtime, 'getManifest').returns({
+        ...chrome.runtime.getManifest(),
+        externally_connectable: {
+          ids: [
+            'some_extension_id',
+            legacySidekickId,
+            'other_extension_id',
+          ],
+        },
+      });
+    });
+
+    describe('detectLegacySidekick', () => {
+      it('detects legacy sidekick and returns id', async () => {
+        mockLegacySidekickResponse(legacySidekickId);
+        const id = await detectLegacySidekick();
+        expect(id).to.equal(legacySidekickId);
+      });
+
+      it('no legacy sidekick present', async () => {
+        mockLegacySidekickResponse(); // no id matches
+        const id = await detectLegacySidekick();
+        expect(id).to.be.undefined;
+      });
+
+      it('chrome.runtime.lastError exists', async () => {
+        mockLegacySidekickResponse(legacySidekickId, error);
+        const id = await detectLegacySidekick();
+        expect(id).to.be.undefined;
+      });
+
+      it('chrome.runtime.sendMessage throws', async () => {
+        sandbox.stub(chrome.runtime, 'sendMessage').throws(error);
+        const id = await detectLegacySidekick();
+        expect(id).to.be.undefined;
+      });
+    });
+
+    describe('importLegacyProjects', () => {
+      it('no legacy sidekick present', async () => {
+        mockLegacySidekickResponse(); // no id matches
+        const imported = await importLegacyProjects();
+        expect(imported).to.equal(0);
+      });
+
+      it('legacy sidekick responds with null', async () => {
+        mockLegacySidekickResponse(legacySidekickId, null, null);
+        const imported = await importLegacyProjects();
+        expect(imported).to.equal(0);
+      });
+
+      it('legacy sidekick responds with empty array', async () => {
+        mockLegacySidekickResponse(legacySidekickId, null, []);
+        const imported = await importLegacyProjects();
+        expect(imported).to.equal(0);
+      });
+
+      it('legacy sidekick responds with new projects', async () => {
+        mockLegacySidekickResponse(legacySidekickId, null, CONFIGS);
+        const imported = await importLegacyProjects();
+        expect(imported).to.equal(6);
+      });
+
+      it('legacy sidekick responds with existing project', async () => {
+        mockLegacySidekickResponse(legacySidekickId, null, [CONFIGS[0]]);
+        sandbox.stub(chrome.storage.sync, 'get')
+          .callsFake(async (prop) => {
+            const value = prop.includes('/')
+              ? CONFIGS.find(({ owner, repo }) => prop === `${owner}/${repo}`) // project
+              : CONFIGS.slice(0, 1).map(({ owner, repo }) => `${owner}/${repo}`); // projects
+            return { [prop]: value };
+          });
+        const imported = await importLegacyProjects();
+        expect(imported).to.equal(0);
+      });
+
+      it('chrome.runtime.sendMessage throws', async () => {
+        mockLegacySidekickResponse(legacySidekickId, null, CONFIGS)
+          .withArgs(legacySidekickId)
+          .onSecondCall()
+          .throws(error);
+        const imported = await importLegacyProjects();
+        expect(imported).to.equal(0);
+      });
     });
   });
 });
