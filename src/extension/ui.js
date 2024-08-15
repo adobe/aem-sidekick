@@ -13,7 +13,12 @@
 import { log } from './log.js';
 import { internalActions } from './actions.js';
 import { getDisplay } from './display.js';
-import { GH_URL, getProject, isValidProject } from './project.js';
+import {
+  GH_URL,
+  detectLegacySidekick,
+  getProject,
+  isValidProject,
+} from './project.js';
 
 /**
  * The configuration object type
@@ -151,6 +156,23 @@ export async function updateContextMenu({
           ],
         });
       }
+    }
+    if (await detectLegacySidekick()) {
+      // import legacy projects
+      await chrome.contextMenus.create({
+        id: 'separator',
+        type: 'separator',
+        contexts: [
+          'action',
+        ],
+      });
+      await chrome.contextMenus.create({
+        id: 'importProjects',
+        title: chrome.i18n.getMessage('config_project_import'),
+        contexts: [
+          'action',
+        ],
+      });
     }
     updateInProgress = false;
   }

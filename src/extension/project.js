@@ -18,6 +18,7 @@ import {
 } from './config.js';
 import { urlCache } from './url-cache.js';
 import { callAdmin, createAdminUrl } from './utils/admin.js';
+import { setAuthToken } from './auth.js';
 
 export const DEV_URL = 'http://localhost:3000/';
 
@@ -78,7 +79,6 @@ export async function updateProject(project) {
       await setConfig('sync', { projects });
     }
     log.info('updated project', project);
-    // todo: alert
     return project;
   }
   return null;
@@ -275,16 +275,18 @@ export async function getProjectEnv({
 /**
  * Adds a project configuration.
  * @param {Object} input The project settings
+ * @param {boolean} [loggedIn] True if user is logged in, else false or empty (default)
  * @returns {Promise<Object>} The added project
  */
-export async function addProject(input) {
+export async function addProject(input, loggedIn) {
   const config = assembleProject(input);
   const { owner, repo } = config;
   const env = await getProjectEnv(config);
-  if (env.unauthorized && !input.authToken) {
+  if (env.unauthorized && !loggedIn) {
     // defer adding project and have user sign in
     const loginUrl = createAdminUrl(config, 'login');
     loginUrl.searchParams.set('extensionId', chrome.runtime.id);
+    const [currentTab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     const { id: loginTabId } = await chrome.tabs.create({
       url: loginUrl.toString(),
       active: true,
@@ -295,8 +297,12 @@ export async function addProject(input) {
         let added = false;
         if (message.authToken && owner === message.owner && repo === message.repo) {
           await chrome.tabs.remove(loginTabId);
-          config.authToken = message.authToken;
-          added = await addProject(config);
+          await chrome.tabs.update(currentTab.id, { active: true });
+          // ensure auth header rule is set before retrying
+          await new Promise((r) => {
+            setTimeout(r, 500);
+          });
+          added = await addProject(config, true);
         }
         // clean up
         chrome.runtime.onMessageExternal.removeListener(retryAddProjectListener);
@@ -308,12 +314,10 @@ export async function addProject(input) {
   let project = await getProject(config);
   if (!project) {
     project = await updateProject({ ...config, ...env });
-    log.info('added project', config);
-    // todo: alert(i18n('config_add_success'));
+    log.info('added project', project);
     return true;
   } else {
     log.warn('project already exists', project);
-    // todo: alert(i18n('config_project_exists'));
     return false;
   }
 }
@@ -339,18 +343,16 @@ export async function deleteProject(project) {
   const i = projects.indexOf(handle);
   if (i >= 0) {
     // delete admin auth header rule
-    chrome.runtime.sendMessage({ updateAuthToken: { owner, authToken: '' } });
+    await setAuthToken(owner, '');
     // delete the project entry
     await removeConfig('sync', handle);
     // remove project entry from index
     projects.splice(i, 1);
     await setConfig('sync', { projects });
     log.info('project deleted', handle);
-    // todo: alert
     return true;
   } else {
     log.warn('project to delete not found', handle);
-    // todo: alert
   }
   return false;
 }
@@ -511,4 +513,84 @@ export async function getProjectMatches(configs, tab) {
     // exclude disabled configs
     .filter(({ owner, repo }) => !configs
       .find((cfg) => cfg.owner === owner && cfg.repo === repo && cfg.disabled));
+}
+
+/**
+ * Looks for a legacy sidekick and returns its extension ID if found.
+ * @returns {Promise<string>} The legacy sidekick ID
+ */
+export async function detectLegacySidekick() {
+  const extensionIds = chrome.runtime.getManifest().externally_connectable?.ids || [];
+  return (await Promise.all(
+    extensionIds.map(
+      async (id) => new Promise((resolve) => {
+        try {
+          chrome.runtime.lastError = null;
+          chrome.runtime.sendMessage(
+            id,
+            { action: 'ping' },
+            (pong) => {
+              if (chrome.runtime.lastError) {
+                resolve(null);
+              } else {
+                resolve(pong ? id : null);
+              }
+            },
+          );
+        } catch (e) {
+          resolve(null);
+        }
+      }),
+    ),
+  ))
+    .find((id) => id !== null);
+}
+
+/**
+ * Imports projects from legacy sidekick.
+ * @returns {Promise<number>} The number of imported projects
+ */
+export async function importLegacyProjects() {
+  // look for legacy sidekick id
+  const sidekickId = await detectLegacySidekick();
+  if (!sidekickId) {
+    return 0;
+  }
+  return new Promise((resolve) => {
+    let importedProjects = 0;
+    try {
+      // fetch projects from legacy sidekick
+      chrome.runtime.sendMessage(
+        sidekickId,
+        { action: 'getProjects' },
+        async (legacyProjects) => {
+          if (Array.isArray(legacyProjects)
+            && legacyProjects.length > 0
+            && !chrome.runtime.lastError) {
+            log.info(`Importing projects from legacy sidekick (${sidekickId})`);
+            for (const legacyProject of legacyProjects) {
+              /* eslint-disable no-await-in-loop */
+              const handle = `${legacyProject.owner}/${legacyProject.repo}`;
+              const existing = await getProject(handle);
+              if (!existing) {
+                await updateProject(legacyProject);
+                importedProjects += 1;
+                log.info(`imported project ${handle}`);
+              } else {
+                log.info(`skipping import of existing project ${handle}`);
+              }
+              /* eslint-enable no-await-in-loop */
+            }
+            log.info(`Imported ${importedProjects} projects from legacy sidekick (${sidekickId})`);
+            resolve(importedProjects);
+          } else {
+            resolve(importedProjects);
+          }
+        },
+      );
+    } catch (e) {
+      log.warn(`Error importing projects from legacy sidekick (${sidekickId})`, e);
+      resolve(importedProjects);
+    }
+  });
 }

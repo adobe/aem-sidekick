@@ -130,20 +130,48 @@
     "config_project_add": {
       "message": "Add this project"
     },
+    "config_project_added": {
+      "message": "$1 successfully added",
+      "description": "Project added"
+    },
     "config_project_disable": {
       "message": "Disable this project"
+    },
+    "config_project_disabled": {
+      "message": "$1 disabled",
+      "description": "Project disabled"
     },
     "config_project_enable": {
       "message": "Enable this project"
     },
+    "config_project_enabled": {
+      "message": "$1 enabled",
+      "description": "Project enabled"
+    },
     "config_project_exists": {
       "message": "A configuration for this project already exists."
+    },
+    "config_project_import": {
+      "message": "Import projects from AEM Sidekick v6"
+    },
+    "config_project_imported_none": {
+      "message": "No new projects found in AEM Sidekick v6."
+    },
+    "config_project_imported_single": {
+      "message": "Successfully imported 1 project from AEM Sidekick v6."
+    },
+    "config_project_imported_multiple": {
+      "message": "Successfully imported $1 projects from AEM Sidekick v6."
     },
     "config_project_pick": {
       "message": "Pick a project"
     },
     "config_project_remove": {
       "message": "Remove this project"
+    },
+    "config_project_removed": {
+      "message": "$1 successfully removed",
+      "description": "Project removed"
     },
     "config_success": {
       "message": "Configuration successfully activated."

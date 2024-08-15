@@ -233,6 +233,7 @@ class UrlCache {
         let results = [];
         // discover project details from edit url
         const resp = await callAdmin(
+          // @ts-ignore
           {}, 'discover', '/', { searchParams: new URLSearchParams(`url=${info?.url || url}`) },
         );
         if (resp.ok) {
