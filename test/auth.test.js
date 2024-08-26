@@ -98,7 +98,7 @@ describe('Test auth', () => {
             },
             condition: {
               regexFilter: '^https://admin.hlx.page/[a-z]+/test/.*',
-              initiatorDomains: [
+              requestDomains: [
                 'admin.hlx.page',
               ],
               requestMethods: [
