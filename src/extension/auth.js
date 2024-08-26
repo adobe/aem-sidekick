@@ -47,7 +47,7 @@ export async function configureAuthAndCorsHeaders() {
         },
         condition: {
           regexFilter: `^https://${adminHost}/[a-z]+/${owner}/.*`,
-          initiatorDomains: [adminHost],
+          requestDomains: [adminHost],
           requestMethods: ['get', 'post', 'delete'],
           resourceTypes: ['xmlhttprequest'],
         },
