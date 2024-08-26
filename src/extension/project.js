@@ -343,7 +343,7 @@ export async function deleteProject(project) {
   const i = projects.indexOf(handle);
   if (i >= 0) {
     // delete admin auth header rule
-    await setAuthToken(owner, '');
+    await setAuthToken(owner, repo, '');
     // delete the project entry
     await removeConfig('sync', handle);
     // remove project entry from index

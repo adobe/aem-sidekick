@@ -55,22 +55,23 @@ describe('Test auth', () => {
     const getConfig = sandbox.spy(chrome.storage.session, 'get');
     const setConfig = sandbox.spy(chrome.storage.session, 'set');
     const owner = 'test';
+    const repo = 'site';
     const authToken = '1234567890';
     const authTokenExpiry = Date.now() / 1000 + 60;
 
     // set auth token
-    await setAuthToken(owner, authToken, authTokenExpiry);
+    await setAuthToken(owner, repo, authToken, authTokenExpiry);
     expect(getConfig.callCount).to.equal(2);
     expect(setConfig.callCount).to.be.equal(1);
     // update auth token without expiry
-    await setAuthToken(owner, authToken);
+    await setAuthToken(owner, repo, authToken);
     expect(getConfig.callCount).to.equal(4);
     expect(setConfig.callCount).to.be.equal(2);
     // remove auth token
-    await setAuthToken(owner, '');
+    await setAuthToken(owner, repo, '');
     expect(setConfig.callCount).to.equal(3);
     // remove auth token again
-    await setAuthToken(owner, '');
+    await setAuthToken(owner, repo, '');
     expect(setConfig.callCount).to.equal(4);
     // testing else paths
     getConfig.resetHistory();
@@ -80,66 +81,228 @@ describe('Test auth', () => {
     expect(getConfig.notCalled).to.be.true;
     expect(setConfig.notCalled).to.be.true;
 
-    expect(updateSessionRules.calledWith(
-      {
-        addRules: [
-          {
-            id: 2,
-            priority: 1,
-            action: {
-              type: 'modifyHeaders',
-              requestHeaders: [
-                {
-                  operation: 'set',
-                  header: 'x-auth-token',
-                  value: '1234567890',
-                },
-              ],
-            },
-            condition: {
-              regexFilter: '^https://admin.hlx.page/[a-z]+/test/.*',
-              requestDomains: [
-                'admin.hlx.page',
-              ],
-              requestMethods: [
-                'get',
-                'post',
-                'delete',
-              ],
-              resourceTypes: [
-                'xmlhttprequest',
-              ],
-            },
+    expect(updateSessionRules.calledWith({
+      addRules: [
+        {
+          id: 2,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [
+              {
+                operation: 'set',
+                header: 'x-auth-token',
+                value: '1234567890',
+              },
+            ],
           },
-          {
-            id: 3,
-            priority: 1,
-            action: {
-              type: 'modifyHeaders',
-              responseHeaders: [
-                {
-                  header: 'Access-Control-Allow-Origin',
-                  operation: 'set',
-                  value: '*',
-                },
-              ],
-            },
-            condition: {
-              regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.(hlx|aem).(live|page)/.*',
-              initiatorDomains: [
-                'tools.aem.live',
-                'labs.aem.live',
-              ],
-              requestMethods: [
-                'get',
-              ],
-              resourceTypes: [
-                'xmlhttprequest',
-              ],
-            },
+          condition: {
+            regexFilter: '^https://admin.hlx.page/(config/test.json|[a-z]+/test/.*)',
+            requestDomains: [
+              'admin.hlx.page',
+            ],
+            requestMethods: [
+              'get',
+              'post',
+              'delete',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
           },
-        ],
+        },
+        {
+          id: 3,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            responseHeaders: [
+              {
+                header: 'Access-Control-Allow-Origin',
+                operation: 'set',
+                value: '*',
+              },
+            ],
+          },
+          condition: {
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(live|page)/.*',
+            initiatorDomains: [
+              'tools.aem.live',
+              'labs.aem.live',
+            ],
+            requestMethods: [
+              'get',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+      ],
+    },
+    )).to.be.true;
+  });
+
+  it('setAuthToken (added project)', async () => {
+    const updateSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'updateSessionRules');
+    const getConfig = sandbox.spy(chrome.storage.session, 'get');
+    const setConfig = sandbox.spy(chrome.storage.session, 'set');
+    const owner = 'test';
+    const repo = 'site';
+    const authToken = '1234567890';
+
+    sandbox.stub(chrome.storage.sync, 'get').resolves({
+      'test/site': {
+        host: 'production-host.com',
+        previewHost: 'custom-preview.com',
+        liveHost: 'custom-live.com',
       },
+    });
+
+    await setAuthToken(owner, repo, authToken);
+    expect(setConfig.callCount).to.equal(1);
+    expect(getConfig.callCount).to.equal(2);
+
+    expect(updateSessionRules.calledWith({
+      addRules: [
+        {
+          id: 2,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [
+              {
+                operation: 'set',
+                header: 'x-auth-token',
+                value: '1234567890',
+              },
+            ],
+          },
+          condition: {
+            regexFilter: '^https://admin.hlx.page/(config/test.json|[a-z]+/test/.*)',
+            requestDomains: [
+              'admin.hlx.page',
+            ],
+            requestMethods: [
+              'get',
+              'post',
+              'delete',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: 3,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            responseHeaders: [
+              {
+                header: 'Access-Control-Allow-Origin',
+                operation: 'set',
+                value: '*',
+              },
+            ],
+          },
+          condition: {
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(live|page)/.*',
+            initiatorDomains: [
+              'tools.aem.live',
+              'labs.aem.live',
+            ],
+            requestMethods: [
+              'get',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: 4,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            responseHeaders: [
+              {
+                header: 'Access-Control-Allow-Origin',
+                operation: 'set',
+                value: '*',
+              },
+            ],
+          },
+          condition: {
+            regexFilter: '^https://production-host.com/.*',
+            initiatorDomains: [
+              'tools.aem.live',
+              'labs.aem.live',
+            ],
+            requestMethods: [
+              'get',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: 5,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            responseHeaders: [
+              {
+                header: 'Access-Control-Allow-Origin',
+                operation: 'set',
+                value: '*',
+              },
+            ],
+          },
+          condition: {
+            regexFilter: '^https://custom-preview.com/.*',
+            initiatorDomains: [
+              'tools.aem.live',
+              'labs.aem.live',
+            ],
+            requestMethods: [
+              'get',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: 6,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            responseHeaders: [
+              {
+                header: 'Access-Control-Allow-Origin',
+                operation: 'set',
+                value: '*',
+              },
+            ],
+          },
+          condition: {
+            regexFilter: '^https://custom-live.com/.*',
+            initiatorDomains: [
+              'tools.aem.live',
+              'labs.aem.live',
+            ],
+            requestMethods: [
+              'get',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+      ],
+    },
     )).to.be.true;
   });
 });

@@ -33,9 +33,9 @@ export async function configureAuthAndCorsHeaders() {
     // find projects with auth tokens and add rules for each
     let id = 2;
     const projects = await getConfig('session', 'projects') || [];
-    const addRules = projects.flatMap(({ owner, authToken }) => {
+    const addRulesPromises = projects.map(async ({ owner, repo, authToken }) => {
       const adminRule = {
-        id: id++,
+        id,
         priority: 1,
         action: {
           type: 'modifyHeaders',
@@ -46,35 +46,52 @@ export async function configureAuthAndCorsHeaders() {
           }],
         },
         condition: {
-          regexFilter: `^https://${adminHost}/[a-z]+/${owner}/.*`,
+          regexFilter: `^https://${adminHost}/(config/${owner}.json|[a-z]+/${owner}/.*)`,
           requestDomains: [adminHost],
           requestMethods: ['get', 'post', 'delete'],
           resourceTypes: ['xmlhttprequest'],
         },
       };
 
-      const corsRule = {
-        id: id++,
-        priority: 1,
-        action: {
-          type: 'modifyHeaders',
-          responseHeaders: [{
-            header: 'Access-Control-Allow-Origin',
-            operation: 'set',
-            value: '*',
-          }],
-        },
-        condition: {
-          regexFilter: `^https://[0-9a-z-]+--[0-9a-z-]+--${owner}.(hlx|aem).(live|page)/.*`,
-          initiatorDomains: ['tools.aem.live', 'labs.aem.live'],
-          requestMethods: ['get'],
-          resourceTypes: ['xmlhttprequest'],
-        },
-      };
+      const corsFilters = [`^https://[0-9a-z-]+--[0-9a-z-]+--${owner}.aem.(live|page)/.*`];
+      const project = await getConfig('sync', `${owner}/${repo}`);
+      if (project) {
+        const { host, previewHost, liveHost } = project;
+
+        const additionalFilters = [host, previewHost, liveHost]
+          .filter(Boolean) // Filter out undefined or null values
+          .map((domain) => `^https://${domain}/.*`);
+
+        corsFilters.push(...additionalFilters);
+      }
+
+      const corsRules = corsFilters.map((regexFilter) => {
+        id += 1;
+        return {
+          id,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            responseHeaders: [{
+              header: 'Access-Control-Allow-Origin',
+              operation: 'set',
+              value: '*',
+            }],
+          },
+          condition: {
+            regexFilter,
+            initiatorDomains: ['tools.aem.live', 'labs.aem.live'],
+            requestMethods: ['get'],
+            resourceTypes: ['xmlhttprequest'],
+          },
+        };
+      });
 
       log.debug(`addAuthTokensHeaders: added rules for ${owner}`);
-      return [adminRule, corsRule];
+      return [adminRule, ...corsRules];
     });
+
+    const addRules = (await Promise.all(addRulesPromises)).flat();
     if (addRules.length > 0) {
       await chrome.declarativeNetRequest.updateSessionRules({
         addRules,
@@ -88,11 +105,12 @@ export async function configureAuthAndCorsHeaders() {
 /**
  * Sets the auth token for a given project.
  * @param {string} owner The project owner
+ * @param {string} repo The project repo
  * @param {string} token The auth token
  * @param {number} [exp] The token expiry in seconds since epoch
  * @returns {Promise<void>}
  */
-export async function setAuthToken(owner, token, exp) {
+export async function setAuthToken(owner, repo, token, exp) {
   if (owner) {
     const projects = await getConfig('session', 'projects') || [];
     const projectIndex = projects.findIndex((project) => project.owner === owner);
@@ -101,6 +119,7 @@ export async function setAuthToken(owner, token, exp) {
       if (projectIndex < 0) {
         projects.push({
           owner,
+          repo,
           authToken: token,
           authTokenExpiry,
         });
