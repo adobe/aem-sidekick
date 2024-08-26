@@ -10,6 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-disable no-plusplus */
+
 import { log } from './log.js';
 import { getConfig, setConfig } from './config.js';
 import { ADMIN_ORIGIN } from './utils/admin.js';
@@ -17,10 +19,11 @@ import { ADMIN_ORIGIN } from './utils/admin.js';
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
 /**
  * Sets the x-auth-token header for all requests to the Admin API if project config
- * has an auth token.
+ * has an auth token. Also sets the Access-Control-Allow-Origin header for
+ * all requests from tools.aem.live and labs.aem.live.
  * @returns {Promise<void>}
  */
-export async function addAuthTokenHeaders() {
+export async function configureAuthAndCorsHeaders() {
   try {
     // remove all rules first
     await chrome.declarativeNetRequest.updateSessionRules({
@@ -30,10 +33,9 @@ export async function addAuthTokenHeaders() {
     // find projects with auth tokens and add rules for each
     let id = 2;
     const projects = await getConfig('session', 'projects') || [];
-    const addRules = [];
-    projects.forEach(({ owner, authToken }) => {
-      addRules.push({
-        id,
+    const addRules = projects.flatMap(({ owner, authToken }) => {
+      const adminRule = {
+        id: id++,
         priority: 1,
         action: {
           type: 'modifyHeaders',
@@ -45,13 +47,33 @@ export async function addAuthTokenHeaders() {
         },
         condition: {
           regexFilter: `^https://${adminHost}/[a-z]+/${owner}/.*`,
-          requestDomains: [adminHost],
+          initiatorDomains: [adminHost],
           requestMethods: ['get', 'post', 'delete'],
           resourceTypes: ['xmlhttprequest'],
         },
-      });
-      id += 1;
-      log.debug(`addAuthTokensHeaders: added admin auth header rule for ${owner}`);
+      };
+
+      const corsRule = {
+        id: id++,
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          responseHeaders: [{
+            header: 'Access-Control-Allow-Origin',
+            operation: 'set',
+            value: '*',
+          }],
+        },
+        condition: {
+          regexFilter: `^https://[0-9a-z-]+--[0-9a-z-]+--${owner}.(hlx|aem).(live|page)/.*`,
+          initiatorDomains: ['tools.aem.live', 'labs.aem.live'],
+          requestMethods: ['get'],
+          resourceTypes: ['xmlhttprequest'],
+        },
+      };
+
+      log.debug(`addAuthTokensHeaders: added rules for ${owner}`);
+      return [adminRule, corsRule];
     });
     if (addRules.length > 0) {
       await chrome.declarativeNetRequest.updateSessionRules({
@@ -91,6 +113,6 @@ export async function setAuthToken(owner, token, exp) {
       projects.splice(projectIndex, 1);
     }
     await setConfig('session', { projects });
-    await addAuthTokenHeaders();
+    await configureAuthAndCorsHeaders();
   }
 }

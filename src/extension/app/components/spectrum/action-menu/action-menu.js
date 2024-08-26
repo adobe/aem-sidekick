@@ -63,7 +63,7 @@ export class ActionMenu extends SPActionMenu {
       } else if (!this.pointerdownState) {
         // Prevent browser driven closure while opening the Picker
         // and the expected event series has not completed.
-        this.overlayElement.manuallyKeepOpen();
+        this.overlayElement?.manuallyKeepOpen();
       }
     }
     if (!this.open && this.optionsMenu) {
