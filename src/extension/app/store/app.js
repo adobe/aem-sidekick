@@ -204,11 +204,6 @@ export class AppStore {
 
     this.fetchStatus();
 
-    this.fireEvent(EXTERNAL_EVENTS.CONTEXT_LOADED, {
-      config: this.siteStore.toJSON(),
-      location: this.location,
-    });
-
     this.showView();
 
     document.dispatchEvent(new CustomEvent(EXTERNAL_EVENTS.SIDEKICK_READY));

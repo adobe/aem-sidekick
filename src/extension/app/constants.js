@@ -40,7 +40,6 @@ export const EVENTS = {
  * @enum {string}
  */
 export const EXTERNAL_EVENTS = {
-  CONTEXT_LOADED: 'contextloaded',
   STATUS_FETCHED: 'statusfetched',
   RESOURCE_UPDATED: 'updated',
   RESOURCE_PREVIEWED: 'previewed',
