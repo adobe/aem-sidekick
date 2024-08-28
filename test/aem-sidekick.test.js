@@ -128,37 +128,12 @@ describe('AEM Sidekick', () => {
     });
   });
 
-  describe('configuration loading', () => {
-    it('default config', async () => {
-      sidekickTest
-        .mockFetchSidekickConfigNotFound();
-
-      sidekick = sidekickTest.createSidekick();
-      sidekick.addEventListener('contextloaded', (event) => {
-        // @ts-ignore
-        const { detail } = event;
-        const { data } = detail;
-        expect(data).to.exist;
-        expect(data.config).to.exist;
-        expect(data.config.owner).to.eq('adobe');
-        expect(data.config.repo).to.eq('aem-boilerplate');
-        expect(data.config.ref).to.eq('main');
-        expect(data.config.giturl).to.eq('https://github.com/adobe/aem-boilerplate');
-        expect(data.config.lang).to.eq('en');
-        expect(data.config.views.length).to.eq(1);
-
-        expect(data.location).to.exist;
-        expect(data.location.host).to.eq('main--aem-boilerplate--adobe.hlx.page');
-      });
-    });
-  });
-
   it('passes the a11y audit', async () => {
     sidekickTest
       .mockFetchSidekickConfigNotFound();
 
     sidekick = sidekickTest.createSidekick();
-    sidekick.addEventListener('contextloaded', async () => {
+    document.addEventListener('sidekick-ready', async () => {
       await expect(sidekick).shadowDom.to.be.accessible();
     });
   });
