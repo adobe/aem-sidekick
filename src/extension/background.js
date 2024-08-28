@@ -20,7 +20,7 @@ import {
   internalActions,
   checkViewDocSource,
 } from './actions.js';
-import { addAuthTokenHeaders } from './auth.js';
+import { configureAuthAndCorsHeaders } from './auth.js';
 import { getProjectMatches, getProjects } from './project.js';
 import { updateIcon } from './ui.js';
 
@@ -77,6 +77,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 });
 
 // add existing auth token headers
-addAuthTokenHeaders();
+configureAuthAndCorsHeaders();
 
 log.info('sidekick initialized');

@@ -48,20 +48,21 @@ export async function notify(message, timeout = 5000) {
  * Updates the auth token via external messaging API (admin only).
  * @param {Object} message The message object
  * @param {string} message.owner The project owner
+ * @param {string} message.repo The project repo
  * @param {string} message.authToken The auth token
  * @param {number} message.exp The token expiry in seconds since epoch
  * @param {chrome.runtime.MessageSender} sender The sender
  * @returns {Promise<string>} The action's response
  */
 async function updateAuthToken({
-  owner, authToken, exp,
+  owner, repo, authToken, exp,
 }, sender) {
   const { url } = sender;
   if (owner) {
     try {
       if (new URL(url).origin === ADMIN_ORIGIN
         && authToken !== undefined) {
-        await setAuthToken(owner, authToken, exp);
+        await setAuthToken(owner, repo, authToken, exp);
         return 'close';
       }
     } catch (e) {
