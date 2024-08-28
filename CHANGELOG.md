@@ -1,3 +1,10 @@
+# [1.30.0](https://github.com/adobe/aem-sidekick/compare/v1.29.0...v1.30.0) (2024-08-28)
+
+
+### Features
+
+* support cross origin request to tools and labs ([#236](https://github.com/adobe/aem-sidekick/issues/236)) ([314e2b8](https://github.com/adobe/aem-sidekick/commit/314e2b8d1c8d2f85e72abc1c9423f74c6662af1c))
+
 # [1.29.0](https://github.com/adobe/aem-sidekick/compare/v1.28.10...v1.29.0) (2024-08-15)
 
 
