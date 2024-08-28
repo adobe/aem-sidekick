@@ -49,6 +49,7 @@ export const EXTERNAL_EVENTS = {
   RESOURCE_UNPUBLISHED: 'unpublished',
   EVIRONMENT_SWITCHED: 'envswitched',
   PLUGIN_USED: 'pluginused',
+  SIDEKICK_READY: 'sidekick-ready',
 };
 
 /**

@@ -15,7 +15,6 @@
 import { html, LitElement } from 'lit';
 import { provide } from '@lit/context';
 import { customElement } from 'lit/decorators.js';
-import { log } from '../log.js';
 import { style } from './aem-sidekick.css.js';
 import { spectrum2 } from './spectrum-2.css.js';
 import { AppStore, appStoreContext } from './store/app.js';
@@ -37,10 +36,6 @@ export class AEMSidekick extends LitElement {
 
     this.appStore = store || new AppStore();
     this.appStore.loadContext(this, config);
-
-    this.addEventListener('contextloaded', (data) => {
-      log.debug('contextloaded fired', data);
-    });
   }
 
   /**

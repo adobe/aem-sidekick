@@ -210,6 +210,8 @@ export class AppStore {
     });
 
     this.showView();
+
+    document.dispatchEvent(new CustomEvent(EXTERNAL_EVENTS.SIDEKICK_READY));
   }
 
   /**

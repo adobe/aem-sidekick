@@ -15,6 +15,7 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import { expect } from '@open-wc/testing';
 import { emulateMedia } from '@web/test-runner-commands';
+import { spy } from 'sinon';
 import { AppStore } from '../src/extension/app/store/app.js';
 import { recursiveQuery } from './test-utils.js';
 import chromeMock from './mocks/chrome.js';
@@ -72,6 +73,32 @@ describe('AEM Sidekick', () => {
 
     const { location } = sidekick;
     expect(location.href).to.eq('https://main--aem-boilerplate--adobe.hlx.page/');
+  });
+
+  it('dispatches sidekick-ready', async () => {
+    const readySpy = spy();
+    document.addEventListener('sidekick-ready', readySpy);
+
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    expect(readySpy).to.have.been.calledOnce;
+  });
+
+  it('dispatches statusfetched', async () => {
+    const statusSpy = spy();
+
+    sidekick = sidekickTest.createSidekick();
+    sidekick.addEventListener('statusfetched', statusSpy);
+    await sidekickTest.awaitEnvSwitcher();
+
+    expect(statusSpy).to.have.been.calledOnce;
+
+    const { data } = statusSpy.args[0][0].detail;
+    expect(data.webPath).to.eq('/');
+    expect(data.resourcePath).to.eq('/index.md');
+    expect(data.preview.status).to.eq(200);
+    expect(data.live.status).to.eq(200);
   });
 
   describe('color themes', () => {
