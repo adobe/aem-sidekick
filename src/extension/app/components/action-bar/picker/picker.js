@@ -62,7 +62,7 @@ export class Picker extends SPPicker {
       } else if (!this.pointerdownState) {
         // Prevent browser driven closure while opening the Picker
         // and the expected event series has not completed.
-        this.overlayElement?.manuallyKeepOpen();
+        this.overlayElement.manuallyKeepOpen();
       }
     }
     if (!this.open && this.optionsMenu) {
