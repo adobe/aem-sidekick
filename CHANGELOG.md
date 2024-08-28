@@ -1,3 +1,10 @@
+## [1.30.1](https://github.com/adobe/aem-sidekick/compare/v1.30.0...v1.30.1) (2024-08-28)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([d517619](https://github.com/adobe/aem-sidekick/commit/d5176196e23573fe768642f59958b622e13bd038))
+
 # [1.30.0](https://github.com/adobe/aem-sidekick/compare/v1.29.0...v1.30.0) (2024-08-28)
 
 
