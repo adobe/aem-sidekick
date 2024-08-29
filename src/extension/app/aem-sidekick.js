@@ -18,6 +18,7 @@ import { customElement } from 'lit/decorators.js';
 import { style } from './aem-sidekick.css.js';
 import { spectrum2 } from './spectrum-2.css.js';
 import { AppStore, appStoreContext } from './store/app.js';
+import { EXTERNAL_EVENTS } from './constants.js';
 
 @customElement('aem-sidekick')
 export class AEMSidekick extends LitElement {
@@ -35,7 +36,12 @@ export class AEMSidekick extends LitElement {
     super();
 
     this.appStore = store || new AppStore();
-    this.appStore.loadContext(this, config);
+    this.loadContext(config);
+  }
+
+  async loadContext(config) {
+    await this.appStore.loadContext(this, config);
+    document.dispatchEvent(new CustomEvent(EXTERNAL_EVENTS.SIDEKICK_READY));
   }
 
   /**
