@@ -1,3 +1,10 @@
+## [1.30.2](https://github.com/adobe/aem-sidekick/compare/v1.30.1...v1.30.2) (2024-08-30)
+
+
+### Bug Fixes
+
+* dispatch sidekick-ready, test statusfetched ([#240](https://github.com/adobe/aem-sidekick/issues/240)) ([bb3e8f6](https://github.com/adobe/aem-sidekick/commit/bb3e8f6eb33e0a93eda368d9f33ebe9649702f85))
+
 ## [1.30.1](https://github.com/adobe/aem-sidekick/compare/v1.30.0...v1.30.1) (2024-08-28)
 
 
