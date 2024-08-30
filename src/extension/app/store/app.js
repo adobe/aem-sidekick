@@ -181,7 +181,6 @@ export class AppStore {
    * and retrieves the location of the current document.
    * @param {AEMSidekick} sidekick The sidekick HTMLElement
    * @param {SidekickOptionsConfig} inputConfig The sidekick config
-   * @fires Sidekick#sidekick-ready
    */
   async loadContext(sidekick, inputConfig) {
     this.sidekick = sidekick;
