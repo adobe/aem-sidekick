@@ -15,6 +15,7 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import { expect } from '@open-wc/testing';
 import { emulateMedia } from '@web/test-runner-commands';
+import { spy } from 'sinon';
 import { AppStore } from '../src/extension/app/store/app.js';
 import { recursiveQuery } from './test-utils.js';
 import chromeMock from './mocks/chrome.js';
@@ -74,6 +75,32 @@ describe('AEM Sidekick', () => {
     expect(location.href).to.eq('https://main--aem-boilerplate--adobe.hlx.page/');
   });
 
+  it('dispatches sidekick-ready', async () => {
+    const readySpy = spy();
+    document.addEventListener('sidekick-ready', readySpy);
+
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    expect(readySpy).to.have.been.calledOnce;
+  });
+
+  it('dispatches statusfetched', async () => {
+    const statusSpy = spy();
+
+    sidekick = sidekickTest.createSidekick();
+    sidekick.addEventListener('statusfetched', statusSpy);
+    await sidekickTest.awaitEnvSwitcher();
+
+    expect(statusSpy).to.have.been.calledOnce;
+
+    const { data } = statusSpy.args[0][0].detail;
+    expect(data.webPath).to.eq('/');
+    expect(data.resourcePath).to.eq('/index.md');
+    expect(data.preview.status).to.eq(200);
+    expect(data.live.status).to.eq(200);
+  });
+
   describe('color themes', () => {
     it('renders light theme', async () => {
       await emulateMedia({ colorScheme: 'light' });
@@ -101,37 +128,12 @@ describe('AEM Sidekick', () => {
     });
   });
 
-  describe('configuration loading', () => {
-    it('default config', async () => {
-      sidekickTest
-        .mockFetchSidekickConfigNotFound();
-
-      sidekick = sidekickTest.createSidekick();
-      sidekick.addEventListener('contextloaded', (event) => {
-        // @ts-ignore
-        const { detail } = event;
-        const { data } = detail;
-        expect(data).to.exist;
-        expect(data.config).to.exist;
-        expect(data.config.owner).to.eq('adobe');
-        expect(data.config.repo).to.eq('aem-boilerplate');
-        expect(data.config.ref).to.eq('main');
-        expect(data.config.giturl).to.eq('https://github.com/adobe/aem-boilerplate');
-        expect(data.config.lang).to.eq('en');
-        expect(data.config.views.length).to.eq(1);
-
-        expect(data.location).to.exist;
-        expect(data.location.host).to.eq('main--aem-boilerplate--adobe.hlx.page');
-      });
-    });
-  });
-
   it('passes the a11y audit', async () => {
     sidekickTest
       .mockFetchSidekickConfigNotFound();
 
     sidekick = sidekickTest.createSidekick();
-    sidekick.addEventListener('contextloaded', async () => {
+    document.addEventListener('sidekick-ready', async () => {
       await expect(sidekick).shadowDom.to.be.accessible();
     });
   });

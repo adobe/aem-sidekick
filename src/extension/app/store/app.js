@@ -181,7 +181,6 @@ export class AppStore {
    * and retrieves the location of the current document.
    * @param {AEMSidekick} sidekick The sidekick HTMLElement
    * @param {SidekickOptionsConfig} inputConfig The sidekick config
-   * @fires Sidekick#contextloaded
    */
   async loadContext(sidekick, inputConfig) {
     this.sidekick = sidekick;
@@ -203,11 +202,6 @@ export class AppStore {
     this.setupPlugins();
 
     this.fetchStatus();
-
-    this.fireEvent(EXTERNAL_EVENTS.CONTEXT_LOADED, {
-      config: this.siteStore.toJSON(),
-      location: this.location,
-    });
 
     this.showView();
   }

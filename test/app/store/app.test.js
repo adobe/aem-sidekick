@@ -91,11 +91,7 @@ describe('Test App Store', () => {
   }
 
   it('loadContext - no config.json', async () => {
-    const contextLoadedSpy = sidekickTest.sandbox.spy();
-    sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
-
     await appStore.loadContext(sidekickElement, defaultSidekickConfig);
-    expect(contextLoadedSpy.calledOnce).to.be.true;
     await testDefaultConfig();
   });
 
@@ -103,11 +99,7 @@ describe('Test App Store', () => {
     sidekickTest
       .mockFetchSidekickConfigSuccess(true, true);
 
-    const contextLoadedSpy = sidekickTest.sandbox.spy();
-    sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
-
     await appStore.loadContext(sidekickElement, defaultSidekickConfig);
-    expect(contextLoadedSpy.calledOnce).to.be.true;
     await testDefaultConfig();
 
     expect(appStore.siteStore.plugins.length).to.eq(9);
@@ -122,16 +114,12 @@ describe('Test App Store', () => {
     sidekickTest
       .mockFetchSidekickConfigSuccess(true, true);
 
-    const contextLoadedSpy = sidekickTest.sandbox.spy();
-    sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
-
     const config = {
       ...defaultSidekickConfig,
       lang: 'abc',
     };
 
     await appStore.loadContext(sidekickElement, config);
-    expect(contextLoadedSpy.calledOnce).to.be.true;
     await testDefaultConfig();
 
     expect(appStore.languageDict.title).to.eq('AEM Sidekick - NextGen');
