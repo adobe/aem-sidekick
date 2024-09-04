@@ -876,9 +876,9 @@ export class AppStore {
     // update preview
     const previewStatus = await this.api.updatePreview(path);
     if (previewStatus) {
-      if (this.isEditor() || this.isPreview() || this.isDev()) {
-        // bust client cache
-        await fetch(`https://${siteStore.innerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
+      if (this.isEditor() || this.isPreview()) {
+        const host = this.isDev() ? siteStore.devUrl.host : `https://${siteStore.innerHost}`;
+        await fetch(`${host}${path}`, { cache: 'reload', mode: 'no-cors' });
       }
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED, path);
     }
@@ -907,7 +907,7 @@ export class AppStore {
         /* istanbul ignore next 4 */
         const actionCallback = () => {
           this.setState();
-          this.switchEnv('preview');
+          this.switchEnv('preview', false, true);
         };
         this.showToast(this.i18n('preview_success'), 'positive', undefined, actionCallback, 'Open');
       }
@@ -1095,7 +1095,7 @@ export class AppStore {
    * @param {boolean} [open] true if environment should be opened in new tab
    * @fires Sidekick#envswitched
    */
-  async switchEnv(targetEnv, open = false) {
+  async switchEnv(targetEnv, open = false, cacheBust = false) {
     const hostType = ENVS[targetEnv];
     if (!hostType) {
       // eslint-disable-next-line no-console
@@ -1136,6 +1136,13 @@ export class AppStore {
       const customViewUrl = new URL(customView.viewer, envUrl);
       customViewUrl.searchParams.set('path', status.webPath);
       envUrl = customViewUrl.href;
+    }
+
+    const liveDomains = ['aem.live', 'hlx.live'];
+    if (cacheBust
+      && !(targetEnv === 'prod' && !liveDomains.some((domain) => envUrl.includes(domain)) && this.siteStore.transient)) {
+      const separator = envUrl.includes('?') ? '&' : '?';
+      envUrl = `${envUrl}${separator}nocache=${Date.now()}`;
     }
 
     // switch or open env

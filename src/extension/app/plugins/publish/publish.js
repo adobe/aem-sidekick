@@ -36,8 +36,17 @@ export function createPublishPlugin(appStore) {
         const { siteStore } = appStore;
         const res = await appStore.publish();
         if (res) {
-          const actionCallback = () => {
-            appStore.switchEnv('prod', newTab(evt));
+          const actionCallback = async () => {
+            const redirectHost = siteStore.host || siteStore.outerHost;
+            const isSameHost = redirectHost === appStore.location.host;
+
+            if (isSameHost) {
+              const path = appStore.location.pathname;
+              const prodURL = new URL(path, `https://${redirectHost}`).toString();
+              await fetch(prodURL, { cache: 'reload', mode: 'no-cors' });
+            }
+
+            appStore.switchEnv('prod', newTab(evt), !isSameHost);
             appStore.closeToast();
           };
 
