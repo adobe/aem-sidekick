@@ -38,14 +38,14 @@ export function createPublishPlugin(appStore) {
         if (res) {
           const actionCallback = async () => {
             const redirectHost = siteStore.host || siteStore.outerHost;
-            const isSameHost = redirectHost === appStore.location.host;
-            if (isSameHost) {
+            const isSameOrigin = redirectHost === appStore.location.host;
+            if (isSameOrigin) {
               const path = appStore.location.pathname;
               const prodURL = new URL(path, `https://${redirectHost}`);
               await fetch(prodURL, { cache: 'reload', mode: 'no-cors' });
             }
 
-            appStore.switchEnv('prod', newTab(evt), !isSameHost);
+            appStore.switchEnv('prod', newTab(evt), !isSameOrigin);
             appStore.closeToast();
           };
 
