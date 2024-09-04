@@ -961,7 +961,7 @@ export class AppStore {
 
     // update live
     const resp = await this.api.updateLive(path);
-    if (resp.ok) {
+    if (resp) {
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
     }
 
