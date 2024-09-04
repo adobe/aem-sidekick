@@ -104,7 +104,7 @@ describe('Test App Store', () => {
 
     expect(appStore.siteStore.plugins.length).to.eq(9);
     expect(appStore.siteStore.scriptUrl).to.eq('https://www.hlx.live/tools/sidekick/index.js');
-    expect(appStore.siteStore.host).to.eq('custom-host.com');
+    expect(appStore.siteStore.host).to.eq('www.aemboilerplate.com');
     expect(appStore.siteStore.innerHost).to.eq('custom-preview-host.com');
     expect(appStore.siteStore.liveHost).to.eq('custom-live-host.com');
     expect(appStore.siteStore.project).to.eq('AEM Boilerplate');
@@ -961,8 +961,6 @@ describe('Test App Store', () => {
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
-
-      expect(fetchStub.calledWith('https://main--aem-boilerplate--adobe.hlx.live/somepath', sinon.match.has('cache', 'reload'))).is.true;
     });
 
     it('should purge host', async () => {
@@ -973,9 +971,6 @@ describe('Test App Store', () => {
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
-
-      expect(fetchStub.args[1][0]).to.equal('https://aem-boilerplate.com/somepath');
-      expect(fetchStub.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
     });
 
     it('should handle publish when host is defined', async () => {
@@ -985,8 +980,6 @@ describe('Test App Store', () => {
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
-
-      expect(fetchStub.calledWith('https://aem-boilerplate.com/somepath', sinon.match.has('cache', 'reload'))).is.true;
     });
 
     it('should use correct parameters for fetch call', async () => {

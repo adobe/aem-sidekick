@@ -39,10 +39,9 @@ export function createPublishPlugin(appStore) {
           const actionCallback = async () => {
             const redirectHost = siteStore.host || siteStore.outerHost;
             const isSameHost = redirectHost === appStore.location.host;
-
             if (isSameHost) {
               const path = appStore.location.pathname;
-              const prodURL = new URL(path, `https://${redirectHost}`).toString();
+              const prodURL = new URL(path, `https://${redirectHost}`);
               await fetch(prodURL, { cache: 'reload', mode: 'no-cors' });
             }
 

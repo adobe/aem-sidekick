@@ -949,7 +949,7 @@ export class AppStore {
    * @returns {Promise<boolean>} True if the page was published successfully, false otherwise
    */
   async publish(path) {
-    const { siteStore, status } = this;
+    const { status } = this;
     path = path || status.webPath;
 
     // publish content only
@@ -961,16 +961,7 @@ export class AppStore {
 
     // update live
     const resp = await this.api.updateLive(path);
-    if (resp) {
-      // bust client cache for live and production
-      if (siteStore.outerHost) {
-        // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
-        await fetch(`https://${siteStore.outerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
-      }
-      if (siteStore.host) {
-        // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
-        await fetch(`https://${siteStore.host}${path}`, { cache: 'reload', mode: 'no-cors' });
-      }
+    if (resp.ok) {
       this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
     }
 
