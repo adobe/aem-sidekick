@@ -876,7 +876,9 @@ export class AppStore {
     // update preview
     const previewStatus = await this.api.updatePreview(path);
     if (previewStatus) {
-      if (this.isEditor() || this.isPreview()) {
+      // If we are on preview, we need to bust the cache on the page to ensure the latest
+      // content is loaded.
+      if (this.isPreview()) {
         const host = this.isDev() ? siteStore.devUrl.host : `https://${siteStore.innerHost}`;
         await fetch(`${host}${path}`, { cache: 'reload', mode: 'no-cors' });
       }
@@ -1129,6 +1131,10 @@ export class AppStore {
       envUrl = customViewUrl.href;
     }
 
+    // Check if cache busting should be applied based on the environment and conditions.
+    // The logic prevents cache busting if:
+    // The target environment is 'prod' && the envUrl does not include any of the live
+    // domains & the sidekick is running in transient mode.
     const liveDomains = ['aem.live', 'hlx.live'];
     if (cacheBust
       && !(targetEnv === 'prod' && !liveDomains.some((domain) => envUrl.includes(domain)) && this.siteStore.transient)) {

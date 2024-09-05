@@ -37,6 +37,9 @@ export function createPublishPlugin(appStore) {
         const res = await appStore.publish();
         if (res) {
           const actionCallback = async () => {
+            // Determine if the redirect host is the same origin as the current page
+            // If it is, we need to bust the cache on the page to ensure the latest
+            // content is loaded
             const redirectHost = siteStore.host || siteStore.outerHost;
             const isSameOrigin = redirectHost === appStore.location.host;
             if (isSameOrigin) {
