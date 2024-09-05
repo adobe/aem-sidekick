@@ -657,7 +657,7 @@ describe('Test App Store', () => {
 
     it('should bust client cache', async () => {
       sidekickTest.sandbox.stub(instance, 'isDev').returns(false);
-      instance.isEditor.returns(true);
+      instance.isPreview.returns(true);
       instance.status = { webPath: '/somepath' };
       instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.hlx.page';
 
