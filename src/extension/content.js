@@ -15,9 +15,35 @@
  * @typedef {import('@Types').OptionsConfig} OptionsConfig
  */
 
+/**
+ * Removes the cache buster from the URL.
+ * @param {string} [href] The URL to remove the cache buster from
+ */
+function removeCacheParam(href = window.location.href) {
+  const location = new URL(href);
+  const params = location.searchParams;
+
+  // Check if 'nocache' parameter exists
+  if (params.has('nocache')) {
+    // Remove 'nocache' parameter
+    params.delete('nocache');
+
+    // Update the URL without changing the browser history
+    window.history.replaceState(null, '', location);
+
+    // Now we are on same origin we are safe to reload the cache
+    fetch(location, { cache: 'reload' });
+  }
+
+  return location.href;
+}
+
 (async () => {
   // ensure hlx namespace
   window.hlx = window.hlx || {};
+
+  // remove cache buster from URL
+  removeCacheParam();
 
   const { getDisplay, toggleDisplay } = await import('./display.js');
   const display = await getDisplay();

@@ -20,29 +20,6 @@ import { urlCache } from './url-cache.js';
 import { updateUI } from './ui.js';
 
 /**
- * Removes the cache buster from the URL.
- * @param {string} [href] The URL to remove the cache buster from
- */
-export function removeCacheParam(href = window.location.href) {
-  const location = new URL(href);
-  const params = location.searchParams;
-
-  // Check if 'nocache' parameter exists
-  if (params.has('nocache')) {
-    // Remove 'nocache' parameter
-    params.delete('nocache');
-
-    // Update the URL without changing the browser history
-    window.history.replaceState(null, '', location);
-
-    // Now we are on same origin we are safe to reload the cache
-    fetch(location, { cache: 'reload' });
-  }
-
-  return location.href;
-}
-
-/**
  * Loads the content script in the tab.
  * @param {number} tabId The ID of the tab
  * @param {Object[]} matches The config matches
@@ -50,7 +27,6 @@ export function removeCacheParam(href = window.location.href) {
 async function injectContentScript(tabId, matches) {
   // execute content script
   try {
-    removeCacheParam();
     await chrome.scripting.executeScript({
       target: { tabId },
       files: ['./content.js'],
