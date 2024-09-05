@@ -16,7 +16,7 @@ import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
 import chromeMock from './mocks/chrome.js';
-import { checkTab, getCurrentTab } from '../src/extension/tab.js';
+import { checkTab, getCurrentTab, removeCacheParam } from '../src/extension/tab.js';
 import { error } from './test-utils.js';
 import { log } from '../src/extension/log.js';
 
@@ -208,5 +208,31 @@ describe('Test check-tab', () => {
     sandbox.stub(chrome.tabs, 'query').withArgs({ active: true, currentWindow: true }).resolves([TABS[1]]);
     const tab = await getCurrentTab();
     expect(tab).to.equal(TABS[1]);
+  });
+});
+
+describe('Test removeCacheParam', () => {
+  const sandbox = sinon.createSandbox();
+
+  beforeEach(() => {
+    sandbox.stub(window.history, 'replaceState').callsFake(() => {});
+    sandbox.stub(window, 'fetch').resolves(new Response());
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it('should remove the nocache parameter from the URL', () => {
+    const url = 'https://example.com?nocache=123';
+    const expectedUrl = 'https://example.com/';
+    const newUrl = removeCacheParam(url);
+    expect(newUrl).to.equal(expectedUrl);
+  });
+
+  it('should not remove the nocache parameter from the URL if it does not exist', () => {
+    const url = 'https://example.com';
+    const newUrl = removeCacheParam(url);
+    expect(newUrl).to.equal('https://example.com/');
   });
 });
