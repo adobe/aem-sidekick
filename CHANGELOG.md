@@ -1,3 +1,10 @@
+# [1.31.0](https://github.com/adobe/aem-sidekick/compare/v1.30.2...v1.31.0) (2024-09-09)
+
+
+### Features
+
+* add cache buster ([#243](https://github.com/adobe/aem-sidekick/issues/243)) ([63a7dc5](https://github.com/adobe/aem-sidekick/commit/63a7dc5ad35ae646523395e24f10065252cb374f))
+
 ## [1.30.2](https://github.com/adobe/aem-sidekick/compare/v1.30.1...v1.30.2) (2024-08-30)
 
 
