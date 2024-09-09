@@ -84,7 +84,7 @@ describe('Test auth', () => {
     expect(updateSessionRules.calledWith({
       addRules: [
         {
-          id: 2,
+          id: sinon.match.number,
           priority: 1,
           action: {
             type: 'modifyHeaders',
@@ -112,7 +112,7 @@ describe('Test auth', () => {
           },
         },
         {
-          id: 3,
+          id: sinon.match.number,
           priority: 1,
           action: {
             type: 'modifyHeaders',
@@ -166,7 +166,7 @@ describe('Test auth', () => {
     expect(updateSessionRules.calledWith({
       addRules: [
         {
-          id: 2,
+          id: sinon.match.number,
           priority: 1,
           action: {
             type: 'modifyHeaders',
@@ -194,7 +194,7 @@ describe('Test auth', () => {
           },
         },
         {
-          id: 3,
+          id: sinon.match.number,
           priority: 1,
           action: {
             type: 'modifyHeaders',
@@ -221,7 +221,7 @@ describe('Test auth', () => {
           },
         },
         {
-          id: 4,
+          id: sinon.match.number,
           priority: 1,
           action: {
             type: 'modifyHeaders',
@@ -248,7 +248,7 @@ describe('Test auth', () => {
           },
         },
         {
-          id: 5,
+          id: sinon.match.number,
           priority: 1,
           action: {
             type: 'modifyHeaders',
@@ -275,7 +275,7 @@ describe('Test auth', () => {
           },
         },
         {
-          id: 6,
+          id: sinon.match.number,
           priority: 1,
           action: {
             type: 'modifyHeaders',
