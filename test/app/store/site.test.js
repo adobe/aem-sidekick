@@ -155,7 +155,7 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.project).to.equal('AEM Boilerplate');
       expect(appStore.siteStore.innerHost).to.equal('custom-preview-host.com');
       expect(appStore.siteStore.liveHost).to.equal('custom-live-host.com');
-      expect(appStore.siteStore.host).to.equal('custom-host.com');
+      expect(appStore.siteStore.host).to.equal('www.aemboilerplate.com');
 
       expect(appStore.siteStore.plugins.length).to.equal(9);
       const firstPlugin = appStore.siteStore.plugins[0];

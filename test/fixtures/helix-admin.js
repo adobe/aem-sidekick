@@ -35,7 +35,7 @@ export const defaultConfigJSONWithHost = {
   ...defaultConfigJSON,
   previewHost: 'custom-preview-host.com',
   liveHost: 'custom-live-host.com',
-  host: 'custom-host.com',
+  host: 'www.aemboilerplate.com',
 };
 
 export const defaultConfigPlugins = {
