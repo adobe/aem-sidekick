@@ -1,3 +1,10 @@
+## [1.31.1](https://github.com/adobe/aem-sidekick/compare/v1.31.0...v1.31.1) (2024-09-10)
+
+
+### Bug Fixes
+
+* random session rule id ([#249](https://github.com/adobe/aem-sidekick/issues/249)) ([23027a3](https://github.com/adobe/aem-sidekick/commit/23027a35599e6b32a7946b66333e986863f7abd9))
+
 # [1.31.0](https://github.com/adobe/aem-sidekick/compare/v1.30.2...v1.31.0) (2024-09-09)
 
 
