@@ -42,9 +42,6 @@ function removeCacheParam(href = window.location.href) {
   // ensure hlx namespace
   window.hlx = window.hlx || {};
 
-  // remove cache buster from URL
-  removeCacheParam();
-
   const { getDisplay, toggleDisplay } = await import('./display.js');
   const display = await getDisplay();
 
@@ -117,8 +114,10 @@ function removeCacheParam(href = window.location.href) {
       return;
     }
 
-    const sidekick = document.querySelector('aem-sidekick');
+    // remove cache buster from URL
+    removeCacheParam();
 
+    const sidekick = document.querySelector('aem-sidekick');
     if (configMatches.length > 0) {
       if (sidekick) {
         // Toggle sidekick display
