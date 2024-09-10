@@ -76,20 +76,20 @@ describe('Palette container', () => {
     const toolsPickerPluginLabel = recursiveQuery(toolsPlugin, '#label');
     expect(toolsPickerPluginLabel.textContent.trim()).to.equal('Tools');
 
-    await waitUntil(() => recursiveQuery(sidekick, 'palette-dialog'));
+    await waitUntil(() => recursiveQuery(sidekick, 'palette-container'));
   }
 
   it('closes palette plugin via close button', async () => {
     await openPallete();
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
-    const paletteDialog = recursiveQuery(sidekick, 'palette-dialog');
-    const closeButton = recursiveQuery(paletteDialog, 'sp-close-button');
+    await waitUntil(() => recursiveQuery(paletteContainer, 'sk-action-button'));
+    const closeButton = recursiveQuery(paletteContainer, 'sk-action-button');
     closeButton.click();
 
-    await waitUntil(() => paletteContainer.plugin === undefined);
-
-    expect(paletteContainer.plugin).to.be.undefined;
+    const container = recursiveQuery(paletteContainer, '.container');
+    await waitUntil(() => container.classList.contains('hidden'));
+    expect(container.classList.contains('hidden')).to.be.true;
   });
 
   it('closes palette plugin via esc key', async () => {
@@ -97,6 +97,7 @@ describe('Palette container', () => {
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
 
+    await waitUntil(() => recursiveQuery(paletteContainer, '.title'));
     paletteContainer.dispatchEvent(new KeyboardEvent('keydown', { key: 'QKey' }));
     expect(paletteContainer.plugin).to.exist;
 
@@ -111,7 +112,8 @@ describe('Palette container', () => {
     await openPallete('localize');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
-    const title = recursiveQuery(paletteContainer, 'h2');
+    await waitUntil(() => recursiveQuery(paletteContainer, '.title'));
+    const title = recursiveQuery(paletteContainer, '.title');
 
     expect(title.textContent.trim()).to.equal('Localize project');
   });
