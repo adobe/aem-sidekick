@@ -1,3 +1,10 @@
+## [1.31.2](https://github.com/adobe/aem-sidekick/compare/v1.31.1...v1.31.2) (2024-09-10)
+
+
+### Bug Fixes
+
+* rework palette, allow hiding ([#250](https://github.com/adobe/aem-sidekick/issues/250)) ([e95548f](https://github.com/adobe/aem-sidekick/commit/e95548fb5a0ba798563e3d091ba3fff7c838392c))
+
 ## [1.31.1](https://github.com/adobe/aem-sidekick/compare/v1.31.0...v1.31.1) (2024-09-10)
 
 
