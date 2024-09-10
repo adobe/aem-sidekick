@@ -17,6 +17,11 @@ import { getConfig, setConfig } from './config.js';
 import { ADMIN_ORIGIN } from './utils/admin.js';
 
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
+
+function getRandomId() {
+  return Math.floor(Math.random() * 1000000);
+}
+
 /**
  * Sets the x-auth-token header for all requests to the Admin API if project config
  * has an auth token. Also sets the Access-Control-Allow-Origin header for
@@ -31,11 +36,10 @@ export async function configureAuthAndCorsHeaders() {
         .map((rule) => rule.id),
     });
     // find projects with auth tokens and add rules for each
-    let id = 2;
     const projects = await getConfig('session', 'projects') || [];
     const addRulesPromises = projects.map(async ({ owner, repo, authToken }) => {
       const adminRule = {
-        id,
+        id: getRandomId(),
         priority: 1,
         action: {
           type: 'modifyHeaders',
@@ -65,27 +69,24 @@ export async function configureAuthAndCorsHeaders() {
         corsFilters.push(...additionalFilters);
       }
 
-      const corsRules = corsFilters.map((regexFilter) => {
-        id += 1;
-        return {
-          id,
-          priority: 1,
-          action: {
-            type: 'modifyHeaders',
-            responseHeaders: [{
-              header: 'Access-Control-Allow-Origin',
-              operation: 'set',
-              value: '*',
-            }],
-          },
-          condition: {
-            regexFilter,
-            initiatorDomains: ['tools.aem.live', 'labs.aem.live'],
-            requestMethods: ['get'],
-            resourceTypes: ['xmlhttprequest'],
-          },
-        };
-      });
+      const corsRules = corsFilters.map((regexFilter) => ({
+        id: getRandomId(),
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          responseHeaders: [{
+            header: 'Access-Control-Allow-Origin',
+            operation: 'set',
+            value: '*',
+          }],
+        },
+        condition: {
+          regexFilter,
+          initiatorDomains: ['tools.aem.live', 'labs.aem.live'],
+          requestMethods: ['get'],
+          resourceTypes: ['xmlhttprequest'],
+        },
+      }));
 
       log.debug(`addAuthTokensHeaders: added rules for ${owner}`);
       return [adminRule, ...corsRules];
