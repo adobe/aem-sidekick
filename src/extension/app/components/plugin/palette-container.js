@@ -67,7 +67,7 @@ export class PaletteContainer extends ConnectedElement {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px;
+      padding: 10px 10px 10px 15px;
     }
 
     .container .header .title {
@@ -99,10 +99,9 @@ export class PaletteContainer extends ConnectedElement {
         if (iframe) {
           this.plugin = undefined;
 
-          // Wait for next tick for the to iframe reset
+          // Wait for next tick for the iframe to reset
           await new Promise((resolve) => setTimeout(resolve, 0));
           this.plugin = e.detail.plugin;
-          this.requestUpdate();
 
           return;
         }
