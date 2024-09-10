@@ -352,7 +352,7 @@ export class PluginActionBar extends ConnectedElement {
 
     systemPlugins.push(html`
       <div class="logo">
-        ${ICONS.ADOBE_LOGO}
+        ${ICONS.SIDEKICK_LOGO}
       </div>
     `);
 
