@@ -906,12 +906,8 @@ export class AppStore {
       if (this.status.webPath.startsWith('/.helix/')) {
         this.showToast(this.i18n('config_success'), 'positive');
       } else {
-        /* istanbul ignore next 4 */
-        const actionCallback = () => {
-          this.setState();
-          this.switchEnv('preview', false, true);
-        };
-        this.showToast(this.i18n('preview_success'), 'positive', undefined, actionCallback, 'Open');
+        this.showToast(this.i18n('preview_success'), 'positive');
+        this.switchEnv('preview', false, true);
       }
     }
   }
