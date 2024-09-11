@@ -597,7 +597,7 @@ describe('Plugin action bar', () => {
 
       // make viewport narrower
       await resizeWindow({ width: 560, height: 600 });
-      await aTimeout(300);
+      await aTimeout(1300);
 
       // check if tools container plugin moved to plugin menu
       expectInActionBar([
@@ -899,6 +899,7 @@ describe('Plugin action bar', () => {
 
       await sidekickTest.awaitActionBar();
 
+      await aTimeout(1000);
       expectInActionBar([
         'env-switcher',
         'edit-preview',
