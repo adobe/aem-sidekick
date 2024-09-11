@@ -899,15 +899,6 @@ describe('Plugin action bar', () => {
 
       await sidekickTest.awaitActionBar();
 
-      await aTimeout(1000);
-      expectInActionBar([
-        'env-switcher',
-        'edit-preview',
-        'assets',
-        'library',
-        'tools',
-      ]);
-
       function createFocusSpy(element) {
         const spy = sidekickTest.sandbox.spy();
         element.addEventListener('focus', spy);
@@ -915,6 +906,16 @@ describe('Plugin action bar', () => {
       }
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
+
+      await waitUntil(() => recursiveQuery(actionBar, '.library'));
+
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+        'assets',
+        'library',
+        'tools',
+      ]);
 
       const envSwitcher = recursiveQuery(actionBar, 'env-switcher');
       const envSwitcherFocusSpy = createFocusSpy(envSwitcher);
