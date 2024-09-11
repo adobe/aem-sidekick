@@ -895,6 +895,8 @@ describe('Plugin action bar', () => {
         .mockFetchEditorStatusSuccess()
         .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR);
 
+      await resizeWindow({ width: 1200, height: 600 });
+
       sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitActionBar();
