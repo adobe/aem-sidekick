@@ -596,7 +596,7 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport narrower
-      await resizeWindow({ width: 560, height: 600 });
+      await resizeWindow({ width: 600, height: 600 });
       await aTimeout(1300);
 
       // check if tools container plugin moved to plugin menu
