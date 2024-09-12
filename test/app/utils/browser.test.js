@@ -23,6 +23,8 @@ import {
   createTag,
   extendTag,
   globToRegExp,
+  detectBrowser,
+  detectPlatform,
 } from '../../../src/extension/app/utils/browser.js';
 
 describe('browser utils', () => {
@@ -292,6 +294,63 @@ describe('browser utils', () => {
       const regex = globToRegExp(glob);
       expect(regex.test('dir/subdir/file-123.js')).to.be.true;
       expect(regex.test('dir/subdir/extra/file-123.js')).to.be.false;
+    });
+  });
+
+  describe('detectPlatform', () => {
+    it('should detect Windows platform', () => {
+      const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)';
+      expect(detectPlatform(userAgent)).to.equal('windows');
+    });
+
+    it('should detect iOS platform', () => {
+      const userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)';
+      expect(detectPlatform(userAgent)).to.equal('ios');
+    });
+
+    it('should detect macOS platform', () => {
+      const userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)';
+      expect(detectPlatform(userAgent)).to.equal('macos');
+    });
+
+    it('should detect Android platform', () => {
+      const userAgent = 'Mozilla/5.0 (Linux; Android 10; Pixel 3)';
+      expect(detectPlatform(userAgent)).to.equal('android');
+    });
+
+    it('should detect Linux platform', () => {
+      const userAgent = 'Mozilla/5.0 (X11; Linux x86_64)';
+      expect(detectPlatform(userAgent)).to.equal('linux');
+    });
+
+    it('should return "other" for unknown platforms', () => {
+      const userAgent = 'Mozilla/5.0 (Unknown OS)';
+      expect(detectPlatform(userAgent)).to.equal('other');
+    });
+  });
+
+  describe('detectBrowser', () => {
+    it('should detect Edge browser', () => {
+      const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Edg/90.0.818.66';
+      expect(detectBrowser(userAgent)).to.equal('edge');
+    });
+
+    it('should detect Opera browser', () => {
+      const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) OPR/74.0.3911.160';
+      expect(detectBrowser(userAgent)).to.equal('opera');
+    });
+
+    it('should detect Samsung browser', () => {
+      const userAgent = 'Mozilla/5.0 (Linux; Android 10; SAMSUNG SM-G970F Build/QP1A.190711.020) SamsungBrowser/12.1';
+      expect(detectBrowser(userAgent)).to.equal('samsung');
+    });
+    it('should detect Safari browser', () => {
+      const userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15';
+      expect(detectBrowser(userAgent)).to.equal('safari');
+    });
+    it('should detect Firefox browser', () => {
+      const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0';
+      expect(detectBrowser(userAgent)).to.equal('firefox');
     });
   });
 });

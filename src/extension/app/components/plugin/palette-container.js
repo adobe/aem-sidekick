@@ -16,7 +16,6 @@ import { customElement, property, queryAsync } from 'lit/decorators.js';
 import { html, css } from 'lit';
 import { EventBus } from '../../utils/event-bus.js';
 import { EVENTS, ICONS } from '../../constants.js';
-import sampleRUM from '../../../utils/rum.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 
 /**
@@ -154,7 +153,7 @@ export class PaletteContainer extends ConnectedElement {
   async closed() {
     this.hideContainer();
 
-    sampleRUM('click', {
+    this.appStore.sampleRUM('click', {
       source: 'sidekick',
       target: 'paletteclosed',
     });

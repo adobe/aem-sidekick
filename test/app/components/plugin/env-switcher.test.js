@@ -97,6 +97,11 @@ describe('Environment Switcher', () => {
 
       expect(switchEnvStub.called).to.be.true;
       expect(switchEnvStub.calledWith('live', false)).to.be.true;
+      expect(sidekickTest.rumStub.called).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'switch-env:live',
+      })).to.be.true;
     }).timeout(20000);
 
     it('edit -> preview - with special views', async () => {
@@ -148,6 +153,11 @@ describe('Environment Switcher', () => {
 
       expect(openPageStub.called).to.be.true;
       expect(openPageStub.calledWith('https://custom-preview-host.com/tools/sidekick/example/index.html?path=%2Fplaceholders.json')).to.be.true;
+      expect(sidekickTest.rumStub.called).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'switch-env:preview',
+      })).to.be.true;
     });
 
     it('change environment - preview -> live (with meta key)', async () => {
@@ -190,6 +200,11 @@ describe('Environment Switcher', () => {
 
       expect(switchEnvStub.called).to.be.true;
       expect(switchEnvStub.calledWith('live', true)).to.be.true;
+      expect(sidekickTest.rumStub.called).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'switch-env:live',
+      })).to.be.true;
     }).timeout(20000);
   });
 });

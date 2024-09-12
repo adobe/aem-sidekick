@@ -517,8 +517,7 @@ describe('Plugin action bar', () => {
       sidekickTest
         .mockFetchStatusSuccess(true)
         .mockFetchSidekickConfigSuccess()
-        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW)
-        .createSidekick();
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
       sidekick = sidekickTest.createSidekick();
 
@@ -534,8 +533,7 @@ describe('Plugin action bar', () => {
       sidekickTest
         .mockFetchStatusSuccess(true)
         .mockFetchSidekickConfigSuccess()
-        .mockHelixEnvironment(HelixMockEnvironments.LIVE)
-        .createSidekick();
+        .mockHelixEnvironment(HelixMockEnvironments.LIVE);
 
       sidekick = sidekickTest.createSidekick();
 
@@ -550,8 +548,7 @@ describe('Plugin action bar', () => {
       sidekickTest
         .mockFetchStatusSuccess(true)
         .mockFetchSidekickConfigSuccess(true, false)
-        .mockHelixEnvironment(HelixMockEnvironments.PROD)
-        .createSidekick();
+        .mockHelixEnvironment(HelixMockEnvironments.PROD);
 
       sidekick = sidekickTest.createSidekick();
 
@@ -571,8 +568,7 @@ describe('Plugin action bar', () => {
             ...defaultConfigUnpinnedPlugin.plugins,
           ],
         })
-        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
-        .createSidekick();
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR);
 
       await resizeWindow({ width: 1200, height: 600 });
 

@@ -30,6 +30,14 @@ export async function setDisplay(display) {
   await setConfig('local', {
     display,
   });
+
+  const mod = await import(chrome.runtime.getURL('utils/rum.js'));
+  const { default: sampleRUM } = mod;
+
+  sampleRUM('click', {
+    source: 'sidekick',
+    target: `display:${display ? 'show' : 'hide'}`,
+  });
   return display;
 }
 

@@ -313,6 +313,11 @@ export class EnvironmentSwitcher extends ConnectedElement {
 
     this.appStore.switchEnv(value, openNewTab);
     picker.value = this.currentEnv;
+
+    this.appStore.sampleRUM('click', {
+      source: 'sidekick',
+      target: `switch-env:${value}`,
+    });
   }
 
   keydown(event) {

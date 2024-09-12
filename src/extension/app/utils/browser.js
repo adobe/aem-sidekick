@@ -206,3 +206,48 @@ export function globToRegExp(glob) {
     .replace(/_/g, '.*');
   return new RegExp(`^${reString}$`);
 }
+
+/**
+ * Detects the platform.
+ * @param {string} userAgent The user agent
+ * @returns {string} The platform
+ */
+export function detectPlatform(userAgent) {
+  userAgent = userAgent.toLowerCase();
+  if (userAgent.includes('(windows')) {
+    return 'windows';
+  } else if (userAgent.includes('(iphone') || userAgent.includes('(ipad')) {
+    return 'ios';
+  } else if (userAgent.includes('(macintosh')) {
+    return 'macos';
+  } else if (userAgent.includes('android')) {
+    return 'android';
+  } else if (userAgent.includes('linux')) {
+    return 'linux';
+  }
+  return 'other';
+}
+
+/**
+ * Detects the browser.
+ * @private
+ * @param {string} userAgent The user agent
+ * @returns {string} The browser
+ */
+export function detectBrowser(userAgent) {
+  userAgent = userAgent.toLowerCase();
+  if (userAgent.includes('edg/')) {
+    return 'edge';
+  } else if (userAgent.includes('opr/')) {
+    return 'opera';
+  } else if (userAgent.includes('samsung')) {
+    return 'samsung';
+  } else if (userAgent.includes('chrome/')) {
+    return 'chrome';
+  } else if (userAgent.includes('safari/')) {
+    return 'safari';
+  } else if (userAgent.includes('firefox/')) {
+    return 'firefox';
+  }
+  return 'other';
+}

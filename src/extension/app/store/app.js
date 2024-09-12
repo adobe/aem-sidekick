@@ -705,7 +705,7 @@ export class AppStore {
       ];
       if (name.startsWith('custom:') || userEvents.includes(name)) {
         /* istanbul ignore next */
-        sampleRUM('click', {
+        this.sampleRUM('click', {
           source: 'sidekick',
           target: name,
         });
@@ -756,6 +756,15 @@ export class AppStore {
       actionOnTimeout,
     };
     this.setState(STATE.TOAST);
+  }
+
+  /**
+   * Samples RUM event, abstracted for testing.
+   * @param {string} event The event name
+   * @param {Object} data The event data
+   */
+  sampleRUM(event, data) {
+    sampleRUM(event, data);
   }
 
   /**
