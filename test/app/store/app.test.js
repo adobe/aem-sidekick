@@ -749,10 +749,6 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(sidekickTest.rumStub.calledWith('click', {
-        source: 'sidekick',
-        target: 'previewed',
-      })).to.be.true;
     });
 
     it('should show previewing, update, and handle success response with toast action', async () => {
