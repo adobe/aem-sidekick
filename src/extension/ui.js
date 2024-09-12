@@ -203,8 +203,11 @@ if (chrome.contextMenus) {
           window.hlx = window.hlx || {};
           window.hlx.sidekick = window.hlx.sidekick || { location: window.location };
 
-          const checkpoint = `sidekick:context-menu:${menuItemIdVal}`;
-          sampleRUM(checkpoint, { source: window.location.href });
+          const checkpoint = `context-menu:${menuItemIdVal}`;
+          sampleRUM('click', {
+            source: 'sidekick',
+            target: checkpoint,
+          });
         } catch (e) {
           // eslint-disable-next-line no-console
           console.log('Unable to collect RUM data', e);

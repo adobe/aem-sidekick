@@ -378,7 +378,10 @@ export class JSONView extends LitElement {
    * RUM tracking for the filter
    */
   trackFilterRUM() {
-    sampleRUM('sidekick:jsonview:filter');
+    sampleRUM('click', {
+      source: 'sidekick',
+      target: 'jsonview:filter',
+    });
   }
 
   /**
@@ -425,7 +428,10 @@ export class JSONView extends LitElement {
   async onSelectionChange() {
     const actionGroup = await this.actionGroup;
     this.selectedTabIndex = parseInt(actionGroup.selected[0], 10);
-    sampleRUM('sidekick:jsonview:switch-tab');
+    sampleRUM('click', {
+      source: 'sidekick',
+      target: 'jsonview:switch-tab',
+    });
   }
 
   /**
@@ -435,7 +441,10 @@ export class JSONView extends LitElement {
     const customEventDetail = { detail: { event: 'hlx-close-view' } };
     window.parent.postMessage(customEventDetail, '*');
     if (trackRum) {
-      sampleRUM('sidekick:jsonview:close');
+      sampleRUM('click', {
+        source: 'sidekick',
+        target: 'jsonview:close',
+      });
     }
   }
 

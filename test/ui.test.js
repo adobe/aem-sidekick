@@ -284,7 +284,7 @@ describe('Test UI: RUM collection when clicked', () => {
       menuItemId: 'openViewDocSource',
     }, tab);
     await aTimeout(1000);
-    expect(logSpy.calledWith('sampleRUM', 'sidekick:context-menu:openViewDocSource')).to.be.true;
+    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:openViewDocSource' })).to.be.true;
   });
 
   it('handles error', async () => {

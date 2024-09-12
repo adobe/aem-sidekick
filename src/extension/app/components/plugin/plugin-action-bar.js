@@ -284,13 +284,13 @@ export class PluginActionBar extends ConnectedElement {
     menu.removeAttribute('open');
 
     if (value === 'open-help') {
-      sampleRUM('sidekick:open-help');
+      sampleRUM('click', { source: 'sidekick', target: 'open-help' });
       this.appStore.openPage('https://www.aem.live/docs/sidekick');
       return;
     }
 
     if (value === 'project-added' || value === 'project-removed') {
-      sampleRUM(`sidekick:${value}`);
+      sampleRUM('click', { source: 'sidekick', target: value });
       chrome.runtime.sendMessage({ action: 'addRemoveProject' });
       return;
     }

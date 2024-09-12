@@ -153,9 +153,10 @@ export class PaletteContainer extends ConnectedElement {
    */
   async closed() {
     this.hideContainer();
-    sampleRUM('sidekick:paletteclosed', {
-      source: this.appStore.location.href,
-      target: this.appStore.status.webPath,
+
+    sampleRUM('click', {
+      source: 'sidekick',
+      target: 'paletteclosed',
     });
   }
 

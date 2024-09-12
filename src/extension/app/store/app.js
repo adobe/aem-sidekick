@@ -705,9 +705,9 @@ export class AppStore {
       ];
       if (name.startsWith('custom:') || userEvents.includes(name)) {
         /* istanbul ignore next */
-        sampleRUM(`sidekick:${name}`, {
-          source: data?.sourceUrl || this.location.href,
-          target: data?.targetUrl || this.status.webPath,
+        sampleRUM('click', {
+          source: 'sidekick',
+          target: name,
         });
       }
     } catch (e) {

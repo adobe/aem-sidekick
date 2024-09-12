@@ -21,7 +21,7 @@ import { error } from '../../test-utils.js';
 export default function sampleRUM(checkpoint, data = {}) {
   // eslint-disable-next-line no-console
   console.log('sampleRUM', checkpoint, data);
-  if (checkpoint === 'sidekick:context-menu:openViewDocSource') {
+  if (data.target === 'context-menu:openViewDocSource') {
     // test error handling
     throw error;
   }
