@@ -35,15 +35,8 @@ export function createReloadPlugin(appStore) {
       action: async (evt) => {
         const res = await appStore.update();
         if (res) {
-          const closeHandler = () => {
-            appStore.closeToast();
-          };
-
-          const actionHandler = () => {
-            appStore.reloadPage(newTab(evt));
-          };
-
-          appStore.showToast(appStore.i18n('reload_success'), 'positive', closeHandler, actionHandler, appStore.i18n('open'));
+          appStore.showToast(appStore.i18n('reload_success'), 'positive');
+          appStore.reloadPage(newTab(evt));
         }
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write'),
