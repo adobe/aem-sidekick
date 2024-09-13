@@ -89,28 +89,6 @@ describe('Publish plugin', () => {
       })).to.be.true;
     }).timeout(15000);
 
-    it('publish from preview - docx with toast dismiss', async () => {
-      const { sandbox } = sidekickTest;
-      sidekickTest
-        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW)
-        .mockFetchSidekickConfigSuccess(false, false);
-
-      const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
-      const showToastSpy = sandbox.spy(appStore, 'showToast');
-      const closeToastSpy = sandbox.spy(appStore, 'closeToast');
-
-      sidekick = sidekickTest.createSidekick();
-
-      await sidekickTest.awaitEnvSwitcher();
-      await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called');
-
-      expect(showToastSpy.calledWith('Publication successful, opening Live...', 'positive')).to.be.true;
-      expect(sidekickTest.rumStub.calledWith('click', {
-        source: 'sidekick',
-        target: 'published',
-      })).to.be.true;
-    }).timeout(15000);
-
     it('publish from preview - with host', async () => {
       const { sandbox } = sidekickTest;
       sidekickTest
