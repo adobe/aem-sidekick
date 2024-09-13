@@ -153,6 +153,10 @@ describe('Delete plugin', () => {
 
         await waitUntil(() => reloadPageStub.calledOnce);
         expect(reloadPageStub.calledOnce).to.be.true;
+        expect(sidekickTest.rumStub.calledWith('click', {
+          source: 'sidekick',
+          target: 'deleted',
+        })).to.be.true;
       });
 
       it('skips reloading if toast manually closed', async () => {
@@ -183,6 +187,10 @@ describe('Delete plugin', () => {
 
         await sidekickTest.clickToastClose();
         expect(reloadPageStub.calledOnce).to.be.false;
+        expect(sidekickTest.rumStub.calledWith('click', {
+          source: 'sidekick',
+          target: 'deleted',
+        })).to.be.true;
       });
 
       it('allows authenticated user to delete even if source file still exists', async () => {
@@ -216,6 +224,10 @@ describe('Delete plugin', () => {
 
         await waitUntil(() => deleteStub.calledOnce);
         sidekickTest.clickToastClose();
+        expect(sidekickTest.rumStub.calledWith('click', {
+          source: 'sidekick',
+          target: 'deleted',
+        })).to.be.true;
       });
 
       it('handles server failure', async () => {

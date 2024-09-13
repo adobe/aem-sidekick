@@ -15,7 +15,7 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import { expect } from '@open-wc/testing';
 import { emulateMedia } from '@web/test-runner-commands';
-import sinon, { spy } from 'sinon';
+import { spy } from 'sinon';
 import { AppStore } from '../src/extension/app/store/app.js';
 import { recursiveQuery } from './test-utils.js';
 import chromeMock from './mocks/chrome.js';
@@ -76,7 +76,7 @@ describe('AEM Sidekick', () => {
     expect(sidekickTest.rumStub.called).to.be.true;
     expect(sidekickTest.rumStub.calledWith('click', {
       source: 'sidekick',
-      target: sinon.match(/^loaded:.*:chrome$/),
+      target: 'loaded:chrome',
     })).to.be.true;
   });
 

@@ -51,7 +51,7 @@ describe('Test display', () => {
     })).to.be.true;
     expect(logSpy.calledWith('sampleRUM', 'click', {
       source: 'sidekick',
-      target: 'display:show',
+      target: 'shown',
     })).to.be.true;
   });
 
@@ -64,7 +64,7 @@ describe('Test display', () => {
     expect(display).to.be.false;
     expect(logSpy.calledWith('sampleRUM', 'click', {
       source: 'sidekick',
-      target: 'display:hide',
+      target: 'hidden',
     })).to.be.true;
   });
 });

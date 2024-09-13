@@ -92,6 +92,11 @@ export class PaletteContainer extends ConnectedElement {
 
       this.showContainer();
 
+      this.appStore.sampleRUM('click', {
+        source: 'sidekick',
+        target: 'palette-opened',
+      });
+
       if (newPlugin.id !== this.plugin?.id) {
         // Reset the iframe src to avoid seeing the old plugin
         const iframe = this.shadowRoot.querySelector('iframe');
@@ -134,6 +139,10 @@ export class PaletteContainer extends ConnectedElement {
     const paletteContainer = await this.container;
     if (paletteContainer) {
       paletteContainer.classList.add('hidden');
+      this.appStore.sampleRUM('click', {
+        source: 'sidekick',
+        target: 'palette-closed',
+      });
     }
   }
 
@@ -143,7 +152,7 @@ export class PaletteContainer extends ConnectedElement {
    */
   onKeyDown(event) {
     if (event.key === 'Escape') {
-      this.plugin = undefined;
+      this.hideContainer();
     }
   }
 
@@ -152,11 +161,6 @@ export class PaletteContainer extends ConnectedElement {
    */
   async closed() {
     this.hideContainer();
-
-    this.appStore.sampleRUM('click', {
-      source: 'sidekick',
-      target: 'paletteclosed',
-    });
   }
 
   /**

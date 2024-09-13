@@ -24,7 +24,6 @@ import {
   extendTag,
   globToRegExp,
   detectBrowser,
-  detectPlatform,
 } from '../../../src/extension/app/utils/browser.js';
 
 describe('browser utils', () => {
@@ -294,38 +293,6 @@ describe('browser utils', () => {
       const regex = globToRegExp(glob);
       expect(regex.test('dir/subdir/file-123.js')).to.be.true;
       expect(regex.test('dir/subdir/extra/file-123.js')).to.be.false;
-    });
-  });
-
-  describe('detectPlatform', () => {
-    it('should detect Windows platform', () => {
-      const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)';
-      expect(detectPlatform(userAgent)).to.equal('windows');
-    });
-
-    it('should detect iOS platform', () => {
-      const userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)';
-      expect(detectPlatform(userAgent)).to.equal('ios');
-    });
-
-    it('should detect macOS platform', () => {
-      const userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)';
-      expect(detectPlatform(userAgent)).to.equal('macos');
-    });
-
-    it('should detect Android platform', () => {
-      const userAgent = 'Mozilla/5.0 (Linux; Android 10; Pixel 3)';
-      expect(detectPlatform(userAgent)).to.equal('android');
-    });
-
-    it('should detect Linux platform', () => {
-      const userAgent = 'Mozilla/5.0 (X11; Linux x86_64)';
-      expect(detectPlatform(userAgent)).to.equal('linux');
-    });
-
-    it('should return "other" for unknown platforms', () => {
-      const userAgent = 'Mozilla/5.0 (Unknown OS)';
-      expect(detectPlatform(userAgent)).to.equal('other');
     });
   });
 

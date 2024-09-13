@@ -83,6 +83,10 @@ describe('Publish plugin', () => {
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
 
       expect(showToastSpy.calledWith('Publication successful, opening Live...', 'positive')).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'published',
+      })).to.be.true;
     }).timeout(15000);
 
     it('publish from preview - docx with toast dismiss', async () => {
@@ -110,6 +114,10 @@ describe('Publish plugin', () => {
 
       await waitUntil(() => closeToastSpy.calledOnce, 'toast was not dismissed', { timeout: 5000 });
       expect(showToastSpy.calledWith('Publication successful, opening Live...', 'positive')).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'published',
+      })).to.be.true;
     }).timeout(15000);
 
     it('publish from preview - docx with host and toast dismiss', async () => {
@@ -137,6 +145,10 @@ describe('Publish plugin', () => {
 
       await waitUntil(() => closeToastSpy.calledOnce, 'toast was not dismissed', { timeout: 5000 });
       expect(showToastSpy.calledWith('Publication successful, opening Production...', 'positive')).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'published',
+      })).to.be.true;
     }).timeout(15000);
 
     it('publish from live ', async () => {
@@ -169,6 +181,10 @@ describe('Publish plugin', () => {
       expect(mockFetch._calls[3].identifier).to.eq('https://main--aem-boilerplate--adobe.hlx.live/');
       expect(mockFetch._calls[3].options.cache).to.eq('reload');
       expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'published',
+      })).to.be.true;
     }).timeout(15000);
 
     it('publish from prod host', async () => {
@@ -201,6 +217,10 @@ describe('Publish plugin', () => {
       expect(mockFetch._calls[3].identifier).to.eq('https://www.aemboilerplate.com/');
       expect(mockFetch._calls[3].options.cache).to.eq('reload');
       expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'published',
+      })).to.be.true;
     }).timeout(15000);
   });
 });

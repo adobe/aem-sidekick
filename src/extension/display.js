@@ -36,7 +36,7 @@ export async function setDisplay(display) {
 
   sampleRUM('click', {
     source: 'sidekick',
-    target: `display:${display ? 'show' : 'hide'}`,
+    target: `${display ? 'shown' : 'hidden'}`,
   });
   return display;
 }

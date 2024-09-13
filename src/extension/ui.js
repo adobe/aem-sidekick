@@ -203,10 +203,10 @@ if (chrome.contextMenus) {
           window.hlx = window.hlx || {};
           window.hlx.sidekick = window.hlx.sidekick || { location: window.location };
 
-          const checkpoint = `context-menu:${menuItemIdVal}`;
+          const action = `context-menu:${menuItemIdVal}`;
           sampleRUM('click', {
             source: 'sidekick',
-            target: checkpoint,
+            target: action,
           });
         } catch (e) {
           // eslint-disable-next-line no-console

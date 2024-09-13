@@ -688,20 +688,14 @@ export class AppStore {
         detail: { data },
       }));
       const userEvents = [
-        'shown',
         'hidden',
         'updated',
         'previewed',
         'published',
         'unpublished',
         'deleted',
-        'envswitched',
         'loggedin',
         'loggedout',
-        'helpnext',
-        'helpdismissed',
-        'helpacknowlegded',
-        'helpoptedout',
       ];
       if (name.startsWith('custom:') || userEvents.includes(name)) {
         /* istanbul ignore next */
@@ -891,7 +885,6 @@ export class AppStore {
         const host = this.isDev() ? siteStore.devUrl.host : `https://${siteStore.innerHost}`;
         await fetch(`${host}${path}`, { cache: 'reload', mode: 'no-cors' });
       }
-      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED, path);
     }
 
     return !!previewStatus;
@@ -948,7 +941,6 @@ export class AppStore {
     if (resp && status.live && status.live.lastModified) {
       await this.unpublish();
     }
-    this.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED, path);
 
     return !!resp;
   }
@@ -972,9 +964,6 @@ export class AppStore {
 
     // update live
     const resp = await this.api.updateLive(path);
-    if (resp) {
-      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
-    }
 
     return !!resp;
   }
@@ -997,10 +986,6 @@ export class AppStore {
 
     // delete live
     const resp = await this.api.updateLive(path, true);
-    if (resp) {
-      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, path);
-    }
-
     return !!resp;
   }
 

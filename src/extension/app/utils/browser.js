@@ -208,27 +208,6 @@ export function globToRegExp(glob) {
 }
 
 /**
- * Detects the platform.
- * @param {string} userAgent The user agent
- * @returns {string} The platform
- */
-export function detectPlatform(userAgent) {
-  userAgent = userAgent.toLowerCase();
-  if (userAgent.includes('(windows')) {
-    return 'windows';
-  } else if (userAgent.includes('(iphone') || userAgent.includes('(ipad')) {
-    return 'ios';
-  } else if (userAgent.includes('(macintosh')) {
-    return 'macos';
-  } else if (userAgent.includes('android')) {
-    return 'android';
-  } else if (userAgent.includes('linux')) {
-    return 'linux';
-  }
-  return 'other';
-}
-
-/**
  * Detects the browser.
  * @private
  * @param {string} userAgent The user agent

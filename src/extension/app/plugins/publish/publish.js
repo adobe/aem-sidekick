@@ -11,6 +11,7 @@
  */
 
 import { Plugin } from '../../components/plugin/plugin.js';
+import { EXTERNAL_EVENTS } from '../../constants.js';
 import { newTab } from '../../utils/browser.js';
 
 /**
@@ -65,6 +66,7 @@ export function createPublishPlugin(appStore) {
             actionCallback,
             appStore.i18n('open'),
           );
+          appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED);
         }
       },
       isEnabled: (store) => store.isAuthorized('live', 'write') // only enable if authorized

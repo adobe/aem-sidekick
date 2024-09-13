@@ -12,6 +12,7 @@
 
 import { Plugin } from '../../components/plugin/plugin.js';
 import {
+  EXTERNAL_EVENTS,
   MODALS,
   MODAL_EVENTS,
   RESTRICTED_PATHS,
@@ -75,6 +76,7 @@ export function createUnpublishPlugin(appStore) {
               actionCallback,
               appStore.i18n('reload'),
             );
+            appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED);
           }
         });
       },

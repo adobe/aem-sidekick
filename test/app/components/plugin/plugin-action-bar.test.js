@@ -801,6 +801,10 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
       expect(messageSpy.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'project-added',
+      })).to.be.true;
     }).timeout(10000);
 
     it('not transient mode', async () => {
@@ -827,6 +831,10 @@ describe('Plugin action bar', () => {
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
 
       expect(messageSpy.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'project-removed',
+      })).to.be.true;
     }).timeout(10000);
 
     it('close extension', async () => {
@@ -880,6 +888,10 @@ describe('Plugin action bar', () => {
       await aTimeout(200);
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
       expect(openPageStub.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'open-help',
+      })).to.be.true;
     }).timeout(10000);
   });
 

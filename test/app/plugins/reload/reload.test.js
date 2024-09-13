@@ -94,6 +94,10 @@ describe('Reload plugin', () => {
     expect(reloaded).to.be.true;
 
     expect(showToastSpy.calledWith('Preview successfully updated, reloading...', 'positive')).to.be.true;
+    expect(sidekickTest.rumStub.calledWith('click', {
+      source: 'sidekick',
+      target: 'updated',
+    })).to.be.true;
   });
 
   it('reload calls appStore.update() and reloads window with toast close', async () => {
@@ -119,6 +123,10 @@ describe('Reload plugin', () => {
     expect(reloaded).to.be.false;
 
     expect(showToastSpy.calledWith('Preview successfully updated, reloading...', 'positive')).to.be.true;
+    expect(sidekickTest.rumStub.calledWith('click', {
+      source: 'sidekick',
+      target: 'updated',
+    })).to.be.true;
   });
 
   it('reload handles failure', async () => {
