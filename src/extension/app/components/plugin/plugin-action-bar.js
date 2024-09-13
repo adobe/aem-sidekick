@@ -154,6 +154,7 @@ export class PluginActionBar extends ConnectedElement {
 
     // Plugin menu container styles
     const pluginMenuStyles = window.getComputedStyle(this.actionGroups[1]);
+    const pluginMenuPadding = parseInt(pluginMenuStyles.padding, 10);
     const pluginMenuWidth = parseInt(pluginMenuStyles.width, 10);
 
     // System plugin container styles
@@ -162,7 +163,7 @@ export class PluginActionBar extends ConnectedElement {
     const systemWidth = parseInt(systemStyles.width, 10);
 
     // Combined width of system plugins and plugin menu containers
-    const rightWidth = pluginMenuWidth + systemWidth + (systemPadding * 2) + 8;
+    const rightWidth = pluginMenuWidth + (pluginMenuPadding * 2) + systemWidth + (systemPadding * 2) + 2;
 
     // Try moving the first transient plugin back to the bar
     if (barWidthSameOrLess) {
@@ -351,7 +352,7 @@ export class PluginActionBar extends ConnectedElement {
 
     systemPlugins.push(html`
       <div class="logo">
-        ${ICONS.ADOBE_LOGO}
+        ${ICONS.SIDEKICK_LOGO}
       </div>
     `);
 

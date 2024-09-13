@@ -50,11 +50,6 @@ export function createPublishPlugin(appStore) {
             }
 
             appStore.switchEnv('prod', newTab(evt), !isSameOrigin);
-            appStore.closeToast();
-          };
-
-          const closeCallback = () => {
-            appStore.closeToast();
           };
 
           const { host } = siteStore;
@@ -62,11 +57,9 @@ export function createPublishPlugin(appStore) {
           appStore.showToast(
             appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv)),
             'positive',
-            closeCallback,
-            actionCallback,
-            appStore.i18n('open'),
           );
           appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED);
+          actionCallback();
         }
       },
       isEnabled: (store) => store.isAuthorized('live', 'write') // only enable if authorized

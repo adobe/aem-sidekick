@@ -592,8 +592,8 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport narrower
-      await resizeWindow({ width: 560, height: 600 });
-      await aTimeout(300);
+      await resizeWindow({ width: 600, height: 600 });
+      await aTimeout(1300);
 
       // check if tools container plugin moved to plugin menu
       expectInActionBar([
@@ -903,17 +903,11 @@ describe('Plugin action bar', () => {
         .mockFetchEditorStatusSuccess()
         .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR);
 
+      await resizeWindow({ width: 1200, height: 600 });
+
       sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitActionBar();
-
-      expectInActionBar([
-        'env-switcher',
-        'edit-preview',
-        'assets',
-        'library',
-        'tools',
-      ]);
 
       function createFocusSpy(element) {
         const spy = sidekickTest.sandbox.spy();
@@ -922,6 +916,16 @@ describe('Plugin action bar', () => {
       }
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
+
+      await waitUntil(() => recursiveQuery(actionBar, '.library'));
+
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+        'assets',
+        'library',
+        'tools',
+      ]);
 
       const envSwitcher = recursiveQuery(actionBar, 'env-switcher');
       const envSwitcherFocusSpy = createFocusSpy(envSwitcher);

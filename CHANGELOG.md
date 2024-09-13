@@ -1,3 +1,12 @@
+## [1.31.3](https://github.com/adobe/aem-sidekick/compare/v1.31.2...v1.31.3) (2024-09-12)
+
+
+### Bug Fixes
+
+* don't remove nocache at start of content script ([#252](https://github.com/adobe/aem-sidekick/issues/252)) ([481e499](https://github.com/adobe/aem-sidekick/commit/481e499744940e46475755b98604e69055acb5de))
+* obsolete success toasts ([#256](https://github.com/adobe/aem-sidekick/issues/256)) ([69180a6](https://github.com/adobe/aem-sidekick/commit/69180a68a03b8cbb4f06ebb7b66f0ca4b69e09b7))
+* update right side width calculation ([#257](https://github.com/adobe/aem-sidekick/issues/257)) ([8c5b759](https://github.com/adobe/aem-sidekick/commit/8c5b7595667f9aaf16e6ab16ed325c6a9c77d243))
+
 ## [1.31.2](https://github.com/adobe/aem-sidekick/compare/v1.31.1...v1.31.2) (2024-09-10)
 
 

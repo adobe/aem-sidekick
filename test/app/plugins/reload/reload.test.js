@@ -48,7 +48,6 @@ describe('Reload plugin', () => {
 
   let reloaded = false;
   let showToastSpy;
-  let closeToastSpy;
 
   beforeEach(async () => {
     appStore = new AppStore();
@@ -60,7 +59,6 @@ describe('Reload plugin', () => {
 
     sidekick = sidekickTest.createSidekick();
     showToastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
-    closeToastSpy = sidekickTest.sandbox.spy(appStore, 'closeToast');
     sidekickTest.sandbox.stub(appStore, 'reloadPage').callsFake(() => {
       reloaded = true;
     });
@@ -72,7 +70,7 @@ describe('Reload plugin', () => {
     sidekickTest.destroy();
   });
 
-  it('reload calls appStore.update() and reloads window with toast action', async () => {
+  it('reload calls appStore.update() and reloads window', async () => {
     const { sandbox } = sidekickTest;
     const updateStub = sandbox.stub(appStore, 'update')
       .resolves(true);
@@ -89,38 +87,8 @@ describe('Reload plugin', () => {
 
     await waitUntil(() => updateStub.calledOnce);
 
-    await sidekickTest.clickToastAction();
     expect(updateStub.calledOnce).to.be.true;
     expect(reloaded).to.be.true;
-
-    expect(showToastSpy.calledWith('Preview successfully updated, reloading...', 'positive')).to.be.true;
-    expect(sidekickTest.rumStub.calledWith('click', {
-      source: 'sidekick',
-      target: 'updated',
-    })).to.be.true;
-  });
-
-  it('reload calls appStore.update() and reloads window with toast close', async () => {
-    const { sandbox } = sidekickTest;
-    const updateStub = sandbox.stub(appStore, 'update')
-      .resolves(true);
-
-    await sidekickTest.awaitEnvSwitcher();
-
-    const reloadPlugin = recursiveQuery(sidekick, '.reload');
-    expect(reloadPlugin.textContent.trim()).to.equal('Reload');
-    await waitUntil(() => reloadPlugin.getAttribute('disabled') === null);
-
-    reloadPlugin.click();
-
-    await aTimeout(500);
-
-    await waitUntil(() => updateStub.calledOnce);
-
-    await sidekickTest.clickToastClose();
-    expect(closeToastSpy.calledOnce);
-    expect(updateStub.calledOnce);
-    expect(reloaded).to.be.false;
 
     expect(showToastSpy.calledWith('Preview successfully updated, reloading...', 'positive')).to.be.true;
     expect(sidekickTest.rumStub.calledWith('click', {
