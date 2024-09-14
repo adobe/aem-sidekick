@@ -327,16 +327,17 @@ export class AppStore {
             includePaths,
             isContainer,
             containerId,
+            confirm,
           } = cfg;
           const condition = (appStore) => {
             let excluded = false;
             const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
             if (excludePaths && Array.isArray(excludePaths)
-                && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
               excluded = true;
             }
             if (includePaths && Array.isArray(includePaths)
-                && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
               excluded = false;
             }
             if (excluded) {
@@ -355,7 +356,7 @@ export class AppStore {
             };
             return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
           };
-            // assemble plugin config
+          // assemble plugin config
           const plugin = {
             custom: true,
             id,
@@ -396,6 +397,7 @@ export class AppStore {
               isDropdown: isContainer,
             },
             pinned,
+            confirm,
             container: containerId,
           };
           // check if this overlaps with a core plugin, if so override the condition only
@@ -404,6 +406,7 @@ export class AppStore {
             // extend default condition
             const { condition: defaultCondition } = corePlugin.config;
             corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
+            corePlugin.config.confirm = confirm;
           } else {
             // add custom plugin
             const customPlugin = new Plugin(plugin, this);
@@ -641,9 +644,13 @@ export class AppStore {
    * Navigates to the provided URL in the current window. Abstracted for testing.
    * @param {string} url The URL to load
    */
-  // istanbul ignore next 3
+  // istanbul ignore next 7
   loadPage(url) {
-    window.location.href = url;
+    if (url === window.location.href) {
+      window.location.reload();
+    } else {
+      window.location.href = url;
+    }
   }
 
   /**

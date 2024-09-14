@@ -462,6 +462,9 @@
     "publish": {
       "message": "Publish"
     },
+    "publish_confirm": {
+      "message": "Are you sure you want to publish this page?"
+    },
     "publish_date": {
       "message": "Published: "
     },

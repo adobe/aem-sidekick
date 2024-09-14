@@ -172,4 +172,52 @@ describe('Publish plugin', () => {
       expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
     }).timeout(15000);
   });
+
+  describe('custom overrides', () => {
+    it('shows confirmation modal if confirm is true', async () => {
+      const { sandbox } = sidekickTest;
+      sidekickTest
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW)
+        .mockFetchSidekickConfigSuccess(true, false, {
+          plugins: [{
+            id: 'publish',
+            confirm: true,
+          }],
+        });
+
+      const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
+      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').resolves();
+      const showToastSpy = sandbox.spy(appStore, 'showToast');
+      const showModalSpy = sandbox.spy(appStore, 'showModal');
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const publishPlugin = recursiveQuery(sidekick, '.publish');
+      expect(publishPlugin.textContent.trim()).to.equal('Publish');
+      await waitUntil(() => publishPlugin.getAttribute('disabled') === null);
+      publishPlugin.click();
+
+      await waitUntil(() => showModalSpy.called);
+      expect(showModalSpy.calledWith({
+        type: 'confirm',
+        data: {
+          headline: 'Publish',
+          message: 'Are you sure you want to publish this page?',
+          confirmLabel: 'Publish',
+        },
+      }));
+
+      // confirm publish
+      const dialogWrapper = recursiveQuery(sidekick, 'sp-dialog-wrapper');
+      const publishButton = recursiveQuery(dialogWrapper, 'sp-button[variant="accent"]');
+      publishButton.click();
+
+      await waitUntil(() => publishStub.calledOnce);
+      await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called');
+
+      expect(showToastSpy.calledWith('Publication successful, opening Production...', 'positive')).to.be.true;
+    });
+  });
 });
