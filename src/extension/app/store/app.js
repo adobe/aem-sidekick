@@ -694,8 +694,8 @@ export class AppStore {
         'published',
         'unpublished',
         'deleted',
-        'loggedin',
-        'loggedout',
+        'logged-in',
+        'logged-out',
       ];
       if (name.startsWith('custom:') || userEvents.includes(name)) {
         /* istanbul ignore next */
@@ -1199,7 +1199,7 @@ export class AppStore {
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
           this.fetchStatus();
-          this.fireEvent('loggedin');
+          this.fireEvent('logged-in');
           return;
         }
         if (attempts >= 5) {
@@ -1243,7 +1243,7 @@ export class AppStore {
           await this.siteStore.initStore(siteStore);
           this.setupPlugins();
           this.fetchStatus();
-          this.fireEvent('loggedout');
+          this.fireEvent('logged-out');
           return;
         }
         if (attempts >= 5) {

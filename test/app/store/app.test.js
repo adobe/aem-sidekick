@@ -1443,7 +1443,7 @@ describe('Test App Store', () => {
 
       const loginEventSpy = sinon.spy();
       const rumStub = sinon.stub(instance, 'sampleRUM');
-      instance.sidekick.addEventListener('loggedin', loginEventSpy);
+      instance.sidekick.addEventListener('logged-in', loginEventSpy);
 
       // Mock other methods called upon successful login
       const initStoreStub = sandbox.stub(instance.siteStore, 'initStore').resolves();
@@ -1459,7 +1459,7 @@ describe('Test App Store', () => {
       expect(fetchStatusStub.called).to.be.true;
       expect(rumStub.calledWith('click', {
         source: 'sidekick',
-        target: 'loggedin',
+        target: 'logged-in',
       })).to.be.true;
     }).timeout(20000);
   });
@@ -1521,7 +1521,7 @@ describe('Test App Store', () => {
 
       const rumStub = sinon.stub(instance, 'sampleRUM');
       const loginEventSpy = sinon.spy();
-      instance.sidekick.addEventListener('loggedout', loginEventSpy);
+      instance.sidekick.addEventListener('logged-out', loginEventSpy);
 
       const statusEventSpy = sinon.spy();
       instance.sidekick.addEventListener('statusfetched', statusEventSpy);
@@ -1545,7 +1545,7 @@ describe('Test App Store', () => {
 
       expect(rumStub.calledWith('click', {
         source: 'sidekick',
-        target: 'loggedout',
+        target: 'logged-out',
       })).to.be.true;
     }).timeout(20000);
   });
