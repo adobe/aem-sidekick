@@ -881,7 +881,7 @@ describe('Plugin action bar', () => {
       await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
 
       const openPageStub = sandbox.stub(sidekickTest.appStore, 'openPage').returns(null);
-      const helpButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="open-help"]');
+      const helpButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="help-opened"]');
       expect(helpButton).to.exist;
       helpButton.click();
 
@@ -890,7 +890,7 @@ describe('Plugin action bar', () => {
       expect(openPageStub.calledOnce).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
-        target: 'open-help',
+        target: 'help-opened',
       })).to.be.true;
     }).timeout(10000);
   });

@@ -283,8 +283,8 @@ export class PluginActionBar extends ConnectedElement {
     const menu = await this.sidekickMenu;
     menu.removeAttribute('open');
 
-    if (value === 'open-help') {
-      this.appStore.sampleRUM('click', { source: 'sidekick', target: 'open-help' });
+    if (value === 'help-opened') {
+      this.appStore.sampleRUM('click', { source: 'sidekick', target: 'help-opened' });
       this.appStore.openPage('https://www.aem.live/docs/sidekick');
       return;
     }
@@ -329,7 +329,7 @@ export class PluginActionBar extends ConnectedElement {
             </sk-menu-item>
           `
         }
-        <sk-menu-item class="icon-item" value="open-help"  @click=${this.handleItemSelection}>
+        <sk-menu-item class="icon-item" value="help-opened"  @click=${this.handleItemSelection}>
           <sp-icon slot="icon" size="m">
             ${ICONS.HELP_ICON}
           </sp-icon>

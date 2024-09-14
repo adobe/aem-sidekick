@@ -247,11 +247,6 @@ const load = async () => {
   editor.addEventListener('input', debounce(() => {
     sendMessage({ fct: 'setMain', params: { html: htmlEditionToSource() } });
   }, 500));
-
-  sampleRUM('click', {
-    source: 'sidekick',
-    target: 'doc-source-opened',
-  });
 };
 
 load();

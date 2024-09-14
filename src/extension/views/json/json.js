@@ -380,7 +380,7 @@ export class JSONView extends LitElement {
   trackFilterRUM() {
     sampleRUM('click', {
       source: 'sidekick',
-      target: 'jsonview:filter',
+      target: 'jsonview:filtered',
     });
   }
 
@@ -430,7 +430,7 @@ export class JSONView extends LitElement {
     this.selectedTabIndex = parseInt(actionGroup.selected[0], 10);
     sampleRUM('click', {
       source: 'sidekick',
-      target: 'jsonview:switch-tab',
+      target: 'jsonview:tab-switched',
     });
   }
 
@@ -443,7 +443,7 @@ export class JSONView extends LitElement {
     if (trackRum) {
       sampleRUM('click', {
         source: 'sidekick',
-        target: 'jsonview:close',
+        target: 'jsonview:closed',
       });
     }
   }
