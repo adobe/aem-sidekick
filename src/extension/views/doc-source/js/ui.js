@@ -239,7 +239,7 @@ const load = async () => {
 
     sampleRUM('click', {
       source: 'sidekick',
-      target: 'copydocsource',
+      target: 'doc-source-copied',
     });
   });
 
@@ -250,7 +250,7 @@ const load = async () => {
 
   sampleRUM('click', {
     source: 'sidekick',
-    target: 'viewdocsource',
+    target: 'doc-source-opened',
   });
 };
 

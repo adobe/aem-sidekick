@@ -316,7 +316,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
 
     this.appStore.sampleRUM('click', {
       source: 'sidekick',
-      target: `switch-env:${value}`,
+      target: `env-switched:${value}`,
     });
   }
 

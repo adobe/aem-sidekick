@@ -100,7 +100,7 @@ describe('Environment Switcher', () => {
       expect(sidekickTest.rumStub.called).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
-        target: 'switch-env:live',
+        target: 'env-switched:live',
       })).to.be.true;
     }).timeout(20000);
 
@@ -156,7 +156,7 @@ describe('Environment Switcher', () => {
       expect(sidekickTest.rumStub.called).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
-        target: 'switch-env:preview',
+        target: 'env-switched:preview',
       })).to.be.true;
     });
 
@@ -203,7 +203,7 @@ describe('Environment Switcher', () => {
       expect(sidekickTest.rumStub.called).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
-        target: 'switch-env:live',
+        target: 'env-switched:live',
       })).to.be.true;
     }).timeout(20000);
   });
