@@ -203,10 +203,11 @@ if (chrome.contextMenus) {
           window.hlx = window.hlx || {};
           window.hlx.sidekick = window.hlx.sidekick || { location: window.location };
 
-          const action = `context-menu:${menuItemIdVal}`;
+          // @ts-ignore
+          const action = `${menuItemIdVal}`.replaceAll(/([A-Z])/g, `-${'$1'}`).toLowerCase();
           sampleRUM('click', {
             source: 'sidekick',
-            target: action,
+            target: `context-menu:${action}`,
           });
         } catch (e) {
           // eslint-disable-next-line no-console

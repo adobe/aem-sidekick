@@ -284,7 +284,7 @@ describe('Test UI: RUM collection when clicked', () => {
       menuItemId: 'openViewDocSource',
     }, tab);
     await aTimeout(1000);
-    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:openViewDocSource' })).to.be.true;
+    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:open-view-doc-source' })).to.be.true;
   });
 
   it('collects RUM when addRemoveProject', async () => {
@@ -292,7 +292,7 @@ describe('Test UI: RUM collection when clicked', () => {
       menuItemId: 'addRemoveProject',
     }, tab);
     await aTimeout(1000);
-    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:addRemoveProject' })).to.be.true;
+    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:add-remove-project' })).to.be.true;
   });
 
   it('collects RUM when enableDisableProject', async () => {
@@ -300,7 +300,7 @@ describe('Test UI: RUM collection when clicked', () => {
       menuItemId: 'enableDisableProject',
     }, tab);
     await aTimeout(1000);
-    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:enableDisableProject' })).to.be.true;
+    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:enable-disable-project' })).to.be.true;
   });
 
   it('collects RUM when importProjects', async () => {
@@ -308,7 +308,7 @@ describe('Test UI: RUM collection when clicked', () => {
       menuItemId: 'importProjects',
     }, tab);
     await aTimeout(1000);
-    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:importProjects' })).to.be.true;
+    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:import-projects' })).to.be.true;
   });
 
   it('handles error', async () => {
