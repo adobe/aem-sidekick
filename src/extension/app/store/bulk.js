@@ -454,9 +454,12 @@ export class BulkStore {
       return false;
     }
 
-    const illegalNames = this.selection
-      .filter(({ file }) => file.startsWith(illegalPathPrefix))
-      .map(({ file }) => file.substring(10));
+    const { webPath } = this.appStore.status;
+    const illegalNames = webPath.includes(' ')
+      ? [`${webPath}${this.selection[0].file}`]
+      : this.selection
+        .filter(({ file }) => file.startsWith(illegalPathPrefix))
+        .map(({ file }) => file.substring(10));
     if (illegalNames.length > 0) {
       this.appStore.showToast(
         this.appStore.i18n(`bulk_error_illegal_file_name${illegalNames.length === 1 ? '' : 's'}`)

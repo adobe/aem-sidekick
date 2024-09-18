@@ -45,6 +45,20 @@ export function createPreviewPlugin(appStore) {
       action: async () => {
         const { location } = appStore;
         const status = await appStore.fetchStatus(false, true, true);
+        if ([' ', '%20'].find((pattern) => status.webPath.includes(pattern))) {
+          appStore.showToast(
+            appStore.i18n('bulk_error_illegal_file_name')
+              .replace('$1', status.webPath),
+            'warning',
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            3600000, // keep for 1 hour
+          );
+          return;
+        }
         if (status.edit && status.edit.sourceLocation
             && status.edit.sourceLocation.startsWith('onedrive:')
             && !location.pathname.startsWith('/:x:/')) {
