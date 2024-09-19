@@ -1,3 +1,10 @@
+## [1.31.4](https://github.com/adobe/aem-sidekick/compare/v1.31.3...v1.31.4) (2024-09-19)
+
+
+### Bug Fixes
+
+* switch to rum click events ([#258](https://github.com/adobe/aem-sidekick/issues/258)) ([9006c20](https://github.com/adobe/aem-sidekick/commit/9006c20f889c78e1acdf092c77901fd298d37534))
+
 ## [1.31.3](https://github.com/adobe/aem-sidekick/compare/v1.31.2...v1.31.3) (2024-09-12)
 
 
