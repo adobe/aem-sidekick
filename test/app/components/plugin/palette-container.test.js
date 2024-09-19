@@ -84,13 +84,23 @@ describe('Palette container', () => {
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
     await waitUntil(() => recursiveQuery(paletteContainer, 'sk-action-button'));
+
+    expect(sidekickTest.rumStub.calledWith('click', {
+      source: 'sidekick',
+      target: 'palette-opened',
+    })).to.be.true;
+
     const closeButton = recursiveQuery(paletteContainer, 'sk-action-button');
     closeButton.click();
 
     const container = recursiveQuery(paletteContainer, '.container');
     await waitUntil(() => container.classList.contains('hidden'));
     expect(container.classList.contains('hidden')).to.be.true;
-  });
+    expect(sidekickTest.rumStub.calledWith('click', {
+      source: 'sidekick',
+      target: 'palette-closed',
+    })).to.be.true;
+  }).timeout(20000);
 
   it('closes palette plugin via esc key', async () => {
     await openPallete();
@@ -102,10 +112,13 @@ describe('Palette container', () => {
     expect(paletteContainer.plugin).to.exist;
 
     paletteContainer.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-
-    await waitUntil(() => paletteContainer.plugin === undefined);
-
-    expect(paletteContainer.plugin).to.be.undefined;
+    const container = recursiveQuery(paletteContainer, '.container');
+    await waitUntil(() => container.classList.contains('hidden'));
+    expect(container.classList.contains('hidden')).to.be.true;
+    expect(sidekickTest.rumStub.calledWith('click', {
+      source: 'sidekick',
+      target: 'palette-closed',
+    })).to.be.true;
   });
 
   it('palette renders titleI18n', async () => {

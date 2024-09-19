@@ -22,6 +22,7 @@
  */
 
 import { Plugin } from '../../components/plugin/plugin.js';
+import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -89,6 +90,7 @@ export function createPreviewPlugin(appStore) {
           appStore.reloadPage();
         } else {
           appStore.updatePreview();
+          appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED);
         }
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write')

@@ -23,7 +23,6 @@ import { defaultSidekickConfig } from './fixtures/sidekick-config.js';
 import '../src/extension/index.js';
 import { HelixMockEnvironments, restoreEnvironment } from './mocks/environment.js';
 import { SidekickTest } from './sidekick-test.js';
-
 /**
  * The AEMSidekick object type
  * @typedef {import('../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
@@ -56,6 +55,7 @@ describe('AEM Sidekick', () => {
   afterEach(() => {
     fetchMock.restore();
     restoreEnvironment(document);
+    sidekickTest.destroy();
   });
 
   it('renders theme and action-bar', async () => {
@@ -73,6 +73,11 @@ describe('AEM Sidekick', () => {
 
     const { location } = sidekick;
     expect(location.href).to.eq('https://main--aem-boilerplate--adobe.hlx.page/');
+    expect(sidekickTest.rumStub.called).to.be.true;
+    expect(sidekickTest.rumStub.calledWith('click', {
+      source: 'sidekick',
+      target: 'loaded:chrome',
+    })).to.be.true;
   });
 
   it('dispatches sidekick-ready', async () => {

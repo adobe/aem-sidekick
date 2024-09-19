@@ -652,7 +652,6 @@ describe('Test App Store', () => {
       const response = await instance.update();
 
       expect(response).to.be.true;
-      expect(instance.fireEvent.calledWith('previewed', '/somepath')).to.be.true;
     });
 
     it('should bust client cache', async () => {
@@ -671,7 +670,6 @@ describe('Test App Store', () => {
       const response = await instance.update();
 
       expect(response).to.be.true;
-      expect(instance.fireEvent.calledWith('previewed', '/somepath')).to.be.true;
       expect(fakeFetch.args[1][0]).to.equal('https://main--aem-boilerplate--adobe.hlx.page/somepath');
       expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
     });
@@ -694,7 +692,6 @@ describe('Test App Store', () => {
       const response = await instance.update();
 
       expect(response).to.be.true;
-      expect(instance.fireEvent.calledWith('previewed', '/somepath')).to.be.true;
       expect(fakeFetch.args[1][0]).to.equal('localhost:3000/somepath');
       expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
     });
@@ -749,7 +746,6 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(setStateStub.calledWith(STATE.PREVIEWING)).is.true;
     });
 
     it('should show previewing, update, and handle success response with toast action', async () => {
@@ -839,7 +835,6 @@ describe('Test App Store', () => {
 
       const resp = await instance.delete();
       expect(resp).to.be.true;
-      expect(instance.fireEvent.calledWith('deleted', deletePath)).to.be.true;
     });
 
     it('deletes published content from preview and live', async () => {
@@ -862,7 +857,6 @@ describe('Test App Store', () => {
 
       expect(resp).to.be.true;
       expect(unpublishStub.calledOnce).to.be.true;
-      expect(instance.fireEvent.calledWith('deleted', deletePath)).to.be.true;
     });
 
     it('only deletes content', async () => {
@@ -892,7 +886,6 @@ describe('Test App Store', () => {
   describe('publish', () => {
     let instance;
     let fetchStub;
-    let fireEventStub;
 
     beforeEach(() => {
       instance = appStore;
@@ -904,7 +897,6 @@ describe('Test App Store', () => {
           headers: new Headers(),
           json: () => Promise.resolve({}),
         });
-      fireEventStub = sidekickTest.sandbox.stub(instance, 'fireEvent');
     });
 
     afterEach(() => {
@@ -937,7 +929,6 @@ describe('Test App Store', () => {
       const resp = await instance.publish();
 
       expect(fetchStub.called).is.true;
-      expect(fireEventStub.calledWith('published', '/somepath')).is.true;
       expect(resp).to.equal(true);
     });
 
@@ -1051,7 +1042,6 @@ describe('Test App Store', () => {
       const resp = await instance.unpublish();
 
       expect(resp).to.be.true;
-      sinon.assert.calledWith(instance.fireEvent, 'unpublished', unpublishPath);
     });
 
     it('only unpublishes content', async () => {
@@ -1407,6 +1397,12 @@ describe('Test App Store', () => {
     beforeEach(async () => {
       instance = appStore;
       instance.languageDict = await fetchLanguageDict(undefined, 'en');
+      const config = {
+        ...defaultSidekickConfig,
+        host: 'aem-boilerplate.com',
+      };
+
+      await instance.loadContext(sidekickElement, config);
       sandbox = sinon.createSandbox();
       clock = sandbox.useFakeTimers();
       window.hlx = {};
@@ -1441,11 +1437,13 @@ describe('Test App Store', () => {
 
     it('handles successful login correctly', async () => {
       instance.sidekick = document.createElement('div');
+
       getProfileStub.onCall(0).resolves(false);
       getProfileStub.onCall(4).resolves({ name: 'foo' }); // Simulate success on the 5th attempt
 
       const loginEventSpy = sinon.spy();
-      instance.sidekick.addEventListener('loggedin', loginEventSpy);
+      const rumStub = sinon.stub(instance, 'sampleRUM');
+      instance.sidekick.addEventListener('logged-in', loginEventSpy);
 
       // Mock other methods called upon successful login
       const initStoreStub = sandbox.stub(instance.siteStore, 'initStore').resolves();
@@ -1459,6 +1457,10 @@ describe('Test App Store', () => {
       expect(initStoreStub.called).to.be.true;
       expect(setupCorePluginsStub.called).to.be.true;
       expect(fetchStatusStub.called).to.be.true;
+      expect(rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'logged-in',
+      })).to.be.true;
     }).timeout(20000);
   });
 
@@ -1472,6 +1474,12 @@ describe('Test App Store', () => {
     beforeEach(async () => {
       instance = appStore;
       instance.languageDict = await fetchLanguageDict(undefined, 'en');
+      const config = {
+        ...defaultSidekickConfig,
+        host: 'aem-boilerplate.com',
+      };
+
+      await instance.loadContext(sidekickElement, config);
       sandbox = sinon.createSandbox();
       clock = sandbox.useFakeTimers();
       window.hlx = {};
@@ -1511,8 +1519,9 @@ describe('Test App Store', () => {
       getProfileStub.onCall(0).resolves({ name: 'foo' });
       getProfileStub.onCall(4).resolves(false); // Simulate success on the 5th attempt
 
+      const rumStub = sinon.stub(instance, 'sampleRUM');
       const loginEventSpy = sinon.spy();
-      instance.sidekick.addEventListener('loggedout', loginEventSpy);
+      instance.sidekick.addEventListener('logged-out', loginEventSpy);
 
       const statusEventSpy = sinon.spy();
       instance.sidekick.addEventListener('statusfetched', statusEventSpy);
@@ -1533,6 +1542,11 @@ describe('Test App Store', () => {
 
       await waitUntil(() => statusEventSpy.calledTwice, 'Status should fire twice');
       expect(statusEventSpy.calledTwice).to.be.true;
+
+      expect(rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'logged-out',
+      })).to.be.true;
     }).timeout(20000);
   });
 

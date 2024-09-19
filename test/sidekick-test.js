@@ -101,6 +101,11 @@ export class SidekickTest {
   bulkRoot;
 
   /**
+   * @type {sinon.SinonStub}
+   */
+  rumStub;
+
+  /**
    * Constructor
    * @param {Object} [config] The sidekick configuration
    * @param {AppStore} [appStore] The app store
@@ -124,6 +129,12 @@ export class SidekickTest {
     this.sidekick = new AEMSidekick(config || this.config, appStore || this.appStore);
     document.body.appendChild(this.sidekick);
 
+    if (this.rumStub) {
+      this.rumStub.restore();
+    }
+
+    // stub the sampleRUM method
+    this.rumStub = this.sandbox.stub(appStore || this.appStore, 'sampleRUM');
     return this.sidekick;
   }
 
@@ -170,7 +181,7 @@ export class SidekickTest {
    */
   async awaitLoggedOut() {
     const logoutSpy = this.sandbox.spy();
-    this.sidekick.addEventListener('loggedout', logoutSpy);
+    this.sidekick.addEventListener('logged-out', logoutSpy);
     await waitUntil(() => logoutSpy.calledOnce, 'Logout not compelte', { timeout: 2000 });
   }
 
