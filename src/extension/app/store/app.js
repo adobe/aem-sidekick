@@ -327,6 +327,8 @@ export class AppStore {
             includePaths,
             isContainer,
             containerId,
+            isBadge,
+            badgeVariant,
           } = cfg;
           const condition = (appStore) => {
             let excluded = false;
@@ -355,12 +357,25 @@ export class AppStore {
             };
             return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
           };
-            // assemble plugin config
+          // assemble plugin config
           const plugin = {
             custom: true,
-            id,
+            id: id || `custom-plugin-${i}`,
             condition,
-            button: {
+            pinned,
+            container: containerId,
+          };
+          if (isBadge) {
+            plugin.feature = true;
+            plugin.elements = [{
+              tag: 'span',
+              text: title,
+              attrs: {
+                class: `hlx-sk-badge hlx-sk-badge-${badgeVariant?.toLowerCase() || 'default'}`,
+              },
+            }];
+          } else {
+            plugin.button = {
               text: (titleI18n && titleI18n[lang]) || title,
               action: () => {
                 if (url) {
@@ -394,10 +409,8 @@ export class AppStore {
                 }
               },
               isDropdown: isContainer,
-            },
-            pinned,
-            container: containerId,
-          };
+            };
+          }
           // check if this overlaps with a core plugin, if so override the condition only
           const corePlugin = this.corePlugins[plugin.id];
           if (corePlugin) {
