@@ -192,18 +192,5 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.owner).to.equal('adobe');
       expect(appStore.siteStore.repo).to.equal('aem-boilerplate');
     });
-
-    it('with custom sourceEditUrl', async () => {
-      /**
-       * @type {SidekickOptionsConfig | ClientConfig}
-       */
-      const config = {
-        ...defaultConfig,
-        editUrlLabel: 'Universal Editor',
-        editUrlPattern: '{{contentSourceUrl}}{{pathname}}?cmd=open',
-      };
-      await appStore.loadContext(sidekickElement, config);
-      expect(appStore.siteStore.contentSourceEditLabel).to.equal('Universal Editor');
-    });
   });
 });

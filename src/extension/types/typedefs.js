@@ -44,8 +44,6 @@
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
  * @prop {string} [devOrigin] The origin of the local development environment
- * @prop {string} [editUrlLabel] The custom label of the edit content source
- * @prop {string} [editUrlPattern] The pattern of the edit content source
  * @prop {string} [adminVersion] The specific version of admin service to use
  * @prop {boolean} [disabled] Is the project disabled?
  * @description Represents the sidekick configuration from the user via the options view
