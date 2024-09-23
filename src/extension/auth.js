@@ -172,8 +172,9 @@ export async function setAuthToken(
           authTokenExpiry: authTokenExpiry * 1000, // store in milliseconds
         });
       } else {
-        projects[orgExists].authToken = authToken;
-        projects[orgExists].authTokenExpiry = authTokenExpiry;
+        const orgIndex = projects.findIndex(({ id }) => id === orgHandle);
+        projects[orgIndex].authToken = authToken;
+        projects[orgIndex].authTokenExpiry = authTokenExpiry;
       }
     } else if (orgExists) {
       // remove auth token from session storage
@@ -190,8 +191,9 @@ export async function setAuthToken(
           siteTokenExpiry: siteTokenExpiry * 1000, // store in milliseconds
         });
       } else {
-        projects[siteExists].siteToken = siteToken;
-        projects[siteExists].siteTokenExpiry = siteTokenExpiry;
+        const siteIndex = projects.findIndex(({ id }) => id === siteHandle);
+        projects[siteIndex].siteToken = siteToken;
+        projects[siteIndex].siteTokenExpiry = siteTokenExpiry;
       }
     } else if (siteExists) {
       // remove site token from session storage
