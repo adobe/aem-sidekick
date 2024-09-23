@@ -695,26 +695,20 @@ export class AppStore {
         detail: { data },
       }));
       const userEvents = [
-        'shown',
         'hidden',
         'updated',
         'previewed',
         'published',
         'unpublished',
         'deleted',
-        'envswitched',
-        'loggedin',
-        'loggedout',
-        'helpnext',
-        'helpdismissed',
-        'helpacknowlegded',
-        'helpoptedout',
+        'logged-in',
+        'logged-out',
       ];
       if (name.startsWith('custom:') || userEvents.includes(name)) {
         /* istanbul ignore next */
-        sampleRUM(`sidekick:${name}`, {
-          source: data?.sourceUrl || this.location.href,
-          target: data?.targetUrl || this.status.webPath,
+        this.sampleRUM('click', {
+          source: 'sidekick',
+          target: name,
         });
       }
     } catch (e) {
@@ -763,6 +757,15 @@ export class AppStore {
       actionOnTimeout,
     };
     this.setState(STATE.TOAST);
+  }
+
+  /**
+   * Samples RUM event, abstracted for testing.
+   * @param {string} event The event name
+   * @param {Object} data The event data
+   */
+  sampleRUM(event, data) {
+    sampleRUM(event, data);
   }
 
   /**
@@ -889,7 +892,6 @@ export class AppStore {
         const host = this.isDev() ? siteStore.devUrl.host : `https://${siteStore.innerHost}`;
         await fetch(`${host}${path}`, { cache: 'reload', mode: 'no-cors' });
       }
-      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED, path);
     }
 
     return !!previewStatus;
@@ -942,7 +944,6 @@ export class AppStore {
     if (resp && status.live && status.live.lastModified) {
       await this.unpublish();
     }
-    this.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED, path);
 
     return !!resp;
   }
@@ -966,9 +967,6 @@ export class AppStore {
 
     // update live
     const resp = await this.api.updateLive(path);
-    if (resp) {
-      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
-    }
 
     return !!resp;
   }
@@ -991,10 +989,6 @@ export class AppStore {
 
     // delete live
     const resp = await this.api.updateLive(path, true);
-    if (resp) {
-      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, path);
-    }
-
     return !!resp;
   }
 
@@ -1212,7 +1206,7 @@ export class AppStore {
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
           this.fetchStatus();
-          this.fireEvent('loggedin');
+          this.fireEvent('logged-in');
           return;
         }
         if (attempts >= 5) {
@@ -1256,7 +1250,7 @@ export class AppStore {
           await this.siteStore.initStore(siteStore);
           this.setupPlugins();
           this.fetchStatus();
-          this.fireEvent('loggedout');
+          this.fireEvent('logged-out');
           return;
         }
         if (attempts >= 5) {

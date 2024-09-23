@@ -139,6 +139,10 @@ describe('Unpublish plugin', () => {
       await sidekickTest.clickToastAction();
 
       expect(reloadPageStub.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'unpublished',
+      })).to.be.true;
     });
 
     it('skips reloading if toast manually closed', async () => {
@@ -162,6 +166,10 @@ describe('Unpublish plugin', () => {
       await sidekickTest.clickToastClose();
 
       expect(reloadPageStub.calledOnce).to.be.false;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'unpublished',
+      })).to.be.true;
     });
 
     it('allows authenticated user to unpublish even if source file still exists', async () => {
@@ -190,6 +198,11 @@ describe('Unpublish plugin', () => {
       confirmUnpublish(sidekick);
 
       await waitUntil(() => unpublishStub.calledOnce);
+
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'unpublished',
+      })).to.be.true;
     });
 
     it('handles server failure', async () => {

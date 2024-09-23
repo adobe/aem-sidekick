@@ -237,8 +237,9 @@ const load = async () => {
       copyButton.classList.remove('copied');
     }, 2000);
 
-    sampleRUM('sidekick:copydocsource', {
-      source: tab.url,
+    sampleRUM('click', {
+      source: 'sidekick',
+      target: 'doc-source-copied',
     });
   });
 
@@ -246,10 +247,6 @@ const load = async () => {
   editor.addEventListener('input', debounce(() => {
     sendMessage({ fct: 'setMain', params: { html: htmlEditionToSource() } });
   }, 500));
-
-  sampleRUM('sidekick:viewdocsource', {
-    source: tab.url,
-  });
 };
 
 load();

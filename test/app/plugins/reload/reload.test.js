@@ -91,6 +91,10 @@ describe('Reload plugin', () => {
     expect(reloaded).to.be.true;
 
     expect(showToastSpy.calledWith('Preview successfully updated, reloading...', 'positive')).to.be.true;
+    expect(sidekickTest.rumStub.calledWith('click', {
+      source: 'sidekick',
+      target: 'updated',
+    })).to.be.true;
   });
 
   it('reload handles failure', async () => {

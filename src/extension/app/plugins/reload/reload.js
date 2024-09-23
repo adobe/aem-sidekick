@@ -11,6 +11,7 @@
  */
 
 import { Plugin } from '../../components/plugin/plugin.js';
+import { EXTERNAL_EVENTS } from '../../constants.js';
 import { newTab } from '../../utils/browser.js';
 
 /**
@@ -36,6 +37,7 @@ export function createReloadPlugin(appStore) {
         const res = await appStore.update();
         if (res) {
           appStore.showToast(appStore.i18n('reload_success'), 'positive');
+          appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_UPDATED);
           appStore.reloadPage(newTab(evt));
         }
       },

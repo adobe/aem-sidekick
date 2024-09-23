@@ -88,6 +88,10 @@ describe('Preview plugin', () => {
 
       await waitUntil(() => updatePreviewSpy.calledOnce);
       expect(updatePreviewSpy.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'previewed',
+      })).to.be.true;
     });
 
     it('previewing from sharepoint editor - sheet', async () => {
@@ -171,6 +175,10 @@ describe('Preview plugin', () => {
       await waitUntil(() => updatePreviewSpy.calledOnce);
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'previewed',
+      })).to.be.true;
     });
 
     it('previewing from gdrive editor - not a valid content type with toast dismiss', async () => {

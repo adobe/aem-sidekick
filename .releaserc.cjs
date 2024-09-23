@@ -20,6 +20,7 @@ module.exports = {
       'assets': [
         'package.json',
         'CHANGELOG.md',
+        'src/extension/manifest.json',
         // todo: add back when we have a safari project
         // 'src/safari/helix-sidekick-extension.xcodeproj/project.pbxproj'
       ],

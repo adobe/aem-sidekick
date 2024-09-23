@@ -19,6 +19,7 @@ import { style } from './aem-sidekick.css.js';
 import { spectrum2 } from './spectrum-2.css.js';
 import { AppStore, appStoreContext } from './store/app.js';
 import { EXTERNAL_EVENTS } from './constants.js';
+import { detectBrowser } from './utils/browser.js';
 
 @customElement('aem-sidekick')
 export class AEMSidekick extends LitElement {
@@ -41,6 +42,13 @@ export class AEMSidekick extends LitElement {
 
   async loadContext(config) {
     await this.appStore.loadContext(this, config);
+
+    const browser = detectBrowser(navigator.userAgent);
+    this.appStore.sampleRUM('click', {
+      source: 'sidekick',
+      target: `loaded:${browser}`,
+    });
+
     document.dispatchEvent(new CustomEvent(EXTERNAL_EVENTS.SIDEKICK_READY));
   }
 

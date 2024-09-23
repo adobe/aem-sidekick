@@ -20,7 +20,6 @@ import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import '../action-bar/activity-action/activity-action.js';
 import '../bulk/bulk-info/bulk-info.js';
-import sampleRUM from '../../../utils/rum.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} Plugin
@@ -284,14 +283,14 @@ export class PluginActionBar extends ConnectedElement {
     const menu = await this.sidekickMenu;
     menu.removeAttribute('open');
 
-    if (value === 'open-help') {
-      sampleRUM('sidekick:open-help');
+    if (value === 'help-opened') {
+      this.appStore.sampleRUM('click', { source: 'sidekick', target: 'help-opened' });
       this.appStore.openPage('https://www.aem.live/docs/sidekick');
       return;
     }
 
     if (value === 'project-added' || value === 'project-removed') {
-      sampleRUM(`sidekick:${value}`);
+      this.appStore.sampleRUM('click', { source: 'sidekick', target: value });
       chrome.runtime.sendMessage({ action: 'addRemoveProject' });
       return;
     }
@@ -330,7 +329,7 @@ export class PluginActionBar extends ConnectedElement {
             </sk-menu-item>
           `
         }
-        <sk-menu-item class="icon-item" value="open-help"  @click=${this.handleItemSelection}>
+        <sk-menu-item class="icon-item" value="help-opened"  @click=${this.handleItemSelection}>
           <sp-icon slot="icon" size="m">
             ${ICONS.HELP_ICON}
           </sp-icon>

@@ -517,8 +517,7 @@ describe('Plugin action bar', () => {
       sidekickTest
         .mockFetchStatusSuccess(true)
         .mockFetchSidekickConfigSuccess()
-        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW)
-        .createSidekick();
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
       sidekick = sidekickTest.createSidekick();
 
@@ -534,8 +533,7 @@ describe('Plugin action bar', () => {
       sidekickTest
         .mockFetchStatusSuccess(true)
         .mockFetchSidekickConfigSuccess()
-        .mockHelixEnvironment(HelixMockEnvironments.LIVE)
-        .createSidekick();
+        .mockHelixEnvironment(HelixMockEnvironments.LIVE);
 
       sidekick = sidekickTest.createSidekick();
 
@@ -550,8 +548,7 @@ describe('Plugin action bar', () => {
       sidekickTest
         .mockFetchStatusSuccess(true)
         .mockFetchSidekickConfigSuccess(true, false)
-        .mockHelixEnvironment(HelixMockEnvironments.PROD)
-        .createSidekick();
+        .mockHelixEnvironment(HelixMockEnvironments.PROD);
 
       sidekick = sidekickTest.createSidekick();
 
@@ -571,8 +568,7 @@ describe('Plugin action bar', () => {
             ...defaultConfigUnpinnedPlugin.plugins,
           ],
         })
-        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
-        .createSidekick();
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR);
 
       await resizeWindow({ width: 1200, height: 600 });
 
@@ -805,6 +801,10 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
       expect(messageSpy.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'project-added',
+      })).to.be.true;
     }).timeout(10000);
 
     it('not transient mode', async () => {
@@ -831,6 +831,10 @@ describe('Plugin action bar', () => {
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
 
       expect(messageSpy.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'project-removed',
+      })).to.be.true;
     }).timeout(10000);
 
     it('close extension', async () => {
@@ -877,13 +881,17 @@ describe('Plugin action bar', () => {
       await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
 
       const openPageStub = sandbox.stub(sidekickTest.appStore, 'openPage').returns(null);
-      const helpButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="open-help"]');
+      const helpButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="help-opened"]');
       expect(helpButton).to.exist;
       helpButton.click();
 
       await aTimeout(200);
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
       expect(openPageStub.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'help-opened',
+      })).to.be.true;
     }).timeout(10000);
   });
 

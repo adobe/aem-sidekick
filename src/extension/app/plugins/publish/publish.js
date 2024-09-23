@@ -11,7 +11,7 @@
  */
 
 import { Plugin } from '../../components/plugin/plugin.js';
-import { MODAL_EVENTS, MODALS } from '../../constants.js';
+import { EXTERNAL_EVENTS, MODAL_EVENTS, MODALS } from '../../constants.js';
 import { newTab } from '../../utils/browser.js';
 
 /**
@@ -59,6 +59,7 @@ export function createPublishPlugin(appStore) {
               appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv)),
               'positive',
             );
+            appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED);
             actionCallback();
           }
         };
