@@ -52,6 +52,7 @@ describe('Login', () => {
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
 
     setStateSpy = sidekickTest.sandbox.spy(appStore, 'setState');
+    sidekickTest.sandbox.stub(appStore, 'reloadPage');
 
     sidekickTest
       .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
