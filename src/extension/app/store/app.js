@@ -1199,11 +1199,12 @@ export class AppStore {
             && window.hlx.sidekickConfig
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
-          this.fetchStatus();
           this.fireEvent('logged-in');
           // refresh page with site token in case of 401
           if (is401Page(this.location, window.document)) {
             this.reloadPage();
+          } else {
+            this.fetchStatus();
           }
           return;
         }

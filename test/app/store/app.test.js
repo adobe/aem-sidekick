@@ -1483,7 +1483,7 @@ describe('Test App Store', () => {
 
       expect(initStoreStub.called).to.be.true;
       expect(setupCorePluginsStub.called).to.be.true;
-      expect(fetchStatusStub.called).to.be.true;
+      expect(fetchStatusStub.called).to.be.false;
       expect(reloadPageStub.called).to.be.true;
     });
   });
