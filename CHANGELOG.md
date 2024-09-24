@@ -1,3 +1,10 @@
+## [1.32.1](https://github.com/adobe/aem-sidekick/compare/v1.32.0...v1.32.1) (2024-09-24)
+
+
+### Bug Fixes
+
+* update manifest version before publishing ([#276](https://github.com/adobe/aem-sidekick/issues/276)) ([1891a16](https://github.com/adobe/aem-sidekick/commit/1891a164bedcdd49fd89738b3cbdc73fffe9bc3c))
+
 # [1.32.0](https://github.com/adobe/aem-sidekick/compare/v1.31.4...v1.32.0) (2024-09-24)
 
 
