@@ -19,6 +19,15 @@
               }
             },
             {
+              "kind": "method",
+              "name": "loadContext",
+              "parameters": [
+                {
+                  "name": "config"
+                }
+              ]
+            },
+            {
               "kind": "field",
               "name": "location",
               "description": "Allow the location the sidekick is working with the be accessed via\nthe aem-sidekick element.",
