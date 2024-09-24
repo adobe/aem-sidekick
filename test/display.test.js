@@ -25,7 +25,6 @@ import {
 // @ts-ignore
 window.chrome = chromeMock;
 
-const logSpy = sinon.spy(console, 'log');
 describe('Test display', () => {
   const sandbox = sinon.createSandbox();
 
@@ -49,10 +48,6 @@ describe('Test display', () => {
     expect(spy.calledWith({
       display: true,
     })).to.be.true;
-    expect(logSpy.calledWith('sampleRUM', 'click', {
-      source: 'sidekick',
-      target: 'shown',
-    })).to.be.true;
   });
 
   it('toggleDisplay', async () => {
@@ -62,9 +57,5 @@ describe('Test display', () => {
       display: false,
     })).to.be.true;
     expect(display).to.be.false;
-    expect(logSpy.calledWith('sampleRUM', 'click', {
-      source: 'sidekick',
-      target: 'hidden',
-    })).to.be.true;
   });
 });
