@@ -19,7 +19,6 @@ import {
   getProject,
   isValidProject,
 } from './project.js';
-import sampleRUM from './utils/rum.js';
 
 /**
  * The configuration object type
@@ -78,10 +77,6 @@ export async function updateIcon({ matches = [] }) {
   log.debug(`updateIcon: using icon type ${iconType}`);
   await chrome.action.setIcon({
     path: getPaths(iconType),
-  });
-  sampleRUM('click', {
-    source: 'sidekick',
-    target: `icon:${iconType}`,
   });
 }
 
@@ -201,6 +196,9 @@ if (chrome.contextMenus) {
       target: { tabId: tab.id },
       func: async (menuItemIdVal) => {
         try {
+          const mod = await import(chrome.runtime.getURL('utils/rum.js'));
+          const { default: sampleRUM } = mod;
+
           // Ensure window.hlx and window.hlx.sidekick exists
           window.hlx = window.hlx || {};
           window.hlx.sidekick = window.hlx.sidekick || { location: window.location };
