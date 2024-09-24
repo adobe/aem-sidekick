@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import sampleRUM from './utils/rum.js';
 import { getConfig, setConfig } from './config.js';
 
 /**
@@ -30,9 +31,6 @@ export async function setDisplay(display) {
   await setConfig('local', {
     display,
   });
-
-  const mod = await import(chrome.runtime.getURL('utils/rum.js'));
-  const { default: sampleRUM } = mod;
 
   sampleRUM('click', {
     source: 'sidekick',

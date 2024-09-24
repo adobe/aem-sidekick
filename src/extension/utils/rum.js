@@ -11,10 +11,7 @@
  */
 
 /* istanbul ignore file */
-
-/**
- * @typedef {Object} sampleRUM
- */
+// @ts-nocheck
 
 /**
  * Log RUM for sidekick telemetry.
