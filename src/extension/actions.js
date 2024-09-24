@@ -50,19 +50,26 @@ export async function notify(message, timeout = 5000) {
  * @param {string} message.owner The project owner
  * @param {string} message.repo The project repo
  * @param {string} message.authToken The auth token
- * @param {number} message.exp The token expiry in seconds since epoch
+ * @param {number} message.authTokenExpiry The auth token expiry in seconds since epoch
+ * @param {string} message.siteToken The auth token
+ * @param {number} message.siteTokenExpiry The site token expiry in seconds since epoch
  * @param {chrome.runtime.MessageSender} sender The sender
  * @returns {Promise<string>} The action's response
  */
 async function updateAuthToken({
-  owner, repo, authToken, exp,
+  owner,
+  repo,
+  authToken,
+  authTokenExpiry,
+  siteToken,
+  siteTokenExpiry,
 }, sender) {
   const { url } = sender;
   if (owner) {
     try {
       if (new URL(url).origin === ADMIN_ORIGIN
         && authToken !== undefined) {
-        await setAuthToken(owner, repo, authToken, exp);
+        await setAuthToken(owner, repo, authToken, authTokenExpiry, siteToken, siteTokenExpiry);
         return 'close';
       }
     } catch (e) {

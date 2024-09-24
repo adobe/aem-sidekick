@@ -21,6 +21,7 @@ import sampleRUM from '../../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
 import {
   getLocation, matchProjectHost, isSupportedFileExtension, globToRegExp,
+  is401Page,
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
@@ -1198,8 +1199,13 @@ export class AppStore {
             && window.hlx.sidekickConfig
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
-          this.fetchStatus();
           this.fireEvent('logged-in');
+          // refresh page with site token in case of 401
+          if (is401Page(this.location, window.document)) {
+            this.reloadPage();
+          } else {
+            this.fetchStatus();
+          }
           return;
         }
         if (attempts >= 5) {
@@ -1244,6 +1250,8 @@ export class AppStore {
           this.setupPlugins();
           this.fetchStatus();
           this.fireEvent('logged-out');
+          // refresh the page to reflect logged out state
+          this.reloadPage();
           return;
         }
         if (attempts >= 5) {
