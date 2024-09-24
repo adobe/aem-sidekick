@@ -1,3 +1,18 @@
+# [1.32.0](https://github.com/adobe/aem-sidekick/compare/v1.31.4...v1.32.0) (2024-09-24)
+
+
+### Bug Fixes
+
+* dynamically load in ui.js ([a4fc57d](https://github.com/adobe/aem-sidekick/commit/a4fc57d5120233c1e7a1bd777dbceb1af19a71bf))
+* remove dynamic import from background script ([58cc888](https://github.com/adobe/aem-sidekick/commit/58cc88814ba5f19345cb5a362e1f8c182b1e52cd))
+
+
+### Features
+
+* extensible source support ([#245](https://github.com/adobe/aem-sidekick/issues/245)) ([#268](https://github.com/adobe/aem-sidekick/issues/268)) ([a834be2](https://github.com/adobe/aem-sidekick/commit/a834be244a1f85e1036d1e7aee9ac1fe427c5861))
+* **publish:** add confirm option ([#262](https://github.com/adobe/aem-sidekick/issues/262)) ([7e8e1fc](https://github.com/adobe/aem-sidekick/commit/7e8e1fc7896f44b98cab0bebd6c3551edc9b1d92))
+* support transient site token ([#272](https://github.com/adobe/aem-sidekick/issues/272)) ([2aeb56a](https://github.com/adobe/aem-sidekick/commit/2aeb56a497df99e0d62106c4284b0faea0d94726))
+
 ## [1.31.4](https://github.com/adobe/aem-sidekick/compare/v1.31.3...v1.31.4) (2024-09-19)
 
 
