@@ -96,6 +96,8 @@ export const spectrum2 = css`
 
     /* Sidekick theme tokens */
     --sidekick-max-width: 640px;
+    --sidekick-color-light: #292929;
+    --sidekick-color-dark: #DBDBDB;
     --sidekick-background-light: #FFFFFFCC;
     --sidekick-background-dark: #222222CC;
     --sidekick-background-layer1-dark: #1B1B1B;
@@ -135,6 +137,7 @@ export const spectrum2 = css`
     /**
      * SIDEKICK ALIAS TOKENS
      */
+    --spectrum2-sidekick-color: var(--sidekick-color-dark);
     --spectrum2-sidekick-background: var(--sidekick-background-dark);
     --spectrum2-sidekick-layer-1: var(--sidekick-background-layer1-dark);
     --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-dark);
@@ -198,6 +201,7 @@ export const spectrum2 = css`
       /**
        * SIDEKICK ALIAS TOKENS
        */
+      --spectrum2-sidekick-color: var(--sidekick-color-light);
       --spectrum2-sidekick-background: var(--sidekick-background-light);
       --spectrum2-sidekick-layer-1: var(--sidekick-background-layer1-light);
       --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-light);
