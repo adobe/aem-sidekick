@@ -599,12 +599,14 @@ export class AppStore {
    * @returns {string} The content source label
    */
   getContentSourceLabel() {
-    const { contentSourceType } = this.siteStore;
+    const { contentSourceType, contentSourceEditLabel } = this.siteStore;
 
     if (contentSourceType === 'onedrive') {
       return 'SharePoint';
     } else if (contentSourceType === 'google') {
       return 'Google Drive';
+    } else if (contentSourceEditLabel) {
+      return contentSourceEditLabel;
     } else {
       return 'BYOM';
     }
@@ -1072,6 +1074,27 @@ export class AppStore {
     }
   }
 
+  getBYOMSourceUrl() {
+    const {
+      owner,
+      repo,
+      contentSourceUrl,
+      contentSourceEditPattern,
+    } = this.siteStore;
+    if (!contentSourceEditPattern || typeof contentSourceEditPattern !== 'string') return undefined;
+
+    let { pathname } = this.location;
+    if (pathname.endsWith('/')) pathname += 'index';
+
+    const url = contentSourceEditPattern
+      .replace('{{contentSourceUrl}}', contentSourceUrl)
+      .replace('{{org}}', owner)
+      .replace('{{site}}', repo)
+      .replace('{{pathname}}', pathname);
+
+    return url;
+  }
+
   /**
    * Switches to (or opens) a given environment.
    * @param {string} targetEnv One of the following environments:
@@ -1112,7 +1135,7 @@ export class AppStore {
 
     if (targetEnv === 'edit') {
       const updatedStatus = await this.fetchStatus(false, true);
-      envUrl = updatedStatus.edit && updatedStatus.edit.url;
+      envUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
     }
 
     const [customView] = this.findViews(VIEWS.CUSTOM);

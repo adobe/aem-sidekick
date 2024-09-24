@@ -552,6 +552,20 @@ describe('Test App Store', () => {
       expect(openPageArgs[0]).to.include('foo=bar');
     });
 
+    it('switches from preview to BYOM editor', async () => {
+      instance.siteStore.contentSourceUrl = 'https://aemcloud.com';
+      instance.siteStore.contentSourceEditLabel = 'Universal Editor';
+      instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}{{pathname}}?cmd=open';
+
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      fetchStatusStub.resolves({});
+
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('edit');
+      expect(loadPage.calledWith('https://aemcloud.com/index?cmd=open')).to.be.true;
+    });
+
     it('switches from live to preview', async () => {
       instance.location = new URL(mockStatus.live.url);
       instance.status = mockStatus;
@@ -1633,6 +1647,12 @@ describe('Test App Store', () => {
     it('should return "Google Drive" if sourceLocation includes "gdrive:"', () => {
       instance.siteStore.contentSourceType = 'google';
       expect(instance.getContentSourceLabel()).to.equal('Google Drive');
+    });
+
+    it('should return "Document Authoring" if a label is provided', () => {
+      instance.siteStore.contentSourceType = 'markup';
+      instance.siteStore.contentSourceEditLabel = 'Document Authoring';
+      expect(instance.getContentSourceLabel()).to.equal('Document Authoring');
     });
 
     it('should return "BYOM" for everything else', () => {
