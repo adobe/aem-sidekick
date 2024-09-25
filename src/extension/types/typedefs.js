@@ -107,6 +107,8 @@
  * @prop {boolean} [isContainer] Determines whether to turn this plugin into a dropdown
  * @prop {boolean} [isPalette] Determines whether a URL is opened in a palette instead of a new tab
  * @prop {string} [paletteRect] The dimensions and position of a palette (optional)
+ * @prop {boolean} [isBadge] Determines whether the plugin is a badge (optional)
+ * @prop {string} [badgeVariant] The color variant of the badge (optional)
  * @prop {string[]} [environments] Specifies when to show this plugin (admin, edit, dev, preview, live, prod)
  * @prop {string[]} [excludePaths] Exclude the plugin from these paths (glob patterns supported)
  * @prop {string[]} [includePaths] Include the plugin on these paths (glob patterns supported)

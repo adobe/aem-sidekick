@@ -366,12 +366,12 @@ export class AppStore {
             container: containerId,
           };
           if (isBadge) {
-            plugin.feature = true;
             plugin.elements = [{
-              tag: 'span',
+              tag: 'sp-badge',
               text: title,
               attrs: {
-                class: `hlx-sk-badge hlx-sk-badge-${badgeVariant?.toLowerCase() || 'default'}`,
+                variant: badgeVariant?.toLowerCase() || 'default',
+                size: 's',
               },
             }];
           } else {

@@ -143,6 +143,23 @@ export class Plugin {
   }
 
   /**
+   *  Is this plugin a badge?
+   * @returns {boolean} True if the plugin elements array has exactly one element and that element is a badge, otherwise false.
+   */
+  isBadge() {
+    return this.config.elements?.length === 1 && this.config.elements[0].tag === 'sp-badge';
+  }
+
+  /**
+   * Returns the badge element in the configuration.
+   *
+   * @returns {Object} The badge element object
+   */
+  getBadge() {
+    return this.config.elements[0].tag === 'sp-badge' ? this.config.elements[0] : null;
+  }
+
+  /**
    * Adds a plugin to this plugin's children.
    * @param {Plugin} plugin The plugin to add
    */

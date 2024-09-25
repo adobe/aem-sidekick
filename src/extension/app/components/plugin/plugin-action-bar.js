@@ -90,10 +90,13 @@ export class PluginActionBar extends ConnectedElement {
     ].filter((plugin) => plugin.isVisible());
 
     this.barPlugins = this.visiblePlugins
-      .filter((plugin) => plugin.isPinned());
+      .filter((plugin) => plugin.isPinned() && !plugin.isBadge());
 
     this.menuPlugins = this.visiblePlugins
-      .filter((plugin) => !plugin.isPinned());
+      .filter((plugin) => !plugin.isPinned() && !plugin.isBadge());
+
+    this.badgePlugins = this.visiblePlugins
+      .filter((plugin) => plugin.isBadge());
 
     this.requestUpdate();
   }
@@ -216,6 +219,17 @@ export class PluginActionBar extends ConnectedElement {
         </sk-menu-item>`;
   }
 
+  renderPluginBadge(plugin) {
+    const badge = plugin.getBadge();
+    return html`
+      <sp-badge
+        class=${plugin.getId()}
+        size="${badge.attrs.size}"
+        variant="${badge.attrs.variant}"
+      >${badge.text}</sp-badge>
+    `;
+  }
+
   /**
    * Render the plugin menu with unpinned and transient plugins
    * @returns {TemplateResult|string} An array of Lit-html templates or strings, or a single empty string.
@@ -274,6 +288,14 @@ export class PluginActionBar extends ConnectedElement {
           ? html`<bulk-info></bulk-info><sp-menu-divider size="s" vertical></sp-menu-divider>`
           : ''}
         ${this.barPlugins.length > 0 ? this.barPlugins.map((p) => p.render()) : ''}
+      </div>`;
+  }
+
+  renderBadgePlugins() {
+    return html`
+      <div class="badge-plugins-container">
+       ${this.badgePlugins.map((p) => this.renderPluginBadge(p))}
+
       </div>`;
   }
 
@@ -368,6 +390,7 @@ export class PluginActionBar extends ConnectedElement {
         ${this.renderPlugins()}
         ${this.renderPluginMenu()}
         ${this.renderSystemPlugins()}
+        ${this.renderBadgePlugins()}
       </action-bar>
     ` : '';
   }
