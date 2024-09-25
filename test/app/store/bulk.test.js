@@ -287,7 +287,7 @@ describe('Test Bulk Store', () => {
         await bulkStore.preview();
 
         expect(startJobStub.called).to.be.false;
-        expect(showToastSpy.calledWithMatch('The following file name contains illegal characters:', 'warning')).to.be.true;
+        expect(showToastSpy.calledWithMatch('This file contains illegal characters:', 'warning')).to.be.true;
 
         // select 2nd illegal item
         sidekickTest.toggleAdminItems(['video*.mp4']);
@@ -296,7 +296,7 @@ describe('Test Bulk Store', () => {
         await bulkStore.preview();
 
         expect(startJobStub.called).to.be.false;
-        expect(showToastSpy.calledWithMatch('The following file names contain illegal characters:', 'warning')).to.be.true;
+        expect(showToastSpy.calledWithMatch('The following files contain illegal characters:', 'warning')).to.be.true;
       });
 
       it('bulk previews selection and displays success toast', async () => {
@@ -687,7 +687,7 @@ describe('Test Bulk Store', () => {
         await bulkStore.publish();
 
         expect(startJobStub.called).to.be.false;
-        expect(showToastSpy.calledWithMatch('The following file name contains illegal characters:', 'warning')).to.be.true;
+        expect(showToastSpy.calledWithMatch('This file contains illegal characters:', 'warning')).to.be.true;
 
         // select 2nd illegal item
         sidekickTest.toggleAdminItems(['video*.mp4']);
@@ -696,7 +696,7 @@ describe('Test Bulk Store', () => {
         await bulkStore.publish();
 
         expect(startJobStub.called).to.be.false;
-        expect(showToastSpy.calledWithMatch('The following file names contain illegal characters:', 'warning')).to.be.true;
+        expect(showToastSpy.calledWithMatch('The following files contain illegal characters:', 'warning')).to.be.true;
       });
 
       it('bulk publishes selection and displays success toast', async () => {
@@ -1164,6 +1164,36 @@ describe('Test Bulk Store', () => {
 
       await waitUntil(() => updateStub.called);
       expect(updateStub.calledWith('/spreadsheet.xlsx')).to.be.true;
+    });
+
+    it('rejects illegal folder path', async () => {
+      const showToastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
+
+      // mock gdrive
+      sidekickTest
+        .mockLocation(getAdminLocation(HelixMockContentSources.GDRIVE))
+        .mockAdminDOM(HelixMockContentSources.GDRIVE)
+        .mockFetchDirectoryStatusSuccess(HelixMockContentSources.GDRIVE, {
+          edit: {
+            status: 200,
+            sourceLocation: 'gdrive:driveid',
+            contentType: 'application/folder',
+            name: 'illegal folder',
+            illegalPath: '/path/to/illegal folder',
+          },
+        });
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      await aTimeout(500);
+
+      sidekickTest.toggleAdminItems(['document']);
+
+      bulkStore.initStore(appStore.location);
+      await waitUntil(() => bulkStore.selection.length === 1);
+
+      await bulkStore.preview();
+
+      await waitUntil(() => showToastSpy.called);
+      expect(showToastSpy.calledWithMatch('This folder contains illegal characters:', 'warning')).to.be.true;
     });
 
     it('getSummaryText: returns message based on succeeded vs failed', async () => {

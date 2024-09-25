@@ -45,7 +45,7 @@ export function createPreviewPlugin(appStore) {
       action: async () => {
         const { location } = appStore;
         const status = await appStore.fetchStatus(false, true, true);
-        if ([' ', '%20'].find((pattern) => status.webPath.includes(pattern))) {
+        if (status.edit?.illegalPath) {
           appStore.showToast(
             appStore.i18n('bulk_error_illegal_file_name')
               .replace('$1', status.webPath),
