@@ -207,24 +207,41 @@ export function mockSharePointFolder(name, viewType = 'list') {
  * @param {string} viewType The view type: "list" (default) or "grid"
  * @returns {string} The markup for the resource
  */
-export function mockSharePointFile({ path, type }, viewType = 'list') {
+export function mockSharePointFile({ path, type }, viewType = 'list', nonLatin = false) {
+  console.log('mockSharePointFile called with:', {
+    path, type, viewType, nonLatin,
+  });
   if (type === 'folder') {
     return mockSharePointFolder(path.split('/').pop(), viewType);
   }
   const descriptor = spDescriptors[type];
   const filename = path.split('/').pop();
+  console.log('Descriptor:', descriptor);
+  console.log('Filename:', filename);
 
-  return viewType === 'list' ? `
+  const ariaLabel = nonLatin
+    ? `${filename}, ${descriptor} 文件, 专用, 已于 2/6/2023 修改, 编辑者: John Doe, 74.3 KB`
+    : `${filename}, ${descriptor}, Private, Modified 4/9/2023, edited by John Doe, 356 KB`;
+  console.log('AriaLabel:', ariaLabel);
+
+  const span = nonLatin
+    ? `${filename}, ${descriptor} 文件`
+    : `${filename}, ${descriptor}, Private`;
+  console.log('Span:', span);
+
+  const result = viewType === 'list' ? `
     <div class="file" id="file-${type}" role="row" aria-selected="false"
-      aria-label="${filename}, ${descriptor}, Private, Modified 4/9/2023, edited by John Doe, 356 KB">
+      aria-label="${ariaLabel}">
       <img src="./icons/${type}.svg">
       <button>${filename}</button>
     </div>` : `
     <div class="file" id="file-${type}" role="row" aria-selected="false">
-      <span>${filename}, ${descriptor}, Private</span>
+      <span>${span}</span>
       <i data-icon-name="svg/${type}_16x1.svg" aria-label="${type}">
         <img src="./icons/${type}.svg">
       </i>
       <div data-automationid="name">${filename}</div>
     </div>`;
+  console.log('Resulting HTML:', result);
+  return result;
 }
