@@ -291,11 +291,15 @@ export class PluginActionBar extends ConnectedElement {
       </div>`;
   }
 
+  /**
+   * Renders the badge plugins.
+   *
+   * @returns {TemplateResult} The HTML template for the badge plugin.
+   */
   renderBadgePlugins() {
     return html`
       <div class="badge-plugins-container">
        ${this.badgePlugins.map((p) => this.renderPluginBadge(p))}
-
       </div>`;
   }
 
