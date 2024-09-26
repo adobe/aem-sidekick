@@ -90,7 +90,10 @@ describe('Reload plugin', () => {
     expect(updateStub.calledOnce).to.be.true;
     expect(reloaded).to.be.true;
 
-    expect(showToastSpy.calledWith('Preview successfully updated, reloading...', 'positive')).to.be.true;
+    expect(showToastSpy.calledWith({
+      message: 'Preview successfully updated, reloading...',
+      variant: 'positive',
+    })).to.be.true;
     expect(sidekickTest.rumStub.calledWith('click', {
       source: 'sidekick',
       target: 'updated',

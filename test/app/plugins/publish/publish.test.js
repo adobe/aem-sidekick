@@ -82,7 +82,10 @@ describe('Publish plugin', () => {
       await waitUntil(() => publishStub.calledOnce);
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
 
-      expect(showToastSpy.calledWith('Publication successful, opening Live...', 'positive')).to.be.true;
+      expect(showToastSpy.calledWith({
+        message: 'Publication successful, opening Live...',
+        variant: 'positive',
+      })).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'published',
@@ -111,7 +114,10 @@ describe('Publish plugin', () => {
       await waitUntil(() => publishStub.calledOnce);
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called');
 
-      expect(showToastSpy.calledWith('Publication successful, opening Production...', 'positive')).to.be.true;
+      expect(showToastSpy.calledWith({
+        message: 'Publication successful, opening Production...',
+        variant: 'positive',
+      })).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'published',
@@ -233,7 +239,10 @@ describe('Publish plugin', () => {
       await waitUntil(() => publishStub.calledOnce);
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called');
 
-      expect(showToastSpy.calledWith('Publication successful, opening Production...', 'positive')).to.be.true;
+      expect(showToastSpy.calledWith({
+        message: 'Publication successful, opening Production...',
+        variant: 'positive',
+      })).to.be.true;
     });
   });
 });

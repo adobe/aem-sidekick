@@ -216,7 +216,10 @@ describe('Preview plugin', () => {
 
       await sidekickTest.clickToastClose();
       expect(closeToastSpy.calledOnce);
-      expect(toastSpy.calledOnceWith('This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets', 'negative'));
+      expect(toastSpy.calledOnceWith({
+        message: 'This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets',
+        variant: 'negative',
+      }));
     });
 
     it('previewing from gdrive editor - not a gdoc type', async () => {
@@ -249,7 +252,10 @@ describe('Preview plugin', () => {
       previewPlugin.click();
 
       await waitUntil(() => toastSpy.calledOnce);
-      expect(toastSpy.calledOnceWith('This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets', 'negative'));
+      expect(toastSpy.calledOnceWith({
+        message: 'This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets',
+        variant: 'negative',
+      }));
     });
 
     it('previewing from gdrive editor - not a gsheet type', async () => {
@@ -282,7 +288,10 @@ describe('Preview plugin', () => {
       previewPlugin.click();
 
       await waitUntil(() => toastSpy.calledOnce);
-      expect(toastSpy.calledOnceWith('This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets', 'negative'));
+      expect(toastSpy.calledOnceWith({
+        message: 'This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets',
+        variant: 'negative',
+      }));
     });
   });
 });
