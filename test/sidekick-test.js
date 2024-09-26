@@ -366,8 +366,7 @@ export class SidekickTest {
       }
     });
     // trigger bulk selection update in sidekick
-    this.bulkRoot.click();
-
+    setTimeout(() => this.bulkRoot.click(), 500);
     return this;
   }
 
