@@ -360,7 +360,7 @@ export class AppStore {
           // assemble plugin config
           const plugin = {
             custom: true,
-            id: id || `custom-plugin-${i}`,
+            id,
             condition,
             pinned,
             container: containerId,
