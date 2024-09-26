@@ -405,7 +405,7 @@ export class BulkStore {
 
       const openUrlsLabel = this.appStore.i18n(`open_url${paths.length !== 1 ? 's' : ''}`)
         .replace('$1', `${paths.length}`);
-      const openUrlsCallback = () => this.openUrls(host, paths);
+      const openUrlsCallback = () => this.openUrls(host, paths) && this.appStore.closeToast();
 
       const copyUrlsLabel = this.appStore.i18n(`copy_url${paths.length !== 1 ? 's' : ''}`)
         .replace('$1', `${paths.length}`);
