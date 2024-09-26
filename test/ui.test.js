@@ -182,6 +182,29 @@ describe('Test UI: updateContextMenu', () => {
     expect(removeAllSpy.callCount).to.equal(1);
     expect(createSpy.callCount).to.equal(0);
   });
+
+  it('updateContextMenu: import projects', async () => {
+    sandbox.stub(chrome.runtime, 'getManifest').returns({
+      ...chrome.runtime.getManifest(),
+      externally_connectable: {
+        ids: ['klmnopqrstuvwxyz'],
+      },
+    });
+    sandbox.stub(chrome.runtime, 'sendMessage')
+      .callsFake(async (_, __, callback) => {
+        if (callback) {
+          // @ts-ignore
+          callback(true);
+        }
+      });
+
+    await updateContextMenu({
+      url,
+      config,
+    });
+    expect(createSpy.calledWithMatch({ type: 'separator' })).to.be.true;
+    expect(createSpy.calledWithMatch({ id: 'importProjects' })).to.be.true;
+  });
 });
 
 describe('Test UI: updateIcon', () => {
@@ -256,12 +279,36 @@ describe('Test UI: RUM collection when clicked', () => {
     sandbox.restore();
   });
 
-  it('collects RUM', async () => {
+  it('collects RUM when opening view doc source', async () => {
     clickListener({
       menuItemId: 'openViewDocSource',
     }, tab);
     await aTimeout(1000);
-    expect(logSpy.calledWith('sampleRUM', 'sidekick:context-menu:openViewDocSource')).to.be.true;
+    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:open-view-doc-source' })).to.be.true;
+  });
+
+  it('collects RUM when addRemoveProject', async () => {
+    clickListener({
+      menuItemId: 'addRemoveProject',
+    }, tab);
+    await aTimeout(1000);
+    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:add-remove-project' })).to.be.true;
+  });
+
+  it('collects RUM when enableDisableProject', async () => {
+    clickListener({
+      menuItemId: 'enableDisableProject',
+    }, tab);
+    await aTimeout(1000);
+    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:enable-disable-project' })).to.be.true;
+  });
+
+  it('collects RUM when importProjects', async () => {
+    clickListener({
+      menuItemId: 'importProjects',
+    }, tab);
+    await aTimeout(1000);
+    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:import-projects' })).to.be.true;
   });
 
   it('handles error', async () => {

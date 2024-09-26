@@ -10,11 +10,12 @@
  * governing permissions and limitations under the License.
  */
 
-import { customElement, property } from 'lit/decorators.js';
+/* eslint-disable no-promise-executor-return */
+
+import { customElement, property, queryAsync } from 'lit/decorators.js';
 import { html, css } from 'lit';
 import { EventBus } from '../../utils/event-bus.js';
-import { EVENTS } from '../../constants.js';
-import sampleRUM from '../../../utils/rum.js';
+import { EVENTS, ICONS } from '../../constants.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 
 /**
@@ -41,16 +42,75 @@ export class PaletteContainer extends ConnectedElement {
   @property({ type: Object })
   accessor plugin;
 
+  @queryAsync('.container')
+  accessor container;
+
   static styles = css`
-    palette-dialog-wrapper iframe {
+    .container {
+      position: absolute;
+      background-color: var(--mod-popover-background-color);
+      color: var(--spectrum-gray-800);
+      backdrop-filter: var(--sidekick-backdrop-filter);
+      border-top-left-radius: var(--mod-popover-corner-radius);
+      border-top-right-radius: var(--mod-popover-corner-radius);
+      pointer-events: auto;
+      overflow: hidden;
+      padding-bottom: 20px;
+    }
+
+    .container.hidden {
+      display: none;
+    }
+
+    .container .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 10px 10px 15px;
+    }
+
+    .container .header .title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .container .header .close {
+      --mod-actionbutton-border-radius: 50%;
+    }
+
+    .container iframe {
       border: 0;
+      overflow: hidden;
     }
   `;
 
   async connectedCallback() {
     super.connectedCallback();
 
-    EventBus.instance.addEventListener(EVENTS.OPEN_PALETTE, (e) => {
+    EventBus.instance.addEventListener(EVENTS.OPEN_PALETTE, async (e) => {
+      const newPlugin = e.detail.plugin;
+
+      this.showContainer();
+
+      this.appStore.sampleRUM('click', {
+        source: 'sidekick',
+        target: 'palette-opened',
+      });
+
+      if (newPlugin.id !== this.plugin?.id) {
+        // Reset the iframe src to avoid seeing the old plugin
+        const iframe = this.shadowRoot.querySelector('iframe');
+        if (iframe) {
+          this.plugin = undefined;
+
+          // Wait for next tick for the iframe to reset
+          await new Promise((resolve) => setTimeout(resolve, 0));
+          this.plugin = e.detail.plugin;
+
+          return;
+        }
+      }
+
       this.plugin = e.detail.plugin;
     });
 
@@ -63,24 +123,44 @@ export class PaletteContainer extends ConnectedElement {
   }
 
   /**
+   * Show the palette container
+   */
+  async showContainer() {
+    const paletteContainer = await this.container;
+    if (paletteContainer) {
+      paletteContainer.classList.remove('hidden');
+    }
+  }
+
+  /**
+   * Hide the palette container
+   */
+  async hideContainer() {
+    const paletteContainer = await this.container;
+    if (paletteContainer) {
+      paletteContainer.classList.add('hidden');
+      this.appStore.sampleRUM('click', {
+        source: 'sidekick',
+        target: 'palette-closed',
+      });
+    }
+  }
+
+  /**
    * Check for keyboard event
    * @param {KeyboardEvent} event Keyboard event
    */
   onKeyDown(event) {
     if (event.key === 'Escape') {
-      this.plugin = undefined;
+      this.hideContainer();
     }
   }
 
   /**
    * Called when the modal is closed
    */
-  closed() {
-    this.plugin = undefined;
-    sampleRUM('sidekick:paletteclosed', {
-      source: this.appStore.location.href,
-      target: this.appStore.status.webPath,
-    });
+  async closed() {
+    this.hideContainer();
   }
 
   /**
@@ -104,18 +184,20 @@ export class PaletteContainer extends ConnectedElement {
     const paletteTitle = (titleI18n && titleI18n[this.appStore.siteStore.lang]) || title;
 
     return html`
-      <palette-dialog-wrapper
+      <div
         id=${`palette-${id}`}
-        headline=${paletteTitle}
-        hero-label="ABC"
+        class="container"
         style=${paletteRect || ''}
-        no-divider
-        dismissable
-        open
-        @close=${this.closed}
         tabindex="0">
+        <div class="header">
+          <div class="title">${paletteTitle}</div>
+          <sk-action-button class="close" quiet @click=${this.closed}>
+            <sp-icon slot="icon">${ICONS.CLOSE_X}</sp-icon>
+          </sk-action-button>
+        </div>
+        <sp-divider></sp-divider>
         <iframe width="100%" height="100%" title=${paletteTitle} src=${url} allow="clipboard-write *"></iframe>
-      </palette-dialog-wrapper>
+      </div>
     `;
   }
 

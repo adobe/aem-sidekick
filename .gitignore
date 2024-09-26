@@ -10,3 +10,4 @@ test-results.xml
 **/xcshareddata/*
 dist/
 .vscode
+*.env

@@ -1,98 +1,98 @@
 {
-    "manifest_version": 3,
-    "name": "__MSG_title__",
-    "version": "0.0.5",
-    "author": "Adobe",
-    "homepage_url": "https://www.hlx.live/tools/sidekick/",
-    "default_locale": "en",
-    "description": "__MSG_description__",
-    "permissions": [
-      "activeTab",
-      "contextMenus",
-      "declarativeNetRequest",
-      "notifications",
-      "scripting",
-      "storage"
+  "manifest_version": 3,
+  "name": "__MSG_title__",
+  "version": "1.32.1",
+  "author": "Adobe",
+  "homepage_url": "https://www.hlx.live/tools/sidekick/",
+  "default_locale": "en",
+  "description": "__MSG_description__",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "declarativeNetRequest",
+    "notifications",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.hlx.live/tools/sidekick/*",
+    "http://localhost:3000/*",
+    "https://*/*"
+  ],
+  "__chrome__background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "__safari__background": {
+    "page": "background.html",
+    "persistent": false
+  },
+  "__chrome__externally_connectable": {
+    "ids": [
+      "ccfggkjabjahcjoljmgmklhpaccedipo",
+      "olciodlegapfmemadcjicljalmfmlehb",
+      "ahahnfffoakmmahloojpkmlkjjffnial"
     ],
-    "host_permissions": [
-      "https://www.hlx.live/tools/sidekick/*",
+    "matches": [
       "http://localhost:3000/*",
       "https://*/*"
-    ],
-    "__chrome__background": {
-      "service_worker": "background.js",
-      "type": "module"
-    },
-    "__safari__background": {
-      "page": "background.html",
-      "persistent": false
-    },
-    "__chrome__externally_connectable": {
-      "ids": [
-        "ccfggkjabjahcjoljmgmklhpaccedipo",
-        "olciodlegapfmemadcjicljalmfmlehb",
-        "ahahnfffoakmmahloojpkmlkjjffnial"
+    ]
+  },
+  "__safari__externally_connectable": {
+    "matches": [
+      "https://admin.hlx.page/*"
+    ]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "_locales/*",
+        "content.js",
+        "context-menu.js",
+        "index.js",
+        "*.js.map",
+        "display.js",
+        "config.js",
+        "lib/polyfills.min.js",
+        "log.js",
+        "sp-popover.js",
+        "sp-tray.js",
+        "tab.js",
+        "project.js",
+        "utis/admin.js",
+        "utils/rum.js",
+        "url-cache.js",
+        "views/json/*"
       ],
       "matches": [
-        "http://localhost:3000/*",
-        "https://*/*"
+        "<all_urls>"
       ]
-    },
-    "__safari__externally_connectable": {
-      "matches": [
-        "https://admin.hlx.page/*"
-      ]
-    },
-    "web_accessible_resources": [
-      {
-        "resources": [
-          "_locales/*",
-          "content.js",
-          "context-menu.js",
-          "index.js",
-          "*.js.map",
-          "display.js",
-          "config.js",
-          "lib/polyfills.min.js",
-          "log.js",
-          "sp-popover.js",
-          "sp-tray.js",
-          "tab.js",
-          "project.js",
-          "utis/admin.js",
-          "utils/rum.js",
-          "url-cache.js",
-          "views/json/*"
-        ],
-        "matches": [
-          "<all_urls>"
-        ]
-      }
-    ],
-    "action": {
-      "default_title": "__MSG_title__",
-      "default_icon": {
-        "16": "icons/disabled/icon-16x16.png",
-        "32": "icons/disabled/icon-32x32.png",
-        "48": "icons/disabled/icon-48x48.png",
-        "128": "icons/disabled/icon-128x128.png",
-        "512": "icons/disabled/icon-512x512.png"
-      }
-    },
-    "commands": {
-      "_execute_action": {
-        "suggested_key": {
-          "default": "Ctrl+Shift+H",
-          "mac": "MacCtrl+Shift+H"
-        },
-        "description": "__MSG_description_shortcut__"
-      }
-    },
-    "icons": {
-      "16": "icons/default/icon-16x16.png",
-      "32": "icons/default/icon-32x32.png",
-      "48": "icons/default/icon-48x48.png",
-      "128": "icons/default/icon-128x128.png",
-      "512": "icons/default/icon-512x512.png"
     }
+  ],
+  "action": {
+    "default_title": "__MSG_title__",
+    "default_icon": {
+      "16": "icons/disabled/icon-16x16.png",
+      "32": "icons/disabled/icon-32x32.png",
+      "48": "icons/disabled/icon-48x48.png",
+      "128": "icons/disabled/icon-128x128.png",
+      "512": "icons/disabled/icon-512x512.png"
+    }
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+H",
+        "mac": "MacCtrl+Shift+H"
+      },
+      "description": "__MSG_description_shortcut__"
+    }
+  },
+  "icons": {
+    "16": "icons/default/icon-16x16.png",
+    "32": "icons/default/icon-32x32.png",
+    "48": "icons/default/icon-48x48.png",
+    "128": "icons/default/icon-128x128.png",
+    "512": "icons/default/icon-512x512.png"
   }
+}

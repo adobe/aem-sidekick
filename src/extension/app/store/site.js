@@ -239,6 +239,8 @@ export class SiteStore {
       lang,
       contentSourceUrl,
       contentSourceType,
+      editUrlLabel,
+      editUrlPattern,
       previewHost,
       liveHost,
       outerHost: legacyLiveHost,
@@ -273,6 +275,9 @@ export class SiteStore {
     this.giturl = giturl;
     this.contentSourceUrl = contentSourceUrl;
     this.contentSourceType = contentSourceType;
+    this.contentSourceEditLabel = editUrlLabel;
+    this.contentSourceEditPattern = editUrlPattern;
+
     this.mountpoints = contentSourceUrl ? [contentSourceUrl] : (mountpoints || []);
     [this.mountpoint] = this.mountpoints;
     this.adminVersion = adminVersion;

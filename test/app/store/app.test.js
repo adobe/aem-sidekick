@@ -91,11 +91,7 @@ describe('Test App Store', () => {
   }
 
   it('loadContext - no config.json', async () => {
-    const contextLoadedSpy = sidekickTest.sandbox.spy();
-    sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
-
     await appStore.loadContext(sidekickElement, defaultSidekickConfig);
-    expect(contextLoadedSpy.calledOnce).to.be.true;
     await testDefaultConfig();
   });
 
@@ -103,16 +99,12 @@ describe('Test App Store', () => {
     sidekickTest
       .mockFetchSidekickConfigSuccess(true, true);
 
-    const contextLoadedSpy = sidekickTest.sandbox.spy();
-    sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
-
     await appStore.loadContext(sidekickElement, defaultSidekickConfig);
-    expect(contextLoadedSpy.calledOnce).to.be.true;
     await testDefaultConfig();
 
     expect(appStore.siteStore.plugins.length).to.eq(9);
     expect(appStore.siteStore.scriptUrl).to.eq('https://www.hlx.live/tools/sidekick/index.js');
-    expect(appStore.siteStore.host).to.eq('custom-host.com');
+    expect(appStore.siteStore.host).to.eq('www.aemboilerplate.com');
     expect(appStore.siteStore.innerHost).to.eq('custom-preview-host.com');
     expect(appStore.siteStore.liveHost).to.eq('custom-live-host.com');
     expect(appStore.siteStore.project).to.eq('AEM Boilerplate');
@@ -122,16 +114,12 @@ describe('Test App Store', () => {
     sidekickTest
       .mockFetchSidekickConfigSuccess(true, true);
 
-    const contextLoadedSpy = sidekickTest.sandbox.spy();
-    sidekickElement.addEventListener('contextloaded', contextLoadedSpy);
-
     const config = {
       ...defaultSidekickConfig,
       lang: 'abc',
     };
 
     await appStore.loadContext(sidekickElement, config);
-    expect(contextLoadedSpy.calledOnce).to.be.true;
     await testDefaultConfig();
 
     expect(appStore.languageDict.title).to.eq('AEM Sidekick - NextGen');
@@ -479,6 +467,7 @@ describe('Test App Store', () => {
     beforeEach(() => {
       sidekickTest.sandbox.stub(window, 'fetch').resolves(new Response(JSON.stringify({
         webPath: '/somepath',
+        edit: { url: 'https://my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx' },
       })));
       instance = appStore;
       // @ts-ignore
@@ -518,14 +507,63 @@ describe('Test App Store', () => {
       expect(openPage.calledWith(mockStatus.preview.url)).to.be.true;
     });
 
+    it('switches from editor to preview w/cache busting', async () => {
+      instance.location = new URL(getDefaultEditorEnviromentLocations(
+        HelixMockContentSources.SHAREPOINT,
+        HelixMockContentType.DOC),
+      );
+      instance.status = mockStatus;
+      await instance.switchEnv('preview', false, true);
+      const openPageArgs = openPage.args[0];
+      expect(openPageArgs[0]).to.include('nocache');
+    });
+
     it('switches from preview to editor', async () => {
       const fetchStatusSpy = sidekickTest.sandbox.spy(instance, 'fetchStatus');
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('edit', true);
+      expect(openPage.calledWith('https://my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx')).to.be.true;
+      expect(fetchStatusSpy.calledWith(false, true)).to.be.true;
+    });
+
+    it('switches from preview to production host', async () => {
+      const prodHost = 'aem-boilerplate.com';
+      instance.siteStore.host = prodHost;
+
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('prod', true, true);
+      const openPageArgs = openPage.args[0];
+      expect(openPageArgs[0]).to.include(prodHost);
+      expect(openPageArgs[0]).to.include('nocache');
+    });
+
+    it('switches from preview to production host, maintains url params', async () => {
+      const prodHost = 'aem-boilerplate.com';
+      instance.siteStore.host = prodHost;
+
+      instance.location = new URL(`${mockStatus.preview.url}?foo=bar`);
+      instance.status = mockStatus;
+      await instance.switchEnv('prod', true, true);
+      const openPageArgs = openPage.args[0];
+      expect(openPageArgs[0]).to.include(prodHost);
+      expect(openPageArgs[0]).to.include('nocache');
+      expect(openPageArgs[0]).to.include('foo=bar');
+    });
+
+    it('switches from preview to BYOM editor', async () => {
+      instance.siteStore.contentSourceUrl = 'https://aemcloud.com';
+      instance.siteStore.contentSourceEditLabel = 'Universal Editor';
+      instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}{{pathname}}?cmd=open';
+
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      fetchStatusStub.resolves({});
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
       await instance.switchEnv('edit');
-      expect(loadPage.calledWith(mockStatus.edit.url)).to.be.true;
-      expect(fetchStatusSpy.calledWith(false, true)).to.be.true;
+      expect(loadPage.calledWith('https://aemcloud.com/index?cmd=open')).to.be.true;
     });
 
     it('switches from live to preview', async () => {
@@ -540,6 +578,14 @@ describe('Test App Store', () => {
       instance.status = mockStatus;
       await instance.switchEnv('live', true);
       expect(openPage.calledWith(mockStatus.live.url)).to.be.true;
+    });
+
+    it('switches from preview to live w/cache busting', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('live', true, true);
+      const openPageArgs = openPage.args[0];
+      expect(openPageArgs[0]).to.include('nocache');
     });
 
     it('switches from preview to dev', async () => {
@@ -598,7 +644,6 @@ describe('Test App Store', () => {
       sandbox.stub(instance, 'isContent');
       sandbox.stub(instance, 'isEditor');
       sandbox.stub(instance, 'isPreview');
-      sandbox.stub(instance, 'isDev');
       sandbox.stub(instance, 'fireEvent');
     });
 
@@ -607,6 +652,7 @@ describe('Test App Store', () => {
     });
 
     it('should handle successful update', async () => {
+      sidekickTest.sandbox.stub(instance, 'isDev').returns(false);
       instance.isContent.returns(true);
       instance.status = { webPath: '/somepath' };
 
@@ -620,11 +666,11 @@ describe('Test App Store', () => {
       const response = await instance.update();
 
       expect(response).to.be.true;
-      expect(instance.fireEvent.calledWith('previewed', '/somepath')).to.be.true;
     });
 
     it('should bust client cache', async () => {
-      instance.isEditor.returns(true);
+      sidekickTest.sandbox.stub(instance, 'isDev').returns(false);
+      instance.isPreview.returns(true);
       instance.status = { webPath: '/somepath' };
       instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.hlx.page';
 
@@ -638,8 +684,29 @@ describe('Test App Store', () => {
       const response = await instance.update();
 
       expect(response).to.be.true;
-      expect(instance.fireEvent.calledWith('previewed', '/somepath')).to.be.true;
       expect(fakeFetch.args[1][0]).to.equal('https://main--aem-boilerplate--adobe.hlx.page/somepath');
+      expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
+    });
+
+    it('should bust client cache (localhost)', async () => {
+      sidekickTest.sandbox.stub(instance, 'isDev').returns(true);
+      instance.isPreview.returns(true);
+      instance.siteStore.devUrl = new URL('http://localhost:3000');
+      instance.location = new URL('http://localhost:3000/somepath');
+      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.hlx.page';
+      instance.status = { webPath: '/somepath' };
+
+      fakeFetch.resolves({
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+        json: () => Promise.resolve({ webPath: '/somepath' }),
+      });
+
+      const response = await instance.update();
+
+      expect(response).to.be.true;
+      expect(fakeFetch.args[1][0]).to.equal('localhost:3000/somepath');
       expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
     });
 
@@ -693,7 +760,6 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(setStateStub.calledWith(STATE.PREVIEWING)).is.true;
     });
 
     it('should show previewing, update, and handle success response with toast action', async () => {
@@ -783,7 +849,6 @@ describe('Test App Store', () => {
 
       const resp = await instance.delete();
       expect(resp).to.be.true;
-      expect(instance.fireEvent.calledWith('deleted', deletePath)).to.be.true;
     });
 
     it('deletes published content from preview and live', async () => {
@@ -806,7 +871,6 @@ describe('Test App Store', () => {
 
       expect(resp).to.be.true;
       expect(unpublishStub.calledOnce).to.be.true;
-      expect(instance.fireEvent.calledWith('deleted', deletePath)).to.be.true;
     });
 
     it('only deletes content', async () => {
@@ -836,7 +900,6 @@ describe('Test App Store', () => {
   describe('publish', () => {
     let instance;
     let fetchStub;
-    let fireEventStub;
 
     beforeEach(() => {
       instance = appStore;
@@ -848,7 +911,6 @@ describe('Test App Store', () => {
           headers: new Headers(),
           json: () => Promise.resolve({}),
         });
-      fireEventStub = sidekickTest.sandbox.stub(instance, 'fireEvent');
     });
 
     afterEach(() => {
@@ -881,7 +943,6 @@ describe('Test App Store', () => {
       const resp = await instance.publish();
 
       expect(fetchStub.called).is.true;
-      expect(fireEventStub.calledWith('published', '/somepath')).is.true;
       expect(resp).to.equal(true);
     });
 
@@ -905,8 +966,6 @@ describe('Test App Store', () => {
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
-
-      expect(fetchStub.calledWith('https://main--aem-boilerplate--adobe.hlx.live/somepath', sinon.match.has('cache', 'reload'))).is.true;
     });
 
     it('should purge host', async () => {
@@ -917,9 +976,6 @@ describe('Test App Store', () => {
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
-
-      expect(fetchStub.args[1][0]).to.equal('https://aem-boilerplate.com/somepath');
-      expect(fetchStub.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
     });
 
     it('should handle publish when host is defined', async () => {
@@ -929,8 +985,6 @@ describe('Test App Store', () => {
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
-
-      expect(fetchStub.calledWith('https://aem-boilerplate.com/somepath', sinon.match.has('cache', 'reload'))).is.true;
     });
 
     it('should use correct parameters for fetch call', async () => {
@@ -1002,7 +1056,6 @@ describe('Test App Store', () => {
       const resp = await instance.unpublish();
 
       expect(resp).to.be.true;
-      sinon.assert.calledWith(instance.fireEvent, 'unpublished', unpublishPath);
     });
 
     it('only unpublishes content', async () => {
@@ -1352,12 +1405,19 @@ describe('Test App Store', () => {
     let instance;
     let clock;
     let getProfileStub;
+    let reloadPageStub;
     let sandbox;
     let toastSpy;
 
     beforeEach(async () => {
       instance = appStore;
       instance.languageDict = await fetchLanguageDict(undefined, 'en');
+      const config = {
+        ...defaultSidekickConfig,
+        host: 'aem-boilerplate.com',
+      };
+
+      await instance.loadContext(sidekickElement, config);
       sandbox = sinon.createSandbox();
       clock = sandbox.useFakeTimers();
       window.hlx = {};
@@ -1367,6 +1427,7 @@ describe('Test App Store', () => {
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       toastSpy = sandbox.spy(appStore, 'showToast');
       getProfileStub = sandbox.stub(appStore, 'getProfile').resolves(false);
+      reloadPageStub = sandbox.stub(appStore, 'reloadPage');
     });
 
     afterEach(() => {
@@ -1392,11 +1453,13 @@ describe('Test App Store', () => {
 
     it('handles successful login correctly', async () => {
       instance.sidekick = document.createElement('div');
+
       getProfileStub.onCall(0).resolves(false);
       getProfileStub.onCall(4).resolves({ name: 'foo' }); // Simulate success on the 5th attempt
 
       const loginEventSpy = sinon.spy();
-      instance.sidekick.addEventListener('loggedin', loginEventSpy);
+      const rumStub = sinon.stub(instance, 'sampleRUM');
+      instance.sidekick.addEventListener('logged-in', loginEventSpy);
 
       // Mock other methods called upon successful login
       const initStoreStub = sandbox.stub(instance.siteStore, 'initStore').resolves();
@@ -1410,19 +1473,52 @@ describe('Test App Store', () => {
       expect(initStoreStub.called).to.be.true;
       expect(setupCorePluginsStub.called).to.be.true;
       expect(fetchStatusStub.called).to.be.true;
+      expect(rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'logged-in',
+      })).to.be.true;
     }).timeout(20000);
+
+    it('reloads page after successful login if 401 page', async () => {
+      document.body.innerHTML = '<pre>401 Unauthorized</pre>';
+      instance.sidekick = document.createElement('div');
+      document.body.prepend(instance.sidekick);
+
+      getProfileStub.onCall(0).resolves({ name: 'foo' }); // Simulate success on the 1st attempt
+
+      // Mock other methods called upon successful login
+      const initStoreStub = sandbox.stub(instance.siteStore, 'initStore').resolves();
+      const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
+      const fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
+
+      instance.login(false); // Call without selectAccount
+
+      await clock.tickAsync(5000); // Fast-forward time
+
+      expect(initStoreStub.called).to.be.true;
+      expect(setupCorePluginsStub.called).to.be.true;
+      expect(fetchStatusStub.called).to.be.false;
+      expect(reloadPageStub.called).to.be.true;
+    });
   });
 
   describe('logout', () => {
     let instance;
     let clock;
     let getProfileStub;
+    let reloadPageStub;
     let sandbox;
     let toastSpy;
 
     beforeEach(async () => {
       instance = appStore;
       instance.languageDict = await fetchLanguageDict(undefined, 'en');
+      const config = {
+        ...defaultSidekickConfig,
+        host: 'aem-boilerplate.com',
+      };
+
+      await instance.loadContext(sidekickElement, config);
       sandbox = sinon.createSandbox();
       clock = sandbox.useFakeTimers();
       window.hlx = {};
@@ -1430,6 +1526,7 @@ describe('Test App Store', () => {
       // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       toastSpy = sandbox.spy(appStore, 'showToast');
+      reloadPageStub = sandbox.stub(appStore, 'reloadPage');
     });
 
     afterEach(() => {
@@ -1462,8 +1559,9 @@ describe('Test App Store', () => {
       getProfileStub.onCall(0).resolves({ name: 'foo' });
       getProfileStub.onCall(4).resolves(false); // Simulate success on the 5th attempt
 
+      const rumStub = sinon.stub(instance, 'sampleRUM');
       const loginEventSpy = sinon.spy();
-      instance.sidekick.addEventListener('loggedout', loginEventSpy);
+      instance.sidekick.addEventListener('logged-out', loginEventSpy);
 
       const statusEventSpy = sinon.spy();
       instance.sidekick.addEventListener('statusfetched', statusEventSpy);
@@ -1484,6 +1582,12 @@ describe('Test App Store', () => {
 
       await waitUntil(() => statusEventSpy.calledTwice, 'Status should fire twice');
       expect(statusEventSpy.calledTwice).to.be.true;
+
+      expect(rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'logged-out',
+      })).to.be.true;
+      expect(reloadPageStub.called).to.be.true;
     }).timeout(20000);
   });
 
@@ -1543,6 +1647,12 @@ describe('Test App Store', () => {
     it('should return "Google Drive" if sourceLocation includes "gdrive:"', () => {
       instance.siteStore.contentSourceType = 'google';
       expect(instance.getContentSourceLabel()).to.equal('Google Drive');
+    });
+
+    it('should return "Document Authoring" if a label is provided', () => {
+      instance.siteStore.contentSourceType = 'markup';
+      instance.siteStore.contentSourceEditLabel = 'Document Authoring';
+      expect(instance.getContentSourceLabel()).to.equal('Document Authoring');
     });
 
     it('should return "BYOM" for everything else', () => {

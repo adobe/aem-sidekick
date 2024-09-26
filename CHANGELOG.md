@@ -1,3 +1,95 @@
+## [1.32.1](https://github.com/adobe/aem-sidekick/compare/v1.32.0...v1.32.1) (2024-09-24)
+
+
+### Bug Fixes
+
+* update manifest version before publishing ([#276](https://github.com/adobe/aem-sidekick/issues/276)) ([1891a16](https://github.com/adobe/aem-sidekick/commit/1891a164bedcdd49fd89738b3cbdc73fffe9bc3c))
+
+# [1.32.0](https://github.com/adobe/aem-sidekick/compare/v1.31.4...v1.32.0) (2024-09-24)
+
+
+### Bug Fixes
+
+* dynamically load in ui.js ([a4fc57d](https://github.com/adobe/aem-sidekick/commit/a4fc57d5120233c1e7a1bd777dbceb1af19a71bf))
+* remove dynamic import from background script ([58cc888](https://github.com/adobe/aem-sidekick/commit/58cc88814ba5f19345cb5a362e1f8c182b1e52cd))
+
+
+### Features
+
+* extensible source support ([#245](https://github.com/adobe/aem-sidekick/issues/245)) ([#268](https://github.com/adobe/aem-sidekick/issues/268)) ([a834be2](https://github.com/adobe/aem-sidekick/commit/a834be244a1f85e1036d1e7aee9ac1fe427c5861))
+* **publish:** add confirm option ([#262](https://github.com/adobe/aem-sidekick/issues/262)) ([7e8e1fc](https://github.com/adobe/aem-sidekick/commit/7e8e1fc7896f44b98cab0bebd6c3551edc9b1d92))
+* support transient site token ([#272](https://github.com/adobe/aem-sidekick/issues/272)) ([2aeb56a](https://github.com/adobe/aem-sidekick/commit/2aeb56a497df99e0d62106c4284b0faea0d94726))
+
+## [1.31.4](https://github.com/adobe/aem-sidekick/compare/v1.31.3...v1.31.4) (2024-09-19)
+
+
+### Bug Fixes
+
+* switch to rum click events ([#258](https://github.com/adobe/aem-sidekick/issues/258)) ([9006c20](https://github.com/adobe/aem-sidekick/commit/9006c20f889c78e1acdf092c77901fd298d37534))
+
+## [1.31.3](https://github.com/adobe/aem-sidekick/compare/v1.31.2...v1.31.3) (2024-09-12)
+
+
+### Bug Fixes
+
+* don't remove nocache at start of content script ([#252](https://github.com/adobe/aem-sidekick/issues/252)) ([481e499](https://github.com/adobe/aem-sidekick/commit/481e499744940e46475755b98604e69055acb5de))
+* obsolete success toasts ([#256](https://github.com/adobe/aem-sidekick/issues/256)) ([69180a6](https://github.com/adobe/aem-sidekick/commit/69180a68a03b8cbb4f06ebb7b66f0ca4b69e09b7))
+* update right side width calculation ([#257](https://github.com/adobe/aem-sidekick/issues/257)) ([8c5b759](https://github.com/adobe/aem-sidekick/commit/8c5b7595667f9aaf16e6ab16ed325c6a9c77d243))
+
+## [1.31.2](https://github.com/adobe/aem-sidekick/compare/v1.31.1...v1.31.2) (2024-09-10)
+
+
+### Bug Fixes
+
+* rework palette, allow hiding ([#250](https://github.com/adobe/aem-sidekick/issues/250)) ([e95548f](https://github.com/adobe/aem-sidekick/commit/e95548fb5a0ba798563e3d091ba3fff7c838392c))
+
+## [1.31.1](https://github.com/adobe/aem-sidekick/compare/v1.31.0...v1.31.1) (2024-09-10)
+
+
+### Bug Fixes
+
+* random session rule id ([#249](https://github.com/adobe/aem-sidekick/issues/249)) ([23027a3](https://github.com/adobe/aem-sidekick/commit/23027a35599e6b32a7946b66333e986863f7abd9))
+
+# [1.31.0](https://github.com/adobe/aem-sidekick/compare/v1.30.2...v1.31.0) (2024-09-09)
+
+
+### Features
+
+* add cache buster ([#243](https://github.com/adobe/aem-sidekick/issues/243)) ([63a7dc5](https://github.com/adobe/aem-sidekick/commit/63a7dc5ad35ae646523395e24f10065252cb374f))
+
+## [1.30.2](https://github.com/adobe/aem-sidekick/compare/v1.30.1...v1.30.2) (2024-08-30)
+
+
+### Bug Fixes
+
+* dispatch sidekick-ready, test statusfetched ([#240](https://github.com/adobe/aem-sidekick/issues/240)) ([bb3e8f6](https://github.com/adobe/aem-sidekick/commit/bb3e8f6eb33e0a93eda368d9f33ebe9649702f85))
+
+## [1.30.1](https://github.com/adobe/aem-sidekick/compare/v1.30.0...v1.30.1) (2024-08-28)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([d517619](https://github.com/adobe/aem-sidekick/commit/d5176196e23573fe768642f59958b622e13bd038))
+
+# [1.30.0](https://github.com/adobe/aem-sidekick/compare/v1.29.0...v1.30.0) (2024-08-28)
+
+
+### Features
+
+* support cross origin request to tools and labs ([#236](https://github.com/adobe/aem-sidekick/issues/236)) ([314e2b8](https://github.com/adobe/aem-sidekick/commit/314e2b8d1c8d2f85e72abc1c9423f74c6662af1c))
+
+# [1.29.0](https://github.com/adobe/aem-sidekick/compare/v1.28.10...v1.29.0) (2024-08-15)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([06d1294](https://github.com/adobe/aem-sidekick/commit/06d129486f083f952ccec672c405f889d6b7a724))
+
+
+### Features
+
+* project migration ([#230](https://github.com/adobe/aem-sidekick/issues/230)) ([b8b4fc4](https://github.com/adobe/aem-sidekick/commit/b8b4fc4d73143ec6ce061310530c291879191ba3))
+
 ## [1.28.10](https://github.com/adobe/aem-sidekick/compare/v1.28.9...v1.28.10) (2024-07-30)
 
 

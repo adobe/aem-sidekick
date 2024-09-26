@@ -206,3 +206,42 @@ export function globToRegExp(glob) {
     .replace(/_/g, '.*');
   return new RegExp(`^${reString}$`);
 }
+
+/**
+ * Detects the browser.
+ * @private
+ * @param {string} userAgent The user agent
+ * @returns {string} The browser
+ */
+export function detectBrowser(userAgent) {
+  userAgent = userAgent.toLowerCase();
+  if (userAgent.includes('edg/')) {
+    return 'edge';
+  } else if (userAgent.includes('opr/')) {
+    return 'opera';
+  } else if (userAgent.includes('samsung')) {
+    return 'samsung';
+  } else if (userAgent.includes('chrome/')) {
+    return 'chrome';
+  } else if (userAgent.includes('safari/')) {
+    return 'safari';
+  } else if (userAgent.includes('firefox/')) {
+    return 'firefox';
+  }
+  return 'other';
+}
+
+/**
+ * Detects an AEM 401 error page.
+ * @param {Location} location The location object
+ * @aparm {Document} document The document object
+ * @returns {boolean} True if 401 page
+ */
+export function is401Page(location, document) {
+  return ((location.host.endsWith('.aem.page')
+    || location.host.endsWith('.aem.live')
+    || location.hostname === 'localhost')
+    && !document.querySelector('body > main > div')
+    && document.querySelector('body > pre') === document.body.children[1]
+    && document.querySelector('body > pre').textContent.trim() === '401 Unauthorized');
+}

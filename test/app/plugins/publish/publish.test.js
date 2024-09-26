@@ -9,8 +9,10 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
+/* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, no-underscore-dangle */
 
+// @ts-ignore
+import fetchMock from 'fetch-mock/esm/client.js';
 import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
@@ -50,8 +52,7 @@ describe('Publish plugin', () => {
     appStore = new AppStore();
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
     sidekickTest
-      .mockFetchStatusSuccess()
-      .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+      .mockFetchStatusSuccess();
   });
 
   afterEach(() => {
@@ -59,9 +60,10 @@ describe('Publish plugin', () => {
   });
 
   describe('switching between environments', () => {
-    it('publish from preview - docx with toast timeout', async () => {
+    it('publish from preview', async () => {
       const { sandbox } = sidekickTest;
       sidekickTest
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW)
         .mockFetchSidekickConfigSuccess(false, false);
 
       const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
@@ -81,42 +83,53 @@ describe('Publish plugin', () => {
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
 
       expect(showToastSpy.calledWith('Publication successful, opening Live...', 'positive')).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'published',
+      })).to.be.true;
     }).timeout(15000);
 
-    it('publish from preview - docx with toast dismiss', async () => {
+    it('publish from preview - with host', async () => {
       const { sandbox } = sidekickTest;
       sidekickTest
-        .mockFetchSidekickConfigSuccess(false, false);
-
-      const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
-      const showToastSpy = sandbox.spy(appStore, 'showToast');
-      const closeToastSpy = sandbox.spy(appStore, 'closeToast');
-
-      sidekick = sidekickTest.createSidekick();
-
-      await sidekickTest.awaitEnvSwitcher();
-
-      const publishPlugin = recursiveQuery(sidekick, '.publish');
-      expect(publishPlugin.textContent.trim()).to.equal('Publish');
-      await waitUntil(() => publishPlugin.getAttribute('disabled') === null);
-      publishPlugin.click();
-
-      await waitUntil(() => publishStub.calledOnce);
-
-      await sidekickTest.clickToastClose();
-
-      await waitUntil(() => closeToastSpy.calledOnce, 'toast was not dismissed', { timeout: 5000 });
-      expect(showToastSpy.calledWith('Publication successful, opening Live...', 'positive')).to.be.true;
-    }).timeout(15000);
-
-    it('publish from preview - docx with host and toast dismiss', async () => {
-      const { sandbox } = sidekickTest;
-      sidekickTest
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW)
         .mockFetchSidekickConfigSuccess(true, false);
 
       const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
+      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').resolves();
       const showToastSpy = sandbox.spy(appStore, 'showToast');
-      const closeToastSpy = sandbox.spy(appStore, 'closeToast');
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const publishPlugin = recursiveQuery(sidekick, '.publish');
+      expect(publishPlugin.textContent.trim()).to.equal('Publish');
+      await waitUntil(() => publishPlugin.getAttribute('disabled') === null);
+      publishPlugin.click();
+
+      await waitUntil(() => publishStub.calledOnce);
+      await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called');
+
+      expect(showToastSpy.calledWith('Publication successful, opening Production...', 'positive')).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'published',
+      })).to.be.true;
+    }).timeout(15000);
+
+    it('publish from live ', async () => {
+      const { sandbox } = sidekickTest;
+      sidekickTest
+        .mockHelixEnvironment(HelixMockEnvironments.LIVE)
+        .mockFetchSidekickConfigSuccess(false, false);
+
+      const mockFetch = fetchMock.get('https://main--aem-boilerplate--adobe.hlx.live/', {
+        status: 200,
+      });
+
+      const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
+      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').resolves();
 
       sidekick = sidekickTest.createSidekick();
 
@@ -129,10 +142,98 @@ describe('Publish plugin', () => {
 
       await waitUntil(() => publishStub.calledOnce);
 
-      await sidekickTest.clickToastClose();
-
-      await waitUntil(() => closeToastSpy.calledOnce, 'toast was not dismissed', { timeout: 5000 });
-      expect(showToastSpy.calledWith('Publication successful, opening Production...', 'positive')).to.be.true;
+      await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
+      expect(switchEnvStub.calledWith('prod', false, false)).to.be.true;
+      expect(mockFetch._calls[3].identifier).to.eq('https://main--aem-boilerplate--adobe.hlx.live/');
+      expect(mockFetch._calls[3].options.cache).to.eq('reload');
+      expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'published',
+      })).to.be.true;
     }).timeout(15000);
+
+    it('publish from prod host', async () => {
+      const { sandbox } = sidekickTest;
+      sidekickTest
+        .mockHelixEnvironment(HelixMockEnvironments.PROD)
+        .mockFetchSidekickConfigSuccess(true, false);
+
+      const mockFetch = fetchMock.get('https://www.aemboilerplate.com/', {
+        status: 200,
+      });
+
+      const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
+      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').resolves();
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const publishPlugin = recursiveQuery(sidekick, '.publish');
+      expect(publishPlugin.textContent.trim()).to.equal('Publish');
+      await waitUntil(() => publishPlugin.getAttribute('disabled') === null);
+      publishPlugin.click();
+
+      await waitUntil(() => publishStub.calledOnce);
+
+      await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
+      expect(switchEnvStub.calledWith('prod', false, false)).to.be.true;
+      expect(mockFetch._calls[3].identifier).to.eq('https://www.aemboilerplate.com/');
+      expect(mockFetch._calls[3].options.cache).to.eq('reload');
+      expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'published',
+      })).to.be.true;
+    }).timeout(15000);
+  });
+
+  describe('custom overrides', () => {
+    it('shows confirmation modal if confirm is true', async () => {
+      const { sandbox } = sidekickTest;
+      sidekickTest
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW)
+        .mockFetchSidekickConfigSuccess(true, false, {
+          plugins: [{
+            id: 'publish',
+            confirm: true,
+          }],
+        });
+
+      const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
+      const switchEnvStub = sandbox.stub(appStore, 'switchEnv').resolves();
+      const showToastSpy = sandbox.spy(appStore, 'showToast');
+      const showModalSpy = sandbox.spy(appStore, 'showModal');
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const publishPlugin = recursiveQuery(sidekick, '.publish');
+      expect(publishPlugin.textContent.trim()).to.equal('Publish');
+      await waitUntil(() => publishPlugin.getAttribute('disabled') === null);
+      publishPlugin.click();
+
+      await waitUntil(() => showModalSpy.called);
+      expect(showModalSpy.calledWith({
+        type: 'confirm',
+        data: {
+          headline: 'Publish',
+          message: 'Are you sure you want to publish this page?',
+          confirmLabel: 'Publish',
+        },
+      }));
+
+      // confirm publish
+      const dialogWrapper = recursiveQuery(sidekick, 'sp-dialog-wrapper');
+      const publishButton = recursiveQuery(dialogWrapper, 'sp-button[variant="accent"]');
+      publishButton.click();
+
+      await waitUntil(() => publishStub.calledOnce);
+      await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called');
+
+      expect(showToastSpy.calledWith('Publication successful, opening Production...', 'positive')).to.be.true;
+    });
   });
 });

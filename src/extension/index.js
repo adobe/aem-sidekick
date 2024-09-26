@@ -33,8 +33,6 @@ import './app/components/action-bar/menu-item/menu-item.js';
 import './app/components/theme/theme.js';
 import './app/components/plugin/plugin-action-bar.js';
 import './app/components/plugin/palette-container.js';
-import './app/components/plugin/palette-dialog/palette-dialog-wrapper.js';
-import './app/components/plugin/palette-dialog/palette-dialog.js';
 import './app/components/plugin/env-switcher/env-switcher.js';
 import './app/components/plugin/login/login.js';
 import './app/components/dialog-wrapper/dialog-wrapper.js';

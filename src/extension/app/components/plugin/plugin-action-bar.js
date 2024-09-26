@@ -20,7 +20,6 @@ import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import '../action-bar/activity-action/activity-action.js';
 import '../bulk/bulk-info/bulk-info.js';
-import sampleRUM from '../../../utils/rum.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} Plugin
@@ -155,6 +154,7 @@ export class PluginActionBar extends ConnectedElement {
 
     // Plugin menu container styles
     const pluginMenuStyles = window.getComputedStyle(this.actionGroups[1]);
+    const pluginMenuPadding = parseInt(pluginMenuStyles.padding, 10);
     const pluginMenuWidth = parseInt(pluginMenuStyles.width, 10);
 
     // System plugin container styles
@@ -163,7 +163,7 @@ export class PluginActionBar extends ConnectedElement {
     const systemWidth = parseInt(systemStyles.width, 10);
 
     // Combined width of system plugins and plugin menu containers
-    const rightWidth = pluginMenuWidth + systemWidth + (systemPadding * 2) + 8;
+    const rightWidth = pluginMenuWidth + (pluginMenuPadding * 2) + systemWidth + (systemPadding * 2) + 2;
 
     // Try moving the first transient plugin back to the bar
     if (barWidthSameOrLess) {
@@ -283,14 +283,14 @@ export class PluginActionBar extends ConnectedElement {
     const menu = await this.sidekickMenu;
     menu.removeAttribute('open');
 
-    if (value === 'open-help') {
-      sampleRUM('sidekick:open-help');
+    if (value === 'help-opened') {
+      this.appStore.sampleRUM('click', { source: 'sidekick', target: 'help-opened' });
       this.appStore.openPage('https://www.aem.live/docs/sidekick');
       return;
     }
 
     if (value === 'project-added' || value === 'project-removed') {
-      sampleRUM(`sidekick:${value}`);
+      this.appStore.sampleRUM('click', { source: 'sidekick', target: value });
       chrome.runtime.sendMessage({ action: 'addRemoveProject' });
       return;
     }
@@ -329,7 +329,7 @@ export class PluginActionBar extends ConnectedElement {
             </sk-menu-item>
           `
         }
-        <sk-menu-item class="icon-item" value="open-help"  @click=${this.handleItemSelection}>
+        <sk-menu-item class="icon-item" value="help-opened"  @click=${this.handleItemSelection}>
           <sp-icon slot="icon" size="m">
             ${ICONS.HELP_ICON}
           </sp-icon>
@@ -352,7 +352,7 @@ export class PluginActionBar extends ConnectedElement {
 
     systemPlugins.push(html`
       <div class="logo">
-        ${ICONS.ADOBE_LOGO}
+        ${ICONS.SIDEKICK_LOGO}
       </div>
     `);
 

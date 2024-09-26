@@ -21,6 +21,7 @@ import sampleRUM from '../../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
 import {
   getLocation, matchProjectHost, isSupportedFileExtension, globToRegExp,
+  is401Page,
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
@@ -181,7 +182,6 @@ export class AppStore {
    * and retrieves the location of the current document.
    * @param {AEMSidekick} sidekick The sidekick HTMLElement
    * @param {SidekickOptionsConfig} inputConfig The sidekick config
-   * @fires Sidekick#contextloaded
    */
   async loadContext(sidekick, inputConfig) {
     this.sidekick = sidekick;
@@ -203,11 +203,6 @@ export class AppStore {
     this.setupPlugins();
 
     this.fetchStatus();
-
-    this.fireEvent(EXTERNAL_EVENTS.CONTEXT_LOADED, {
-      config: this.siteStore.toJSON(),
-      location: this.location,
-    });
 
     this.showView();
   }
@@ -333,16 +328,17 @@ export class AppStore {
             includePaths,
             isContainer,
             containerId,
+            confirm,
           } = cfg;
           const condition = (appStore) => {
             let excluded = false;
             const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
             if (excludePaths && Array.isArray(excludePaths)
-                && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
               excluded = true;
             }
             if (includePaths && Array.isArray(includePaths)
-                && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
               excluded = false;
             }
             if (excluded) {
@@ -361,7 +357,7 @@ export class AppStore {
             };
             return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
           };
-            // assemble plugin config
+          // assemble plugin config
           const plugin = {
             custom: true,
             id,
@@ -402,6 +398,7 @@ export class AppStore {
               isDropdown: isContainer,
             },
             pinned,
+            confirm,
             container: containerId,
           };
           // check if this overlaps with a core plugin, if so override the condition only
@@ -410,6 +407,7 @@ export class AppStore {
             // extend default condition
             const { condition: defaultCondition } = corePlugin.config;
             corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
+            corePlugin.config.confirm = confirm;
           } else {
             // add custom plugin
             const customPlugin = new Plugin(plugin, this);
@@ -604,12 +602,14 @@ export class AppStore {
    * @returns {string} The content source label
    */
   getContentSourceLabel() {
-    const { contentSourceType } = this.siteStore;
+    const { contentSourceType, contentSourceEditLabel } = this.siteStore;
 
     if (contentSourceType === 'onedrive') {
       return 'SharePoint';
     } else if (contentSourceType === 'google') {
       return 'Google Drive';
+    } else if (contentSourceEditLabel) {
+      return contentSourceEditLabel;
     } else {
       return 'BYOM';
     }
@@ -647,9 +647,13 @@ export class AppStore {
    * Navigates to the provided URL in the current window. Abstracted for testing.
    * @param {string} url The URL to load
    */
-  // istanbul ignore next 3
+  // istanbul ignore next 7
   loadPage(url) {
-    window.location.href = url;
+    if (url === window.location.href) {
+      window.location.reload();
+    } else {
+      window.location.href = url;
+    }
   }
 
   /**
@@ -694,26 +698,20 @@ export class AppStore {
         detail: { data },
       }));
       const userEvents = [
-        'shown',
         'hidden',
         'updated',
         'previewed',
         'published',
         'unpublished',
         'deleted',
-        'envswitched',
-        'loggedin',
-        'loggedout',
-        'helpnext',
-        'helpdismissed',
-        'helpacknowlegded',
-        'helpoptedout',
+        'logged-in',
+        'logged-out',
       ];
       if (name.startsWith('custom:') || userEvents.includes(name)) {
         /* istanbul ignore next */
-        sampleRUM(`sidekick:${name}`, {
-          source: data?.sourceUrl || this.location.href,
-          target: data?.targetUrl || this.status.webPath,
+        this.sampleRUM('click', {
+          source: 'sidekick',
+          target: name,
         });
       }
     } catch (e) {
@@ -762,6 +760,15 @@ export class AppStore {
       actionOnTimeout,
     };
     this.setState(STATE.TOAST);
+  }
+
+  /**
+   * Samples RUM event, abstracted for testing.
+   * @param {string} event The event name
+   * @param {Object} data The event data
+   */
+  sampleRUM(event, data) {
+    sampleRUM(event, data);
   }
 
   /**
@@ -882,11 +889,12 @@ export class AppStore {
     // update preview
     const previewStatus = await this.api.updatePreview(path);
     if (previewStatus) {
-      if (this.isEditor() || this.isPreview() || this.isDev()) {
-        // bust client cache
-        await fetch(`https://${siteStore.innerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
+      // If we are on preview, we need to bust the cache on the page to ensure the latest
+      // content is loaded.
+      if (this.isPreview()) {
+        const host = this.isDev() ? siteStore.devUrl.host : `https://${siteStore.innerHost}`;
+        await fetch(`${host}${path}`, { cache: 'reload', mode: 'no-cors' });
       }
-      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED, path);
     }
 
     return !!previewStatus;
@@ -910,12 +918,8 @@ export class AppStore {
       if (this.status.webPath.startsWith('/.helix/')) {
         this.showToast(this.i18n('config_success'), 'positive');
       } else {
-        /* istanbul ignore next 4 */
-        const actionCallback = () => {
-          this.setState();
-          this.switchEnv('preview');
-        };
-        this.showToast(this.i18n('preview_success'), 'positive', undefined, actionCallback, 'Open');
+        this.showToast(this.i18n('preview_success'), 'positive');
+        this.switchEnv('preview', false, true);
       }
     }
   }
@@ -943,7 +947,6 @@ export class AppStore {
     if (resp && status.live && status.live.lastModified) {
       await this.unpublish();
     }
-    this.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED, path);
 
     return !!resp;
   }
@@ -955,7 +958,7 @@ export class AppStore {
    * @returns {Promise<boolean>} True if the page was published successfully, false otherwise
    */
   async publish(path) {
-    const { siteStore, status } = this;
+    const { status } = this;
     path = path || status.webPath;
 
     // publish content only
@@ -967,18 +970,6 @@ export class AppStore {
 
     // update live
     const resp = await this.api.updateLive(path);
-    if (resp) {
-      // bust client cache for live and production
-      if (siteStore.outerHost) {
-        // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
-        await fetch(`https://${siteStore.outerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
-      }
-      if (siteStore.host) {
-        // reuse purgeURL to ensure page relative paths (e.g. when publishing dependencies)
-        await fetch(`https://${siteStore.host}${path}`, { cache: 'reload', mode: 'no-cors' });
-      }
-      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED, path);
-    }
 
     return !!resp;
   }
@@ -1001,10 +992,6 @@ export class AppStore {
 
     // delete live
     const resp = await this.api.updateLive(path, true);
-    if (resp) {
-      this.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, path);
-    }
-
     return !!resp;
   }
 
@@ -1094,6 +1081,27 @@ export class AppStore {
     }
   }
 
+  getBYOMSourceUrl() {
+    const {
+      owner,
+      repo,
+      contentSourceUrl,
+      contentSourceEditPattern,
+    } = this.siteStore;
+    if (!contentSourceEditPattern || typeof contentSourceEditPattern !== 'string') return undefined;
+
+    let { pathname } = this.location;
+    if (pathname.endsWith('/')) pathname += 'index';
+
+    const url = contentSourceEditPattern
+      .replace('{{contentSourceUrl}}', contentSourceUrl)
+      .replace('{{org}}', owner)
+      .replace('{{site}}', repo)
+      .replace('{{pathname}}', pathname);
+
+    return url;
+  }
+
   /**
    * Switches to (or opens) a given environment.
    * @param {string} targetEnv One of the following environments:
@@ -1101,7 +1109,7 @@ export class AppStore {
    * @param {boolean} [open] true if environment should be opened in new tab
    * @fires Sidekick#envswitched
    */
-  async switchEnv(targetEnv, open = false) {
+  async switchEnv(targetEnv, open = false, cacheBust = false) {
     const hostType = ENVS[targetEnv];
     if (!hostType) {
       // eslint-disable-next-line no-console
@@ -1134,7 +1142,7 @@ export class AppStore {
 
     if (targetEnv === 'edit') {
       const updatedStatus = await this.fetchStatus(false, true);
-      envUrl = updatedStatus.edit && updatedStatus.edit.url;
+      envUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
     }
 
     const [customView] = this.findViews(VIEWS.CUSTOM);
@@ -1142,6 +1150,17 @@ export class AppStore {
       const customViewUrl = new URL(customView.viewer, envUrl);
       customViewUrl.searchParams.set('path', status.webPath);
       envUrl = customViewUrl.href;
+    }
+
+    // Check if cache busting should be applied based on the environment and conditions.
+    // The logic prevents cache busting if:
+    // The target environment is 'prod' && the envUrl does not include any of the live
+    // domains & the sidekick is running in transient mode.
+    const liveDomains = ['aem.live', 'hlx.live'];
+    if (cacheBust
+      && !(targetEnv === 'prod' && !liveDomains.some((domain) => envUrl.includes(domain)) && this.siteStore.transient)) {
+      const separator = envUrl.includes('?') ? '&' : '?';
+      envUrl = `${envUrl}${separator}nocache=${Date.now()}`;
     }
 
     // switch or open env
@@ -1210,8 +1229,13 @@ export class AppStore {
             && window.hlx.sidekickConfig
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
-          this.fetchStatus();
-          this.fireEvent('loggedin');
+          this.fireEvent('logged-in');
+          // refresh page with site token in case of 401
+          if (is401Page(this.location, window.document)) {
+            this.reloadPage();
+          } else {
+            this.fetchStatus();
+          }
           return;
         }
         if (attempts >= 5) {
@@ -1255,7 +1279,9 @@ export class AppStore {
           await this.siteStore.initStore(siteStore);
           this.setupPlugins();
           this.fetchStatus();
-          this.fireEvent('loggedout');
+          this.fireEvent('logged-out');
+          // refresh the page to reflect logged out state
+          this.reloadPage();
           return;
         }
         if (attempts >= 5) {

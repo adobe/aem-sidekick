@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import sampleRUM from './utils/rum.js';
 import { getConfig, setConfig } from './config.js';
 
 /**
@@ -29,6 +30,11 @@ export async function getDisplay() {
 export async function setDisplay(display) {
   await setConfig('local', {
     display,
+  });
+
+  sampleRUM('click', {
+    source: 'sidekick',
+    target: `${display ? 'shown' : 'hidden'}`,
   });
   return display;
 }

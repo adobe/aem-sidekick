@@ -155,7 +155,7 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.project).to.equal('AEM Boilerplate');
       expect(appStore.siteStore.innerHost).to.equal('custom-preview-host.com');
       expect(appStore.siteStore.liveHost).to.equal('custom-live-host.com');
-      expect(appStore.siteStore.host).to.equal('custom-host.com');
+      expect(appStore.siteStore.host).to.equal('www.aemboilerplate.com');
 
       expect(appStore.siteStore.plugins.length).to.equal(9);
       const firstPlugin = appStore.siteStore.plugins[0];
@@ -191,6 +191,19 @@ describe('Test Site Store', () => {
       await appStore.loadContext(sidekickElement, undefined);
       expect(appStore.siteStore.owner).to.equal('adobe');
       expect(appStore.siteStore.repo).to.equal('aem-boilerplate');
+    });
+
+    it('with custom sourceEditUrl', async () => {
+      /**
+       * @type {SidekickOptionsConfig | ClientConfig}
+       */
+      const config = {
+        ...defaultConfig,
+        editUrlLabel: 'Universal Editor',
+        editUrlPattern: '{{contentSourceUrl}}{{pathname}}?cmd=open',
+      };
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.contentSourceEditLabel).to.equal('Universal Editor');
     });
   });
 });

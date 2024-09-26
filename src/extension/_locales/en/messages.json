@@ -130,10 +130,7 @@
     "config_project_add": {
       "message": "Add this project"
     },
-    "config_project_add_failure": {
-      "message": "Failed to add this project"
-    },
-    "config_project_add_success": {
+    "config_project_added": {
       "message": "$1 successfully added",
       "description": "Project added"
     },
@@ -172,10 +169,7 @@
     "config_project_remove": {
       "message": "Remove this project"
     },
-    "config_project_remove_failure": {
-      "message": "Failed to remove this project"
-    },
-    "config_project_remove_success": {
+    "config_project_removed": {
       "message": "$1 successfully removed",
       "description": "Project removed"
     },
@@ -467,6 +461,9 @@
     },
     "publish": {
       "message": "Publish"
+    },
+    "publish_confirm": {
+      "message": "Are you sure you want to publish this page?"
     },
     "publish_date": {
       "message": "Published: "

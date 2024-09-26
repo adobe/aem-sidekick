@@ -33,13 +33,17 @@ export class DialogWrapper extends SPDialogWrapper {
   accessor negative;
 
   firstUpdated() {
-    if (this.underlay && this.closeOnUnderlayClick) {
-      this.shadowRoot.querySelector('sp-underlay').addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
-        this.remove();
-      });
+    if (this.underlay) {
+      const underlay = this.shadowRoot.querySelector('sp-underlay');
+      underlay.setAttribute('open');
+      if (this.closeOnUnderlayClick) {
+        underlay.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.dispatchEvent(new CustomEvent(MODAL_EVENTS.CLOSE));
+          this.remove();
+        });
+      }
     }
   }
 
