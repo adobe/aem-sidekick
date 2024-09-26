@@ -57,6 +57,7 @@ export class AEMSidekick extends LitElement {
       <theme-wrapper>
         <plugin-action-bar></plugin-action-bar>
         <palette-container></palette-container>
+        <onboarding-dialog></onboarding-dialog>
       </theme-wrapper>
     `;
   }

@@ -55,6 +55,7 @@
     "@spectrum-web-components/progress-circle": "0.46.0",
     "@spectrum-web-components/search": "0.46.0",
     "@spectrum-web-components/status-light": "0.46.0",
+    "@spectrum-web-components/tabs": "0.46.0",
     "@spectrum-web-components/table": "0.46.0",
     "@spectrum-web-components/textfield": "0.46.0",
     "@spectrum-web-components/theme": "0.46.0",
