@@ -43,7 +43,7 @@ export const style = css`
     top: -20px;
     display: flex;
     gap: var(--spectrum-spacing-75);
-    flex-wrap:wrap;
+    flex-wrap: wrap;
   }
 
   action-bar sp-action-group.not-authorized {
