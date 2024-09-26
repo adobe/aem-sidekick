@@ -83,6 +83,10 @@ import { ModalContainer } from '../components/modal/modal-container.js';
  */
 
 /**
+ * @typedef {import('@Types').Toast} Toast
+ */
+
+/**
  * Enum for view types.
  * @enum {number}
  */
@@ -723,26 +727,19 @@ export class AppStore {
 
   /**
    * Displays a toast message
-   * @param {string} message The message to display
-   * @param {string} [variant] The variant of the toast (optional)
-   * @param {Function} [closeCallback] The close callback function
-   * @param {Function} [actionCallback] The action callback function
-   * @param {string} [actionLabel] The action label
-   * @param {Function} [secondaryCallback] The secondary action callback function
-   * @param {string} [secondaryLabel] The secondary action label
-   * @param {number} [timeout] The timeout in milliseconds (optional)
+   * @param {Toast} toast The toast to display
    */
-  showToast(
+  showToast({
     message,
     variant = 'info',
-    closeCallback = undefined,
-    actionCallback = undefined,
-    actionLabel = 'Ok',
-    secondaryCallback = undefined,
-    secondaryLabel = undefined,
+    closeCallback,
+    actionCallback,
+    actionLabel = this.i18n('ok'),
+    secondaryCallback,
+    secondaryLabel,
     timeout = 3000,
-    actionOnTimeout = true,
-  ) {
+    timeoutCallback,
+  }) {
     if (this.toast) {
       this.toast = null;
       this.setState();
@@ -757,9 +754,19 @@ export class AppStore {
       secondaryCallback,
       secondaryLabel,
       timeout,
-      actionOnTimeout,
+      timeoutCallback,
     };
+
     this.setState(STATE.TOAST);
+
+    if (this.toast.timeout > 0) {
+      setTimeout(() => {
+        this.closeToast();
+        if (typeof timeoutCallback === 'function') {
+          timeoutCallback();
+        }
+      }, this.toast.timeout);
+    }
   }
 
   /**
@@ -775,6 +782,11 @@ export class AppStore {
    * Closes the toast message
    */
   closeToast() {
+    const { closeCallback } = this.toast || {};
+    if (typeof closeCallback === 'function') {
+      closeCallback();
+    }
+
     this.toast = null;
     this.setState();
   }
@@ -916,9 +928,15 @@ export class AppStore {
     if (res) {
       // special handling of config files
       if (this.status.webPath.startsWith('/.helix/')) {
-        this.showToast(this.i18n('config_success'), 'positive');
+        this.showToast({
+          message: this.i18n('config_success'),
+          variant: 'positive',
+        });
       } else {
-        this.showToast(this.i18n('preview_success'), 'positive');
+        this.showToast({
+          message: this.i18n('preview_success'),
+          variant: 'positive',
+        });
         this.switchEnv('preview', false, true);
       }
     }
@@ -1240,7 +1258,10 @@ export class AppStore {
         }
         if (attempts >= 5) {
           // give up after 5 attempts
-          this.showToast(this.i18n('error_login_timeout'), 'negative');
+          this.showToast({
+            message: this.i18n('error_login_timeout'),
+            variant: 'negative',
+          });
           return;
         }
       }
@@ -1285,7 +1306,10 @@ export class AppStore {
           return;
         }
         if (attempts >= 5) {
-          this.showToast(this.i18n('error_logout'), 'negative');
+          this.showToast({
+            message: this.i18n('error_logout'),
+            variant: 'negative',
+          });
           return;
         }
       }

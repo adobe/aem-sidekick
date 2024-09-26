@@ -395,7 +395,10 @@ export class BulkStore {
 
     if (paths.find((path) => path.startsWith('/.helix/'))) {
       // special handling for config files
-      this.appStore.showToast(this.appStore.i18n('config_success'), 'positive');
+      this.appStore.showToast({
+        message: this.appStore.i18n('config_success'),
+        variant: 'positive',
+      });
     } else {
       const message = this.getSummaryText(operation, resources.length, failed.length);
       const variant = this.#getSummaryVariant(resources.length, failed.length);
@@ -410,35 +413,29 @@ export class BulkStore {
 
       if (failed.length === 0) {
         // show success toast with open and copy buttons
-        this.appStore.showToast(
+        this.appStore.showToast({
           message,
           variant,
-          null,
-          openUrlsCallback,
-          openUrlsLabel,
-          copyUrlsCallback,
-          copyUrlsLabel,
-          60000, // keep for 1 minute
-          false,
-        );
+          actionCallback: openUrlsCallback,
+          actionLabel: openUrlsLabel,
+          secondaryCallback: copyUrlsCallback,
+          secondaryLabel: copyUrlsLabel,
+          timeout: 0, // keep open
+        });
       } else {
         // show (partial) failure toast with details button
-        this.appStore.showToast(
+        this.appStore.showToast({
           message,
           variant,
-          null,
-          () => {
+          actionCallback: () => {
             this.appStore.showModal({
               type: MODALS.BULK,
             });
             this.appStore.closeToast();
           },
-          this.appStore.i18n('bulk_result_details'),
-          null, // no secondary callback
-          null, // no secondary label
-          3600000, // keep for 1 hour
-          false,
-        );
+          actionLabel: this.appStore.i18n('bulk_result_details'),
+          timeout: 0, // keep open
+        });
       }
     }
   }
@@ -458,17 +455,13 @@ export class BulkStore {
       .filter(({ file }) => file.startsWith(illegalPathPrefix))
       .map(({ file }) => file.substring(10));
     if (illegalNames.length > 0) {
-      this.appStore.showToast(
-        this.appStore.i18n(`bulk_error_illegal_file_name${illegalNames.length === 1 ? '' : 's'}`)
+      this.appStore.showToast({
+        message: this.appStore
+          .i18n(`bulk_error_illegal_file_name${illegalNames.length === 1 ? '' : 's'}`)
           .replace('$1', illegalNames.join(', ')),
-        'warning',
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        3600000, // keep for 1 hour
-      );
+        variant: 'warning',
+        timeout: 0, // keep open
+      });
       return false;
     }
     return true;
@@ -602,17 +595,17 @@ export class BulkStore {
         paths.map((path) => `https://${host}${path}`).join('\n'),
       );
 
-      this.appStore.showToast(
-        this.appStore.i18n(`copied_url${paths.length !== 1 ? 's' : ''}`),
-        'positive',
-      );
+      this.appStore.showToast({
+        message: this.appStore.i18n(`copied_url${paths.length !== 1 ? 's' : ''}`),
+        variant: 'positive',
+      });
     } catch ({ message }) {
-      this.appStore.showToast(
-        this.appStore.i18n(message.includes('not focused')
+      this.appStore.showToast({
+        message: this.appStore.i18n(message.includes('not focused')
           ? 'copy_urls_error_focus'
           : 'copy_urls_error'),
-        'negative',
-      );
+        variant: 'negative',
+      });
     }
   }
 

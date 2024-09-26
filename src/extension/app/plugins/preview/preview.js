@@ -52,7 +52,7 @@ export function createPreviewPlugin(appStore) {
           // show ctrl/cmd + s hint on onedrive docs
           // istanbul ignore next
           const mac = navigator.platform.toLowerCase().includes('mac') ? '_mac' : '';
-          appStore.showToast(appStore.i18n(`preview_onedrive${mac}`));
+          appStore.showToast({ message: appStore.i18n(`preview_onedrive${mac}`) });
         } else if (status.edit.sourceLocation?.startsWith('gdrive:')) {
           const { contentType } = status.edit;
 
@@ -72,11 +72,10 @@ export function createPreviewPlugin(appStore) {
               errorKey = 'error_preview_not_gsheet_ms_excel';
             }
 
-            appStore.showToast(
-              appStore.i18n(errorKey),
-              'negative',
-              () => appStore.closeToast(),
-            );
+            appStore.showToast({
+              message: appStore.i18n(errorKey),
+              variant: 'negative',
+            });
 
             return;
           }
