@@ -147,16 +147,7 @@ export class Plugin {
    * @returns {boolean} True if the plugin elements array has exactly one element and that element is a badge, otherwise false.
    */
   isBadge() {
-    return this.config.elements?.length === 1 && this.config.elements[0].tag === 'sp-badge';
-  }
-
-  /**
-   * Returns the badge element in the configuration.
-   *
-   * @returns {Object} The badge element object
-   */
-  getBadge() {
-    return this.config.elements[0].tag === 'sp-badge' ? this.config.elements[0] : null;
+    return this.config.elements?.length === 1 && this.config.elements[0].tag === 'badge';
   }
 
   /**
@@ -208,6 +199,17 @@ export class Plugin {
     if (this.getId() === 'env-switcher') {
       return html`
         <env-switcher></env-switcher>
+      `;
+    }
+
+    if (this.isBadge()) {
+      const badge = this.config.elements[0];
+      return html`
+        <sp-badge
+          class=${this.getId()}
+          size="${badge.attrs.size}"
+          variant="${badge.attrs.variant}"
+        >${badge.text}</sp-badge>
       `;
     }
 

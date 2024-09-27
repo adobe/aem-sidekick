@@ -219,17 +219,6 @@ export class PluginActionBar extends ConnectedElement {
         </sk-menu-item>`;
   }
 
-  renderPluginBadge(plugin) {
-    const badge = plugin.getBadge();
-    return html`
-      <sp-badge
-        class=${plugin.getId()}
-        size="${badge.attrs.size}"
-        variant="${badge.attrs.variant}"
-      >${badge.text}</sp-badge>
-    `;
-  }
-
   /**
    * Render the plugin menu with unpinned and transient plugins
    * @returns {TemplateResult|string} An array of Lit-html templates or strings, or a single empty string.
@@ -297,13 +286,13 @@ export class PluginActionBar extends ConnectedElement {
    * @returns {TemplateResult} The HTML template for the badge plugin.
    */
   renderBadgePlugins() {
-    if (this.appStore.state !== STATE.READY || this.badgePlugins.length === 0) {
+    if (this.appStore.state !== STATE.READY) {
       return html``;
     }
 
     return html`
       <div class="badge-plugins-container">
-       ${this.badgePlugins.map((p) => this.renderPluginBadge(p))}
+        ${this.badgePlugins.length > 0 ? this.badgePlugins.map((p) => p.render()) : ''}
       </div>`;
   }
 

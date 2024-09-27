@@ -370,7 +370,7 @@ export class AppStore {
           };
           if (isBadge) {
             plugin.elements = [{
-              tag: 'sp-badge',
+              tag: 'badge',
               text: title,
               attrs: {
                 variant: badgeVariant?.toLowerCase() || 'default',
