@@ -21,6 +21,7 @@ import sampleRUM from '../../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
 import {
   getLocation, matchProjectHost, isSupportedFileExtension, globToRegExp,
+  is401Page,
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
@@ -329,16 +330,17 @@ export class AppStore {
             containerId,
             isBadge,
             badgeVariant,
+            confirm,
           } = cfg;
           const condition = (appStore) => {
             let excluded = false;
             const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
             if (excludePaths && Array.isArray(excludePaths)
-                && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              && excludePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
               excluded = true;
             }
             if (includePaths && Array.isArray(includePaths)
-                && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
+              && includePaths.some((glob) => globToRegExp(glob).test(pathSearchHash))) {
               excluded = false;
             }
             if (excluded) {
@@ -363,6 +365,7 @@ export class AppStore {
             id,
             condition,
             pinned,
+            confirm,
             container: containerId,
           };
           if (isBadge) {
@@ -409,14 +412,17 @@ export class AppStore {
                 }
               },
               isDropdown: isContainer,
+
             };
           }
+
           // check if this overlaps with a core plugin, if so override the condition only
           const corePlugin = this.corePlugins[plugin.id];
           if (corePlugin) {
             // extend default condition
             const { condition: defaultCondition } = corePlugin.config;
             corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
+            corePlugin.config.confirm = confirm;
           } else {
             // add custom plugin
             const customPlugin = new Plugin(plugin, this);
@@ -611,12 +617,14 @@ export class AppStore {
    * @returns {string} The content source label
    */
   getContentSourceLabel() {
-    const { contentSourceType } = this.siteStore;
+    const { contentSourceType, contentSourceEditLabel } = this.siteStore;
 
     if (contentSourceType === 'onedrive') {
       return 'SharePoint';
     } else if (contentSourceType === 'google') {
       return 'Google Drive';
+    } else if (contentSourceEditLabel) {
+      return contentSourceEditLabel;
     } else {
       return 'BYOM';
     }
@@ -654,9 +662,13 @@ export class AppStore {
    * Navigates to the provided URL in the current window. Abstracted for testing.
    * @param {string} url The URL to load
    */
-  // istanbul ignore next 3
+  // istanbul ignore next 7
   loadPage(url) {
-    window.location.href = url;
+    if (url === window.location.href) {
+      window.location.reload();
+    } else {
+      window.location.href = url;
+    }
   }
 
   /**
@@ -1084,6 +1096,27 @@ export class AppStore {
     }
   }
 
+  getBYOMSourceUrl() {
+    const {
+      owner,
+      repo,
+      contentSourceUrl,
+      contentSourceEditPattern,
+    } = this.siteStore;
+    if (!contentSourceEditPattern || typeof contentSourceEditPattern !== 'string') return undefined;
+
+    let { pathname } = this.location;
+    if (pathname.endsWith('/')) pathname += 'index';
+
+    const url = contentSourceEditPattern
+      .replace('{{contentSourceUrl}}', contentSourceUrl)
+      .replace('{{org}}', owner)
+      .replace('{{site}}', repo)
+      .replace('{{pathname}}', pathname);
+
+    return url;
+  }
+
   /**
    * Switches to (or opens) a given environment.
    * @param {string} targetEnv One of the following environments:
@@ -1124,7 +1157,7 @@ export class AppStore {
 
     if (targetEnv === 'edit') {
       const updatedStatus = await this.fetchStatus(false, true);
-      envUrl = updatedStatus.edit && updatedStatus.edit.url;
+      envUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
     }
 
     const [customView] = this.findViews(VIEWS.CUSTOM);
@@ -1211,8 +1244,13 @@ export class AppStore {
             && window.hlx.sidekickConfig
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
-          this.fetchStatus();
           this.fireEvent('logged-in');
+          // refresh page with site token in case of 401
+          if (is401Page(this.location, window.document)) {
+            this.reloadPage();
+          } else {
+            this.fetchStatus();
+          }
           return;
         }
         if (attempts >= 5) {
@@ -1257,6 +1295,8 @@ export class AppStore {
           this.setupPlugins();
           this.fetchStatus();
           this.fireEvent('logged-out');
+          // refresh the page to reflect logged out state
+          this.reloadPage();
           return;
         }
         if (attempts >= 5) {

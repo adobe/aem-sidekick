@@ -1,6 +1,6 @@
 {
   "name": "@adobe/aem-sidekick",
-  "version": "1.31.4",
+  "version": "1.32.1",
   "description": "AEM Sidekick Extension",
   "type": "module",
   "scripts": {
@@ -16,7 +16,8 @@
     "build:analyze": "npm run analyze -- --globs src/extension/app/aem-sidekick.js",
     "build:safari": "node ./build/build-browser.js safari",
     "build:chrome": "node ./build/build-browser.js chrome",
-    "publish:chrome": "npm run build && node ./build/publish.js chrome",
+    "publish:prepare": "node ./build/publish-prepare.js",
+    "publish:chrome": "npm run publish:prepare && npm run build && node ./build/publish.js chrome",
     "prepare": "husky install"
   },
   "repository": {
@@ -65,7 +66,7 @@
   },
   "devDependencies": {
     "@adobe/eslint-config-helix": "2.0.7",
-    "@adobe/fetch": "4.1.8",
+    "@adobe/fetch": "4.1.9",
     "@babel/eslint-parser": "7.25.1",
     "@babel/plugin-proposal-decorators": "7.24.7",
     "@custom-elements-manifest/analyzer": "0.10.3",
@@ -73,7 +74,7 @@
     "@open-wc/testing": "4.0.0",
     "@rollup/plugin-babel": "6.0.4",
     "@rollup/plugin-node-resolve": "15.2.3",
-    "@rollup/plugin-replace": "5.0.7",
+    "@rollup/plugin-replace": "6.0.1",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
@@ -86,25 +87,25 @@
     "ajv": "8.17.1",
     "archiver": "7.0.1",
     "babel-plugin-istanbul": "7.0.0",
-    "chokidar": "3.6.0",
+    "chokidar": "4.0.1",
     "codecov": "3.8.3",
-    "eslint": "8.57.0",
+    "eslint": "8.57.1",
     "eslint-plugin-mobx": "0.0.11",
     "fetch-mock": "9.11.0",
     "fs-extra": "11.2.0",
     "husky": "9.1.6",
-    "jsdoc-to-markdown": "8.0.3",
+    "jsdoc-to-markdown": "9.0.1",
     "lint-staged": "15.2.10",
     "nock": "13.5.5",
     "request": "2.88.2",
     "rimraf": "6.0.1",
-    "rollup": "4.21.3",
+    "rollup": "4.22.4",
     "rollup-plugin-copy": "3.5.0",
     "rollup-plugin-esbuild": "6.1.1",
     "semantic-release": "24.1.1",
     "semantic-release-react-native": "1.10.0",
     "shelljs": "0.8.5",
-    "sinon": "18.0.1"
+    "sinon": "19.0.2"
   },
   "lint-staged": {
     "*.js": "eslint"

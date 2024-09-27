@@ -37,59 +37,94 @@ export async function configureAuthAndCorsHeaders() {
     });
     // find projects with auth tokens and add rules for each
     const projects = await getConfig('session', 'projects') || [];
-    const addRulesPromises = projects.map(async ({ owner, repo, authToken }) => {
-      const adminRule = {
-        id: getRandomId(),
-        priority: 1,
-        action: {
-          type: 'modifyHeaders',
-          requestHeaders: [{
-            operation: 'set',
-            header: 'x-auth-token',
-            value: authToken,
-          }],
-        },
-        condition: {
-          regexFilter: `^https://${adminHost}/(config/${owner}.json|[a-z]+/${owner}/.*)`,
-          requestDomains: [adminHost],
-          requestMethods: ['get', 'post', 'delete'],
-          resourceTypes: ['xmlhttprequest'],
-        },
-      };
+    const addRulesPromises = projects.map(async ({
+      owner, repo, authToken, siteToken,
+    }) => {
+      const rules = [];
+      if (authToken) {
+        rules.push({
+          id: getRandomId(),
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [{
+              operation: 'set',
+              header: 'x-auth-token',
+              value: authToken,
+            }],
+          },
+          condition: {
+            regexFilter: `^https://${adminHost}/(config/${owner}.json|[a-z]+/${owner}/.*)`,
+            requestDomains: [adminHost],
+            requestMethods: ['get', 'post', 'delete'],
+            resourceTypes: ['xmlhttprequest'],
+          },
+        });
 
-      const corsFilters = [`^https://[0-9a-z-]+--[0-9a-z-]+--${owner}.aem.(live|page)/.*`];
-      const project = await getConfig('sync', `${owner}/${repo}`);
-      if (project) {
-        const { host, previewHost, liveHost } = project;
+        const corsFilters = [`^https://[0-9a-z-]+--[0-9a-z-]+--${owner}.aem.(live|page)/.*`];
+        const project = await getConfig('sync', `${owner}/${repo}`);
+        if (project) {
+          const { host, previewHost, liveHost } = project;
 
-        const additionalFilters = [host, previewHost, liveHost]
-          .filter(Boolean) // Filter out undefined or null values
-          .map((domain) => `^https://${domain}/.*`);
+          const additionalFilters = [host, previewHost, liveHost]
+            .filter(Boolean) // Filter out undefined or null values
+            .map((domain) => `^https://${domain}/.*`);
 
-        corsFilters.push(...additionalFilters);
+          corsFilters.push(...additionalFilters);
+        }
+
+        const corsRules = corsFilters.map((regexFilter) => ({
+          id: getRandomId(),
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            responseHeaders: [{
+              header: 'Access-Control-Allow-Origin',
+              operation: 'set',
+              value: '*',
+            }],
+          },
+          condition: {
+            regexFilter,
+            initiatorDomains: ['tools.aem.live', 'labs.aem.live'],
+            requestMethods: ['get'],
+            resourceTypes: ['xmlhttprequest'],
+          },
+        }));
+
+        rules.push(...corsRules);
       }
 
-      const corsRules = corsFilters.map((regexFilter) => ({
-        id: getRandomId(),
-        priority: 1,
-        action: {
-          type: 'modifyHeaders',
-          responseHeaders: [{
-            header: 'Access-Control-Allow-Origin',
-            operation: 'set',
-            value: '*',
-          }],
-        },
-        condition: {
-          regexFilter,
-          initiatorDomains: ['tools.aem.live', 'labs.aem.live'],
-          requestMethods: ['get'],
-          resourceTypes: ['xmlhttprequest'],
-        },
-      }));
+      if (siteToken) {
+        rules.push({
+          id: getRandomId(),
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [{
+              operation: 'set',
+              header: 'authorization',
+              value: `token ${siteToken}`,
+            }],
+          },
+          condition: {
+            regexFilter: `^https://[a-z0-9-]+--${repo}--${owner}.aem.(page|live)/.*`,
+            requestMethods: ['get', 'post'],
+            resourceTypes: [
+              'main_frame',
+              'script',
+              'stylesheet',
+              'image',
+              'xmlhttprequest',
+              'media',
+              'font',
+            ],
+          },
+        });
+      }
 
       log.debug(`addAuthTokensHeaders: added rules for ${owner}`);
-      return [adminRule, ...corsRules];
+      return rules;
     });
 
     const addRules = (await Promise.all(addRulesPromises)).flat();
@@ -107,30 +142,63 @@ export async function configureAuthAndCorsHeaders() {
  * Sets the auth token for a given project.
  * @param {string} owner The project owner
  * @param {string} repo The project repo
- * @param {string} token The auth token
- * @param {number} [exp] The token expiry in seconds since epoch
+ * @param {string} authToken The auth token
+ * @param {number} [authTokenExpiry] The auth token expiry in seconds since epoch
+ * @param {string} [siteToken] The site token
+ * @param {number} [siteTokenExpiry] The site token expiry in seconds since epoch
  * @returns {Promise<void>}
  */
-export async function setAuthToken(owner, repo, token, exp) {
+export async function setAuthToken(
+  owner,
+  repo,
+  authToken,
+  authTokenExpiry = 0,
+  siteToken = '',
+  siteTokenExpiry = 0,
+) {
   if (owner) {
     const projects = await getConfig('session', 'projects') || [];
-    const projectIndex = projects.findIndex((project) => project.owner === owner);
-    if (token) {
-      const authTokenExpiry = exp ? exp * 1000 : 0; // store expiry in milliseconds
-      if (projectIndex < 0) {
+    const orgHandle = owner;
+    const orgExists = projects.find(({ id }) => id === orgHandle);
+    const siteHandle = `${owner}/${repo}`;
+    const siteExists = projects.find(({ id }) => id === siteHandle);
+    if (authToken) {
+      if (!orgExists) {
         projects.push({
+          id: orgHandle,
           owner,
           repo,
-          authToken: token,
-          authTokenExpiry,
+          authToken,
+          authTokenExpiry: authTokenExpiry * 1000, // store in milliseconds
         });
       } else {
-        projects[projectIndex].authToken = token;
-        projects[projectIndex].authTokenExpiry = authTokenExpiry;
+        const orgIndex = projects.findIndex(({ id }) => id === orgHandle);
+        projects[orgIndex].authToken = authToken;
+        projects[orgIndex].authTokenExpiry = authTokenExpiry;
       }
-    } else if (projectIndex >= 0) {
+    } else if (orgExists) {
       // remove auth token from session storage
-      projects.splice(projectIndex, 1);
+      const orgIndex = projects.findIndex(({ id }) => id === orgHandle);
+      projects.splice(orgIndex, 1);
+    }
+    if (siteToken) {
+      if (!siteExists) {
+        projects.push({
+          id: siteHandle,
+          owner,
+          repo,
+          siteToken,
+          siteTokenExpiry: siteTokenExpiry * 1000, // store in milliseconds
+        });
+      } else {
+        const siteIndex = projects.findIndex(({ id }) => id === siteHandle);
+        projects[siteIndex].siteToken = siteToken;
+        projects[siteIndex].siteTokenExpiry = siteTokenExpiry;
+      }
+    } else if (siteExists) {
+      // remove site token from session storage
+      const siteIndex = projects.findIndex(({ id }) => id === siteHandle);
+      projects.splice(siteIndex, 1);
     }
     await setConfig('session', { projects });
     await configureAuthAndCorsHeaders();

@@ -145,6 +145,26 @@ describe('Unpublish plugin', () => {
       })).to.be.true;
     });
 
+    it('asks for user confirmation and reloads the page after toast timeout', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          webPath: '/foo',
+          // live delete permission is granted
+          live: {
+            status: 200,
+            permissions: ['read', 'write', 'delete'],
+          },
+        });
+
+      await clickUnpublishPlugin(sidekick);
+
+      expect(showModalSpy.calledWithMatch({ type: MODALS.DELETE })).to.be.true;
+
+      confirmUnpublish(sidekick);
+
+      await waitUntil(() => reloadPageStub.calledOnce, 'reloadPage was not called', { timeout: 4000 });
+    }).timeout(5000);
+
     it('skips reloading if toast manually closed', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {

@@ -552,6 +552,20 @@ describe('Test App Store', () => {
       expect(openPageArgs[0]).to.include('foo=bar');
     });
 
+    it('switches from preview to BYOM editor', async () => {
+      instance.siteStore.contentSourceUrl = 'https://aemcloud.com';
+      instance.siteStore.contentSourceEditLabel = 'Universal Editor';
+      instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}{{pathname}}?cmd=open';
+
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      fetchStatusStub.resolves({});
+
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('edit');
+      expect(loadPage.calledWith('https://aemcloud.com/index?cmd=open')).to.be.true;
+    });
+
     it('switches from live to preview', async () => {
       instance.location = new URL(mockStatus.live.url);
       instance.status = mockStatus;
@@ -1391,6 +1405,7 @@ describe('Test App Store', () => {
     let instance;
     let clock;
     let getProfileStub;
+    let reloadPageStub;
     let sandbox;
     let toastSpy;
 
@@ -1412,6 +1427,7 @@ describe('Test App Store', () => {
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       toastSpy = sandbox.spy(appStore, 'showToast');
       getProfileStub = sandbox.stub(appStore, 'getProfile').resolves(false);
+      reloadPageStub = sandbox.stub(appStore, 'reloadPage');
     });
 
     afterEach(() => {
@@ -1462,12 +1478,35 @@ describe('Test App Store', () => {
         target: 'logged-in',
       })).to.be.true;
     }).timeout(20000);
+
+    it('reloads page after successful login if 401 page', async () => {
+      document.body.innerHTML = '<pre>401 Unauthorized</pre>';
+      instance.sidekick = document.createElement('div');
+      document.body.prepend(instance.sidekick);
+
+      getProfileStub.onCall(0).resolves({ name: 'foo' }); // Simulate success on the 1st attempt
+
+      // Mock other methods called upon successful login
+      const initStoreStub = sandbox.stub(instance.siteStore, 'initStore').resolves();
+      const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
+      const fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
+
+      instance.login(false); // Call without selectAccount
+
+      await clock.tickAsync(5000); // Fast-forward time
+
+      expect(initStoreStub.called).to.be.true;
+      expect(setupCorePluginsStub.called).to.be.true;
+      expect(fetchStatusStub.called).to.be.false;
+      expect(reloadPageStub.called).to.be.true;
+    });
   });
 
   describe('logout', () => {
     let instance;
     let clock;
     let getProfileStub;
+    let reloadPageStub;
     let sandbox;
     let toastSpy;
 
@@ -1487,6 +1526,7 @@ describe('Test App Store', () => {
       // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       toastSpy = sandbox.spy(appStore, 'showToast');
+      reloadPageStub = sandbox.stub(appStore, 'reloadPage');
     });
 
     afterEach(() => {
@@ -1547,6 +1587,7 @@ describe('Test App Store', () => {
         source: 'sidekick',
         target: 'logged-out',
       })).to.be.true;
+      expect(reloadPageStub.called).to.be.true;
     }).timeout(20000);
   });
 
@@ -1606,6 +1647,12 @@ describe('Test App Store', () => {
     it('should return "Google Drive" if sourceLocation includes "gdrive:"', () => {
       instance.siteStore.contentSourceType = 'google';
       expect(instance.getContentSourceLabel()).to.equal('Google Drive');
+    });
+
+    it('should return "Document Authoring" if a label is provided', () => {
+      instance.siteStore.contentSourceType = 'markup';
+      instance.siteStore.contentSourceEditLabel = 'Document Authoring';
+      expect(instance.getContentSourceLabel()).to.equal('Document Authoring');
     });
 
     it('should return "BYOM" for everything else', () => {

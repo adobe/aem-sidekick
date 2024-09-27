@@ -305,4 +305,123 @@ describe('Test auth', () => {
     },
     )).to.be.true;
   });
+
+  it('setAuthToken with transient site token', async () => {
+    const updateSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'updateSessionRules');
+    const getConfig = sandbox.spy(chrome.storage.session, 'get');
+    const setConfig = sandbox.spy(chrome.storage.session, 'set');
+    const owner = 'test';
+    const repo = 'site';
+    const authToken = '1234567890';
+    const siteToken = '0987654321';
+    let expiry = Date.now() / 1000 + 60;
+
+    await setAuthToken(owner, repo, authToken, expiry, siteToken, expiry);
+    expect(setConfig.callCount).to.equal(1);
+    expect(getConfig.callCount).to.equal(2);
+
+    expect(updateSessionRules.calledWith({
+      addRules: [
+        {
+          id: sinon.match.number,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [
+              {
+                operation: 'set',
+                header: 'x-auth-token',
+                value: authToken,
+              },
+            ],
+          },
+          condition: {
+            regexFilter: '^https://admin.hlx.page/(config/test.json|[a-z]+/test/.*)',
+            requestDomains: [
+              'admin.hlx.page',
+            ],
+            requestMethods: [
+              'get',
+              'post',
+              'delete',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: sinon.match.number,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            responseHeaders: [
+              {
+                header: 'Access-Control-Allow-Origin',
+                operation: 'set',
+                value: '*',
+              },
+            ],
+          },
+          condition: {
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(live|page)/.*',
+            initiatorDomains: [
+              'tools.aem.live',
+              'labs.aem.live',
+            ],
+            requestMethods: [
+              'get',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: sinon.match.number,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [
+              {
+                operation: 'set',
+                header: 'authorization',
+                value: `token ${siteToken}`,
+              },
+            ],
+          },
+          condition: {
+            regexFilter: '^https://[a-z0-9-]+--site--test.aem.(page|live)/.*',
+            requestMethods: [
+              'get',
+              'post',
+            ],
+            resourceTypes: [
+              'main_frame',
+              'script',
+              'stylesheet',
+              'image',
+              'xmlhttprequest',
+              'media',
+              'font',
+            ],
+          },
+        },
+      ],
+    },
+    )).to.be.true;
+
+    // update existing auth and site tokens
+    expiry = Date.now() / 1000 + 120;
+    await setAuthToken(owner, repo, authToken, expiry, siteToken, expiry);
+    expect(setConfig.callCount).to.equal(2);
+    expect(getConfig.callCount).to.equal(4);
+    expect(updateSessionRules.callCount).to.equal(4);
+
+    // remove existing auth and site tokens
+    await setAuthToken(owner, repo, '', undefined, '', undefined);
+    expect(setConfig.callCount).to.equal(3);
+    expect(getConfig.callCount).to.equal(6);
+    expect(updateSessionRules.callCount).to.equal(5);
+  });
 });
