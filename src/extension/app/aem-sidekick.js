@@ -53,7 +53,7 @@ export class AEMSidekick extends LitElement {
     document.dispatchEvent(new CustomEvent(EXTERNAL_EVENTS.SIDEKICK_READY));
 
     const onboarded = await getConfig('local', 'onboarded');
-    if (onboarded) {
+    if (!onboarded) {
       this.appStore.showOnboarding();
     }
   }
