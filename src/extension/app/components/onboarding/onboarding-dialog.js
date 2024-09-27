@@ -17,12 +17,20 @@ import { when } from 'lit/directives/when.js';
 import { style } from './onboarding-dialog.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import { ICONS } from '../../constants.js';
+import { getConfig, setConfig } from '../../../config.js';
 
 /**
+ * The onboarding item type
+ * @typedef {import('@Types').OnboardingItem} OnboardingItem
+ */
+
+/**
+ * Spectrum tabs
  * @typedef {import('@spectrum-web-components/tabs').Tabs} Tabs
  */
 
 /**
+ * Spectrum dialog
  * @typedef {import('@spectrum-web-components/dialog').DialogBase} DialogBase
  */
 
@@ -41,14 +49,26 @@ export class OnBoardingDialog extends ConnectedElement {
   @queryAsync('sp-dialog-base')
   accessor dialog;
 
-  @state()
-  accessor selectedIndex = 0;
-
+  /**
+   * The onboarding items
+   * @type {OnboardingItem[]}
+   */
   @state()
   accessor items;
 
+  /**
+   * The theme
+   * @type {'dark' | 'light'}
+   */
   @state()
   accessor theme;
+
+  /**
+   * The selected index
+   * @type {number}
+   */
+  @state()
+  accessor selectedIndex = 0;
 
   static get styles() {
     return [style];
@@ -56,25 +76,35 @@ export class OnBoardingDialog extends ConnectedElement {
 
   async connectedCallback() {
     super.connectedCallback();
+
     this.fetchIndex();
+    // Listen for theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.onThemeChange);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
+
     window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.onThemeChange);
   }
 
+  /**
+   * Handle theme changes
+   */
   onThemeChange = () => {
     this.requestUpdate();
   };
 
+  /**
+   * Fetch the onboarding index
+   */
   async fetchIndex() {
     const resp = await fetch(`${TOOLS_ORIGIN}/sidekick/query-index.json`);
     if (resp.ok) {
       const index = await resp.json();
       const promises = index.data.map((item) => (item.category === 'onboarding' ? item : null))
         .map(async (item) => {
+          // Fetch the content
           const fetchResp = await fetch(`${TOOLS_ORIGIN}${item.path}.plain.html`);
           if (fetchResp.ok) {
             return {
@@ -87,39 +117,61 @@ export class OnBoardingDialog extends ConnectedElement {
         });
 
       this.items = await Promise.all(promises);
-
-      const imagePromises = this.items.map(async (url) => {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const img = new Image();
-        img.src = URL.createObjectURL(blob);
-        // Optionally, append the image to the DOM (hidden) to ensure it's loaded
-        // document.body.appendChild(img);
-      });
-
-      await Promise.all(imagePromises);
     }
   }
 
-  async onTabChange(e) {
-    this.selectedIndex = Number(e.target.value);
-    this.requestUpdate();
-    console.log('index', this.selectedIndex);
+  /**
+   * Handle tab changes
+   * @param {*} event
+   */
+  async onTabChange(event) {
+    this.selectedIndex = Number(event.target.value);
   }
 
+  /**
+   * Handle next button clicks
+   */
   async onNextClicked() {
-    this.selectedIndex += 1;
-    if (this.selectedIndex >= this.items.length) {
+    // If the user is on the last item, close the dialog
+    if (this.selectedIndex + 1 >= this.items.length) {
       this.closeDialog();
+      return;
     }
-    console.log('index', this.selectedIndex);
+
+    // Otherwise, move to the next item
+    this.selectedIndex += 1;
   }
 
+  /**
+   * Handle action button clicks
+   */
+  async onActionClicked() {
+    const { action } = this.items[this.selectedIndex];
+    if (action) {
+      if (action === 'import') {
+        this.appStore.sampleRUM('click', { source: 'sidekick', target: 'onboard-modal:import-projects' });
+        chrome.runtime.sendMessage({ action: 'importProjects' });
+      } else if (action === 'join_discord') {
+        this.appStore.sampleRUM('click', { source: 'sidekick', target: 'open-discord' });
+        this.appStore.openPage('https://discord.gg/aem-live');
+      }
+    }
+  }
+
+  /**
+   * Close the dialog
+   */
   async closeDialog() {
-    console.log('closeDialog');
+    const onboarded = await getConfig('local', 'onboarded');
+    if (!onboarded) {
+      setConfig('local', { onboarded: true, onboardDate: new Date().toISOString() });
+    }
     this.remove();
   }
 
+  /**
+   * Render the current index
+   */
   renderCurrentIndex() {
     const main = document.createElement('main');
     main.innerHTML = this.items[this.selectedIndex].content;
@@ -139,29 +191,56 @@ export class OnBoardingDialog extends ConnectedElement {
   render() {
     const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const theme = prefersDarkMode ? 'dark' : 'light';
+    const item = this.items && this.items.length > 0 ? this.items[this.selectedIndex] : null;
     return html`
-      ${when(this.items && this.items.length > 0,
+      ${when(item,
         () => html`
-          <sp-dialog-base slot="click-content" open underlay>
+          <sp-underlay open></sp-underlay>
+          <sp-dialog-base slot="click-content" class=${theme} open>
             <div class="container">
               <nav>
-                <div class="heading">What's New</div>
+                <div class="heading">${this.appStore.i18n('whats_new')}</div>
                 <sp-tabs quiet direction="vertical" selected=${this.selectedIndex}>
-                  ${this.items.map((item, index) => html`<sp-tab label=${item.title} value=${index} @click=${this.onTabChange}></sp-tab>`)}
+                  ${this.items.map((onboardingItem, index) => html`
+                    <sp-tab 
+                      label=${onboardingItem.title} 
+                      value=${index} 
+                      @click=${this.onTabChange}
+                    ></sp-tab>
+                  `)}
                 </sp-tabs>
               </nav>
               <div>
                 <div class="content">${this.renderCurrentIndex()}</div>
-                <sp-button
+                <sp-button-group>   
+                  ${when(item.action,
+                    () => html`
+                      <sp-button
+                        variant="primary"
+                        treatment="fill"
+                        @click=${this.onActionClicked}
+                      >
+                        ${this.appStore.i18n(item.action)}
+                      </sp-button>
+                    `,
+                  )}
+                  <sp-button
                     variant="cta"
                     treatment="fill"
                     @click=${this.onNextClicked}
-                >
-                    ${this.selectedIndex === this.items.length - 1 ? 'Close' : 'Next'}
-                </sp-button>
+                  >
+                    ${this.selectedIndex === this.items.length - 1 ? this.appStore.i18n('close') : this.appStore.i18n('next')}
+                  </sp-button>
+                </sp-button-group>
               </div>
             </div>
-            <sp-button id="close-button" static=${theme === 'dark' ? 'black' : 'white'} label="Close" @click=${this.closeDialog} icon-only>
+            <sp-button 
+              id="close-button" 
+              static=${theme === 'dark' ? 'black' : 'white'} 
+              label="Close" 
+              @click=${this.closeDialog} 
+              icon-only
+            >
               <sp-icon slot="icon" size="m">
                 ${ICONS.CLOSE_X}
               </sp-icon>

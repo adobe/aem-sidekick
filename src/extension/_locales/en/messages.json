@@ -372,6 +372,9 @@
     "help_next": {
       "message": "Next tip"
     },
+    "next": {
+      "message": "Next"
+    },
     "help_opt_out": {
       "message": "Don't show any help"
     },
@@ -627,5 +630,14 @@
     },
     "help_documentation": {
       "message": "Help & Documentation"
+    },
+    "whats_new": {
+      "message": "What's New"
+    },  
+    "join_discord": {
+      "message": "Join us on Discord"
+    },  
+    "import": {
+      "message": "Import"
     }
 }

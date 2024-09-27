@@ -289,6 +289,12 @@ export class PluginActionBar extends ConnectedElement {
       return;
     }
 
+    if (value === 'whats-new-opened') {
+      this.appStore.sampleRUM('click', { source: 'sidekick', target: 'whats-new-opened' });
+      this.appStore.showOnboarding();
+      return;
+    }
+
     if (value === 'project-added' || value === 'project-removed') {
       this.appStore.sampleRUM('click', { source: 'sidekick', target: value });
       chrome.runtime.sendMessage({ action: 'addRemoveProject' });
@@ -334,6 +340,12 @@ export class PluginActionBar extends ConnectedElement {
             ${ICONS.HELP_ICON}
           </sp-icon>
           ${this.appStore.i18n('help_documentation')}
+        </sk-menu-item>        
+        <sk-menu-item class="icon-item" value="whats-new-opened"  @click=${this.handleItemSelection}>
+          <sp-icon slot="icon" size="m">
+            ${ICONS.PRESENT_ICON}
+          </sp-icon>
+          ${this.appStore.i18n('whats_new')}
         </sk-menu-item>
         <sp-divider size="s"></sp-divider>
         <sk-menu-item class="close icon-item" value="hidden" @click=${this.handleItemSelection}>

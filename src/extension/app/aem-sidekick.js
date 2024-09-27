@@ -20,6 +20,7 @@ import { spectrum2 } from './spectrum-2.css.js';
 import { AppStore, appStoreContext } from './store/app.js';
 import { EXTERNAL_EVENTS } from './constants.js';
 import { detectBrowser } from './utils/browser.js';
+import { getConfig } from '../config.js';
 
 @customElement('aem-sidekick')
 export class AEMSidekick extends LitElement {
@@ -50,6 +51,11 @@ export class AEMSidekick extends LitElement {
     });
 
     document.dispatchEvent(new CustomEvent(EXTERNAL_EVENTS.SIDEKICK_READY));
+
+    const onboarded = await getConfig('local', 'onboarded');
+    if (onboarded) {
+      this.appStore.showOnboarding();
+    }
   }
 
   /**
@@ -66,7 +72,6 @@ export class AEMSidekick extends LitElement {
       <theme-wrapper>
         <plugin-action-bar></plugin-action-bar>
         <palette-container></palette-container>
-        <onboarding-dialog></onboarding-dialog>
       </theme-wrapper>
     `;
   }

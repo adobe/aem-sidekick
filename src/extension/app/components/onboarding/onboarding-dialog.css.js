@@ -27,9 +27,8 @@ export const style = css`
 
   .container {
     display: grid;
-    grid-template-columns: 288px auto;
-    grid-template-rows: auto 1fr auto;
-    max-height: 640px;
+    grid-template-columns: 1fr;
+    height: 640px;
     background-color: var(--spectrum2-sidekick-layer-1);
     border-radius: var(--spectrum2-xlarge-border-radius);
     overflow: hidden;
@@ -41,6 +40,7 @@ export const style = css`
     margin-top: 40px;
     margin-left: 40px;
     margin-right: 18px;
+    display: none;
   }
 
   .container nav .heading {
@@ -53,7 +53,7 @@ export const style = css`
     overflow: hidden;    
   }
 
-  .container > div sp-button {
+  .container > div sp-button-group {
     position: absolute;
     right: 40px;
     bottom: 40px;
@@ -67,14 +67,33 @@ export const style = css`
 
   .content {
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto 1fr;
+    height: 100%;
     background-color: var(--spectrum2-sidekick-background-pasteboard);
   }
+
+  sp-dialog-base.dark picture:nth-of-type(1) {  
+    display: none;
+  }
+
+  sp-dialog-base.light picture:nth-of-type(2) {  
+    display: none;
+  }
+
+  .content div:nth-of-type(1) br {
+    display: none;
+  }  
+  
+  .content div:nth-of-type(1) p {
+    margin: 0;
+  }
+
 
   .content div:nth-of-type(1) img {
     width: 100%;
     height: 140px;
-    object-fit: scale-down;
+    object-fit: cover;
+    object-position: center;
   }
 
   .content div:nth-of-type(2){
@@ -103,14 +122,18 @@ export const style = css`
     }
   }
 
-  @media (max-width: 768px) {
+  @media (min-width: 768px) {
     .container {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto 1fr auto;
+      grid-template-columns: 288px auto;
     }
 
     .container nav {
-      display: none;
+      display: block;
+    }
+
+    .content div:nth-of-type(1) img {
+      object-fit: cover;
+      object-position: left;
     }
   }
 
@@ -118,10 +141,6 @@ export const style = css`
     sp-dialog-base {
       inline-size: initial;
       width: 942px;
-    }
-
-    .content div:nth-of-type(1) img {
-      object-fit: none;
     }
   }
 `;
