@@ -59,7 +59,10 @@ export function createPublishPlugin(appStore) {
               appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv)),
               'positive',
             );
-            appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_PUBLISHED);
+            appStore.fireEvent(
+              EXTERNAL_EVENTS.RESOURCE_PUBLISHED,
+              appStore.status.webPath,
+            );
             actionCallback();
           }
         };

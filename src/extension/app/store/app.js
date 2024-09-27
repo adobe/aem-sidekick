@@ -695,10 +695,9 @@ export class AppStore {
         status,
       };
       sidekick.dispatchEvent(new CustomEvent(name, {
-        detail: { data },
+        detail: data,
       }));
       const userEvents = [
-        'hidden',
         'updated',
         'previewed',
         'published',
@@ -1229,7 +1228,7 @@ export class AppStore {
             && window.hlx.sidekickConfig
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
-          this.fireEvent('logged-in');
+          this.fireEvent(EXTERNAL_EVENTS.LOGGED_IN, this.status.profile);
           // refresh page with site token in case of 401
           if (is401Page(this.location, window.document)) {
             this.reloadPage();
@@ -1279,7 +1278,7 @@ export class AppStore {
           await this.siteStore.initStore(siteStore);
           this.setupPlugins();
           this.fetchStatus();
-          this.fireEvent('logged-out');
+          this.fireEvent(EXTERNAL_EVENTS.LOGGED_OUT, this.status.profile);
           // refresh the page to reflect logged out state
           this.reloadPage();
           return;
