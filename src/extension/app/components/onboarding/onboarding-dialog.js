@@ -216,7 +216,7 @@ export class OnBoardingDialog extends ConnectedElement {
                   ${when(item.action,
                     () => html`
                       <sp-button
-                        variant="primary"
+                        variant="secondary"
                         treatment="fill"
                         @click=${this.onActionClicked}
                       >
