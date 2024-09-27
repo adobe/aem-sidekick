@@ -99,7 +99,7 @@ describe('AEM Sidekick', () => {
 
     expect(statusSpy).to.have.been.calledOnce;
 
-    const { data } = statusSpy.args[0][0].detail;
+    const { detail: data } = statusSpy.args[0][0];
     expect(data.webPath).to.eq('/');
     expect(data.resourcePath).to.eq('/index.md');
     expect(data.preview.status).to.eq(200);
