@@ -90,11 +90,11 @@ describe('AEM Sidekick', () => {
     expect(readySpy).to.have.been.calledOnce;
   });
 
-  it('dispatches statusfetched', async () => {
+  it('dispatches status-fetched', async () => {
     const statusSpy = spy();
 
     sidekick = sidekickTest.createSidekick();
-    sidekick.addEventListener('statusfetched', statusSpy);
+    sidekick.addEventListener('status-fetched', statusSpy);
     await sidekickTest.awaitEnvSwitcher();
 
     expect(statusSpy).to.have.been.calledOnce;

@@ -815,7 +815,7 @@ export class AppStore {
 
   /**
      * Fetches the status for the current resource.
-     * @fires Sidekick#statusfetched
+     * @fires Sidekick#status-fetched
      * @param {boolean} [refreshLocation] Refresh the sidekick's location (optional)
      * @param {boolean} [fetchEdit] Should the edit url be fetched (optional)
      * @param {boolean} [transient] Should we persist the status in the store (optional)
@@ -905,7 +905,7 @@ export class AppStore {
     const res = await this.update();
     if (!res && !ranBefore) {
       // assume document has been renamed, re-fetch status and try again
-      this.sidekick.addEventListener('statusfetched', async () => {
+      this.sidekick.addEventListener('status-fetched', async () => {
         this.updatePreview(true);
       }, { once: true });
       this.fetchStatus();
@@ -1221,7 +1221,7 @@ export class AppStore {
         if (this.status.profile) {
           // logged in, stop checking
           delete status.status;
-          this.sidekick.addEventListener('statusfetched', () => this.setState(), { once: true });
+          this.sidekick.addEventListener('status-fetched', () => this.setState(), { once: true });
           await this.siteStore.initStore(siteStore);
           this.siteStore.authTokenExpiry = (
             window.hlx
@@ -1309,7 +1309,7 @@ export class AppStore {
       if (now > exp * 1000) {
         // token is expired
         this.login(true);
-        this.sidekick.addEventListener('statusfetched', () => {
+        this.sidekick.addEventListener('status-fetched', () => {
           resolve();
         }, { once: true });
       } else {

@@ -786,7 +786,7 @@ describe('Test App Store', () => {
       expect(setStateStub.calledWith(STATE.PREVIEWING)).is.true;
       expect(fetchStatusStub.called).is.true;
 
-      instance.sidekick.dispatchEvent(new CustomEvent('statusfetched', { detail: { status: { webPath: '/somepath' } } }));
+      instance.sidekick.dispatchEvent(new CustomEvent('status-fetched', { detail: { status: { webPath: '/somepath' } } }));
       await waitUntil(() => updatePreviewSpy.calledTwice);
     });
 
@@ -1564,7 +1564,7 @@ describe('Test App Store', () => {
       instance.sidekick.addEventListener('logged-out', loginEventSpy);
 
       const statusEventSpy = sinon.spy();
-      instance.sidekick.addEventListener('statusfetched', statusEventSpy);
+      instance.sidekick.addEventListener('status-fetched', statusEventSpy);
 
       // Mock other methods called upon successful login
       const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
