@@ -109,6 +109,14 @@ describe('Plugin action bar', () => {
       .map((plugin) => plugin.className)).to.deep.equal(pluginIds);
   }
 
+  function expectInBadgeContainer(pluginIds) {
+    const badgeContainer = recursiveQuery(sidekickTest.sidekick, '.badge-plugins-container');
+    const badges = recursiveQueryAll(badgeContainer, 'sp-badge');
+
+    expect([...badges]
+      .map((badge) => badge.className)).to.deep.equal(pluginIds);
+  }
+
   describe('renders correct default plugins in action bar', () => {
     it('isPreview', async () => {
       sidekickTest
@@ -577,7 +585,7 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitEnvSwitcher();
       await aTimeout(200);
 
-      const customPluginId = 'custom-plugin-9'; // generated id
+      const customPluginId = 'custom-plugin-10'; // generated id
 
       // check initial state
       expectInActionBar([
@@ -969,5 +977,22 @@ describe('Plugin action bar', () => {
       await sendKeys({ press: 'Tab' });
       await waitUntil(() => loginButtonFocusSpy.calledOnce, 'login did not focus', { timeout: 3000 });
     }).timeout(10000);
+  });
+
+  describe('badge plugins', () => {
+    it('renders cored badge plugins', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, true)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitBadgeContainer();
+
+      expectInBadgeContainer([
+        'badge',
+      ]);
+    });
   });
 });

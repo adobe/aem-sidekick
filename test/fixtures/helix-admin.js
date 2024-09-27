@@ -110,6 +110,13 @@ export const defaultConfigPlugins = {
       isPalette: true,
     },
     {
+      id: 'badge',
+      title: 'Badge',
+      environments: ['edit', 'dev', 'preview', 'live'],
+      isBadge: true,
+      badgeVariant: 'orange',
+    },
+    {
       // override core plugin
       id: 'publish',
       excludePaths: ['**/drafts/**'],
