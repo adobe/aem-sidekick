@@ -905,7 +905,7 @@ export class AppStore {
     const res = await this.update();
     if (!res && !ranBefore) {
       // assume document has been renamed, re-fetch status and try again
-      this.sidekick.addEventListener('status-fetched', async () => {
+      this.sidekick.addEventListener(EXTERNAL_EVENTS.STATUS_FETCHED, async () => {
         this.updatePreview(true);
       }, { once: true });
       this.fetchStatus();
@@ -1221,7 +1221,11 @@ export class AppStore {
         if (this.status.profile) {
           // logged in, stop checking
           delete status.status;
-          this.sidekick.addEventListener('status-fetched', () => this.setState(), { once: true });
+          this.sidekick.addEventListener(
+            EXTERNAL_EVENTS.STATUS_FETCHED,
+            () => this.setState(),
+            { once: true },
+          );
           await this.siteStore.initStore(siteStore);
           this.siteStore.authTokenExpiry = (
             window.hlx
@@ -1309,7 +1313,7 @@ export class AppStore {
       if (now > exp * 1000) {
         // token is expired
         this.login(true);
-        this.sidekick.addEventListener('status-fetched', () => {
+        this.sidekick.addEventListener(EXTERNAL_EVENTS.STATUS_FETCHED, () => {
           resolve();
         }, { once: true });
       } else {
