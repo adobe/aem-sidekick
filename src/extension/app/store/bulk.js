@@ -470,9 +470,7 @@ export class BulkStore {
     }
     if (invalidMessage) {
       this.appStore.showToast({
-        message: this.appStore
-          .i18n(`bulk_error_illegal_file_name${illegalNames.length === 1 ? '' : 's'}`)
-          .replace('$1', illegalNames.join(', ')),
+        message: invalidMessage,
         variant: 'warning',
         timeout: 0, // keep open
       });
