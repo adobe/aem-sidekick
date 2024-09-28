@@ -172,7 +172,7 @@ export class SidekickTest {
    */
   async awaitStatusFetched() {
     const statusFetchedSpy = this.sandbox.spy();
-    this.sidekick.addEventListener('statusfetched', statusFetchedSpy);
+    this.sidekick.addEventListener('status-fetched', statusFetchedSpy);
     await waitUntil(() => statusFetchedSpy.calledOnce, 'Status not fetched', { timeout: 2000 });
   }
 
@@ -366,8 +366,7 @@ export class SidekickTest {
       }
     });
     // trigger bulk selection update in sidekick
-    this.bulkRoot.click();
-
+    setTimeout(() => this.bulkRoot.click(), 500);
     return this;
   }
 

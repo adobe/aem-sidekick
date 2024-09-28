@@ -153,7 +153,7 @@ export class BulkStore {
       .map((row) => {
         const info = row.getAttribute('aria-label') || row.querySelector('span')?.textContent;
         // info format: bla.docx, docx File, Private, Modified 8/28/2023, edited by Jane, 1 KB
-        const type = info.match(/, ([a-z0-9]+) [A-Za-z]+,/)?.[1];
+        const type = info.match(/, ([\p{L}\p{N}]+) [\p{L}\p{N}]+,/u)?.[1];
         const file = type && info.split(`, ${type}`)[0];
         return {
           file,
@@ -450,11 +450,25 @@ export class BulkStore {
       log.debug(`bulk ${operation}: no selection`);
       return false;
     }
-
-    const illegalNames = this.selection
-      .filter(({ file }) => file.startsWith(illegalPathPrefix))
-      .map(({ file }) => file.substring(10));
-    if (illegalNames.length > 0) {
+    const { webPath, edit: { illegalPath } } = this.appStore.status;
+    let invalidMessage = '';
+    // check parent path
+    if (illegalPath) {
+      invalidMessage = this.appStore
+        .i18n('bulk_error_illegal_folder_name')
+        .replace('$1', illegalPath);
+    } else {
+      // check selected files
+      const illegalFileNames = this.selection
+        .filter(({ file }) => file.startsWith(illegalPathPrefix))
+        .map(({ file }) => `${webPath}${file.substring(10)}`);
+      if (illegalFileNames.length > 0) {
+        invalidMessage = this.appStore
+          .i18n(`bulk_error_illegal_file_name${illegalFileNames.length === 1 ? '' : 's'}`)
+          .replace('$1', illegalFileNames.join(', '));
+      }
+    }
+    if (invalidMessage) {
       this.appStore.showToast({
         message: this.appStore
           .i18n(`bulk_error_illegal_file_name${illegalNames.length === 1 ? '' : 's'}`)

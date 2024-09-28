@@ -70,6 +70,10 @@ export function createUnpublishPlugin(appStore) {
               timeoutCallback,
             });
             appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED);
+            appStore.fireEvent(
+              EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED,
+              appStore.status.webPath,
+            );
           }
         });
       },

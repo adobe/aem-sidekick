@@ -46,6 +46,20 @@ export function createPreviewPlugin(appStore) {
       action: async () => {
         const { location } = appStore;
         const status = await appStore.fetchStatus(false, true, true);
+        if (status.edit?.illegalPath) {
+          appStore.showToast(
+            appStore.i18n('bulk_error_illegal_file_name')
+              .replace('$1', status.webPath),
+            'warning',
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            3600000, // keep for 1 hour
+          );
+          return;
+        }
         if (status.edit && status.edit.sourceLocation
             && status.edit.sourceLocation.startsWith('onedrive:')
             && !location.pathname.startsWith('/:x:/')) {
@@ -89,7 +103,10 @@ export function createPreviewPlugin(appStore) {
           appStore.reloadPage();
         } else {
           appStore.updatePreview();
-          appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED);
+          appStore.fireEvent(
+            EXTERNAL_EVENTS.RESOURCE_PREVIEWED,
+            appStore.status.webPath,
+          );
         }
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write')

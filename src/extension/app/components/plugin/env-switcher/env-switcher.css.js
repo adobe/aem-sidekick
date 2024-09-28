@@ -15,6 +15,10 @@ import { css } from 'lit';
 export const style = css`
   :host {
     position: relative;
+
+    --mod-menu-item-label-icon-color-disabled: var(--spectrum-gray-600);
+    --mod-menu-item-description-color-disabled: var(--spectrum-gray-600);
+    --mod-menu-item-label-content-color-disabled: var(--spectrum-gray-600);
   }
  
   action-bar-picker {

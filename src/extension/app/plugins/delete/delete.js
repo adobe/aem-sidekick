@@ -75,7 +75,10 @@ export function createDeletePlugin(appStore) {
               variant: 'positive',
               timeoutCallback,
             });
-            appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED);
+            appStore.fireEvent(
+              EXTERNAL_EVENTS.RESOURCE_DELETED,
+              appStore.status.webPath,
+            );
           }
         });
       },

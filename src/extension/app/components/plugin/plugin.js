@@ -157,7 +157,7 @@ export class Plugin {
   async onButtonClick(evt) {
     const { config, id } = this;
     await this.appStore.validateSession();
-    this.appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, { id });
+    this.appStore.fireEvent(EXTERNAL_EVENTS.PLUGIN_USED, id);
     config.button.action(evt);
   }
 

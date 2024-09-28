@@ -1202,6 +1202,36 @@ describe('Test Bulk Store', () => {
       expect(updateStub.calledWith('/spreadsheet.xlsx')).to.be.true;
     });
 
+    it('rejects illegal folder path', async () => {
+      const showToastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
+
+      // mock gdrive
+      sidekickTest
+        .mockLocation(getAdminLocation(HelixMockContentSources.GDRIVE))
+        .mockAdminDOM(HelixMockContentSources.GDRIVE)
+        .mockFetchDirectoryStatusSuccess(HelixMockContentSources.GDRIVE, {
+          edit: {
+            status: 200,
+            sourceLocation: 'gdrive:driveid',
+            contentType: 'application/folder',
+            name: 'illegal folder',
+            illegalPath: '/path/to/illegal folder',
+          },
+        });
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      await aTimeout(500);
+
+      sidekickTest.toggleAdminItems(['document']);
+
+      bulkStore.initStore(appStore.location);
+      await waitUntil(() => bulkStore.selection.length === 1);
+
+      await bulkStore.preview();
+
+      await waitUntil(() => showToastSpy.called);
+      expect(showToastSpy.calledWithMatch('This folder contains illegal characters:', 'warning')).to.be.true;
+    });
+
     it('getSummaryText: returns message based on succeeded vs failed', async () => {
       await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
       expect(bulkStore.getSummaryText('preview', 4, 0))
