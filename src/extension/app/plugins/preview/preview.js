@@ -90,7 +90,10 @@ export function createPreviewPlugin(appStore) {
           appStore.reloadPage();
         } else {
           appStore.updatePreview();
-          appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED);
+          appStore.fireEvent(
+            EXTERNAL_EVENTS.RESOURCE_PREVIEWED,
+            appStore.status.webPath,
+          );
         }
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write')

@@ -76,7 +76,9 @@ export function createUnpublishPlugin(appStore) {
               actionCallback,
               appStore.i18n('reload'),
             );
-            appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED);
+            appStore.fireEvent(
+              EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED,
+              appStore.status.webPath);
           }
         });
       },

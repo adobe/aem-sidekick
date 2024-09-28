@@ -695,10 +695,9 @@ export class AppStore {
         status,
       };
       sidekick.dispatchEvent(new CustomEvent(name, {
-        detail: { data },
+        detail: data,
       }));
       const userEvents = [
-        'hidden',
         'updated',
         'previewed',
         'published',
@@ -816,7 +815,7 @@ export class AppStore {
 
   /**
      * Fetches the status for the current resource.
-     * @fires Sidekick#statusfetched
+     * @fires Sidekick#status-fetched
      * @param {boolean} [refreshLocation] Refresh the sidekick's location (optional)
      * @param {boolean} [fetchEdit] Should the edit url be fetched (optional)
      * @param {boolean} [transient] Should we persist the status in the store (optional)
@@ -906,7 +905,7 @@ export class AppStore {
     const res = await this.update();
     if (!res && !ranBefore) {
       // assume document has been renamed, re-fetch status and try again
-      this.sidekick.addEventListener('statusfetched', async () => {
+      this.sidekick.addEventListener(EXTERNAL_EVENTS.STATUS_FETCHED, async () => {
         this.updatePreview(true);
       }, { once: true });
       this.fetchStatus();
@@ -1222,14 +1221,18 @@ export class AppStore {
         if (this.status.profile) {
           // logged in, stop checking
           delete status.status;
-          this.sidekick.addEventListener('statusfetched', () => this.setState(), { once: true });
+          this.sidekick.addEventListener(
+            EXTERNAL_EVENTS.STATUS_FETCHED,
+            () => this.setState(),
+            { once: true },
+          );
           await this.siteStore.initStore(siteStore);
           this.siteStore.authTokenExpiry = (
             window.hlx
             && window.hlx.sidekickConfig
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
-          this.fireEvent('logged-in');
+          this.fireEvent(EXTERNAL_EVENTS.LOGGED_IN, this.status.profile);
           // refresh page with site token in case of 401
           if (is401Page(this.location, window.document)) {
             this.reloadPage();
@@ -1279,7 +1282,7 @@ export class AppStore {
           await this.siteStore.initStore(siteStore);
           this.setupPlugins();
           this.fetchStatus();
-          this.fireEvent('logged-out');
+          this.fireEvent(EXTERNAL_EVENTS.LOGGED_OUT, this.status.profile);
           // refresh the page to reflect logged out state
           this.reloadPage();
           return;
@@ -1310,7 +1313,7 @@ export class AppStore {
       if (now > exp * 1000) {
         // token is expired
         this.login(true);
-        this.sidekick.addEventListener('statusfetched', () => {
+        this.sidekick.addEventListener(EXTERNAL_EVENTS.STATUS_FETCHED, () => {
           resolve();
         }, { once: true });
       } else {
