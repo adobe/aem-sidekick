@@ -13,9 +13,9 @@ import { html, LitElement } from 'lit';
 import {
   customElement, property, queryAsync,
 } from 'lit/decorators.js';
-import '@spectrum-web-components/theme/scale-medium.js';
-import '@spectrum-web-components/theme/theme-dark.js';
-import '@spectrum-web-components/theme/theme-light.js';
+import '@spectrum-web-components/theme/spectrum-two/theme-light-core-tokens.js';
+import '@spectrum-web-components/theme/spectrum-two/theme-dark-core-tokens.js';
+import '@spectrum-web-components/theme/spectrum-two/scale-medium-core-tokens.js';
 import '@spectrum-web-components/illustrated-message/sp-illustrated-message.js';
 import '@spectrum-web-components/table/sp-table.js';
 import '@spectrum-web-components/table/sp-table-body.js';

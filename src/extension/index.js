@@ -9,10 +9,9 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-
-import '@spectrum-web-components/theme/scale-medium.js';
-import '@spectrum-web-components/theme/theme-dark.js';
-import '@spectrum-web-components/theme/theme-light.js';
+import '@spectrum-web-components/theme/spectrum-two/theme-light-core-tokens.js';
+import '@spectrum-web-components/theme/spectrum-two/theme-dark-core-tokens.js';
+import '@spectrum-web-components/theme/spectrum-two/scale-medium-core-tokens.js';
 import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/divider/sp-divider.js';

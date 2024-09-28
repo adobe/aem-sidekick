@@ -54,7 +54,7 @@ export class ThemeWrapper extends LitElement {
   render() {
     return html`
       <sk-theme
-        theme="spectrum"
+        system="spectrum-two"
         color=${this.theme === 'dark' ? 'dark' : 'light'}
         scale="medium"
       >
