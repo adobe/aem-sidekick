@@ -1229,7 +1229,10 @@ describe('Test Bulk Store', () => {
       await bulkStore.preview();
 
       await waitUntil(() => showToastSpy.called);
-      expect(showToastSpy.calledWithMatch('This folder contains illegal characters:', 'warning')).to.be.true;
+      expect(showToastSpy.calledWithMatch({
+        variant: 'warning',
+        timeout: 0,
+      })).to.be.true;
     });
 
     it('getSummaryText: returns message based on succeeded vs failed', async () => {
