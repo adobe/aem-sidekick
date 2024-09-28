@@ -329,7 +329,10 @@ describe('Preview plugin', () => {
       previewPlugin.click();
 
       await waitUntil(() => showToastSpy.calledOnce);
-      expect(showToastSpy.calledWithMatch('This file contains illegal characters:', 'warning')).to.be.true;
+      expect(showToastSpy.calledWithMatch({
+        variant: 'warning',
+        timeout: 0,
+      })).to.be.true;
       expect(updatePreviewStub.calledOnce).to.be.false;
     });
   });
