@@ -453,14 +453,27 @@ export class BulkStore {
       log.debug(`bulk ${operation}: no selection`);
       return false;
     }
-
-    const illegalNames = this.selection
-      .filter(({ file }) => file.startsWith(illegalPathPrefix))
-      .map(({ file }) => file.substring(10));
-    if (illegalNames.length > 0) {
+    const { webPath, edit: { illegalPath } } = this.appStore.status;
+    let invalidMessage = '';
+    // check parent path
+    if (illegalPath) {
+      invalidMessage = this.appStore
+        .i18n('bulk_error_illegal_folder_name')
+        .replace('$1', illegalPath);
+    } else {
+      // check selected files
+      const illegalFileNames = this.selection
+        .filter(({ file }) => file.startsWith(illegalPathPrefix))
+        .map(({ file }) => `${webPath}${file.substring(10)}`);
+      if (illegalFileNames.length > 0) {
+        invalidMessage = this.appStore
+          .i18n(`bulk_error_illegal_file_name${illegalFileNames.length === 1 ? '' : 's'}`)
+          .replace('$1', illegalFileNames.join(', '));
+      }
+    }
+    if (invalidMessage) {
       this.appStore.showToast(
-        this.appStore.i18n(`bulk_error_illegal_file_name${illegalNames.length === 1 ? '' : 's'}`)
-          .replace('$1', illegalNames.join(', ')),
+        invalidMessage,
         'warning',
         undefined,
         undefined,
