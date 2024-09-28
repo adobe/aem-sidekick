@@ -287,7 +287,11 @@ describe('Test Bulk Store', () => {
         await bulkStore.preview();
 
         expect(startJobStub.called).to.be.false;
-        expect(showToastSpy.calledWithMatch('This file contains illegal characters:', 'warning')).to.be.true;
+        expect(showToastSpy.calledWithMatch({
+          variant: 'warning',
+          timeout: 0,
+        })).to.be.true;
+        showToastSpy.resetHistory();
 
         // select 2nd illegal item
         sidekickTest.toggleAdminItems(['video*.mp4']);
@@ -296,7 +300,10 @@ describe('Test Bulk Store', () => {
         await bulkStore.preview();
 
         expect(startJobStub.called).to.be.false;
-        expect(showToastSpy.calledWithMatch('The following files contain illegal characters:', 'warning')).to.be.true;
+        expect(showToastSpy.calledWithMatch({
+          variant: 'warning',
+          timeout: 0,
+        })).to.be.true;
       });
 
       it('bulk previews selection and displays success toast', async () => {
@@ -344,10 +351,10 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => getJobStub.calledWith('preview', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
-        expect(showToastSpy.calledWithMatch(
-          'Preview of 3 files successfully generated.',
-          'positive',
-        )).to.be.true;
+        expect(showToastSpy.calledWithMatch({
+          message: 'Preview of 3 files successfully generated.',
+          variant: 'positive',
+        })).to.be.true;
         expect(fireEventStub.calledWithMatch('previewed')).to.be.true;
 
         // test toast actions
@@ -415,10 +422,10 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => getJobStub.calledWith('preview', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
-        expect(showToastSpy.calledWithMatch(
-          'Configuration successfully activated.',
-          'positive',
-        )).to.be.true;
+        expect(showToastSpy.calledWith({
+          message: 'Configuration successfully activated.',
+          variant: 'positive',
+        })).to.be.true;
         expect(fireEventStub.calledWithMatch('previewed')).to.be.true;
 
         // no toast actions
@@ -458,7 +465,10 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => getJobStub.calledWith('preview', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
-        expect(showToastSpy.calledWithMatch('but 1 failed', 'warning')).to.be.true;
+        expect(showToastSpy.calledWithMatch({
+          message: 'Preview of 1 file successfully generated, but 1 failed.',
+          variant: 'warning',
+        })).to.be.true;
       }).timeout(10000);
 
       it('bulk previews selection and displays failure toast', async () => {
@@ -493,7 +503,10 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => getJobStub.calledWith('preview', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
-        expect(showToastSpy.calledWithMatch('Failed to generate preview', 'negative')).to.be.true;
+        expect(showToastSpy.calledWithMatch({
+          message: 'Failed to generate preview of all files.',
+          variant: 'negative',
+        })).to.be.true;
 
         // test toast action
         const activityAction = recursiveQuery(sidekickTest.sidekick, 'activity-action');
@@ -624,13 +637,18 @@ describe('Test Bulk Store', () => {
 
         await waitUntil(() => updateStub.called);
         await waitUntil(() => showToastSpy.called);
-        expect(showToastSpy.calledWithMatch('Preview of this file successfully generated.')).to.be.true;
+        expect(showToastSpy.calledWithMatch({
+          message: 'Preview of this file successfully generated.',
+        })).to.be.true;
       });
 
       it('single file failure', async () => {
         updateStub.callsFake(() => {
           // admin client shows error toast
-          appStore.showToast('Failed to generate preview', 'negative');
+          appStore.showToast({
+            message: 'Failed to generate preview',
+            variant: 'negative',
+          });
           return false;
         });
         sidekickTest.toggleAdminItems(['document']);
@@ -687,7 +705,10 @@ describe('Test Bulk Store', () => {
         await bulkStore.publish();
 
         expect(startJobStub.called).to.be.false;
-        expect(showToastSpy.calledWithMatch('This file contains illegal characters:', 'warning')).to.be.true;
+        expect(showToastSpy.calledWithMatch({
+          variant: 'warning',
+          timeout: 0,
+        })).to.be.true;
 
         // select 2nd illegal item
         sidekickTest.toggleAdminItems(['video*.mp4']);
@@ -696,7 +717,10 @@ describe('Test Bulk Store', () => {
         await bulkStore.publish();
 
         expect(startJobStub.called).to.be.false;
-        expect(showToastSpy.calledWithMatch('The following files contain illegal characters:', 'warning')).to.be.true;
+        expect(showToastSpy.calledWithMatch({
+          variant: 'warning',
+          timeout: 0,
+        })).to.be.true;
       });
 
       it('bulk publishes selection and displays success toast', async () => {
@@ -731,10 +755,10 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => getJobStub.calledWith('publish', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
-        expect(showToastSpy.calledWithMatch(
-          '2 files successfully published.',
-          'positive',
-        )).to.be.true;
+        expect(showToastSpy.calledWithMatch({
+          message: '2 files successfully published.',
+          variant: 'positive',
+        })).to.be.true;
         expect(fireEventStub.calledWithMatch('published')).to.be.true;
 
         // test toast actions
@@ -781,7 +805,11 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => getJobStub.calledWith('publish', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
-        expect(showToastSpy.calledWithMatch('but 1 failed', 'warning')).to.be.true;
+
+        expect(showToastSpy.calledWithMatch({
+          message: '1 file successfully published, but 1 failed.',
+          variant: 'warning',
+        })).to.be.true;
       }).timeout(10000);
 
       it('bulk publishes selection and displays failure toast', async () => {
@@ -816,7 +844,10 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => getJobStub.calledWith('publish', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
-        expect(showToastSpy.calledWithMatch('Failed to publish all files.', 'negative')).to.be.true;
+        expect(showToastSpy.calledWithMatch({
+          message: 'Failed to publish all files.',
+          variant: 'negative',
+        })).to.be.true;
       }).timeout(10000);
 
       it('start job fails', async () => {
@@ -924,13 +955,18 @@ describe('Test Bulk Store', () => {
 
         await waitUntil(() => publishStub.called);
         await waitUntil(() => showToastSpy.called);
-        expect(showToastSpy.calledWithMatch('File successfully published.')).to.be.true;
+        expect(showToastSpy.calledWithMatch({
+          message: 'File successfully published.',
+        })).to.be.true;
       });
 
       it('single file failure', async () => {
         publishStub.callsFake(() => {
           // admin client shows error toast
-          appStore.showToast('Publication failed', 'negative');
+          appStore.showToast({
+            message: 'Publication failed',
+            variant: 'negative',
+          });
           return false;
         });
         sidekickTest.toggleAdminItems(['document']);
@@ -995,10 +1031,10 @@ describe('Test Bulk Store', () => {
         await bulkStore.copyUrls(host, ['/document', '/spreadsheet.json']);
 
         await waitUntil(() => writeTextStub.called);
-        expect(showToastSpy.args[0][0])
-          .to.equal('Copy to clipboard failed. Please make sure the window remains focused.');
-        expect(showToastSpy.args[0][1])
-          .to.equal('negative');
+        expect(showToastSpy.calledWith({
+          message: 'Copy to clipboard failed. Please make sure the window remains focused.',
+          variant: 'negative',
+        })).to.be.true;
       });
 
       it('navigator.cliboard.writeText throws error', async () => {
@@ -1006,10 +1042,10 @@ describe('Test Bulk Store', () => {
         await bulkStore.copyUrls(host, ['/document', '/spreadsheet.json']);
 
         await waitUntil(() => writeTextStub.called);
-        expect(showToastSpy.args[0][0])
-          .to.equal('Copy to clipboard failed. Please try again.');
-        expect(showToastSpy.args[0][1])
-          .to.equal('negative');
+        expect(showToastSpy.calledWith({
+          message: 'Copy to clipboard failed. Please try again.',
+          variant: 'negative',
+        })).to.be.true;
       });
     });
 
@@ -1193,7 +1229,10 @@ describe('Test Bulk Store', () => {
       await bulkStore.preview();
 
       await waitUntil(() => showToastSpy.called);
-      expect(showToastSpy.calledWithMatch('This folder contains illegal characters:', 'warning')).to.be.true;
+      expect(showToastSpy.calledWithMatch({
+        variant: 'warning',
+        timeout: 0,
+      })).to.be.true;
     });
 
     it('getSummaryText: returns message based on succeeded vs failed', async () => {

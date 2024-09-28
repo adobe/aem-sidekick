@@ -55,10 +55,10 @@ export function createPublishPlugin(appStore) {
 
             const { host } = siteStore;
             const targetEnv = host ? 'production' : 'live';
-            appStore.showToast(
-              appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv)),
-              'positive',
-            );
+            appStore.showToast({
+              message: appStore.i18n('publish_success').replace('$1', appStore.i18n(targetEnv)),
+              variant: 'positive',
+            });
             appStore.fireEvent(
               EXTERNAL_EVENTS.RESOURCE_PUBLISHED,
               appStore.status.webPath,

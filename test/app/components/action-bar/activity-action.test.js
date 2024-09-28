@@ -138,13 +138,16 @@ describe('Activity', () => {
 
       await sidekickTest.awaitEnvSwitcher();
 
-      appStore.showToast(
-        'Test Toast',
-        'info',
-      );
+      appStore.showToast({
+        message: 'Test Toast',
+        variant: 'info',
+      });
 
       await sidekickTest.awaitToast();
-      expect(toastSpy.calledWith('Test Toast', 'info')).to.be.true;
+      expect(toastSpy.calledWith({
+        message: 'Test Toast',
+        variant: 'info',
+      })).to.be.true;
       await waitUntil(() => recursiveQuery(sidekick, '.toast-container .message span')
         .textContent === 'Test Toast');
 
@@ -158,13 +161,12 @@ describe('Activity', () => {
 
       await sidekickTest.awaitEnvSwitcher();
 
-      appStore.showToast(
-        'Test Toast',
-        'positive',
-        () => appStore.closeToast(),
-        () => appStore.openPage('https://www.aem.live/'),
-        'Action',
-      );
+      appStore.showToast({
+        message: 'Test Toast',
+        variant: 'positive',
+        actionCallback: () => appStore.openPage('https://www.aem.live/'),
+        actionLabel: 'Action',
+      });
 
       await sidekickTest.awaitToast();
 
@@ -181,15 +183,14 @@ describe('Activity', () => {
 
       await sidekickTest.awaitEnvSwitcher();
 
-      appStore.showToast(
-        'Test Toast',
-        'info',
-        () => appStore.closeToast(),
-        () => appStore.openPage('https://www.aem.live/'),
-        'Action 1',
-        () => appStore.openPage('https://www.aem.live/docs/'),
-        'Action 2',
-      );
+      appStore.showToast({
+        message: 'Test Toast',
+        variant: 'info',
+        actionCallback: () => appStore.openPage('https://www.aem.live/'),
+        actionLabel: 'Action 1',
+        secondaryCallback: () => appStore.openPage('https://www.aem.live/docs/'),
+        secondaryLabel: 'Action 2',
+      });
 
       await sidekickTest.awaitToast();
 
@@ -204,10 +205,10 @@ describe('Activity', () => {
 
       await sidekickTest.awaitEnvSwitcher();
 
-      appStore.showToast('Test Toast 1', 'info');
+      appStore.showToast({ message: 'Test Toast 1', variant: 'info' });
       await sidekickTest.awaitToast();
 
-      appStore.showToast('Test Toast 2', 'info');
+      appStore.showToast({ message: 'Test Toast 2', variant: 'info' });
       await sidekickTest.awaitToast();
 
       await waitUntil(() => recursiveQuery(sidekick, '.toast-container .message span')

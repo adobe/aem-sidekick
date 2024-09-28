@@ -47,17 +47,13 @@ export function createPreviewPlugin(appStore) {
         const { location } = appStore;
         const status = await appStore.fetchStatus(false, true, true);
         if (status.edit?.illegalPath) {
-          appStore.showToast(
-            appStore.i18n('bulk_error_illegal_file_name')
+          appStore.showToast({
+            message: appStore
+              .i18n('bulk_error_illegal_file_name')
               .replace('$1', status.webPath),
-            'warning',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            3600000, // keep for 1 hour
-          );
+            variant: 'warning',
+            timeout: 0, // keep open
+          });
           return;
         }
         if (status.edit && status.edit.sourceLocation
@@ -66,7 +62,7 @@ export function createPreviewPlugin(appStore) {
           // show ctrl/cmd + s hint on onedrive docs
           // istanbul ignore next
           const mac = navigator.platform.toLowerCase().includes('mac') ? '_mac' : '';
-          appStore.showToast(appStore.i18n(`preview_onedrive${mac}`));
+          appStore.showToast({ message: appStore.i18n(`preview_onedrive${mac}`) });
         } else if (status.edit.sourceLocation?.startsWith('gdrive:')) {
           const { contentType } = status.edit;
 
@@ -86,11 +82,10 @@ export function createPreviewPlugin(appStore) {
               errorKey = 'error_preview_not_gsheet_ms_excel';
             }
 
-            appStore.showToast(
-              appStore.i18n(errorKey),
-              'negative',
-              () => appStore.closeToast(),
-            );
+            appStore.showToast({
+              message: appStore.i18n(errorKey),
+              variant: 'negative',
+            });
 
             return;
           }
