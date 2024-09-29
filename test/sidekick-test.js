@@ -52,6 +52,7 @@ import {
   mockSharePointFile,
   mockSharePointRoot,
 } from './fixtures/content-sources.js';
+import { defaultOnboardingResponse, onboardingHtml } from './fixtures/onboarding.js';
 
 /**
  * Status API
@@ -106,6 +107,11 @@ export class SidekickTest {
   rumStub;
 
   /**
+   * @type {sinon.SinonStub}
+   */
+  localStorageStub;
+
+  /**
    * Constructor
    * @param {Object} [config] The sidekick configuration
    * @param {AppStore} [appStore] The app store
@@ -117,6 +123,7 @@ export class SidekickTest {
     this.appStore = appStore;
     this.config = config;
     this.sandbox = sinon.createSandbox();
+    this.localStorageStub = this.sandbox.stub(chrome.storage.local, 'get').resolves({ onboarded: true });
   }
 
   /**
@@ -654,6 +661,30 @@ export class SidekickTest {
         ...body,
         ...overrides,
       },
+    }, { overwriteRoutes: true });
+
+    return this;
+  }
+
+  /**
+   * Mocks the fetch of the sidekick config endpoint
+   * @param {Object} overrides Additional overrides for the status response
+   * @returns {SidekickTest}
+   */
+  mockFetchOnboardingSuccess(
+    overrides = {},
+  ) {
+    fetchMock.get('https://tools.aem.live/sidekick/query-index.json', {
+      status: 200,
+      body: {
+        ...defaultOnboardingResponse,
+        ...overrides,
+      },
+    }, { overwriteRoutes: true });
+
+    fetchMock.get('glob:https://tools.aem.live/sidekick/onboarding/en/**.plain.html', {
+      status: 200,
+      body: onboardingHtml(),
     }, { overwriteRoutes: true });
 
     return this;

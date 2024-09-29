@@ -92,6 +92,7 @@ export class OnBoardingDialog extends ConnectedElement {
    * Handle theme changes
    */
   onThemeChange = () => {
+    /* istanbul ignore next */
     this.requestUpdate();
   };
 
@@ -102,7 +103,7 @@ export class OnBoardingDialog extends ConnectedElement {
     const resp = await fetch(`${TOOLS_ORIGIN}/sidekick/query-index.json`);
     if (resp.ok) {
       const index = await resp.json();
-      const promises = index.data.map((item) => (item.category === 'onboarding' ? item : null))
+      const promises = index.data.filter((item) => item.category === 'onboarding')
         .map(async (item) => {
           // Fetch the content
           const fetchResp = await fetch(`${TOOLS_ORIGIN}${item.path}.plain.html`);
@@ -113,6 +114,7 @@ export class OnBoardingDialog extends ConnectedElement {
             };
           }
 
+          /* istanbul ignore next */
           return null;
         });
 
@@ -216,6 +218,7 @@ export class OnBoardingDialog extends ConnectedElement {
                   ${when(item.action,
                     () => html`
                       <sp-button
+                        id="action"
                         variant="secondary"
                         treatment="fill"
                         @click=${this.onActionClicked}
@@ -225,6 +228,7 @@ export class OnBoardingDialog extends ConnectedElement {
                     `,
                   )}
                   <sp-button
+                    id="next"
                     variant="cta"
                     treatment="fill"
                     @click=${this.onNextClicked}
