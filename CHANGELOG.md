@@ -1,3 +1,24 @@
+# [2.0.0](https://github.com/adobe/aem-sidekick/compare/v1.32.1...v2.0.0) (2024-09-30)
+
+
+### Bug Fixes
+
+* JSON view should not attempt to draw links for glob paths ([#286](https://github.com/adobe/aem-sidekick/issues/286)) ([8384e92](https://github.com/adobe/aem-sidekick/commit/8384e924862d314b190a5a2638416b3df699f709))
+* localized SP file selection ([03f5b53](https://github.com/adobe/aem-sidekick/commit/03f5b53b44ab69dcc8bf6c922a2732a2d9aeef27))
+* **preview:** disallow folders with illegal characters ([#277](https://github.com/adobe/aem-sidekick/issues/277)) ([4bbc138](https://github.com/adobe/aem-sidekick/commit/4bbc138c4b1ec725e66d7890a683423c04e516d3))
+* remove check for '?' inclusion ([#291](https://github.com/adobe/aem-sidekick/issues/291)) ([69fb9cb](https://github.com/adobe/aem-sidekick/commit/69fb9cb1df8313fabce66a68785946ee06738296))
+* use spectrum 2 SWC theme ([#275](https://github.com/adobe/aem-sidekick/issues/275)) ([a3e6767](https://github.com/adobe/aem-sidekick/commit/a3e6767097752821d51c38e7b4df3e3622914101))
+
+
+### Code Refactoring
+
+* event management ([#285](https://github.com/adobe/aem-sidekick/issues/285)) ([5e45d3e](https://github.com/adobe/aem-sidekick/commit/5e45d3e5d153a19d45753bc10318aa183fc0fe3b))
+
+
+### BREAKING CHANGES
+
+* renamed events
+
 ## [1.32.1](https://github.com/adobe/aem-sidekick/compare/v1.32.0...v1.32.1) (2024-09-24)
 
 
