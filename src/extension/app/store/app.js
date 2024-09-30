@@ -368,16 +368,7 @@ export class AppStore {
             confirm,
             container: containerId,
           };
-          if (isBadge) {
-            plugin.elements = [{
-              tag: 'badge',
-              text: title,
-              attrs: {
-                variant: badgeVariant?.toLowerCase() || 'default',
-                size: 's',
-              },
-            }];
-          } else {
+          if (!isBadge) {
             plugin.button = {
               text: (titleI18n && titleI18n[lang]) || title,
               action: () => {
