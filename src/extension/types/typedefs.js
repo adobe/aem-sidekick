@@ -68,7 +68,6 @@
 /**
  * @typedef {Object} ClientConfig
  * @prop {string} [extends] Extend another project's sidekick configuration?
- * @prop {string} [redirect] Loads the sidekick configuration from a different URL?
  * @prop {string} [project] The name of the project
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
