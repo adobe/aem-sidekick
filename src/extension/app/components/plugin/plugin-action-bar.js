@@ -286,13 +286,13 @@ export class PluginActionBar extends ConnectedElement {
    * @returns {TemplateResult} The HTML template for the badge plugin.
    */
   renderBadgePlugins() {
-    if (this.appStore.state !== STATE.READY) {
+    if (this.appStore.state !== STATE.READY || this.badgePlugins.length === 0) {
       return html``;
     }
 
     return html`
       <div class="badge-plugins-container">
-        ${this.badgePlugins.length > 0 ? this.badgePlugins.map((p) => p.render()) : ''}
+        ${this.badgePlugins.map((p) => p.render())}
       </div>`;
   }
 
