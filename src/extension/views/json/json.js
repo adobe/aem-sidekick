@@ -301,8 +301,7 @@ export class JSONView extends LitElement {
       }
     } else if (value.startsWith('/') || value.startsWith('http')) {
       // check if the value contains a glob pattern
-      const hasGlobPattern = value.includes('*') || value.includes('?');
-      if (!hasGlobPattern) {
+      if (!value.includes('*')) {
         // assume link
         const link = valueContainer.appendChild(document.createElement('a'));
         const target = new URL(value, url).toString();
