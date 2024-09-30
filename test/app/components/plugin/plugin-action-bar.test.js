@@ -980,7 +980,7 @@ describe('Plugin action bar', () => {
   });
 
   describe('badge plugins', () => {
-    it('renders cored badge plugins', async () => {
+    it('renders badge plugins', async () => {
       sidekickTest
         .mockFetchStatusSuccess()
         .mockFetchSidekickConfigSuccess(true, true)
