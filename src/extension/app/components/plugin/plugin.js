@@ -59,7 +59,7 @@ export class Plugin {
   /**
    * The plugin configuration
    * @property
-   * @type {CorePlugin}
+   * @type {CustomPlugin}
    */
   config;
 
@@ -147,7 +147,7 @@ export class Plugin {
    * @returns {boolean} True if the plugin elements array has exactly one element and that element is a badge, otherwise false.
    */
   isBadge() {
-    return this.config.elements?.length === 1 && this.config.elements[0].tag === 'badge';
+    return this.config.isBadge;
   }
 
   /**
@@ -203,13 +203,12 @@ export class Plugin {
     }
 
     if (this.isBadge()) {
-      const badge = this.config.elements[0];
       return html`
         <sp-badge
           class=${this.getId()}
-          size="${badge.attrs.size}"
-          variant="${badge.attrs.variant}"
-        >${badge.text}</sp-badge>
+          size="s"
+          variant="${this.config.badgeVariant || 'default'}"
+        >${this.getButtonText()}</sp-badge>
       `;
     }
 

@@ -40,16 +40,12 @@ const TEST_CHILD_CONFIG = {
 
 const TEST_BADGE_CONFIG = {
   id: 'test',
-  elements: [
-    {
-      tag: 'badge',
-      text: 'Text',
-      attrs: {
-        variant: 'orange',
-        size: 's',
-      },
-    },
-  ],
+  isBadge: true,
+  badgeVariant: 'orange',
+  button: {
+    text: 'Test Child',
+    action: () => {},
+  },
 };
 
 describe('Plugin', () => {

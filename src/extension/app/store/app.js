@@ -364,12 +364,7 @@ export class AppStore {
             custom: true,
             id,
             condition,
-            pinned,
-            confirm,
-            container: containerId,
-          };
-          if (!isBadge) {
-            plugin.button = {
+            button: {
               text: (titleI18n && titleI18n[lang]) || title,
               action: () => {
                 if (url) {
@@ -403,9 +398,13 @@ export class AppStore {
                 }
               },
               isDropdown: isContainer,
-
-            };
-          }
+            },
+            pinned,
+            confirm,
+            container: containerId,
+            isBadge,
+            badgeVariant,
+          };
 
           // check if this overlaps with a core plugin, if so override the condition only
           const corePlugin = this.corePlugins[plugin.id];
