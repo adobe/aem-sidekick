@@ -142,4 +142,14 @@ describe('Onboarding modal', () => {
 
     await waitUntil(() => recursiveQuery(themeWrapper, 'onboarding-dialog') === undefined);
   });
+
+  it('click next on last page closes onboarding', async () => {
+    sidekickTest.mockFetchOnboardingFailure();
+
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
+    expect(recursiveQuery(themeWrapper, 'onboarding-dialog')).to.not.exist;
+  });
 });

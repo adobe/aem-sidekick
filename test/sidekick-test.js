@@ -123,6 +123,8 @@ export class SidekickTest {
     this.appStore = appStore;
     this.config = config;
     this.sandbox = sinon.createSandbox();
+
+    // Stub the onboarded flag true by default
     this.localStorageStub = this.sandbox.stub(chrome.storage.local, 'get').resolves({ onboarded: true });
   }
 
@@ -667,7 +669,7 @@ export class SidekickTest {
   }
 
   /**
-   * Mocks the fetch of the sidekick config endpoint
+   * Mocks the fetch of the sidekick onboarding index
    * @param {Object} overrides Additional overrides for the status response
    * @returns {SidekickTest}
    */
@@ -685,6 +687,25 @@ export class SidekickTest {
     fetchMock.get('glob:https://tools.aem.live/sidekick/onboarding/en/**.plain.html', {
       status: 200,
       body: onboardingHtml(),
+    }, { overwriteRoutes: true });
+
+    return this;
+  }
+
+  /**
+   * Mocks the failure fetch of the sidekick onboarding index
+   * @param {Object} overrides Additional overrides for the status response
+   * @returns {SidekickTest}
+   */
+  mockFetchOnboardingFailure(
+    overrides = {},
+  ) {
+    fetchMock.get('https://tools.aem.live/sidekick/query-index.json', {
+      status: 500,
+      body: {
+        ...defaultOnboardingResponse,
+        ...overrides,
+      },
     }, { overwriteRoutes: true });
 
     return this;

@@ -101,24 +101,22 @@ export class OnBoardingDialog extends ConnectedElement {
    */
   async fetchIndex() {
     const resp = await fetch(`${TOOLS_ORIGIN}/sidekick/query-index.json`);
-    if (resp.ok) {
-      const index = await resp.json();
-      const promises = index.data.filter((item) => item.category === 'onboarding')
-        .map(async (item) => {
-          const fetchResp = await fetch(`${TOOLS_ORIGIN}${item.path}.plain.html`);
-          if (fetchResp.ok) {
-            return {
-              ...item,
-              content: await fetchResp.text(),
-            };
-          }
-
-          /* istanbul ignore next */
-          return null;
-        });
-
-      this.items = await Promise.all(promises);
+    if (!resp.ok) {
+      this.remove();
+      return;
     }
+
+    const index = await resp.json();
+    const onboardingItems = index.data
+      .filter(({ category }) => category === 'onboarding')
+      .map(async (item) => {
+        const fetchResp = await fetch(`${TOOLS_ORIGIN}${item.path}.plain.html`);
+        return fetchResp.ok
+          ? { ...item, content: await fetchResp.text() }
+          : null;
+      });
+
+    this.items = (await Promise.all(onboardingItems)).filter(Boolean);
   }
 
   /**
@@ -168,6 +166,8 @@ export class OnBoardingDialog extends ConnectedElement {
    */
   async closeDialog() {
     const onboarded = await getConfig('local', 'onboarded');
+
+    /* istanbul ignore else */
     if (!onboarded) {
       setConfig('local', { onboarded: true, onboardDate: new Date().toISOString() });
     }
