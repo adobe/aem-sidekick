@@ -361,10 +361,7 @@ describe('Plugin action bar', () => {
 
       plugins.values().next().value.click();
       await aTimeout(100);
-      expect(fireEventStub.calledWith(
-        EXTERNAL_EVENTS.PLUGIN_USED,
-        { id: 'tag-selector' },
-      )).to.be.true;
+      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, 'tag-selector')).to.be.true;
     });
 
     it('custom plugin clicked', async () => {
@@ -395,7 +392,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => openPageStub.calledOnce);
       expect(openPageStub.calledOnce).to.be.true;
-      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, { id: 'library' })).to.be.true;
+      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, 'library')).to.be.true;
 
       recursiveQuery(sidekick, '.tools').click();
       const preflightPlugin = recursiveQuery(sidekick, '[value="preflight"]');
@@ -404,7 +401,7 @@ describe('Plugin action bar', () => {
       await aTimeout(100);
 
       expect(fireEventStub.calledWithMatch('custom:preflight')).to.be.true;
-      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, { id: 'preflight' })).to.be.true;
+      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, 'preflight')).to.be.true;
     });
 
     it('overrides core plugin', async () => {
@@ -742,7 +739,7 @@ describe('Plugin action bar', () => {
 
       const statusFetchedSpy = sandbox.spy();
 
-      sidekick.addEventListener('statusfetched', statusFetchedSpy);
+      sidekick.addEventListener('status-fetched', statusFetchedSpy);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
       await aTimeout(100);

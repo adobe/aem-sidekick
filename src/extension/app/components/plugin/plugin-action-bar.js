@@ -112,13 +112,6 @@ export class PluginActionBar extends ConnectedElement {
           if (this.appStore.state === STATE.TOAST) {
             actionBar.classList.add(this.appStore.toast.variant);
 
-            setTimeout(() => {
-              actionBar.className = '';
-              if (this.appStore.toast?.actionCallback && this.appStore.toast?.actionOnTimeout) {
-                this.appStore.toast?.actionCallback();
-              }
-              this.appStore.closeToast();
-            }, this.appStore.toast.timeout);
             // We need to reset the class name to remove the toast variant, but only if it exists.
             // It's possible for actionBar to be null on the first render.
           } else if (actionBar) {

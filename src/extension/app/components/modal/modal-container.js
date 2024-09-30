@@ -61,6 +61,12 @@ export class ModalContainer extends LitElement {
   @queryAsync('sp-dialog-wrapper')
   accessor dialogWrapper;
 
+  /**
+   * The dialog wrapper
+   */
+  @queryAsync('sp-dialog-wrapper sp-textfield')
+  accessor confirmInput;
+
   static get styles() {
     return [style];
   }
@@ -101,6 +107,10 @@ export class ModalContainer extends LitElement {
       dialogWrapper.addEventListener(MODAL_EVENTS.SECONDARY, () => {
         this.onSecondary();
       });
+    }
+    // focus text field if delete modal
+    if (this.modal.type === MODALS.DELETE) {
+      (await this.confirmInput).focus();
     }
   }
 

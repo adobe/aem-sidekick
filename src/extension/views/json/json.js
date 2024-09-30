@@ -13,9 +13,9 @@ import { html, LitElement } from 'lit';
 import {
   customElement, property, queryAsync,
 } from 'lit/decorators.js';
-import '@spectrum-web-components/theme/scale-medium.js';
-import '@spectrum-web-components/theme/theme-dark.js';
-import '@spectrum-web-components/theme/theme-light.js';
+import '@spectrum-web-components/theme/spectrum-two/theme-light-core-tokens.js';
+import '@spectrum-web-components/theme/spectrum-two/theme-dark-core-tokens.js';
+import '@spectrum-web-components/theme/spectrum-two/scale-medium-core-tokens.js';
 import '@spectrum-web-components/illustrated-message/sp-illustrated-message.js';
 import '@spectrum-web-components/table/sp-table.js';
 import '@spectrum-web-components/table/sp-table-body.js';
@@ -300,27 +300,33 @@ export class JSONView extends LitElement {
         valueContainer.textContent = value;
       }
     } else if (value.startsWith('/') || value.startsWith('http')) {
-      // assume link
-      const link = valueContainer.appendChild(document.createElement('a'));
-      const target = new URL(value, url).toString();
-      link.href = target;
-      link.title = value;
-      link.target = '_blank';
-      if (value.endsWith('.mp4')) {
-        // linked mp4 video
-        valueContainer.classList.add('video');
-        const video = link.appendChild(document.createElement('video'));
-        const source = video.appendChild(document.createElement('source'));
-        source.src = target;
-        source.type = 'video/mp4';
-      } else if (value.includes('media_')) {
-        // linked image
-        valueContainer.classList.add('image');
-        const img = link.appendChild(document.createElement('img'));
-        img.src = target;
+      // check if the value contains a glob pattern
+      if (!value.includes('*')) {
+        // assume link
+        const link = valueContainer.appendChild(document.createElement('a'));
+        const target = new URL(value, url).toString();
+        link.href = target;
+        link.title = value;
+        link.target = '_blank';
+        if (value.endsWith('.mp4')) {
+          // linked mp4 video
+          valueContainer.classList.add('video');
+          const video = link.appendChild(document.createElement('video'));
+          const source = video.appendChild(document.createElement('source'));
+          source.src = target;
+          source.type = 'video/mp4';
+        } else if (value.includes('media_')) {
+          // linked image
+          valueContainer.classList.add('image');
+          const img = link.appendChild(document.createElement('img'));
+          img.src = target;
+        } else {
+          // text link
+          link.textContent = value;
+        }
       } else {
-        // text link
-        link.textContent = value;
+        // Text
+        valueContainer.textContent = value;
       }
     } else if (value.startsWith('[') && value.endsWith(']')) {
       // assume array
@@ -334,7 +340,6 @@ export class JSONView extends LitElement {
       // text
       valueContainer.textContent = value;
     }
-
     return html`<sp-table-cell>${valueContainer}</sp-table-cell>`;
   }
 

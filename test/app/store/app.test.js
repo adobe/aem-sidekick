@@ -295,10 +295,15 @@ describe('Test App Store', () => {
   describe('fetchStatus()', async () => {
     let showToastStub;
     let instance;
+    let toast;
 
     beforeEach(() => {
       instance = appStore;
-      showToastStub = sidekickTest.sandbox.stub(instance, 'showToast');
+      showToastStub = sidekickTest.sandbox
+        .stub(instance, 'showToast')
+        .callsFake((t) => {
+          toast = t;
+        });
     });
 
     afterEach(() => {
@@ -352,7 +357,7 @@ describe('Test App Store', () => {
       );
       expect(instance.status.status).to.equal(404);
       expect(showToastStub.calledOnce).to.be.true;
-      expect(showToastStub.args[0][0]).to.match(/404 Not found/);
+      expect(toast.message).to.match(/404 Not found/);
     });
 
     it('not found - editor', async () => {
@@ -368,8 +373,8 @@ describe('Test App Store', () => {
       );
       expect(instance.status.status).to.equal(404);
       expect(showToastStub.calledOnce).to.be.true;
-      expect(showToastStub.args[0][0]).to.match(/404 Not found/);
-      expect(showToastStub.args[0][0]).to.match(/access to this document is granted/);
+      expect(toast.message).to.match(/404 Not found/);
+      expect(toast.message).to.match(/access to this document is granted/);
     });
 
     it('server error', async () => {
@@ -406,29 +411,64 @@ describe('Test App Store', () => {
   });
 
   describe('show toast', async () => {
-    it('shows a toast with a primary action', async () => {
+    beforeEach(() => {
       // @ts-ignore
       appStore.sidekick = document.createElement('div');
       appStore.sidekick.attachShadow({ mode: 'open' });
       appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
+    });
 
+    it('shows a toast with a primary action', async () => {
       const closeCallback = () => {};
       const actionCallback = () => {};
       const toastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
-      appStore.showToast('test', 'info', closeCallback, actionCallback);
+      appStore.showToast({
+        message: 'test',
+        variant: 'info',
+        actionCallback,
+        closeCallback,
+      });
       expect(appStore.toast).to.deep.equal({
         closeCallback,
         actionCallback,
-        actionLabel: 'Ok',
+        actionLabel: appStore.i18n('ok'),
         message: 'test',
         timeout: 3000,
         variant: 'info',
         secondaryCallback: undefined,
         secondaryLabel: undefined,
-        actionOnTimeout: true,
+        timeoutCallback: undefined,
       });
       expect(appStore.state).to.equal(STATE.TOAST);
       expect(toastSpy.calledOnce).to.be.true;
+    });
+
+    it('closes toast after timeout and calls timeout callback', async () => {
+      const closeToastSpy = sidekickTest.sandbox.spy(appStore, 'closeToast');
+      const timeoutCallback = sidekickTest.sandbox.spy();
+      appStore.showToast({
+        message: 'test',
+        variant: 'info',
+        timeout: 1000,
+        timeoutCallback,
+      });
+
+      await waitUntil(() => timeoutCallback.calledOnce, 'timeout callback never called', { timeout: 2000 });
+      expect(closeToastSpy.calledOnce).to.be.true;
+    });
+
+    it('closes toast on close button click and calls close callback', async () => {
+      const closeCallback = sidekickTest.sandbox.spy();
+      appStore.showToast({
+        message: 'test',
+        variant: 'info',
+        timeout: 0,
+        closeCallback,
+      });
+
+      appStore.closeToast();
+
+      expect(closeCallback.calledOnce).to.be.true;
     });
   });
 
@@ -786,7 +826,7 @@ describe('Test App Store', () => {
       expect(setStateStub.calledWith(STATE.PREVIEWING)).is.true;
       expect(fetchStatusStub.called).is.true;
 
-      instance.sidekick.dispatchEvent(new CustomEvent('statusfetched', { detail: { status: { webPath: '/somepath' } } }));
+      instance.sidekick.dispatchEvent(new CustomEvent('status-fetched', { detail: { status: { webPath: '/somepath' } } }));
       await waitUntil(() => updatePreviewSpy.calledTwice);
     });
 
@@ -798,7 +838,10 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(showToastStub.calledWith('Preview successfully updated, opening Preview...', 'positive')).is.true;
+      expect(showToastStub.calledWith({
+        message: 'Preview successfully updated, opening Preview...',
+        variant: 'positive',
+      })).is.true;
     });
 
     // Test when resp is ok and status.webPath starts with /.helix/
@@ -809,7 +852,10 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(showToastStub.calledWith('Configuration successfully activated.', 'positive')).is.true;
+      expect(showToastStub.calledWith({
+        message: 'Configuration successfully activated.',
+        variant: 'positive',
+      })).is.true;
     });
   });
 
@@ -1564,7 +1610,7 @@ describe('Test App Store', () => {
       instance.sidekick.addEventListener('logged-out', loginEventSpy);
 
       const statusEventSpy = sinon.spy();
-      instance.sidekick.addEventListener('statusfetched', statusEventSpy);
+      instance.sidekick.addEventListener('status-fetched', statusEventSpy);
 
       // Mock other methods called upon successful login
       const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');

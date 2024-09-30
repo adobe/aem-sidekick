@@ -37,7 +37,7 @@ export const style = css`
   :host(.current-env.env-edit[disabled]) #label,
   :host(.current-env.env-edit[aria-disabled="true"]) [name="description"]::slotted(*),
   :host(.current-env.env-edit[disabled]) [name="description"]::slotted(*) {
-    color: var(--menu-item-label-content-color-default);
+    color: var(--spectrum2-sidekick-color);
   }
 
   :host(.current-env.env-preview){
@@ -179,7 +179,7 @@ export const style = css`
       color: var(--spectrum-gray-800);
     }
 
-    :host(:not(.env-edit, .current-env, .logout)[class]),
+    :host(:not(.env-edit, .current-env, .logout)[class], [disabled]),
     :host(:not(.env-edit, .current-env, .logout)[class]) #label,
     :host(:not(.env-edit, .current-env, .logout)[class]) [name="description"]::slotted(*) {
       color: var(--spectrum-gray-800);

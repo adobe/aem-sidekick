@@ -111,16 +111,11 @@ export class AdminClient {
    * @param {string} variant The toast variant (positive, warning, negative)
    */
   showErrorToast(message, variant) {
-    this.appStore.showToast(
+    this.appStore.showToast({
       message,
       variant,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      3600000, // keep for 1 hour
-    );
+      timeout: 0, // keep open
+    });
   }
 
   /**

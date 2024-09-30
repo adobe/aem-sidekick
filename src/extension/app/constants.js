@@ -40,14 +40,16 @@ export const EVENTS = {
  * @enum {string}
  */
 export const EXTERNAL_EVENTS = {
-  STATUS_FETCHED: 'statusfetched',
+  STATUS_FETCHED: 'status-fetched',
   RESOURCE_UPDATED: 'updated',
   RESOURCE_PREVIEWED: 'previewed',
   RESOURCE_DELETED: 'deleted',
   RESOURCE_PUBLISHED: 'published',
   RESOURCE_UNPUBLISHED: 'unpublished',
-  EVIRONMENT_SWITCHED: 'envswitched',
-  PLUGIN_USED: 'pluginused',
+  EVIRONMENT_SWITCHED: 'env-switched',
+  PLUGIN_USED: 'plugin-used',
+  LOGGED_IN: 'logged-in',
+  LOGGED_OUT: 'logged-out',
   SIDEKICK_READY: 'sidekick-ready',
 };
 

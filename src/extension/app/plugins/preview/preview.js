@@ -46,13 +46,23 @@ export function createPreviewPlugin(appStore) {
       action: async () => {
         const { location } = appStore;
         const status = await appStore.fetchStatus(false, true, true);
+        if (status.edit?.illegalPath) {
+          appStore.showToast({
+            message: appStore
+              .i18n('bulk_error_illegal_file_name')
+              .replace('$1', status.webPath),
+            variant: 'warning',
+            timeout: 0, // keep open
+          });
+          return;
+        }
         if (status.edit && status.edit.sourceLocation
             && status.edit.sourceLocation.startsWith('onedrive:')
             && !location.pathname.startsWith('/:x:/')) {
           // show ctrl/cmd + s hint on onedrive docs
           // istanbul ignore next
           const mac = navigator.platform.toLowerCase().includes('mac') ? '_mac' : '';
-          appStore.showToast(appStore.i18n(`preview_onedrive${mac}`));
+          appStore.showToast({ message: appStore.i18n(`preview_onedrive${mac}`) });
         } else if (status.edit.sourceLocation?.startsWith('gdrive:')) {
           const { contentType } = status.edit;
 
@@ -72,11 +82,10 @@ export function createPreviewPlugin(appStore) {
               errorKey = 'error_preview_not_gsheet_ms_excel';
             }
 
-            appStore.showToast(
-              appStore.i18n(errorKey),
-              'negative',
-              () => appStore.closeToast(),
-            );
+            appStore.showToast({
+              message: appStore.i18n(errorKey),
+              variant: 'negative',
+            });
 
             return;
           }
@@ -90,7 +99,10 @@ export function createPreviewPlugin(appStore) {
           appStore.reloadPage();
         } else {
           appStore.updatePreview();
-          appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_PREVIEWED);
+          appStore.fireEvent(
+            EXTERNAL_EVENTS.RESOURCE_PREVIEWED,
+            appStore.status.webPath,
+          );
         }
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write')
