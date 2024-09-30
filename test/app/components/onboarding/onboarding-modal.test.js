@@ -55,9 +55,6 @@ describe('Onboarding modal', () => {
       .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
     sidekickTest.localStorageStub.resolves({ onboarded: false });
-
-    sidekick = sidekickTest.createSidekick();
-    await sidekickTest.awaitEnvSwitcher();
   });
 
   afterEach(() => {
@@ -65,6 +62,9 @@ describe('Onboarding modal', () => {
   });
 
   it('click next and close', async () => {
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
     const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
     await waitUntil(() => recursiveQuery(themeWrapper, 'onboarding-dialog'));
     const onboardingDialog = recursiveQuery(themeWrapper, 'onboarding-dialog');
@@ -83,6 +83,9 @@ describe('Onboarding modal', () => {
   });
 
   it('should trigger import', async () => {
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
     const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
     await waitUntil(() => recursiveQuery(themeWrapper, 'onboarding-dialog'));
     const onboardingDialog = recursiveQuery(themeWrapper, 'onboarding-dialog');
@@ -101,6 +104,9 @@ describe('Onboarding modal', () => {
   });
 
   it('should open community', async () => {
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
     const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
     await waitUntil(() => recursiveQuery(themeWrapper, 'onboarding-dialog'), 'Onboarding dialog not found', { timeout: 10000 });
     const onboardingDialog = recursiveQuery(themeWrapper, 'onboarding-dialog');
@@ -119,6 +125,9 @@ describe('Onboarding modal', () => {
   });
 
   it('click next on last page closes onboarding', async () => {
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
     const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
     await waitUntil(() => recursiveQuery(themeWrapper, 'onboarding-dialog'));
     const onboardingDialog = recursiveQuery(themeWrapper, 'onboarding-dialog');

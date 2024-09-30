@@ -105,7 +105,6 @@ export class OnBoardingDialog extends ConnectedElement {
       const index = await resp.json();
       const promises = index.data.filter((item) => item.category === 'onboarding')
         .map(async (item) => {
-          // Fetch the content
           const fetchResp = await fetch(`${TOOLS_ORIGIN}${item.path}.plain.html`);
           if (fetchResp.ok) {
             return {
@@ -149,15 +148,19 @@ export class OnBoardingDialog extends ConnectedElement {
    */
   async onActionClicked() {
     const { action } = this.items[this.selectedIndex];
-    if (action) {
-      if (action === 'import') {
+
+    const actionsMap = {
+      import: () => {
         this.appStore.sampleRUM('click', { source: 'sidekick', target: 'onboard-modal:import-projects' });
         chrome.runtime.sendMessage({ action: 'importProjects' });
-      } else if (action === 'join_discord') {
+      },
+      join_discord: () => {
         this.appStore.sampleRUM('click', { source: 'sidekick', target: 'open-discord' });
         this.appStore.openPage('https://discord.gg/aem-live');
-      }
-    }
+      },
+    };
+
+    actionsMap[action]?.();
   }
 
   /**
