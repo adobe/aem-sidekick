@@ -23,6 +23,17 @@ export const style = css`
     font-weight: 700;
   }
 
+  :host(.current-env.env-edit[aria-disabled="true"]) [name="description"]::slotted(*) {
+    font-weight: 400;
+    font-size: var(--spectrum-font-size-50);
+  }
+
+  :host(.current-env.env-edit[aria-disabled="true"]) {
+    background-color: var(--spectrum-gray-200);
+    border: 1px solid var(--spectrum2-edit-border-default);
+    border-radius: var(--spectrum2-default-border-radius);
+  }
+
   :host(:hover) {
     border-radius: var(--spectrum2-default-border-radius);
   }
@@ -77,7 +88,9 @@ export const style = css`
 
   :host(.env-edit) {
     display: flex;
-    height: 40px;
+    height: 50px;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   ::slotted([slot=icon]) {
