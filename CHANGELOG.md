@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/adobe/aem-sidekick/compare/v2.0.0...v2.1.0) (2024-10-01)
+
+
+### Features
+
+* api to get auth info ([#294](https://github.com/adobe/aem-sidekick/issues/294)) ([f799bfb](https://github.com/adobe/aem-sidekick/commit/f799bfb1a1ec84322f42ac62d96228cfca4ad60e))
+
 # [2.0.0](https://github.com/adobe/aem-sidekick/compare/v1.32.1...v2.0.0) (2024-09-30)
 
 
