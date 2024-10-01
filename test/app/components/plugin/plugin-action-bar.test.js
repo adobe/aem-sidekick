@@ -148,7 +148,7 @@ describe('Plugin action bar', () => {
         'tools',
       ]);
 
-      expectEnvPlugin(['preview', 'prod']);
+      expectEnvPlugin(['edit', 'preview', 'prod']);
 
       // Should fallback to id for label if title not provided
       const assetLibraryPlugin = recursiveQuery(sidekick, '.assets');
@@ -237,7 +237,7 @@ describe('Plugin action bar', () => {
         'edit-preview',
       ]);
 
-      expectEnvPlugin(['preview', 'live']);
+      expectEnvPlugin(['edit', 'preview', 'live']);
     });
 
     it('isEditor - custom config with prod host', async () => {
@@ -254,7 +254,7 @@ describe('Plugin action bar', () => {
         'edit-preview',
       ]);
 
-      expectEnvPlugin(['preview', 'prod']);
+      expectEnvPlugin(['edit', 'preview', 'prod']);
     });
 
     it('isPreview - custom config with prod host', async () => {
