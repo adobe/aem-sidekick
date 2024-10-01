@@ -101,6 +101,39 @@ describe('Test actions', () => {
     expect(set.notCalled).to.be.true;
   });
 
+  it('external: getAuthInfo', async () => {
+    const getStub = sandbox.stub(chrome.storage.session, 'get');
+    let resp;
+
+    // without auth info
+    getStub.resolves({});
+    resp = await externalActions.getAuthInfo();
+    expect(resp).to.deep.equal([]);
+
+    // with auth info
+    getStub.resolves({
+      projects: [{
+        // valid auth token, include
+        owner: 'foo',
+        repo: 'bar',
+        authToken: '1234567890',
+        authTokenExpiry: Date.now() / 1000 + 60,
+      }, {
+        // expired auth token, exclude
+        owner: 'foo2',
+        repo: 'baz',
+        authToken: '1234567890',
+        authTokenExpiry: Date.now() / 1000 - 60,
+      }, {
+        // no auth token, exclude
+        owner: 'foo1',
+        repo: 'baz',
+      }],
+    });
+    resp = await externalActions.getAuthInfo();
+    expect(resp).to.deep.equal(['foo']);
+  });
+
   it('internal: addRemoveProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const remove = sandbox.spy(chrome.storage.sync, 'remove');

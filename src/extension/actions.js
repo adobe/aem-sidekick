@@ -24,6 +24,7 @@ import {
   importLegacyProjects,
 } from './project.js';
 import { ADMIN_ORIGIN } from './utils/admin.js';
+import { getConfig } from './config.js';
 
 /**
  * Displays a browser notification.
@@ -50,7 +51,7 @@ export async function notify(message, timeout = 5000) {
  * @param {string} message.owner The project owner
  * @param {string} message.repo The project repo
  * @param {string} message.authToken The auth token
- * @param {number} message.authTokenExpiry The auth token expiry in seconds since epoch
+ * @param {number} message.exp The auth token expiry in seconds since epoch
  * @param {string} message.siteToken The auth token
  * @param {number} message.siteTokenExpiry The site token expiry in seconds since epoch
  * @param {chrome.runtime.MessageSender} sender The sender
@@ -60,7 +61,7 @@ async function updateAuthToken({
   owner,
   repo,
   authToken,
-  authTokenExpiry,
+  exp: authTokenExpiry,
   siteToken,
   siteTokenExpiry,
 }, sender) {
@@ -77,6 +78,17 @@ async function updateAuthToken({
     }
   }
   return 'invalid message';
+}
+
+/**
+ * Returns the organizations the user is currently authenticated for.
+ * @returns {Promise<string[]>} The organizations
+ */
+async function getAuthInfo() {
+  const projects = await getConfig('session', 'projects') || [];
+  return projects
+    .filter(({ authToken, authTokenExpiry }) => !!authToken && authTokenExpiry > Date.now() / 1000)
+    .map(({ owner }) => owner);
 }
 
 /**
@@ -182,6 +194,5 @@ export const internalActions = {
  */
 export const externalActions = {
   updateAuthToken,
-  // todo: loadSidekick
-  // todo: closePalette
+  getAuthInfo,
 };
