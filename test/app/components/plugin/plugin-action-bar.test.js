@@ -30,6 +30,7 @@ import {
   defaultConfigUnpinnedContainerPlugin,
   defaultConfigUnpinnedPlugin,
   defaultConfigPlugins,
+  defaultConfigPluginsWithBadge,
 } from '../../../fixtures/helix-admin.js';
 
 /**
@@ -585,7 +586,7 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitEnvSwitcher();
       await aTimeout(200);
 
-      const customPluginId = 'custom-plugin-10'; // generated id
+      const customPluginId = 'custom-plugin-9'; // generated id
 
       // check initial state
       expectInActionBar([
@@ -983,7 +984,7 @@ describe('Plugin action bar', () => {
     it('renders badge plugins', async () => {
       sidekickTest
         .mockFetchStatusSuccess()
-        .mockFetchSidekickConfigSuccess(true, true)
+        .mockFetchSidekickConfigSuccess(true, true, defaultConfigPluginsWithBadge)
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
       sidekick = sidekickTest.createSidekick();

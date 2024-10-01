@@ -157,7 +157,7 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.liveHost).to.equal('custom-live-host.com');
       expect(appStore.siteStore.host).to.equal('www.aemboilerplate.com');
 
-      expect(appStore.siteStore.plugins.length).to.equal(10);
+      expect(appStore.siteStore.plugins.length).to.equal(9);
       const firstPlugin = appStore.siteStore.plugins[0];
       expect(firstPlugin).to.deep.equal({
         id: 'assets',

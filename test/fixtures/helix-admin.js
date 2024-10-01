@@ -110,16 +110,22 @@ export const defaultConfigPlugins = {
       isPalette: true,
     },
     {
+      // override core plugin
+      id: 'publish',
+      excludePaths: ['**/drafts/**'],
+    },
+  ],
+};
+
+export const defaultConfigPluginsWithBadge = {
+  ...defaultConfigJSON,
+  plugins: [
+    {
       id: 'badge',
       title: 'Badge',
       environments: ['edit', 'dev', 'preview', 'live'],
       isBadge: true,
       badgeVariant: 'orange',
-    },
-    {
-      // override core plugin
-      id: 'publish',
-      excludePaths: ['**/drafts/**'],
     },
   ],
 };
