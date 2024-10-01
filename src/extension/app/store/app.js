@@ -332,6 +332,8 @@ export class AppStore {
             includePaths,
             isContainer,
             containerId,
+            isBadge,
+            badgeVariant,
             confirm,
           } = cfg;
           const condition = (appStore) => {
@@ -404,7 +406,10 @@ export class AppStore {
             pinned,
             confirm,
             container: containerId,
+            isBadge,
+            badgeVariant,
           };
+
           // check if this overlaps with a core plugin, if so override the condition only
           const corePlugin = this.corePlugins[plugin.id];
           if (corePlugin) {

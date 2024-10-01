@@ -172,6 +172,8 @@ export const spectrum2 = css`
 
     --mod-picker-focus-indicator-color: var(--spectrum2-color-focus);
     --mod-actionbutton-focus-indicator-color: var(--spectrum2-color-focus);
+
+    --mod-badge-corner-radius: 7px;
   }
 
   @media (prefers-color-scheme: light) {

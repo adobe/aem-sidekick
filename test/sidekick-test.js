@@ -168,6 +168,13 @@ export class SidekickTest {
   }
 
   /**
+   * Await the sidekick badge container to be rendered
+   */
+  async awaitBadgeContainer() {
+    await waitUntil(() => recursiveQuery(this.sidekick, '.badge-plugins-container'));
+  }
+
+  /**
    * Await the status to be fetched
    */
   async awaitStatusFetched() {

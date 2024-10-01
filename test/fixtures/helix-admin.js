@@ -117,6 +117,19 @@ export const defaultConfigPlugins = {
   ],
 };
 
+export const defaultConfigPluginsWithBadge = {
+  ...defaultConfigJSON,
+  plugins: [
+    {
+      id: 'badge',
+      title: 'Badge',
+      environments: ['edit', 'dev', 'preview', 'live'],
+      isBadge: true,
+      badgeVariant: 'orange',
+    },
+  ],
+};
+
 export const defaultConfigUnpinnedPlugin = {
   ...defaultConfigJSON,
   plugins: [

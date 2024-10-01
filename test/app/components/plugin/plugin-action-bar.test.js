@@ -30,6 +30,7 @@ import {
   defaultConfigUnpinnedContainerPlugin,
   defaultConfigUnpinnedPlugin,
   defaultConfigPlugins,
+  defaultConfigPluginsWithBadge,
 } from '../../../fixtures/helix-admin.js';
 
 /**
@@ -107,6 +108,14 @@ describe('Plugin action bar', () => {
 
     expect([...plugins]
       .map((plugin) => plugin.className)).to.deep.equal(pluginIds);
+  }
+
+  function expectInBadgeContainer(pluginIds) {
+    const badgeContainer = recursiveQuery(sidekickTest.sidekick, '.badge-plugins-container');
+    const badges = recursiveQueryAll(badgeContainer, 'sp-badge');
+
+    expect([...badges]
+      .map((badge) => badge.className)).to.deep.equal(pluginIds);
   }
 
   describe('renders correct default plugins in action bar', () => {
@@ -966,5 +975,22 @@ describe('Plugin action bar', () => {
       await sendKeys({ press: 'Tab' });
       await waitUntil(() => loginButtonFocusSpy.calledOnce, 'login did not focus', { timeout: 3000 });
     }).timeout(10000);
+  });
+
+  describe('badge plugins', () => {
+    it('renders badge plugins', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, true, defaultConfigPluginsWithBadge)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitBadgeContainer();
+
+      expectInBadgeContainer([
+        'badge',
+      ]);
+    });
   });
 });

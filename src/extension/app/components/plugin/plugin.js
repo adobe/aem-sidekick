@@ -59,7 +59,7 @@ export class Plugin {
   /**
    * The plugin configuration
    * @property
-   * @type {CorePlugin}
+   * @type {CustomPlugin}
    */
   config;
 
@@ -143,6 +143,14 @@ export class Plugin {
   }
 
   /**
+   *  Is this plugin a badge?
+   * @returns {boolean} True if the plugin elements array has exactly one element and that element is a badge, otherwise false.
+   */
+  isBadge() {
+    return this.config.isBadge;
+  }
+
+  /**
    * Adds a plugin to this plugin's children.
    * @param {Plugin} plugin The plugin to add
    */
@@ -191,6 +199,16 @@ export class Plugin {
     if (this.getId() === 'env-switcher') {
       return html`
         <env-switcher></env-switcher>
+      `;
+    }
+
+    if (this.isBadge()) {
+      return html`
+        <sp-badge
+          class=${this.getId()}
+          size="s"
+          variant="${this.config.badgeVariant || 'default'}"
+        >${this.getButtonText()}</sp-badge>
       `;
     }
 

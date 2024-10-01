@@ -90,10 +90,13 @@ export class PluginActionBar extends ConnectedElement {
     ].filter((plugin) => plugin.isVisible());
 
     this.barPlugins = this.visiblePlugins
-      .filter((plugin) => plugin.isPinned());
+      .filter((plugin) => plugin.isPinned() && !plugin.isBadge());
 
     this.menuPlugins = this.visiblePlugins
-      .filter((plugin) => !plugin.isPinned());
+      .filter((plugin) => !plugin.isPinned() && !plugin.isBadge());
+
+    this.badgePlugins = this.visiblePlugins
+      .filter((plugin) => plugin.isBadge());
 
     this.requestUpdate();
   }
@@ -270,6 +273,22 @@ export class PluginActionBar extends ConnectedElement {
       </div>`;
   }
 
+  /**
+   * Renders the badge plugins.
+   *
+   * @returns {TemplateResult} The HTML template for the badge plugin.
+   */
+  renderBadgePlugins() {
+    if (this.appStore.state !== STATE.READY || this.badgePlugins.length === 0) {
+      return html``;
+    }
+
+    return html`
+      <div class="badge-plugins-container">
+        ${this.badgePlugins.map((p) => p.render())}
+      </div>`;
+  }
+
   async handleItemSelection(event) {
     const { value } = event.target;
 
@@ -361,6 +380,7 @@ export class PluginActionBar extends ConnectedElement {
         ${this.renderPlugins()}
         ${this.renderPluginMenu()}
         ${this.renderSystemPlugins()}
+        ${this.renderBadgePlugins()}
       </action-bar>
     ` : '';
   }
