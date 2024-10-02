@@ -593,7 +593,7 @@ describe('Test project', () => {
 
       it('legacy sidekick responds with new projects', async () => {
         mockLegacySidekickResponse(legacySidekickId, null, CONFIGS);
-        const imported = await importLegacyProjects();
+        const imported = await importLegacyProjects(legacySidekickId);
         expect(imported).to.equal(6);
       });
 

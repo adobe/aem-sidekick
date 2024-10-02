@@ -58,6 +58,7 @@ export const EXTERNAL_EVENTS = {
  * @enum {string}
  */
 export const MODALS = {
+  INFO: 'info',
   ERROR: 'error',
   CONFIRM: 'confirm',
   DELETE: 'delete',
@@ -114,6 +115,15 @@ export const STATE = {
   MEDIA: 'media_state',
   READY: 'ready_state',
 };
+
+/**
+ * The chrome extension IDs that are allowed to send messages to the extension.
+ * @type {string[]}
+ */
+export const ALLOWED_EXTENSION_IDS = [
+  'igkmdomcgoebiipaifhmpfjhbjccggml',
+  'iijidanmjddcjacejcjofhcjmgkkiijo',
+];
 
 /**
  * The SVG icons.
