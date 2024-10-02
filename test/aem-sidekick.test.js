@@ -13,7 +13,7 @@
 
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
-import { expect } from '@open-wc/testing';
+import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { emulateMedia } from '@web/test-runner-commands';
 import { spy } from 'sinon';
 import { AppStore } from '../src/extension/app/store/app.js';
@@ -131,6 +131,70 @@ describe('AEM Sidekick', () => {
       // todo: check if color scheme change is getting picked up
       expect(spTheme.getAttribute('color')).to.equal('dark');
     });
+  });
+
+  it('renders external notifications from extension', async () => {
+    const sendResponse = spy();
+
+    // const listener = chrome.runtime.onMessage.addListener.getCall(0).args[0];
+
+    // Simulate a message from a valid sender
+    const message = {
+      action: 'show_notification',
+      message: 'Test message',
+      headline: 'Test headline',
+    };
+    const sender = {
+      id: 'igkmdomcgoebiipaifhmpfjhbjccggml',
+    };
+    // stub message receiver and invoke callback
+    sidekickTest.sandbox.stub(chrome.runtime.onMessage, 'addListener')
+      .callsFake((func) => func(
+        message,
+        sender,
+        sendResponse,
+      ));
+
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    await waitUntil(() => recursiveQuery(sidekick, 'modal-container') !== null);
+    const modal = recursiveQuery(sidekick, 'modal-container');
+    const headline = recursiveQuery(modal, 'h2');
+    expect(headline.textContent.trim()).to.eq('Test headline');
+
+    const closeButton = recursiveQuery(modal, 'sp-button');
+    closeButton.click();
+    expect(sendResponse).to.have.been.calledOnce;
+  });
+
+  it('ignores external notifications from invalid extension', async () => {
+    const sendResponse = spy();
+
+    // const listener = chrome.runtime.onMessage.addListener.getCall(0).args[0];
+
+    // Simulate a message from a valid sender
+    const message = {
+      action: 'show_notification',
+      message: 'Test message',
+      headline: 'Test headline',
+    };
+    const sender = {
+      id: 'unknown-extension',
+    };
+    // stub message receiver and invoke callback
+    sidekickTest.sandbox.stub(chrome.runtime.onMessage, 'addListener')
+      .callsFake((func) => func(
+        message,
+        sender,
+        sendResponse,
+      ));
+
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    await aTimeout(1000);
+    expect(recursiveQuery(sidekick, 'modal-container')).to.not.exist;
   });
 
   it('passes the a11y audit', async () => {
