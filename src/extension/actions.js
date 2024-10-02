@@ -26,6 +26,7 @@ import {
 } from './project.js';
 import { ADMIN_ORIGIN } from './utils/admin.js';
 import { getConfig } from './config.js';
+import { getDisplay, setDisplay } from './display.js';
 
 /**
  * Updates the auth token via external messaging API (admin only).
@@ -62,6 +63,23 @@ async function updateAuthToken({
   return 'invalid message';
 }
 
+/**
+ * Shows the sidekick if it is hidden.
+ */
+export async function showSidekickIfHidden() {
+  const visible = await getDisplay();
+  if (!visible) {
+    await setDisplay(true);
+    // wait for sidekick to be visible and check tab to be called by storage listener
+    // eslint-disable-next-line no-promise-executor-return
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+}
+
+/**
+ * Notification confirmation callback
+ * @param {number} tabId The tab ID
+ */
 function notificationConfirmCallback(tabId) {
   return async () => {
     /* istanbul ignore next */
@@ -97,6 +115,8 @@ async function addRemoveProject(tab) {
   const matches = await getProjectMatches(await getProjects(), tab);
   const config = matches.length === 1 && !matches[0].transient
     ? matches[0] : await getProjectFromUrl(tab);
+
+  await showSidekickIfHidden();
   if (isValidProject(config)) {
     const { owner, repo } = config;
     let project = await getProject(config);
@@ -131,6 +151,8 @@ async function enableDisableProject(tab) {
   const { id } = tab;
   const cfg = await getProjectFromUrl(tab);
   const project = await getProject(cfg);
+
+  await showSidekickIfHidden();
   if (await toggleProject(cfg)) {
     const i18nKey = project.disabled
       ? 'config_project_enabled'
@@ -150,6 +172,7 @@ async function enableDisableProject(tab) {
  */
 async function importProjects(tab) {
   const sidekickId = await detectLegacySidekick();
+  await showSidekickIfHidden();
   if (!sidekickId) {
     await showSidekickNotification(tab.id,
       {
