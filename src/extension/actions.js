@@ -80,9 +80,8 @@ export async function showSidekickIfHidden() {
  * Notification confirmation callback
  * @param {number} tabId The tab ID
  */
-function notificationConfirmCallback(tabId) {
+export function notificationConfirmCallback(tabId) {
   return async () => {
-    /* istanbul ignore next */
     await chrome.tabs.reload(tabId, { bypassCache: true });
   };
 }

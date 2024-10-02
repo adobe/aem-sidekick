@@ -19,6 +19,7 @@ import {
   checkViewDocSource,
   externalActions,
   internalActions,
+  notificationConfirmCallback,
 } from '../src/extension/actions.js';
 import chromeMock from './mocks/chrome.js';
 import { error, mockTab } from './test-utils.js';
@@ -369,5 +370,12 @@ describe('Test actions', () => {
     // tab with vds=true
     await checkViewDocSource(1);
     expect(createSpy.callCount).to.equal(1);
+  });
+
+  it('notificationConfirmCallback', async () => {
+    const reloadStub = sandbox.stub(chrome.tabs, 'reload');
+    const callback = notificationConfirmCallback(1);
+    await callback();
+    expect(reloadStub.calledOnce).to.be.true;
   });
 });
