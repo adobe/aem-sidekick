@@ -133,12 +133,21 @@
     "config_project_add": {
       "message": "Add this project"
     },
+    "config_add_project_headline": {
+      "message": "Add project"
+    },
+    "config_remove_project_headline": {
+      "message": "Remove project"
+    },
     "config_project_added": {
       "message": "$1 successfully added",
       "description": "Project added"
     },
     "config_project_disable": {
       "message": "Disable this project"
+    },
+    "config_project_headline": {
+      "message": "Project"
     },
     "config_project_disabled": {
       "message": "$1 disabled",

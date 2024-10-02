@@ -103,11 +103,21 @@ async function addRemoveProject(tab) {
       await addProject(config);
       project = await getProject(config);
       const i18nKey = 'config_project_added';
-      await showSidekickNotification(tab.id, { message: chrome.i18n.getMessage(i18nKey, project.project || project.id), headline: 'Add project' }, notificationConfirmCallback(tab.id));
+      await showSidekickNotification(tab.id,
+        {
+          message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
+          headline: chrome.i18n.getMessage('config_add_project_headline'),
+        },
+        notificationConfirmCallback(tab.id));
     } else {
       await deleteProject(`${owner}/${repo}`);
       const i18nKey = 'config_project_removed';
-      await showSidekickNotification(tab.id, { message: chrome.i18n.getMessage(i18nKey, project.project || project.id), headline: 'Remove project' }, notificationConfirmCallback(tab.id));
+      await showSidekickNotification(tab.id,
+        {
+          message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
+          headline: chrome.i18n.getMessage('config_remove_project_headline'),
+        },
+        notificationConfirmCallback(tab.id));
     }
   }
 }
@@ -125,7 +135,12 @@ async function enableDisableProject(tab) {
       ? 'config_project_enabled'
       : 'config_project_disabled';
 
-    await showSidekickNotification({ message: chrome.i18n.getMessage(i18nKey, project.project || project.id), headline: 'Project' }, notificationConfirmCallback(id));
+    await showSidekickNotification(tab.id,
+      {
+        message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
+        headline: chrome.i18n.getMessage('config_project_headline'),
+      },
+      notificationConfirmCallback(id));
   }
 }
 
@@ -135,14 +150,22 @@ async function enableDisableProject(tab) {
 async function importProjects(tab) {
   const sidekickId = await detectLegacySidekick();
   if (!sidekickId) {
-    await showSidekickNotification(tab.id, { message: chrome.i18n.getMessage('config_project_import_sidekick_not_found'), headline: chrome.i18n.getMessage('config_project_import_headline') });
+    await showSidekickNotification(tab.id,
+      {
+        message: chrome.i18n.getMessage('config_project_import_sidekick_not_found'),
+        headline: chrome.i18n.getMessage('config_project_import_headline'),
+      });
     return;
   }
   const imported = await importLegacyProjects(sidekickId);
   const i18nKey = imported > 0
     ? `config_project_imported_${imported === 1 ? 'single' : 'multiple'}`
     : 'config_project_imported_none';
-  await showSidekickNotification(tab.id, { message: chrome.i18n.getMessage(i18nKey, `${imported}`), headline: chrome.i18n.getMessage('config_project_import_headline') });
+  await showSidekickNotification(tab.id,
+    {
+      message: chrome.i18n.getMessage(i18nKey, `${imported}`),
+      headline: chrome.i18n.getMessage('config_project_import_headline'),
+    });
 }
 
 /**
