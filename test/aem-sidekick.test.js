@@ -13,7 +13,7 @@
 
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
-import { expect } from '@open-wc/testing';
+import { expect, waitUntil } from '@open-wc/testing';
 import { emulateMedia } from '@web/test-runner-commands';
 import { spy } from 'sinon';
 import { AppStore } from '../src/extension/app/store/app.js';
@@ -141,5 +141,23 @@ describe('AEM Sidekick', () => {
     document.addEventListener('sidekick-ready', async () => {
       await expect(sidekick).shadowDom.to.be.accessible();
     });
+  });
+
+  it('shows the onboarding dialog', async () => {
+    sidekickTest.localStorageStub.resolves({ onboarded: false });
+    sidekickTest
+      .mockFetchOnboardingSuccess()
+      .mockFetchStatusSuccess();
+
+    const showOnboardingSpy = sidekickTest.sandbox.spy(sidekickTest.appStore, 'showOnboarding');
+    sidekick = sidekickTest.createSidekick();
+    sidekick.addEventListener('showonboarding', showOnboardingSpy);
+
+    await sidekickTest.awaitEnvSwitcher();
+
+    const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
+    await waitUntil(() => recursiveQuery(themeWrapper, 'onboarding-dialog'), 'Onboarding dialog not found', { timeout: 10000 });
+
+    expect(showOnboardingSpy.calledOnce).to.be.true;
   });
 });
