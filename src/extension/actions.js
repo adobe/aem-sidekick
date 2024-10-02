@@ -64,6 +64,7 @@ async function updateAuthToken({
 
 function notificationConfirmCallback(tabId) {
   return async () => {
+    /* istanbul ignore next */
     await chrome.tabs.reload(tabId, { bypassCache: true });
   };
 }
