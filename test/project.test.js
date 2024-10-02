@@ -581,13 +581,13 @@ describe('Test project', () => {
 
       it('legacy sidekick responds with null', async () => {
         mockLegacySidekickResponse(legacySidekickId, null, null);
-        const imported = await importLegacyProjects();
+        const imported = await importLegacyProjects(legacySidekickId);
         expect(imported).to.equal(0);
       });
 
       it('legacy sidekick responds with empty array', async () => {
         mockLegacySidekickResponse(legacySidekickId, null, []);
-        const imported = await importLegacyProjects();
+        const imported = await importLegacyProjects(legacySidekickId);
         expect(imported).to.equal(0);
       });
 
@@ -606,16 +606,16 @@ describe('Test project', () => {
               : CONFIGS.slice(0, 1).map(({ owner, repo }) => `${owner}/${repo}`); // projects
             return { [prop]: value };
           });
-        const imported = await importLegacyProjects();
+        const imported = await importLegacyProjects(legacySidekickId);
         expect(imported).to.equal(0);
       });
 
       it('chrome.runtime.sendMessage throws', async () => {
         mockLegacySidekickResponse(legacySidekickId, null, CONFIGS)
           .withArgs(legacySidekickId)
-          .onSecondCall()
+          .onFirstCall()
           .throws(error);
-        const imported = await importLegacyProjects();
+        const imported = await importLegacyProjects(legacySidekickId);
         expect(imported).to.equal(0);
       });
     });
