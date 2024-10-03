@@ -433,6 +433,23 @@ describe('Test Admin Client', () => {
       appStore.closeToast();
     });
 
+    it('should fall back to x-error header', async () => {
+      mockFetchError({
+        method: 'get',
+        api: 'status',
+        status: 503,
+        headers: {
+          'x-error': 'foo went wrong',
+        },
+      });
+      await adminClient.getStatus('/');
+      expect(showToastStub.calledOnce).to.be.true;
+      expect(toast.message).to.equal('An error occurred: foo went wrong');
+      expect(toast.variant).to.equal('negative');
+
+      appStore.closeToast();
+    });
+
     it('should handle fatal error', async () => {
       mockFetchError({
         method: 'post',
@@ -493,7 +510,12 @@ describe('Test Admin Client', () => {
       expect(res).to.match(/Check your Sidekick configuration or URL/);
     });
 
-    it('should return localized error for status 400', () => {
+    it('should return localized error for status 400 on status', () => {
+      const res = adminClient.getLocalizedError('status', path, 400);
+      expect(res).to.match(/Invalid URL/);
+    });
+
+    it('should return localized error for status 400 on preview', () => {
       const res1 = adminClient.getLocalizedError('preview', path, 400, 'XML parsing error');
       expect(res1).to.match(/SVG invalid/);
 

@@ -285,6 +285,9 @@
     "error_fatal": {
       "message": "Apologies, we seem to be having problems at the moment. Please try again later."
     },
+    "error_generic": {
+      "message": "An error occurred: $1"
+    },
     "error_job_404": {
       "message": "404 Not found: No such job."
     },
@@ -329,6 +332,9 @@
     },
     "error_publish_404": {
       "message": "Publication failed, generate preview first."
+    },
+    "error_status_400": {
+      "message": "400 Bad Request: Invalid URL."
     },
     "error_status_404_content": {
       "message": "404 Not found: Check your Sidekick configuration or URL."
