@@ -128,7 +128,7 @@ export class AdminClient {
   getLocalizedError(action, path, status, error) {
     let message = '';
     if (action === 'status' && status === 404) {
-      // special handling for status
+      // status: special 404 handling
       message = this.appStore.i18n(this.appStore.isEditor()
         ? 'error_status_404_document'
         : 'error_status_404_content');

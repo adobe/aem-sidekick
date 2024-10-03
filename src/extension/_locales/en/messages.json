@@ -330,6 +330,9 @@
     "error_publish_404": {
       "message": "Publication failed, generate preview first."
     },
+    "error_status_400": {
+      "message": "400 Bad Request: Invalid URL."
+    },
     "error_status_404_content": {
       "message": "404 Not found: Check your Sidekick configuration or URL."
     },

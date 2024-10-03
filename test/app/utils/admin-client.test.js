@@ -493,7 +493,12 @@ describe('Test Admin Client', () => {
       expect(res).to.match(/Check your Sidekick configuration or URL/);
     });
 
-    it('should return localized error for status 400', () => {
+    it('should return localized error for status 400 on status', () => {
+      const res = adminClient.getLocalizedError('status', path, 400);
+      expect(res).to.match(/Invalid URL/);
+    });
+
+    it('should return localized error for status 400 on preview', () => {
       const res1 = adminClient.getLocalizedError('preview', path, 400, 'XML parsing error');
       expect(res1).to.match(/SVG invalid/);
 
