@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/adobe/aem-sidekick/compare/v2.1.0...v2.1.1) (2024-10-03)
+
+
+### Bug Fixes
+
+* handle status 400 ([#298](https://github.com/adobe/aem-sidekick/issues/298)) ([929ba68](https://github.com/adobe/aem-sidekick/commit/929ba68a6cafa44b66e2b235c5111c40d053527a))
+
 # [2.1.0](https://github.com/adobe/aem-sidekick/compare/v2.0.0...v2.1.0) (2024-10-01)
 
 
