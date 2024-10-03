@@ -433,6 +433,23 @@ describe('Test Admin Client', () => {
       appStore.closeToast();
     });
 
+    it('should fall back to x-error header', async () => {
+      mockFetchError({
+        method: 'get',
+        api: 'status',
+        status: 503,
+        headers: {
+          'x-error': 'foo went wrong',
+        },
+      });
+      await adminClient.getStatus('/');
+      expect(showToastStub.calledOnce).to.be.true;
+      expect(toast.message).to.equal('An error occurred: foo went wrong');
+      expect(toast.variant).to.equal('negative');
+
+      appStore.closeToast();
+    });
+
     it('should handle fatal error', async () => {
       mockFetchError({
         method: 'post',

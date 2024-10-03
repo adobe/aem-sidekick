@@ -165,6 +165,7 @@ describe('Test actions', () => {
     expect(set.calledWith(
       { projects: [] },
     )).to.be.true;
+    // @ts-ignore
     expect(remove.calledWith('foo/bar')).to.be.true;
     expect(i18nSpy.calledWith('config_project_removed', 'foo/bar/main')).to.be.true;
     expect(reload.calledWith(2)).to.be.true;

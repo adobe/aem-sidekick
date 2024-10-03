@@ -159,6 +159,7 @@ export class AdminClient {
     } else {
       // error key fallbacks
       message = this.appStore.i18n(`error_${action}_${status}`)
+        || (error && this.appStore.i18n('error_generic').replace('$1', error))
         || this.appStore.i18n(`error_${action}`);
     }
     return message;
@@ -181,7 +182,8 @@ export class AdminClient {
       return;
     }
 
-    const message = this.getLocalizedError(action, path, resp.status, this.getServerError(resp));
+    const error = this.getServerError(resp);
+    const message = this.getLocalizedError(action, path, resp.status, error);
     if (message) {
       this.showErrorToast(
         message.replace('$1', this.getServerError(resp)),
