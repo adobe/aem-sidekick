@@ -240,6 +240,48 @@ describe('Plugin action bar', () => {
       expectEnvPlugin(['edit', 'preview', 'live']);
     });
 
+    it('Editor - should display "last edited" description for Source', async () => {
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.GDRIVE, HelixMockContentType.DOC)
+        .mockFetchSidekickConfigSuccess(false, false)
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
+        .createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const menuItem = recursiveQuery(envPlugin, 'sk-menu-item.env-edit');
+
+      const lastModifiedLabel = 'Last edited Dec 19, 2023, 9:12 PM';
+
+      await waitUntil(() => {
+        const descriptionElement = menuItem.querySelector('[slot="description"]');
+        return descriptionElement;
+      }, 'Description element not found', { timeout: 5000 });
+
+      const description = menuItem.querySelector('[slot="description"]');
+      expect(description.textContent).to.equal(lastModifiedLabel);
+    });
+
+    it('Preview - should display "open in" description for Source', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const menuItem = recursiveQuery(envPlugin, 'sk-menu-item.env-edit');
+
+      const description = menuItem.querySelector('[slot="description"]');
+      expect(description.textContent).to.equal('Open in Google Drive');
+    });
+
     it('isEditor - custom config with prod host', async () => {
       sidekickTest
         .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
