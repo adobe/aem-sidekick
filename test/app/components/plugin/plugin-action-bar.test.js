@@ -242,18 +242,17 @@ describe('Plugin action bar', () => {
 
     it('Editor - should display "last edited" description for Source', async () => {
       sidekickTest
-        .mockFetchEditorStatusSuccess(HelixMockContentSources.GDRIVE, HelixMockContentType.DOC)
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
         .mockFetchSidekickConfigSuccess(false, false)
         .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
         .createSidekick();
 
+      await sidekickTest.awaitStatusFetched();
+
       await sidekickTest.awaitEnvSwitcher();
 
-      const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const envPlugin = recursiveQuery(sidekickTest.sidekick, 'env-switcher');
       const menuItem = recursiveQuery(envPlugin, 'sk-menu-item.env-edit');
-
-      const lastModifiedLabel = 'Last edited Dec 19, 2023, 9:12 PM';
 
       await waitUntil(() => {
         const descriptionElement = menuItem.querySelector('[slot="description"]');
@@ -261,7 +260,9 @@ describe('Plugin action bar', () => {
       }, 'Description element not found', { timeout: 5000 });
 
       const description = menuItem.querySelector('[slot="description"]');
-      expect(description.textContent).to.equal(lastModifiedLabel);
+      const localeDateString = description.textContent.substring(11);
+      expect(localeDateString.length).to.be.greaterThan(0);
+      expect(new Date(localeDateString).toUTCString()).to.equal('Fri, 21 Jul 2023 19:58:00 GMT');
     });
 
     it('Preview - should display "open in" description for Source', async () => {
