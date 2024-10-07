@@ -1,6 +1,6 @@
 {
   "name": "@adobe/aem-sidekick",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "AEM Sidekick Extension",
   "type": "module",
   "scripts": {
@@ -42,7 +42,7 @@
     "@spectrum-web-components/action-button": "0.43.0",
     "@spectrum-web-components/action-group": "0.43.0",
     "@spectrum-web-components/action-menu": "0.43.0",
-    "@spectrum-web-components/badge": "0.43.0",
+    "@spectrum-web-components/badge": "0.48.1",
     "@spectrum-web-components/base": "0.43.0",
     "@spectrum-web-components/button": "0.43.0",
     "@spectrum-web-components/dialog": "0.43.0",
@@ -65,10 +65,10 @@
     "mobx": "6.13.3"
   },
   "devDependencies": {
-    "@adobe/eslint-config-helix": "2.0.7",
+    "@adobe/eslint-config-helix": "2.0.8",
     "@adobe/fetch": "4.1.9",
-    "@babel/eslint-parser": "7.25.1",
-    "@babel/plugin-proposal-decorators": "7.24.7",
+    "@babel/eslint-parser": "7.25.7",
+    "@babel/plugin-proposal-decorators": "7.25.7",
     "@custom-elements-manifest/analyzer": "0.10.3",
     "@open-wc/eslint-config": "12.0.3",
     "@open-wc/testing": "4.0.0",
@@ -78,7 +78,7 @@
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
-    "@types/chrome": "0.0.272",
+    "@types/chrome": "0.0.277",
     "@types/mocha": "10.0.8",
     "@web/rollup-plugin-html": "2.3.0",
     "@web/rollup-plugin-import-meta-assets": "2.2.1",
@@ -99,7 +99,7 @@
     "nock": "13.5.5",
     "request": "2.88.2",
     "rimraf": "6.0.1",
-    "rollup": "4.22.5",
+    "rollup": "4.24.0",
     "rollup-plugin-copy": "3.5.0",
     "rollup-plugin-esbuild": "6.1.1",
     "semantic-release": "24.1.2",
