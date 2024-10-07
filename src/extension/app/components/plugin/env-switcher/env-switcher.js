@@ -174,8 +174,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
         },
       });
 
-      const currentEnvironment = this.currentEnv;
-      const descriptionText = currentEnvironment === 'edit'
+      const descriptionText = this.currentEnv === 'edit'
         ? this.getLastModifiedLabel(id, lastModified)
         : this.appStore.i18n('open_in').replace('$1', contentSourceLabel);
 
