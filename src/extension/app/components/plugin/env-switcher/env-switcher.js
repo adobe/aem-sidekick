@@ -114,7 +114,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
    * @returns {string} - The last modified label
    */
   getLastModifiedLabel(id, lastModified) {
-    const envId = (id === 'dev') ? 'preview' : id;
+    const envId = id === 'dev' ? 'preview' : id;
     return lastModified
       ? this.appStore.i18n(`${envId}_last_updated`).replace('$1', getTimeAgo(this.appStore.languageDict, lastModified))
       : this.appStore.i18n(`${envId}_never_updated`);
