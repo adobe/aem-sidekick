@@ -97,7 +97,8 @@ export const style = css`
   :host(.env-edit) ::slotted([slot=icon]) {
     position: absolute;
     right: 7px;
-    top: 11px;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--spectrum-menu-item-label-icon-color-default);
   }
 
