@@ -25,7 +25,7 @@ export const style = css`
   }
 
   :host(.current-env.env-edit[aria-disabled="true"]) {
-    background-color: var(--spectrum-gray-200);
+    background-color: var(--spectrum2-edit-background-default);
     border: 1px solid var(--spectrum2-edit-border-default);
     border-radius: var(--spectrum2-default-border-radius);
   }
