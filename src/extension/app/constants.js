@@ -122,6 +122,7 @@ export const STATE = {
  */
 export const ALLOWED_EXTENSION_IDS = [
   'igkmdomcgoebiipaifhmpfjhbjccggml',
+  'dfeojcdljkdfebmdcmilekahpcjkafdp',
   'iijidanmjddcjacejcjofhcjmgkkiijo',
 ];
 
