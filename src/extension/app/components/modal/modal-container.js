@@ -228,6 +228,17 @@ export class ModalContainer extends LitElement {
     const { type, data } = modal;
     const options = {};
     switch (type) {
+      case MODALS.INFO:
+        options.underlay = true;
+        options.headline = data?.headline ?? '';
+        options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('ok');
+        options.confirmCallback = data?.confirmCallback;
+        options.secondaryLabel = data?.secondaryLabel;
+        options.secondaryCallback = data?.secondaryCallback;
+        options.content = html`
+          ${data.message}
+        `;
+        break;
       case MODALS.ERROR:
         options.dismissable = false;
         options.headline = data?.headline ?? this.appStore.i18n('error');

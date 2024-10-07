@@ -11,7 +11,7 @@
  */
 /* eslint-disable no-unused-expressions */
 
-import { aTimeout, expect } from '@open-wc/testing';
+import { expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
@@ -19,6 +19,7 @@ import {
   checkViewDocSource,
   externalActions,
   internalActions,
+  notificationConfirmCallback,
 } from '../src/extension/actions.js';
 import chromeMock from './mocks/chrome.js';
 import { error, mockTab } from './test-utils.js';
@@ -137,7 +138,6 @@ describe('Test actions', () => {
   it('internal: addRemoveProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const remove = sandbox.spy(chrome.storage.sync, 'remove');
-    const reload = sandbox.spy(chrome.tabs, 'reload');
     const i18nSpy = sandbox.spy(chrome.i18n, 'getMessage');
     // add project
     await internalActions.addRemoveProject(mockTab('https://main--bar--foo.hlx.page/', {
@@ -156,7 +156,6 @@ describe('Test actions', () => {
       },
     })).to.be.true;
     expect(i18nSpy.calledWith('config_project_added', 'foo/bar/main')).to.be.true;
-    expect(reload.calledWith(1)).to.be.true;
     // remove project
     await internalActions.addRemoveProject({
       id: 2,
@@ -168,7 +167,6 @@ describe('Test actions', () => {
     // @ts-ignore
     expect(remove.calledWith('foo/bar')).to.be.true;
     expect(i18nSpy.calledWith('config_project_removed', 'foo/bar/main')).to.be.true;
-    expect(reload.calledWith(2)).to.be.true;
     // testing noop
     set.resetHistory();
     await internalActions.addRemoveProject({
@@ -180,7 +178,6 @@ describe('Test actions', () => {
 
   it('internal: enableDisableProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
-    const reload = sandbox.spy(chrome.tabs, 'reload');
     // add project first
     await internalActions.addRemoveProject(mockTab('https://main--bar--foo.hlx.page/', {
       id: 1,
@@ -199,7 +196,6 @@ describe('Test actions', () => {
         disabled: true,
       },
     })).to.be.true;
-    expect(reload.calledWith(1)).to.be.true;
     // enable project
     await internalActions.enableDisableProject(mockTab('https://main--bar--foo.hlx.page/', {
       id: 2,
@@ -213,7 +209,6 @@ describe('Test actions', () => {
         ref: 'main',
       },
     })).to.be.true;
-    expect(reload.calledWith(2)).to.be.true;
     // testing noop
     set.resetHistory();
     await internalActions.enableDisableProject(mockTab('https://www.example.com/', {
@@ -223,8 +218,7 @@ describe('Test actions', () => {
   });
 
   describe('internal: importProjects', () => {
-    let createNotificationStub;
-    let clearNotificationStub;
+    let sendMessageStub;
     let i18nSpy;
 
     function mockLegacySidekickResponse(projects = []) {
@@ -247,8 +241,7 @@ describe('Test actions', () => {
     }
 
     beforeEach(() => {
-      createNotificationStub = sandbox.spy(chrome.notifications, 'create');
-      clearNotificationStub = sandbox.spy(chrome.notifications, 'clear');
+      sendMessageStub = sandbox.spy(chrome.tabs, 'sendMessage');
       i18nSpy = sandbox.spy(chrome.i18n, 'getMessage');
       sandbox.stub(chrome.runtime, 'getManifest').returns({
         ...chrome.runtime.getManifest(),
@@ -266,32 +259,36 @@ describe('Test actions', () => {
       mockLegacySidekickResponse([CONFIGS[0]]);
       sandbox.stub(chrome.storage.sync, 'get').resolves({ projects: [] });
 
-      await internalActions.importProjects();
-
+      await internalActions.importProjects(mockTab('https://main--bar--foo.hlx.page/', {
+        id: 2,
+      }));
       expect(i18nSpy.calledWith('config_project_imported_single', '1')).to.be.true;
-      expect(createNotificationStub.called, 'notification not created').to.be.true;
-      await aTimeout(5100); // wait for notification to clear
-      expect(clearNotificationStub.called, 'notification not cleared').to.be.true;
-    }).timeout(10000);
+
+      expect(sendMessageStub.calledWithMatch(2, { action: 'show_notification' })).to.be.true;
+    });
 
     it('multiple project', async () => {
       mockLegacySidekickResponse(CONFIGS);
       sandbox.stub(chrome.storage.sync, 'get').resolves({ projects: [] });
 
-      await internalActions.importProjects();
+      await internalActions.importProjects(mockTab('https://main--bar--foo.hlx.page/', {
+        id: 2,
+      }));
 
       expect(i18nSpy.calledWith('config_project_imported_multiple', '2')).to.be.true;
-      expect(createNotificationStub.called, 'notification not created').to.be.true;
+      expect(sendMessageStub.calledWithMatch(2, { action: 'show_notification' })).to.be.true;
     });
 
     it('no projects', async () => {
       mockLegacySidekickResponse([CONFIGS[1]]);
       sandbox.stub(chrome.storage.sync, 'get').resolves({ 'foo/bar2': CONFIGS[1] });
 
-      await internalActions.importProjects();
+      await internalActions.importProjects(mockTab('https://main--bar--foo.hlx.page/', {
+        id: 2,
+      }));
 
       expect(i18nSpy.calledWith('config_project_imported_none', '0')).to.be.true;
-      expect(createNotificationStub.called, 'notification not created').to.be.true;
+      expect(sendMessageStub.calledWithMatch(2, { action: 'show_notification' })).to.be.true;
     });
   });
 
@@ -374,5 +371,12 @@ describe('Test actions', () => {
     // tab with vds=true
     await checkViewDocSource(1);
     expect(createSpy.callCount).to.equal(1);
+  });
+
+  it('notificationConfirmCallback', async () => {
+    const reloadStub = sandbox.stub(chrome.tabs, 'reload');
+    const callback = notificationConfirmCallback(1);
+    await callback();
+    expect(reloadStub.calledOnce).to.be.true;
   });
 });

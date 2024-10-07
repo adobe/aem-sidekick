@@ -23,4 +23,8 @@ export const style = css`
       backdrop-filter: var(--sidekick-backdrop-filter);
       -webkit-backdrop-filter: var(--sidekick-backdrop-filter);
     }
+
+    sp-dialog {
+      max-width: 450px;
+    }
  `;
