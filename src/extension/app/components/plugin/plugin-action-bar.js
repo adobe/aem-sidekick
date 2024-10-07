@@ -84,6 +84,8 @@ export class PluginActionBar extends ConnectedElement {
    * Set up the bar and menu plugins in this environment and updates the component.
    */
   setupPlugins() {
+    this.transientPlugins = [];
+
     this.visiblePlugins = [
       ...Object.values(this.appStore.corePlugins),
       ...Object.values(this.appStore.customPlugins),
@@ -101,9 +103,6 @@ export class PluginActionBar extends ConnectedElement {
     this.requestUpdate();
   }
 
-  /**
-   * Loads the user preferences for plugins in this environment.
-   */
   async connectedCallback() {
     super.connectedCallback();
 
@@ -132,6 +131,13 @@ export class PluginActionBar extends ConnectedElement {
         this.setupPlugins();
       },
     );
+
+    // trap clicks inside action bar
+    this.addEventListener('click', this.onClick);
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('click', this.onClick);
   }
 
   async checkOverflow() {
@@ -194,6 +200,10 @@ export class PluginActionBar extends ConnectedElement {
     if (pluginMenu) {
       pluginMenu.value = '';
     }
+  }
+
+  onClick(e) {
+    e.stopPropagation();
   }
 
   renderPluginMenuItem(plugin) {

@@ -34,7 +34,7 @@ export const style = css`
   }
 
   action-bar > div.plugin-menu-container {
-    width: 42px;
+    width: 32px;
   }
 
   action-bar > div.badge-plugins-container {
