@@ -146,8 +146,11 @@
     "config_project_disable": {
       "message": "Disable this project"
     },
-    "config_project_headline": {
-      "message": "Project"
+    "config_project_enabled_headline": {
+      "message": "Project enabled"
+    },
+    "config_project_disabled_headline": {
+      "message": "Project disabled"
     },
     "config_project_disabled": {
       "message": "$1 disabled",
