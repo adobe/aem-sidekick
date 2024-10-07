@@ -247,8 +247,6 @@ describe('Plugin action bar', () => {
         .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
         .createSidekick();
 
-      await sidekickTest.awaitStatusFetched();
-
       await sidekickTest.awaitEnvSwitcher();
 
       const envPlugin = recursiveQuery(sidekickTest.sidekick, 'env-switcher');
