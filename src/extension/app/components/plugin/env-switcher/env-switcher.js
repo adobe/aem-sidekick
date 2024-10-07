@@ -114,14 +114,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
    * @returns {string} - The last modified label
    */
   getLastModifiedLabel(id, lastModified) {
-    let envId;
-    if (id === 'dev') {
-      envId = 'preview';
-    } else if (id === 'edit') {
-      envId = 'edit';
-    } else {
-      envId = id;
-    }
+    const envId = (id === 'dev') ? 'preview' : id;
     return lastModified
       ? this.appStore.i18n(`${envId}_last_updated`).replace('$1', getTimeAgo(this.appStore.languageDict, lastModified))
       : this.appStore.i18n(`${envId}_never_updated`);
@@ -147,7 +140,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       });
     }
 
-    const label = id === 'edit' ? this.envNames.edit : this.envNames[id];
+    const label = this.envNames[id];
     const menuItem = createTag({
       tag: 'sk-menu-item',
       text: label,
