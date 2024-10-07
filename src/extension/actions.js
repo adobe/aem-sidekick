@@ -156,11 +156,14 @@ async function enableDisableProject(tab) {
     const i18nKey = project.disabled
       ? 'config_project_enabled'
       : 'config_project_disabled';
+    const i18nHeadlineKey = project.disabled
+      ? 'config_project_enabled_headline'
+      : 'config_project_disabled_headline';
 
     await showSidekickNotification(tab.id,
       {
         message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
-        headline: chrome.i18n.getMessage('config_project_headline'),
+        headline: chrome.i18n.getMessage(i18nHeadlineKey),
       },
       notificationConfirmCallback(id));
   }

@@ -134,10 +134,10 @@
       "message": "Add this project"
     },
     "config_add_project_headline": {
-      "message": "Add project"
+      "message": "Added project"
     },
     "config_remove_project_headline": {
-      "message": "Remove project"
+      "message": "Removed project"
     },
     "config_project_added": {
       "message": "$1 successfully added",
