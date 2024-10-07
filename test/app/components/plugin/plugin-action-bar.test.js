@@ -157,7 +157,7 @@ describe('Plugin action bar', () => {
         'tools',
       ]);
 
-      expectEnvPlugin(['preview', 'prod']);
+      expectEnvPlugin(['edit', 'preview', 'prod']);
 
       // Should fallback to id for label if title not provided
       const assetLibraryPlugin = recursiveQuery(sidekick, '.assets');
@@ -246,7 +246,48 @@ describe('Plugin action bar', () => {
         'edit-preview',
       ]);
 
-      expectEnvPlugin(['preview', 'live']);
+      expectEnvPlugin(['edit', 'preview', 'live']);
+    });
+
+    it('Editor - should display "last edited" description for Source', async () => {
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
+        .mockFetchSidekickConfigSuccess(false, false)
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
+        .createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const envPlugin = recursiveQuery(sidekickTest.sidekick, 'env-switcher');
+      const menuItem = recursiveQuery(envPlugin, 'sk-menu-item.env-edit');
+
+      await waitUntil(() => {
+        const descriptionElement = menuItem.querySelector('[slot="description"]');
+        return descriptionElement;
+      }, 'Description element not found', { timeout: 5000 });
+
+      const description = menuItem.querySelector('[slot="description"]');
+      const localeDateString = description.textContent.substring(11);
+      expect(localeDateString.length).to.be.greaterThan(0);
+      expect(new Date(localeDateString).toUTCString()).to.equal('Fri, 21 Jul 2023 19:58:00 GMT');
+    });
+
+    it('Preview - should display "open in" description for Source', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const menuItem = recursiveQuery(envPlugin, 'sk-menu-item.env-edit');
+
+      const description = menuItem.querySelector('[slot="description"]');
+      expect(description.textContent).to.equal('Open in Google Drive');
     });
 
     it('isEditor - custom config with prod host', async () => {
@@ -263,7 +304,7 @@ describe('Plugin action bar', () => {
         'edit-preview',
       ]);
 
-      expectEnvPlugin(['preview', 'prod']);
+      expectEnvPlugin(['edit', 'preview', 'prod']);
     });
 
     it('isPreview - custom config with prod host', async () => {
