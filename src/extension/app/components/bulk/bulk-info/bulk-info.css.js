@@ -21,6 +21,7 @@ export const style = css`
   }
 
   .container span {
+    padding-left: 4px;
     padding-right: 6px;
     color: var(--spectrum2-sidekick-color);
     white-space: nowrap;
