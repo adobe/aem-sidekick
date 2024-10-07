@@ -15,10 +15,6 @@
 import { css } from 'lit';
 
 export const style = css`
-  :host(.current-env) {
-    margin-bottom: 7px;
-  }
-
   :host(.current-env) #label {
     font-weight: 700;
   }
