@@ -477,8 +477,9 @@
     "publish_date": {
       "message": "Published: "
     },
-    "reload": {
-      "message": "Reload"
+    "update": {
+      "message": "Update",
+      "description": "Update the preview of a page"
     },
     "save": {
       "message": "Save"
@@ -598,7 +599,7 @@
     "destructive_confirmation_invalid": {
       "message": "Sorry, please enter the text exactly as displayed to confirm."
     },
-    "reload_success": {
+    "update_success": {
       "message": "Preview successfully updated, reloading..."
     },
     "preview_success": {
