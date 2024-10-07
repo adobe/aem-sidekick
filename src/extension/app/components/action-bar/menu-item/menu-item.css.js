@@ -82,7 +82,7 @@ export const style = css`
   :host(.current-env.env-live[aria-disabled="true"]) [name="description"]::slotted(*),
   :host(.current-env.env-prod[aria-disabled="true"]) [name="description"]::slotted(*),
   :host(.current-env.env-live[disabled]) [name="description"]::slotted(*),
-    :host(.current-env.env-prod[disabled]) [name="description"]::slotted(*) {
+  :host(.current-env.env-prod[disabled]) [name="description"]::slotted(*) {
     color: var(--spectrum2-live-content-default);
   }
 
@@ -102,6 +102,7 @@ export const style = css`
     position: absolute;
     right: 7px;
     top: 11px;
+    color: var(--spectrum-menu-item-label-icon-color-default);
   }
 
   sp-status-light {
