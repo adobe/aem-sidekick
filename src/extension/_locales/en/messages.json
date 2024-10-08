@@ -133,12 +133,24 @@
     "config_project_add": {
       "message": "Add this project"
     },
+    "config_add_project_headline": {
+      "message": "Added project"
+    },
+    "config_remove_project_headline": {
+      "message": "Removed project"
+    },
     "config_project_added": {
       "message": "$1 successfully added",
       "description": "Project added"
     },
     "config_project_disable": {
       "message": "Disable this project"
+    },
+    "config_project_enabled_headline": {
+      "message": "Project enabled"
+    },
+    "config_project_disabled_headline": {
+      "message": "Project disabled"
     },
     "config_project_disabled": {
       "message": "$1 disabled",
@@ -165,6 +177,12 @@
     },
     "config_project_imported_multiple": {
       "message": "Successfully imported $1 projects from AEM Sidekick v6."
+    },
+    "config_project_import_headline": {
+      "message": "Import projects"
+    },
+    "config_project_import_sidekick_not_found": {
+      "message": "Legacy sidekick not found. If the extension is installed but currently disabled, please enable it and try again."
     },
     "config_project_pick": {
       "message": "Pick a project"
@@ -360,26 +378,8 @@
     "extensions": {
       "message": "Extensions"
     },
-    "help": {
-      "message": "Help"
-    },
-    "help_acknowledge": {
-      "message": "Got it!"
-    },
-    "help_close_acknowledge": {
-      "message": "Don't show help topic again"
-    },
-    "help_close_dismiss": {
-      "message": "Show help topic again later"
-    },
-    "help_close_opt_out": {
-      "message": "Never show any help topics"
-    },
-    "help_current": {
-      "message": "This tip"
-    },
-    "help_next": {
-      "message": "Next tip"
+    "next": {
+      "message": "Next"
     },
     "help_opt_out": {
       "message": "Don't show any help"
@@ -477,8 +477,9 @@
     "publish_date": {
       "message": "Published: "
     },
-    "reload": {
-      "message": "Reload"
+    "update": {
+      "message": "Update",
+      "description": "Update the preview of a page"
     },
     "save": {
       "message": "Save"
@@ -598,7 +599,7 @@
     "destructive_confirmation_invalid": {
       "message": "Sorry, please enter the text exactly as displayed to confirm."
     },
-    "reload_success": {
+    "update_success": {
       "message": "Preview successfully updated, reloading..."
     },
     "preview_success": {

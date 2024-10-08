@@ -550,12 +550,7 @@ export async function detectLegacySidekick() {
  * Imports projects from legacy sidekick.
  * @returns {Promise<number>} The number of imported projects
  */
-export async function importLegacyProjects() {
-  // look for legacy sidekick id
-  const sidekickId = await detectLegacySidekick();
-  if (!sidekickId) {
-    return 0;
-  }
+export async function importLegacyProjects(sidekickId) {
   return new Promise((resolve) => {
     let importedProjects = 0;
     try {

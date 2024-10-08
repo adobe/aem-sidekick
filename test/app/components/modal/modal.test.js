@@ -346,6 +346,7 @@ describe('Modals', () => {
 
       const confirmButton = recursiveQuery(dialogWrapper, 'sp-button[variant="accent"]');
       expect(confirmButton.textContent.trim()).to.eq('Yes');
+      await waitUntil(() => confirmCallback.notCalled);
       confirmButton.click();
       await waitUntil(() => confirmCallback.calledOnce);
     });
