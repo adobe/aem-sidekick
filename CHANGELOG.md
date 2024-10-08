@@ -1,3 +1,17 @@
+# [2.2.0](https://github.com/adobe/aem-sidekick/compare/v2.1.1...v2.2.0) (2024-10-08)
+
+
+### Bug Fixes
+
+* plugin-menu in bulk mode ([#301](https://github.com/adobe/aem-sidekick/issues/301)) ([fea040d](https://github.com/adobe/aem-sidekick/commit/fea040d92d841dfd65c7146b366bd59a8ff26a1d))
+
+
+### Features
+
+* **env-switcher:** visually align source item in all envs ([9c7165c](https://github.com/adobe/aem-sidekick/commit/9c7165c18280df68498c9bba72849cbe3a612bda))
+* rename reload button to update ([#304](https://github.com/adobe/aem-sidekick/issues/304)) ([1068e5a](https://github.com/adobe/aem-sidekick/commit/1068e5a935ed99240036e877b4f45a537665fb43))
+* rework notifications ([#295](https://github.com/adobe/aem-sidekick/issues/295)) ([a4eb0ae](https://github.com/adobe/aem-sidekick/commit/a4eb0aeb46a40ef5d1fd598f683d39cc95e4a410))
+
 ## [2.1.1](https://github.com/adobe/aem-sidekick/compare/v2.1.0...v2.1.1) (2024-10-03)
 
 
