@@ -10,12 +10,15 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-disable lit-a11y/no-aria-slot */
+
 // @ts-nocheck
 /* istanbul ignore file */
 
 import { html } from '@spectrum-web-components/base';
 import { Picker as SPPicker } from '@spectrum-web-components/picker';
 import { classMap } from 'lit/directives/class-map.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { style } from './picker.css.js';
 
 const chevronClass = {
@@ -89,15 +92,42 @@ export class Picker extends SPPicker {
       placeholder: !this.value,
       label: true,
     };
-    return [html`
-      <span class=${classMap(labelClasses)}>
-        ${this.label}
-        <slot name="label"></slot>
-      </span>
-      <sp-icon-chevron100
-        class="picker ${chevronClass[this.size]}"
-      ></sp-icon-chevron100>
-    `];
+    const appliedLabel = this.label;
+    return [
+      html`
+            <span id="icon" ?hidden=${this.icons === 'none'}>
+              ${this.selectedItemContent.icon}
+            </span>
+            <span id=${ifDefined(this.value && this.selectedItem ? 'label' : undefined)} class=${classMap(labelClasses)}>
+              ${this.label}
+            </span>
+            ${this.value && this.selectedItem
+              ? html`
+                  <span
+                    aria-hidden="true"
+                    class="visually-hidden"
+                    id="applied-label"
+                  >
+                    ${appliedLabel}
+                    <slot name="label"></slot>
+                  </span>
+                `
+              : html`
+                <span hidden id="applied-label">${appliedLabel}</span>
+              `}
+            <sp-icon-chevron100
+                class="picker ${chevronClass[
+                  this.size
+                ]}"
+            ></sp-icon-chevron100>
+            <slot
+              aria-hidden="true"
+              name="tooltip"
+              id="tooltip"
+              @slotchange=${this.handleTooltipSlotchange}
+            ></slot>
+        `,
+    ];
   }
 
   renderOverlay(menu) {
