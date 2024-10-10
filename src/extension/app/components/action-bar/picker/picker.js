@@ -15,7 +15,15 @@
 
 import { html } from '@spectrum-web-components/base';
 import { Picker as SPPicker } from '@spectrum-web-components/picker';
+import { classMap } from 'lit/directives/class-map.js';
 import { style } from './picker.css.js';
+
+const chevronClass = {
+  s: 'spectrum-UIIcon-ChevronDown75',
+  m: 'spectrum-UIIcon-ChevronDown100',
+  l: 'spectrum-UIIcon-ChevronDown200',
+  xl: 'spectrum-UIIcon-ChevronDown300',
+};
 
 export class Picker extends SPPicker {
   static get styles() {
@@ -69,6 +77,27 @@ export class Picker extends SPPicker {
       this.optionsMenu.updateSelectedItemIndex();
       this.optionsMenu.closeDescendentOverlays();
     }
+  }
+
+  async manageSelection() {
+    return Promise.resolve();
+  }
+
+  get buttonContent() {
+    const labelClasses = {
+      'visually-hidden': this.icons === 'only' && !!this.value,
+      placeholder: !this.value,
+      label: true,
+    };
+    return [html`
+      <span class=${classMap(labelClasses)}>
+        ${this.label}
+        <slot name="label"></slot>
+      </span>
+      <sp-icon-chevron100
+        class="picker ${chevronClass[this.size]}"
+      ></sp-icon-chevron100>
+    `];
   }
 
   renderOverlay(menu) {
