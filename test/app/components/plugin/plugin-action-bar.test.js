@@ -130,6 +130,7 @@ describe('Plugin action bar', () => {
 
       expectInActionBar([
         'env-switcher',
+        'edit',
         'reload',
         'publish',
       ]);
@@ -176,6 +177,7 @@ describe('Plugin action bar', () => {
 
       expectInActionBar([
         'env-switcher',
+        'edit',
         'publish',
       ]);
 
@@ -193,6 +195,7 @@ describe('Plugin action bar', () => {
 
       expectInActionBar([
         'env-switcher',
+        'edit',
         'publish',
       ]);
 
@@ -227,6 +230,7 @@ describe('Plugin action bar', () => {
       expectEnvPlugin(['dev', 'edit', 'preview', 'prod']);
       expectInActionBar([
         'env-switcher',
+        'edit',
         'reload',
         'publish',
       ]);
@@ -318,6 +322,7 @@ describe('Plugin action bar', () => {
 
       expectInActionBar([
         'env-switcher',
+        'edit',
         'reload',
         'publish',
       ]);
@@ -354,6 +359,7 @@ describe('Plugin action bar', () => {
 
       expectInActionBar([
         'env-switcher',
+        'edit',
         'reload',
         'publish',
       ]);

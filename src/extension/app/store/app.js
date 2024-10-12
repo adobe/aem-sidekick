@@ -49,6 +49,7 @@ import {
 } from '../plugins/bulk/bulk-copy-urls.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
+import { createEditPlugin } from '../plugins/edit/edit.js';
 
 /**
  * The sidekick configuration object type
@@ -274,6 +275,7 @@ export class AppStore {
 
     if (this.siteStore.ready && this.siteStore.authorized) {
       const envPlugin = createEnvPlugin(this);
+      const editPlugin = createEditPlugin(this);
       const previewPlugin = createPreviewPlugin(this);
       const reloadPlugin = createReloadPlugin(this);
       const deletePlugin = createDeletePlugin(this);
@@ -287,6 +289,7 @@ export class AppStore {
       const bulkCopyProdUrlsPlugin = createBulkCopyProdUrlsPlugin(this);
 
       this.registerPlugin(this.corePlugins, envPlugin);
+      this.registerPlugin(this.corePlugins, editPlugin);
       this.registerPlugin(this.corePlugins, previewPlugin);
       this.registerPlugin(this.corePlugins, reloadPlugin);
       this.registerPlugin(this.corePlugins, deletePlugin);

@@ -545,6 +545,9 @@
     "preview_last_updated": {
       "message": "Last updated $1"
     },
+    "edit": {
+      "message": "Edit"
+    },
     "edit_last_updated": {
       "message": "Last edited $1"
     },
