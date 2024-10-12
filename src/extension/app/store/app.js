@@ -34,6 +34,7 @@ import {
 // eslint-disable-next-line import/no-cycle
 import { Plugin } from '../components/plugin/plugin.js';
 import { createEnvPlugin } from '../plugins/env/env.js';
+import { createEditPlugin } from '../plugins/edit/edit.js';
 import { createPreviewPlugin } from '../plugins/preview/preview.js';
 import { createReloadPlugin } from '../plugins/reload/reload.js';
 import { createDeletePlugin } from '../plugins/delete/delete.js';
@@ -49,7 +50,6 @@ import {
 } from '../plugins/bulk/bulk-copy-urls.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
-import { createEditPlugin } from '../plugins/edit/edit.js';
 
 /**
  * The sidekick configuration object type

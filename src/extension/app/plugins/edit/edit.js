@@ -17,10 +17,6 @@ import { Plugin } from '../../components/plugin/plugin.js';
  */
 
 /**
- * @typedef {import('@Types').CorePlugin} CorePlugin
- */
-
-/**
  * Creates the edit plugin
  * @param {AppStore} appStore The app store
  * @returns {Plugin} The edit plugin
