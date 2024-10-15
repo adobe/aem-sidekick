@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/adobe/aem-sidekick/compare/v2.2.0...v2.3.0) (2024-10-15)
+
+
+### Features
+
+* edit plugin ([4c31160](https://github.com/adobe/aem-sidekick/commit/4c31160976aa4948122202fed6add8807e0967c5))
+
 # [2.2.0](https://github.com/adobe/aem-sidekick/compare/v2.1.1...v2.2.0) (2024-10-08)
 
 
