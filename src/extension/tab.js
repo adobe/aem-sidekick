@@ -58,8 +58,6 @@ export async function checkTab(id) {
     // fill url cache
     await urlCache.set(tab, projects);
 
-    // todo: if share url, inject install helper
-
     const matches = await getProjectMatches(projects, tab);
 
     const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(tab);
