@@ -34,6 +34,7 @@ import {
 // eslint-disable-next-line import/no-cycle
 import { Plugin } from '../components/plugin/plugin.js';
 import { createEnvPlugin } from '../plugins/env/env.js';
+import { createEditPlugin } from '../plugins/edit/edit.js';
 import { createPreviewPlugin } from '../plugins/preview/preview.js';
 import { createReloadPlugin } from '../plugins/reload/reload.js';
 import { createDeletePlugin } from '../plugins/delete/delete.js';
@@ -274,6 +275,7 @@ export class AppStore {
 
     if (this.siteStore.ready && this.siteStore.authorized) {
       const envPlugin = createEnvPlugin(this);
+      const editPlugin = createEditPlugin(this);
       const previewPlugin = createPreviewPlugin(this);
       const reloadPlugin = createReloadPlugin(this);
       const deletePlugin = createDeletePlugin(this);
@@ -287,6 +289,7 @@ export class AppStore {
       const bulkCopyProdUrlsPlugin = createBulkCopyProdUrlsPlugin(this);
 
       this.registerPlugin(this.corePlugins, envPlugin);
+      this.registerPlugin(this.corePlugins, editPlugin);
       this.registerPlugin(this.corePlugins, previewPlugin);
       this.registerPlugin(this.corePlugins, reloadPlugin);
       this.registerPlugin(this.corePlugins, deletePlugin);
