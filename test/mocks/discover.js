@@ -24,6 +24,7 @@ import {
  * Mocks fetch requests related to URL discovery.
  * @param {object} [cfg] The config object
  * @param {boolean} [cfg.failEditInfo] Whether to fail the edit info request
+ * @param {boolean} [cfg.failRootItem] Whether to fail the root item request
  * @param {boolean} [cfg.failDiscovery] Whether to fail the discovery request
  * @param {boolean} [cfg.emptyDiscovery] Whether to return an empty response
  * @param {boolean} [cfg.multipleOriginalSites] Whether to return multiple original sites
@@ -31,6 +32,7 @@ import {
  */
 export function mockDiscoveryCall({
   failEditInfo = false,
+  failRootItem = false,
   failDiscovery = false,
   emptyDiscovery = false,
   multipleOriginalSites = false,
@@ -60,13 +62,19 @@ export function mockDiscoveryCall({
     // @ts-ignore
     const path = new URL(url).pathname;
     if (path.startsWith('/_api/v2.0/shares/')) {
-      if (path.includes('MTA1OTI1OA')) {
+      if (failEditInfo) {
+        return new Response('', { status: 404 });
+      } else if (path.includes('MTA1OTI1OA')) {
         return new Response(JSON.stringify(DRIVE_ITEM_FOLDER_JSON));
       } else {
         return new Response(JSON.stringify(DRIVE_ITEM_FILE_JSON));
       }
     } else if (path.startsWith('/_api/v2.0/drives/1234')) {
-      return new Response(JSON.stringify(ROOT_ITEM_JSON));
+      if (failRootItem) {
+        return new Response('', { status: 404 });
+      } else {
+        return new Response(JSON.stringify(ROOT_ITEM_JSON));
+      }
     }
     return new Response('');
   });

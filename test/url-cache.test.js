@@ -142,8 +142,15 @@ describe('Test url-cache', () => {
 
     it('fetch edit info fails', async () => {
       fetchMock = mockDiscoveryCall({ failEditInfo: true });
-      await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=bla.docx&action=default&mobileredirect=true'));
+      await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=blu.docx&action=default&mobileredirect=true'));
       expect(fetchMock.calls().length).to.equal(2);
+      expect(sessionSet.callCount).to.equal(1);
+    });
+
+    it('fetch root item fails', async () => {
+      fetchMock = mockDiscoveryCall({ failRootItem: true });
+      await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=bla.docx&action=default&mobileredirect=true'));
+      expect(fetchMock.calls().length).to.equal(3);
       expect(sessionSet.callCount).to.equal(1);
     });
 
