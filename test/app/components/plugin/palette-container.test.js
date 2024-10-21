@@ -73,7 +73,7 @@ describe('Palette container', () => {
     toolsPlugin.dispatchEvent(new Event('change'));
 
     // Picker label should not change on selection
-    const toolsPickerPluginLabel = recursiveQuery(toolsPlugin, '#label');
+    const toolsPickerPluginLabel = recursiveQuery(toolsPlugin, '.label');
     expect(toolsPickerPluginLabel.textContent.trim()).to.equal('Tools');
 
     await waitUntil(() => recursiveQuery(sidekick, 'palette-container'));

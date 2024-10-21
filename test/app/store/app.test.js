@@ -82,7 +82,7 @@ describe('Test App Store', () => {
   async function testDefaultConfig() {
     expect(appStore.languageDict.add).to.equal('Add');
     expect(appStore.location.hostname).to.equal('localhost');
-    expect(appStore.languageDict.title).to.equal('AEM Sidekick - NextGen');
+    expect(appStore.languageDict.title).to.equal('AEM Sidekick');
 
     await waitUntil(() => appStore.status.webPath, 'Status never loaded');
     expect(appStore.status.webPath).to.equal('/');
@@ -122,7 +122,7 @@ describe('Test App Store', () => {
     await appStore.loadContext(sidekickElement, config);
     await testDefaultConfig();
 
-    expect(appStore.languageDict.title).to.eq('AEM Sidekick - NextGen');
+    expect(appStore.languageDict.title).to.eq('AEM Sidekick');
   });
 
   it('isPreview()', async () => {
