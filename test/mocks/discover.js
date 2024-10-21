@@ -23,32 +23,43 @@ import {
 /**
  * Mocks fetch requests related to URL discovery.
  * @param {object} [cfg] The config object
- * @param {boolean} [cfg.fail] Whether to fail the request
- * @param {boolean} [cfg.empty] Whether to return an empty response
+ * @param {boolean} [cfg.failEditInfo] Whether to fail the edit info request
+ * @param {boolean} [cfg.failDiscovery] Whether to fail the discovery request
+ * @param {boolean} [cfg.emptyDiscovery] Whether to return an empty response
  * @param {boolean} [cfg.multipleOriginalSites] Whether to return multiple original sites
  * @returns {Object} The stubbed fetch function
  */
 export function mockDiscoveryCall({
-  fail = false,
-  empty = false,
+  failEditInfo = false,
+  failDiscovery = false,
+  emptyDiscovery = false,
   multipleOriginalSites = false,
 } = {}) {
   fetchMock.restore();
   fetchMock.get('begin:https://admin.hlx.page/discover/', (url) => {
-    if (fail) {
+    if (failDiscovery) {
       return new Response('', { status: 404 });
     }
     // @ts-ignore
     const path = new URL(url).pathname;
     if (path.startsWith('/discover')) {
-      if (empty) {
+      if (emptyDiscovery) {
         return new Response('[]');
       } else if (multipleOriginalSites) {
         return new Response(JSON.stringify(DISCOVER_JSON_MULTIPLE));
       } else {
         return new Response(JSON.stringify(DISCOVER_JSON));
       }
-    } else if (path.startsWith('/_api/v2.0/shares/')) {
+    }
+    return new Response('');
+  });
+  fetchMock.get(/\.sharepoint\.com/, (url) => {
+    if (failEditInfo) {
+      return new Response('', { status: 404 });
+    }
+    // @ts-ignore
+    const path = new URL(url).pathname;
+    if (path.startsWith('/_api/v2.0/shares/')) {
       if (path.includes('MTA1OTI1OA')) {
         return new Response(JSON.stringify(DRIVE_ITEM_FOLDER_JSON));
       } else {
@@ -59,4 +70,5 @@ export function mockDiscoveryCall({
     }
     return new Response('');
   });
+  return fetchMock;
 }
