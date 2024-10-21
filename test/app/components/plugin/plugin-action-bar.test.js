@@ -30,6 +30,7 @@ import {
   defaultConfigUnpinnedContainerPlugin,
   defaultConfigUnpinnedPlugin,
   defaultConfigPlugins,
+  defaultConfigPluginsWithBadge,
 } from '../../../fixtures/helix-admin.js';
 
 /**
@@ -109,6 +110,14 @@ describe('Plugin action bar', () => {
       .map((plugin) => plugin.className)).to.deep.equal(pluginIds);
   }
 
+  function expectInBadgeContainer(pluginIds) {
+    const badgeContainer = recursiveQuery(sidekickTest.sidekick, '.badge-plugins-container');
+    const badges = recursiveQueryAll(badgeContainer, 'sp-badge');
+
+    expect([...badges]
+      .map((badge) => badge.className)).to.deep.equal(pluginIds);
+  }
+
   describe('renders correct default plugins in action bar', () => {
     it('isPreview', async () => {
       sidekickTest
@@ -121,6 +130,7 @@ describe('Plugin action bar', () => {
 
       expectInActionBar([
         'env-switcher',
+        'edit',
         'reload',
         'publish',
       ]);
@@ -148,7 +158,7 @@ describe('Plugin action bar', () => {
         'tools',
       ]);
 
-      expectEnvPlugin(['preview', 'prod']);
+      expectEnvPlugin(['edit', 'preview', 'prod']);
 
       // Should fallback to id for label if title not provided
       const assetLibraryPlugin = recursiveQuery(sidekick, '.assets');
@@ -167,6 +177,7 @@ describe('Plugin action bar', () => {
 
       expectInActionBar([
         'env-switcher',
+        'edit',
         'publish',
       ]);
 
@@ -184,6 +195,7 @@ describe('Plugin action bar', () => {
 
       expectInActionBar([
         'env-switcher',
+        'edit',
         'publish',
       ]);
 
@@ -218,6 +230,7 @@ describe('Plugin action bar', () => {
       expectEnvPlugin(['dev', 'edit', 'preview', 'prod']);
       expectInActionBar([
         'env-switcher',
+        'edit',
         'reload',
         'publish',
       ]);
@@ -237,7 +250,48 @@ describe('Plugin action bar', () => {
         'edit-preview',
       ]);
 
-      expectEnvPlugin(['preview', 'live']);
+      expectEnvPlugin(['edit', 'preview', 'live']);
+    });
+
+    it('Editor - should display "last edited" description for Source', async () => {
+      sidekickTest
+        .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT, HelixMockContentType.DOC)
+        .mockFetchSidekickConfigSuccess(false, false)
+        .mockEditorAdminEnvironment(EditorMockEnvironments.EDITOR)
+        .createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const envPlugin = recursiveQuery(sidekickTest.sidekick, 'env-switcher');
+      const menuItem = recursiveQuery(envPlugin, 'sk-menu-item.env-edit');
+
+      await waitUntil(() => {
+        const descriptionElement = menuItem.querySelector('[slot="description"]');
+        return descriptionElement;
+      }, 'Description element not found', { timeout: 5000 });
+
+      const description = menuItem.querySelector('[slot="description"]');
+      const localeDateString = description.textContent.substring(11);
+      expect(localeDateString.length).to.be.greaterThan(0);
+      expect(new Date(localeDateString).toUTCString()).to.equal('Fri, 21 Jul 2023 19:58:00 GMT');
+    });
+
+    it('Preview - should display "open in" description for Source', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const menuItem = recursiveQuery(envPlugin, 'sk-menu-item.env-edit');
+
+      const description = menuItem.querySelector('[slot="description"]');
+      expect(description.textContent).to.equal('Open in Google Drive');
     });
 
     it('isEditor - custom config with prod host', async () => {
@@ -254,7 +308,7 @@ describe('Plugin action bar', () => {
         'edit-preview',
       ]);
 
-      expectEnvPlugin(['preview', 'prod']);
+      expectEnvPlugin(['edit', 'preview', 'prod']);
     });
 
     it('isPreview - custom config with prod host', async () => {
@@ -268,6 +322,7 @@ describe('Plugin action bar', () => {
 
       expectInActionBar([
         'env-switcher',
+        'edit',
         'reload',
         'publish',
       ]);
@@ -304,6 +359,7 @@ describe('Plugin action bar', () => {
 
       expectInActionBar([
         'env-switcher',
+        'edit',
         'reload',
         'publish',
       ]);
@@ -361,10 +417,7 @@ describe('Plugin action bar', () => {
 
       plugins.values().next().value.click();
       await aTimeout(100);
-      expect(fireEventStub.calledWith(
-        EXTERNAL_EVENTS.PLUGIN_USED,
-        { id: 'tag-selector' },
-      )).to.be.true;
+      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, 'tag-selector')).to.be.true;
     });
 
     it('custom plugin clicked', async () => {
@@ -395,7 +448,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => openPageStub.calledOnce);
       expect(openPageStub.calledOnce).to.be.true;
-      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, { id: 'library' })).to.be.true;
+      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, 'library')).to.be.true;
 
       recursiveQuery(sidekick, '.tools').click();
       const preflightPlugin = recursiveQuery(sidekick, '[value="preflight"]');
@@ -404,7 +457,7 @@ describe('Plugin action bar', () => {
       await aTimeout(100);
 
       expect(fireEventStub.calledWithMatch('custom:preflight')).to.be.true;
-      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, { id: 'preflight' })).to.be.true;
+      expect(fireEventStub.calledWith(EXTERNAL_EVENTS.PLUGIN_USED, 'preflight')).to.be.true;
     });
 
     it('overrides core plugin', async () => {
@@ -742,7 +795,7 @@ describe('Plugin action bar', () => {
 
       const statusFetchedSpy = sandbox.spy();
 
-      sidekick.addEventListener('statusfetched', statusFetchedSpy);
+      sidekick.addEventListener('status-fetched', statusFetchedSpy);
 
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
       await aTimeout(100);
@@ -999,5 +1052,22 @@ describe('Plugin action bar', () => {
       await sendKeys({ press: 'Tab' });
       await waitUntil(() => loginButtonFocusSpy.calledOnce, 'login did not focus', { timeout: 3000 });
     }).timeout(10000);
+  });
+
+  describe('badge plugins', () => {
+    it('renders badge plugins', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, true, defaultConfigPluginsWithBadge)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitBadgeContainer();
+
+      expectInBadgeContainer([
+        'badge',
+      ]);
+    });
   });
 });

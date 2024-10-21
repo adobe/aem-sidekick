@@ -34,7 +34,16 @@ export const style = css`
   }
 
   action-bar > div.plugin-menu-container {
-    width: 42px;
+    width: 32px;
+  }
+
+  action-bar > div.badge-plugins-container {
+    position: absolute;
+    right: 8px;
+    top: -20px;
+    display: flex;
+    gap: var(--spectrum-spacing-75);
+    flex-wrap: wrap;
   }
 
   action-bar sp-action-group.not-authorized {

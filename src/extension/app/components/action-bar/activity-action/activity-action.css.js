@@ -23,6 +23,7 @@ export const style = css`
     align-items: center;
     height: 100%;
     gap: 12px;
+    color: var(--spectrum2-sidekick-color);
   }
 
   .container span {
@@ -36,7 +37,6 @@ export const style = css`
     font-weight: bold;
     font-style: normal;
     transform: scaleX(.75);
-    color: var(--spectrum-global-color-gray-500);
   }
 
   .toast-container {

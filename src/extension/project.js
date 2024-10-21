@@ -210,7 +210,7 @@ export function assembleProject({
   } else {
     giturl = `https://github.com/${owner}/${repo}/tree/${ref}`;
   }
-  const id = `${owner}/${repo}/${ref}`;
+  const id = `${owner}/${repo}`;
 
   return {
     id,
@@ -497,16 +497,25 @@ export async function getProjectMatches(configs, tab) {
     }
   }
   if (matches.length === 0) {
-    const { org, site } = cachedResults.length === 1
-      ? cachedResults[0] // use single match from url cache
-      : (cachedResults.find((r) => r.originalSite) || {});
-    if (org && site) {
+    if (cachedResults.length === 1) {
+      // use single match from url cache
+      const { org: owner, site: repo } = cachedResults[0];
       matches.push({
-        owner: org,
-        repo: site,
+        owner,
+        repo,
         ref: 'main',
         transient: true,
       });
+    } else if (cachedResults.length > 1) {
+      // use all matches from url cache with originalSite flag
+      matches.push(...cachedResults
+        .filter((r) => r.originalSite)
+        .map(({ org: owner, site: repo }) => ({
+          owner,
+          repo,
+          ref: 'main',
+          transient: true,
+        })));
     }
   }
   return matches
@@ -550,12 +559,7 @@ export async function detectLegacySidekick() {
  * Imports projects from legacy sidekick.
  * @returns {Promise<number>} The number of imported projects
  */
-export async function importLegacyProjects() {
-  // look for legacy sidekick id
-  const sidekickId = await detectLegacySidekick();
-  if (!sidekickId) {
-    return 0;
-  }
+export async function importLegacyProjects(sidekickId) {
   return new Promise((resolve) => {
     let importedProjects = 0;
     try {

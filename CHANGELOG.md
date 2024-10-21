@@ -1,3 +1,71 @@
+# [2.4.0](https://github.com/adobe/aem-sidekick/compare/v2.3.0...v2.4.0) (2024-10-21)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([3cefbba](https://github.com/adobe/aem-sidekick/commit/3cefbba9c389aabfa8fbd0f04083a2d5c3536ba8))
+
+
+### Features
+
+* match multiple original sites in url cache ([#316](https://github.com/adobe/aem-sidekick/issues/316)) ([fd43ee3](https://github.com/adobe/aem-sidekick/commit/fd43ee30d6ec586aacd7986afdf2d7d230ad3122))
+
+# [2.3.0](https://github.com/adobe/aem-sidekick/compare/v2.2.0...v2.3.0) (2024-10-15)
+
+
+### Features
+
+* edit plugin ([4c31160](https://github.com/adobe/aem-sidekick/commit/4c31160976aa4948122202fed6add8807e0967c5))
+
+# [2.2.0](https://github.com/adobe/aem-sidekick/compare/v2.1.1...v2.2.0) (2024-10-08)
+
+
+### Bug Fixes
+
+* plugin-menu in bulk mode ([#301](https://github.com/adobe/aem-sidekick/issues/301)) ([fea040d](https://github.com/adobe/aem-sidekick/commit/fea040d92d841dfd65c7146b366bd59a8ff26a1d))
+
+
+### Features
+
+* **env-switcher:** visually align source item in all envs ([9c7165c](https://github.com/adobe/aem-sidekick/commit/9c7165c18280df68498c9bba72849cbe3a612bda))
+* rename reload button to update ([#304](https://github.com/adobe/aem-sidekick/issues/304)) ([1068e5a](https://github.com/adobe/aem-sidekick/commit/1068e5a935ed99240036e877b4f45a537665fb43))
+* rework notifications ([#295](https://github.com/adobe/aem-sidekick/issues/295)) ([a4eb0ae](https://github.com/adobe/aem-sidekick/commit/a4eb0aeb46a40ef5d1fd598f683d39cc95e4a410))
+
+## [2.1.1](https://github.com/adobe/aem-sidekick/compare/v2.1.0...v2.1.1) (2024-10-03)
+
+
+### Bug Fixes
+
+* handle status 400 ([#298](https://github.com/adobe/aem-sidekick/issues/298)) ([929ba68](https://github.com/adobe/aem-sidekick/commit/929ba68a6cafa44b66e2b235c5111c40d053527a))
+
+# [2.1.0](https://github.com/adobe/aem-sidekick/compare/v2.0.0...v2.1.0) (2024-10-01)
+
+
+### Features
+
+* api to get auth info ([#294](https://github.com/adobe/aem-sidekick/issues/294)) ([f799bfb](https://github.com/adobe/aem-sidekick/commit/f799bfb1a1ec84322f42ac62d96228cfca4ad60e))
+
+# [2.0.0](https://github.com/adobe/aem-sidekick/compare/v1.32.1...v2.0.0) (2024-09-30)
+
+
+### Bug Fixes
+
+* JSON view should not attempt to draw links for glob paths ([#286](https://github.com/adobe/aem-sidekick/issues/286)) ([8384e92](https://github.com/adobe/aem-sidekick/commit/8384e924862d314b190a5a2638416b3df699f709))
+* localized SP file selection ([03f5b53](https://github.com/adobe/aem-sidekick/commit/03f5b53b44ab69dcc8bf6c922a2732a2d9aeef27))
+* **preview:** disallow folders with illegal characters ([#277](https://github.com/adobe/aem-sidekick/issues/277)) ([4bbc138](https://github.com/adobe/aem-sidekick/commit/4bbc138c4b1ec725e66d7890a683423c04e516d3))
+* remove check for '?' inclusion ([#291](https://github.com/adobe/aem-sidekick/issues/291)) ([69fb9cb](https://github.com/adobe/aem-sidekick/commit/69fb9cb1df8313fabce66a68785946ee06738296))
+* use spectrum 2 SWC theme ([#275](https://github.com/adobe/aem-sidekick/issues/275)) ([a3e6767](https://github.com/adobe/aem-sidekick/commit/a3e6767097752821d51c38e7b4df3e3622914101))
+
+
+### Code Refactoring
+
+* event management ([#285](https://github.com/adobe/aem-sidekick/issues/285)) ([5e45d3e](https://github.com/adobe/aem-sidekick/commit/5e45d3e5d153a19d45753bc10318aa183fc0fe3b))
+
+
+### BREAKING CHANGES
+
+* renamed events
+
 ## [1.32.1](https://github.com/adobe/aem-sidekick/compare/v1.32.0...v1.32.1) (2024-09-24)
 
 

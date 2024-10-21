@@ -84,23 +84,25 @@ export class PluginActionBar extends ConnectedElement {
    * Set up the bar and menu plugins in this environment and updates the component.
    */
   setupPlugins() {
+    this.transientPlugins = [];
+
     this.visiblePlugins = [
       ...Object.values(this.appStore.corePlugins),
       ...Object.values(this.appStore.customPlugins),
     ].filter((plugin) => plugin.isVisible());
 
     this.barPlugins = this.visiblePlugins
-      .filter((plugin) => plugin.isPinned());
+      .filter((plugin) => plugin.isPinned() && !plugin.isBadge());
 
     this.menuPlugins = this.visiblePlugins
-      .filter((plugin) => !plugin.isPinned());
+      .filter((plugin) => !plugin.isPinned() && !plugin.isBadge());
+
+    this.badgePlugins = this.visiblePlugins
+      .filter((plugin) => plugin.isBadge());
 
     this.requestUpdate();
   }
 
-  /**
-   * Loads the user preferences for plugins in this environment.
-   */
   async connectedCallback() {
     super.connectedCallback();
 
@@ -112,13 +114,6 @@ export class PluginActionBar extends ConnectedElement {
           if (this.appStore.state === STATE.TOAST) {
             actionBar.classList.add(this.appStore.toast.variant);
 
-            setTimeout(() => {
-              actionBar.className = '';
-              if (this.appStore.toast?.actionCallback && this.appStore.toast?.actionOnTimeout) {
-                this.appStore.toast?.actionCallback();
-              }
-              this.appStore.closeToast();
-            }, this.appStore.toast.timeout);
             // We need to reset the class name to remove the toast variant, but only if it exists.
             // It's possible for actionBar to be null on the first render.
           } else if (actionBar) {
@@ -136,6 +131,13 @@ export class PluginActionBar extends ConnectedElement {
         this.setupPlugins();
       },
     );
+
+    // trap clicks inside action bar
+    this.addEventListener('click', this.onClick);
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('click', this.onClick);
   }
 
   async checkOverflow() {
@@ -198,6 +200,10 @@ export class PluginActionBar extends ConnectedElement {
     if (pluginMenu) {
       pluginMenu.value = '';
     }
+  }
+
+  onClick(e) {
+    e.stopPropagation();
   }
 
   renderPluginMenuItem(plugin) {
@@ -274,6 +280,22 @@ export class PluginActionBar extends ConnectedElement {
           ? html`<bulk-info></bulk-info><sp-menu-divider size="s" vertical></sp-menu-divider>`
           : ''}
         ${this.barPlugins.length > 0 ? this.barPlugins.map((p) => p.render()) : ''}
+      </div>`;
+  }
+
+  /**
+   * Renders the badge plugins.
+   *
+   * @returns {TemplateResult} The HTML template for the badge plugin.
+   */
+  renderBadgePlugins() {
+    if (this.appStore.state !== STATE.READY || this.badgePlugins.length === 0) {
+      return html``;
+    }
+
+    return html`
+      <div class="badge-plugins-container">
+        ${this.badgePlugins.map((p) => p.render())}
       </div>`;
   }
 
@@ -380,6 +402,7 @@ export class PluginActionBar extends ConnectedElement {
         ${this.renderPlugins()}
         ${this.renderPluginMenu()}
         ${this.renderSystemPlugins()}
+        ${this.renderBadgePlugins()}
       </action-bar>
     ` : '';
   }

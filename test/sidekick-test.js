@@ -177,11 +177,18 @@ export class SidekickTest {
   }
 
   /**
+   * Await the sidekick badge container to be rendered
+   */
+  async awaitBadgeContainer() {
+    await waitUntil(() => recursiveQuery(this.sidekick, '.badge-plugins-container'));
+  }
+
+  /**
    * Await the status to be fetched
    */
   async awaitStatusFetched() {
     const statusFetchedSpy = this.sandbox.spy();
-    this.sidekick.addEventListener('statusfetched', statusFetchedSpy);
+    this.sidekick.addEventListener('status-fetched', statusFetchedSpy);
     await waitUntil(() => statusFetchedSpy.calledOnce, 'Status not fetched', { timeout: 2000 });
   }
 

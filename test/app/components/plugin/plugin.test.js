@@ -38,6 +38,16 @@ const TEST_CHILD_CONFIG = {
   },
 };
 
+const TEST_BADGE_CONFIG = {
+  id: 'test',
+  isBadge: true,
+  badgeVariant: 'orange',
+  button: {
+    text: 'Test Child',
+    action: () => {},
+  },
+};
+
 describe('Plugin', () => {
   const appStore = new AppStore();
 
@@ -92,6 +102,15 @@ describe('Plugin', () => {
     // @ts-ignore
     const renderedPlugin = plugin.render().strings.join('');
     expect(renderedPlugin).to.contain('sk-action-button');
+  });
+
+  it('renders plugin as badge', async () => {
+    const plugin = new Plugin(TEST_BADGE_CONFIG, appStore);
+    const badge = plugin.isBadge();
+    expect(badge).to.be.true;
+    // @ts-ignore
+    const renderedPlugin = plugin.render().strings.join('');
+    expect(renderedPlugin).to.contain('sp-badge');
   });
 
   it('renders container plugin as picker', async () => {

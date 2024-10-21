@@ -37,11 +37,14 @@
     "bulk_error": {
       "message": "Bulk operation failed. Please try again later."
     },
+    "bulk_error_illegal_folder_name": {
+      "message": "Folders can only contain normalized, small latin letters, digits and hyphens. This folder contains illegal characters: $1"
+    },
     "bulk_error_illegal_file_name": {
-      "message": "Only normalized, small latin letters, digits and hyphens are allowed in file names. The following file name contains illegal characters: $1"
+      "message": "Files can only contain normalized, small latin letters, digits and hyphens. This file contains illegal characters: $1"
     },
     "bulk_error_illegal_file_names": {
-      "message": "Only normalized, small latin letters, digits and hyphens are allowed in file names. The following file names contain illegal characters: $1"
+      "message": "Files can only contain normalized, small latin letters, digits and hyphens. The following files contain illegal characters: $1"
     },
     "bulk_error_preview_login_required": {
       "message": "You need to sign in to generate the preview of more than 100 files."
@@ -130,12 +133,24 @@
     "config_project_add": {
       "message": "Add this project"
     },
+    "config_add_project_headline": {
+      "message": "Added project"
+    },
+    "config_remove_project_headline": {
+      "message": "Removed project"
+    },
     "config_project_added": {
       "message": "$1 successfully added",
       "description": "Project added"
     },
     "config_project_disable": {
       "message": "Disable this project"
+    },
+    "config_project_enabled_headline": {
+      "message": "Project enabled"
+    },
+    "config_project_disabled_headline": {
+      "message": "Project disabled"
     },
     "config_project_disabled": {
       "message": "$1 disabled",
@@ -162,6 +177,12 @@
     },
     "config_project_imported_multiple": {
       "message": "Successfully imported $1 projects from AEM Sidekick v6."
+    },
+    "config_project_import_headline": {
+      "message": "Import projects"
+    },
+    "config_project_import_sidekick_not_found": {
+      "message": "Legacy sidekick not found. If the extension is installed but currently disabled, please enable it and try again."
     },
     "config_project_pick": {
       "message": "Pick a project"
@@ -282,6 +303,9 @@
     "error_fatal": {
       "message": "Apologies, we seem to be having problems at the moment. Please try again later."
     },
+    "error_generic": {
+      "message": "An error occurred: $1"
+    },
     "error_job_404": {
       "message": "404 Not found: No such job."
     },
@@ -326,6 +350,9 @@
     },
     "error_publish_404": {
       "message": "Publication failed, generate preview first."
+    },
+    "error_status_400": {
+      "message": "400 Bad Request: Invalid URL."
     },
     "error_status_404_content": {
       "message": "404 Not found: Check your Sidekick configuration or URL."
@@ -428,8 +455,9 @@
     "publish_date": {
       "message": "Published: "
     },
-    "reload": {
-      "message": "Reload"
+    "update": {
+      "message": "Update",
+      "description": "Update the preview of a page"
     },
     "save": {
       "message": "Save"
@@ -495,6 +523,9 @@
     "preview_last_updated": {
       "message": "Last updated $1"
     },
+    "edit": {
+      "message": "Edit"
+    },
     "edit_last_updated": {
       "message": "Last edited $1"
     },
@@ -549,7 +580,7 @@
     "destructive_confirmation_invalid": {
       "message": "Sorry, please enter the text exactly as displayed to confirm."
     },
-    "reload_success": {
+    "update_success": {
       "message": "Preview successfully updated, reloading..."
     },
     "preview_success": {

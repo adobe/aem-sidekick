@@ -21,7 +21,7 @@ export const style = css`
     flex-direction: column;
     width: 100%;
     height: 100%;
-    color: var(--spectrum-global-color-gray-800);
+    color: var(--spectrum2-sidekick-color);
     box-sizing: border-box;
     margin-bottom: 40px;
   }

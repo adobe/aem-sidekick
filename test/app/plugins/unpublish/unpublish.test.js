@@ -114,7 +114,7 @@ describe('Unpublish plugin', () => {
       await expectUnpublishPlugin(sidekick, false);
     });
 
-    it('asks for user confirmation and reloads the page', async () => {
+    it('asks for user confirmation and reloads page after toast timeout', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           webPath: '/foo',
@@ -133,19 +133,19 @@ describe('Unpublish plugin', () => {
 
       await waitUntil(() => unpublishStub.calledOnce);
 
+      waitUntil(() => showToastSpy.calledOnce);
+
+      await waitUntil(() => reloadPageStub.calledOnce, 'page not reloaded', { timeout: 4000 });
+
       expect(unpublishStub.calledOnce).to.be.true;
-      expect(showToastSpy.calledOnce).to.be.true;
-
-      await sidekickTest.clickToastAction();
-
       expect(reloadPageStub.calledOnce).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'unpublished',
       })).to.be.true;
-    });
+    }).timeout(5000);
 
-    it('asks for user confirmation and reloads the page after toast timeout', async () => {
+    it('asks for user confirmation and skips reloading page if toast closed', async () => {
       sidekickTest
         .mockFetchStatusSuccess(false, {
           webPath: '/foo',
@@ -162,35 +162,18 @@ describe('Unpublish plugin', () => {
 
       confirmUnpublish(sidekick);
 
-      await waitUntil(() => reloadPageStub.calledOnce, 'reloadPage was not called', { timeout: 4000 });
-    }).timeout(5000);
-
-    it('skips reloading if toast manually closed', async () => {
-      sidekickTest
-        .mockFetchStatusSuccess(false, {
-          webPath: '/foo',
-          // live delete permission is granted
-          live: {
-            status: 200,
-            permissions: ['read', 'write', 'delete'],
-          },
-        });
-
-      await clickUnpublishPlugin(sidekick);
-      confirmUnpublish(sidekick);
-
       await waitUntil(() => unpublishStub.calledOnce);
 
-      expect(showToastSpy.calledOnce).to.be.true;
+      waitUntil(() => showToastSpy.calledOnce);
+      sidekickTest.clickToastClose();
 
-      await sidekickTest.clickToastClose();
-
+      expect(unpublishStub.calledOnce).to.be.true;
       expect(reloadPageStub.calledOnce).to.be.false;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'unpublished',
       })).to.be.true;
-    });
+    }).timeout(5000);
 
     it('allows authenticated user to unpublish even if source file still exists', async () => {
       sidekickTest

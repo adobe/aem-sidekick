@@ -15,12 +15,19 @@
 import { css } from 'lit';
 
 export const style = css`
-  :host(.current-env) {
-    margin-bottom: 7px;
-  }
-
   :host(.current-env) #label {
     font-weight: 700;
+  }
+
+  :host(.current-env.env-edit[aria-disabled="true"]) [name="description"]::slotted(*) {
+    font-weight: 400;
+    font-size: var(--spectrum-font-size-50);
+  }
+
+  :host(.current-env.env-edit[aria-disabled="true"]) {
+    background-color: var(--spectrum2-edit-background-default);
+    border: 1px solid var(--spectrum2-edit-border-default);
+    border-radius: var(--spectrum2-default-border-radius);
   }
 
   :host(:hover) {
@@ -37,7 +44,7 @@ export const style = css`
   :host(.current-env.env-edit[disabled]) #label,
   :host(.current-env.env-edit[aria-disabled="true"]) [name="description"]::slotted(*),
   :host(.current-env.env-edit[disabled]) [name="description"]::slotted(*) {
-    color: var(--menu-item-label-content-color-default);
+    color: var(--spectrum2-sidekick-color);
   }
 
   :host(.current-env.env-preview){
@@ -71,13 +78,15 @@ export const style = css`
   :host(.current-env.env-live[aria-disabled="true"]) [name="description"]::slotted(*),
   :host(.current-env.env-prod[aria-disabled="true"]) [name="description"]::slotted(*),
   :host(.current-env.env-live[disabled]) [name="description"]::slotted(*),
-    :host(.current-env.env-prod[disabled]) [name="description"]::slotted(*) {
+  :host(.current-env.env-prod[disabled]) [name="description"]::slotted(*) {
     color: var(--spectrum2-live-content-default);
   }
 
   :host(.env-edit) {
     display: flex;
-    height: 40px;
+    height: 50px;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   ::slotted([slot=icon]) {
@@ -88,7 +97,9 @@ export const style = css`
   :host(.env-edit) ::slotted([slot=icon]) {
     position: absolute;
     right: 7px;
-    top: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--spectrum-menu-item-label-icon-color-default);
   }
 
   sp-status-light {
@@ -179,7 +190,7 @@ export const style = css`
       color: var(--spectrum-gray-800);
     }
 
-    :host(:not(.env-edit, .current-env, .logout)[class]),
+    :host(:not(.env-edit, .current-env, .logout)[class], [disabled]),
     :host(:not(.env-edit, .current-env, .logout)[class]) #label,
     :host(:not(.env-edit, .current-env, .logout)[class]) [name="description"]::slotted(*) {
       color: var(--spectrum-gray-800);

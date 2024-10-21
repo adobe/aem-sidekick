@@ -34,6 +34,7 @@ import {
 // eslint-disable-next-line import/no-cycle
 import { Plugin } from '../components/plugin/plugin.js';
 import { createEnvPlugin } from '../plugins/env/env.js';
+import { createEditPlugin } from '../plugins/edit/edit.js';
 import { createPreviewPlugin } from '../plugins/preview/preview.js';
 import { createReloadPlugin } from '../plugins/reload/reload.js';
 import { createDeletePlugin } from '../plugins/delete/delete.js';
@@ -80,6 +81,10 @@ import { ModalContainer } from '../components/modal/modal-container.js';
 
 /**
  * @typedef {import('@Types').Modal} Modal
+ */
+
+/**
+ * @typedef {import('@Types').Toast} Toast
  */
 
 /**
@@ -270,6 +275,7 @@ export class AppStore {
 
     if (this.siteStore.ready && this.siteStore.authorized) {
       const envPlugin = createEnvPlugin(this);
+      const editPlugin = createEditPlugin(this);
       const previewPlugin = createPreviewPlugin(this);
       const reloadPlugin = createReloadPlugin(this);
       const deletePlugin = createDeletePlugin(this);
@@ -283,6 +289,7 @@ export class AppStore {
       const bulkCopyProdUrlsPlugin = createBulkCopyProdUrlsPlugin(this);
 
       this.registerPlugin(this.corePlugins, envPlugin);
+      this.registerPlugin(this.corePlugins, editPlugin);
       this.registerPlugin(this.corePlugins, previewPlugin);
       this.registerPlugin(this.corePlugins, reloadPlugin);
       this.registerPlugin(this.corePlugins, deletePlugin);
@@ -328,6 +335,8 @@ export class AppStore {
             includePaths,
             isContainer,
             containerId,
+            isBadge,
+            badgeVariant,
             confirm,
           } = cfg;
           const condition = (appStore) => {
@@ -400,7 +409,10 @@ export class AppStore {
             pinned,
             confirm,
             container: containerId,
+            isBadge,
+            badgeVariant,
           };
+
           // check if this overlaps with a core plugin, if so override the condition only
           const corePlugin = this.corePlugins[plugin.id];
           if (corePlugin) {
@@ -700,10 +712,9 @@ export class AppStore {
         status,
       };
       sidekick.dispatchEvent(new CustomEvent(name, {
-        detail: { data },
+        detail: data,
       }));
       const userEvents = [
-        'hidden',
         'updated',
         'previewed',
         'published',
@@ -728,26 +739,19 @@ export class AppStore {
 
   /**
    * Displays a toast message
-   * @param {string} message The message to display
-   * @param {string} [variant] The variant of the toast (optional)
-   * @param {Function} [closeCallback] The close callback function
-   * @param {Function} [actionCallback] The action callback function
-   * @param {string} [actionLabel] The action label
-   * @param {Function} [secondaryCallback] The secondary action callback function
-   * @param {string} [secondaryLabel] The secondary action label
-   * @param {number} [timeout] The timeout in milliseconds (optional)
+   * @param {Toast} toast The toast to display
    */
-  showToast(
+  showToast({
     message,
     variant = 'info',
-    closeCallback = undefined,
-    actionCallback = undefined,
-    actionLabel = 'Ok',
-    secondaryCallback = undefined,
-    secondaryLabel = undefined,
+    closeCallback,
+    actionCallback,
+    actionLabel = this.i18n('ok'),
+    secondaryCallback,
+    secondaryLabel,
     timeout = 3000,
-    actionOnTimeout = true,
-  ) {
+    timeoutCallback,
+  }) {
     if (this.toast) {
       this.toast = null;
       this.setState();
@@ -762,9 +766,19 @@ export class AppStore {
       secondaryCallback,
       secondaryLabel,
       timeout,
-      actionOnTimeout,
+      timeoutCallback,
     };
+
     this.setState(STATE.TOAST);
+
+    if (this.toast.timeout > 0) {
+      setTimeout(() => {
+        this.closeToast();
+        if (typeof timeoutCallback === 'function') {
+          timeoutCallback();
+        }
+      }, this.toast.timeout);
+    }
   }
 
   /**
@@ -780,6 +794,11 @@ export class AppStore {
    * Closes the toast message
    */
   closeToast() {
+    const { closeCallback } = this.toast || {};
+    if (typeof closeCallback === 'function') {
+      closeCallback();
+    }
+
     this.toast = null;
     this.setState();
   }
@@ -821,7 +840,7 @@ export class AppStore {
 
   /**
      * Fetches the status for the current resource.
-     * @fires Sidekick#statusfetched
+     * @fires Sidekick#status-fetched
      * @param {boolean} [refreshLocation] Refresh the sidekick's location (optional)
      * @param {boolean} [fetchEdit] Should the edit url be fetched (optional)
      * @param {boolean} [transient] Should we persist the status in the store (optional)
@@ -911,7 +930,7 @@ export class AppStore {
     const res = await this.update();
     if (!res && !ranBefore) {
       // assume document has been renamed, re-fetch status and try again
-      this.sidekick.addEventListener('statusfetched', async () => {
+      this.sidekick.addEventListener(EXTERNAL_EVENTS.STATUS_FETCHED, async () => {
         this.updatePreview(true);
       }, { once: true });
       this.fetchStatus();
@@ -921,9 +940,15 @@ export class AppStore {
     if (res) {
       // special handling of config files
       if (this.status.webPath.startsWith('/.helix/')) {
-        this.showToast(this.i18n('config_success'), 'positive');
+        this.showToast({
+          message: this.i18n('config_success'),
+          variant: 'positive',
+        });
       } else {
-        this.showToast(this.i18n('preview_success'), 'positive');
+        this.showToast({
+          message: this.i18n('preview_success'),
+          variant: 'positive',
+        });
         this.switchEnv('preview', false, true);
       }
     }
@@ -1227,14 +1252,18 @@ export class AppStore {
         if (this.status.profile) {
           // logged in, stop checking
           delete status.status;
-          this.sidekick.addEventListener('statusfetched', () => this.setState(), { once: true });
+          this.sidekick.addEventListener(
+            EXTERNAL_EVENTS.STATUS_FETCHED,
+            () => this.setState(),
+            { once: true },
+          );
           await this.siteStore.initStore(siteStore);
           this.siteStore.authTokenExpiry = (
             window.hlx
             && window.hlx.sidekickConfig
             && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
-          this.fireEvent('logged-in');
+          this.fireEvent(EXTERNAL_EVENTS.LOGGED_IN, this.status.profile);
           // refresh page with site token in case of 401
           if (is401Page(this.location, window.document)) {
             this.reloadPage();
@@ -1245,7 +1274,10 @@ export class AppStore {
         }
         if (attempts >= 5) {
           // give up after 5 attempts
-          this.showToast(this.i18n('error_login_timeout'), 'negative');
+          this.showToast({
+            message: this.i18n('error_login_timeout'),
+            variant: 'negative',
+          });
           return;
         }
       }
@@ -1284,13 +1316,16 @@ export class AppStore {
           await this.siteStore.initStore(siteStore);
           this.setupPlugins();
           this.fetchStatus();
-          this.fireEvent('logged-out');
+          this.fireEvent(EXTERNAL_EVENTS.LOGGED_OUT, this.status.profile);
           // refresh the page to reflect logged out state
           this.reloadPage();
           return;
         }
         if (attempts >= 5) {
-          this.showToast(this.i18n('error_logout'), 'negative');
+          this.showToast({
+            message: this.i18n('error_logout'),
+            variant: 'negative',
+          });
           return;
         }
       }
@@ -1315,7 +1350,7 @@ export class AppStore {
       if (now > exp * 1000) {
         // token is expired
         this.login(true);
-        this.sidekick.addEventListener('statusfetched', () => {
+        this.sidekick.addEventListener(EXTERNAL_EVENTS.STATUS_FETCHED, () => {
           resolve();
         }, { once: true });
       } else {

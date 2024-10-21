@@ -163,13 +163,14 @@ export async function setAuthToken(
     const siteHandle = `${owner}/${repo}`;
     const siteExists = projects.find(({ id }) => id === siteHandle);
     if (authToken) {
+      authTokenExpiry *= 1000; // store in milliseconds
       if (!orgExists) {
         projects.push({
           id: orgHandle,
           owner,
           repo,
           authToken,
-          authTokenExpiry: authTokenExpiry * 1000, // store in milliseconds
+          authTokenExpiry,
         });
       } else {
         const orgIndex = projects.findIndex(({ id }) => id === orgHandle);

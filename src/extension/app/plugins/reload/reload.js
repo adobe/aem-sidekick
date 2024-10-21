@@ -32,11 +32,14 @@ export function createReloadPlugin(appStore) {
     id: 'reload',
     condition: (store) => store.isContent() && (store.isPreview() || store.isDev()),
     button: {
-      text: appStore.i18n('reload'),
+      text: appStore.i18n('update'),
       action: async (evt) => {
         const res = await appStore.update();
         if (res) {
-          appStore.showToast(appStore.i18n('reload_success'), 'positive');
+          appStore.showToast({
+            message: appStore.i18n('update_success'),
+            variant: 'positive',
+          });
           appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_UPDATED);
           appStore.reloadPage(newTab(evt));
         }

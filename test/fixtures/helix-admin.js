@@ -117,6 +117,19 @@ export const defaultConfigPlugins = {
   ],
 };
 
+export const defaultConfigPluginsWithBadge = {
+  ...defaultConfigJSON,
+  plugins: [
+    {
+      id: 'badge',
+      title: 'Badge',
+      environments: ['edit', 'dev', 'preview', 'live'],
+      isBadge: true,
+      badgeVariant: 'orange',
+    },
+  ],
+};
+
 export const defaultConfigUnpinnedPlugin = {
   ...defaultConfigJSON,
   plugins: [
@@ -156,6 +169,27 @@ export const defaultEnvJSON = {
   contentSourceType: 'onedrive',
 };
 
+export const defaultSharepointEditInfo = {
+  status: 200,
+  url: 'https://adobe.sharepoint.com/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7B207F9725-D73A-4C98-A87D-DC6AD4360373%7D&file=bar.docx&action=default&mobileredirect=true',
+  name: 'bar.docx',
+  contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  folders: [
+    {
+      name: 'foo',
+      url: 'https://adobe.sharepoint.com/sites/foo/Shared%20Documents/site/foo',
+      path: '/foo',
+    },
+    {
+      name: 'site',
+      url: 'https://adobe.sharepoint.com/sites/foo/Shared%20Documents/site',
+      path: '/',
+    },
+  ],
+  lastModified: 'Fri, 21 Jul 2023 19:58:27 GMT',
+  sourceLocation: 'onedrive:/drives/b!SRYzYQL770qsQPbhXU8sWMnBDDbKRg1Npp5iKHaWz7cyd_ev_i2JTI5LB0GcN0hc/items/01HFRI53JFS57SAOWXTBGKQ7O4NLKDMA3T',
+};
+
 /**
  * status request stubs
  */
@@ -188,7 +222,7 @@ export const defaultSharepointStatusResponse = {
       'write',
     ],
   },
-  edit: {},
+  edit: defaultSharepointEditInfo,
   code: {
     status: 400,
     permissions: [
@@ -266,27 +300,6 @@ export const defaultCodeStatusResponse = {
     sourceLastModified: 'Thu, 06 Jun 2024 19:54:13 GMT',
     sourceLocation: 'https://raw.githubusercontent.com/adobecom/blog/main/scripts/scripts.js',
   },
-};
-
-export const defaultSharepointEditInfo = {
-  status: 200,
-  url: 'https://adobe.sharepoint.com/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7B207F9725-D73A-4C98-A87D-DC6AD4360373%7D&file=bar.docx&action=default&mobileredirect=true',
-  name: 'bar.docx',
-  contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  folders: [
-    {
-      name: 'foo',
-      url: 'https://adobe.sharepoint.com/sites/foo/Shared%20Documents/site/foo',
-      path: '/foo',
-    },
-    {
-      name: 'site',
-      url: 'https://adobe.sharepoint.com/sites/foo/Shared%20Documents/site',
-      path: '/',
-    },
-  ],
-  lastModified: 'Fri, 21 Jul 2023 19:58:27 GMT',
-  sourceLocation: 'onedrive:/drives/b!SRYzYQL770qsQPbhXU8sWMnBDDbKRg1Npp5iKHaWz7cyd_ev_i2JTI5LB0GcN0hc/items/01HFRI53JFS57SAOWXTBGKQ7O4NLKDMA3T',
 };
 
 export const defaultGdriveStatusResponse = {

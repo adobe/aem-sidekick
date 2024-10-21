@@ -22,27 +22,11 @@ import {
   getProjects,
   getProjectMatches,
   importLegacyProjects,
+  detectLegacySidekick,
 } from './project.js';
 import { ADMIN_ORIGIN } from './utils/admin.js';
-
-/**
- * Displays a browser notification.
- * @param {*} message The message to display
- * @param {number} [timeout=5000] Time to wait until notification is cleared
- */
-export async function notify(message, timeout = 5000) {
-  const { name: title } = chrome.runtime.getManifest();
-  const notificationId = await chrome.notifications.create(
-    {
-      type: 'basic',
-      iconUrl: 'icons/default/icon-48x48.png',
-      title,
-      message,
-    },
-  );
-  // @ts-ignore
-  setTimeout(() => chrome.notifications.clear(notificationId), timeout);
-}
+import { getConfig } from './config.js';
+import { getDisplay, setDisplay } from './display.js';
 
 /**
  * Updates the auth token via external messaging API (admin only).
@@ -50,7 +34,7 @@ export async function notify(message, timeout = 5000) {
  * @param {string} message.owner The project owner
  * @param {string} message.repo The project repo
  * @param {string} message.authToken The auth token
- * @param {number} message.authTokenExpiry The auth token expiry in seconds since epoch
+ * @param {number} message.exp The auth token expiry in seconds since epoch
  * @param {string} message.siteToken The auth token
  * @param {number} message.siteTokenExpiry The site token expiry in seconds since epoch
  * @param {chrome.runtime.MessageSender} sender The sender
@@ -60,7 +44,7 @@ async function updateAuthToken({
   owner,
   repo,
   authToken,
-  authTokenExpiry,
+  exp: authTokenExpiry,
   siteToken,
   siteTokenExpiry,
 }, sender) {
@@ -80,6 +64,49 @@ async function updateAuthToken({
 }
 
 /**
+ * Shows the sidekick if it is hidden.
+ */
+export async function showSidekickIfHidden() {
+  const visible = await getDisplay();
+  if (!visible) {
+    await setDisplay(true);
+    // wait for sidekick to be visible and check tab to be called by storage listener
+    // eslint-disable-next-line no-promise-executor-return
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+}
+
+/**
+ * Notification confirmation callback
+ * @param {number} tabId The tab ID
+ */
+export function notificationConfirmCallback(tabId) {
+  return async () => {
+    await chrome.tabs.reload(tabId, { bypassCache: true });
+  };
+}
+
+/**
+ * Shows a notification in the sidekick
+ * @param {*} data
+ * @param {*} callback
+ */
+export async function showSidekickNotification(tabId, data, callback) {
+  chrome.tabs.sendMessage(tabId, { action: 'show_notification', ...data }, callback);
+}
+
+/**
+ * Returns the organizations the user is currently authenticated for.
+ * @returns {Promise<string[]>} The organizations
+ */
+async function getAuthInfo() {
+  const projects = await getConfig('session', 'projects') || [];
+  return projects
+    .filter(({ authToken, authTokenExpiry }) => !!authToken && authTokenExpiry > Date.now() / 1000)
+    .map(({ owner }) => owner);
+}
+
+/**
  * Adds or removes a project based on the tab's URL
  * @param {chrome.tabs.Tab} tab The tab
  */
@@ -87,6 +114,8 @@ async function addRemoveProject(tab) {
   const matches = await getProjectMatches(await getProjects(), tab);
   const config = matches.length === 1 && !matches[0].transient
     ? matches[0] : await getProjectFromUrl(tab);
+
+  await showSidekickIfHidden();
   if (isValidProject(config)) {
     const { owner, repo } = config;
     let project = await getProject(config);
@@ -94,13 +123,22 @@ async function addRemoveProject(tab) {
       await addProject(config);
       project = await getProject(config);
       const i18nKey = 'config_project_added';
-      await notify(chrome.i18n.getMessage(i18nKey, project.project || project.id));
+      await showSidekickNotification(tab.id,
+        {
+          message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
+          headline: chrome.i18n.getMessage('config_add_project_headline'),
+        },
+        notificationConfirmCallback(tab.id));
     } else {
       await deleteProject(`${owner}/${repo}`);
       const i18nKey = 'config_project_removed';
-      await notify(chrome.i18n.getMessage(i18nKey, project.project || project.id));
+      await showSidekickNotification(tab.id,
+        {
+          message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
+          headline: chrome.i18n.getMessage('config_remove_project_headline'),
+        },
+        notificationConfirmCallback(tab.id));
     }
-    await chrome.tabs.reload(tab.id, { bypassCache: true });
   }
 }
 
@@ -112,24 +150,48 @@ async function enableDisableProject(tab) {
   const { id } = tab;
   const cfg = await getProjectFromUrl(tab);
   const project = await getProject(cfg);
+
+  await showSidekickIfHidden();
   if (await toggleProject(cfg)) {
     const i18nKey = project.disabled
       ? 'config_project_enabled'
       : 'config_project_disabled';
-    await notify(chrome.i18n.getMessage(i18nKey, project.project || project.id));
-    await chrome.tabs.reload(id, { bypassCache: true });
+    const i18nHeadlineKey = project.disabled
+      ? 'config_project_enabled_headline'
+      : 'config_project_disabled_headline';
+
+    await showSidekickNotification(tab.id,
+      {
+        message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
+        headline: chrome.i18n.getMessage(i18nHeadlineKey),
+      },
+      notificationConfirmCallback(id));
   }
 }
 
 /**
  * Imports projects from legacy sidekick.
  */
-async function importProjects() {
-  const imported = await importLegacyProjects();
+async function importProjects(tab) {
+  const sidekickId = await detectLegacySidekick();
+  await showSidekickIfHidden();
+  if (!sidekickId) {
+    await showSidekickNotification(tab.id,
+      {
+        message: chrome.i18n.getMessage('config_project_import_sidekick_not_found'),
+        headline: chrome.i18n.getMessage('config_project_import_headline'),
+      });
+    return;
+  }
+  const imported = await importLegacyProjects(sidekickId);
   const i18nKey = imported > 0
     ? `config_project_imported_${imported === 1 ? 'single' : 'multiple'}`
     : 'config_project_imported_none';
-  await notify(chrome.i18n.getMessage(i18nKey, `${imported}`));
+  await showSidekickNotification(tab.id,
+    {
+      message: chrome.i18n.getMessage(i18nKey, `${imported}`),
+      headline: chrome.i18n.getMessage('config_project_import_headline'),
+    });
 }
 
 /**
@@ -182,6 +244,5 @@ export const internalActions = {
  */
 export const externalActions = {
   updateAuthToken,
-  // todo: loadSidekick
-  // todo: closePalette
+  getAuthInfo,
 };

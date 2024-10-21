@@ -65,196 +65,202 @@ function confirmDelete(sidekick) {
   deleteButton.click();
 }
 
-describe('Delete plugin', () => {
-  for (const contentType of [HelixMockContentType.DOC, HelixMockContentType.SHEET]) {
-    describe(`deletes ${contentType}`, () => {
-      /**
-       * @type {SidekickTest}
-       */
-      let sidekickTest;
+// for (const contentType of [HelixMockContentType.DOC, HelixMockContentType.SHEET]) {
 
-      /**
-       * @type {AEMSidekick}
-       */
-      let sidekick;
+describe('Delete plugin', async () => {
+  const runTests = async (contentType) => describe(`deletes ${contentType}`, async () => {
+    /**
+     * @type {SidekickTest}
+     */
+    let sidekickTest;
 
-      /**
-       * @type {AppStore}
-       */
-      let appStore;
+    /**
+     * @type {AEMSidekick}
+     */
+    let sidekick;
 
-      const statusUrl = contentType === HelixMockContentType.SHEET
-        ? 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/placeholders.json'
-        : 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/';
-      let deleteStub;
-      let reloadPageStub;
-      let showModalSpy;
-      let showToastSpy;
+    /**
+     * @type {AppStore}
+     */
+    let appStore;
 
-      beforeEach(async () => {
-        appStore = new AppStore();
-        sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
-        sidekickTest
-          .mockFetchSidekickConfigSuccess(false, false)
-          .mockHelixEnvironment(HelixMockEnvironments.PREVIEW, contentType);
+    const statusUrl = contentType === HelixMockContentType.SHEET
+      ? 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/placeholders.json'
+      : 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/';
+    let deleteStub;
+    let reloadPageStub;
+    let showModalSpy;
+    let showToastSpy;
 
-        const { sandbox } = sidekickTest;
-        deleteStub = sandbox.stub(appStore, 'delete').resolves(true);
-        reloadPageStub = sandbox.stub(appStore, 'reloadPage');
-        showModalSpy = sandbox.spy(appStore, 'showModal');
-        showToastSpy = sandbox.spy(appStore, 'showToast');
-      });
+    beforeEach(async () => {
+      appStore = new AppStore();
+      sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(false, false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW, contentType);
 
-      afterEach(() => {
-        sidekickTest.destroy();
-      });
-
-      it('no delete plugin if user not authorized', async () => {
-        const { sandbox } = sidekickTest;
-        // @ts-ignore
-        sandbox.stub(appStore, 'showView').returns();
-        sidekickTest.mockFetchStatusSuccess(false, null, null, statusUrl);
-        sidekick = sidekickTest.createSidekick();
-        await sidekickTest.awaitEnvSwitcher();
-        await expectDeletePlugin(sidekick, false);
-      });
-
-      it('asks for user confirmation and reloads the page', async () => {
-        const { sandbox } = sidekickTest;
-        // @ts-ignore
-        sandbox.stub(appStore, 'showView').returns();
-        sidekickTest
-          .mockFetchStatusSuccess(false, {
-            webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
-            // preview delete permission is granted
-            preview: {
-              status: 200,
-              sourceLocation: 'gdrive:drive-id',
-              permissions: ['read', 'write', 'delete'],
-            },
-          }, null, statusUrl,
-          );
-
-        sidekick = sidekickTest.createSidekick();
-        await sidekickTest.awaitEnvSwitcher();
-
-        await clickDeletePlugin(sidekick);
-
-        expect(showModalSpy.calledWithMatch({ type: MODALS.DELETE })).to.be.true;
-
-        confirmDelete(sidekick);
-
-        await waitUntil(() => deleteStub.calledOnce);
-
-        sidekickTest.clickToastAction();
-
-        expect(deleteStub.calledOnce).to.be.true;
-        expect(showToastSpy.calledOnce).to.be.true;
-
-        await waitUntil(() => reloadPageStub.calledOnce);
-        expect(reloadPageStub.calledOnce).to.be.true;
-        expect(sidekickTest.rumStub.calledWith('click', {
-          source: 'sidekick',
-          target: 'deleted',
-        })).to.be.true;
-      });
-
-      it('skips reloading if toast manually closed', async () => {
-        const { sandbox } = sidekickTest;
-        // @ts-ignore
-        sandbox.stub(appStore, 'showView').returns();
-        sidekickTest
-          .mockFetchStatusSuccess(false, {
-            webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
-            // preview delete permission is granted
-            preview: {
-              status: 200,
-              sourceLocation: 'gdrive:drive-id',
-              permissions: ['read', 'write', 'delete'],
-            },
-          }, null, statusUrl,
-          );
-
-        sidekick = sidekickTest.createSidekick();
-        await sidekickTest.awaitEnvSwitcher();
-
-        await clickDeletePlugin(sidekick);
-        confirmDelete(sidekick);
-
-        await waitUntil(() => deleteStub.calledOnce);
-
-        expect(showToastSpy.calledOnce).to.be.true;
-
-        await sidekickTest.clickToastClose();
-        expect(reloadPageStub.calledOnce).to.be.false;
-        expect(sidekickTest.rumStub.calledWith('click', {
-          source: 'sidekick',
-          target: 'deleted',
-        })).to.be.true;
-      });
-
-      it('allows authenticated user to delete even if source file still exists', async () => {
-        sidekickTest
-          .mockFetchStatusSuccess(false, {
-            webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
-            edit: {
-              status: 200,
-            },
-            // preview delete permission is granted
-            preview: {
-              status: 200,
-              sourceLocation: 'gdrive:drive-id',
-              permissions: ['read', 'write', 'delete'],
-            },
-            // user authenticated
-            profile: {
-              email: 'foo@example.com',
-              name: 'Peter Parker',
-            },
-          }, null, statusUrl);
-
-        sidekick = sidekickTest.createSidekick();
-        await sidekickTest.awaitEnvSwitcher();
-
-        await clickDeletePlugin(sidekick);
-
-        expect(showModalSpy.calledWithMatch({ type: MODALS.DELETE })).to.be.true;
-
-        confirmDelete(sidekick);
-
-        await waitUntil(() => deleteStub.calledOnce);
-        sidekickTest.clickToastClose();
-        expect(sidekickTest.rumStub.calledWith('click', {
-          source: 'sidekick',
-          target: 'deleted',
-        })).to.be.true;
-      });
-
-      it('handles server failure', async () => {
-        sidekickTest
-          .mockFetchStatusSuccess(false, {
-            // preview delete permission is granted
-            preview: {
-              status: 200,
-              sourceLocation: 'gdrive:drive-id',
-              permissions: ['read', 'write', 'delete'],
-            },
-          }, null, statusUrl);
-
-        sidekick = sidekickTest.createSidekick();
-        await sidekickTest.awaitEnvSwitcher();
-
-        deleteStub.resolves(false);
-
-        await clickDeletePlugin(sidekick);
-
-        expect(showModalSpy.calledWithMatch({ type: MODALS.DELETE })).to.be.true;
-
-        confirmDelete(sidekick);
-
-        await waitUntil(() => deleteStub.calledOnce);
-        expect(deleteStub.calledOnce);
-      });
+      const { sandbox } = sidekickTest;
+      deleteStub = sandbox.stub(appStore, 'delete').resolves(true);
+      reloadPageStub = sandbox.stub(appStore, 'reloadPage');
+      showModalSpy = sandbox.spy(appStore, 'showModal');
+      showToastSpy = sandbox.spy(appStore, 'showToast');
     });
-  }
+
+    afterEach(() => {
+      sidekickTest.destroy();
+    });
+
+    it('no delete plugin if user not authorized', async () => {
+      const { sandbox } = sidekickTest;
+      // @ts-ignore
+      sandbox.stub(appStore, 'showView').returns();
+      sidekickTest.mockFetchStatusSuccess(false, null, null, statusUrl);
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+      await expectDeletePlugin(sidekick, false);
+    });
+
+    it('asks for user confirmation and reloads page after toast timeout', async () => {
+      const { sandbox } = sidekickTest;
+      // @ts-ignore
+      sandbox.stub(appStore, 'showView').returns();
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
+          // preview delete permission is granted
+          preview: {
+            status: 200,
+            sourceLocation: 'gdrive:drive-id',
+            permissions: ['read', 'write', 'delete'],
+          },
+        }, null, statusUrl,
+        );
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      await clickDeletePlugin(sidekick);
+
+      expect(showModalSpy.calledWithMatch({ type: MODALS.DELETE })).to.be.true;
+
+      confirmDelete(sidekick);
+
+      await waitUntil(() => deleteStub.calledOnce);
+
+      waitUntil(() => showToastSpy.calledOnce);
+
+      await waitUntil(() => reloadPageStub.calledOnce, 'page not reloaded', { timeout: 4000 });
+
+      expect(deleteStub.calledOnce).to.be.true;
+      expect(reloadPageStub.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'deleted',
+      })).to.be.true;
+    }).timeout(5000);
+
+    it('asks for user confirmation and skips reloading page if toast closed', async () => {
+      const { sandbox } = sidekickTest;
+      // @ts-ignore
+      sandbox.stub(appStore, 'showView').returns();
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
+          // preview delete permission is granted
+          preview: {
+            status: 200,
+            permissions: ['read', 'write', 'delete'],
+          },
+        }, null, statusUrl,
+        );
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      await clickDeletePlugin(sidekick);
+
+      expect(showModalSpy.calledWithMatch({ type: MODALS.DELETE })).to.be.true;
+
+      confirmDelete(sidekick);
+
+      await waitUntil(() => deleteStub.calledOnce);
+
+      waitUntil(() => showToastSpy.calledOnce);
+      sidekickTest.clickToastClose();
+
+      expect(deleteStub.calledOnce).to.be.true;
+      expect(reloadPageStub.calledOnce).to.be.false;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'deleted',
+      })).to.be.true;
+    });
+
+    it('allows authenticated user to delete even if source file still exists', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          webPath: contentType === HelixMockContentType.DOC ? '/' : '/placeholder.json',
+          edit: {
+            status: 200,
+          },
+          // preview delete permission is granted
+          preview: {
+            status: 200,
+            sourceLocation: 'gdrive:drive-id',
+            permissions: ['read', 'write', 'delete'],
+          },
+          // user authenticated
+          profile: {
+            email: 'foo@example.com',
+            name: 'Peter Parker',
+          },
+        }, null, statusUrl);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      await clickDeletePlugin(sidekick);
+
+      expect(showModalSpy.calledWithMatch({ type: MODALS.DELETE })).to.be.true;
+
+      confirmDelete(sidekick);
+
+      await waitUntil(() => deleteStub.calledOnce);
+      sidekickTest.clickToastClose();
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'deleted',
+      })).to.be.true;
+    });
+
+    it('handles server failure', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          // preview delete permission is granted
+          preview: {
+            status: 200,
+            sourceLocation: 'gdrive:drive-id',
+            permissions: ['read', 'write', 'delete'],
+          },
+        }, null, statusUrl);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      deleteStub.resolves(false);
+
+      await clickDeletePlugin(sidekick);
+
+      expect(showModalSpy.calledWithMatch({ type: MODALS.DELETE })).to.be.true;
+
+      confirmDelete(sidekick);
+
+      await waitUntil(() => deleteStub.calledOnce);
+      expect(deleteStub.calledOnce);
+    });
+  });
+
+  await runTests(HelixMockContentType.DOC);
+  await aTimeout(5000);
+  await runTests(HelixMockContentType.SHEET);
 });

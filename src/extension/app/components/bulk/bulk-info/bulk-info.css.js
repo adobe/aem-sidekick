@@ -21,6 +21,9 @@ export const style = css`
   }
 
   .container span {
-    padding: 0 6px 2px;
+    padding-left: 4px;
+    padding-right: 6px;
+    color: var(--spectrum2-sidekick-color);
+    white-space: nowrap;
   }
 `;

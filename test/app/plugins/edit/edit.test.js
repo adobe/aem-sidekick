@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Adobe. All rights reserved.
+ * Copyright 2024 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -11,7 +11,7 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-import { aTimeout, expect, waitUntil } from '@open-wc/testing';
+import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
@@ -30,7 +30,7 @@ import { SidekickTest } from '../../../sidekick-test.js';
 // @ts-ignore
 window.chrome = chromeMock;
 
-describe('Reload plugin', () => {
+describe('Edit plugin', () => {
   /**
    * @type {SidekickTest}
    */
@@ -46,8 +46,7 @@ describe('Reload plugin', () => {
    */
   let appStore;
 
-  let reloaded = false;
-  let showToastSpy;
+  let switchEnvStub;
 
   beforeEach(async () => {
     appStore = new AppStore();
@@ -58,62 +57,23 @@ describe('Reload plugin', () => {
       .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
     sidekick = sidekickTest.createSidekick();
-    showToastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
-    sidekickTest.sandbox.stub(appStore, 'reloadPage').callsFake(() => {
-      reloaded = true;
-    });
-
-    reloaded = false;
+    switchEnvStub = sidekickTest.sandbox.spy(appStore, 'switchEnv');
   });
 
   afterEach(() => {
     sidekickTest.destroy();
   });
 
-  it('reload calls appStore.update() and reloads window', async () => {
-    const { sandbox } = sidekickTest;
-    const updateStub = sandbox.stub(appStore, 'update')
-      .resolves(true);
-
+  it('switches to editor environment', async () => {
     await sidekickTest.awaitEnvSwitcher();
 
-    const reloadPlugin = recursiveQuery(sidekick, '.reload');
-    expect(reloadPlugin.textContent.trim()).to.equal('Update');
-    await waitUntil(() => reloadPlugin.getAttribute('disabled') === null);
+    const editPlugin = recursiveQuery(sidekick, '.edit');
+    expect(editPlugin.textContent.trim()).to.equal('Edit');
 
-    reloadPlugin.click();
+    editPlugin.click();
 
-    await aTimeout(500);
+    await waitUntil(() => switchEnvStub.calledOnce);
 
-    await waitUntil(() => updateStub.calledOnce);
-
-    expect(updateStub.calledOnce).to.be.true;
-    expect(reloaded).to.be.true;
-
-    expect(showToastSpy.calledWith({
-      message: 'Preview successfully updated, reloading...',
-      variant: 'positive',
-    })).to.be.true;
-    expect(sidekickTest.rumStub.calledWith('click', {
-      source: 'sidekick',
-      target: 'updated',
-    })).to.be.true;
-  });
-
-  it('reload handles failure', async () => {
-    const { sandbox } = sidekickTest;
-    const updateStub = sandbox.stub(appStore, 'update')
-      .resolves(false);
-
-    await sidekickTest.awaitEnvSwitcher();
-
-    const reloadPlugin = recursiveQuery(sidekick, '.reload');
-
-    reloadPlugin.click();
-
-    await waitUntil(() => updateStub.calledOnce);
-
-    expect(updateStub.calledOnce).to.be.true;
-    expect(reloaded).to.be.false;
+    expect(switchEnvStub.calledWith('edit', true)).to.be.true;
   });
 });

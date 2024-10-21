@@ -327,6 +327,14 @@ describe('Test Admin Client', () => {
   });
 
   describe('should handle rate limiting', () => {
+    let toast;
+
+    beforeEach(() => {
+      showToastStub.callsFake((t) => {
+        toast = t;
+      });
+    });
+
     it('should handle 429 error', async () => {
       mockFetchError({
         method: 'post',
@@ -335,9 +343,9 @@ describe('Test Admin Client', () => {
       });
       await adminClient.updatePreview('/');
       expect(showToastStub.calledOnce).to.be.true;
-      expect(showToastStub.args[0][0]).to.match(/429/);
-      expect(showToastStub.args[0][0]).to.match(/by AEM/);
-      expect(showToastStub.args[0][1]).to.equal('warning');
+      expect(toast.message).to.match(/429/);
+      expect(toast.message).to.match(/by AEM/);
+      expect(toast.variant).to.equal('warning');
     });
 
     it('should handle 503 error with 429 in x-error header', async () => {
@@ -351,9 +359,9 @@ describe('Test Admin Client', () => {
       });
       await adminClient.updatePreview('/');
       expect(showToastStub.calledOnce).to.be.true;
-      expect(showToastStub.args[0][0]).to.match(/429/);
-      expect(showToastStub.args[0][0]).to.match(/by Microsoft/);
-      expect(showToastStub.args[0][1]).to.equal('warning');
+      expect(toast.message).to.match(/429/);
+      expect(toast.message).to.match(/by Microsoft/);
+      expect(toast.variant).to.equal('warning');
     });
   });
 
@@ -363,8 +371,8 @@ describe('Test Admin Client', () => {
 
     beforeEach(() => {
       closeToastStub = sandbox.stub(appStore, 'closeToast');
-      showToastStub.callsFake((message, variant, closeCallback) => {
-        toast = { message, variant, closeCallback };
+      showToastStub.callsFake((t) => {
+        toast = t;
       });
     });
 
@@ -420,6 +428,23 @@ describe('Test Admin Client', () => {
       await adminClient.updateLive('/');
       expect(showToastStub.calledOnce).to.be.true;
       expect(toast.message).to.match(/Publication failed/);
+      expect(toast.variant).to.equal('negative');
+
+      appStore.closeToast();
+    });
+
+    it('should fall back to x-error header', async () => {
+      mockFetchError({
+        method: 'get',
+        api: 'status',
+        status: 503,
+        headers: {
+          'x-error': 'foo went wrong',
+        },
+      });
+      await adminClient.getStatus('/');
+      expect(showToastStub.calledOnce).to.be.true;
+      expect(toast.message).to.equal('An error occurred: foo went wrong');
       expect(toast.variant).to.equal('negative');
 
       appStore.closeToast();
@@ -485,7 +510,12 @@ describe('Test Admin Client', () => {
       expect(res).to.match(/Check your Sidekick configuration or URL/);
     });
 
-    it('should return localized error for status 400', () => {
+    it('should return localized error for status 400 on status', () => {
+      const res = adminClient.getLocalizedError('status', path, 400);
+      expect(res).to.match(/Invalid URL/);
+    });
+
+    it('should return localized error for status 400 on preview', () => {
       const res1 = adminClient.getLocalizedError('preview', path, 400, 'XML parsing error');
       expect(res1).to.match(/SVG invalid/);
 

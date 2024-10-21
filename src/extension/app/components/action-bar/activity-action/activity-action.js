@@ -45,10 +45,6 @@ export class ActivityAction extends ConnectedElement {
   }
 
   handleCloseToast() {
-    if (this.appStore.toast.closeCallback) {
-      this.appStore.toast.closeCallback();
-      return;
-    }
     this.appStore.closeToast();
   }
 

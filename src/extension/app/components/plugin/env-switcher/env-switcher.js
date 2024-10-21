@@ -140,7 +140,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       });
     }
 
-    const label = id === 'edit' ? this.appStore.i18n('open_in').replace('$1', contentSourceLabel) : this.envNames[id];
+    const label = this.envNames[id];
     const menuItem = createTag({
       tag: 'sk-menu-item',
       text: label,
@@ -173,6 +173,20 @@ export class EnvironmentSwitcher extends ConnectedElement {
           slot: 'icon',
         },
       });
+
+      const descriptionText = this.currentEnv === 'edit'
+        ? this.getLastModifiedLabel(id, lastModified)
+        : this.appStore.i18n('open_in').replace('$1', contentSourceLabel);
+
+      const description = createTag({
+        tag: 'span',
+        text: descriptionText,
+        attrs: {
+          slot: 'description',
+        },
+      });
+
+      menuItem.appendChild(description);
 
       const { status } = this.appStore;
 
@@ -217,12 +231,13 @@ export class EnvironmentSwitcher extends ConnectedElement {
     picker.innerHTML = '';
 
     // Pull mod dates from status
+    const editLastMod = status.edit?.lastModified;
     const previewLastMod = status.preview?.lastModified;
     const liveLastMod = status.live?.lastModified;
 
     const environmentsHeader = this.createHeader('environments');
     const devMenuItem = this.createMenuItem('dev', {}, previewLastMod);
-    const editMenuItem = this.createMenuItem('edit', {});
+    const editMenuItem = this.createMenuItem('edit', {}, editLastMod);
     const previewMenuItem = this.createMenuItem('preview', {}, previewLastMod);
     const liveMenuItem = this.createMenuItem('live', {}, liveLastMod);
     const prodMenuItem = this.createMenuItem('prod', {}, liveLastMod);
@@ -250,6 +265,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
         editMenuItem.classList.add('current-env');
         picker.append(
           environmentsHeader,
+          editMenuItem,
           previewMenuItem,
           liveMenuItem,
         );

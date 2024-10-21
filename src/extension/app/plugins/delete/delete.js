@@ -63,22 +63,22 @@ export function createDeletePlugin(appStore) {
           // perform delete
           const res = await appStore.delete();
           if (res) {
-            const actionCallback = () => {
+            const timeoutCallback = () => {
               appStore.reloadPage(newTab(evt));
-              appStore.closeToast();
             };
 
             // show success toast
-            appStore.showToast(
-              isPage
+            appStore.showToast({
+              message: isPage
                 ? appStore.i18n('delete_page_success')
                 : appStore.i18n('delete_file_success'),
-              'positive',
-              null,
-              actionCallback,
-              appStore.i18n('reload'),
+              variant: 'positive',
+              timeoutCallback,
+            });
+            appStore.fireEvent(
+              EXTERNAL_EVENTS.RESOURCE_DELETED,
+              appStore.status.webPath,
             );
-            appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_DELETED);
           }
         });
       },

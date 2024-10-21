@@ -59,24 +59,21 @@ export function createUnpublishPlugin(appStore) {
           // perform unpublish
           const res = await appStore.unpublish();
           if (res) {
-            const actionCallback = () => {
+            const timeoutCallback = () => {
               appStore.reloadPage(newTab(evt));
-              appStore.closeToast();
-            };
-
-            const closeCallback = () => {
-              appStore.closeToast();
             };
 
             // show success toast
-            appStore.showToast(
-              appStore.i18n('unpublish_page_success'),
-              'positive',
-              closeCallback,
-              actionCallback,
-              appStore.i18n('reload'),
-            );
+            appStore.showToast({
+              message: appStore.i18n('unpublish_page_success'),
+              variant: 'positive',
+              timeoutCallback,
+            });
             appStore.fireEvent(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED);
+            appStore.fireEvent(
+              EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED,
+              appStore.status.webPath,
+            );
           }
         });
       },

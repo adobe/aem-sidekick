@@ -109,6 +109,8 @@
  * @prop {boolean} [isContainer] Determines whether to turn this plugin into a dropdown
  * @prop {boolean} [isPalette] Determines whether a URL is opened in a palette instead of a new tab
  * @prop {string} [paletteRect] The dimensions and position of a palette (optional)
+ * @prop {boolean} [isBadge] Determines whether the plugin is a badge (optional)
+ * @prop {string} [badgeVariant] The color variant of the badge (optional)
  * @prop {string[]} [environments] Specifies when to show this plugin (admin, edit, dev, preview, live, prod)
  * @prop {string[]} [excludePaths] Exclude the plugin from these paths (glob patterns supported)
  * @prop {string[]} [includePaths] Include the plugin on these paths (glob patterns supported)
@@ -120,7 +122,6 @@
  * @prop {string} id The plugin ID (mandatory)
  * @prop {PluginButton} [button] A button configuration object (optional)
  * @prop {string} [container] The ID of a dropdown to add this plugin to (optional)
- * @prop {ElemConfig[]} [elements]  An array of elements to add (optional)
  * @prop {Function} [condition] Show this plugin (optional).
  * @prop {boolean} [pinned=true] Pin this plugin to the action bar (optional).
  * @prop {boolean} [confirm=false] Requires confirmation before action is executed (optional).
@@ -185,14 +186,14 @@
 /**
  * @typedef {Object} Toast
  * @prop {string} message The toast message
- * @prop {string} variant The toast variant
+ * @prop {string} [variant] The toast variant
  * @prop {Function} [closeCallback] The function to call on close
  * @prop {Function} [actionCallback] The function to call on action
  * @prop {string} [actionLabel] The action label
  * @prop {Function} [secondaryCallback] The function to call on secondary action
  * @prop {string} [secondaryLabel] The secondary actiom label
- * @prop {number} [timeout] The time the toast is shown (default: 6000)
- * @prop {boolean} [actionOnTimeout=true] Execute action on timeout
+ * @prop {number} [timeout] The time the toast is shown (default: 3000)
+ * @prop {Function} [timeoutCallback] The function to call on timeout
  */
 
 /**

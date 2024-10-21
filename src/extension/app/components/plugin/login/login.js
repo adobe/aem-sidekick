@@ -100,6 +100,7 @@ export class LoginButton extends ConnectedElement {
       display: flex;
       align-items: center;
       justify-content: center;
+      color: var(--spectrum2-sidekick-color);
     }
 
     sp-icon.loading > svg,
@@ -123,7 +124,7 @@ export class LoginButton extends ConnectedElement {
     }
 
     :host(.not-authorized) sk-action-button.login {
-      background-color: var(--spectrum-blue-600);
+      background-color: var(--spectrum-blue-700);
       color: #fff;
     }
 

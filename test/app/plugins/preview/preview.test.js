@@ -216,7 +216,10 @@ describe('Preview plugin', () => {
 
       await sidekickTest.clickToastClose();
       expect(closeToastSpy.calledOnce);
-      expect(toastSpy.calledOnceWith('This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets', 'negative'));
+      expect(toastSpy.calledOnceWith({
+        message: 'This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets',
+        variant: 'negative',
+      }));
     });
 
     it('previewing from gdrive editor - not a gdoc type', async () => {
@@ -249,7 +252,10 @@ describe('Preview plugin', () => {
       previewPlugin.click();
 
       await waitUntil(() => toastSpy.calledOnce);
-      expect(toastSpy.calledOnceWith('This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets', 'negative'));
+      expect(toastSpy.calledOnceWith({
+        message: 'This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets',
+        variant: 'negative',
+      }));
     });
 
     it('previewing from gdrive editor - not a gsheet type', async () => {
@@ -282,7 +288,52 @@ describe('Preview plugin', () => {
       previewPlugin.click();
 
       await waitUntil(() => toastSpy.calledOnce);
-      expect(toastSpy.calledOnceWith('This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets', 'negative'));
+      expect(toastSpy.calledOnceWith({
+        message: 'This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets',
+        variant: 'negative',
+      }));
+    });
+  });
+
+  describe('error handling', () => {
+    it('does not preview from illegal path', async () => {
+      const { sandbox } = sidekickTest;
+      sidekickTest
+        .mockEditorAdminEnvironment(
+          EditorMockEnvironments.EDITOR,
+          HelixMockContentType.DOC,
+          HelixMockContentSources.SHAREPOINT,
+        ).mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT,
+          HelixMockContentType.ADMIN,
+          {
+            edit: {
+              status: 200,
+              sourceLocation: 'onedrive:driveid',
+              contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+              illegalPath: '/path to/document',
+            },
+          },
+        );
+
+      sidekick = sidekickTest.createSidekick();
+
+      const updatePreviewStub = sandbox.stub(appStore, 'updatePreview').resolves();
+      const showToastSpy = sandbox.spy(appStore, 'showToast');
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
+      expect(previewPlugin.textContent.trim()).to.equal('Preview');
+      await waitUntil(() => previewPlugin.getAttribute('disabled') === null);
+
+      previewPlugin.click();
+
+      await waitUntil(() => showToastSpy.calledOnce);
+      expect(showToastSpy.calledWithMatch({
+        variant: 'warning',
+        timeout: 0,
+      })).to.be.true;
+      expect(updatePreviewStub.calledOnce).to.be.false;
     });
   });
 });
