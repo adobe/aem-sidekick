@@ -644,6 +644,11 @@ export class AppStore {
     return modalContainer;
   }
 
+  showOnboarding() {
+    const dialog = document.createElement('onboarding-dialog');
+    this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(dialog);
+  }
+
   /**
    * Opens a new page. Abstracted for testing.
    * @param {string} url The URL to open
