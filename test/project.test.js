@@ -36,7 +36,7 @@ import {
 } from '../src/extension/project.js';
 import { urlCache } from '../src/extension/url-cache.js';
 import { error, mockTab } from './test-utils.js';
-import { mockDiscoveryCalls } from './mocks/discover.js';
+import { mockDiscoveryCall } from './mocks/discover.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -376,7 +376,7 @@ describe('Test project', () => {
     await urlCache.set(mockTab('https://7.foo.bar/'), { owner: 'foo', repo: 'bar6' });
     expect((await getProjectMatches(CONFIGS, mockTab('https://7.foo.bar/'))).length).to.equal(1);
     // match sharepoint URL (docx)
-    mockDiscoveryCalls();
+    mockDiscoveryCall();
     await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'));
     expect((await getProjectMatches(CONFIGS, mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'))).length).to.equal(1);
     // match transient sharepoint URL
@@ -385,7 +385,12 @@ describe('Test project', () => {
     // match transient gdrive URL
     await urlCache.set(mockTab('https://docs.google.com/document/d/1234567890/edit'), { owner: 'foo', repo: 'bar0' });
     expect((await getProjectMatches(CONFIGS, mockTab('https://docs.google.com/document/d/1234567890/edit'))).length).to.equal(1);
-  }).timeout(3000);
+    // match multiple original sites from cache
+    mockDiscoveryCall({ multipleOriginalSites: true });
+    const tab = mockTab('https://foo.sharepoint.com/something/boo/Shared%20Documents/root1');
+    await urlCache.set(tab);
+    expect((await getProjectMatches([], tab)).length).to.equal(2);
+  }).timeout(5000);
 
   it('getGitHubSettings', async () => {
     const github = getGitHubSettings('https://github.com/adobe/blog/tree/stage');

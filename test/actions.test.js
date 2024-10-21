@@ -148,14 +148,14 @@ describe('Test actions', () => {
     })).to.be.true;
     expect(set.calledWith({
       'foo/bar': {
-        id: 'foo/bar/main',
+        id: 'foo/bar',
         giturl: 'https://github.com/foo/bar/tree/main',
         owner: 'foo',
         repo: 'bar',
         ref: 'main',
       },
     })).to.be.true;
-    expect(i18nSpy.calledWith('config_project_added', 'foo/bar/main')).to.be.true;
+    expect(i18nSpy.calledWith('config_project_added', 'foo/bar')).to.be.true;
     // remove project
     await internalActions.addRemoveProject({
       id: 2,
@@ -166,7 +166,7 @@ describe('Test actions', () => {
     )).to.be.true;
     // @ts-ignore
     expect(remove.calledWith('foo/bar')).to.be.true;
-    expect(i18nSpy.calledWith('config_project_removed', 'foo/bar/main')).to.be.true;
+    expect(i18nSpy.calledWith('config_project_removed', 'foo/bar')).to.be.true;
     // testing noop
     set.resetHistory();
     await internalActions.addRemoveProject({
@@ -188,7 +188,7 @@ describe('Test actions', () => {
     }));
     expect(set.calledWith({
       'foo/bar': {
-        id: 'foo/bar/main',
+        id: 'foo/bar',
         giturl: 'https://github.com/foo/bar/tree/main',
         owner: 'foo',
         repo: 'bar',
@@ -202,7 +202,7 @@ describe('Test actions', () => {
     }));
     expect(set.calledWith({
       'foo/bar': {
-        id: 'foo/bar/main',
+        id: 'foo/bar',
         giturl: 'https://github.com/foo/bar/tree/main',
         owner: 'foo',
         repo: 'bar',

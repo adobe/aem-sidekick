@@ -15,6 +15,11 @@ export const DISCOVER_JSON = [
   { org: 'foo', site: 'bar2', originalSite: false },
 ];
 
+export const DISCOVER_JSON_MULTIPLE = [
+  { org: 'foo', site: 'bar1', originalSite: true },
+  { org: 'foo', site: 'bar2', originalSite: true },
+];
+
 export const DRIVE_ITEM_FILE_JSON = {
   webUrl: 'https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C',
   parentReference: {
