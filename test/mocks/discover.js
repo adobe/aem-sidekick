@@ -10,41 +10,73 @@
  * governing permissions and limitations under the License.
  */
 
-import sinon from 'sinon';
+// @ts-ignore
+import fetchMock from 'fetch-mock/esm/client.js';
 import {
-  DISCOVER_JSON, DRIVE_ITEM_FILE_JSON, DRIVE_ITEM_FOLDER_JSON, ROOT_ITEM_JSON,
+  DISCOVER_JSON,
+  DISCOVER_JSON_MULTIPLE,
+  DRIVE_ITEM_FILE_JSON,
+  DRIVE_ITEM_FOLDER_JSON,
+  ROOT_ITEM_JSON,
 } from '../fixtures/discover.js';
-
-let count;
 
 /**
  * Mocks fetch requests related to URL discovery.
- * @param {number[]} fail The numbers of calls to let fail
- * @param {number[]} empty The numbers of calls where discovery should come up emtpy
+ * @param {object} [cfg] The config object
+ * @param {boolean} [cfg.failEditInfo] Whether to fail the edit info request
+ * @param {boolean} [cfg.failRootItem] Whether to fail the root item request
+ * @param {boolean} [cfg.failDiscovery] Whether to fail the discovery request
+ * @param {boolean} [cfg.emptyDiscovery] Whether to return an empty response
+ * @param {boolean} [cfg.multipleOriginalSites] Whether to return multiple original sites
  * @returns {Object} The stubbed fetch function
  */
-export function mockDiscoveryCalls(fail = [], empty = []) {
-  count = 0;
-  const stub = sinon.stub(window, 'fetch')
-    .callsFake(async (url) => {
-      count += 1;
-      if (fail.includes(count)) {
-        return new Response('', { status: 404 });
+export function mockDiscoveryCall({
+  failEditInfo = false,
+  failRootItem = false,
+  failDiscovery = false,
+  emptyDiscovery = false,
+  multipleOriginalSites = false,
+} = {}) {
+  fetchMock.restore();
+  fetchMock.get('begin:https://admin.hlx.page/discover/', (url) => {
+    if (failDiscovery) {
+      return new Response('', { status: 404 });
+    }
+    // @ts-ignore
+    const path = new URL(url).pathname;
+    if (path.startsWith('/discover')) {
+      if (emptyDiscovery) {
+        return new Response('[]');
+      } else if (multipleOriginalSites) {
+        return new Response(JSON.stringify(DISCOVER_JSON_MULTIPLE));
+      } else {
+        return new Response(JSON.stringify(DISCOVER_JSON));
       }
-      // @ts-ignore
-      const path = new URL(url).pathname;
-      if (path.startsWith('/discover')) {
-        return new Response(empty.includes(count) ? '[]' : JSON.stringify(DISCOVER_JSON));
-      } else if (path.startsWith('/_api/v2.0/shares/')) {
-        if (path.includes('MTA1OTI1OA')) {
-          return new Response(JSON.stringify(DRIVE_ITEM_FOLDER_JSON));
-        } else {
-          return new Response(JSON.stringify(DRIVE_ITEM_FILE_JSON));
-        }
-      } else if (path.startsWith('/_api/v2.0/drives/1234')) {
+    }
+    return new Response('');
+  });
+  fetchMock.get(/\.sharepoint\.com/, (url) => {
+    if (failEditInfo) {
+      return new Response('', { status: 404 });
+    }
+    // @ts-ignore
+    const path = new URL(url).pathname;
+    if (path.startsWith('/_api/v2.0/shares/')) {
+      if (failEditInfo) {
+        return new Response('', { status: 404 });
+      } else if (path.includes('MTA1OTI1OA')) {
+        return new Response(JSON.stringify(DRIVE_ITEM_FOLDER_JSON));
+      } else {
+        return new Response(JSON.stringify(DRIVE_ITEM_FILE_JSON));
+      }
+    } else if (path.startsWith('/_api/v2.0/drives/1234')) {
+      if (failRootItem) {
+        return new Response('', { status: 404 });
+      } else {
         return new Response(JSON.stringify(ROOT_ITEM_JSON));
       }
-      return new Response('');
-    });
-  return stub;
+    }
+    return new Response('');
+  });
+  return fetchMock;
 }
