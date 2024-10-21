@@ -1,0 +1,644 @@
+{
+    "activate": {
+      "message": "Activate",
+      "description": "Activate the configuration"
+    },
+    "add": {
+      "message": "Add"
+    },
+    "admin_version": {
+      "message": "Use a specific Admin API version"
+    },
+    "admin_version_placeholder": {
+      "message": "Admin Version: x.y.z"
+    },
+    "advanced": {
+      "message": "Advanced",
+      "description": "Advanced config mode"
+    },
+    "anonymous": {
+      "message": "Anonymous"
+    },
+    "bulk_confirm_empty": {
+      "message": "No file selected"
+    },
+    "bulk_confirm_preview_multiple": {
+      "message": "Are you sure you want to generate the preview of $1 files?"
+    },
+    "bulk_confirm_preview_single": {
+      "message": "Are you sure you want to generate the preview of this file?"
+    },
+    "bulk_confirm_publish_multiple": {
+      "message": "Are you sure you want to publish $1 files?"
+    },
+    "bulk_confirm_publish_single": {
+      "message": "Are you sure you want to publish this file?"
+    },
+    "bulk_error": {
+      "message": "Bulk operation failed. Please try again later."
+    },
+    "bulk_error_illegal_folder_name": {
+      "message": "Folders can only contain normalized, small latin letters, digits and hyphens. This folder contains illegal characters: $1"
+    },
+    "bulk_error_illegal_file_name": {
+      "message": "Files can only contain normalized, small latin letters, digits and hyphens. This file contains illegal characters: $1"
+    },
+    "bulk_error_illegal_file_names": {
+      "message": "Files can only contain normalized, small latin letters, digits and hyphens. The following files contain illegal characters: $1"
+    },
+    "bulk_error_preview_login_required": {
+      "message": "You need to sign in to generate the preview of more than 100 files."
+    },
+    "bulk_error_publish_login_required": {
+      "message": "You need to sign in to publish more than 100 files."
+    },
+    "bulk_previewing_state": {
+      "message": "Preview for $1 of $2 files generated..."
+    },
+    "bulk_publishing_state": {
+      "message": "$1 of $2 files published..."
+    },
+    "bulk_result_details": {
+      "message": "Details"
+    },
+    "bulk_result_path": {
+      "message": "Path"
+    },
+    "bulk_result_preview_multiple_failure": {
+      "message": "Failed to generate preview of all files."
+    },
+    "bulk_result_preview_multiple_partial_success": {
+      "message": "Preview of $1 files successfully generated, but $2 failed."
+    },
+    "bulk_result_preview_multiple_partial_success_1": {
+      "message": "Preview of $1 file successfully generated, but $2 failed."
+    },
+    "bulk_result_preview_multiple_success": {
+      "message": "Preview of $1 files successfully generated."
+    },
+    "bulk_result_preview_single_failure": {
+      "message": "Failed to generate preview of this file."
+    },
+    "bulk_result_preview_single_success": {
+      "message": "Preview of this file successfully generated."
+    },
+    "bulk_result_publish_multiple_failure": {
+      "message": "Failed to publish all files."
+    },
+    "bulk_result_publish_multiple_partial_success": {
+      "message": "$1 files successfully published, but $2 failed."
+    },
+    "bulk_result_publish_multiple_partial_success_1": {
+      "message": "1 file successfully published, but $2 failed."
+    },
+    "bulk_result_publish_multiple_success": {
+      "message": "$1 files successfully published."
+    },
+    "bulk_result_publish_single_error_no_source": {
+      "message": "File must be previewed first"
+    },
+    "bulk_result_publish_single_failure": {
+      "message": "Failed to publish this file."
+    },
+    "bulk_result_publish_single_success": {
+      "message": "File successfully published."
+    },
+    "bulk_selection_empty": {
+      "message": "Select files"
+    },
+    "bulk_selection_multiple": {
+      "message": "$1 files selected"
+    },
+    "bulk_selection_single": {
+      "message": "1 file selected"
+    },
+    "cancel": {
+      "message": "Cancel"
+    },
+    "caution_side_effects": {
+      "message": "Caution: unexpected side effects!"
+    },
+    "code_state": {
+      "message": "No actions available for code files"
+    },
+    "close": {
+      "message": "Close"
+    },
+    "close_sidekick": {
+      "message": "Close AEM Sidekick"
+    },
+    "config_add_success": {
+      "message": "Project added to Sidekick"
+    },
+    "config_project_add": {
+      "message": "Add this project"
+    },
+    "config_add_project_headline": {
+      "message": "Added project"
+    },
+    "config_remove_project_headline": {
+      "message": "Removed project"
+    },
+    "config_project_added": {
+      "message": "$1 successfully added",
+      "description": "Project added"
+    },
+    "config_project_disable": {
+      "message": "Disable this project"
+    },
+    "config_project_enabled_headline": {
+      "message": "Project enabled"
+    },
+    "config_project_disabled_headline": {
+      "message": "Project disabled"
+    },
+    "config_project_disabled": {
+      "message": "$1 disabled",
+      "description": "Project disabled"
+    },
+    "config_project_enable": {
+      "message": "Enable this project"
+    },
+    "config_project_enabled": {
+      "message": "$1 enabled",
+      "description": "Project enabled"
+    },
+    "config_project_exists": {
+      "message": "A configuration for this project already exists."
+    },
+    "config_project_import": {
+      "message": "Import projects from AEM Sidekick v6"
+    },
+    "config_project_imported_none": {
+      "message": "No new projects found in AEM Sidekick v6."
+    },
+    "config_project_imported_single": {
+      "message": "Successfully imported 1 project from AEM Sidekick v6."
+    },
+    "config_project_imported_multiple": {
+      "message": "Successfully imported $1 projects from AEM Sidekick v6."
+    },
+    "config_project_import_headline": {
+      "message": "Import projects"
+    },
+    "config_project_import_sidekick_not_found": {
+      "message": "Legacy sidekick not found. If the extension is installed but currently disabled, please enable it and try again."
+    },
+    "config_project_pick": {
+      "message": "Pick a project"
+    },
+    "config_project_remove": {
+      "message": "Remove this project"
+    },
+    "config_project_removed": {
+      "message": "$1 successfully removed",
+      "description": "Project removed"
+    },
+    "config_success": {
+      "message": "Configuration successfully activated."
+    },
+    "confirm": {
+      "message": "Please confirm",
+      "description": "Confirmation modal heading"
+    },
+    "copied": {
+      "message": "Copied"
+    },
+    "copied_url": {
+      "message": "URL copied to clipboard."
+    },
+    "copied_urls": {
+      "message": "URLs copied to clipboard."
+    },
+    "copy": {
+      "message": "Copy"
+    },
+    "copy_live_url": {
+      "message": "Copy Live URL"
+    },
+    "copy_live_urls": {
+      "message": "Copy Live URLs"
+    },
+    "copy_preview_url": {
+      "message": "Copy Preview URL"
+    },
+    "copy_preview_urls": {
+      "message": "Copy Preview URLs"
+    },
+    "copy_prod_url": {
+      "message": "Copy Production URL"
+    },
+    "copy_prod_urls": {
+      "message": "Copy Production URLs"
+    },
+    "copy_url": {
+      "message": "Copy URL"
+    },
+    "copy_urls": {
+      "message": "Copy $1 URLs"
+    },
+    "copy_urls_error": {
+      "message": "Copy to clipboard failed. Please try again."
+    },
+    "copy_urls_error_focus": {
+      "message": "Copy to clipboard failed. Please make sure the window remains focused."
+    },
+    "delete": {
+      "message": "Delete"
+    },
+    "delete_file_confirm": {
+      "message": "Are you sure you want to delete this file?"
+    },
+    "delete_file_no_source_confirm": {
+      "message": "This file no longer exists in the repository, deleting it cannot be undone!\n\nAre you sure you want to delete it?"
+    },
+    "delete_file_source_exists": {
+      "message": "This file still exists in the repository and cannot be deleted."
+    },
+    "delete_file_success": {
+      "message": "File successfully deleted."
+    },
+    "delete_page_confirm": {
+      "message": "Are you sure you want to delete this page?"
+    },
+    "delete_page_no_source_confirm": {
+      "message": "This page no longer has a source document, deleting it cannot be undone!\n\nAre you sure you want to delete it?"
+    },
+    "delete_page_source_exists": {
+      "message": "This page still has a source document and cannot be deleted."
+    },
+    "delete_page_success": {
+      "message": "Page successfully deleted, reloading..."
+    },
+    "description": {
+      "message": "AEM Sidekick allows authors of AEM sites to easily preview and publish content."
+    },
+    "description_shortcut": {
+      "message": "Toggle Sidekick"
+    },
+    "development": {
+      "message": "Development"
+    },
+    "docs": {
+      "message": "https://www.hlx.live/docs/sidekick"
+    },
+    "source": {
+      "message": "Source"
+    },
+    "open_in": {
+      "message": "Open in $1"
+    },
+    "edit_date": {
+      "message": "Edited: "
+    },
+    "error_429": {
+      "message": "429 Too many requests: Your project is being throttled by $1. Please wait and try again later."
+    },
+    "error_preview_config": {
+      "message": "Failed to activate configuration: $1"
+    },
+    "error_delete": {
+      "message": "Deletion failed. Please try again later."
+    },
+    "error_fatal": {
+      "message": "Apologies, we seem to be having problems at the moment. Please try again later."
+    },
+    "error_generic": {
+      "message": "An error occurred: $1"
+    },
+    "error_job_404": {
+      "message": "404 Not found: No such job."
+    },
+    "error_login_aborted": {
+      "message": "Sign in aborted."
+    },
+    "error_login_timeout": {
+      "message": "Sign in timed out. Please try again later."
+    },
+    "error_logout": {
+      "message": "Sign out failed. Please try again later."
+    },
+    "error_preview": {
+      "message": "Preview generation failed. Please try again later."
+    },
+    "error_preview_400": {
+      "message": "Preview generation failed. Check the file format, name or path."
+    },
+    "error_preview_404": {
+      "message": "Source document does not exist, preview generation failed."
+    },
+    "error_preview_415": {
+      "message": "File type not supported. Refer to the documentation for supported file types."
+    },
+    "error_preview_not_gdoc_generic": {
+      "message": "Preview generation failed. Must be Google document or spreadsheet."
+    },
+    "error_preview_no_docx": {
+      "message": "This is a Microsoft Word document, please convert it to Google Docs first."
+    },
+    "error_preview_no_xlsx": {
+      "message": "This is a Microsoft Excel document, please convert it to Google Sheets first."
+    },
+    "error_preview_too_large": {
+      "message": "File too large. Refer to the documentation for file size limits."
+    },
+    "error_preview_svg_invalid": {
+      "message": "SVG invalid. Make sure it is valid XML and contains no scripts."
+    },
+    "error_publish": {
+      "message": "Publication failed. Please try again later."
+    },
+    "error_publish_404": {
+      "message": "Publication failed, generate preview first."
+    },
+    "error_status_400": {
+      "message": "400 Bad Request: Invalid URL."
+    },
+    "error_status_404_content": {
+      "message": "404 Not found: Check your Sidekick configuration or URL."
+    },
+    "error_status_404_document": {
+      "message": "404 Not found: Check your Sidekick configuration and make sure access to this document is granted."
+    },
+    "error_status_500": {
+      "message": "500 Internal server error: Failed to fetch the page status. Please try again later."
+    },
+    "error_status_502": {
+      "message": "502 Bad gateway: Failed to fetch the page status. Please try again later."
+    },
+    "error_status_504": {
+      "message": "504 Gateway timeout: Failed to fetch the page status. Please try again later."
+    },
+    "error_status_invalid": {
+      "message": "Invalid server response. Check your Sidekick configuration or URL."
+    },
+    "error_unpublish": {
+      "message": "Unpublication failed. Please try again later."
+    },
+    "extensions": {
+      "message": "Extensions"
+    },
+    "next": {
+      "message": "Next"
+    },
+    "help_opt_out": {
+      "message": "Don't show any help"
+    },
+    "help_opt_out_alert": {
+      "message": "Help turned off. You can turn it back on on under Options > User experience."
+    },
+    "help_previous": {
+      "message": "Previous tip"
+    },
+    "help_user_status": {
+      "message": "Available help topics"
+    },
+    "help_user_status_check_all": {
+      "message": "Check all",
+      "description": "Check all help topics"
+    },
+    "help_user_status_description": {
+      "message": "Checked topics will not be shown anymore. Remove the checkmark next to a topic you wish to see again."
+    },
+    "help_user_status_uncheck_all": {
+      "message": "Uncheck all",
+      "description": "Uncheck all help topics"
+    },
+    "homepage": {
+      "message": "https://www.hlx.live/tools/sidekick/"
+    },
+    "info": {
+      "message": "Information"
+    },
+    "json_view_description": {
+      "message": "Data rendition"
+    },
+    "live": {
+      "message": "Live"
+    },
+    "media_state": {
+      "message": "No actions available for media files"
+    },
+    "minutes_ago": {
+      "message": "$1 minutes ago"
+    },
+    "never": {
+      "message": "Never"
+    },
+    "now": {
+      "message": "Now"
+    },
+    "open_preview": {
+      "message": "Open preview URL",
+      "description": "Opens the preview URL for a given GitHub branch"
+    },
+    "open_view_doc_source": {
+      "message": "View document source"
+    },
+    "open_url": {
+      "message": "Open URL"
+    },
+    "open_urls": {
+      "message": "Open $1 URLs"
+    },
+    "open": {
+      "message": "Open"
+    },
+    "open_urls_confirm": {
+      "message": "Are you sure you want to open $1 URLs?"
+    },
+    "please_wait": {
+      "message": "Please wait..."
+    },
+    "plugins_more": {
+      "message": "More plugins..."
+    },
+    "preview": {
+      "message": "Preview"
+    },
+    "preview_date": {
+      "message": "Previewed: "
+    },
+    "preview_onedrive": {
+      "message": "Pro tip: Press Ctrl + S before generating previewing to see the latest changes immediately..."
+    },
+    "preview_onedrive_mac": {
+      "message": "Pro tip: Press ⌘ + S before generating previewing to see the latest changes immediately..."
+    },
+    "production": {
+      "message": "Production"
+    },
+    "publish": {
+      "message": "Publish"
+    },
+    "publish_confirm": {
+      "message": "Are you sure you want to publish this page?"
+    },
+    "publish_date": {
+      "message": "Published: "
+    },
+    "update": {
+      "message": "Update",
+      "description": "Update the preview of a page"
+    },
+    "save": {
+      "message": "Save"
+    },
+    "seconds_ago": {
+      "message": "$1 seconds ago"
+    },
+    "share_description": {
+      "message": "Share your Sidekick"
+    },
+    "standard": {
+      "message": "Standard",
+      "description": "Standard config mode"
+    },
+    "switch_view": {
+      "message": "View"
+    },
+    "title": {
+      "message": "AEM Sidekick - NextGen"
+    },
+    "today_at": {
+      "message": "Today at $1"
+    },
+    "unpublish": {
+      "message": "Unpublish"
+    },
+    "unpublish_page_confirm": {
+      "message": "Are you sure you want to unpublish this page?"
+    },
+    "unpublish_page_source_exists": {
+      "message": "This page still has a source document and cannot be unpublished."
+    },
+    "unpublish_page_no_source_confirm": {
+      "message": "This page no longer has a source document, unpublishing it cannot be undone!\n\nAre you sure you want to unpublish it?"
+    },
+    "unpublish_page_success": {
+      "message": "Page successfully unpublished, reloading..."
+    },
+    "user_login": {
+      "message": "Sign in"
+    },
+    "user_login_hint": {
+      "message": "You need to sign in before you can use Sidekick."
+    },
+    "user_logout": {
+      "message": "Sign out"
+    },
+    "user_switch": {
+      "message": "Switch user"
+    },
+    "yesterday_at": {
+      "message": "Yesterday at $1"
+    },
+    "environments": {
+      "message": "Environments"
+    },
+    "notifications": {
+      "message": "Notifications"
+    },
+    "publish_outdated": {
+      "message": "Preview has been updated"
+    },
+    "preview_last_updated": {
+      "message": "Last updated $1"
+    },
+    "edit": {
+      "message": "Edit"
+    },
+    "edit_last_updated": {
+      "message": "Last edited $1"
+    },
+    "live_last_updated": {
+      "message": "Last published $1"
+    },
+    "prod_last_updated": {
+      "message": "Last published $1"
+    },
+    "edit_never_updated": {
+      "message": "Never saved"
+    },
+    "preview_never_updated": {
+      "message": "Never previewed"
+    },
+    "live_never_updated": {
+      "message": "Never published"
+    },
+    "prod_never_updated": {
+      "message": "Never published"
+    },
+    "ok": {
+      "message": "OK"
+    },
+    "error": {
+      "message": "Error"
+    },
+    "not_authorized": {
+      "message": "Not authorized"
+    },
+    "login_wait": {
+      "message": "Please sign in..."
+    },
+    "json_results_stat": {
+      "message": "Showing $1 of $2 results"
+    },
+    "search": {
+      "message": "Search"
+    },
+    "no_results": {
+      "message": "No Results Found"
+    },
+    "no_results_subheading": {
+      "message": "Try refining your search term"
+    },
+    "destructive_confirmation": {
+      "message": "Are you sure you want to $1 this?"
+    },
+    "destructive_confirmation_prompt": {
+      "message": "Type $1 to confirm"
+    },
+    "destructive_confirmation_invalid": {
+      "message": "Sorry, please enter the text exactly as displayed to confirm."
+    },
+    "update_success": {
+      "message": "Preview successfully updated, reloading..."
+    },
+    "preview_success": {
+      "message": "Preview successfully updated, opening Preview..."
+    },
+    "publish_success": {
+      "message": "Publication successful, opening $1..."
+    },
+    "fetching_status_state": {
+      "message": "Loading status..."
+    },
+    "login_required_state": {
+      "message": "Sign in to continue"
+    },
+    "logging_in_state": {
+      "message": "Signing in..."
+    },
+    "logging_out_state": {
+      "message": "Signing out..."
+    },
+    "unauthorized_state": {
+      "message": "Account not authorized for this site"
+    },
+    "previewing_state": {
+      "message": "Updating Preview..."
+    },
+    "publishing_state": {
+      "message": "Publishing..."
+    },
+    "unpublishing_state": {
+      "message": "Unpublishing..."
+    },
+    "deleting_state": {
+      "message": "Deleting..."
+    },
+    "help_documentation": {
+      "message": "Help & Documentation"
+    }
+}
