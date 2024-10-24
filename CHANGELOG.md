@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/adobe/aem-sidekick/compare/v2.4.0...v2.4.1) (2024-10-24)
+
+
+### Bug Fixes
+
+* disable manageSelection in env picker ([#307](https://github.com/adobe/aem-sidekick/issues/307)) ([ec5f6f2](https://github.com/adobe/aem-sidekick/commit/ec5f6f26f5b6be4595874cb3a00692632f913828))
+
 # [2.4.0](https://github.com/adobe/aem-sidekick/compare/v2.3.0...v2.4.0) (2024-10-21)
 
 
