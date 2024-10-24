@@ -18,6 +18,7 @@ import { style } from './onboarding-dialog.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import { ICONS } from '../../constants.js';
 import { getConfig, setConfig } from '../../../config.js';
+import { getLanguage } from '../../utils/i18n.js';
 
 /**
  * The onboarding item type
@@ -106,9 +107,10 @@ export class OnBoardingDialog extends ConnectedElement {
       return;
     }
 
+    const browserLocale = getLanguage();
     const index = await resp.json();
     const onboardingItems = index.data
-      .filter(({ category }) => category === 'onboarding')
+      .filter(({ category, locale }) => category === 'onboarding' && locale === browserLocale)
       .map(async (item) => {
         const fetchResp = await fetch(`${TOOLS_ORIGIN}${item.path}.plain.html`);
         return fetchResp.ok
@@ -216,29 +218,31 @@ export class OnBoardingDialog extends ConnectedElement {
                 </sp-tabs>
               </nav>
               <div>
-                <div class="content">${this.renderCurrentIndex()}</div>
-                <sp-button-group>   
-                  ${when(item.action,
-                    () => html`
-                      <sp-button
-                        id="action"
-                        variant="secondary"
-                        treatment="fill"
-                        @click=${this.onActionClicked}
-                      >
-                        ${this.appStore.i18n(item.action)}
-                      </sp-button>
-                    `,
-                  )}
-                  <sp-button
-                    id="next"
-                    variant="cta"
-                    treatment="fill"
-                    @click=${this.onNextClicked}
-                  >
-                    ${this.selectedIndex === this.items.length - 1 ? this.appStore.i18n('close') : this.appStore.i18n('next')}
-                  </sp-button>
-                </sp-button-group>
+                <div class="content">
+                  ${this.renderCurrentIndex()}
+                  <sp-button-group>   
+                    ${when(item.action,
+                      () => html`
+                        <sp-button
+                          id="action"
+                          variant="secondary"
+                          treatment="fill"
+                          @click=${this.onActionClicked}
+                        >
+                          ${this.appStore.i18n(item.action)}
+                        </sp-button>
+                      `,
+                    )}
+                    <sp-button
+                      id="next"
+                      variant="cta"
+                      treatment="fill"
+                      @click=${this.onNextClicked}
+                    >
+                      ${this.selectedIndex === this.items.length - 1 ? this.appStore.i18n('close') : this.appStore.i18n('next')}
+                    </sp-button>
+                  </sp-button-group>
+                </div>
               </div>
             </div>
             <sp-button 

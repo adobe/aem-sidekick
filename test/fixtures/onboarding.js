@@ -22,6 +22,7 @@ export const defaultOnboardingResponse = {
     category: 'onboarding',
     publicationDate: '',
     lastModified: '1724342331',
+    locale: 'en',
   }, {
     path: '/sidekick/onboarding/en/switch-environments',
     title: 'Switch environments',
@@ -30,6 +31,7 @@ export const defaultOnboardingResponse = {
     category: 'onboarding',
     publicationDate: '',
     lastModified: '1724341128',
+    locale: 'en',
   }, {
     path: '/sidekick/onboarding/en/actions-organization',
     title: 'New organization for actions',
@@ -38,6 +40,7 @@ export const defaultOnboardingResponse = {
     category: 'onboarding',
     publicationDate: '',
     lastModified: '1724340936',
+    locale: 'en',
   }, {
     path: '/sidekick/onboarding/en/import-projects',
     title: 'Import your projects',
@@ -46,6 +49,7 @@ export const defaultOnboardingResponse = {
     category: 'onboarding',
     publicationDate: '',
     lastModified: '1727376655',
+    locale: 'en',
   }, {
     path: '/sidekick/onboarding/en/join-our-community',
     title: 'Join our community',
@@ -54,6 +58,7 @@ export const defaultOnboardingResponse = {
     category: 'onboarding',
     publicationDate: '',
     lastModified: '1727446306',
+    locale: 'en',
   }, {
     path: '/sidekick/something-else',
     title: 'Should not show up',
@@ -62,6 +67,7 @@ export const defaultOnboardingResponse = {
     category: 'something',
     publicationDate: '',
     lastModified: '1727446306',
+    locale: 'en',
   }],
   ':type': 'sheet',
 };

@@ -14,7 +14,7 @@ import { css } from 'lit';
 
 export const style = css`
   :host {
-    color: var(--spectrum-global-color-gray-800);
+    color: var(--spectrum-gray-800);
     --mod-modal-background-color: transparent;
     --mod-tabs-start-to-edge: 20px;
   }
@@ -28,7 +28,6 @@ export const style = css`
   .container {
     display: grid;
     grid-template-columns: 1fr;
-    height: 640px;
     background-color: var(--spectrum2-sidekick-layer-1);
     border-radius: var(--spectrum2-xlarge-border-radius);
     overflow: hidden;
@@ -54,9 +53,8 @@ export const style = css`
   }
 
   .container > div sp-button-group {
-    position: absolute;
-    right: 40px;
-    bottom: 40px;
+    justify-content: flex-end;
+    padding: 10px 40px 40px 40px;
   }
 
   :host #close-button {
@@ -97,8 +95,7 @@ export const style = css`
   }
 
   .content div:nth-of-type(2){
-    padding: 40px;
-    margin-bottom: 60px;
+    padding: 40px 40px 0 40px;
   }
 
   .content div:nth-of-type(2) h1 {
