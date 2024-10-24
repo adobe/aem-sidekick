@@ -1,0 +1,644 @@
+{
+  "activate": {
+    "description": "啟動此設定",
+    "message": "啟動"
+  },
+  "add": {
+    "message": "新增"
+  },
+  "admin_version": {
+    "message": "使用特定的管理員 API 版本"
+  },
+  "admin_version_placeholder": {
+    "message": "管理員版本：x.y.z"
+  },
+  "advanced": {
+    "description": "進階設定模式",
+    "message": "進階"
+  },
+  "anonymous": {
+    "message": "匿名"
+  },
+  "bulk_confirm_empty": {
+    "message": "未選取任何檔案"
+  },
+  "bulk_confirm_preview_multiple": {
+    "message": "您確定要產生 $1 個檔案的預覽嗎?"
+  },
+  "bulk_confirm_preview_single": {
+    "message": "您確定要產生此檔案的預覽嗎?"
+  },
+  "bulk_confirm_publish_multiple": {
+    "message": "您確定要發佈 $1 個檔案嗎?"
+  },
+  "bulk_confirm_publish_single": {
+    "message": "您確定要發佈此檔案嗎?"
+  },
+  "bulk_error": {
+    "message": "大量作業失敗。請稍後再試。"
+  },
+  "bulk_error_illegal_file_name": {
+    "message": "檔案只能包含正規化的小寫拉丁字母、數字和連字號。此檔案包含非法字元：$1"
+  },
+  "bulk_error_illegal_file_names": {
+    "message": "檔案只能包含正規化的小寫拉丁字母、數字和連字號。下列檔案包含非法字元：$1"
+  },
+  "bulk_error_illegal_folder_name": {
+    "message": "資料夾只能包含正規化的小寫拉丁字母、數字和連字號。此資料夾包含非法字元：$1"
+  },
+  "bulk_error_preview_login_required": {
+    "message": "您必須登入才能產生超過 100 個檔案的預覽。"
+  },
+  "bulk_error_publish_login_required": {
+    "message": "您必須登入才能發佈超過 100 個檔案。"
+  },
+  "bulk_previewing_state": {
+    "message": "已產生 $1 個檔案 (共 $2 個檔案) 的預覽…"
+  },
+  "bulk_publishing_state": {
+    "message": "$1/$2 個檔案已發佈…"
+  },
+  "bulk_result_details": {
+    "message": "詳細資料"
+  },
+  "bulk_result_path": {
+    "message": "路徑"
+  },
+  "bulk_result_preview_multiple_failure": {
+    "message": "產生所有檔案的預覽失敗。"
+  },
+  "bulk_result_preview_multiple_partial_success": {
+    "message": "$1 個檔案的預覽已成功產生，但有 $2 個產生失敗。"
+  },
+  "bulk_result_preview_multiple_partial_success_1": {
+    "message": "$1 個檔案的預覽已成功產生，但有 $2 個產生失敗。"
+  },
+  "bulk_result_preview_multiple_success": {
+    "message": "已成功產生 $1 個檔案的預覽。"
+  },
+  "bulk_result_preview_single_failure": {
+    "message": "產生此檔案的預覽失敗。"
+  },
+  "bulk_result_preview_single_success": {
+    "message": "已成功產生此檔案的預覽。"
+  },
+  "bulk_result_publish_multiple_failure": {
+    "message": "發佈所有檔案失敗。"
+  },
+  "bulk_result_publish_multiple_partial_success": {
+    "message": "$1 個檔案已成功發佈，但有 $2 個發佈失敗。"
+  },
+  "bulk_result_publish_multiple_partial_success_1": {
+    "message": "1 個檔案已成功發佈，但有 $2 個發佈失敗。"
+  },
+  "bulk_result_publish_multiple_success": {
+    "message": "$1 個檔案已成功發佈。"
+  },
+  "bulk_result_publish_single_error_no_source": {
+    "message": "必須先預覽檔案"
+  },
+  "bulk_result_publish_single_failure": {
+    "message": "發佈此檔案失敗。"
+  },
+  "bulk_result_publish_single_success": {
+    "message": "檔案已成功發佈。"
+  },
+  "bulk_selection_empty": {
+    "message": "選取檔案"
+  },
+  "bulk_selection_multiple": {
+    "message": "已選取 $1 個檔案"
+  },
+  "bulk_selection_single": {
+    "message": "已選取 1 個檔案"
+  },
+  "cancel": {
+    "message": "取消"
+  },
+  "caution_side_effects": {
+    "message": "警告：注意意外的副作用！"
+  },
+  "close": {
+    "message": "關閉"
+  },
+  "close_sidekick": {
+    "message": "關閉 AEM Sidekick"
+  },
+  "code_state": {
+    "message": "沒有可用於程式碼檔案的動作"
+  },
+  "config_add_project_headline": {
+    "message": "已新增專案"
+  },
+  "config_add_success": {
+    "message": "專案已新增至 Sidekick"
+  },
+  "config_project_add": {
+    "message": "新增此專案"
+  },
+  "config_project_added": {
+    "description": "專案已新增",
+    "message": "$1 已成功新增"
+  },
+  "config_project_disable": {
+    "message": "停用此專案"
+  },
+  "config_project_disabled": {
+    "description": "專案已停用",
+    "message": "$1 已停用"
+  },
+  "config_project_disabled_headline": {
+    "message": "專案已停用"
+  },
+  "config_project_enable": {
+    "message": "啟用此專案"
+  },
+  "config_project_enabled": {
+    "description": "專案已啟用",
+    "message": "$1 已啟用"
+  },
+  "config_project_enabled_headline": {
+    "message": "專案已啟用"
+  },
+  "config_project_exists": {
+    "message": "此專案的設定已存在。"
+  },
+  "config_project_import": {
+    "message": "從 AEM Sidekick v6 中匯入專案"
+  },
+  "config_project_import_headline": {
+    "message": "匯入專案"
+  },
+  "config_project_import_sidekick_not_found": {
+    "message": "找不到舊版 Sidekick。如果擴充功能已安裝但目前已停用，請將其啟用，然後再試一次。"
+  },
+  "config_project_imported_multiple": {
+    "message": "已成功從 AEM Sidekick v6 中匯入 $1 個專案。"
+  },
+  "config_project_imported_none": {
+    "message": "在 AEM Sidekick v6 中找不到新專案。"
+  },
+  "config_project_imported_single": {
+    "message": "已成功從 AEM Sidekick v6 中匯入 1 個專案。"
+  },
+  "config_project_pick": {
+    "message": "選取一個專案"
+  },
+  "config_project_remove": {
+    "message": "移除此專案"
+  },
+  "config_project_removed": {
+    "description": "專案已移除",
+    "message": "$1 已成功移除"
+  },
+  "config_remove_project_headline": {
+    "message": "已移除專案"
+  },
+  "config_success": {
+    "message": "設定已成功啟用。"
+  },
+  "confirm": {
+    "description": "確認強制回應標題",
+    "message": "請確認"
+  },
+  "copied": {
+    "message": "已複製"
+  },
+  "copied_url": {
+    "message": "URL 已複製到剪貼簿。"
+  },
+  "copied_urls": {
+    "message": "URL 已複製到剪貼簿。"
+  },
+  "copy": {
+    "message": "複製"
+  },
+  "copy_live_url": {
+    "message": "複製即時 URL"
+  },
+  "copy_live_urls": {
+    "message": "複製即時 URL"
+  },
+  "copy_preview_url": {
+    "message": "複製預覽 URL"
+  },
+  "copy_preview_urls": {
+    "message": "複製預覽 URL"
+  },
+  "copy_prod_url": {
+    "message": "複製生產 URL"
+  },
+  "copy_prod_urls": {
+    "message": "複製生產 URL"
+  },
+  "copy_url": {
+    "message": "複製 URL"
+  },
+  "copy_urls": {
+    "message": "複製 $1 URL"
+  },
+  "copy_urls_error": {
+    "message": "複製到剪貼簿失敗。請再試一次。"
+  },
+  "copy_urls_error_focus": {
+    "message": "複製到剪貼簿失敗。請確定焦點仍在視窗中。"
+  },
+  "delete": {
+    "message": "刪除"
+  },
+  "delete_file_confirm": {
+    "message": "您確定要刪除此檔案嗎?"
+  },
+  "delete_file_no_source_confirm": {
+    "message": "此檔案已不存在於存放庫中，刪除後就無法還原！\n\n您確定要刪除嗎?"
+  },
+  "delete_file_source_exists": {
+    "message": "此檔案仍然存在於存放庫中，因此無法刪除。"
+  },
+  "delete_file_success": {
+    "message": "檔案已成功刪除。"
+  },
+  "delete_page_confirm": {
+    "message": "您確定要刪除此頁面嗎?"
+  },
+  "delete_page_no_source_confirm": {
+    "message": "此頁面已沒有來源文件，刪除後就無法還原！\n\n您確定要刪除嗎?"
+  },
+  "delete_page_source_exists": {
+    "message": "此頁面仍有來源文件，因此無法刪除。"
+  },
+  "delete_page_success": {
+    "message": "頁面已成功刪除，正在重新載入…"
+  },
+  "deleting_state": {
+    "message": "正在刪除..."
+  },
+  "description": {
+    "message": "AEM Sidekick 可讓 AEM 網站的作者輕鬆預覽和發佈內容。"
+  },
+  "description_shortcut": {
+    "message": "切換 Sidekick"
+  },
+  "destructive_confirmation": {
+    "message": "您確定要$1此項目嗎?"
+  },
+  "destructive_confirmation_invalid": {
+    "message": "抱歉，請確切輸入顯示的文字以進行確認。"
+  },
+  "destructive_confirmation_prompt": {
+    "message": "輸入 $1 以確認"
+  },
+  "development": {
+    "message": "開發"
+  },
+  "docs": {
+    "message": "https://www.hlx.live/docs/sidekick"
+  },
+  "edit": {
+    "message": "編輯"
+  },
+  "edit_date": {
+    "message": "編輯時間："
+  },
+  "edit_last_updated": {
+    "message": "上次編輯時間：$1"
+  },
+  "edit_never_updated": {
+    "message": "從未儲存過"
+  },
+  "environments": {
+    "message": "環境"
+  },
+  "error": {
+    "message": "錯誤"
+  },
+  "error_429": {
+    "message": "429 請求過多：您的專案正受到 $1 的限制。請稍後再試。"
+  },
+  "error_delete": {
+    "message": "刪除失敗。請稍後再試。"
+  },
+  "error_fatal": {
+    "message": "抱歉，我們目前似乎遇到問題。請稍後再試。"
+  },
+  "error_generic": {
+    "message": "發生錯誤：$1"
+  },
+  "error_job_404": {
+    "message": "404 找不到：沒有此類工作。"
+  },
+  "error_login_aborted": {
+    "message": "登入已中止。"
+  },
+  "error_login_timeout": {
+    "message": "登入逾時。請稍後再試。"
+  },
+  "error_logout": {
+    "message": "登出失敗。請稍後再試。"
+  },
+  "error_preview": {
+    "message": "預覽產生失敗。請稍後再試。"
+  },
+  "error_preview_400": {
+    "message": "預覽產生失敗。請檢查檔案格式、名稱或路徑。"
+  },
+  "error_preview_404": {
+    "message": "來源文件不存在，預覽產生失敗。"
+  },
+  "error_preview_415": {
+    "message": "檔案類型不受支援。請參閱文件以了解受支援的檔案類型。"
+  },
+  "error_preview_config": {
+    "message": "啟動設定失敗：$1"
+  },
+  "error_preview_no_docx": {
+    "message": "這是一個 Microsoft Word 文件，請先將其轉換為 Google 文件。"
+  },
+  "error_preview_no_xlsx": {
+    "message": "這是一個 Microsoft Excel 文件，請先將其轉換為 Google 試算表。"
+  },
+  "error_preview_not_gdoc_generic": {
+    "message": "預覽產生失敗。必須是 Google 文件或試算表。"
+  },
+  "error_preview_svg_invalid": {
+    "message": "SVG 無效。請確定它是有效的 XML 且不包含指令碼。"
+  },
+  "error_preview_too_large": {
+    "message": "檔案過大。請參閱文件以了解檔案大小限制。"
+  },
+  "error_publish": {
+    "message": "發佈失敗。請稍後再試。"
+  },
+  "error_publish_404": {
+    "message": "發佈失敗，請先產生預覽。"
+  },
+  "error_status_400": {
+    "message": "400 錯誤的請求：無效的 URL。"
+  },
+  "error_status_404_content": {
+    "message": "404 找不到：請檢查您的 Sidekick 設定或 URL。"
+  },
+  "error_status_404_document": {
+    "message": "404 找不到：請檢查您的 Sidekick 設定，並確保已授予對此文件的存取權。"
+  },
+  "error_status_500": {
+    "message": "500 內部伺服器錯誤：擷取頁面狀態失敗。請稍後再試。"
+  },
+  "error_status_502": {
+    "message": "502 錯誤的閘道：擷取頁面狀態失敗。請稍後再試。"
+  },
+  "error_status_504": {
+    "message": "504 閘道逾時：擷取頁面狀態失敗。請稍後再試。"
+  },
+  "error_status_invalid": {
+    "message": "伺服器回應無效。請檢查您的 Sidekick 設定或 URL。"
+  },
+  "error_unpublish": {
+    "message": "取消發佈失敗。請稍後再試。"
+  },
+  "extensions": {
+    "message": "擴充功能"
+  },
+  "fetching_status_state": {
+    "message": "正在載入狀態…"
+  },
+  "help_documentation": {
+    "message": "說明與文件"
+  },
+  "help_opt_out": {
+    "message": "不要顯示任何說明"
+  },
+  "help_opt_out_alert": {
+    "message": "說明已關閉。您可以在「選項 > 使用者體驗」下方將其重新開啟。"
+  },
+  "help_previous": {
+    "message": "上一個祕訣"
+  },
+  "help_user_status": {
+    "message": "可用的說明主題"
+  },
+  "help_user_status_check_all": {
+    "description": "勾選所有說明主題",
+    "message": "全部勾選"
+  },
+  "help_user_status_description": {
+    "message": "勾選的主題將不再顯示。請到您想要再次看到的主題旁，移除其核取記號。"
+  },
+  "help_user_status_uncheck_all": {
+    "description": "取消勾選所有說明主題",
+    "message": "全部取消勾選"
+  },
+  "homepage": {
+    "message": "https://www.hlx.live/tools/sidekick/"
+  },
+  "info": {
+    "message": "資訊"
+  },
+  "json_results_stat": {
+    "message": "正在顯示 $1 個結果 (共 $2 個)"
+  },
+  "json_view_description": {
+    "message": "資料轉譯"
+  },
+  "live": {
+    "message": "即時"
+  },
+  "live_last_updated": {
+    "message": "上次發佈時間：$1"
+  },
+  "live_never_updated": {
+    "message": "從未發佈過"
+  },
+  "logging_in_state": {
+    "message": "正在登入…"
+  },
+  "logging_out_state": {
+    "message": "正在登出…"
+  },
+  "login_required_state": {
+    "message": "登入以繼續"
+  },
+  "login_wait": {
+    "message": "請登入…"
+  },
+  "media_state": {
+    "message": "沒有可用於媒體檔案的動作"
+  },
+  "minutes_ago": {
+    "message": "$1 分鐘前"
+  },
+  "never": {
+    "message": "從未"
+  },
+  "next": {
+    "message": "下一步"
+  },
+  "no_results": {
+    "message": "找不到任何結果"
+  },
+  "no_results_subheading": {
+    "message": "嘗試調整您的搜尋字詞"
+  },
+  "not_authorized": {
+    "message": "未授權"
+  },
+  "notifications": {
+    "message": "通知"
+  },
+  "now": {
+    "message": "現在"
+  },
+  "ok": {
+    "message": "確定"
+  },
+  "open": {
+    "message": "開啟"
+  },
+  "open_in": {
+    "message": "在 $1 中開啟"
+  },
+  "open_preview": {
+    "description": "開啟給定 GitHub 分支的預覽 URL",
+    "message": "開啟預覽 URL"
+  },
+  "open_url": {
+    "message": "開啟 URL"
+  },
+  "open_urls": {
+    "message": "開啟 $1 URL"
+  },
+  "open_urls_confirm": {
+    "message": "您確定要開啟 $1 個 URL 嗎?"
+  },
+  "open_view_doc_source": {
+    "message": "檢視文件來源"
+  },
+  "please_wait": {
+    "message": "請稍候..."
+  },
+  "plugins_more": {
+    "message": "更多外掛程式…"
+  },
+  "preview": {
+    "message": "預覽"
+  },
+  "preview_date": {
+    "message": "預覽時間："
+  },
+  "preview_last_updated": {
+    "message": "上次更新時間：$1"
+  },
+  "preview_never_updated": {
+    "message": "從未預覽過"
+  },
+  "preview_onedrive": {
+    "message": "專業祕訣：在產生預覽前按 Ctrl+S 可立即查看最新變更…"
+  },
+  "preview_onedrive_mac": {
+    "message": "專業祕訣：在產生預覽前按 ⌘+S 可立即查看最新變更…"
+  },
+  "preview_success": {
+    "message": "預覽已成功更新，正在開啟預覽…"
+  },
+  "previewing_state": {
+    "message": "正在更新預覽…"
+  },
+  "prod_last_updated": {
+    "message": "上次發佈時間：$1"
+  },
+  "prod_never_updated": {
+    "message": "從未發佈過"
+  },
+  "production": {
+    "message": "生產"
+  },
+  "publish": {
+    "message": "發佈"
+  },
+  "publish_confirm": {
+    "message": "您確定要發佈此頁面嗎?"
+  },
+  "publish_date": {
+    "message": "發佈時間："
+  },
+  "publish_outdated": {
+    "message": "預覽已更新"
+  },
+  "publish_success": {
+    "message": "發佈成功，正在開啟 $1…"
+  },
+  "publishing_state": {
+    "message": "正在發佈…"
+  },
+  "save": {
+    "message": "儲存"
+  },
+  "search": {
+    "message": "搜尋"
+  },
+  "seconds_ago": {
+    "message": "$1 秒前"
+  },
+  "share_description": {
+    "message": "共用您的 Sidekick"
+  },
+  "source": {
+    "message": "來源"
+  },
+  "standard": {
+    "description": "標準設定模式",
+    "message": "標準"
+  },
+  "switch_view": {
+    "message": "檢視"
+  },
+  "title": {
+    "message": "AEM Sidekick"
+  },
+  "today_at": {
+    "message": "今天 $1"
+  },
+  "unauthorized_state": {
+    "message": "帳戶未獲得此網站的授權"
+  },
+  "unpublish": {
+    "message": "取消發佈"
+  },
+  "unpublish_page_confirm": {
+    "message": "您確定要取消發佈此頁面嗎?"
+  },
+  "unpublish_page_no_source_confirm": {
+    "message": "此頁面已沒有來源文件，取消發佈後就無法還原！\n\n您確定要取消發佈嗎?"
+  },
+  "unpublish_page_source_exists": {
+    "message": "此頁面仍有來源文件，因此無法取消發佈。"
+  },
+  "unpublish_page_success": {
+    "message": "頁面已成功取消發佈，正在重新載入…"
+  },
+  "unpublishing_state": {
+    "message": "正在取消發佈…"
+  },
+  "update": {
+    "description": "更新頁面的預覽",
+    "message": "更新"
+  },
+  "update_success": {
+    "message": "預覽已成功更新，正在重新載入…"
+  },
+  "user_login": {
+    "message": "登入"
+  },
+  "user_login_hint": {
+    "message": "您必須先登入才能使用 Sidekick。"
+  },
+  "user_logout": {
+    "message": "登出"
+  },
+  "user_switch": {
+    "message": "切換使用者"
+  },
+  "yesterday_at": {
+    "message": "昨天 $1"
+  }
+}

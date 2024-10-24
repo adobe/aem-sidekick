@@ -1,0 +1,644 @@
+{
+  "activate": {
+    "description": "設定をアクティベート",
+    "message": "アクティベート"
+  },
+  "add": {
+    "message": "追加"
+  },
+  "admin_version": {
+    "message": "特定の管理 API バージョンを使用"
+  },
+  "admin_version_placeholder": {
+    "message": "管理バージョン : x.y.z"
+  },
+  "advanced": {
+    "description": "詳細設定モード",
+    "message": "詳細"
+  },
+  "anonymous": {
+    "message": "匿名"
+  },
+  "bulk_confirm_empty": {
+    "message": "ファイルが選択されていません"
+  },
+  "bulk_confirm_preview_multiple": {
+    "message": "$1 個のファイルのプレビューを生成してもよろしいですか？"
+  },
+  "bulk_confirm_preview_single": {
+    "message": "このファイルのプレビューを生成してもよろしいですか？"
+  },
+  "bulk_confirm_publish_multiple": {
+    "message": "$1 個のファイルを公開してもよろしいですか？"
+  },
+  "bulk_confirm_publish_single": {
+    "message": "このファイルを公開しますか？"
+  },
+  "bulk_error": {
+    "message": "一括操作に失敗しました。後でもう一度試してください。"
+  },
+  "bulk_error_illegal_file_name": {
+    "message": "ファイルには、正規化された小文字のラテン文字、数字、ハイフンのみを含めることができます。このファイルに不正な文字が含まれています : $1"
+  },
+  "bulk_error_illegal_file_names": {
+    "message": "ファイルには、正規化された小文字のラテン文字、数字、ハイフンのみを含めることができます。次のファイルに不正な文字が含まれています : $1"
+  },
+  "bulk_error_illegal_folder_name": {
+    "message": "フォルダーには、正規化された小文字のラテン文字、数字、ハイフンのみを含めることができます。このフォルダーには不正な文字が含まれています : $1"
+  },
+  "bulk_error_preview_login_required": {
+    "message": "100 個を超えるファイルのプレビューを生成するには、ログインする必要があります。"
+  },
+  "bulk_error_publish_login_required": {
+    "message": "100 個を超えるファイルを公開するには、ログインする必要があります。"
+  },
+  "bulk_previewing_state": {
+    "message": "$2 個中 $1 個のファイルのプレビューが生成されました..."
+  },
+  "bulk_publishing_state": {
+    "message": "$2 個のうち $1 個のファイルが公開されました..."
+  },
+  "bulk_result_details": {
+    "message": "詳細"
+  },
+  "bulk_result_path": {
+    "message": "パス"
+  },
+  "bulk_result_preview_multiple_failure": {
+    "message": "すべてのファイルのプレビューを生成できませんでした。"
+  },
+  "bulk_result_preview_multiple_partial_success": {
+    "message": "$1 個のファイルのプレビューが正常に生成されましたが、$2 個は失敗しました。"
+  },
+  "bulk_result_preview_multiple_partial_success_1": {
+    "message": "$1 個のファイルのプレビューが正常に生成されましたが、$2 個は失敗しました。"
+  },
+  "bulk_result_preview_multiple_success": {
+    "message": "$1 個のファイルのプレビューの生成に成功しました。"
+  },
+  "bulk_result_preview_single_failure": {
+    "message": "このファイルのプレビューを生成できませんでした。"
+  },
+  "bulk_result_preview_single_success": {
+    "message": "このファイルのプレビューの生成に成功しました。"
+  },
+  "bulk_result_publish_multiple_failure": {
+    "message": "すべてのファイルを公開できませんでした。"
+  },
+  "bulk_result_publish_multiple_partial_success": {
+    "message": "$1 個のファイルが正常に公開されましたが、$2 個は失敗しました。"
+  },
+  "bulk_result_publish_multiple_partial_success_1": {
+    "message": "1 個のファイルが正常に公開されましたが、$2 個は失敗しました。"
+  },
+  "bulk_result_publish_multiple_success": {
+    "message": "$1 個のファイルが正常に公開されました。"
+  },
+  "bulk_result_publish_single_error_no_source": {
+    "message": "最初にファイルをプレビューする必要があります"
+  },
+  "bulk_result_publish_single_failure": {
+    "message": "このファイルを公開できませんでした。"
+  },
+  "bulk_result_publish_single_success": {
+    "message": "ファイルが正常に公開されました。"
+  },
+  "bulk_selection_empty": {
+    "message": "ファイルを選択"
+  },
+  "bulk_selection_multiple": {
+    "message": "$1 個のファイルが選択されました"
+  },
+  "bulk_selection_single": {
+    "message": "1 個のファイルが選択されました"
+  },
+  "cancel": {
+    "message": "キャンセル"
+  },
+  "caution_side_effects": {
+    "message": "注意 : 予期しない副作用です"
+  },
+  "close": {
+    "message": "閉じる"
+  },
+  "close_sidekick": {
+    "message": "AEM Sidekick を閉じる"
+  },
+  "code_state": {
+    "message": "コードファイルに使用できるアクションはありません"
+  },
+  "config_add_project_headline": {
+    "message": "プロジェクトを追加しました"
+  },
+  "config_add_success": {
+    "message": "プロジェクトが Sidekick に追加されました"
+  },
+  "config_project_add": {
+    "message": "このプロジェクトを追加"
+  },
+  "config_project_added": {
+    "description": "プロジェクトが追加されました",
+    "message": "$1 が正常に追加されました"
+  },
+  "config_project_disable": {
+    "message": "このプロジェクトを無効にする"
+  },
+  "config_project_disabled": {
+    "description": "プロジェクトが無効になりました",
+    "message": "$1 個が無効になりました"
+  },
+  "config_project_disabled_headline": {
+    "message": "プロジェクトが無効になりました"
+  },
+  "config_project_enable": {
+    "message": "このプロジェクトを有効にする"
+  },
+  "config_project_enabled": {
+    "description": "プロジェクトが有効になりました",
+    "message": "$1 個が有効になりました"
+  },
+  "config_project_enabled_headline": {
+    "message": "プロジェクトが有効になりました"
+  },
+  "config_project_exists": {
+    "message": "このプロジェクトの設定は既に存在します。"
+  },
+  "config_project_import": {
+    "message": "AEM Sidekick v6 からプロジェクトを読み込む"
+  },
+  "config_project_import_headline": {
+    "message": "プロジェクトを読み込む"
+  },
+  "config_project_import_sidekick_not_found": {
+    "message": "レガシーサイドキックが見つかりません。拡張機能がインストールされているが現在無効になっている場合は、有効にしてもう一度試してください。"
+  },
+  "config_project_imported_multiple": {
+    "message": "AEM Sidekick v6 から $1 個のプロジェクトを正常に読み込みました。"
+  },
+  "config_project_imported_none": {
+    "message": "AEM Sidekick v6 に新しいプロジェクトが見つかりません。"
+  },
+  "config_project_imported_single": {
+    "message": "AEM Sidekick v6 から 1 個のプロジェクトを正常に読み込みました。"
+  },
+  "config_project_pick": {
+    "message": "プロジェクトを選択"
+  },
+  "config_project_remove": {
+    "message": "このプロジェクトを削除"
+  },
+  "config_project_removed": {
+    "description": "プロジェクトが削除されました",
+    "message": "$1 個が正常に削除されました"
+  },
+  "config_remove_project_headline": {
+    "message": "プロジェクトを削除しました"
+  },
+  "config_success": {
+    "message": "設定が正常にアクティブ化されました。"
+  },
+  "confirm": {
+    "description": "確認モーダルの見出し",
+    "message": "確認してください"
+  },
+  "copied": {
+    "message": "コピーされました"
+  },
+  "copied_url": {
+    "message": "URL がクリップボードにコピーされました。"
+  },
+  "copied_urls": {
+    "message": "URL がクリップボードにコピーされました。"
+  },
+  "copy": {
+    "message": "コピー"
+  },
+  "copy_live_url": {
+    "message": "ライブ URL をコピー"
+  },
+  "copy_live_urls": {
+    "message": "ライブ URL をコピー"
+  },
+  "copy_preview_url": {
+    "message": "プレビュー URL をコピー"
+  },
+  "copy_preview_urls": {
+    "message": "プレビュー URL をコピー"
+  },
+  "copy_prod_url": {
+    "message": "実稼動 URL をコピー"
+  },
+  "copy_prod_urls": {
+    "message": "実稼動 URL をコピー"
+  },
+  "copy_url": {
+    "message": "URL をコピー"
+  },
+  "copy_urls": {
+    "message": "$1 個の URL をコピー"
+  },
+  "copy_urls_error": {
+    "message": "クリップボードへのコピーに失敗しました。もう一度試してください。"
+  },
+  "copy_urls_error_focus": {
+    "message": "クリップボードへのコピーに失敗しました。ウィンドウに焦点が当てられたままになっていることを確認してください。"
+  },
+  "delete": {
+    "message": "削除"
+  },
+  "delete_file_confirm": {
+    "message": "このファイルを削除してもよろしいですか？"
+  },
+  "delete_file_no_source_confirm": {
+    "message": "このファイルはリポジトリに存在しません。削除すると元に戻すことはできません。\n\n削除してもよろしいですか？"
+  },
+  "delete_file_source_exists": {
+    "message": "このファイルはリポジトリにまだ存在しているので、削除できません。"
+  },
+  "delete_file_success": {
+    "message": "ファイルが正常に削除されました。"
+  },
+  "delete_page_confirm": {
+    "message": "このページを削除してもよろしいですか？"
+  },
+  "delete_page_no_source_confirm": {
+    "message": "このページにはソースドキュメントが存在しません。削除すると元に戻すことはできません。\n\n削除してもよろしいですか？"
+  },
+  "delete_page_source_exists": {
+    "message": "このページにはソースドキュメントがまだ存在しているので、削除できません。"
+  },
+  "delete_page_success": {
+    "message": "ページが正常に削除されました。リロード中..."
+  },
+  "deleting_state": {
+    "message": "削除中..."
+  },
+  "description": {
+    "message": "AEM Sidekick を使用すると、AEM サイトの作成者はコンテンツを簡単にプレビューおよび公開できます。"
+  },
+  "description_shortcut": {
+    "message": "Sidekick を切り替え"
+  },
+  "destructive_confirmation": {
+    "message": "これを $1 してもよろしいですか？"
+  },
+  "destructive_confirmation_invalid": {
+    "message": "申し訳ありませんが、確認のため、表示されているとおりにテキストを正確に入力してください。"
+  },
+  "destructive_confirmation_prompt": {
+    "message": "「$1」と入力して確認"
+  },
+  "development": {
+    "message": "開発"
+  },
+  "docs": {
+    "message": "https://www.hlx.live/docs/sidekick"
+  },
+  "edit": {
+    "message": "編集"
+  },
+  "edit_date": {
+    "message": "編集 : "
+  },
+  "edit_last_updated": {
+    "message": "最終編集日 : $1"
+  },
+  "edit_never_updated": {
+    "message": "未保存"
+  },
+  "environments": {
+    "message": "環境"
+  },
+  "error": {
+    "message": "エラー"
+  },
+  "error_429": {
+    "message": "429 リクエストが多すぎます : プロジェクトは $1 によって調整されています。しばらく待ってから、もう一度試してください。"
+  },
+  "error_delete": {
+    "message": "削除に失敗しました。後でもう一度試してください。"
+  },
+  "error_fatal": {
+    "message": "申し訳ありませんが、現在問題が発生しているようです。後でもう一度試してください。"
+  },
+  "error_generic": {
+    "message": "エラーが発生しました : $1"
+  },
+  "error_job_404": {
+    "message": "404 見つかりません : そのようなジョブはありません。"
+  },
+  "error_login_aborted": {
+    "message": "ログインが中止されました。"
+  },
+  "error_login_timeout": {
+    "message": "ログインがタイムアウトしました。後でもう一度試してください。"
+  },
+  "error_logout": {
+    "message": "ログアウトに失敗しました。後でもう一度試してください。"
+  },
+  "error_preview": {
+    "message": "プレビューの生成に失敗しました。後で再試行してください。"
+  },
+  "error_preview_400": {
+    "message": "プレビューの生成に失敗しました。ファイルの形式、名前またはパスを確認してください。"
+  },
+  "error_preview_404": {
+    "message": "ソースドキュメントが存在しないので、プレビューの生成に失敗しました。"
+  },
+  "error_preview_415": {
+    "message": "ファイルタイプがサポートされていません。サポートされているファイルタイプについては、ドキュメントを参照してください。"
+  },
+  "error_preview_config": {
+    "message": "設定をアクティブ化できませんでした : $1"
+  },
+  "error_preview_no_docx": {
+    "message": "これは、Microsoft Word ドキュメントです。まず Google ドキュメントに変換してください。"
+  },
+  "error_preview_no_xlsx": {
+    "message": "これは、Microsoft Excel ドキュメントです。まず Google スプレッドシートに変換してください。"
+  },
+  "error_preview_not_gdoc_generic": {
+    "message": "プレビューの生成に失敗しました。Google ドキュメントまたはスプレッドシートにする必要があります。"
+  },
+  "error_preview_svg_invalid": {
+    "message": "SVG が無効です。XML が有効であり、スクリプトが含まれていないことを確認してください。"
+  },
+  "error_preview_too_large": {
+    "message": "ファイルが大きすぎます。ファイルサイズの制限については、ドキュメントを参照してください。"
+  },
+  "error_publish": {
+    "message": "公開に失敗しました。後でもう一度試してください。"
+  },
+  "error_publish_404": {
+    "message": "公開に失敗しました。まずプレビューを生成してください。"
+  },
+  "error_status_400": {
+    "message": "400 無効なリクエスト : 無効な URL。"
+  },
+  "error_status_404_content": {
+    "message": "404 見つかりません : Sidekick の設定または URL を確認してください。"
+  },
+  "error_status_404_document": {
+    "message": "404 見つかりません : Sidekick の設定を確認し、このドキュメントへのアクセス権が付与されていることを確認してください。"
+  },
+  "error_status_500": {
+    "message": "500 内部サーバーエラー : ページのステータスを取得できませんでした。後でもう一度試してください。"
+  },
+  "error_status_502": {
+    "message": "502 無効なゲートウェイです : ページのステータスを取得できませんでした。後でもう一度試してください。"
+  },
+  "error_status_504": {
+    "message": "504 ゲートウェイタイムアウト : ページのステータスを取得できませんでした。後でもう一度試してください。"
+  },
+  "error_status_invalid": {
+    "message": "無効なサーバー応答です。Sidekick の設定または URL を確認してください。"
+  },
+  "error_unpublish": {
+    "message": "非公開に失敗しました。後でもう一度試してください。"
+  },
+  "extensions": {
+    "message": "拡張機能"
+  },
+  "fetching_status_state": {
+    "message": "ステータスを読み込み中..."
+  },
+  "help_documentation": {
+    "message": "ヘルプとドキュメント"
+  },
+  "help_opt_out": {
+    "message": "ヘルプを表示しない"
+  },
+  "help_opt_out_alert": {
+    "message": "ヘルプがオフになりました。オプション／ユーザーエクスペリエンスでオンに戻すことができます。"
+  },
+  "help_previous": {
+    "message": "前のヒント"
+  },
+  "help_user_status": {
+    "message": "利用可能なヘルプトピック"
+  },
+  "help_user_status_check_all": {
+    "description": "すべてのヘルプトピックを確認",
+    "message": "すべてオンにする"
+  },
+  "help_user_status_description": {
+    "message": "選択したトピックは表示されなくなります。トピックを再表示するにはトピックのチェックマークを外してください。"
+  },
+  "help_user_status_uncheck_all": {
+    "description": "すべてのヘルプトピックのチェックを解除",
+    "message": "すべて解除する"
+  },
+  "homepage": {
+    "message": "https://www.hlx.live/tools/sidekick/"
+  },
+  "info": {
+    "message": "情報"
+  },
+  "json_results_stat": {
+    "message": "結果 $2 個中 $1 個を表示中"
+  },
+  "json_view_description": {
+    "message": "データレンディション"
+  },
+  "live": {
+    "message": "ライブ"
+  },
+  "live_last_updated": {
+    "message": "最終公開日 : $1"
+  },
+  "live_never_updated": {
+    "message": "未公開"
+  },
+  "logging_in_state": {
+    "message": "ログイン中..."
+  },
+  "logging_out_state": {
+    "message": "ログアウト中..."
+  },
+  "login_required_state": {
+    "message": "ログインして続行"
+  },
+  "login_wait": {
+    "message": "ログインしてください..."
+  },
+  "media_state": {
+    "message": "メディアファイルに使用できるアクションはありません"
+  },
+  "minutes_ago": {
+    "message": "$1 分前"
+  },
+  "never": {
+    "message": "なし"
+  },
+  "next": {
+    "message": "次へ"
+  },
+  "no_results": {
+    "message": "結果が見つかりません"
+  },
+  "no_results_subheading": {
+    "message": "検索語の絞り込みを試してください"
+  },
+  "not_authorized": {
+    "message": "承認されていません"
+  },
+  "notifications": {
+    "message": "通知"
+  },
+  "now": {
+    "message": "たった今"
+  },
+  "ok": {
+    "message": "OK"
+  },
+  "open": {
+    "message": "開く"
+  },
+  "open_in": {
+    "message": "$1 で開く"
+  },
+  "open_preview": {
+    "description": "特定の GitHub ブランチのプレビュー URL を開く",
+    "message": "プレビュー URL を開く"
+  },
+  "open_url": {
+    "message": "URL を開く"
+  },
+  "open_urls": {
+    "message": "$1 個の URL を開く"
+  },
+  "open_urls_confirm": {
+    "message": "$1 個の URL を開いてもよろしいですか？"
+  },
+  "open_view_doc_source": {
+    "message": "ドキュメントソースを表示"
+  },
+  "please_wait": {
+    "message": "お待ちください..."
+  },
+  "plugins_more": {
+    "message": "その他のプラグイン..."
+  },
+  "preview": {
+    "message": "プレビュー"
+  },
+  "preview_date": {
+    "message": "プレビュー : "
+  },
+  "preview_last_updated": {
+    "message": "最終更新 $1"
+  },
+  "preview_never_updated": {
+    "message": "未プレビュー"
+  },
+  "preview_onedrive": {
+    "message": "プロのヒント : 最新の変更をすぐに確認するには、プレビューを生成する前に Ctrl+S キーを押します..."
+  },
+  "preview_onedrive_mac": {
+    "message": "プロのヒント : 最新の変更をすぐに確認するには、プレビューを生成する前に ⌘+S キーを押します..."
+  },
+  "preview_success": {
+    "message": "プレビューが正常に更新されました。プレビューを開いています..."
+  },
+  "previewing_state": {
+    "message": "プレビューを更新中..."
+  },
+  "prod_last_updated": {
+    "message": "最終公開日 : $1"
+  },
+  "prod_never_updated": {
+    "message": "未公開"
+  },
+  "production": {
+    "message": "実稼動"
+  },
+  "publish": {
+    "message": "公開"
+  },
+  "publish_confirm": {
+    "message": "このページを公開にしてもよろしいですか？"
+  },
+  "publish_date": {
+    "message": "公開 : "
+  },
+  "publish_outdated": {
+    "message": "プレビューが更新されました"
+  },
+  "publish_success": {
+    "message": "公開に成功しました。$1 個を開いています..."
+  },
+  "publishing_state": {
+    "message": "公開中..."
+  },
+  "save": {
+    "message": "保存"
+  },
+  "search": {
+    "message": "検索"
+  },
+  "seconds_ago": {
+    "message": "$1 秒前"
+  },
+  "share_description": {
+    "message": "Sidekick を共有"
+  },
+  "source": {
+    "message": "ソース"
+  },
+  "standard": {
+    "description": "標準設定モード",
+    "message": "標準"
+  },
+  "switch_view": {
+    "message": "表示"
+  },
+  "title": {
+    "message": "AEM Sidekick"
+  },
+  "today_at": {
+    "message": "今日の $1"
+  },
+  "unauthorized_state": {
+    "message": "このサイトではアカウントが承認されていません"
+  },
+  "unpublish": {
+    "message": "非公開"
+  },
+  "unpublish_page_confirm": {
+    "message": "このページを非公開にしてもよろしいですか？"
+  },
+  "unpublish_page_no_source_confirm": {
+    "message": "このページにはソースドキュメントが存在しません。非公開にすると元に戻すことはできません。\n\n非公開にしてもよろしいですか？"
+  },
+  "unpublish_page_source_exists": {
+    "message": "このページにはソースドキュメントがまだ存在しているので、非公開にすることはできません。"
+  },
+  "unpublish_page_success": {
+    "message": "ページが正常に非公開にされました。リロード中..."
+  },
+  "unpublishing_state": {
+    "message": "非公開にしています..."
+  },
+  "update": {
+    "description": "ページのプレビューを更新",
+    "message": "更新"
+  },
+  "update_success": {
+    "message": "プレビューが正常に更新されました。リロード中..."
+  },
+  "user_login": {
+    "message": "ログイン"
+  },
+  "user_login_hint": {
+    "message": "Sidekick を使用するには、ログインする必要があります。"
+  },
+  "user_logout": {
+    "message": "ログアウト"
+  },
+  "user_switch": {
+    "message": "ユーザーを切り替え"
+  },
+  "yesterday_at": {
+    "message": "昨日の $1"
+  }
+}
