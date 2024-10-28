@@ -22,11 +22,10 @@ import {
 } from './actions.js';
 import { configureAuthAndCorsHeaders } from './auth.js';
 
-chrome.action.onClicked.addListener(async ({ id }) => {
+chrome.action.onClicked.addListener(async () => {
   // toggle the sidekick when the action is clicked
   const display = await toggleDisplay();
   log.info(`sidekick is now ${display ? 'shown' : 'hidden'}`);
-  checkTab(id);
 });
 
 chrome.tabs.onUpdated.addListener(async (id, info, tab) => {
