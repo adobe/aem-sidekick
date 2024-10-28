@@ -1,3 +1,29 @@
+## [2.4.1](https://github.com/adobe/aem-sidekick/compare/v2.4.0...v2.4.1) (2024-10-24)
+
+
+### Bug Fixes
+
+* disable manageSelection in env picker ([#307](https://github.com/adobe/aem-sidekick/issues/307)) ([ec5f6f2](https://github.com/adobe/aem-sidekick/commit/ec5f6f26f5b6be4595874cb3a00692632f913828))
+
+# [2.4.0](https://github.com/adobe/aem-sidekick/compare/v2.3.0...v2.4.0) (2024-10-21)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([3cefbba](https://github.com/adobe/aem-sidekick/commit/3cefbba9c389aabfa8fbd0f04083a2d5c3536ba8))
+
+
+### Features
+
+* match multiple original sites in url cache ([#316](https://github.com/adobe/aem-sidekick/issues/316)) ([fd43ee3](https://github.com/adobe/aem-sidekick/commit/fd43ee30d6ec586aacd7986afdf2d7d230ad3122))
+
+# [2.3.0](https://github.com/adobe/aem-sidekick/compare/v2.2.0...v2.3.0) (2024-10-15)
+
+
+### Features
+
+* edit plugin ([4c31160](https://github.com/adobe/aem-sidekick/commit/4c31160976aa4948122202fed6add8807e0967c5))
+
 # [2.2.0](https://github.com/adobe/aem-sidekick/compare/v2.1.1...v2.2.0) (2024-10-08)
 
 

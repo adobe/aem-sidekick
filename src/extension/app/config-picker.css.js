@@ -42,10 +42,11 @@ export const style = css`
   }
 
   action-bar sp-action-group span {
-    padding-bottom: 3px;
+    padding-bottom: 2px;
     padding-left: 8px;
     margin: 0;
     display: flex;
     align-items: center;
+    color: var(--spectrum2-sidekick-color);
   }
 `;

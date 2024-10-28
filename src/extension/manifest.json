@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "__MSG_title__",
-  "version": "2.2.0",
+  "version": "2.4.1",
   "author": "Adobe",
-  "homepage_url": "https://www.hlx.live/tools/sidekick/",
+  "homepage_url": "https://www.aem.live/docs/sidekick",
   "default_locale": "en",
   "description": "__MSG_description__",
   "permissions": [
@@ -14,7 +14,6 @@
     "storage"
   ],
   "host_permissions": [
-    "https://www.hlx.live/tools/sidekick/*",
     "http://localhost:3000/*",
     "https://*/*"
   ],
