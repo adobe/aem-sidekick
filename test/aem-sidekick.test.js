@@ -221,4 +221,22 @@ describe('AEM Sidekick', () => {
       await expect(sidekick).shadowDom.to.be.accessible();
     });
   });
+
+  it('shows the onboarding dialog', async () => {
+    sidekickTest.localStorageStub.resolves({ onboarded: false });
+    sidekickTest
+      .mockFetchOnboardingSuccess()
+      .mockFetchStatusSuccess();
+
+    const showOnboardingSpy = sidekickTest.sandbox.spy(sidekickTest.appStore, 'showOnboarding');
+    sidekick = sidekickTest.createSidekick();
+    sidekick.addEventListener('showonboarding', showOnboardingSpy);
+
+    await sidekickTest.awaitEnvSwitcher();
+
+    const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
+    await waitUntil(() => recursiveQuery(themeWrapper, 'onboarding-dialog'), 'Onboarding dialog not found', { timeout: 10000 });
+
+    expect(showOnboardingSpy.calledOnce).to.be.true;
+  });
 });

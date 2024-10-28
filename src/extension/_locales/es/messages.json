@@ -1,0 +1,644 @@
+{
+  "activate": {
+    "description": "Activar la configuración",
+    "message": "Activar"
+  },
+  "add": {
+    "message": "Añadir"
+  },
+  "admin_version": {
+    "message": "Utilice una versión específica de la Admin API"
+  },
+  "admin_version_placeholder": {
+    "message": "Versión de administrador: x.y.z"
+  },
+  "advanced": {
+    "description": "Modo de configuración avanzada",
+    "message": "Avanzado"
+  },
+  "anonymous": {
+    "message": "Anónimo"
+  },
+  "bulk_confirm_empty": {
+    "message": "No se ha seleccionado ningún archivo"
+  },
+  "bulk_confirm_preview_multiple": {
+    "message": "¿Confirma que desea generar la vista previa de $1 archivos?"
+  },
+  "bulk_confirm_preview_single": {
+    "message": "¿Confirma que desea generar la vista previa de este archivo?"
+  },
+  "bulk_confirm_publish_multiple": {
+    "message": "¿Seguro que desea publicar $1 archivos?"
+  },
+  "bulk_confirm_publish_single": {
+    "message": "¿Confirma que desea publicar este archivo?"
+  },
+  "bulk_error": {
+    "message": "Error de operación masiva. Inténtelo de nuevo más tarde."
+  },
+  "bulk_error_illegal_file_name": {
+    "message": "Los archivos solo pueden contener letras latinas normalizadas, dígitos y guiones. Este archivo contiene caracteres no válidos: $1"
+  },
+  "bulk_error_illegal_file_names": {
+    "message": "Los archivos solo pueden contener letras latinas normalizadas, dígitos y guiones. Los siguientes archivos contienen caracteres no válidos: $1"
+  },
+  "bulk_error_illegal_folder_name": {
+    "message": "Las carpetas solo pueden contener letras latinas normalizadas, dígitos y guiones. Esta carpeta contiene caracteres no válidos: $1"
+  },
+  "bulk_error_preview_login_required": {
+    "message": "Debe iniciar sesión para generar la vista previa de más de 100 archivos."
+  },
+  "bulk_error_publish_login_required": {
+    "message": "Debe iniciar sesión para publicar más de 100 archivos."
+  },
+  "bulk_previewing_state": {
+    "message": "Se ha generado la vista previa de $1 de $2 archivos..."
+  },
+  "bulk_publishing_state": {
+    "message": "$1 de $2 archivos publicados..."
+  },
+  "bulk_result_details": {
+    "message": "Detalles"
+  },
+  "bulk_result_path": {
+    "message": "Ruta"
+  },
+  "bulk_result_preview_multiple_failure": {
+    "message": "Error al generar la vista previa de todos los archivos."
+  },
+  "bulk_result_preview_multiple_partial_success": {
+    "message": "La vista previa de $1 archivos se generó correctamente, pero $2 falló."
+  },
+  "bulk_result_preview_multiple_partial_success_1": {
+    "message": "La vista previa del archivo $1 se generó correctamente, pero $2 no se pudo generar."
+  },
+  "bulk_result_preview_multiple_success": {
+    "message": "La vista previa de $1 archivos se ha generado correctamente."
+  },
+  "bulk_result_preview_single_failure": {
+    "message": "Error al generar la vista previa de este archivo."
+  },
+  "bulk_result_preview_single_success": {
+    "message": "La vista previa de este archivo se ha generado correctamente."
+  },
+  "bulk_result_publish_multiple_failure": {
+    "message": "Error al publicar todos los archivos."
+  },
+  "bulk_result_publish_multiple_partial_success": {
+    "message": "Archivos publicados correctamente: $1, pero error: $2."
+  },
+  "bulk_result_publish_multiple_partial_success_1": {
+    "message": "Se publicó 1 archivo correctamente, pero se produjo un error en $2."
+  },
+  "bulk_result_publish_multiple_success": {
+    "message": "$1 archivos publicados con éxito."
+  },
+  "bulk_result_publish_single_error_no_source": {
+    "message": "Primero se debe obtener una vista previa del archivo"
+  },
+  "bulk_result_publish_single_failure": {
+    "message": "Error al publicar este archivo."
+  },
+  "bulk_result_publish_single_success": {
+    "message": "Archivo publicado correctamente."
+  },
+  "bulk_selection_empty": {
+    "message": "Seleccionar archivos"
+  },
+  "bulk_selection_multiple": {
+    "message": "$1 archivos seleccionados"
+  },
+  "bulk_selection_single": {
+    "message": "1 archivo seleccionado"
+  },
+  "cancel": {
+    "message": "Cancelar"
+  },
+  "caution_side_effects": {
+    "message": "Precaución: Efectos secundarios inesperados."
+  },
+  "close": {
+    "message": "Cerrar"
+  },
+  "close_sidekick": {
+    "message": "Cerrar AEM Sidekick"
+  },
+  "code_state": {
+    "message": "No hay acciones disponibles para los archivos de código"
+  },
+  "config_add_project_headline": {
+    "message": "Proyecto añadido"
+  },
+  "config_add_success": {
+    "message": "Proyecto añadido a Sidekick"
+  },
+  "config_project_add": {
+    "message": "Añadir este proyecto"
+  },
+  "config_project_added": {
+    "description": "Proyecto añadido",
+    "message": "$1 añadido correctamente"
+  },
+  "config_project_disable": {
+    "message": "Deshabilitar este proyecto"
+  },
+  "config_project_disabled": {
+    "description": "Proyecto deshabilitado",
+    "message": "$1 deshabilitado"
+  },
+  "config_project_disabled_headline": {
+    "message": "Proyecto deshabilitado"
+  },
+  "config_project_enable": {
+    "message": "Habilitar este proyecto"
+  },
+  "config_project_enabled": {
+    "description": "Proyecto habilitado",
+    "message": "$1 habilitado"
+  },
+  "config_project_enabled_headline": {
+    "message": "Proyecto habilitado"
+  },
+  "config_project_exists": {
+    "message": "Ya existe una configuración para este proyecto."
+  },
+  "config_project_import": {
+    "message": "Importar proyectos desde AEM Sidekick v6"
+  },
+  "config_project_import_headline": {
+    "message": "Importar proyectos"
+  },
+  "config_project_import_sidekick_not_found": {
+    "message": "No se encontró la barra secundaria heredada. Si la extensión está instalada pero actualmente desactivada, actívela e inténtelo de nuevo."
+  },
+  "config_project_imported_multiple": {
+    "message": "Se importaron correctamente proyectos de $1 del AEM Sidekick v6."
+  },
+  "config_project_imported_none": {
+    "message": "No se han encontrado nuevos proyectos en AEM Sidekick v6."
+  },
+  "config_project_imported_single": {
+    "message": "Se ha importado correctamente 1 proyecto del AEM Sidekick v6."
+  },
+  "config_project_pick": {
+    "message": "Elija un proyecto"
+  },
+  "config_project_remove": {
+    "message": "Quitar este proyecto"
+  },
+  "config_project_removed": {
+    "description": "Proyecto eliminado",
+    "message": "$1 eliminado correctamente"
+  },
+  "config_remove_project_headline": {
+    "message": "Proyecto eliminado"
+  },
+  "config_success": {
+    "message": "Configuración activada con éxito."
+  },
+  "confirm": {
+    "description": "Encabezado modal de confirmación",
+    "message": "Confirme"
+  },
+  "copied": {
+    "message": "Copiado"
+  },
+  "copied_url": {
+    "message": "URL copiada al portapapeles."
+  },
+  "copied_urls": {
+    "message": "URL copiadas al portapapeles."
+  },
+  "copy": {
+    "message": "Copiar"
+  },
+  "copy_live_url": {
+    "message": "Copiar URL activa"
+  },
+  "copy_live_urls": {
+    "message": "Copiar URL activas"
+  },
+  "copy_preview_url": {
+    "message": "Copiar URL de vista previa"
+  },
+  "copy_preview_urls": {
+    "message": "Copiar URL de vista previa"
+  },
+  "copy_prod_url": {
+    "message": "Copiar URL de producción"
+  },
+  "copy_prod_urls": {
+    "message": "Copiar URL de producción"
+  },
+  "copy_url": {
+    "message": "Copiar URL"
+  },
+  "copy_urls": {
+    "message": "Copiar URL de $1"
+  },
+  "copy_urls_error": {
+    "message": "Error al copiar en el portapapeles. Inténtelo de nuevo."
+  },
+  "copy_urls_error_focus": {
+    "message": "Error al copiar en el portapapeles. Asegúrese de que la ventana permanezca enfocada."
+  },
+  "delete": {
+    "message": "Eliminar"
+  },
+  "delete_file_confirm": {
+    "message": "¿Seguro que desea eliminar este archivo?"
+  },
+  "delete_file_no_source_confirm": {
+    "message": "Este archivo ya no existe en el repositorio, por lo que no se puede deshacer su eliminación.\n\n¿Confirma que desea eliminarlo?"
+  },
+  "delete_file_source_exists": {
+    "message": "Este archivo todavía existe en el repositorio y no se puede eliminar."
+  },
+  "delete_file_success": {
+    "message": "Archivo eliminado correctamente."
+  },
+  "delete_page_confirm": {
+    "message": "¿Seguro que desea eliminar esta página?"
+  },
+  "delete_page_no_source_confirm": {
+    "message": "Esta página ya no dispone de un documento de origen, por lo que no se puede deshacer su eliminación.\n\n¿Seguro que desea eliminarla?"
+  },
+  "delete_page_source_exists": {
+    "message": "Esta página todavía tiene un documento origen y no se puede eliminar."
+  },
+  "delete_page_success": {
+    "message": "Página eliminada correctamente, recargando..."
+  },
+  "deleting_state": {
+    "message": "Eliminando..."
+  },
+  "description": {
+    "message": "AEM Sidekick permite a los autores de sitios AEM previsualizar y publicar contenido fácilmente."
+  },
+  "description_shortcut": {
+    "message": "Alternar Sidekick"
+  },
+  "destructive_confirmation": {
+    "message": "¿Estás seguro de que quieres $1 este?"
+  },
+  "destructive_confirmation_invalid": {
+    "message": "Lo sentimos, introduce el texto exactamente como se muestra para confirmar."
+  },
+  "destructive_confirmation_prompt": {
+    "message": "Escriba $1 para confirmar"
+  },
+  "development": {
+    "message": "Desarrollo"
+  },
+  "docs": {
+    "message": "https://www.hlx.live/docs/sidekick"
+  },
+  "edit": {
+    "message": "Editar"
+  },
+  "edit_date": {
+    "message": "Editado: "
+  },
+  "edit_last_updated": {
+    "message": "Últimos editados $1"
+  },
+  "edit_never_updated": {
+    "message": "Nunca se guardó"
+  },
+  "environments": {
+    "message": "Entornos"
+  },
+  "error": {
+    "message": "Error"
+  },
+  "error_429": {
+    "message": "429 Demasiadas solicitudes: Su proyecto está siendo limitado por $1. Espere e inténtelo de nuevo más tarde."
+  },
+  "error_delete": {
+    "message": "No se pudo eliminar. Inténtelo de nuevo más tarde."
+  },
+  "error_fatal": {
+    "message": "Disculpas, parece que estamos teniendo problemas en este momento. Inténtelo nuevamente más tarde."
+  },
+  "error_generic": {
+    "message": "Se ha producido un error: $1"
+  },
+  "error_job_404": {
+    "message": "404 No encontrado: No existe tal trabajo."
+  },
+  "error_login_aborted": {
+    "message": "Inicio de sesión anulado."
+  },
+  "error_login_timeout": {
+    "message": "Se agotó el tiempo de inicio de sesión. Inténtelo de nuevo más tarde."
+  },
+  "error_logout": {
+    "message": "No se ha podido cerrar la sesión. Inténtelo de nuevo más tarde."
+  },
+  "error_preview": {
+    "message": "Error al generar la vista previa. Inténtelo de nuevo más tarde."
+  },
+  "error_preview_400": {
+    "message": "Error al generar vista previa. Compruebe el formato, el nombre o la ruta del archivo."
+  },
+  "error_preview_404": {
+    "message": "El documento de Source no existe. Error al generar la vista previa."
+  },
+  "error_preview_415": {
+    "message": "El tipo de archivo no es compatible. Consulte la documentación para ver los tipos de archivo admitidos."
+  },
+  "error_preview_config": {
+    "message": "Error al activar la configuración: $1"
+  },
+  "error_preview_no_docx": {
+    "message": "Este es un documento de Microsoft Word, conviértalo primero a Google Docs."
+  },
+  "error_preview_no_xlsx": {
+    "message": "Este es un documento de Excel de Microsoft. Conviértalo primero a Google Sheets."
+  },
+  "error_preview_not_gdoc_generic": {
+    "message": "Error al generar la vista previa. Debe ser un documento o una hoja de cálculo de Google."
+  },
+  "error_preview_svg_invalid": {
+    "message": "El SVG no es válido. Asegúrese de que el XML sea válido y no contenga scripts."
+  },
+  "error_preview_too_large": {
+    "message": "El archivo es demasiado grande. Consulte la documentación para ver los límites de tamaño de los archivos."
+  },
+  "error_publish": {
+    "message": "Error de publicación. Inténtelo de nuevo más tarde."
+  },
+  "error_publish_404": {
+    "message": "Error de publicación; genere primero la vista previa."
+  },
+  "error_status_400": {
+    "message": "400 Solicitud incorrecta: URL no válida."
+  },
+  "error_status_404_content": {
+    "message": "404 No encontrado: verifique la configuración o la URL de su Sidekick."
+  },
+  "error_status_404_document": {
+    "message": "404 No encontrado: verifique la configuración de su Sidekick y asegúrese de que tenga acceso a este documento."
+  },
+  "error_status_500": {
+    "message": "500 Error interno del servidor: No se pudo recuperar el estado de la página. Inténtelo de nuevo más tarde."
+  },
+  "error_status_502": {
+    "message": "502 Puerta de enlace incorrecta: No se pudo obtener el estado de la página. Inténtelo de nuevo más tarde."
+  },
+  "error_status_504": {
+    "message": "504 Tiempo de espera de la puerta de enlace: No se pudo recuperar el estado de la página. Inténtelo de nuevo más tarde."
+  },
+  "error_status_invalid": {
+    "message": "Respuesta del servidor no válida. Verifique la configuración o la URL de su Sidekick."
+  },
+  "error_unpublish": {
+    "message": "No se ha podido publicar. Inténtelo de nuevo más tarde."
+  },
+  "extensions": {
+    "message": "Extensiones"
+  },
+  "fetching_status_state": {
+    "message": "Cargando estado..."
+  },
+  "help_documentation": {
+    "message": "Ayuda y documentación"
+  },
+  "help_opt_out": {
+    "message": "No mostrar ninguna ayuda"
+  },
+  "help_opt_out_alert": {
+    "message": "Ayuda desactivada. Puede volver a activarla en Opciones > Experiencia de usuario."
+  },
+  "help_previous": {
+    "message": "Consejo anterior"
+  },
+  "help_user_status": {
+    "message": "Temas de ayuda disponibles"
+  },
+  "help_user_status_check_all": {
+    "description": "Revise todos los temas de ayuda",
+    "message": "Marcar todo"
+  },
+  "help_user_status_description": {
+    "message": "Los temas marcados ya no se mostrarán. Quite la marca de verificación junto a un tema que desee volver a ver."
+  },
+  "help_user_status_uncheck_all": {
+    "description": "Desmarque todos los temas de ayuda",
+    "message": "Desmarcar todo"
+  },
+  "homepage": {
+    "message": "https://www.hlx.live/tools/sidekick/"
+  },
+  "info": {
+    "message": "Información"
+  },
+  "json_results_stat": {
+    "message": "Mostrando $1 de $2 resultados"
+  },
+  "json_view_description": {
+    "message": "Representación de datos"
+  },
+  "live": {
+    "message": "Activo"
+  },
+  "live_last_updated": {
+    "message": "Última publicación $1"
+  },
+  "live_never_updated": {
+    "message": "Nunca publicado"
+  },
+  "logging_in_state": {
+    "message": "Iniciando sesión..."
+  },
+  "logging_out_state": {
+    "message": "Cerrando sesión..."
+  },
+  "login_required_state": {
+    "message": "Inicie sesión para continuar"
+  },
+  "login_wait": {
+    "message": "Inicie sesión..."
+  },
+  "media_state": {
+    "message": "No hay acciones disponibles para los archivos multimedia"
+  },
+  "minutes_ago": {
+    "message": "Hace $1 minutos"
+  },
+  "never": {
+    "message": "Nunca"
+  },
+  "next": {
+    "message": "Siguiente"
+  },
+  "no_results": {
+    "message": "No se han encontrado resultados"
+  },
+  "no_results_subheading": {
+    "message": "Intente refinar el término de búsqueda"
+  },
+  "not_authorized": {
+    "message": "No autorizado"
+  },
+  "notifications": {
+    "message": "Notificaciones"
+  },
+  "now": {
+    "message": "Ahora"
+  },
+  "ok": {
+    "message": "ACEPTAR"
+  },
+  "open": {
+    "message": "Abrir"
+  },
+  "open_in": {
+    "message": "Abrir en $1"
+  },
+  "open_preview": {
+    "description": "Abra la URL de vista previa para una rama determinada de GitHub",
+    "message": "Abrir URL de vista previa"
+  },
+  "open_url": {
+    "message": "Abrir URL"
+  },
+  "open_urls": {
+    "message": "Abrir URL de $1"
+  },
+  "open_urls_confirm": {
+    "message": "¿Confirma que desea abrir las URL de $1?"
+  },
+  "open_view_doc_source": {
+    "message": "Ver fuente del documento"
+  },
+  "please_wait": {
+    "message": "Espere..."
+  },
+  "plugins_more": {
+    "message": "Más complementos..."
+  },
+  "preview": {
+    "message": "Previsualizar"
+  },
+  "preview_date": {
+    "message": "Vista previa: "
+  },
+  "preview_last_updated": {
+    "message": "Última actualización $1"
+  },
+  "preview_never_updated": {
+    "message": "Nunca vista previa"
+  },
+  "preview_onedrive": {
+    "message": "Consejo profesional: Pulse Ctrl + S antes de generar una vista previa para ver los cambios más recientes de inmediato..."
+  },
+  "preview_onedrive_mac": {
+    "message": "Consejo profesional: Pulse ⌘ + S antes de generar una vista previa para ver los cambios más recientes de inmediato..."
+  },
+  "preview_success": {
+    "message": "Vista previa actualizada correctamente, abriendo Vista previa..."
+  },
+  "previewing_state": {
+    "message": "Actualizando vista previa..."
+  },
+  "prod_last_updated": {
+    "message": "Última publicación $1"
+  },
+  "prod_never_updated": {
+    "message": "Nunca publicado"
+  },
+  "production": {
+    "message": "Producción"
+  },
+  "publish": {
+    "message": "Publicar"
+  },
+  "publish_confirm": {
+    "message": "¿Seguro que desea publicar esta página?"
+  },
+  "publish_date": {
+    "message": "Publicado: "
+  },
+  "publish_outdated": {
+    "message": "Se ha actualizado la vista previa"
+  },
+  "publish_success": {
+    "message": "Publicación correcta, abriendo $1..."
+  },
+  "publishing_state": {
+    "message": "Publicando..."
+  },
+  "save": {
+    "message": "Guardar"
+  },
+  "search": {
+    "message": "Buscar"
+  },
+  "seconds_ago": {
+    "message": "Hace $1 segundos"
+  },
+  "share_description": {
+    "message": "Comparta su Sidekick"
+  },
+  "source": {
+    "message": "Origen"
+  },
+  "standard": {
+    "description": "Modo de configuración estándar",
+    "message": "Estándar"
+  },
+  "switch_view": {
+    "message": "Ver"
+  },
+  "title": {
+    "message": "AEM Sidekick - NextGen"
+  },
+  "today_at": {
+    "message": "Hoy a las $1"
+  },
+  "unauthorized_state": {
+    "message": "Cuenta no autorizada para este sitio"
+  },
+  "unpublish": {
+    "message": "Cancelar publicación"
+  },
+  "unpublish_page_confirm": {
+    "message": "¿Seguro que desea cancelar la publicación de esta página?"
+  },
+  "unpublish_page_no_source_confirm": {
+    "message": "Esta página ya no dispone de un documento de origen, por lo que la cancelación de su publicación no se puede deshacer.\n\n¿Seguro que desea cancelar su publicación?"
+  },
+  "unpublish_page_source_exists": {
+    "message": "Esta página todavía tiene un documento origen y no se puede anular su publicación."
+  },
+  "unpublish_page_success": {
+    "message": "Página cancelada correctamente, recargando..."
+  },
+  "unpublishing_state": {
+    "message": "Cancelando la publicación..."
+  },
+  "update": {
+    "description": "Actualizar la vista previa de una página",
+    "message": "Actualizar"
+  },
+  "update_success": {
+    "message": "Vista previa actualizada correctamente, recargando..."
+  },
+  "user_login": {
+    "message": "Iniciar sesión"
+  },
+  "user_login_hint": {
+    "message": "Debe iniciar sesión antes de usar Sidekick."
+  },
+  "user_logout": {
+    "message": "Cerrar sesión"
+  },
+  "user_switch": {
+    "message": "Cambiar de usuario"
+  },
+  "yesterday_at": {
+    "message": "Ayer a las $1"
+  }
+}

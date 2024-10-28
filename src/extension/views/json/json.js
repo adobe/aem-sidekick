@@ -110,12 +110,11 @@ export class JSONView extends LitElement {
     try {
       const url = new URL(window.location.href).searchParams.get('url');
       if (url) {
-        const res = await fetch(url);
+        const res = await fetch(url, { cache: 'no-store' });
         if (res.ok) {
-          const text = await res.text();
           let json = {};
           try {
-            json = JSON.parse(text);
+            json = await res.json();
           } catch (e) {
             throw new Error(`invalid json found at ${url}`);
           }
