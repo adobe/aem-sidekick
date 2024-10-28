@@ -58,6 +58,11 @@ class MenuItem extends SPMenuItem {
             <slot id="slot"></slot>
           </div>
         </div>`;
+    } else if (this.classList.contains('theme')) {
+      return html`
+        <div class="theme-item">
+          <slot name="toggle"></slot>
+        </div>`;
     }
 
     return html`

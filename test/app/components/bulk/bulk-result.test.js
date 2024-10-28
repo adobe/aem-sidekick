@@ -49,6 +49,8 @@ describe('Test Bulk Result', () => {
   }).timeout(5000);
 
   it('displays result from bulk summary', async () => {
+    await sidekickTest.awaitEnvSwitcher();
+
     appStore.bulkStore.summary = {
       operation: 'preview',
       host: 'custom-preview-host.com',
@@ -62,7 +64,6 @@ describe('Test Bulk Result', () => {
     const modal = appStore.showModal({
       type: MODALS.BULK,
     });
-
     await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
     const bulkResult = recursiveQuery(modal, 'bulk-result');
     expect(bulkResult).to.exist;

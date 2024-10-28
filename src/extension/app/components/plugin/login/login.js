@@ -58,8 +58,8 @@ export class LoginButton extends ConnectedElement {
     }
 
     sp-action-menu sk-menu-item .no-picture svg {
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
     }
 
     sp-action-menu sk-menu-item.user {
@@ -124,14 +124,8 @@ export class LoginButton extends ConnectedElement {
     }
 
     :host(.not-authorized) sk-action-button.login {
-      background-color: var(--spectrum-blue-700);
+      background-color: var(--spectrum2-sidekick-cta-background-color);
       color: #fff;
-    }
-
-    @media (prefers-color-scheme: light) {
-      :host(.not-authorized) sk-action-button.login {
-        background-color: var(--spectrum-blue-900);
-      }
     }
   `;
 

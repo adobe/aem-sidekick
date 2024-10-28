@@ -21,6 +21,7 @@ export const style = css`
     bottom: 0;
     pointer-events: none;
     z-index: 999999999999;
+    color: initial;
     font-weight: initial;
     letter-spacing: initial;
   }
@@ -40,7 +41,8 @@ export const style = css`
     bottom: 55px;
     pointer-events: auto;
     z-index: 1;
-    width: 90vw;
+    width: auto;
+    min-width: 640px;
     max-width: var(--sidekick-max-width);
   }
 
@@ -59,9 +61,10 @@ export const style = css`
     pointer-events: auto;
   }
 
-  @media (max-width: 700px) {
+  @media (max-width: 800px) {
     plugin-action-bar {
-      width: 100vw;
+      min-width: unset;
+      width: 100%;
       max-width: unset;
       bottom: 0;
     }

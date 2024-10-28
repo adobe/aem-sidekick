@@ -159,6 +159,22 @@ export class Plugin {
   }
 
   /**
+   * Returns the estimated width of the plugin button.
+   * @returns {number} The estimated width of the plugin button
+   */
+  getEstimatedWidth() {
+    const font = '14px Adobe Clean';
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    context.font = font;
+    let pluginWidth = context.measureText(this.getButtonText()).width + 24;
+    if (this.isContainer()) {
+      pluginWidth += 14;
+    }
+    return pluginWidth;
+  }
+
+  /**
    * Executes the plugin's button action.
    * @param {Event} evt The event object
    */

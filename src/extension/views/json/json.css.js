@@ -153,14 +153,12 @@ export const style = css`
     --mod-table-row-background-color-hover: rgb(29, 29, 29);
   }
 
-  @media (prefers-color-scheme: light) {
-    sp-table-row {
-      --mod-table-row-background-color-hover: rgb(255, 255, 255);
-    }
+  sk-theme[color='light'] sp-table-row {
+    --mod-table-row-background-color-hover: rgb(255, 255, 255);
+  }
 
-    .header sp-search {
-      --mod-textfield-background-color: #ffffff;
-    }
+  sk-theme[color='light'] .header sp-search {
+    --mod-textfield-background-color: #ffffff;
   }
 
   sp-table-head {
