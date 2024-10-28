@@ -14,7 +14,6 @@
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
-import { emulateMedia } from '@web/test-runner-commands';
 import { spy } from 'sinon';
 import { AppStore } from '../src/extension/app/store/app.js';
 import { recursiveQuery } from './test-utils.js';
@@ -64,8 +63,6 @@ describe('AEM Sidekick', () => {
     const theme = sidekick.shadowRoot.querySelector('theme-wrapper');
     expect(theme).to.exist;
 
-    // detect color scheme change
-    await emulateMedia({ colorScheme: 'light' });
     // todo: check if color scheme change is getting picked up
     // expect(theme.getAttribute('color')).to.equal('light');
     const spTheme = recursiveQuery(theme, 'sk-theme');
@@ -107,20 +104,18 @@ describe('AEM Sidekick', () => {
   });
 
   describe('color themes', () => {
-    it('renders light theme', async () => {
-      await emulateMedia({ colorScheme: 'light' });
+    it('renders dark theme by default', async () => {
       sidekick = sidekickTest.createSidekick();
       await sidekickTest.awaitEnvSwitcher();
       const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
 
       const spTheme = themeWrapper.shadowRoot.querySelector('sk-theme');
       expect(spTheme).to.exist;
-
-      expect(spTheme.getAttribute('color')).to.equal('light');
+      expect(themeWrapper.getAttribute('theme')).to.equal('dark');
+      expect(spTheme.getAttribute('color')).to.equal('dark');
     });
 
-    it('renders dark theme', async () => {
-      await emulateMedia({ colorScheme: 'dark' });
+    it('renders light theme', async () => {
       sidekick = sidekickTest.createSidekick();
       await sidekickTest.awaitEnvSwitcher();
       const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
@@ -128,7 +123,29 @@ describe('AEM Sidekick', () => {
       const spTheme = themeWrapper.shadowRoot.querySelector('sk-theme');
       expect(spTheme).to.exist;
 
-      // todo: check if color scheme change is getting picked up
+      const menu = recursiveQuery(sidekick, '#sidekick-menu');
+      menu.click();
+
+      await waitUntil(() => menu.hasAttribute('open'));
+      const themeSwitch = recursiveQuery(sidekick, 'sp-switch');
+      themeSwitch.click();
+
+      await waitUntil(() => spTheme.getAttribute('color') === 'light');
+      expect(themeWrapper.getAttribute('theme')).to.equal('light');
+      expect(spTheme.getAttribute('color')).to.equal('light');
+
+      // toggle back to dark theme
+      // Close the menu
+      menu.click();
+
+      // Open the menu so it can render in light switch state
+      menu.click();
+
+      expect(themeSwitch.hasAttribute('checked')).to.be.false;
+
+      themeSwitch.click();
+      await waitUntil(() => spTheme.getAttribute('color') === 'dark');
+      expect(themeWrapper.getAttribute('theme')).to.equal('dark');
       expect(spTheme.getAttribute('color')).to.equal('dark');
     });
   });

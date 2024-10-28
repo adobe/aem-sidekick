@@ -15,8 +15,8 @@
 import { html, LitElement } from 'lit';
 import { provide } from '@lit/context';
 import { customElement } from 'lit/decorators.js';
+import { reaction } from 'mobx';
 import { style } from './aem-sidekick.css.js';
-import { spectrum2 } from './spectrum-2.css.js';
 import { AppStore, appStoreContext } from './store/app.js';
 import { ALLOWED_EXTENSION_IDS, EXTERNAL_EVENTS, MODALS } from './constants.js';
 import { detectBrowser } from './utils/browser.js';
@@ -30,7 +30,7 @@ export class AEMSidekick extends LitElement {
   accessor appStore;
 
   static get styles() {
-    return [spectrum2, style];
+    return [style];
   }
 
   constructor(config, store) {
@@ -38,6 +38,17 @@ export class AEMSidekick extends LitElement {
 
     this.appStore = store || new AppStore();
     this.loadContext(config);
+  }
+
+  async connectedCallback() {
+    super.connectedCallback();
+
+    reaction(
+      () => this.appStore.theme,
+      () => {
+        this.requestUpdate();
+      },
+    );
   }
 
   async loadContext(config) {
@@ -78,7 +89,7 @@ export class AEMSidekick extends LitElement {
 
   render() {
     return html`
-      <theme-wrapper>
+      <theme-wrapper theme=${this.appStore.theme}>
         <plugin-action-bar></plugin-action-bar>
         <palette-container></palette-container>
       </theme-wrapper>
