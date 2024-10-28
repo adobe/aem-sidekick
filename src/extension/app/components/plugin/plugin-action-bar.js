@@ -321,7 +321,7 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     return html`
-      <div class="close-button" @click=${this.onCloseButtonClick} @keydown=${this.onCloseButtonKeyDown}>
+      <div class="close-button" @click=${this.onCloseButtonClick} @keydown=${this.onCloseButtonKeyDown} title="Close Sidekick">
         <sp-menu-divider size="s" vertical></sp-menu-divider>
         <sp-icon size="m">${ICONS.CLOSE_SIDEKICK}</sp-icon>
       </div>

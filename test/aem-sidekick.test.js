@@ -63,8 +63,6 @@ describe('AEM Sidekick', () => {
     const theme = sidekick.shadowRoot.querySelector('theme-wrapper');
     expect(theme).to.exist;
 
-    // todo: check if color scheme change is getting picked up
-    // expect(theme.getAttribute('color')).to.equal('light');
     const spTheme = recursiveQuery(theme, 'sk-theme');
     expect(spTheme).to.exist;
 
