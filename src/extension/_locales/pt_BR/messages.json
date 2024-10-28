@@ -38,13 +38,13 @@
     "message": "Falha na operação em massa. Tente novamente mais tarde."
   },
   "bulk_error_illegal_file_name": {
-    "message": "Os arquivos só podem conter letras latinas, dígitos e hifens normalizados e pequenos. Este arquivo contém caracteres inválidos: $1"
+    "message": "Os arquivos podem conter apenas letras minúsculas e normalizadas do alfabeto latino, números e hifens. Este arquivo contém caracteres inválidos: $1"
   },
   "bulk_error_illegal_file_names": {
-    "message": "Os arquivos só podem conter letras latinas, dígitos e hifens normalizados e pequenos. Os seguintes arquivos contêm caracteres inválidos: $1"
+    "message": "Os arquivos podem conter apenas letras minúsculas e normalizadas do alfabeto latino, números e hifens. Os seguintes arquivos contêm caracteres inválidos: $1"
   },
   "bulk_error_illegal_folder_name": {
-    "message": "As pastas só podem conter letras latinas, dígitos e hifens normalizados e pequenos. Esta pasta contém caracteres inválidos: $1"
+    "message": "As pastas podem conter apenas letras minúsculas e normalizadas do alfabeto latino, números e hifens. Esta pasta contém caracteres inválidos: $1"
   },
   "bulk_error_preview_login_required": {
     "message": "É necessário fazer logon para gerar a pré-visualização de mais de 100 arquivos."
@@ -68,10 +68,10 @@
     "message": "Falha ao gerar a visualização de todos os arquivos."
   },
   "bulk_result_preview_multiple_partial_success": {
-    "message": "Visualização de arquivos $1 gerados com sucesso, mas $2 falhou."
+    "message": "Visualização de $1 arquivo(s) gerada com sucesso, mas $2 falharam."
   },
   "bulk_result_preview_multiple_partial_success_1": {
-    "message": "A visualização do arquivo $1 foi gerada com sucesso, mas $2 falhou."
+    "message": "Visualização de $1 arquivo gerada com sucesso, mas $2 falharam."
   },
   "bulk_result_preview_multiple_success": {
     "message": "A pré-visualização de $1 arquivos foi gerada com sucesso."
@@ -89,7 +89,7 @@
     "message": "$1 arquivos publicados com sucesso, mas $2 falharam."
   },
   "bulk_result_publish_multiple_partial_success_1": {
-    "message": "1 arquivo publicado com sucesso, mas $2 falhou."
+    "message": "1 arquivo publicado com sucesso, mas $2 falharam."
   },
   "bulk_result_publish_multiple_success": {
     "message": "$1 arquivos publicados com sucesso."
@@ -122,7 +122,7 @@
     "message": "Fechar"
   },
   "close_sidekick": {
-    "message": "Fechar AEM Sidekick"
+    "message": "Fechar o AEM Sidekick"
   },
   "code_state": {
     "message": "Nenhuma ação disponível para arquivos de código"
@@ -138,7 +138,7 @@
   },
   "config_project_added": {
     "description": "Projeto adicionado",
-    "message": "$1 adicionado com sucesso"
+    "message": "$1 adicionado(s) com sucesso"
   },
   "config_project_disable": {
     "message": "Desativar este projeto"
@@ -154,11 +154,11 @@
     "message": "Habilitar este projeto"
   },
   "config_project_enabled": {
-    "description": "Projeto ativado",
-    "message": "$1 ativado"
+    "description": "Projeto habilitado",
+    "message": "$1 habilitado"
   },
   "config_project_enabled_headline": {
-    "message": "Projeto ativado"
+    "message": "Projeto habilitado"
   },
   "config_project_exists": {
     "message": "Já existe uma configuração para este projeto."
@@ -170,16 +170,16 @@
     "message": "Importar projetos"
   },
   "config_project_import_sidekick_not_found": {
-    "message": "Sidekick herdado não encontrado. Se a extensão estiver instalada, mas desabilitada no momento, habilite-a e tente novamente."
+    "message": "Sidekick legado não encontrado. Se a extensão estiver instalada, mas desabilitada no momento, habilite-a e tente novamente."
   },
   "config_project_imported_multiple": {
-    "message": "Projetos de $1 importados com êxito do AEM Sidekick v6."
+    "message": "$1 projetos importados com sucesso do AEM Sidekick v6."
   },
   "config_project_imported_none": {
     "message": "Nenhum novo projeto encontrado no AEM Sidekick v6."
   },
   "config_project_imported_single": {
-    "message": "1 projeto importado com êxito do AEM Sidekick v6."
+    "message": "1 projeto importado com sucesso do AEM Sidekick v6."
   },
   "config_project_pick": {
     "message": "Escolha um projeto"
@@ -189,7 +189,7 @@
   },
   "config_project_removed": {
     "description": "Projeto removido",
-    "message": "$1 removido com sucesso"
+    "message": "$1 removido(s) com sucesso"
   },
   "config_remove_project_headline": {
     "message": "Projeto removido"
@@ -235,13 +235,13 @@
     "message": "Copiar URL"
   },
   "copy_urls": {
-    "message": "Copiar URLs de $1"
+    "message": "Copiar $1 URLs"
   },
   "copy_urls_error": {
     "message": "Falha ao copiar para a área de transferência. Tente novamente."
   },
   "copy_urls_error_focus": {
-    "message": "Falha ao copiar para a área de transferência. Verifique se a janela permanece focalizada."
+    "message": "Falha ao copiar para a área de transferência. Certifique-se de que a janela permaneça em foco."
   },
   "delete": {
     "message": "Excluir"
@@ -268,7 +268,7 @@
     "message": "Esta página ainda possui um documento de origem e não pode ser excluída."
   },
   "delete_page_success": {
-    "message": "Página excluída com sucesso, recarregando..."
+    "message": "Página excluída com sucesso. Recarregando..."
   },
   "deleting_state": {
     "message": "Excluindo..."
@@ -280,10 +280,10 @@
     "message": "Ativar Sidekick"
   },
   "destructive_confirmation": {
-    "message": "Tem certeza de que quer $1 isto?"
+    "message": "Deseja $1 isto?"
   },
   "destructive_confirmation_invalid": {
-    "message": "Digite o texto exatamente como exibido para confirmar."
+    "message": "Insira o texto exatamente como exibido para confirmar."
   },
   "destructive_confirmation_prompt": {
     "message": "Digite $1 para confirmar"
@@ -301,7 +301,7 @@
     "message": "Editado: "
   },
   "edit_last_updated": {
-    "message": "Última edição: $1"
+    "message": "Última edição $1"
   },
   "edit_never_updated": {
     "message": "Nunca salvo"
@@ -313,19 +313,19 @@
     "message": "Erro"
   },
   "error_429": {
-    "message": "429 Solicitações em excesso: seu projeto está sendo limitado por $1. Aguarde e tente novamente mais tarde."
+    "message": "429 Muitas solicitações: o projeto está sendo suprimido por $1. Aguarde e tente novamente mais tarde."
   },
   "error_delete": {
     "message": "A exclusão falhou. Tente novamente mais tarde."
   },
   "error_fatal": {
-    "message": "Desculpas, parece que estamos tendo problemas no momento. Tente novamente mais tarde."
+    "message": "Desculpe, estamos com problemas no momento. Tente novamente mais tarde."
   },
   "error_generic": {
     "message": "Ocorreu um erro: $1"
   },
   "error_job_404": {
-    "message": "404 Não encontrado: Não existe tal trabalho."
+    "message": "404 Não encontrado: este processo não existe."
   },
   "error_login_aborted": {
     "message": "Logon abortado."
@@ -340,10 +340,10 @@
     "message": "Falha ao gerar a pré-visualização. Tente novamente mais tarde."
   },
   "error_preview_400": {
-    "message": "Falha na geração da visualização. Verifique o formato, o nome ou o caminho do arquivo."
+    "message": "Falha ao gerar a visualização. Verifique o formato do arquivo, nome ou caminho."
   },
   "error_preview_404": {
-    "message": "O documento do Source não existe; falha na geração da visualização."
+    "message": "O documento de origem não existe. Falha ao gerar a visualização."
   },
   "error_preview_415": {
     "message": "Tipo de arquivo incompatível. Consulte na documentação os tipos de arquivo compatíveis."
@@ -352,10 +352,10 @@
     "message": "Falha ao ativar a configuração: $1"
   },
   "error_preview_no_docx": {
-    "message": "Este é um documento do Microsoft Word. Primeiro, converta-o em Google Docs."
+    "message": "Este é um documento do Microsoft Word. Primeiro, converta-o em um arquivo dos Documentos Google."
   },
   "error_preview_no_xlsx": {
-    "message": "Este é um documento do Microsoft Excel. Primeiro, converta-o em Planilhas do Google."
+    "message": "Este é um documento do Microsoft Excel. Primeiro, converta-o em um arquivo das Planilhas Google."
   },
   "error_preview_not_gdoc_generic": {
     "message": "Falha ao gerar a pré-visualização. Deve ser um documento ou uma planilha do Google."
@@ -370,10 +370,10 @@
     "message": "Falha na publicação. Tente novamente mais tarde."
   },
   "error_publish_404": {
-    "message": "Falha na publicação; gerar visualização primeiro."
+    "message": "Falha na publicação. Gere a visualização primeiro."
   },
   "error_status_400": {
-    "message": "400 Solicitação incorreta: URL inválida."
+    "message": "400 Solicitação inválida: URL inválido."
   },
   "error_status_404_content": {
     "message": "404 Não encontrado: verifique sua configuração do Sidekick ou o URL."
@@ -438,28 +438,28 @@
     "message": "Mostrando $1 de $2 resultados"
   },
   "json_view_description": {
-    "message": "Representação de dados"
+    "message": "Renderização de dados"
   },
   "live": {
     "message": "Em tempo real"
   },
   "live_last_updated": {
-    "message": "Última publicação: $1"
+    "message": "Última publicação $1"
   },
   "live_never_updated": {
     "message": "Nunca publicado"
   },
   "logging_in_state": {
-    "message": "Entrando..."
+    "message": "Fazendo logon..."
   },
   "logging_out_state": {
     "message": "Saindo..."
   },
   "login_required_state": {
-    "message": "Entre para continuar"
+    "message": "Faça logon para continuar"
   },
   "login_wait": {
-    "message": "Entre..."
+    "message": "Faça logon..."
   },
   "media_state": {
     "message": "Nenhuma ação disponível para arquivos de mídia"
@@ -477,13 +477,13 @@
     "message": "Nenhum resultado encontrado"
   },
   "no_results_subheading": {
-    "message": "Tente refinar o termo de pesquisa"
+    "message": "Tente refinar seu termo de pesquisa"
   },
   "not_authorized": {
     "message": "Não autorizado"
   },
   "notifications": {
-    "message": "Notificação"
+    "message": "Notificações"
   },
   "now": {
     "message": "Agora"
@@ -495,7 +495,7 @@
     "message": "Abrir"
   },
   "open_in": {
-    "message": "Abrir em $1"
+    "message": "Abrir no $1"
   },
   "open_preview": {
     "description": "Abre o URL de visualização para uma determinada ramificação do GitHub",
@@ -505,7 +505,7 @@
     "message": "Abrir URL"
   },
   "open_urls": {
-    "message": "Abrir URLs de $1"
+    "message": "Abrir $1 URLs"
   },
   "open_urls_confirm": {
     "message": "Deseja abrir $1 URLs?"
@@ -517,7 +517,7 @@
     "message": "Aguarde..."
   },
   "plugins_more": {
-    "message": "Mais plug-ins..."
+    "message": "Mais plugins..."
   },
   "preview": {
     "message": "Visualizar"
@@ -526,7 +526,7 @@
     "message": "Visualizado: "
   },
   "preview_last_updated": {
-    "message": "Última atualização: $1"
+    "message": "Última atualização $1"
   },
   "preview_never_updated": {
     "message": "Nunca visualizado"
@@ -538,13 +538,13 @@
     "message": "Dica profissional: pressione ⌘ + S antes de gerar a pré-visualização para ver as alterações mais recentes imediatamente..."
   },
   "preview_success": {
-    "message": "Visualização atualizada com sucesso, abrindo Visualização..."
+    "message": "Visualização atualizada com sucesso. Abrindo a visualização..."
   },
   "previewing_state": {
-    "message": "Atualizando visualização..."
+    "message": "Atualizando a visualização..."
   },
   "prod_last_updated": {
-    "message": "Última publicação: $1"
+    "message": "Última publicação $1"
   },
   "prod_never_updated": {
     "message": "Nunca publicado"
@@ -556,7 +556,7 @@
     "message": "Publicar"
   },
   "publish_confirm": {
-    "message": "Tem certeza de que deseja publicar esta página?"
+    "message": "Deseja publicar esta página?"
   },
   "publish_date": {
     "message": "Publicado: "
@@ -565,7 +565,7 @@
     "message": "A visualização foi atualizada"
   },
   "publish_success": {
-    "message": "Publicação bem-sucedida, abrindo $1..."
+    "message": "Publicação bem-sucedida. Abrindo $1..."
   },
   "publishing_state": {
     "message": "Publicando..."
@@ -583,7 +583,7 @@
     "message": "Compartilhe seu Sidekick"
   },
   "source": {
-    "message": "Fonte"
+    "message": "Origem"
   },
   "standard": {
     "description": "Modo de configuração padrão",
@@ -593,7 +593,7 @@
     "message": "Exibir"
   },
   "title": {
-    "message": "AEM Sidekick - NextGen"
+    "message": "AEM Sidekick"
   },
   "today_at": {
     "message": "Hoje às $1"
@@ -614,17 +614,17 @@
     "message": "Esta página ainda possui um documento de origem e sua publicação não pode ser cancelada."
   },
   "unpublish_page_success": {
-    "message": "Publicação da página cancelada com êxito, recarregando..."
+    "message": "Publicação da página cancelada com sucesso. Recarregando..."
   },
   "unpublishing_state": {
-    "message": "Cancelando publicação..."
+    "message": "Cancelando a publicação..."
   },
   "update": {
     "description": "Atualizar a visualização de uma página",
     "message": "Atualizar"
   },
   "update_success": {
-    "message": "Visualização atualizada com sucesso, recarregando..."
+    "message": "Visualização atualizada com sucesso. Recarregando..."
   },
   "user_login": {
     "message": "Fazer logon"

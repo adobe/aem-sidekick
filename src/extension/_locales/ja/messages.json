@@ -1,7 +1,7 @@
 {
   "activate": {
-    "description": "設定をアクティブ化",
-    "message": "有効化"
+    "description": "設定をアクティベート",
+    "message": "アクティベート"
   },
   "add": {
     "message": "追加"
@@ -38,13 +38,13 @@
     "message": "一括操作に失敗しました。後でもう一度試してください。"
   },
   "bulk_error_illegal_file_name": {
-    "message": "ファイルに含めることができるのは、正規化された小さなラテン文字、数字、ハイフンのみです。このファイルには次の無効な文字が含まれています： $1"
+    "message": "ファイルには、正規化された小文字のラテン文字、数字、ハイフンのみを含めることができます。このファイルに不正な文字が含まれています : $1"
   },
   "bulk_error_illegal_file_names": {
-    "message": "ファイルに含めることができるのは、正規化された小さなラテン文字、数字、ハイフンのみです。次のファイルには無効な文字が含まれています： $1"
+    "message": "ファイルには、正規化された小文字のラテン文字、数字、ハイフンのみを含めることができます。次のファイルに不正な文字が含まれています : $1"
   },
   "bulk_error_illegal_folder_name": {
-    "message": "フォルダーには、正規化された小さな英字、数字、ハイフンのみを含めることができます。このフォルダには無効な文字が含まれています： $1"
+    "message": "フォルダーには、正規化された小文字のラテン文字、数字、ハイフンのみを含めることができます。このフォルダーには不正な文字が含まれています : $1"
   },
   "bulk_error_preview_login_required": {
     "message": "100 個を超えるファイルのプレビューを生成するには、ログインする必要があります。"
@@ -68,10 +68,10 @@
     "message": "すべてのファイルのプレビューを生成できませんでした。"
   },
   "bulk_result_preview_multiple_partial_success": {
-    "message": "$1 ファイルのプレビューが正常に生成されましたが、$2 は失敗しました。"
+    "message": "$1 個のファイルのプレビューが正常に生成されましたが、$2 個は失敗しました。"
   },
   "bulk_result_preview_multiple_partial_success_1": {
-    "message": "$1 ファイルのプレビューが正常に生成されましたが、$2 は失敗しました。"
+    "message": "$1 個のファイルのプレビューが正常に生成されましたが、$2 個は失敗しました。"
   },
   "bulk_result_preview_multiple_success": {
     "message": "$1 個のファイルのプレビューの生成に成功しました。"
@@ -86,10 +86,10 @@
     "message": "すべてのファイルを公開できませんでした。"
   },
   "bulk_result_publish_multiple_partial_success": {
-    "message": "$1 個のファイルを正常に公開できましたが、$2 個のファイルを公開できませんでした。"
+    "message": "$1 個のファイルが正常に公開されましたが、$2 個は失敗しました。"
   },
   "bulk_result_publish_multiple_partial_success_1": {
-    "message": "1 個のファイルが正常に公開されましたが、$2 個失敗しました。"
+    "message": "1 個のファイルが正常に公開されましたが、$2 個は失敗しました。"
   },
   "bulk_result_publish_multiple_success": {
     "message": "$1 個のファイルが正常に公開されました。"
@@ -122,13 +122,13 @@
     "message": "閉じる"
   },
   "close_sidekick": {
-    "message": "閉じるAEM Sidekick"
+    "message": "AEM Sidekick を閉じる"
   },
   "code_state": {
-    "message": "コードファイルで使用できるアクションはありません"
+    "message": "コードファイルに使用できるアクションはありません"
   },
   "config_add_project_headline": {
-    "message": "追加されたプロジェクト"
+    "message": "プロジェクトを追加しました"
   },
   "config_add_success": {
     "message": "プロジェクトが Sidekick に追加されました"
@@ -144,42 +144,42 @@
     "message": "このプロジェクトを無効にする"
   },
   "config_project_disabled": {
-    "description": "プロジェクトが無効",
-    "message": "$1 が無効です"
+    "description": "プロジェクトが無効になりました",
+    "message": "$1 個が無効になりました"
   },
   "config_project_disabled_headline": {
-    "message": "プロジェクトが無効"
+    "message": "プロジェクトが無効になりました"
   },
   "config_project_enable": {
     "message": "このプロジェクトを有効にする"
   },
   "config_project_enabled": {
-    "description": "プロジェクト有効",
-    "message": "$1 が有効"
+    "description": "プロジェクトが有効になりました",
+    "message": "$1 個が有効になりました"
   },
   "config_project_enabled_headline": {
-    "message": "プロジェクト有効"
+    "message": "プロジェクトが有効になりました"
   },
   "config_project_exists": {
     "message": "このプロジェクトの設定は既に存在します。"
   },
   "config_project_import": {
-    "message": "プロジェクトをAEM Sidekickv6 からインポート"
+    "message": "AEM Sidekick v6 からプロジェクトを読み込む"
   },
   "config_project_import_headline": {
-    "message": "プロジェクトの読み込み"
+    "message": "プロジェクトを読み込む"
   },
   "config_project_import_sidekick_not_found": {
-    "message": "レガシーサイドキックが見つかりません。拡張機能がインストールされていても、現在は無効になっている場合は、有効にしてもう一度試してください。"
+    "message": "レガシーサイドキックが見つかりません。拡張機能がインストールされているが現在無効になっている場合は、有効にしてもう一度試してください。"
   },
   "config_project_imported_multiple": {
-    "message": "プロジェクト v6 から$1 個のAEM Sidekickを正常に読み込みました。"
+    "message": "AEM Sidekick v6 から $1 個のプロジェクトを正常に読み込みました。"
   },
   "config_project_imported_none": {
-    "message": "AEM Sidekickv6 に新しいプロジェクトが見つかりません。"
+    "message": "AEM Sidekick v6 に新しいプロジェクトが見つかりません。"
   },
   "config_project_imported_single": {
-    "message": "1 件のプロジェクトがAEM Sidekickv6 から正常に読み込まれました。"
+    "message": "AEM Sidekick v6 から 1 個のプロジェクトを正常に読み込みました。"
   },
   "config_project_pick": {
     "message": "プロジェクトを選択"
@@ -189,20 +189,20 @@
   },
   "config_project_removed": {
     "description": "プロジェクトが削除されました",
-    "message": "$1 が正常に削除されました"
+    "message": "$1 個が正常に削除されました"
   },
   "config_remove_project_headline": {
-    "message": "削除されたプロジェクト"
+    "message": "プロジェクトを削除しました"
   },
   "config_success": {
     "message": "設定が正常にアクティブ化されました。"
   },
   "confirm": {
-    "description": "確認モーダル見出し",
+    "description": "確認モーダルの見出し",
     "message": "確認してください"
   },
   "copied": {
-    "message": "コピー済み"
+    "message": "コピーされました"
   },
   "copied_url": {
     "message": "URL がクリップボードにコピーされました。"
@@ -238,10 +238,10 @@
     "message": "$1 個の URL をコピー"
   },
   "copy_urls_error": {
-    "message": "クリップボードにコピーできませんでした。再度お試しください。"
+    "message": "クリップボードへのコピーに失敗しました。もう一度試してください。"
   },
   "copy_urls_error_focus": {
-    "message": "クリップボードにコピーできませんでした。ウィンドウにフォーカスが設定されていることを確認してください。"
+    "message": "クリップボードへのコピーに失敗しました。ウィンドウに焦点が当てられたままになっていることを確認してください。"
   },
   "delete": {
     "message": "削除"
@@ -268,10 +268,10 @@
     "message": "このページにはソースドキュメントがまだ存在しているので、削除できません。"
   },
   "delete_page_success": {
-    "message": "ページが正常に削除されました。再度読み込んでいます…"
+    "message": "ページが正常に削除されました。リロード中..."
   },
   "deleting_state": {
-    "message": "削除中…"
+    "message": "削除中..."
   },
   "description": {
     "message": "AEM Sidekick を使用すると、AEM サイトの作成者はコンテンツを簡単にプレビューおよび公開できます。"
@@ -280,13 +280,13 @@
     "message": "Sidekick を切り替え"
   },
   "destructive_confirmation": {
-    "message": "これを 1 ドルでよろしいですか？"
+    "message": "これを $1 してもよろしいですか？"
   },
   "destructive_confirmation_invalid": {
-    "message": "申し訳ありませんが、表示されているテキストを正確に入力して確認してください。"
+    "message": "申し訳ありませんが、確認のため、表示されているとおりにテキストを正確に入力してください。"
   },
   "destructive_confirmation_prompt": {
-    "message": "確認のために$1 を入力"
+    "message": "「$1」と入力して確認"
   },
   "development": {
     "message": "開発"
@@ -301,10 +301,10 @@
     "message": "編集 : "
   },
   "edit_last_updated": {
-    "message": "最終編集日$1"
+    "message": "最終編集日 : $1"
   },
   "edit_never_updated": {
-    "message": "保存されていません"
+    "message": "未保存"
   },
   "environments": {
     "message": "環境"
@@ -313,19 +313,19 @@
     "message": "エラー"
   },
   "error_429": {
-    "message": "429 リクエストが多すぎます：プロジェクトは$1 で制限されています。しばらく待ってから、もう一度やり直してください。"
+    "message": "429 リクエストが多すぎます : プロジェクトは $1 によって調整されています。しばらく待ってから、もう一度試してください。"
   },
   "error_delete": {
     "message": "削除に失敗しました。後でもう一度試してください。"
   },
   "error_fatal": {
-    "message": "申し訳ありませんが、現在、問題が発生しているようです。後ほど再試行してください。"
+    "message": "申し訳ありませんが、現在問題が発生しているようです。後でもう一度試してください。"
   },
   "error_generic": {
-    "message": "エラーが発生しました： $1"
+    "message": "エラーが発生しました : $1"
   },
   "error_job_404": {
-    "message": "404 Not found：指定されたジョブはありません。"
+    "message": "404 見つかりません : そのようなジョブはありません。"
   },
   "error_login_aborted": {
     "message": "ログインが中止されました。"
@@ -340,22 +340,22 @@
     "message": "プレビューの生成に失敗しました。後で再試行してください。"
   },
   "error_preview_400": {
-    "message": "プレビューの生成に失敗しました。ファイル形式、名前またはパスを確認します。"
+    "message": "プレビューの生成に失敗しました。ファイルの形式、名前またはパスを確認してください。"
   },
   "error_preview_404": {
-    "message": "Sourceドキュメントが存在しません。プレビューの生成に失敗しました。"
+    "message": "ソースドキュメントが存在しないので、プレビューの生成に失敗しました。"
   },
   "error_preview_415": {
     "message": "ファイルタイプがサポートされていません。サポートされているファイルタイプについては、ドキュメントを参照してください。"
   },
   "error_preview_config": {
-    "message": "設定を有効化できませんでした： $1"
+    "message": "設定をアクティブ化できませんでした : $1"
   },
   "error_preview_no_docx": {
-    "message": "これはMicrosoft Word 文書です。まず、Google Docs に変換してください。"
+    "message": "これは、Microsoft Word ドキュメントです。まず Google ドキュメントに変換してください。"
   },
   "error_preview_no_xlsx": {
-    "message": "これはMicrosoft Excel ドキュメントです。最初にGoogle Sheets に変換してください。"
+    "message": "これは、Microsoft Excel ドキュメントです。まず Google スプレッドシートに変換してください。"
   },
   "error_preview_not_gdoc_generic": {
     "message": "プレビューの生成に失敗しました。Google ドキュメントまたはスプレッドシートにする必要があります。"
@@ -370,10 +370,10 @@
     "message": "公開に失敗しました。後でもう一度試してください。"
   },
   "error_publish_404": {
-    "message": "公開に失敗しました。最初にプレビューを生成してください。"
+    "message": "公開に失敗しました。まずプレビューを生成してください。"
   },
   "error_status_400": {
-    "message": "400 無効なリクエスト：URL が無効です。"
+    "message": "400 無効なリクエスト : 無効な URL。"
   },
   "error_status_404_content": {
     "message": "404 見つかりません : Sidekick の設定または URL を確認してください。"
@@ -400,7 +400,7 @@
     "message": "拡張機能"
   },
   "fetching_status_state": {
-    "message": "ステータスのロード中…"
+    "message": "ステータスを読み込み中..."
   },
   "help_documentation": {
     "message": "ヘルプとドキュメント"
@@ -435,7 +435,7 @@
     "message": "情報"
   },
   "json_results_stat": {
-    "message": "$2 件中$1 件の結果を表示"
+    "message": "結果 $2 個中 $1 個を表示中"
   },
   "json_view_description": {
     "message": "データレンディション"
@@ -444,25 +444,25 @@
     "message": "ライブ"
   },
   "live_last_updated": {
-    "message": "最終公開日$1"
+    "message": "最終公開日 : $1"
   },
   "live_never_updated": {
     "message": "未公開"
   },
   "logging_in_state": {
-    "message": "サインイン中…"
+    "message": "ログイン中..."
   },
   "logging_out_state": {
-    "message": "サインアウト中…"
+    "message": "ログアウト中..."
   },
   "login_required_state": {
-    "message": "続行するにはサインインしてください"
+    "message": "ログインして続行"
   },
   "login_wait": {
-    "message": "サインインしてください…"
+    "message": "ログインしてください..."
   },
   "media_state": {
-    "message": "メディアファイルで使用できるアクションはありません"
+    "message": "メディアファイルに使用できるアクションはありません"
   },
   "minutes_ago": {
     "message": "$1 分前"
@@ -474,13 +474,13 @@
     "message": "次へ"
   },
   "no_results": {
-    "message": "見つかりませんでした"
+    "message": "結果が見つかりません"
   },
   "no_results_subheading": {
-    "message": "検索語句を絞り込んでください"
+    "message": "検索語の絞り込みを試してください"
   },
   "not_authorized": {
-    "message": "許可されていません"
+    "message": "承認されていません"
   },
   "notifications": {
     "message": "通知"
@@ -505,7 +505,7 @@
     "message": "URL を開く"
   },
   "open_urls": {
-    "message": "$1 URL を開く"
+    "message": "$1 個の URL を開く"
   },
   "open_urls_confirm": {
     "message": "$1 個の URL を開いてもよろしいですか？"
@@ -517,7 +517,7 @@
     "message": "お待ちください..."
   },
   "plugins_more": {
-    "message": "その他のプラグイン…"
+    "message": "その他のプラグイン..."
   },
   "preview": {
     "message": "プレビュー"
@@ -526,10 +526,10 @@
     "message": "プレビュー : "
   },
   "preview_last_updated": {
-    "message": "最終更新日$1"
+    "message": "最終更新 $1"
   },
   "preview_never_updated": {
-    "message": "プレビューなし"
+    "message": "未プレビュー"
   },
   "preview_onedrive": {
     "message": "プロのヒント : 最新の変更をすぐに確認するには、プレビューを生成する前に Ctrl+S キーを押します..."
@@ -538,13 +538,13 @@
     "message": "プロのヒント : 最新の変更をすぐに確認するには、プレビューを生成する前に ⌘+S キーを押します..."
   },
   "preview_success": {
-    "message": "プレビューが正常に更新されました。プレビューを開いています…"
+    "message": "プレビューが正常に更新されました。プレビューを開いています..."
   },
   "previewing_state": {
-    "message": "プレビューを更新しています…"
+    "message": "プレビューを更新中..."
   },
   "prod_last_updated": {
-    "message": "最終公開日$1"
+    "message": "最終公開日 : $1"
   },
   "prod_never_updated": {
     "message": "未公開"
@@ -556,7 +556,7 @@
     "message": "公開"
   },
   "publish_confirm": {
-    "message": "このページを公開しますか？"
+    "message": "このページを公開にしてもよろしいですか？"
   },
   "publish_date": {
     "message": "公開 : "
@@ -565,10 +565,10 @@
     "message": "プレビューが更新されました"
   },
   "publish_success": {
-    "message": "公開が成功しました。$1 を開きます…"
+    "message": "公開に成功しました。$1 個を開いています..."
   },
   "publishing_state": {
-    "message": "公開中…"
+    "message": "公開中..."
   },
   "save": {
     "message": "保存"
@@ -593,13 +593,13 @@
     "message": "表示"
   },
   "title": {
-    "message": "AEM Sidekick- NextGen"
+    "message": "AEM Sidekick"
   },
   "today_at": {
     "message": "今日の $1"
   },
   "unauthorized_state": {
-    "message": "このサイトのアカウントは許可されていません"
+    "message": "このサイトではアカウントが承認されていません"
   },
   "unpublish": {
     "message": "非公開"
@@ -614,17 +614,17 @@
     "message": "このページにはソースドキュメントがまだ存在しているので、非公開にすることはできません。"
   },
   "unpublish_page_success": {
-    "message": "ページは非公開になりました。再度読み込んでいます…"
+    "message": "ページが正常に非公開にされました。リロード中..."
   },
   "unpublishing_state": {
-    "message": "非公開にしています…"
+    "message": "非公開にしています..."
   },
   "update": {
     "description": "ページのプレビューを更新",
     "message": "更新"
   },
   "update_success": {
-    "message": "プレビューは正常に更新されました。再度読み込んでいます…"
+    "message": "プレビューが正常に更新されました。リロード中..."
   },
   "user_login": {
     "message": "ログイン"

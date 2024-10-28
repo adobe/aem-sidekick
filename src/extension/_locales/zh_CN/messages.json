@@ -38,13 +38,13 @@
     "message": "批量操作失败。请稍后重试。"
   },
   "bulk_error_illegal_file_name": {
-    "message": "文件只能包含规范化的小型拉丁字母、数字和连字符。此文件包含非法字符： $1"
+    "message": "文件只能包含规范化的小写拉丁字母、数字和连字符。此文件包含非法字符：$1"
   },
   "bulk_error_illegal_file_names": {
-    "message": "文件只能包含规范化的小型拉丁字母、数字和连字符。以下文件包含非法字符： $1"
+    "message": "文件只能包含规范化的小写拉丁字母、数字和连字符。下列文件包含非法字符：$1"
   },
   "bulk_error_illegal_folder_name": {
-    "message": "文件夹只能包含标准化的小型拉丁字母、数字和连字符。此文件夹包含非法字符： $1"
+    "message": "文件夹只能包含规范化的小写拉丁字母、数字和连字符。此文件夹包含非法字符：$1"
   },
   "bulk_error_preview_login_required": {
     "message": "您需要登录才能生成 100 多个文件的预览。"
@@ -65,31 +65,31 @@
     "message": "路径"
   },
   "bulk_result_preview_multiple_failure": {
-    "message": "未能生成所有文件的预览。"
+    "message": "所有文件的预览生成失败。"
   },
   "bulk_result_preview_multiple_partial_success": {
-    "message": "已成功生成$1文件的预览，但$2失败。"
+    "message": "成功生成 $1 个文件预览，但 $2 个文件预览生成失败。"
   },
   "bulk_result_preview_multiple_partial_success_1": {
-    "message": "已成功生成$1文件的预览，但$2失败。"
+    "message": "成功生成 $1 个文件预览，但 $2 个文件预览生成失败。"
   },
   "bulk_result_preview_multiple_success": {
     "message": "已成功生成 $1 个文件的预览。"
   },
   "bulk_result_preview_single_failure": {
-    "message": "无法生成此文件的预览。"
+    "message": "此文件的预览生成失败。"
   },
   "bulk_result_preview_single_success": {
     "message": "已成功生成此文件的预览。"
   },
   "bulk_result_publish_multiple_failure": {
-    "message": "无法发布所有文件。"
+    "message": "所有文件发布失败。"
   },
   "bulk_result_publish_multiple_partial_success": {
-    "message": "已成功发布$1个文件，但$2个文件失败。"
+    "message": "$1 个文件发布成功，但 $2 个文件发布失败。"
   },
   "bulk_result_publish_multiple_partial_success_1": {
-    "message": "已成功发布1个文件，但$2个文件失败。"
+    "message": "1 个文件发布成功，但 $2 个文件发布失败。"
   },
   "bulk_result_publish_multiple_success": {
     "message": "已成功发布 $1 个文件。"
@@ -98,10 +98,10 @@
     "message": "必须先预览文件"
   },
   "bulk_result_publish_single_failure": {
-    "message": "无法发布此文件。"
+    "message": "这个文件发布失败。"
   },
   "bulk_result_publish_single_success": {
-    "message": "文件已成功发布。"
+    "message": "已成功发布文件。"
   },
   "bulk_selection_empty": {
     "message": "选择文件"
@@ -122,10 +122,10 @@
     "message": "关闭"
   },
   "close_sidekick": {
-    "message": "关闭AEM Sidekick"
+    "message": "关闭 AEM Sidekick"
   },
   "code_state": {
-    "message": "没有可用于代码文件的操作"
+    "message": "代码文件无可用操作"
   },
   "config_add_project_headline": {
     "message": "已添加项目"
@@ -137,15 +137,15 @@
     "message": "添加该项目"
   },
   "config_project_added": {
-    "description": "已添加项目",
-    "message": "已成功添加$1"
+    "description": "项目已添加",
+    "message": "$1 已成功添加 "
   },
   "config_project_disable": {
     "message": "禁用该项目"
   },
   "config_project_disabled": {
     "description": "项目已禁用",
-    "message": "已禁用$1"
+    "message": "已禁用 $1"
   },
   "config_project_disabled_headline": {
     "message": "项目已禁用"
@@ -155,7 +155,7 @@
   },
   "config_project_enabled": {
     "description": "项目已启用",
-    "message": "$1已启用"
+    "message": "已启用 $1"
   },
   "config_project_enabled_headline": {
     "message": "项目已启用"
@@ -164,22 +164,22 @@
     "message": "对该项目的配置已存在。"
   },
   "config_project_import": {
-    "message": "从AEM Sidekickv6导入项目"
+    "message": "从 AEM Sidekick v6 导入项目"
   },
   "config_project_import_headline": {
     "message": "导入项目"
   },
   "config_project_import_sidekick_not_found": {
-    "message": "找不到旧版Sidekick。如果扩展已安装但当前被禁用，请启用该扩展，然后重试。"
+    "message": "未找到旧版 Sidekick。如果扩展已安装但当前处于禁用状态，请启用后再试。"
   },
   "config_project_imported_multiple": {
-    "message": "已成功从AEM Sidekickv6导入$1项目。"
+    "message": "已成功从 AEM Sidekick v6 导入 $1 个项目。"
   },
   "config_project_imported_none": {
-    "message": "在AEM Sidekickv6中找不到新项目。"
+    "message": "在 AEM Sidekick v6 中未找到新项目。"
   },
   "config_project_imported_single": {
-    "message": "已成功从AEM Sidekickv6导入1个项目。"
+    "message": "已成功从 AEM Sidekick v6 导入 1 个项目。"
   },
   "config_project_pick": {
     "message": "选择一个项目"
@@ -188,11 +188,11 @@
     "message": "删除该项目"
   },
   "config_project_removed": {
-    "description": "项目已删除",
-    "message": "已成功删除$1"
+    "description": "项目已移除",
+    "message": "$1 个已成功删除 "
   },
   "config_remove_project_headline": {
-    "message": "已删除项目"
+    "message": "已移除项目"
   },
   "config_success": {
     "message": "配置已成功激活。"
@@ -235,13 +235,13 @@
     "message": "复制 URL"
   },
   "copy_urls": {
-    "message": "复制$1 URL"
+    "message": "复制 $1 个 URL"
   },
   "copy_urls_error": {
-    "message": "复制到剪贴板失败。请重试。"
+    "message": "无法复制到剪贴板。请稍后再试。"
   },
   "copy_urls_error_focus": {
-    "message": "复制到剪贴板失败。请确保窗口保持集中。"
+    "message": "无法复制到剪贴板。请确保窗口保持聚焦状态。"
   },
   "delete": {
     "message": "删除"
@@ -268,10 +268,10 @@
     "message": "该页面仍有源文档，因此无法删除。"
   },
   "delete_page_success": {
-    "message": "页面已成功删除，正在重新加载……"
+    "message": "页面已成功删除、重新加载……"
   },
   "deleting_state": {
-    "message": "正在删除……"
+    "message": "删除中……"
   },
   "description": {
     "message": "AEM Sidekick 可使 AEM 网站的作者轻松预览和发布内容。"
@@ -280,13 +280,13 @@
     "message": "切换 Sidekick"
   },
   "destructive_confirmation": {
-    "message": "是否确定要为此支付1美元？"
+    "message": "是否确实要 $1 此项？"
   },
   "destructive_confirmation_invalid": {
-    "message": "抱歉，请输入与显示完全相同的文本以进行确认。"
+    "message": "抱歉，请输入与显示内容完全一致的文字进行确认。"
   },
   "destructive_confirmation_prompt": {
-    "message": "键入$1以确认"
+    "message": "输入 $1 来确认"
   },
   "development": {
     "message": "开发"
@@ -301,7 +301,7 @@
     "message": "已编辑: "
   },
   "edit_last_updated": {
-    "message": "上次编辑时间： $1"
+    "message": "上次编辑 $1 个"
   },
   "edit_never_updated": {
     "message": "从未保存"
@@ -313,7 +313,7 @@
     "message": "错误"
   },
   "error_429": {
-    "message": "429请求过多：您的项目正在被1美元限制。请稍候，稍后重试。"
+    "message": "429 请求过多：您的项目正受到 $1 的限制。请稍候再试。"
   },
   "error_delete": {
     "message": "删除失败。请稍后再试。"
@@ -322,10 +322,10 @@
     "message": "抱歉，我们目前似乎遇到了问题。请稍后重试。"
   },
   "error_generic": {
-    "message": "出现错误： $1"
+    "message": "出现错误：$1"
   },
   "error_job_404": {
-    "message": "404未找到：没有此作业。"
+    "message": "404 未找到：没有此类作业。"
   },
   "error_login_aborted": {
     "message": "登录已中止。"
@@ -340,22 +340,22 @@
     "message": "预览生成失败。请稍后重试。"
   },
   "error_preview_400": {
-    "message": "预览生成失败。检查文件格式、名称或路径。"
+    "message": "预览生成失败。请检查文件格式、名称或路径。"
   },
   "error_preview_404": {
-    "message": "Source文档不存在，预览生成失败。"
+    "message": "源文档不存在，预览生成失败。"
   },
   "error_preview_415": {
     "message": "不支持的文件类型。请参阅文档以了解支持的文件类型。"
   },
   "error_preview_config": {
-    "message": "激活配置失败： $1"
+    "message": "无法激活配置：$1"
   },
   "error_preview_no_docx": {
-    "message": "这是一个Microsoft Word文档，请先将其转换为Google Docs。"
+    "message": "这是一份 Microsoft Word 文档，请先将其转换为 Google Docs 文档。"
   },
   "error_preview_no_xlsx": {
-    "message": "这是一个Microsoft Excel文档，请先将其转换为Google工作表。"
+    "message": "这是一份 Microsoft Excel 文档，请先将其转换为 Google Sheets 文档。"
   },
   "error_preview_not_gdoc_generic": {
     "message": "预览生成失败。必须是 Google 文档或电子表格。"
@@ -373,7 +373,7 @@
     "message": "发布失败，请先生成预览。"
   },
   "error_status_400": {
-    "message": "400错误请求： URL无效。"
+    "message": "400 错误请求：无效 URL。"
   },
   "error_status_404_content": {
     "message": "404 未找到：请检查您的 Sidekick 配置或 URL。"
@@ -435,7 +435,7 @@
     "message": "信息"
   },
   "json_results_stat": {
-    "message": "显示$1/$2的结果"
+    "message": "显示 $2 个结果中的 $1 个"
   },
   "json_view_description": {
     "message": "数据演绎版"
@@ -444,7 +444,7 @@
     "message": "实时"
   },
   "live_last_updated": {
-    "message": "上次发布时间： $1"
+    "message": "上次发布 $1 个"
   },
   "live_never_updated": {
     "message": "从未发布"
@@ -453,7 +453,7 @@
     "message": "正在登录……"
   },
   "logging_out_state": {
-    "message": "注销……"
+    "message": "正在注销……"
   },
   "login_required_state": {
     "message": "登录以继续"
@@ -462,7 +462,7 @@
     "message": "请登录……"
   },
   "media_state": {
-    "message": "没有可用于媒体文件的操作"
+    "message": "媒体文件无可用操作"
   },
   "minutes_ago": {
     "message": "$1 分钟前"
@@ -471,13 +471,13 @@
     "message": "无"
   },
   "next": {
-    "message": "下一步"
+    "message": "下一页"
   },
   "no_results": {
     "message": "未找到结果"
   },
   "no_results_subheading": {
-    "message": "尝试优化您的搜索词"
+    "message": "尝试细化您的搜索词"
   },
   "not_authorized": {
     "message": "未授权"
@@ -495,7 +495,7 @@
     "message": "打开"
   },
   "open_in": {
-    "message": "以1美元开张"
+    "message": "在 $1 中打开"
   },
   "open_preview": {
     "description": "打开给定 GitHub 分支的预览 URL",
@@ -505,7 +505,7 @@
     "message": "打开 URL"
   },
   "open_urls": {
-    "message": "打开$1 URL"
+    "message": "打开 $1 个 URL"
   },
   "open_urls_confirm": {
     "message": "是否确实要打开 $1 URL？"
@@ -526,10 +526,10 @@
     "message": "已预览："
   },
   "preview_last_updated": {
-    "message": "上次更新时间：$1"
+    "message": "上次更新 $1 个"
   },
   "preview_never_updated": {
-    "message": "从未预览"
+    "message": "从未预览过"
   },
   "preview_onedrive": {
     "message": "专业提示：在生成预览前按 Ctrl + S 可立即查看最新更改..."
@@ -538,13 +538,13 @@
     "message": "专业提示：在生成预览前按 ⌘ + S 可立即查看最新更改..."
   },
   "preview_success": {
-    "message": "已成功更新预览，正在打开预览……"
+    "message": "预览已成功更新，正在打开预览……"
   },
   "previewing_state": {
     "message": "正在更新预览……"
   },
   "prod_last_updated": {
-    "message": "上次发布时间： $1"
+    "message": "上次发布 $1 个"
   },
   "prod_never_updated": {
     "message": "从未发布"
@@ -562,13 +562,13 @@
     "message": "已发布："
   },
   "publish_outdated": {
-    "message": "已更新预览"
+    "message": "预览已更新"
   },
   "publish_success": {
-    "message": "发布成功，正在打开$1..."
+    "message": "发布成功，打开 $1 个……"
   },
   "publishing_state": {
-    "message": "正在发布……"
+    "message": "正在发布..."
   },
   "save": {
     "message": "保存"
@@ -593,13 +593,13 @@
     "message": "查看"
   },
   "title": {
-    "message": "AEM Sidekick- NextGen"
+    "message": "AEM Sidekick"
   },
   "today_at": {
     "message": "今天 $1"
   },
   "unauthorized_state": {
-    "message": "帐户未获得此站点的授权"
+    "message": "此网站的帐户未被授权"
   },
   "unpublish": {
     "message": "取消发布"
@@ -614,7 +614,7 @@
     "message": "该页面仍有源文档，因此无法取消发布。"
   },
   "unpublish_page_success": {
-    "message": "页面已成功取消发布，正在重新加载……"
+    "message": "页面已成功取消发布、重新加载……"
   },
   "unpublishing_state": {
     "message": "正在取消发布……"
@@ -624,7 +624,7 @@
     "message": "更新"
   },
   "update_success": {
-    "message": "已成功更新预览，正在重新加载……"
+    "message": "预览更新成功，正在重新加载……"
   },
   "user_login": {
     "message": "登录"

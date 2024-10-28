@@ -38,13 +38,13 @@
     "message": "Operazione in blocco non riuscita. Riprova più tardi."
   },
   "bulk_error_illegal_file_name": {
-    "message": "I file possono contenere solo lettere latine, cifre e trattini normalizzati e di piccole dimensioni. Questo file contiene caratteri non validi: $1"
+    "message": "I file possono contenere solo caratteri latini normalizzati: lettere minuscole, cifre e trattini. Questo file contiene caratteri non validi: $1"
   },
   "bulk_error_illegal_file_names": {
-    "message": "I file possono contenere solo lettere latine, cifre e trattini normalizzati e di piccole dimensioni. I seguenti file contengono caratteri non validi: $1"
+    "message": "I file possono contenere solo caratteri latini normalizzati: lettere minuscole, cifre e trattini. I seguenti file contengono caratteri non validi: $1"
   },
   "bulk_error_illegal_folder_name": {
-    "message": "Le cartelle possono contenere solo lettere latine, cifre e trattini normalizzati e di piccole dimensioni. Questa cartella contiene caratteri non validi: $1"
+    "message": "Le cartelle possono contenere solo caratteri latini normalizzati: lettere minuscole, cifre e trattini. Questa cartella contiene caratteri non validi: $1"
   },
   "bulk_error_preview_login_required": {
     "message": "Per generare l’anteprima di più di 100 file, è necessario accedere."
@@ -65,19 +65,19 @@
     "message": "Percorso"
   },
   "bulk_result_preview_multiple_failure": {
-    "message": "Impossibile generare l'anteprima di tutti i file."
+    "message": "Impossibile generare l’anteprima di tutti i file."
   },
   "bulk_result_preview_multiple_partial_success": {
-    "message": "Anteprima di file $1 generati correttamente, ma $2 non sono riusciti."
+    "message": "Anteprima dei file $1 generata correttamente, anteprima di $2 non riuscita."
   },
   "bulk_result_preview_multiple_partial_success_1": {
-    "message": "Anteprima del file $1 generata correttamente, ma $2 non è riuscito."
+    "message": "Anteprima generata correttamente per $1 file, non riuscita per $2."
   },
   "bulk_result_preview_multiple_success": {
     "message": "L’anteprima di $1 file è stata generata correttamente."
   },
   "bulk_result_preview_single_failure": {
-    "message": "Impossibile generare l'anteprima del file."
+    "message": "Impossibile generare l’anteprima di questo file."
   },
   "bulk_result_preview_single_success": {
     "message": "L’anteprima di questo file è stata generata correttamente."
@@ -86,10 +86,10 @@
     "message": "Impossibile pubblicare tutti i file."
   },
   "bulk_result_publish_multiple_partial_success": {
-    "message": "File $1 pubblicati, ma $2 non riusciti."
+    "message": "Pubblicazione di $1 file eseguita correttamente, ma $2 non riuscita."
   },
   "bulk_result_publish_multiple_partial_success_1": {
-    "message": "1 file pubblicato correttamente, ma $2 non riuscito."
+    "message": "Pubblicazione completata per 1 file, non riuscita per $2."
   },
   "bulk_result_publish_multiple_success": {
     "message": "$1 file pubblicati."
@@ -98,13 +98,13 @@
     "message": "Il file deve essere prima visualizzato in anteprima"
   },
   "bulk_result_publish_single_failure": {
-    "message": "Pubblicazione del file non riuscita."
+    "message": "Impossibile pubblicare questo file."
   },
   "bulk_result_publish_single_success": {
-    "message": "File pubblicato."
+    "message": "File pubblicato correttamente."
   },
   "bulk_selection_empty": {
-    "message": "Seleziona file"
+    "message": "Seleziona i file"
   },
   "bulk_selection_multiple": {
     "message": "$1 file selezionati"
@@ -138,24 +138,24 @@
   },
   "config_project_added": {
     "description": "Progetto aggiunto",
-    "message": "$1 aggiunto correttamente"
+    "message": "Aggiunta di $1 avvenuta correttamente"
   },
   "config_project_disable": {
     "message": "Disabilita questo progetto"
   },
   "config_project_disabled": {
-    "description": "Progetto disattivato",
-    "message": "$1 disattivato"
+    "description": "Progetto disabilitato",
+    "message": "Disabilitato: $1"
   },
   "config_project_disabled_headline": {
-    "message": "Progetto disattivato"
+    "message": "Progetto disabilitato"
   },
   "config_project_enable": {
     "message": "Abilita questo progetto"
   },
   "config_project_enabled": {
     "description": "Progetto abilitato",
-    "message": "$ 1 abilitato"
+    "message": "Abilitato: $1"
   },
   "config_project_enabled_headline": {
     "message": "Progetto abilitato"
@@ -170,16 +170,16 @@
     "message": "Importa progetti"
   },
   "config_project_import_sidekick_not_found": {
-    "message": "Spalla legacy non trovata. Se l'estensione è installata ma è attualmente disabilitata, abilitala e riprova."
+    "message": "Sidekick precedente non trovato. Se l’estensione è installata ma al momento è disabilitata, abilitala e riprova."
   },
   "config_project_imported_multiple": {
-    "message": "Importazione di progetti $1 da AEM Sidekick v6 completata."
+    "message": "$1 progetti importati correttamente da AEM Sidekick v6."
   },
   "config_project_imported_none": {
     "message": "Nessun nuovo progetto trovato in AEM Sidekick v6."
   },
   "config_project_imported_single": {
-    "message": "1 progetto importato da AEM Sidekick v6."
+    "message": "$1 progetto importato correttamente da AEM Sidekick v6."
   },
   "config_project_pick": {
     "message": "Scegli un progetto"
@@ -189,7 +189,7 @@
   },
   "config_project_removed": {
     "description": "Progetto rimosso",
-    "message": "$1 rimosso correttamente"
+    "message": "Rimozione di $1 completata"
   },
   "config_remove_project_headline": {
     "message": "Progetto rimosso"
@@ -198,8 +198,8 @@
     "message": "Configurazione attivata."
   },
   "confirm": {
-    "description": "Intestazione modale conferma",
-    "message": "Confermate"
+    "description": "Intestazione modale di conferma",
+    "message": "Conferma"
   },
   "copied": {
     "message": "Copiato"
@@ -235,13 +235,13 @@
     "message": "Copia URL"
   },
   "copy_urls": {
-    "message": "Copia URL $1"
+    "message": "Copia $1 URL"
   },
   "copy_urls_error": {
-    "message": "Copia negli Appunti non riuscita. Riprova."
+    "message": "Copia negli appunti non riuscita. Riprova."
   },
   "copy_urls_error_focus": {
-    "message": "Copia negli Appunti non riuscita. Accertatevi che la finestra rimanga focalizzata."
+    "message": "Copia negli Appunti non riuscita. Assicurati che la finestra rimanga attiva."
   },
   "delete": {
     "message": "Elimina"
@@ -268,10 +268,10 @@
     "message": "Questa pagina ha ancora un documento di origine e non può essere eliminata."
   },
   "delete_page_success": {
-    "message": "Pagina eliminata. Ricaricamento in corso..."
+    "message": "Pagina eliminata, ricaricamento in corso..."
   },
   "deleting_state": {
-    "message": "Eliminazione..."
+    "message": "Eliminazione in corso..."
   },
   "description": {
     "message": "AEM Sidekick consente agli autori di siti AEM di visualizzare in anteprima e pubblicare facilmente i contenuti."
@@ -280,10 +280,10 @@
     "message": "Attiva/Disattiva Sidekick"
   },
   "destructive_confirmation": {
-    "message": "Intendete 1 dollaro?"
+    "message": "Eseguire $1?"
   },
   "destructive_confirmation_invalid": {
-    "message": "Spiacenti, immetti il testo esattamente come visualizzato per confermare."
+    "message": "Immetti il testo esattamente come visualizzato per confermare."
   },
   "destructive_confirmation_prompt": {
     "message": "Digita $1 per confermare"
@@ -301,10 +301,10 @@
     "message": "Modificato: "
   },
   "edit_last_updated": {
-    "message": "Ultima modifica $1"
+    "message": "Ultima modifica: $1"
   },
   "edit_never_updated": {
-    "message": "Mai salvato"
+    "message": "Salvataggio mai eseguito"
   },
   "environments": {
     "message": "Ambienti"
@@ -313,19 +313,19 @@
     "message": "Errore"
   },
   "error_429": {
-    "message": "429 Troppe richieste: il tuo progetto viene limitato da $1. Attendete e riprovate più tardi."
+    "message": "Errore 429 - Troppe richieste: il progetto è soggetto a limitazioni da parte di $1. Attendi e riprova più tardi."
   },
   "error_delete": {
     "message": "Eliminazione non riuscita. Riprova più tardi."
   },
   "error_fatal": {
-    "message": "Scusatemi, sembra che al momento abbiamo dei problemi. Riprova più tardi."
+    "message": "Al momento stiamo riscontrando dei problemi. Riprova più tardi."
   },
   "error_generic": {
     "message": "Si è verificato un errore: $1"
   },
   "error_job_404": {
-    "message": "404 - Non trovato."
+    "message": "Errore 404 - Non trovato: nessun processo di questo tipo."
   },
   "error_login_aborted": {
     "message": "Accesso interrotto."
@@ -343,7 +343,7 @@
     "message": "Generazione anteprima non riuscita. Controlla il formato, il nome o il percorso del file."
   },
   "error_preview_404": {
-    "message": "Documento Source inesistente. Generazione anteprima non riuscita."
+    "message": "Il documento di origine non esiste, generazione dell’anteprima non riuscita."
   },
   "error_preview_415": {
     "message": "Tipo di file non supportato. Consulta la documentazione per i tipi di file supportati."
@@ -352,10 +352,10 @@
     "message": "Impossibile attivare la configurazione: $1"
   },
   "error_preview_no_docx": {
-    "message": "Questo è un documento di Microsoft Word, convertilo innanzitutto in documenti di Google."
+    "message": "Questo è un documento di Microsoft Word. Convertilo prima in Documenti Google."
   },
   "error_preview_no_xlsx": {
-    "message": "Questo è un documento di Microsoft Excel, convertilo prima in fogli di Google."
+    "message": "Questo è un documento di Microsoft Excel. Convertilo prima in Fogli Google."
   },
   "error_preview_not_gdoc_generic": {
     "message": "Generazione dell’anteprima non riuscita. Deve essere un documento o un foglio Google."
@@ -370,7 +370,7 @@
     "message": "Pubblicazione non riuscita. Riprova più tardi."
   },
   "error_publish_404": {
-    "message": "Pubblicazione non riuscita, prima genera l'anteprima."
+    "message": "Pubblicazione non riuscita, genera prima l’anteprima."
   },
   "error_status_400": {
     "message": "400 Richiesta non valida: URL non valido."
@@ -400,10 +400,10 @@
     "message": "Estensioni"
   },
   "fetching_status_state": {
-    "message": "Caricamento stato..."
+    "message": "Caricamento dello stato in corso..."
   },
   "help_documentation": {
-    "message": "Aiuto e documentazione"
+    "message": "Assistenza e documentazione"
   },
   "help_opt_out": {
     "message": "Non mostrare l’Aiuto"
@@ -435,7 +435,7 @@
     "message": "Informazioni"
   },
   "json_results_stat": {
-    "message": "Mostra $1 di $2 risultati"
+    "message": "Visualizzazione di $1 di $2 risultati"
   },
   "json_view_description": {
     "message": "Rappresentazione dei dati"
@@ -444,16 +444,16 @@
     "message": "Live"
   },
   "live_last_updated": {
-    "message": "Ultima pubblicazione $1"
+    "message": "Ultima pubblicazione: $1"
   },
   "live_never_updated": {
-    "message": "Mai pubblicato"
+    "message": "Pubblicazione mai eseguita"
   },
   "logging_in_state": {
-    "message": "Accesso..."
+    "message": "Accesso in corso..."
   },
   "logging_out_state": {
-    "message": "Esci..."
+    "message": "Disconnessione in corso..."
   },
   "login_required_state": {
     "message": "Accedi per continuare"
@@ -471,13 +471,13 @@
     "message": "Mai"
   },
   "next": {
-    "message": "Successivo"
+    "message": "Avanti"
   },
   "no_results": {
     "message": "Nessun risultato"
   },
   "no_results_subheading": {
-    "message": "Prova a perfezionare il termine di ricerca"
+    "message": "Prova ad affinare il termine di ricerca"
   },
   "not_authorized": {
     "message": "Non autorizzato"
@@ -505,7 +505,7 @@
     "message": "Apri URL"
   },
   "open_urls": {
-    "message": "Apri URL $1"
+    "message": "Apri $1 URL"
   },
   "open_urls_confirm": {
     "message": "Desideri aprire $1 URL?"
@@ -517,7 +517,7 @@
     "message": "Attendi..."
   },
   "plugins_more": {
-    "message": "Altri plug-in..."
+    "message": "Ulteriori plug-in..."
   },
   "preview": {
     "message": "Anteprima"
@@ -529,7 +529,7 @@
     "message": "Ultimo aggiornamento: $1"
   },
   "preview_never_updated": {
-    "message": "Mai visualizzato in anteprima"
+    "message": "Anteprima mai eseguita"
   },
   "preview_onedrive": {
     "message": "Suggerimento: premi Ctrl + S prima di generare l’anteprima per vedere subito le ultime modifiche..."
@@ -538,16 +538,16 @@
     "message": "Suggerimento: premi ⌘ + S prima di generare l’anteprima per vedere subito le ultime modifiche..."
   },
   "preview_success": {
-    "message": "Anteprima aggiornata correttamente, apertura Anteprima..."
+    "message": "Anteprima aggiornata correttamente, apertura anteprima in corso..."
   },
   "previewing_state": {
-    "message": "Aggiornamento anteprima..."
+    "message": "Aggiornamento dell’anteprima in corso..."
   },
   "prod_last_updated": {
-    "message": "Ultima pubblicazione $1"
+    "message": "Ultima pubblicazione: $1"
   },
   "prod_never_updated": {
-    "message": "Mai pubblicato"
+    "message": "Pubblicazione mai eseguita"
   },
   "production": {
     "message": "Produzione"
@@ -556,16 +556,16 @@
     "message": "Pubblica"
   },
   "publish_confirm": {
-    "message": "Intendete pubblicare questa pagina?"
+    "message": "Pubblicare questa pagina?"
   },
   "publish_date": {
     "message": "Pubblicato: "
   },
   "publish_outdated": {
-    "message": "Anteprima aggiornata"
+    "message": "L’anteprima è stata aggiornata"
   },
   "publish_success": {
-    "message": "Pubblicazione riuscita, apertura $1..."
+    "message": "Pubblicazione completata, apertura di $1..."
   },
   "publishing_state": {
     "message": "Pubblicazione..."
@@ -593,7 +593,7 @@
     "message": "Visualizza"
   },
   "title": {
-    "message": "AEM Sidekick - NextGen"
+    "message": "AEM Sidekick"
   },
   "today_at": {
     "message": "Oggi alle $1"
@@ -614,17 +614,17 @@
     "message": "Questa pagina ha ancora un documento di origine e non è possibile annullarne la pubblicazione."
   },
   "unpublish_page_success": {
-    "message": "Pubblicazione della pagina annullata. Ricaricamento in corso..."
+    "message": "Annullamento della pubblicazione della pagina eseguito correttamente, ricarica in corso..."
   },
   "unpublishing_state": {
-    "message": "Annullamento pubblicazione..."
+    "message": "Annullamento della pubblicazione in corso..."
   },
   "update": {
-    "description": "Aggiornare l’anteprima di una pagina",
+    "description": "Aggiorna l’anteprima di una pagina",
     "message": "Aggiorna"
   },
   "update_success": {
-    "message": "Anteprima aggiornata. Ricaricamento in corso..."
+    "message": "Anteprima aggiornata, ricaricamento in corso..."
   },
   "user_login": {
     "message": "Accedi"
