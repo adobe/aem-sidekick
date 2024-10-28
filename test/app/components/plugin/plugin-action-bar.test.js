@@ -946,6 +946,36 @@ describe('Plugin action bar', () => {
         target: 'help-opened',
       })).to.be.true;
     }).timeout(10000);
+
+    it('open whats new', async () => {
+      const { sandbox } = sidekickTest;
+      sidekick = sidekickTest.createSidekick({
+        ...defaultSidekickConfig,
+        transient: false,
+      });
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const sidekickMenuButton = recursiveQuery(sidekick, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
+
+      sidekickMenuButton.click();
+
+      await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
+
+      const showOnboardingStub = sandbox.stub(sidekickTest.appStore, 'showOnboarding').returns(null);
+      const helpButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="whats-new-opened"]');
+      expect(helpButton).to.exist;
+      helpButton.click();
+
+      await aTimeout(200);
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
+      expect(showOnboardingStub.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'whats-new-opened',
+      })).to.be.true;
+    }).timeout(10000);
   });
 
   describe('tab order', () => {

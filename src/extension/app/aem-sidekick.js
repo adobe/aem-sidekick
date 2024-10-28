@@ -20,6 +20,7 @@ import { spectrum2 } from './spectrum-2.css.js';
 import { AppStore, appStoreContext } from './store/app.js';
 import { ALLOWED_EXTENSION_IDS, EXTERNAL_EVENTS, MODALS } from './constants.js';
 import { detectBrowser } from './utils/browser.js';
+import { getConfig } from '../config.js';
 
 @customElement('aem-sidekick')
 export class AEMSidekick extends LitElement {
@@ -51,6 +52,10 @@ export class AEMSidekick extends LitElement {
 
     document.dispatchEvent(new CustomEvent(EXTERNAL_EVENTS.SIDEKICK_READY));
 
+    const onboarded = await getConfig('local', 'onboarded');
+    if (!onboarded) {
+      this.appStore.showOnboarding();
+    }
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       if (msg.action === 'show_notification' && ALLOWED_EXTENSION_IDS.includes(sender.id)) {
         const { message, headline } = msg;
