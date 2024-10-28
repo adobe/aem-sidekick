@@ -248,4 +248,16 @@
  * @property {string} [path] The path of the response
  */
 
+/**
+ * @typedef {Object} OnboardingItem
+ * @property {string} title The title of the onboarding item
+ * @property {string} path The path of the onboarding item
+ * @property {string} content The content of the onboarding item
+ * @property {string} category The category of the onboarding item
+ * @property {string} index The index of the onboarding item
+ * @property {string} publicationDate The publication date of the onboarding item
+ * @property {string} locale The locale of the onboarding item
+ * @property {string} action The action to perform
+ */
+
 export const Types = {};

@@ -379,30 +379,8 @@
       "message": "Extensions"
     },
     "next": {
-      "message": "Next"
-    },
-    "help_opt_out": {
-      "message": "Don't show any help"
-    },
-    "help_opt_out_alert": {
-      "message": "Help turned off. You can turn it back on on under Options > User experience."
-    },
-    "help_previous": {
-      "message": "Previous tip"
-    },
-    "help_user_status": {
-      "message": "Available help topics"
-    },
-    "help_user_status_check_all": {
-      "message": "Check all",
-      "description": "Check all help topics"
-    },
-    "help_user_status_description": {
-      "message": "Checked topics will not be shown anymore. Remove the checkmark next to a topic you wish to see again."
-    },
-    "help_user_status_uncheck_all": {
-      "message": "Uncheck all",
-      "description": "Uncheck all help topics"
+      "message": "Next",
+      "description": "Next onboarding slide"
     },
     "homepage": {
       "message": "https://www.hlx.live/tools/sidekick/"
@@ -640,5 +618,15 @@
     },
     "help_documentation": {
       "message": "Help & Documentation"
+    },
+    "whats_new": {
+      "message": "What's New",
+      "description": "Onboarding menu title"
+    },  
+    "join_discord": {
+      "message": "Join us on Discord"
+    },  
+    "import": {
+      "message": "Import"
     }
 }
