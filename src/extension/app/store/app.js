@@ -50,6 +50,7 @@ import {
 } from '../plugins/bulk/bulk-copy-urls.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
+import { getConfig, setConfig } from '../../config.js';
 
 /**
  * The sidekick configuration object type
@@ -175,6 +176,12 @@ export class AppStore {
    */
   accessor toast;
 
+  /**
+   * The current state of the sidekick
+   * @type {'light'|'dark'}
+   */
+  @observable accessor theme;
+
   constructor() {
     this.siteStore = new SiteStore(this);
     this.bulkStore = new BulkStore(this);
@@ -189,6 +196,7 @@ export class AppStore {
    * @param {SidekickOptionsConfig} inputConfig The sidekick config
    */
   async loadContext(sidekick, inputConfig) {
+    this.theme = await getConfig('local', 'theme') || 'dark';
     this.sidekick = sidekick;
     this.location = getLocation();
 
@@ -642,6 +650,11 @@ export class AppStore {
     this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(modalContainer);
 
     return modalContainer;
+  }
+
+  showOnboarding() {
+    const dialog = document.createElement('onboarding-dialog');
+    this.sidekick?.shadowRoot?.querySelector('theme-wrapper').appendChild(dialog);
   }
 
   /**
@@ -1352,6 +1365,11 @@ export class AppStore {
         resolve();
       }
     });
+  }
+
+  async toggleTheme() {
+    this.theme = this.theme === 'light' ? 'dark' : 'light';
+    setConfig('local', { theme: this.theme });
   }
 }
 

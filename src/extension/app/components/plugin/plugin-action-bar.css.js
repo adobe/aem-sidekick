@@ -35,7 +35,10 @@ export const style = css`
 
   action-bar > div.plugin-menu-container {
     width: 32px;
+    flex-shrink: 0;
   }
+
+
 
   action-bar > div.badge-plugins-container {
     position: absolute;
@@ -44,6 +47,7 @@ export const style = css`
     display: flex;
     gap: var(--spectrum-spacing-75);
     flex-wrap: wrap;
+    z-index: 1;
   }
 
   action-bar sp-action-group.not-authorized {
@@ -51,6 +55,7 @@ export const style = css`
   }
 
   action-bar .logo {
+    padding: 12px;
     width: 32px;
     height: 32px;
     display: flex;
@@ -59,8 +64,7 @@ export const style = css`
   }
 
   action-bar .logo > svg{
-    width: 24px;
-    height: 24px;
+    width: 56px;
   }
 
   #plugin-menu {
@@ -95,6 +99,10 @@ export const style = css`
     margin: 4px 8px 8px;
   }
 
+  action-bar sp-action-menu div.theme-switch {
+    padding: 8px 0 8px 10px;
+  }
+
   action-bar sp-action-menu sp-menu-divider {
     margin: 0;
   }
@@ -111,6 +119,30 @@ export const style = css`
     --mod-menu-group-gap: 0;
   }
 
+  action-bar .close-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 37px;
+    flex-shrink: 0;
+    cursor: pointer;
+    border-top-right-radius: var(--spectrum2-sidekick-border-radius);
+    border-bottom-right-radius: var(--spectrum2-sidekick-border-radius);
+    background-color: var(--spectrum2-sidekick-background-close);
+    backdrop-filter: var(--sidekick-backdrop-filter);
+  }
+
+  action-bar .close-button sp-icon {
+    width: 24px;
+    height: 24px;
+    padding: 0 8px;
+    color: var(--spectrum2-sidekick-color);
+  }
+
+  action-bar .close-button:hover {
+    opacity: 0.5;
+  }
+
   #plugin-menu sp-menu-group [slot="header"] {
     text-transform: uppercase;
     font-size: var(--spectrum-global-dimension-font-size-75);
@@ -120,6 +152,13 @@ export const style = css`
   @media (max-width: 500px) {
     #properties {
       display: none;
+    }
+  }
+
+  @media (max-width: 800px) {
+    action-bar .close-button {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
     }
   }
 `;

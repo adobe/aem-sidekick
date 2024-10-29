@@ -14,6 +14,7 @@
 
 import { html } from 'lit';
 import { customElement, queryAll, queryAsync } from 'lit/decorators.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { reaction } from 'mobx';
 import { ICONS, STATE } from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
@@ -29,6 +30,21 @@ import '../bulk/bulk-info/bulk-info.js';
  * The lit template result type
  * @typedef {import('lit').TemplateResult} TemplateResult
  */
+
+/**
+ * The gap between plugins in the plugin group
+ */
+const PLUGIN_GROUP_GAP = 8;
+
+/**
+ * The maximum width of the action bar
+ */
+const ACTION_BAR_MAX_WIDTH = 800;
+
+/**
+ * The threshold for overflow
+ */
+const OVERFLOW_THRESHOLD = -10;
 
 @customElement('plugin-action-bar')
 export class PluginActionBar extends ConnectedElement {
@@ -71,6 +87,9 @@ export class PluginActionBar extends ConnectedElement {
   @queryAsync('action-bar')
   accessor actionBar;
 
+  @queryAsync('.logo')
+  accessor logoContainer;
+
   @queryAll('div.action-group')
   accessor actionGroups;
 
@@ -79,6 +98,9 @@ export class PluginActionBar extends ConnectedElement {
 
   @queryAsync('sp-action-menu#sidekick-menu')
   accessor sidekickMenu;
+
+  @queryAsync('.close-button')
+  accessor closeButton;
 
   /**
    * Set up the bar and menu plugins in this environment and updates the component.
@@ -134,11 +156,24 @@ export class PluginActionBar extends ConnectedElement {
 
     // trap clicks inside action bar
     this.addEventListener('click', this.onClick);
+    this.requestUpdate();
   }
 
   disconnectedCallback() {
     this.removeEventListener('click', this.onClick);
   }
+
+  /**
+   * Utility function to calculate the total width of an element including padding.
+   * @param {HTMLElement} element - The DOM element.
+   * @returns {number} - The total width in pixels.
+   */
+  getTotalWidth = (element) => {
+    const styles = window.getComputedStyle(element);
+    const width = parseInt(styles.width, 10) || 0;
+    const padding = parseInt(styles.padding, 10) || 0;
+    return width + padding * 2;
+  };
 
   async checkOverflow() {
     if (this.actionGroups.length < 3) {
@@ -146,39 +181,74 @@ export class PluginActionBar extends ConnectedElement {
       return;
     }
 
+    const [logoContainer, closeButton] = await Promise.all([this.logoContainer, this.closeButton]);
+
+    // Action bar styles
     const barWidth = parseInt(window.getComputedStyle(this).width, 10);
-    const barWidthSameOrLess = barWidth <= this.actionBarWidth;
+    const logoWidth = this.getTotalWidth(logoContainer);
+    const closeButtonWidth = parseInt(window.getComputedStyle(closeButton).width, 10);
+
+    const [pluginGroup, pluginMenu, systemGroup] = this.actionGroups;
 
     // Left plugin container styles
-    const leftStyles = window.getComputedStyle(this.actionGroups[0]);
-    const leftPadding = parseInt(leftStyles.padding, 10);
-    const leftWidth = parseInt(leftStyles.width, 10) + leftPadding * 2;
+    const pluginGroupStyles = window.getComputedStyle(pluginGroup);
+    const pluginGroupPadding = parseInt(pluginGroupStyles.padding, 10);
+    const pluginGroupWidth = parseInt(pluginGroupStyles.width, 10);
+    const pluginGroupWidthIncludingPadding = pluginGroupWidth + (pluginGroupPadding * 2);
 
-    // Plugin menu container styles
-    const pluginMenuStyles = window.getComputedStyle(this.actionGroups[1]);
-    const pluginMenuPadding = parseInt(pluginMenuStyles.padding, 10);
-    const pluginMenuWidth = parseInt(pluginMenuStyles.width, 10);
+    const pluginMenuWidth = this.getTotalWidth(pluginMenu);
+    const systemWidth = this.getTotalWidth(systemGroup);
 
-    // System plugin container styles
-    const systemStyles = window.getComputedStyle(this.actionGroups[2]);
-    const systemPadding = parseInt(systemStyles.padding, 10);
-    const systemWidth = parseInt(systemStyles.width, 10);
+    // Combined width of system plugins, plugin menu, and close button
+    const rightWidth = pluginMenuWidth + systemWidth + closeButtonWidth;
 
-    // Combined width of system plugins and plugin menu containers
-    const rightWidth = pluginMenuWidth + (pluginMenuPadding * 2) + systemWidth + (systemPadding * 2) + 2;
+    // Combined width of left logo and plugin group
+    const leftWidth = pluginGroupWidthIncludingPadding + logoWidth;
 
-    // Try moving the first transient plugin back to the bar
-    if (barWidthSameOrLess) {
-      // If the left plugins are wider than the bar, move the last one to the menu
-      if (leftWidth > barWidth - rightWidth && this.barPlugins.length > 1) {
-        this.transientPlugins.unshift(this.barPlugins.pop());
-        this.requestUpdate();
-      }
-    // Try moving the first menu plugin back to the bar
-    } else if (this.transientPlugins[0]) {
-      this.barPlugins.push(this.transientPlugins.shift());
+    // Total free space in the bar
+    const totalFreeSpace = barWidth - leftWidth - rightWidth;
+
+    // If there's not enough space for the plugins in the bar, move the last plugin to the menu
+    // We check against -10 to avoid endless loop caused after a plugin is added to back to the bar
+    if (totalFreeSpace <= OVERFLOW_THRESHOLD && this.barPlugins.length > 1) {
+      this.transientPlugins.unshift(this.barPlugins.pop());
       this.requestUpdate();
+    // If we don't need to remove a plugin and if the action bar is less than 800px wide,
+    // the logic must adjust to check if there's space for the next plugin
+    } else if (window.innerWidth < ACTION_BAR_MAX_WIDTH) {
+      const nextPlugin = this.transientPlugins[0];
+      if (nextPlugin) {
+        const children = Array.from(this.actionGroups[0].children);
+
+        let childrenWidth = children.reduce((acc, child) => acc + child.clientWidth, 0);
+        // Account for the gap between the plugins
+        childrenWidth += (children.length - 1) * PLUGIN_GROUP_GAP;
+
+        // Calculate the hypothetical new width of the plugins group if we added the next plugin
+        const nextPluginWidth = nextPlugin.getEstimatedWidth();
+        const newWidth = nextPluginWidth + childrenWidth + PLUGIN_GROUP_GAP;
+
+        // If the new width is less than the plugin group width, add the plugin to the bar
+        if (newWidth < pluginGroupWidth) {
+          this.barPlugins.push(this.transientPlugins.shift());
+          this.requestUpdate();
+        }
+      }
+    } else {
+      // If the action bar is wider than 800px, and we don't need to remove a plugin, check if there's space for the next plugin
+      const extraSpace = ACTION_BAR_MAX_WIDTH - barWidth;
+      if (this.transientPlugins.length > 0) {
+        const nextPlugin = this.transientPlugins[0];
+        if (nextPlugin) {
+          const nextPluginWidth = nextPlugin.getEstimatedWidth();
+          if (nextPluginWidth < extraSpace) {
+            this.barPlugins.push(this.transientPlugins.shift());
+            this.requestUpdate();
+          }
+        }
+      }
     }
+
     this.actionBarWidth = barWidth;
   }
 
@@ -204,6 +274,58 @@ export class PluginActionBar extends ConnectedElement {
 
   onClick(e) {
     e.stopPropagation();
+  }
+
+  /**
+   * Handles the keydown event on the close button.
+   * @param {KeyboardEvent} e The keyboard event.
+   */
+  // istanbul ignore next 5
+  onCloseButtonKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      this.onCloseButtonClick();
+    }
+  }
+
+  /**
+   * Handles the click event on the close button.
+   */
+  onCloseButtonClick() {
+    this.appStore.fireEvent('hidden');
+  }
+
+  /**
+   * Renders the logo. Hidden when the state is TOAST.
+   * @returns {TemplateResult} The Lit-html template for the logo.
+   */
+  renderLogo() {
+    if (this.appStore.state === STATE.TOAST) {
+      return html``;
+    }
+
+    return html`
+      <div class="logo">
+        ${ICONS.SIDEKICK_LOGO}
+      </div>
+      <sp-menu-divider size="s" vertical></sp-menu-divider>
+    `;
+  }
+
+  /**
+   * Renders the close button. Hidden when the state is TOAST.
+   * @returns {TemplateResult} The Lit-html template for the close button.
+   */
+  renderCloseButton() {
+    if (this.appStore.state === STATE.TOAST) {
+      return html``;
+    }
+
+    return html`
+      <div class="close-button" @click=${this.onCloseButtonClick} @keydown=${this.onCloseButtonKeyDown} title="Close Sidekick">
+        <sp-menu-divider size="s" vertical></sp-menu-divider>
+        <sp-icon size="m">${ICONS.CLOSE_SIDEKICK}</sp-icon>
+      </div>
+    `;
   }
 
   renderPluginMenuItem(plugin) {
@@ -236,7 +358,7 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     return html`
-      <div class="action-group plugin-menu-container">
+      <div class=${`action-group plugin-menu-container ${this.menuPlugins.length === 0 ? 'hidden' : ''}`}>
         ${this.transientPlugins.length > 0 || this.menuPlugins.length > 0 ? html`
           <sp-action-menu
             id="plugin-menu"
@@ -311,6 +433,12 @@ export class PluginActionBar extends ConnectedElement {
       return;
     }
 
+    if (value === 'whats-new-opened') {
+      this.appStore.sampleRUM('click', { source: 'sidekick', target: 'whats-new-opened' });
+      this.appStore.showOnboarding();
+      return;
+    }
+
     if (value === 'project-added' || value === 'project-removed') {
       this.appStore.sampleRUM('click', { source: 'sidekick', target: value });
       chrome.runtime.sendMessage({ action: 'addRemoveProject' });
@@ -318,6 +446,11 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     this.appStore.fireEvent(value);
+  }
+
+  toggleTheme(e) {
+    e.stopPropagation();
+    this.appStore.toggleTheme();
   }
 
   renderSystemPlugins() {
@@ -356,26 +489,23 @@ export class PluginActionBar extends ConnectedElement {
             ${ICONS.HELP_ICON}
           </sp-icon>
           ${this.appStore.i18n('help_documentation')}
+        </sk-menu-item>        
+        <sk-menu-item class="icon-item" value="whats-new-opened"  @click=${this.handleItemSelection}>
+          <sp-icon slot="icon" size="m">
+            ${ICONS.PRESENT_ICON}
+          </sp-icon>
+          ${this.appStore.i18n('whats_new')}
         </sk-menu-item>
         <sp-divider size="s"></sp-divider>
-        <sk-menu-item class="close icon-item" value="hidden" @click=${this.handleItemSelection}>
-          <sp-icon slot="icon" size="m">
-            ${ICONS.CLOSE_X}
-          </sp-icon>
-          ${this.appStore.i18n('close_sidekick')}
-        </sk-menu-item>
+        <div class="theme-switch" value="theme" tabindex="-1">
+          <sp-switch slot="toggle" checked=${ifDefined(this.appStore.theme === 'dark' ? true : undefined)} @change=${this.toggleTheme}>Dark Mode</sp-switch>
+        </div>
       </sp-action-menu>`;
     systemPlugins.push(properties);
 
     const buttonType = siteStore.authorized ? '' : 'not-authorized';
     systemPlugins.push(html`
       <login-button id="user" class=${buttonType}></login-button>
-    `);
-
-    systemPlugins.push(html`
-      <div class="logo">
-        ${ICONS.SIDEKICK_LOGO}
-      </div>
     `);
 
     const actionGroup = html`<div class="action-group system-plugins-container">${systemPlugins}</div>`;
@@ -387,10 +517,12 @@ export class PluginActionBar extends ConnectedElement {
   render() {
     return this.appStore.state !== STATE.INITIALIZING ? html`
       <action-bar>
+        ${this.renderLogo()}
         ${this.renderPlugins()}
         ${this.renderPluginMenu()}
         ${this.renderSystemPlugins()}
         ${this.renderBadgePlugins()}
+        ${this.renderCloseButton()}
       </action-bar>
     ` : '';
   }

@@ -34,6 +34,7 @@ import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';
 import { style } from './json.css.js';
 import { spectrum2 } from '../../app/spectrum-2.css.js';
 import sampleRUM from '../../utils/rum.js';
+import { getConfig } from '../../config.js';
 
 /**
  * The lit template result type
@@ -100,18 +101,20 @@ export class JSONView extends LitElement {
   async connectedCallback() {
     super.connectedCallback();
 
+    this.theme = await getConfig('local', 'theme') || 'light';
+    document.body.setAttribute('color', this.theme);
+
     const lang = getLanguage();
     this.languageDict = await fetchLanguageDict(undefined, lang);
 
     try {
       const url = new URL(window.location.href).searchParams.get('url');
       if (url) {
-        const res = await fetch(url);
+        const res = await fetch(url, { cache: 'no-store' });
         if (res.ok) {
-          const text = await res.text();
           let json = {};
           try {
-            json = JSON.parse(text);
+            json = await res.json();
           } catch (e) {
             throw new Error(`invalid json found at ${url}`);
           }
@@ -455,7 +458,7 @@ export class JSONView extends LitElement {
 
   render() {
     return html`
-      <theme-wrapper>
+      <theme-wrapper theme=${this.theme}>
         <div class="container">
           ${this.renderData()}
         </div>

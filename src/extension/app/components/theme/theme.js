@@ -12,50 +12,33 @@
 
 /* eslint-disable wc/no-constructor-params, wc/guard-super-call */
 
-import { html, LitElement } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { spectrum2 } from '../../spectrum-2.css.js';
+import { ConnectedElement } from '../connected-element/connected-element.js';
 
 @customElement('theme-wrapper')
-export class ThemeWrapper extends LitElement {
-  static properties = {
-    theme: { type: String },
-  };
+export class ThemeWrapper extends ConnectedElement {
+  /**
+   * The theme
+   * @type {string}
+   */
+  @property({ type: String })
+  accessor theme;
 
-  constructor() {
-    super();
-    this.theme = 'light';
+  static get styles() {
+    return [spectrum2];
   }
-
-  async connectedCallback() {
-    super.connectedCallback();
-
-    this.getTheme();
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.onChange);
-  }
-
-  onChange = () => {
-    /* istanbul ignore next */
-    this.getTheme();
-  };
 
   disconnectedCallback() {
     super.disconnectedCallback();
-
-    window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.onChange);
-  }
-
-  getTheme() {
-    this.theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
   }
 
   render() {
     return html`
       <sk-theme
         system="spectrum-two"
-        color=${this.theme === 'dark' ? 'dark' : 'light'}
+        color=${this.theme}
         scale="medium"
       >
         <slot></slot>

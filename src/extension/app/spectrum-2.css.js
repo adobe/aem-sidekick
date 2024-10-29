@@ -95,7 +95,7 @@ export const spectrum2 = css`
     --spectrum2-background-color-hover-dark: rgba(255, 255, 255, 0.05);
 
     /* Sidekick theme tokens */
-    --sidekick-max-width: 640px;
+    --sidekick-max-width: 800px;
     --sidekick-color-light: #292929;
     --sidekick-color-dark: #DBDBDB;
     --sidekick-background-light: #FFFFFFCC;
@@ -104,8 +104,14 @@ export const spectrum2 = css`
     --sidekick-background-layer1-light: #F8F8F8;
     --sidekick-background-layer2-dark: #2C2C2C;
     --sidekick-background-layer2-light: #E9E9E9;
+    --sidekick-background-layer3-dark: #292929CC;
+    --sidekick-background-layer3-light: #f3f3f3CC;
     --sidekick-background-pasteboard-dark: #111111;
     --sidekick-background-pasteboard-light: #ffffff;
+    --sidekick-background-close-dark: #ffffff0C;
+    --sidekick-background-close-light: #0000000C;
+    --sidekick-cta-background-color-dark: #345bf8;
+    --sidekick-cta-background-color-light: #3b63fb;
     --sidekick-border-color-dark: #393939;
     --sidekick-border-color-light: #DADADA;
     --sidekick-backdrop-filter: blur(24px);
@@ -141,10 +147,13 @@ export const spectrum2 = css`
     --spectrum2-sidekick-background: var(--sidekick-background-dark);
     --spectrum2-sidekick-layer-1: var(--sidekick-background-layer1-dark);
     --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-dark);
+    --spectrum2-sidekick-layer-3: var(--sidekick-background-layer3-dark);
     --spectrum2-sidekick-background-pasteboard: var(--sidekick-background-pasteboard-dark);
+    --spectrum2-sidekick-background-close: var(--sidekick-background-close-dark);
     --spectrum2-sidekick-border-color: var(--sidekick-border-color-dark);
     --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-background-color-hover-dark);
     --spectrum2-sidekick-border-radius: var(--spectrum2-large-border-radius);
+    --spectrum2-sidekick-cta-background-color: var(--sidekick-cta-background-color-dark);
 
     /**
      * SPECTRUM OVERRIDES
@@ -176,52 +185,82 @@ export const spectrum2 = css`
     --mod-badge-corner-radius: 7px;
   }
 
-  @media (prefers-color-scheme: light) {
-    :host {
-      /* Enviroment alias tokens */
-      --spectrum2-preview-background-default: var(--preview-background-default-light);
-      --spectrum2-preview-background-hover: var(--preview-background-hover-light);
-      --spectrum2-preview-content-default: var(--preview-content-default-light);
-      --spectrum2-preview-border-default: var(--preview-border-default-light);
-      --spectrum2-preview-border-hover: var(--preview-border-hover-light);
-      --spectrum2-preview-border-open: var(--preview-border-open-light);
+  sk-theme[color='light'] {
+    /* Enviroment alias tokens */
+    --spectrum2-preview-background-default: var(--preview-background-default-light);
+    --spectrum2-preview-background-hover: var(--preview-background-hover-light);
+    --spectrum2-preview-content-default: var(--preview-content-default-light);
+    --spectrum2-preview-border-default: var(--preview-border-default-light);
+    --spectrum2-preview-border-hover: var(--preview-border-hover-light);
+    --spectrum2-preview-border-open: var(--preview-border-open-light);
 
-      --spectrum2-live-content-default: var(--live-content-default-light);
-      --spectrum2-live-background-default: var(--live-background-default-light);
-      --spectrum2-live-background-hover: var(--live-background-hover-light);
-      --spectrum2-live-border-default: var(--live-border-default-light);
-      --spectrum2-live-border-hover: var(--live-border-hover-light);
-      --spectrum2-live-border-open: var(--live-border-open-light);
+    --spectrum2-live-content-default: var(--live-content-default-light);
+    --spectrum2-live-background-default: var(--live-background-default-light);
+    --spectrum2-live-background-hover: var(--live-background-hover-light);
+    --spectrum2-live-border-default: var(--live-border-default-light);
+    --spectrum2-live-border-hover: var(--live-border-hover-light);
+    --spectrum2-live-border-open: var(--live-border-open-light);
 
-      --spectrum2-edit-content-default: var(--edit-content-default-light);
-      --spectrum2-edit-background-default: var(--edit-background-default-light);
-      --spectrum2-edit-background-hover: var(--edit-background-hover-light);
-      --spectrum2-edit-border-default: var(--edit-border-default-light);
-      --spectrum2-edit-border-hover: var(--edit-border-hover-light);
-      --spectrum2-edit-border-open: var(--edit-border-open-light);
+    --spectrum2-edit-content-default: var(--edit-content-default-light);
+    --spectrum2-edit-background-default: var(--edit-background-default-light);
+    --spectrum2-edit-background-hover: var(--edit-background-hover-light);
+    --spectrum2-edit-border-default: var(--edit-border-default-light);
+    --spectrum2-edit-border-hover: var(--edit-border-hover-light);
+    --spectrum2-edit-border-open: var(--edit-border-open-light);
 
-      /**
-       * SIDEKICK ALIAS TOKENS
-       */
-      --spectrum2-sidekick-color: var(--sidekick-color-light);
-      --spectrum2-sidekick-background: var(--sidekick-background-light);
-      --spectrum2-sidekick-layer-1: var(--sidekick-background-layer1-light);
-      --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-light);
-      --spectrum2-sidekick-background-pasteboard: var(--sidekick-background-pasteboard-light);
-      --spectrum2-sidekick-border-color: var(--sidekick-border-color-light);
-      --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-background-color-hover-light);
+    /**
+     * SIDEKICK ALIAS TOKENS
+     */
+    --spectrum2-sidekick-color: var(--sidekick-color-light);
+    --spectrum2-sidekick-background: var(--sidekick-background-light);
+    --spectrum2-sidekick-layer-1: var(--sidekick-background-layer1-light);
+    --spectrum2-sidekick-layer-2: var(--sidekick-background-layer2-light);
+    --spectrum2-sidekick-layer-3: var(--sidekick-background-layer3-light);
+    --spectrum2-sidekick-background-pasteboard: var(--sidekick-background-pasteboard-light);
+    --spectrum2-sidekick-background-close: var(--sidekick-background-close-light);
+    --spectrum2-sidekick-border-color: var(--sidekick-border-color-light);
+    --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-background-color-hover-light);
+    --spectrum2-sidekick-cta-background-color: var(--sidekick-cta-background-color-light);
 
-      /**
-       * SPECTRUM ALIAS TOKENS
-       */
-      --spectrum2-color-focus: var(--spectrum2-color-focus-light);
-      --spectrum2-action-button-selected: var(--spectrum2-action-button-selected-light);
-      --spectrum2-background-color-negative: var(--spectrum2-background-color-negative-light);
-      --spectrum2-foreground-color-negative: var(--spectrum2-foreground-color-negative-light);
-      --spectrum2-color-positive: var(--spectrum2-color-positive-light);
+    /**
+     * SPECTRUM ALIAS TOKENS
+     */
+    --spectrum2-color-focus: var(--spectrum2-color-focus-light);
+    --spectrum2-action-button-selected: var(--spectrum2-action-button-selected-light);
+    --spectrum2-background-color-negative: var(--spectrum2-background-color-negative-light);
+    --spectrum2-foreground-color-negative: var(--spectrum2-foreground-color-negative-light);
+    --spectrum2-color-positive: var(--spectrum2-color-positive-light);
 
-      --mod-actionbutton-background-color-focus: var(--spectrum2-background-color-hover-light);
-      --mod-actionbutton-background-color-hover: var(--spectrum2-action-button-hover-light);
-    }
+    --mod-actionbutton-background-color-focus: var(--spectrum2-background-color-hover-light);
+    --mod-actionbutton-background-color-hover: var(--spectrum2-action-button-hover-light);
+
+    /**
+     * SPECTRUM OVERRIDES
+     */
+    --mod-toast-corner-radius: var(--spectrum2-large-border-radius);
+    --mod-toast-divider-color: transparent;
+    --mod-toast-max-inline-size: var(--sidekick-max-width);
+
+    --mod-popover-corner-radius: var(--spectrum2-xlarge-border-radius);
+    --mod-popover-animation-distance: 20px;
+    --mod-popover-background-color: var(--spectrum2-sidekick-background);
+    --mod-popover-border-color: var(--spectrum2-sidekick-border-color);
+    --mod-popover-content-area-spacing-vertical: 0;
+
+    --mod-menu-item-background-color-hover: var(--spectrum2-sidekick-menu-item-background-color-hover);
+    --mod-menu-item-top-edge-to-text: 7px;
+
+    --mod-divider-background-color: var(--spectrum2-sidekick-border-color);
+
+    --mod-actionbutton-border-radius: var(--spectrum2-default-border-radius);
+    --mod-actionbutton-focus-indicator-border-radius: var(--spectrum2-medium-border-radius);
+    --mod-actionbutton-focus-indicator-color: var(--spectrum2-color-focus-dark);
+    --mod-actionbutton-background-color-focus: var(--spectrum2-background-color-hover-dark);
+    --mod-actionbutton-background-color-hover: var(--spectrum2-action-button-hover-dark);
+
+    --mod-picker-focus-indicator-color: var(--spectrum2-color-focus);
+    --mod-actionbutton-focus-indicator-color: var(--spectrum2-color-focus);
+
+    --mod-badge-corner-radius: 7px;
   }
 `;

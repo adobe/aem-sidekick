@@ -15,10 +15,14 @@ import '@spectrum-web-components/theme/spectrum-two/scale-medium-core-tokens.js'
 import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/divider/sp-divider.js';
+import '@spectrum-web-components/dialog/sp-dialog-base.js';
 import '@spectrum-web-components/menu/sp-menu-divider.js';
 import '@spectrum-web-components/overlay/sp-overlay.js';
 import '@spectrum-web-components/picker/sp-picker.js';
 import '@spectrum-web-components/status-light/sp-status-light.js';
+import '@spectrum-web-components/switch/sp-switch.js';
+import '@spectrum-web-components/tabs/sp-tabs.js';
+import '@spectrum-web-components/tabs/sp-tab.js';
 import '@spectrum-web-components/textfield/sp-textfield.js';
 import '@spectrum-web-components/icon/sp-icon.js';
 import '@spectrum-web-components/badge/sp-badge.js';
@@ -38,6 +42,7 @@ import './app/components/spectrum/action-button/action-button.js';
 import './app/components/spectrum/progress-circle/progress-circle.js';
 import './app/components/spectrum/theme/theme.js';
 import './app/components/bulk/bulk-result/bulk-result.js';
+import './app/components/onboarding/onboarding-dialog.js';
 
 import { AEMSidekick } from './app/aem-sidekick.js';
 import { AEMConfigPicker } from './app/config-picker.js';

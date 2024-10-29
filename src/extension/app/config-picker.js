@@ -17,6 +17,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { style } from './config-picker.css.js';
 import { fetchLanguageDict, getLanguage, i18n } from './utils/i18n.js';
 import { spectrum2 } from './spectrum-2.css.js';
+import { getConfig } from '../config.js';
 
 /**
  * The modal type
@@ -52,6 +53,7 @@ export class AEMConfigPicker extends LitElement {
   async connectedCallback() {
     super.connectedCallback();
 
+    this.theme = await getConfig('local', 'theme') || 'dark';
     this.lang = getLanguage();
     this.languageDict = await fetchLanguageDict(undefined, this.lang);
     this.ctaLabel = `${i18n(this.languageDict, 'config_project_pick')}:`;
@@ -71,7 +73,7 @@ export class AEMConfigPicker extends LitElement {
 
   render() {
     return html`
-      <theme-wrapper>
+      <theme-wrapper theme=${this.theme}>
         <action-bar>
             <sp-action-group>
               <span>${this.ctaLabel}</span>

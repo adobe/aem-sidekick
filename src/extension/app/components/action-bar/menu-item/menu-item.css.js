@@ -58,7 +58,7 @@ export const style = css`
   :host(.current-env.env-preview) #label,
   :host(.current-env.env-live) #label,
   :host(.current-env.env-prod) #label {
-    color: var(--spectrum-white);
+    color: var(--spectrum-gray-800);
     font-weight: 700;
   }
 
@@ -182,18 +182,9 @@ export const style = css`
     height: 18px;
   }
 
-  @media (prefers-color-scheme: light) {
-    :host(.current-env.env-dev) #label,
-    :host(.current-env.env-preview) #label,
-    :host(.current-env.env-live) #label,
-    :host(.current-env.env-prod) #label {
-      color: var(--spectrum-gray-800);
-    }
-
-    :host(:not(.env-edit, .current-env, .logout)[class], [disabled]),
-    :host(:not(.env-edit, .current-env, .logout)[class]) #label,
-    :host(:not(.env-edit, .current-env, .logout)[class]) [name="description"]::slotted(*) {
-      color: var(--spectrum-gray-800);
-    }
+  :host(:not(.env-edit, .current-env, .logout).light[class], [disabled]),
+  :host(:not(.env-edit, .current-env, .logout).light[class]) #label,
+  :host(:not(.env-edit, .current-env, .logout).light[class]) [name="description"]::slotted(*) {
+    color: var(--spectrum-gray-800);
   }
 `;

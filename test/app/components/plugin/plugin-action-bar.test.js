@@ -91,9 +91,8 @@ describe('Plugin action bar', () => {
   }
 
   function expectInActionBar(pluginIds) {
-    const actionGroup = recursiveQuery(sidekickTest.sidekick, '.action-group:first-of-type');
+    const actionGroup = recursiveQuery(sidekickTest.sidekick, '.action-group');
     const plugins = recursiveQueryAll(actionGroup, 'sk-action-button, env-switcher, bulk-info, action-bar-picker');
-
     expect(
       [...plugins].map((plugin) => plugin.className.replace('plugin-container ', '')
         || plugin.tagName.toLowerCase()),
@@ -645,8 +644,8 @@ describe('Plugin action bar', () => {
       ]);
 
       // make viewport narrower
-      await resizeWindow({ width: 600, height: 600 });
-      await aTimeout(1300);
+      await resizeWindow({ width: 630, height: 600 });
+      await aTimeout(300);
 
       // check if tools container plugin moved to plugin menu
       expectInActionBar([
@@ -667,14 +666,13 @@ describe('Plugin action bar', () => {
       // make viewport narrower
       await resizeWindow({ width: 500, height: 600 });
       await aTimeout(300);
-
       // check if library plugin and tools container moved to plugin menu
       expectInActionBar([
         'env-switcher',
         'edit-preview',
-        'assets',
       ]);
       await expectInPluginMenu([
+        'assets',
         'library',
         'tag-selector',
         'checkschema',
@@ -684,21 +682,62 @@ describe('Plugin action bar', () => {
         customPluginId,
       ]);
 
-      // make viewport wider again
+      // simulate dragging the viewport wider again
+      await resizeWindow({ width: 650, height: 600 });
+      await aTimeout(500);
+      await resizeWindow({ width: 750, height: 600 });
+      await aTimeout(500);
+      await resizeWindow({ width: 800, height: 600 });
+      await aTimeout(500);
+
+      // check if all plugins moved back to bar
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+        'assets',
+        'library',
+        'tools',
+      ]);
+      await expectInPluginMenu([
+        customPluginId,
+      ]);
+
+      /**
+       * Small to large fast
+       */
+      await resizeWindow({ width: 500, height: 600 });
+      await aTimeout(300);
+      // check if library plugin and tools container moved to plugin menu
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+      ]);
+      await expectInPluginMenu([
+        'assets',
+        'library',
+        'tag-selector',
+        'checkschema',
+        'preflight',
+        'predicted-url',
+        'localize',
+        customPluginId,
+      ]);
+
+      // simulate dragging the viewport wider again
       await resizeWindow({ width: 1000, height: 600 });
       await aTimeout(500);
 
       // check if all plugins moved back to bar
-      // expectInActionBar([
-      //   'env-switcher',
-      //   'edit-preview',
-      //   'assets',
-      //   'library',
-      //   'tools',
-      // ]);
-      // await expectInPluginMenu([
-      //   customPluginId,
-      // ]);
+      expectInActionBar([
+        'env-switcher',
+        'edit-preview',
+        'assets',
+        'library',
+        'tools',
+      ]);
+      await expectInPluginMenu([
+        customPluginId,
+      ]);
     }).timeout(100000);
   });
 
@@ -714,7 +753,7 @@ describe('Plugin action bar', () => {
       await sidekickTest.awaitActionBar();
 
       const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const systemActionGroup = recursiveQuery(actionBar, '.action-group:last-of-type');
+      const systemActionGroup = recursiveQuery(actionBar, '.system-plugins-container');
       expect(recursiveQuery(actionBar, 'login-button')).to.exist;
 
       const sidekickMenuButton = recursiveQuery(systemActionGroup, '#sidekick-menu');
@@ -898,17 +937,10 @@ describe('Plugin action bar', () => {
 
       await sidekickTest.awaitEnvSwitcher();
 
-      const sidekickMenuButton = recursiveQuery(sidekick, '#sidekick-menu');
-      expect(sidekickMenuButton).to.exist;
-
-      sidekickMenuButton.click();
-
-      await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
-
       const closeSpy = sidekickTest.sandbox.spy();
       sidekick.addEventListener('hidden', closeSpy);
 
-      const closeButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="hidden"]');
+      const closeButton = recursiveQuery(sidekick, '.close-button');
       expect(closeButton).to.exist;
       closeButton.click();
 
@@ -944,6 +976,36 @@ describe('Plugin action bar', () => {
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'help-opened',
+      })).to.be.true;
+    }).timeout(10000);
+
+    it('open whats new', async () => {
+      const { sandbox } = sidekickTest;
+      sidekick = sidekickTest.createSidekick({
+        ...defaultSidekickConfig,
+        transient: false,
+      });
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const sidekickMenuButton = recursiveQuery(sidekick, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
+
+      sidekickMenuButton.click();
+
+      await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
+
+      const showOnboardingStub = sandbox.stub(sidekickTest.appStore, 'showOnboarding').returns(null);
+      const helpButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="whats-new-opened"]');
+      expect(helpButton).to.exist;
+      helpButton.click();
+
+      await aTimeout(200);
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
+      expect(showOnboardingStub.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'whats-new-opened',
       })).to.be.true;
     }).timeout(10000);
   });

@@ -55,7 +55,7 @@ export class ActionBar extends LitElement {
         width: 100%;
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 800px) {
       .action-bar {
         border-radius: 0;
       }
