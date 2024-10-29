@@ -2,6 +2,8 @@
 
 > Browser extension for authoring AEM sites
 
+[Download from Chrome Web Store](https://chromewebstore.google.com/detail/aem-sidekick/igkmdomcgoebiipaifhmpfjhbjccggml)
+
 ## Installation
 
 ...
@@ -31,7 +33,7 @@ $ npm test
 ### Debug Browser Tests
 
 ```bash
-$ npm test:wtr:watch
+$ npm run test:watch
 ```
 
 ### Lint
@@ -50,12 +52,6 @@ $ npm run build
 
 ```bash
 $ npm run build:chrome
-```
-
-### Build Safari
-
-```bash
-$ npm run build:safari
 ```
 
 ...
