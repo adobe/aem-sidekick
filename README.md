@@ -33,7 +33,7 @@ $ npm test
 ### Debug Browser Tests
 
 ```bash
-$ npm test:watch
+$ npm run test:watch
 ```
 
 ### Lint
