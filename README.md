@@ -54,12 +54,6 @@ $ npm run build
 $ npm run build:chrome
 ```
 
-### Build Safari
-
-```bash
-$ npm run build:safari
-```
-
 ...
 
 ## Deployment
