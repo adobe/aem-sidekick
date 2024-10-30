@@ -87,7 +87,6 @@ export async function fetchLanguageDict(siteStore, lang) {
       dict[key] = messages[key].message;
     });
   } catch (e) {
-    /* istanbul ignore next 2 */
     // eslint-disable-next-line no-console
     console.error(`failed to fetch dictionary from ${dictPath}`);
   }
