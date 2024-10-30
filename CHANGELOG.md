@@ -1,3 +1,15 @@
+# [7.0.0](https://github.com/adobe/aem-sidekick/compare/v6.0.0...v7.0.0) (2024-10-30)
+
+
+### Features
+
+* create v7 release ([3422a6f](https://github.com/adobe/aem-sidekick/commit/3422a6ff719151a90b953ceb5c357c0ab16b7258))
+
+
+### BREAKING CHANGES
+
+* redesign, updated API and eventing
+
 # [3.0.0](https://github.com/adobe/aem-sidekick/compare/v2.4.1...v3.0.0) (2024-10-29)
 
 
