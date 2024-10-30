@@ -22,7 +22,7 @@ export const style = css`
     pointer-events: none;
     z-index: 999999999999;
     color: initial;
-    font-weight: initial;
+    font: initial;
     letter-spacing: initial;
   }
 
