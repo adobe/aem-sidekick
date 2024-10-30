@@ -58,13 +58,6 @@ export class OnBoardingDialog extends ConnectedElement {
   accessor items;
 
   /**
-   * The theme
-   * @type {'dark' | 'light'}
-   */
-  @state()
-  accessor theme;
-
-  /**
    * The selected index
    * @type {number}
    */
@@ -79,23 +72,7 @@ export class OnBoardingDialog extends ConnectedElement {
     super.connectedCallback();
 
     this.fetchIndex();
-    // Listen for theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.onThemeChange);
   }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-
-    window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.onThemeChange);
-  }
-
-  /**
-   * Handle theme changes
-   */
-  onThemeChange = () => {
-    /* istanbul ignore next */
-    this.requestUpdate();
-  };
 
   /**
    * Fetch the onboarding index
@@ -196,14 +173,12 @@ export class OnBoardingDialog extends ConnectedElement {
   }
 
   render() {
-    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = prefersDarkMode ? 'dark' : 'light';
     const item = this.items && this.items.length > 0 ? this.items[this.selectedIndex] : null;
     return html`
       ${when(item,
         () => html`
           <sp-underlay open></sp-underlay>
-          <sp-dialog-base slot="click-content" class=${theme} open>
+          <sp-dialog-base slot="click-content" class=${this.appStore.theme} open>
             <div class="container">
               <nav>
                 <div class="heading">${this.appStore.i18n('whats_new')}</div>
@@ -247,7 +222,7 @@ export class OnBoardingDialog extends ConnectedElement {
             </div>
             <sp-button 
               id="close-button" 
-              static=${theme === 'dark' ? 'black' : 'white'} 
+              static=${this.appStore.theme === 'dark' ? 'black' : 'white'} 
               label="Close" 
               @click=${this.closeDialog} 
               icon-only
