@@ -118,7 +118,9 @@ export class OnBoardingDialog extends ConnectedElement {
           : null;
       });
 
-    this.items = (await Promise.all(onboardingItems)).filter(Boolean);
+    this.items = (await Promise.all(onboardingItems))
+      .filter(Boolean)
+      .sort((a, b) => a.index - b.index);
   }
 
   /**
