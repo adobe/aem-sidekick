@@ -205,8 +205,8 @@ export class PluginActionBar extends ConnectedElement {
     // Combined width of left logo and plugin group
     const leftWidth = pluginGroupWidthIncludingPadding + logoWidth;
 
-    // Total free space in the bar
-    const totalFreeSpace = barWidth - leftWidth - rightWidth;
+    // Total free space in the bar, minus 3px to account for the dividers
+    const totalFreeSpace = barWidth - leftWidth - rightWidth - 3;
 
     // If there's not enough space for the plugins in the bar, move the last plugin to the menu
     // We check against -10 to avoid endless loop caused after a plugin is added to back to the bar
