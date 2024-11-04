@@ -534,7 +534,7 @@ describe('Test App Store', () => {
     });
 
     afterEach(() => {
-      // sidekickTest.destroy();
+      sidekickTest.destroy();
     });
 
     it('switches from editor to preview', async () => {
