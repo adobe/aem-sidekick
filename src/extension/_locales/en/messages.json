@@ -538,6 +538,9 @@
     "edit_never_updated": {
       "message": "Never saved"
     },
+    "edit_no_source": {
+      "message": "No source document found"
+    },
     "preview_never_updated": {
       "message": "Never previewed"
     },
@@ -622,10 +625,10 @@
     "whats_new": {
       "message": "What's New",
       "description": "Onboarding menu title"
-    },  
+    },
     "join_discord": {
       "message": "Join us on Discord"
-    },  
+    },
     "import": {
       "message": "Import"
     }

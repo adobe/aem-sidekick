@@ -534,7 +534,7 @@ describe('Test App Store', () => {
     });
 
     afterEach(() => {
-      sidekickTest.destroy();
+      // sidekickTest.destroy();
     });
 
     it('switches from editor to preview', async () => {
@@ -660,6 +660,24 @@ describe('Test App Store', () => {
       await instance.switchEnv('live');
       expect(openPage.calledOnce).to.be.false;
       expect(loadPage.calledOnce).to.be.false;
+    });
+
+    it('displays warning when switching to edit without source document', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      sidekickTest.sandbox.stub(instance, 'fetchStatus').resolves({
+        ...mockStatus,
+        edit: { status: 404 },
+      });
+      const showToastStub = sidekickTest.sandbox.stub(instance, 'showToast');
+
+      await instance.switchEnv('edit');
+
+      await waitUntil(() => showToastStub.calledOnce);
+      expect(openPage.calledOnce).to.be.false;
+      expect(showToastStub.calledWithMatch({
+        variant: 'warning',
+      })).to.be.true;
     });
 
     it('retries if status not ready yet', async () => {
