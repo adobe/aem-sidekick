@@ -88,7 +88,13 @@ function removeCacheParam(href = window.location.href) {
     const { AEMConfigPicker } = await import('./index.js');
     const configPicker = new AEMConfigPicker(configMatches);
     configPicker.setAttribute('open', display ? display.toString() : 'false');
-    document.body.prepend(configPicker);
+
+    // ensure single config picker
+    if (document.querySelector('aem-config-picker')) {
+      document.querySelector('aem-config-picker').replaceWith(configPicker);
+    } else {
+      document.body.prepend(configPicker);
+    }
 
     configPicker.addEventListener('configselected', (event) => {
       if (event instanceof CustomEvent) {

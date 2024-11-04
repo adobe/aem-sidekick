@@ -152,4 +152,14 @@ describe('Onboarding modal', () => {
     const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
     expect(recursiveQuery(themeWrapper, 'onboarding-dialog')).to.not.exist;
   });
+
+  it('uses theme from appStore', async () => {
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
+    const onboardingDialog = recursiveQuery(themeWrapper, 'onboarding-dialog');
+    const theme = recursiveQuery(onboardingDialog, 'sp-dialog-base').className;
+    expect(theme).to.equal(themeWrapper.getAttribute('theme'));
+  });
 });
