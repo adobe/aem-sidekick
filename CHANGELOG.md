@@ -1,3 +1,11 @@
+## [7.0.1](https://github.com/adobe/aem-sidekick/compare/v7.0.0...v7.0.1) (2024-11-04)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([4743a5c](https://github.com/adobe/aem-sidekick/commit/4743a5cf5231e49235e4bb9844cf6c0a4fb7f818))
+* **onboarding:** reuse appStore theme and fix sort order ([#332](https://github.com/adobe/aem-sidekick/issues/332)) ([82a1ffd](https://github.com/adobe/aem-sidekick/commit/82a1ffdbf81672979af2973890bde0ebdf43b1ff)), closes [#335](https://github.com/adobe/aem-sidekick/issues/335)
+
 # [7.0.0](https://github.com/adobe/aem-sidekick/compare/v6.0.0...v7.0.0) (2024-10-30)
 
 
