@@ -18,13 +18,15 @@ import {
 } from './project.js';
 import { urlCache } from './url-cache.js';
 import { updateUI } from './ui.js';
+import { getConfig } from './config.js';
 
 /**
  * Loads the content script in the tab.
  * @param {number} tabId The ID of the tab
  * @param {Object[]} matches The config matches
+ * @param {string} [adminVersion] The admin version
  */
-async function injectContentScript(tabId, matches) {
+async function injectContentScript(tabId, matches, adminVersion) {
   // execute content script
   try {
     await chrome.scripting.executeScript({
@@ -33,6 +35,7 @@ async function injectContentScript(tabId, matches) {
     });
     await chrome.tabs.sendMessage(tabId, {
       configMatches: matches,
+      adminVersion,
     });
   } catch (e) {
     log.warn('injectContentScript: unable to inject content script', tabId, e);
@@ -59,10 +62,10 @@ export async function checkTab(id) {
     await urlCache.set(tab, projects);
 
     const matches = await getProjectMatches(projects, tab);
-
     const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(tab);
+    const adminVersion = await getConfig('session', 'adminVersion');
 
-    injectContentScript(id, matches);
+    injectContentScript(id, matches, adminVersion);
 
     updateUI({
       id, url, config, matches,
