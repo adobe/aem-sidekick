@@ -321,7 +321,7 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     return html`
-      <div class="close-button" @click=${this.onCloseButtonClick} @keydown=${this.onCloseButtonKeyDown} title="Close Sidekick">
+      <div class="close-button" @click=${this.onCloseButtonClick} @keydown=${this.onCloseButtonKeyDown} title="${this.appStore.i18n('close_sidekick')}">
         <sp-menu-divider size="s" vertical></sp-menu-divider>
         <sp-icon size="m">${ICONS.CLOSE_SIDEKICK}</sp-icon>
       </div>
@@ -468,7 +468,7 @@ export class PluginActionBar extends ConnectedElement {
           ${ICONS.HAMBURGER_ICON}
         </sp-icon>
         ${siteStore.transient
-          ? html`
+        ? html`
             <sk-menu-item class="icon-item" value="project-added" @click=${this.handleItemSelection}>
               <sp-icon slot="icon" size="m">
                 ${ICONS.PLUS_ICON}
@@ -483,7 +483,7 @@ export class PluginActionBar extends ConnectedElement {
               ${this.appStore.i18n('config_project_remove')}
             </sk-menu-item>
           `
-        }
+      }
         <sk-menu-item class="icon-item" value="help-opened"  @click=${this.handleItemSelection}>
           <sp-icon slot="icon" size="m">
             ${ICONS.HELP_ICON}
@@ -498,7 +498,7 @@ export class PluginActionBar extends ConnectedElement {
         </sk-menu-item>
         <sp-divider size="s"></sp-divider>
         <div class="theme-switch" value="theme" tabindex="-1">
-          <sp-switch slot="toggle" checked=${ifDefined(this.appStore.theme === 'dark' ? true : undefined)} @change=${this.toggleTheme}>Dark Mode</sp-switch>
+          <sp-switch slot="toggle" checked=${ifDefined(this.appStore.theme === 'dark' ? true : undefined)} @change=${this.toggleTheme}>${this.appStore.i18n('dark_mode')}</sp-switch>
         </div>
       </sp-action-menu>`;
     systemPlugins.push(properties);
