@@ -122,7 +122,7 @@
     "message": "Schließen"
   },
   "close_sidekick": {
-    "message": "AEM Sidekick schließen"
+    "message": "Sidekick schließen"
   },
   "code_state": {
     "message": "Keine Aktionen für Code-Dateien verfügbar "
@@ -243,6 +243,9 @@
   "copy_urls_error_focus": {
     "message": "Kopieren in Zwischenablage fehlgeschlagen. Bitte stellen Sie sicher, dass das Fenster im Eingabefokus bleibt."
   },
+  "dark_mode": {
+    "message": "Dunkler Modus"
+  },
   "delete": {
     "message": "Löschen"
   },
@@ -305,6 +308,9 @@
   },
   "edit_never_updated": {
     "message": "Nie gespeichert"
+  },
+  "edit_no_source": {
+    "message": "Kein Quelldokument gefunden"
   },
   "environments": {
     "message": "Umgebungen"
@@ -405,34 +411,17 @@
   "help_documentation": {
     "message": "Hilfe und Dokumentation"
   },
-  "help_opt_out": {
-    "message": "Keine Hilfe anzeigen"
-  },
-  "help_opt_out_alert": {
-    "message": "Hilfe ausgeschaltet. Sie kann unter „Optionen“ > „Anwendererlebnis“ wieder aktiviert werden."
-  },
-  "help_previous": {
-    "message": "Vorheriger Tipp"
-  },
-  "help_user_status": {
-    "message": "Verfügbare Hilfethemen"
-  },
-  "help_user_status_check_all": {
-    "description": "Alle Hilfethemen markieren",
-    "message": "Alle markieren"
-  },
-  "help_user_status_description": {
-    "message": "Markierte Themen werden nicht mehr gezeigt. Entfernen Sie das Häkchen neben Themen, die erneut angezeigt werden sollen."
-  },
-  "help_user_status_uncheck_all": {
-    "description": "Markierung für alle Hilfethemen aufheben",
-    "message": "Alle Markierungen aufheben"
-  },
   "homepage": {
     "message": "https://www.hlx.live/tools/sidekick/"
   },
+  "import": {
+    "message": "Importieren"
+  },
   "info": {
     "message": "Informationen"
+  },
+  "join_discord": {
+    "message": "Kommen Sie mit uns zu Discord"
   },
   "json_results_stat": {
     "message": "$1 von $2 Ergebnissen werden angezeigt"
@@ -471,6 +460,7 @@
     "message": "Nie"
   },
   "next": {
+    "description": "Nächste Einstiegsfolie",
     "message": "Weiter"
   },
   "no_results": {
@@ -637,6 +627,10 @@
   },
   "user_switch": {
     "message": "Benutzer/in wechseln"
+  },
+  "whats_new": {
+    "description": "Onboarding-Menütitel",
+    "message": "Neue Funktionen"
   },
   "yesterday_at": {
     "message": "Gestern um $1"
