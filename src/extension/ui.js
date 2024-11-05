@@ -75,9 +75,13 @@ export async function updateIcon({ matches = [] }) {
   }
   // update icon
   log.debug(`updateIcon: using icon type ${iconType}`);
-  await chrome.action.setIcon({
-    path: getPaths(iconType),
-  });
+  try {
+    await chrome.action.setIcon({
+      path: getPaths(iconType),
+    });
+  } catch (e) {
+    log.warn(`updateIcon: failed to update icon: ${e.message}`);
+  }
 }
 
 /**
