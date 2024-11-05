@@ -122,7 +122,7 @@
     "message": "Chiudi"
   },
   "close_sidekick": {
-    "message": "Chiudi AEM Sidekick"
+    "message": "Chiudi Sidekick"
   },
   "code_state": {
     "message": "Nessuna azione disponibile per i file di codice"
@@ -243,6 +243,9 @@
   "copy_urls_error_focus": {
     "message": "Copia negli Appunti non riuscita. Assicurati che la finestra rimanga attiva."
   },
+  "dark_mode": {
+    "message": "Modalità scura"
+  },
   "delete": {
     "message": "Elimina"
   },
@@ -305,6 +308,9 @@
   },
   "edit_never_updated": {
     "message": "Salvataggio mai eseguito"
+  },
+  "edit_no_source": {
+    "message": "Nessun documento di origine trovato"
   },
   "environments": {
     "message": "Ambienti"
@@ -405,34 +411,17 @@
   "help_documentation": {
     "message": "Assistenza e documentazione"
   },
-  "help_opt_out": {
-    "message": "Non mostrare l’Aiuto"
-  },
-  "help_opt_out_alert": {
-    "message": "Aiuto disattivato. Puoi riattivarlo in Opzioni > Esperienza utente."
-  },
-  "help_previous": {
-    "message": "Suggerimento precedente"
-  },
-  "help_user_status": {
-    "message": "Argomenti dell’Aiuto disponibili"
-  },
-  "help_user_status_check_all": {
-    "description": "Seleziona tutti gli argomenti",
-    "message": "Seleziona tutto"
-  },
-  "help_user_status_description": {
-    "message": "Gli argomenti selezionati non verranno più mostrati. Rimuovi il segno di spunta accanto a un argomento per poterlo vedere di nuovo."
-  },
-  "help_user_status_uncheck_all": {
-    "description": "Deseleziona tutti gli argomenti",
-    "message": "Deseleziona tutto"
-  },
   "homepage": {
     "message": "https://www.hlx.live/tools/sidekick/"
   },
+  "import": {
+    "message": "Importa"
+  },
   "info": {
     "message": "Informazioni"
+  },
+  "join_discord": {
+    "message": "Unisciti a noi su Discord"
   },
   "json_results_stat": {
     "message": "Visualizzazione di $1 di $2 risultati"
@@ -471,6 +460,7 @@
     "message": "Mai"
   },
   "next": {
+    "description": "Diapositiva di onboarding successiva",
     "message": "Avanti"
   },
   "no_results": {
@@ -637,6 +627,10 @@
   },
   "user_switch": {
     "message": "Cambia utente"
+  },
+  "whats_new": {
+    "description": "Titolo del menu di onboarding",
+    "message": "Novità di"
   },
   "yesterday_at": {
     "message": "Ieri alle $1"

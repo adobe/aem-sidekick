@@ -122,7 +122,7 @@
     "message": "Fermer"
   },
   "close_sidekick": {
-    "message": "Fermer AEM Sidekick"
+    "message": "Fermer le Sidekick"
   },
   "code_state": {
     "message": "Aucune action disponible pour les fichiers de code"
@@ -243,6 +243,9 @@
   "copy_urls_error_focus": {
     "message": "La copie dans le presse-papiers a échoué. Veuillez vous assurer que la fenêtre reste au premier plan."
   },
+  "dark_mode": {
+    "message": "Mode Sombre"
+  },
   "delete": {
     "message": "Supprimer"
   },
@@ -305,6 +308,9 @@
   },
   "edit_never_updated": {
     "message": "Jamais enregistré"
+  },
+  "edit_no_source": {
+    "message": "Aucun document source trouvé"
   },
   "environments": {
     "message": "Environnements"
@@ -405,34 +411,17 @@
   "help_documentation": {
     "message": "Aide et documentation"
   },
-  "help_opt_out": {
-    "message": "Ne pas afficher de contenu d’aide"
-  },
-  "help_opt_out_alert": {
-    "message": "L’aide a été désactivée. Réactivez-la sous Options > Expérience client."
-  },
-  "help_previous": {
-    "message": "Conseil précédent"
-  },
-  "help_user_status": {
-    "message": "Rubriques d'aide disponibles"
-  },
-  "help_user_status_check_all": {
-    "description": "Consulter toutes les rubriques d'aide",
-    "message": "Tout cocher"
-  },
-  "help_user_status_description": {
-    "message": "Les rubriques cochées ne seront plus affichées. Enlevez la coche à côté d’une rubrique que vous souhaitez voir à nouveau."
-  },
-  "help_user_status_uncheck_all": {
-    "description": "Décocher toutes les rubriques d'aide",
-    "message": "Tout décocher"
-  },
   "homepage": {
     "message": "https://www.hlx.live/tools/sidekick/"
   },
+  "import": {
+    "message": "Importer"
+  },
   "info": {
     "message": "Informations"
+  },
+  "join_discord": {
+    "message": "Rejoignez-nous sur Discord"
   },
   "json_results_stat": {
     "message": "Affichage de $1 résultat(s) sur $2"
@@ -471,6 +460,7 @@
     "message": "Jamais"
   },
   "next": {
+    "description": "Diapositive d’intégration suivante",
     "message": "Suivant"
   },
   "no_results": {
@@ -637,6 +627,10 @@
   },
   "user_switch": {
     "message": "Changer d'utilisateur"
+  },
+  "whats_new": {
+    "description": "Titre du menu Intégration",
+    "message": "Quoi de neuf ?"
   },
   "yesterday_at": {
     "message": "Hier à $1"
