@@ -208,14 +208,14 @@ describe('Test UI: updateContextMenu', () => {
 });
 
 describe('Test UI: updateIcon', () => {
-  let setIconSpy;
+  let setIconStub;
 
   before(async () => {
     await setUserAgent('HeadlessChrome');
   });
 
   beforeEach(async () => {
-    setIconSpy = sandbox.spy(chrome.action, 'setIcon');
+    setIconStub = sandbox.stub(chrome.action, 'setIcon');
   });
 
   afterEach(() => {
@@ -225,7 +225,7 @@ describe('Test UI: updateIcon', () => {
   it('updateIcon: disabled', async () => {
     // disabled
     await updateIcon({});
-    expect(setIconSpy.calledWith({
+    expect(setIconStub.calledWith({
       path: {
         16: 'icons/disabled/icon-16x16.png',
         32: 'icons/disabled/icon-32x32.png',
@@ -241,7 +241,7 @@ describe('Test UI: updateIcon', () => {
     await updateIcon({
       matches: [config],
     });
-    expect(setIconSpy.calledWith({
+    expect(setIconStub.calledWith({
       path: {
         16: 'icons/default/icon-16x16.png',
         32: 'icons/default/icon-32x32.png',
@@ -258,7 +258,7 @@ describe('Test UI: updateIcon', () => {
     await updateIcon({
       matches: [config],
     });
-    expect(setIconSpy.calledWith({
+    expect(setIconStub.calledWith({
       path: {
         16: 'icons/hidden/icon-16x16.png',
         32: 'icons/hidden/icon-32x32.png',
@@ -267,6 +267,15 @@ describe('Test UI: updateIcon', () => {
         512: 'icons/hidden/icon-512x512.png',
       },
     })).to.be.true;
+  });
+
+  it('updateIcon fails gracefully', async () => {
+    setIconStub.throws(error);
+    await setDisplay(true);
+    await updateIcon({
+      matches: [config],
+    });
+    expect(setIconStub.calledOnce).to.be.true;
   });
 });
 

@@ -35,7 +35,7 @@ export class DialogWrapper extends SPDialogWrapper {
   firstUpdated() {
     if (this.underlay) {
       const underlay = this.shadowRoot.querySelector('sp-underlay');
-      underlay.setAttribute('open');
+      underlay.setAttribute('open', '');
       if (this.closeOnUnderlayClick) {
         underlay.addEventListener('click', (e) => {
           e.preventDefault();

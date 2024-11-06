@@ -122,7 +122,7 @@
     "message": "閉じる"
   },
   "close_sidekick": {
-    "message": "AEM Sidekick を閉じる"
+    "message": "閉じるSidekick"
   },
   "code_state": {
     "message": "コードファイルに使用できるアクションはありません"
@@ -243,6 +243,9 @@
   "copy_urls_error_focus": {
     "message": "クリップボードへのコピーに失敗しました。ウィンドウに焦点が当てられたままになっていることを確認してください。"
   },
+  "dark_mode": {
+    "message": "ダークモード"
+  },
   "delete": {
     "message": "削除"
   },
@@ -305,6 +308,9 @@
   },
   "edit_never_updated": {
     "message": "未保存"
+  },
+  "edit_no_source": {
+    "message": "ソースドキュメントが見つかりません"
   },
   "environments": {
     "message": "環境"
@@ -405,34 +411,17 @@
   "help_documentation": {
     "message": "ヘルプとドキュメント"
   },
-  "help_opt_out": {
-    "message": "ヘルプを表示しない"
-  },
-  "help_opt_out_alert": {
-    "message": "ヘルプがオフになりました。オプション／ユーザーエクスペリエンスでオンに戻すことができます。"
-  },
-  "help_previous": {
-    "message": "前のヒント"
-  },
-  "help_user_status": {
-    "message": "利用可能なヘルプトピック"
-  },
-  "help_user_status_check_all": {
-    "description": "すべてのヘルプトピックを確認",
-    "message": "すべてオンにする"
-  },
-  "help_user_status_description": {
-    "message": "選択したトピックは表示されなくなります。トピックを再表示するにはトピックのチェックマークを外してください。"
-  },
-  "help_user_status_uncheck_all": {
-    "description": "すべてのヘルプトピックのチェックを解除",
-    "message": "すべて解除する"
-  },
   "homepage": {
     "message": "https://www.hlx.live/tools/sidekick/"
   },
+  "import": {
+    "message": "インポート"
+  },
   "info": {
     "message": "情報"
+  },
+  "join_discord": {
+    "message": "Discord に参加"
   },
   "json_results_stat": {
     "message": "結果 $2 個中 $1 個を表示中"
@@ -471,6 +460,7 @@
     "message": "なし"
   },
   "next": {
+    "description": "次のオンボーディングスライド",
     "message": "次へ"
   },
   "no_results": {
@@ -637,6 +627,10 @@
   },
   "user_switch": {
     "message": "ユーザーを切り替え"
+  },
+  "whats_new": {
+    "description": "オンボーディングメニュータイトル",
+    "message": "最新情報"
   },
   "yesterday_at": {
     "message": "昨日の $1"

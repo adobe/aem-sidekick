@@ -125,7 +125,7 @@
       "message": "Close"
     },
     "close_sidekick": {
-      "message": "Close AEM Sidekick"
+      "message": "Close Sidekick"
     },
     "config_add_success": {
       "message": "Project added to Sidekick"
@@ -242,6 +242,9 @@
     },
     "copy_urls_error_focus": {
       "message": "Copy to clipboard failed. Please make sure the window remains focused."
+    },
+    "dark_mode": {
+      "message": "Dark Mode"
     },
     "delete": {
       "message": "Delete"
@@ -538,6 +541,9 @@
     "edit_never_updated": {
       "message": "Never saved"
     },
+    "edit_no_source": {
+      "message": "No source document found"
+    },
     "preview_never_updated": {
       "message": "Never previewed"
     },
@@ -622,10 +628,10 @@
     "whats_new": {
       "message": "What's New",
       "description": "Onboarding menu title"
-    },  
+    },
     "join_discord": {
       "message": "Join us on Discord"
-    },  
+    },
     "import": {
       "message": "Import"
     }
