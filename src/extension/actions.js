@@ -34,9 +34,10 @@ import { getDisplay, setDisplay } from './display.js';
  * @param {string} message.owner The project owner
  * @param {string} message.repo The project repo
  * @param {string} message.authToken The auth token
- * @param {number} message.exp The auth token expiry in seconds since epoch
- * @param {string} message.siteToken The auth token
- * @param {number} message.siteTokenExpiry The site token expiry in seconds since epoch
+ * @param {number} [message.exp] The auth token expiry in seconds since epoch
+ * @param {string} [message.siteToken] The auth token
+ * @param {number} [message.siteTokenExpiry] The site token expiry in seconds since epoch
+ * @param {string} [message.picture] The user picture
  * @param {chrome.runtime.MessageSender} sender The sender
  * @returns {Promise<string>} The action's response
  */
@@ -47,13 +48,22 @@ async function updateAuthToken({
   exp: authTokenExpiry,
   siteToken,
   siteTokenExpiry,
+  picture,
 }, sender) {
   const { url } = sender;
   if (owner) {
     try {
       if (new URL(url).origin === ADMIN_ORIGIN
         && authToken !== undefined) {
-        await setAuthToken(owner, repo, authToken, authTokenExpiry, siteToken, siteTokenExpiry);
+        await setAuthToken(
+          owner,
+          repo,
+          authToken,
+          authTokenExpiry,
+          siteToken,
+          siteTokenExpiry,
+          picture,
+        );
         return 'close';
       }
     } catch (e) {
@@ -228,6 +238,21 @@ export async function checkViewDocSource(id) {
 }
 
 /**
+ * Returns the user's profile picture.
+ * @param {chrome.tabs.Tab} _ The tab
+ * @param {Object} message The message object
+ * @param {string} message.owner The project owner
+ * @returns {Promise<string>} The user picture
+ */
+export async function getProfilePicture(_, { owner }) {
+  if (!owner) {
+    return undefined;
+  }
+  const { projects = [] } = await getConfig('session', 'projects') || {};
+  return projects.find((p) => p.owner === owner)?.picture;
+}
+
+/**
  * Actions which can be executed via internal messaging API.
  * @type {Object} The internal actions
  */
@@ -236,6 +261,7 @@ export const internalActions = {
   enableDisableProject,
   openViewDocSource,
   importProjects,
+  getProfilePicture,
 };
 
 /**

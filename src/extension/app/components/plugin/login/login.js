@@ -152,13 +152,10 @@ export class LoginButton extends ConnectedElement {
       async () => {
         const { profile } = this.appStore.status;
         if (profile) {
-          const { picture } = profile;
-          if (picture && picture.startsWith('https://admin.hlx.page/')) {
-            const resp = await fetch(picture, { credentials: 'include' });
-            this.profilePicture = resp.ok ? URL.createObjectURL(await resp.blob()) : null;
-          } else {
-            this.profilePicture = picture;
-          }
+          this.profilePicture = await chrome.runtime.sendMessage({
+            action: 'getProfilePicture',
+            owner: this.appStore.siteStore.owner,
+          });
         }
 
         this.requestUpdate();
