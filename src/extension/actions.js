@@ -248,8 +248,10 @@ export async function getProfilePicture(_, { owner }) {
   if (!owner) {
     return undefined;
   }
-  const { projects = [] } = await getConfig('session', 'projects') || {};
-  return projects.find((p) => p.owner === owner)?.picture;
+  const projects = await getConfig('session', 'projects') || [];
+  const picture = projects.find((p) => p.owner === owner)?.picture;
+  console.log(new Date().getUTCMilliseconds(), 'getProfilePicture', picture);
+  return picture;
 }
 
 /**

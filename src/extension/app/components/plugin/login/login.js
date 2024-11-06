@@ -152,10 +152,12 @@ export class LoginButton extends ConnectedElement {
       async () => {
         const { profile } = this.appStore.status;
         if (profile) {
-          this.profilePicture = await chrome.runtime.sendMessage({
+          const picture = await chrome.runtime.sendMessage({
             action: 'getProfilePicture',
             owner: this.appStore.siteStore.owner,
           });
+          console.log(new Date().getUTCMilliseconds(), 'picture', picture);
+          this.profilePicture = picture;
         }
 
         this.requestUpdate();
