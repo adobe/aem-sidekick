@@ -59,16 +59,23 @@ chrome.storage.onChanged.addListener(async (changes, storageArea) => {
 });
 
 // internal messaging API to execute actions
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const { action: actionFromTab } = message;
   const { tab } = sender;
-  let resp = null;
+
   // check if message contains action and is sent from tab
   if (tab && tab.url && typeof internalActions[actionFromTab] === 'function') {
-    resp = await internalActions[actionFromTab](tab, message);
+    internalActions[actionFromTab](tab, message)
+      .then((response) => sendResponse(response))
+      .catch((error) => {
+        console.error('Error handling message:', error);
+        sendResponse(null);
+      });
+    return true;
   }
 
-  sendResponse(resp);
+  sendResponse(null);
+  return false;
 });
 
 // add existing auth token headers

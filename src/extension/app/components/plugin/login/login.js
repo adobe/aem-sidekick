@@ -195,11 +195,11 @@ export class LoginButton extends ConnectedElement {
           placement="top"
           quiet
         >
-          <sp-icon slot="icon" size="l" class=${ifDefined(profile.picture && this.profilePicture ? 'picture' : undefined)}>
-            ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
+          <sp-icon slot="icon" size="l" class=${ifDefined(this.profilePicture ? 'picture' : undefined)}>
+            ${this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
           <sk-menu-item class="user" value="user" tabindex="-1" disabled>
-            ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
+            ${this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
             ${profile.name}
             <span slot="description">${profile.email}</span>
           </sk-menu-item>
