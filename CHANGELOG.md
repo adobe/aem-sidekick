@@ -1,3 +1,10 @@
+## [7.0.2](https://github.com/adobe/aem-sidekick/compare/v7.0.1...v7.0.2) (2024-11-06)
+
+
+### Bug Fixes
+
+* inexistent source doc opens blank page ([#340](https://github.com/adobe/aem-sidekick/issues/340)) ([1c53964](https://github.com/adobe/aem-sidekick/commit/1c53964da893aa84f70d807df5c1e519eab79d97))
+
 ## [7.0.1](https://github.com/adobe/aem-sidekick/compare/v7.0.0...v7.0.1) (2024-11-04)
 
 
