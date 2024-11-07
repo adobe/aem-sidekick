@@ -1325,8 +1325,6 @@ export class AppStore {
           this.setupPlugins();
           this.fetchStatus();
           this.fireEvent(EXTERNAL_EVENTS.LOGGED_OUT, this.status.profile);
-          // refresh the page to reflect logged out state
-          this.reloadPage();
           return;
         }
         if (attempts >= 5) {
