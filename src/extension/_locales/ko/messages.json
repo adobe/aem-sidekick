@@ -122,7 +122,7 @@
     "message": "닫기"
   },
   "close_sidekick": {
-    "message": "AEM Sidekick 닫기"
+    "message": "Sidekick 닫기"
   },
   "code_state": {
     "message": "코드 파일에 대해 사용 가능한 액션 없음"
@@ -243,6 +243,9 @@
   "copy_urls_error_focus": {
     "message": "클립보드에 복사하지 못했습니다. 창에 초점을 맞추고 있는지 확인해 주십시오."
   },
+  "dark_mode": {
+    "message": "다크 모드"
+  },
   "delete": {
     "message": "삭제"
   },
@@ -305,6 +308,9 @@
   },
   "edit_never_updated": {
     "message": "저장된 적 없음"
+  },
+  "edit_no_source": {
+    "message": "소스 문서를 찾을 수 없음"
   },
   "environments": {
     "message": "환경"
@@ -405,34 +411,17 @@
   "help_documentation": {
     "message": "도움말 및 설명서"
   },
-  "help_opt_out": {
-    "message": "도움말 표시 안 함"
-  },
-  "help_opt_out_alert": {
-    "message": "도움말 기능이 해제되었습니다. [옵션] > [사용자 환경]에서 다시 활성화할 수 있습니다."
-  },
-  "help_previous": {
-    "message": "이전 팁"
-  },
-  "help_user_status": {
-    "message": "사용 가능한 도움말 항목"
-  },
-  "help_user_status_check_all": {
-    "description": "모든 도움말 항목 선택",
-    "message": "모든 항목 선택"
-  },
-  "help_user_status_description": {
-    "message": "선택한 항목은 더 이상 표시되지 않습니다. 다시 보고 싶은 항목 옆의 확인 표시를 제거하십시오."
-  },
-  "help_user_status_uncheck_all": {
-    "description": "모든 도움말 항목 선택 취소",
-    "message": "모든 항목 선택 해제"
-  },
   "homepage": {
     "message": "https://www.hlx.live/tools/sidekick/"
   },
+  "import": {
+    "message": "가져오기"
+  },
   "info": {
     "message": "정보"
+  },
+  "join_discord": {
+    "message": "Discord에 가입하기"
   },
   "json_results_stat": {
     "message": "$2개 중 $1개 결과 표시 중"
@@ -471,6 +460,7 @@
     "message": "사용 안 함"
   },
   "next": {
+    "description": "다음 온보딩 슬라이드",
     "message": "다음"
   },
   "no_results": {
@@ -637,6 +627,10 @@
   },
   "user_switch": {
     "message": "사용자 전환"
+  },
+  "whats_new": {
+    "description": "온보딩 메뉴 제목",
+    "message": "새로운 기능"
   },
   "yesterday_at": {
     "message": "어제($1)"

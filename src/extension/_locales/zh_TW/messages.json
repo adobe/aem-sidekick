@@ -122,7 +122,7 @@
     "message": "關閉"
   },
   "close_sidekick": {
-    "message": "關閉 AEM Sidekick"
+    "message": "關閉Sidekick"
   },
   "code_state": {
     "message": "沒有可用於程式碼檔案的動作"
@@ -243,6 +243,9 @@
   "copy_urls_error_focus": {
     "message": "複製到剪貼簿失敗。請確定焦點仍在視窗中。"
   },
+  "dark_mode": {
+    "message": "深色模式"
+  },
   "delete": {
     "message": "刪除"
   },
@@ -305,6 +308,9 @@
   },
   "edit_never_updated": {
     "message": "從未儲存過"
+  },
+  "edit_no_source": {
+    "message": "找不到來原始檔"
   },
   "environments": {
     "message": "環境"
@@ -405,34 +411,17 @@
   "help_documentation": {
     "message": "說明與文件"
   },
-  "help_opt_out": {
-    "message": "不要顯示任何說明"
-  },
-  "help_opt_out_alert": {
-    "message": "說明已關閉。您可以在「選項 > 使用者體驗」下方將其重新開啟。"
-  },
-  "help_previous": {
-    "message": "上一個祕訣"
-  },
-  "help_user_status": {
-    "message": "可用的說明主題"
-  },
-  "help_user_status_check_all": {
-    "description": "勾選所有說明主題",
-    "message": "全部勾選"
-  },
-  "help_user_status_description": {
-    "message": "勾選的主題將不再顯示。請到您想要再次看到的主題旁，移除其核取記號。"
-  },
-  "help_user_status_uncheck_all": {
-    "description": "取消勾選所有說明主題",
-    "message": "全部取消勾選"
-  },
   "homepage": {
     "message": "https://www.hlx.live/tools/sidekick/"
   },
+  "import": {
+    "message": "匯入"
+  },
   "info": {
     "message": "資訊"
+  },
+  "join_discord": {
+    "message": "不和諧時加入我們"
   },
   "json_results_stat": {
     "message": "正在顯示 $1 個結果 (共 $2 個)"
@@ -471,6 +460,7 @@
     "message": "從未"
   },
   "next": {
+    "description": "下一張入門投影片",
     "message": "下一步"
   },
   "no_results": {
@@ -637,6 +627,10 @@
   },
   "user_switch": {
     "message": "切換使用者"
+  },
+  "whats_new": {
+    "description": "入門功能表標題",
+    "message": "新功能"
   },
   "yesterday_at": {
     "message": "昨天 $1"

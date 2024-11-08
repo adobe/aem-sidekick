@@ -122,7 +122,7 @@
     "message": "关闭"
   },
   "close_sidekick": {
-    "message": "关闭 AEM Sidekick"
+    "message": "关闭Sidekick"
   },
   "code_state": {
     "message": "代码文件无可用操作"
@@ -243,6 +243,9 @@
   "copy_urls_error_focus": {
     "message": "无法复制到剪贴板。请确保窗口保持聚焦状态。"
   },
+  "dark_mode": {
+    "message": "深色模式"
+  },
   "delete": {
     "message": "删除"
   },
@@ -305,6 +308,9 @@
   },
   "edit_never_updated": {
     "message": "从未保存"
+  },
+  "edit_no_source": {
+    "message": "未找到源文档"
   },
   "environments": {
     "message": "环境"
@@ -405,34 +411,17 @@
   "help_documentation": {
     "message": "帮助和文档"
   },
-  "help_opt_out": {
-    "message": "不显示任何帮助"
-  },
-  "help_opt_out_alert": {
-    "message": "帮助已关闭。您可以在“选项”>“用户体验”下将其重新打开。"
-  },
-  "help_previous": {
-    "message": "上一个提示"
-  },
-  "help_user_status": {
-    "message": "可用的帮助主题"
-  },
-  "help_user_status_check_all": {
-    "description": "检查所有帮助主题",
-    "message": "选择所有"
-  },
-  "help_user_status_description": {
-    "message": "选中的主题将不再显示。移除您希望再次看到的主题旁边的复选标记。"
-  },
-  "help_user_status_uncheck_all": {
-    "description": "取消选择所有帮助主题",
-    "message": "取消选择所有"
-  },
   "homepage": {
     "message": "https://www.hlx.live/tools/sidekick/"
   },
+  "import": {
+    "message": "导入"
+  },
   "info": {
     "message": "信息"
+  },
+  "join_discord": {
+    "message": "不和时加入我们"
   },
   "json_results_stat": {
     "message": "显示 $2 个结果中的 $1 个"
@@ -471,6 +460,7 @@
     "message": "无"
   },
   "next": {
+    "description": "下一张入门幻灯片",
     "message": "下一页"
   },
   "no_results": {
@@ -637,6 +627,10 @@
   },
   "user_switch": {
     "message": "切换用户"
+  },
+  "whats_new": {
+    "description": "入门菜单标题",
+    "message": "新增功能"
   },
   "yesterday_at": {
     "message": "昨天 $1"

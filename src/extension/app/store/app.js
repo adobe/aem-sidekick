@@ -1181,6 +1181,13 @@ export class AppStore {
     if (targetEnv === 'edit') {
       const updatedStatus = await this.fetchStatus(false, true);
       envUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
+      if (!envUrl) {
+        this.showToast({
+          message: this.i18n('edit_no_source'),
+          variant: 'warning',
+        });
+        return;
+      }
     }
 
     const [customView] = this.findViews(VIEWS.CUSTOM);
