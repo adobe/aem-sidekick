@@ -730,6 +730,7 @@ export class AppStore {
         'deleted',
         'logged-in',
         'logged-out',
+        'hidden',
       ];
       if (name.startsWith('custom:') || userEvents.includes(name)) {
         /* istanbul ignore next */
