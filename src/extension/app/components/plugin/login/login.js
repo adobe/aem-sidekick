@@ -156,7 +156,6 @@ export class LoginButton extends ConnectedElement {
             action: 'getProfilePicture',
             owner: this.appStore.siteStore.owner,
           });
-          console.log(new Date().getUTCMilliseconds(), 'picture', picture);
           this.profilePicture = picture;
         }
 

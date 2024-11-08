@@ -67,10 +67,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (tab && tab.url && typeof internalActions[actionFromTab] === 'function') {
     internalActions[actionFromTab](tab, message)
       .then((response) => sendResponse(response))
-      .catch((error) => {
-        console.error('Error handling message:', error);
-        sendResponse(null);
-      });
+      .catch(() => sendResponse(null));
     return true;
   }
 
