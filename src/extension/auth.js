@@ -146,6 +146,7 @@ export async function configureAuthAndCorsHeaders() {
  * @param {number} [authTokenExpiry] The auth token expiry in seconds since epoch
  * @param {string} [siteToken] The site token
  * @param {number} [siteTokenExpiry] The site token expiry in seconds since epoch
+ * @param {string} [picture] The user picture
  * @returns {Promise<void>}
  */
 export async function setAuthToken(
@@ -155,6 +156,7 @@ export async function setAuthToken(
   authTokenExpiry = 0,
   siteToken = '',
   siteTokenExpiry = 0,
+  picture = undefined,
 ) {
   if (owner) {
     const projects = await getConfig('session', 'projects') || [];
@@ -171,11 +173,13 @@ export async function setAuthToken(
           repo,
           authToken,
           authTokenExpiry,
+          picture,
         });
       } else {
         const orgIndex = projects.findIndex(({ id }) => id === orgHandle);
         projects[orgIndex].authToken = authToken;
         projects[orgIndex].authTokenExpiry = authTokenExpiry;
+        projects[orgIndex].picture = picture;
       }
     } else if (orgExists) {
       // remove auth token from session storage

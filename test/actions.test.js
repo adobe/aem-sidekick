@@ -373,6 +373,57 @@ describe('Test actions', () => {
     expect(createSpy.callCount).to.equal(1);
   });
 
+  describe('internal: getProfilePicture', () => {
+    const profilePicture = 'data:image/png;base64,foo';
+
+    it('returns existing profile picture', async () => {
+      sandbox.stub(chrome.storage.session, 'get').resolves({
+        projects: [{
+          owner: 'foo',
+          picture: profilePicture,
+        }],
+      });
+      const { getProfilePicture } = internalActions;
+      const picture = await getProfilePicture(null, { owner: 'foo' });
+      expect(picture).to.equal(profilePicture);
+    });
+
+    it('returns undefined if login info not found', async () => {
+      sandbox.stub(chrome.storage.session, 'get').resolves({
+        projects: [{
+          owner: 'bar',
+          picture: profilePicture,
+        }],
+      });
+      const { getProfilePicture } = internalActions;
+      const picture = await getProfilePicture(null, { owner: 'foo' });
+      expect(picture).to.be.undefined;
+    });
+
+    it('returns undefined if no owner specified', async () => {
+      sandbox.stub(chrome.storage.session, 'get').resolves({
+        projects: [{
+          owner: 'foo',
+          picture: profilePicture,
+        }],
+      });
+      const { getProfilePicture } = internalActions;
+      const picture = await getProfilePicture(null, {});
+      expect(picture).to.be.undefined;
+    });
+
+    it('returns undefined if picture not found', async () => {
+      sandbox.stub(chrome.storage.session, 'get').resolves({
+        projects: [{
+          owner: 'foo',
+        }],
+      });
+      const { getProfilePicture } = internalActions;
+      const picture = await getProfilePicture(null, { owner: 'foo' });
+      expect(picture).to.be.undefined;
+    });
+  });
+
   it('notificationConfirmCallback', async () => {
     const reloadStub = sandbox.stub(chrome.tabs, 'reload');
     const callback = notificationConfirmCallback(1);

@@ -1570,7 +1570,6 @@ describe('Test App Store', () => {
     let instance;
     let clock;
     let getProfileStub;
-    let reloadPageStub;
     let sandbox;
     let toastSpy;
 
@@ -1590,7 +1589,6 @@ describe('Test App Store', () => {
       // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       toastSpy = sandbox.spy(appStore, 'showToast');
-      reloadPageStub = sandbox.stub(appStore, 'reloadPage');
     });
 
     afterEach(() => {
@@ -1651,7 +1649,6 @@ describe('Test App Store', () => {
         source: 'sidekick',
         target: 'logged-out',
       })).to.be.true;
-      expect(reloadPageStub.called).to.be.true;
     }).timeout(20000);
   });
 

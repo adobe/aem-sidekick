@@ -430,22 +430,13 @@ export class PluginActionBar extends ConnectedElement {
     if (value === 'help-opened') {
       this.appStore.sampleRUM('click', { source: 'sidekick', target: 'help-opened' });
       this.appStore.openPage('https://www.aem.live/docs/sidekick');
-      return;
-    }
-
-    if (value === 'whats-new-opened') {
+    } else if (value === 'whats-new-opened') {
       this.appStore.sampleRUM('click', { source: 'sidekick', target: 'whats-new-opened' });
       this.appStore.showOnboarding();
-      return;
-    }
-
-    if (value === 'project-added' || value === 'project-removed') {
+    } else if (value === 'project-added' || value === 'project-removed') {
       this.appStore.sampleRUM('click', { source: 'sidekick', target: value });
       chrome.runtime.sendMessage({ action: 'addRemoveProject' });
-      return;
     }
-
-    this.appStore.fireEvent(value);
   }
 
   toggleTheme(e) {

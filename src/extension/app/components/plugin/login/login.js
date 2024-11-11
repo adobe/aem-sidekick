@@ -151,14 +151,12 @@ export class LoginButton extends ConnectedElement {
       () => this.appStore.status.profile,
       async () => {
         const { profile } = this.appStore.status;
-        if (profile) {
-          const { picture } = profile;
-          if (picture && picture.startsWith('https://admin.hlx.page/')) {
-            const resp = await fetch(picture, { credentials: 'include' });
-            this.profilePicture = resp.ok ? URL.createObjectURL(await resp.blob()) : null;
-          } else {
-            this.profilePicture = picture;
-          }
+        if (profile && !this.profilePicture) {
+          const picture = await chrome.runtime.sendMessage({
+            action: 'getProfilePicture',
+            owner: this.appStore.siteStore.owner,
+          });
+          this.profilePicture = picture;
         }
 
         this.requestUpdate();
@@ -196,11 +194,11 @@ export class LoginButton extends ConnectedElement {
           placement="top"
           quiet
         >
-          <sp-icon slot="icon" size="l" class=${ifDefined(profile.picture && this.profilePicture ? 'picture' : undefined)}>
-            ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
+          <sp-icon slot="icon" size="l" class=${ifDefined(this.profilePicture ? 'picture' : undefined)}>
+            ${this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
           <sk-menu-item class="user" value="user" tabindex="-1" disabled>
-            ${profile.picture && this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
+            ${this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
             ${profile.name}
             <span slot="description">${profile.email}</span>
           </sk-menu-item>

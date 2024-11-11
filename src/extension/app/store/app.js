@@ -730,6 +730,7 @@ export class AppStore {
         'deleted',
         'logged-in',
         'logged-out',
+        'hidden',
       ];
       if (name.startsWith('custom:') || userEvents.includes(name)) {
         /* istanbul ignore next */
@@ -1332,8 +1333,6 @@ export class AppStore {
           this.setupPlugins();
           this.fetchStatus();
           this.fireEvent(EXTERNAL_EVENTS.LOGGED_OUT, this.status.profile);
-          // refresh the page to reflect logged out state
-          this.reloadPage();
           return;
         }
         if (attempts >= 5) {

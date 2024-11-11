@@ -892,7 +892,7 @@ describe('Plugin action bar', () => {
       addProjectButton.click();
 
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
-      expect(messageSpy.calledOnce).to.be.true;
+      expect(messageSpy.calledTwice).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'project-added',
@@ -922,7 +922,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
 
-      expect(messageSpy.calledOnce).to.be.true;
+      expect(messageSpy.calledTwice).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'project-removed',

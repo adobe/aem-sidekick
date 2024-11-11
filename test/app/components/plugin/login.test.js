@@ -197,6 +197,35 @@ describe('Login', () => {
       await waitUntil(() => appStore.state === STATE.READY);
     }).timeout(20000);
 
+    it('Displays profile picture after login', async () => {
+      const profilePicture = 'data:image/png;base64,profile-picture';
+      const sendMessageStub = sidekickTest.sandbox.stub(chrome.runtime, 'sendMessage');
+      sendMessageStub.resolves(profilePicture);
+
+      sidekickTest
+        .mockFetchStatusUnauthorized()
+        .mockFetchProfilePictureSuccess()
+        .mockFetchSidekickConfigNotFound();
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitStatusFetched();
+
+      await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
+
+      await login();
+      await waitUntil(() => appStore.state === STATE.READY);
+
+      expect(sendMessageStub.calledWith({
+        // @ts-ignore
+        action: 'getProfilePicture',
+        owner: appStore.siteStore.owner,
+      })).to.be.true;
+
+      const profilePictureElement = recursiveQuery(sidekick, 'sp-icon.picture > img');
+      expect(profilePictureElement).to.exist;
+      expect(profilePictureElement.getAttribute('src')).to.equal(profilePicture);
+    }).timeout(20000);
+
     it('Unauthorized after login ', async () => {
       sidekickTest
         .mockFetchStatusUnauthorized()
