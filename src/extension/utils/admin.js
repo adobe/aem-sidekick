@@ -75,14 +75,12 @@ export async function callAdmin(
     method = 'get',
     body = undefined,
     searchParams = new URLSearchParams(),
-    omitCredentials = false,
   } = {},
 ) {
   const url = createAdminUrl(config, api, path, searchParams);
   return fetch(url, {
     method,
     cache: 'no-store',
-    credentials: omitCredentials ? 'omit' : 'include',
     headers: body ? { 'Content-Type': 'application/json' } : undefined,
     body: body ? JSON.stringify(body) : undefined,
   });
