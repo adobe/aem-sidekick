@@ -64,7 +64,6 @@ export function createAdminUrl(
  * @param {string} [opts.method] The method to use
  * @param {Object} [opts.body] The body to send
  * @param {URLSearchParams} [opts.searchParams] The search parameters
- * @param {boolean} [opts.omitCredentials] Should we omit the credentials
  * @returns {Promise<Response>} The admin response
  */
 export async function callAdmin(
