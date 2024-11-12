@@ -12,6 +12,13 @@
 
 * display profile picture ([#349](https://github.com/adobe/aem-sidekick/issues/349)) ([67dfa9f](https://github.com/adobe/aem-sidekick/commit/67dfa9f8b46df54a0f47ad9d6fb96a68a315f149))
 
+# [7.1.0](https://github.com/adobe/aem-sidekick/compare/v7.0.2...v7.1.0) (2024-11-12)
+
+
+### Features
+
+* display profile picture ([#349](https://github.com/adobe/aem-sidekick/issues/349)) ([67dfa9f](https://github.com/adobe/aem-sidekick/commit/67dfa9f8b46df54a0f47ad9d6fb96a68a315f149))
+
 ## [7.0.2](https://github.com/adobe/aem-sidekick/compare/v7.0.1...v7.0.2) (2024-11-06)
 
 
