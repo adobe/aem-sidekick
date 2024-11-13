@@ -80,6 +80,7 @@ export async function callAdmin(
   return fetch(url, {
     method,
     cache: 'no-store',
+    credentials: 'omit',
     headers: body ? { 'Content-Type': 'application/json' } : undefined,
     body: body ? JSON.stringify(body) : undefined,
   });
