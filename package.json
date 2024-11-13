@@ -14,7 +14,6 @@
     "build:dev": "rimraf dist && rollup -c rollup.config-dev.js",
     "build": "rimraf dist && rollup -c rollup.config.js && npm run build:analyze",
     "build:analyze": "npm run analyze -- --globs src/extension/app/aem-sidekick.js",
-    "build:safari": "node ./build/build-browser.js safari",
     "build:chrome": "node ./build/build-browser.js chrome",
     "publish:prepare": "node ./build/publish-prepare.js",
     "publish:chrome": "npm run publish:prepare && npm run build && node ./build/publish.js chrome",

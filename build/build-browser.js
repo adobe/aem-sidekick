@@ -15,7 +15,7 @@
 import { rollup } from 'rollup';
 import configs from '../rollup.config.js';
 
-const supportedBrowsers = ['chrome', 'safari', 'firefox'];
+const supportedBrowsers = ['chrome'];
 
 async function buildConfig(name) {
   const config = configs.find((c) => c.output.dir.includes(name));
