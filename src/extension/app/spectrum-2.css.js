@@ -87,6 +87,8 @@ export const spectrum2 = css`
     --spectrum2-action-button-hover-dark: #FFFFFF12;
     --spectrum2-action-button-selected-light: #292929FF;
     --spectrum2-action-button-selected-dark: #DADADAFF;
+    --spectrum2-action-button-disabled-light: #C6C6C6;
+    --spectrum2-action-button-disabled-dark: #c6c6c65c;
     --spectrum2-background-color-negative-light: #D73220;
     --spectrum2-background-color-negative-dark: #CD2E1D;
     --spectrum2-foreground-color-negative-light: #D73220;
@@ -178,6 +180,7 @@ export const spectrum2 = css`
     --mod-actionbutton-focus-indicator-color: var(--spectrum2-color-focus-dark);
     --mod-actionbutton-background-color-focus: var(--spectrum2-background-color-hover-dark);
     --mod-actionbutton-background-color-hover: var(--spectrum2-action-button-hover-dark);
+    --mod-actionbutton-content-color-disabled: var(--spectrum2-action-button-disabled-dark);
 
     --mod-picker-focus-indicator-color: var(--spectrum2-color-focus);
     --mod-actionbutton-focus-indicator-color: var(--spectrum2-color-focus);
@@ -257,7 +260,7 @@ export const spectrum2 = css`
     --mod-actionbutton-focus-indicator-color: var(--spectrum2-color-focus-dark);
     --mod-actionbutton-background-color-focus: var(--spectrum2-background-color-hover-dark);
     --mod-actionbutton-background-color-hover: var(--spectrum2-action-button-hover-dark);
-
+    --mod-actionbutton-content-color-disabled: var(--spectrum2-action-button-disabled-light);
     --mod-picker-focus-indicator-color: var(--spectrum2-color-focus);
     --mod-actionbutton-focus-indicator-color: var(--spectrum2-color-focus);
 
