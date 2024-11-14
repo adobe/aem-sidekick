@@ -1,3 +1,11 @@
+## [7.1.1](https://github.com/adobe/aem-sidekick/compare/v7.1.0...v7.1.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* cookie-less auth cleanup. remove credentials: include ([#353](https://github.com/adobe/aem-sidekick/issues/353)) ([44cba10](https://github.com/adobe/aem-sidekick/commit/44cba103e74144c9c0676ed6b236dfb8bf879134))
+* disabled action buttons color ([#360](https://github.com/adobe/aem-sidekick/issues/360)) ([a1a8a52](https://github.com/adobe/aem-sidekick/commit/a1a8a52889b4d39424e1a4bea182a90ecde13701))
+
 # [7.1.0](https://github.com/adobe/aem-sidekick/compare/v7.0.2...v7.1.0) (2024-11-12)
 
 
