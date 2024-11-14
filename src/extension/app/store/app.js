@@ -1245,12 +1245,7 @@ export class AppStore {
   login(selectAccount) {
     this.setState(STATE.LOGGING_IN);
     const loginUrl = this.api.createUrl('login');
-    let extensionId = window.chrome?.runtime?.id;
-    // istanbul ignore next 3
-    if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
-      extensionId = 'cookie';
-    }
-    loginUrl.searchParams.set('extensionId', extensionId);
+    loginUrl.searchParams.set('extensionId', window.chrome?.runtime?.id);
     if (selectAccount) {
       loginUrl.searchParams.set('selectAccount', 'true');
     }
@@ -1309,12 +1304,7 @@ export class AppStore {
   logout() {
     this.setState(STATE.LOGGING_OUT);
     const logoutUrl = this.api.createUrl('logout');
-    let extensionId = window.chrome?.runtime?.id;
-    // istanbul ignore next 3
-    if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
-      extensionId = 'cookie';
-    }
-    logoutUrl.searchParams.set('extensionId', extensionId);
+    logoutUrl.searchParams.set('extensionId', window.chrome?.runtime?.id);
     const logoutWindow = this.openPage(logoutUrl.toString());
 
     let attempts = 0;

@@ -46,7 +46,7 @@ function commonPlugins() {
     /** Minify JS, compile JS to a lower language target */
     esbuild({
       minify: true,
-      target: ['chrome64', 'firefox67', 'safari11.1'],
+      target: ['chrome64'],
     }),
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),
@@ -99,5 +99,4 @@ export default [
     ...viewBuild('chrome', '/views/json'),
   },
   ...createExtension('chrome'),
-  ...createExtension('safari'),
 ];
