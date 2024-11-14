@@ -88,7 +88,7 @@ export const spectrum2 = css`
     --spectrum2-action-button-selected-light: #292929FF;
     --spectrum2-action-button-selected-dark: #DADADAFF;
     --spectrum2-action-button-disabled-light: #C6C6C6;
-    --spectrum2-action-button-disabled-dark: #c6c6c65c;
+    --spectrum2-action-button-disabled-dark: #DBDBDB66;
     --spectrum2-background-color-negative-light: #D73220;
     --spectrum2-background-color-negative-dark: #CD2E1D;
     --spectrum2-foreground-color-negative-light: #D73220;
