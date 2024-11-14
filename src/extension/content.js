@@ -48,8 +48,9 @@ function removeCacheParam(href = window.location.href) {
   /**
    * Load the sidekick custom element and add it to the DOM
    * @param {OptionsConfig} config The config to load the sidekick with
+   * @param {string} [adminVersion] The admin version
    */
-  async function loadSidekick(config) {
+  async function loadSidekick(config, adminVersion) {
     const { AEMSidekick } = await import('./index.js');
 
     // reduce config to only include properties relevant for sidekick
@@ -62,11 +63,14 @@ function removeCacheParam(href = window.location.href) {
         'liveHost',
         'host',
         'devOrigin',
-        'adminVersion',
         'authTokenExpiry',
         'transient',
       ].includes(k)));
     curatedConfig.scriptUrl = chrome.runtime.getURL('index.js');
+
+    if (adminVersion) {
+      curatedConfig.adminVersion = adminVersion;
+    }
 
     const sidekick = new AEMSidekick(curatedConfig);
     sidekick.setAttribute('open', `${display}`);
@@ -114,7 +118,7 @@ function removeCacheParam(href = window.location.href) {
     window.hlx.sidekick = configPicker;
   }
 
-  async function onMessageListener({ configMatches = [] }, { tab }) {
+  async function onMessageListener({ configMatches = [], adminVersion }, { tab }) {
     // only accept message from background script
     if (tab) {
       return;
@@ -139,10 +143,10 @@ function removeCacheParam(href = window.location.href) {
         if (configMatches.length === 1) {
         // Load sidekick
           const [cfg] = configMatches;
-          loadSidekick(cfg);
+          loadSidekick(cfg, adminVersion);
           // If there is more than one config match, check if we previously stored a project
         } else if (storedProject) {
-          loadSidekick(storedProject);
+          loadSidekick(storedProject, adminVersion);
         } else {
           loadConfigPicker(configMatches);
         }

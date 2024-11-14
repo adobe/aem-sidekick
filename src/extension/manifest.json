@@ -17,15 +17,11 @@
     "http://localhost:3000/*",
     "https://*/*"
   ],
-  "__chrome__background": {
+  "background": {
     "service_worker": "background.js",
     "type": "module"
   },
-  "__safari__background": {
-    "page": "background.html",
-    "persistent": false
-  },
-  "__chrome__externally_connectable": {
+  "externally_connectable": {
     "ids": [
       "ccfggkjabjahcjoljmgmklhpaccedipo",
       "olciodlegapfmemadcjicljalmfmlehb",
@@ -34,11 +30,6 @@
     "matches": [
       "http://localhost:3000/*",
       "https://*/*"
-    ]
-  },
-  "__safari__externally_connectable": {
-    "matches": [
-      "https://admin.hlx.page/*"
     ]
   },
   "web_accessible_resources": [
