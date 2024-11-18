@@ -106,10 +106,47 @@ export async function showSidekickNotification(tabId, data, callback) {
 }
 
 /**
+ * Verifies if the origin that requested the organisations is a trusted one.
+ * @param {string} origin
+ * @returns {boolean} true - trusted / false - untrusted
+ */
+function isGetAuthInfoTrustedOrigin(origin) {
+  const TRUSTED_ORIGINS = [
+    ADMIN_ORIGIN,
+    'https://labs.aem.live',
+    'https://tools.aem.live',
+    'https://aem.live',
+    'http://localhost:3000',
+  ];
+
+  if (TRUSTED_ORIGINS.includes(origin)) {
+    return true;
+  }
+
+  const TRUSTED_ORIGIN_PATTERNS = [
+    /^https:\/\/[a-z0-9-]+--helix-labs-website--adobe.aem.(page|live)$/, // labs
+    /^https:\/\/[a-z0-9-]+--helix-tools-website--adobe\.aem\.(page|live)$/, // tools
+    /^https:\/\/[a-z0-9-]+--helix-website--adobe\.aem\.(page|live)$/, // aem.live
+  ];
+
+  if (TRUSTED_ORIGIN_PATTERNS.some((trustedOriginPattern) => origin.match(trustedOriginPattern))) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Returns the organizations the user is currently authenticated for.
  * @returns {Promise<string[]>} The organizations
  */
-async function getAuthInfo() {
+async function getAuthInfo(message, sender) {
+  const { origin } = new URL(sender.url);
+
+  if (!isGetAuthInfoTrustedOrigin(origin)) {
+    return []; // don't give out any information
+  }
+
   const projects = await getConfig('session', 'projects') || [];
   return projects
     .filter(({ authToken, authTokenExpiry }) => !!authToken && authTokenExpiry > Date.now() / 1000)
