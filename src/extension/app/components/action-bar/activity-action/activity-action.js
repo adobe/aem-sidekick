@@ -72,6 +72,7 @@ export class ActivityAction extends ConnectedElement {
       case STATE.PUBLISHNG:
       case STATE.UNPUBLISHING:
       case STATE.DELETING:
+      case STATE.CONFIG:
         return html`
           <sk-progress-circle size="s" indeterminate></sk-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
