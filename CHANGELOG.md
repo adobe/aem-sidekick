@@ -1,3 +1,11 @@
+## [7.1.2](https://github.com/adobe/aem-sidekick/compare/v7.1.1...v7.1.2) (2024-11-19)
+
+
+### Bug Fixes
+
+* Restrict getAuthInfo Action to trusted Adobe Origins ([#366](https://github.com/adobe/aem-sidekick/issues/366)) ([0cc413f](https://github.com/adobe/aem-sidekick/commit/0cc413f5975875b1b1acbd55331c3c8dbdab6b64))
+* show accurate activity message for config files ([#367](https://github.com/adobe/aem-sidekick/issues/367)) ([ace87bd](https://github.com/adobe/aem-sidekick/commit/ace87bde2770c328363c992f190bd1a6e5f09c20))
+
 ## [7.1.1](https://github.com/adobe/aem-sidekick/compare/v7.1.0...v7.1.1) (2024-11-14)
 
 
