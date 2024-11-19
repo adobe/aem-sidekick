@@ -159,12 +159,6 @@ export class SiteStore {
   authorized = false;
 
   /**
-   * Custom views
-   * @type {number}
-   */
-  authTokenExpiry;
-
-  /**
    * Is this site in transient mode?
    * @type {boolean}
    */

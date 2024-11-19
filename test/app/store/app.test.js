@@ -692,11 +692,13 @@ describe('Test App Store', () => {
   describe('update', async () => {
     let fakeFetch;
     let instance;
+    let setStateStub;
 
     beforeEach(() => {
       const { sandbox } = sidekickTest;
       fakeFetch = sandbox.stub(window, 'fetch');
       instance = appStore;
+      setStateStub = sandbox.stub(instance, 'setState');
 
       // Mock other functions
       sandbox.stub(instance, 'isContent');
@@ -724,6 +726,25 @@ describe('Test App Store', () => {
       const response = await instance.update();
 
       expect(response).to.be.true;
+      expect(setStateStub.calledWith(STATE.PREVIEWING)).to.be.true;
+    });
+
+    it('should detect config path', async () => {
+      sidekickTest.sandbox.stub(instance, 'isDev').returns(false);
+      instance.isContent.returns(true);
+      instance.status = { webPath: '/.helix/config' };
+
+      fakeFetch.resolves({
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+        json: () => Promise.resolve({ webPath: '/.helix/config' }),
+      });
+
+      const response = await instance.update();
+
+      expect(response).to.be.true;
+      expect(setStateStub.calledWith(STATE.CONFIG)).to.be.true;
     });
 
     it('should bust client cache', async () => {
@@ -791,7 +812,6 @@ describe('Test App Store', () => {
     let updateStub;
     let fetchStatusStub;
     let showToastStub;
-    let setStateStub;
     let updatePreviewSpy;
 
     beforeEach(async () => {
@@ -803,7 +823,6 @@ describe('Test App Store', () => {
       updateStub = sandbox.stub(instance, 'update');
       fetchStatusStub = sandbox.stub(instance, 'fetchStatus');
       showToastStub = sandbox.stub(instance, 'showToast');
-      setStateStub = sandbox.stub(instance, 'setState');
       updatePreviewSpy = sandbox.spy(instance, 'updatePreview');
     });
 
@@ -829,7 +848,7 @@ describe('Test App Store', () => {
       await instance.updatePreview(false);
 
       expect(showToastStub.calledOnce).is.true;
-      expect(setStateStub.calledWith(STATE.PREVIEWING)).is.true;
+      expect(updateStub.calledOnce).is.true;
 
       expect(switchEnvSpy.calledWith('preview'));
     });
@@ -841,7 +860,7 @@ describe('Test App Store', () => {
 
       await instance.updatePreview(false);
 
-      expect(setStateStub.calledWith(STATE.PREVIEWING)).is.true;
+      expect(updateStub.calledOnce).is.true;
       expect(fetchStatusStub.called).is.true;
 
       instance.sidekick.dispatchEvent(new CustomEvent('status-fetched', { detail: { status: { webPath: '/somepath' } } }));

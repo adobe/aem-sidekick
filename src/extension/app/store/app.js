@@ -917,7 +917,9 @@ export class AppStore {
     const { siteStore, status } = this;
     path = path || status.webPath;
 
-    this.setState(STATE.PREVIEWING);
+    this.setState(
+      path.startsWith('/.helix') ? STATE.CONFIG : STATE.PREVIEWING,
+    );
 
     // update preview
     const previewStatus = await this.api.updatePreview(path);
@@ -934,8 +936,6 @@ export class AppStore {
   }
 
   async updatePreview(ranBefore) {
-    this.setState(STATE.PREVIEWING);
-
     const res = await this.update();
     if (!res && !ranBefore) {
       // assume document has been renamed, re-fetch status and try again
@@ -1269,10 +1269,6 @@ export class AppStore {
             { once: true },
           );
           await this.siteStore.initStore(siteStore);
-          this.siteStore.authTokenExpiry = (
-            window.hlx
-            && window.hlx.sidekickConfig
-            && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
           this.fireEvent(EXTERNAL_EVENTS.LOGGED_IN, this.status.profile);
           // refresh page with site token in case of 401
@@ -1318,7 +1314,6 @@ export class AppStore {
         this.status.profile = await this.getProfile();
         if (!this.status.profile) {
           delete this.status.profile;
-          delete this.siteStore.authTokenExpiry;
           await this.siteStore.initStore(siteStore);
           this.setupPlugins();
           this.fetchStatus();

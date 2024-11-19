@@ -105,6 +105,7 @@ export const STATE = {
   LOGGING_OUT: 'logging_out_state',
   UNAUTHORIZED: 'unauthorized_state',
   PREVIEWING: 'previewing_state',
+  CONFIG: 'config_state',
   BULK_PREVIEWING: 'bulk_previewing_state',
   PUBLISHNG: 'publishing_state',
   BULK_PUBLISHING: 'bulk_publishing_state',

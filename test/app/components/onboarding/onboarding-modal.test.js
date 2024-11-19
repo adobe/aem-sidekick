@@ -159,6 +159,7 @@ describe('Onboarding modal', () => {
 
     const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
     const onboardingDialog = recursiveQuery(themeWrapper, 'onboarding-dialog');
+    await waitUntil(() => recursiveQuery(onboardingDialog, 'sp-dialog-base'));
     const theme = recursiveQuery(onboardingDialog, 'sp-dialog-base').className;
     expect(theme).to.equal(themeWrapper.getAttribute('theme'));
   });
