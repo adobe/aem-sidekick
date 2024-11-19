@@ -115,7 +115,6 @@ function isGetAuthInfoTrustedOrigin(origin) {
     ADMIN_ORIGIN,
     'https://labs.aem.live',
     'https://tools.aem.live',
-    'https://aem.live',
     'http://localhost:3000',
   ];
 
@@ -126,7 +125,6 @@ function isGetAuthInfoTrustedOrigin(origin) {
   const TRUSTED_ORIGIN_PATTERNS = [
     /^https:\/\/[a-z0-9-]+--helix-labs-website--adobe\.aem\.(page|live)$/, // labs
     /^https:\/\/[a-z0-9-]+--helix-tools-website--adobe\.aem\.(page|live)$/, // tools
-    /^https:\/\/[a-z0-9-]+--helix-website--adobe\.aem\.(page|live)$/, // aem.live
   ];
 
   if (TRUSTED_ORIGIN_PATTERNS.some((trustedOriginPattern) => origin.match(trustedOriginPattern))) {
