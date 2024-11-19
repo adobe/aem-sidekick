@@ -108,7 +108,7 @@ describe('Test actions', () => {
 
     // without auth info
     getStub.resolves({});
-    resp = await externalActions.getAuthInfo();
+    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live'));
     expect(resp).to.deep.equal([]);
 
     // with auth info
@@ -131,8 +131,29 @@ describe('Test actions', () => {
         repo: 'baz',
       }],
     });
-    resp = await externalActions.getAuthInfo();
+
+    // trusted actors
+    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live/'));
     expect(resp).to.deep.equal(['foo']);
+
+    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live/test'));
+    expect(resp).to.deep.equal(['foo']);
+
+    resp = await externalActions.getAuthInfo({}, mockTab('https://feature--helix-labs-website--adobe.aem.page/feature'));
+    expect(resp).to.deep.equal(['foo']);
+
+    // untrusted actors
+    resp = await externalActions.getAuthInfo({}, mockTab('https://evil.live'));
+    expect(resp).to.deep.equal([]);
+
+    resp = await externalActions.getAuthInfo({}, mockTab('https://main--site--owner.aem.live'));
+    expect(resp).to.deep.equal([]);
+
+    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live.evil.com'));
+    expect(resp).to.deep.equal([]);
+
+    resp = await externalActions.getAuthInfo({}, mockTab('https://main--helix-tools-website--adobe.aem.live.evil.com'));
+    expect(resp).to.deep.equal([]);
   });
 
   it('internal: addRemoveProject', async () => {
