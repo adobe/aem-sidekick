@@ -610,6 +610,9 @@
     "unauthorized_state": {
       "message": "Account not authorized for this site"
     },
+    "config_state": {
+      "message": "Activating configuration..."
+    },
     "previewing_state": {
       "message": "Updating Preview..."
     },

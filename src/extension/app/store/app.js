@@ -917,7 +917,9 @@ export class AppStore {
     const { siteStore, status } = this;
     path = path || status.webPath;
 
-    this.setState(STATE.PREVIEWING);
+    this.setState(
+      path.startsWith('/.helix') ? STATE.CONFIG : STATE.PREVIEWING,
+    );
 
     // update preview
     const previewStatus = await this.api.updatePreview(path);
@@ -934,8 +936,6 @@ export class AppStore {
   }
 
   async updatePreview(ranBefore) {
-    this.setState(STATE.PREVIEWING);
-
     const res = await this.update();
     if (!res && !ranBefore) {
       // assume document has been renamed, re-fetch status and try again
