@@ -213,9 +213,14 @@ describe('Test App Store', () => {
     await appStore.loadContext(sidekickElement, config);
     appStore.location.port = '';
 
-    appStore.location.host = 'adobe-my.sharepoint.com';
-    appStore.location.pathname = '/:w:/r/personal/directory/_layouts/15/Doc.aspx';
+    appStore.location.host = 'adobe.sharepoint.com';
+    appStore.location.pathname = '/:w:/r/foo/_layouts/15/Doc.aspx';
     appStore.location.search = '?sourcedoc=AABBCC&file=about.docx&action=default&mobileredirect=true';
+    expect(appStore.isEditor()).to.be.true;
+
+    appStore.location.host = 'adobe.sharepoint.com';
+    appStore.location.pathname = '/:w:/r/foo/_layouts/15/stream.aspx';
+    appStore.location.search = '?id=/foo/video.mp4&referrer=StreamWebApp&view=ebe25cbf-40ca-4fe7-b345-2de37449b94e';
     expect(appStore.isEditor()).to.be.true;
 
     appStore.location.pathname = '';
