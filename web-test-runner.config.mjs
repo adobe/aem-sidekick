@@ -34,6 +34,7 @@ export default {
       sourceMaps: 'inline',
     }),
   ],
+  browserLogs: false,
   testRunnerHtml: (testFramework) => `
   <html>
     <body>
