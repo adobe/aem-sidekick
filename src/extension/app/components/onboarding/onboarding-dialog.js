@@ -225,7 +225,7 @@ export class OnBoardingDialog extends ConnectedElement {
             <sp-button 
               id="close-button" 
               static=${this.appStore.theme === 'dark' ? 'black' : 'white'} 
-              label="Close" 
+              label="${this.appStore.i18n('close')}" 
               @click=${this.closeDialog} 
               icon-only
             >
