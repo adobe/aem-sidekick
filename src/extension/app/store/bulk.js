@@ -461,7 +461,7 @@ export class BulkStore {
       // check selected files
       const illegalFileNames = this.selection
         .filter(({ file }) => file.startsWith(illegalPathPrefix))
-        .map(({ file }) => `${webPath}${file.substring(10)}`);
+        .map(({ file }) => `${webPath}${webPath.endsWith('/') ? '' : '/'}${file.substring(10)}`);
       if (illegalFileNames.length > 0) {
         invalidMessage = this.appStore
           .i18n(`bulk_error_illegal_file_name${illegalFileNames.length === 1 ? '' : 's'}`)

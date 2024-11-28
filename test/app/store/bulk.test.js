@@ -291,11 +291,13 @@ describe('Test Bulk Store', () => {
           variant: 'warning',
           timeout: 0,
         })).to.be.true;
+        expect(showToastSpy.args[0][0].message).to.include('/image?.jpg');
         showToastSpy.resetHistory();
 
         // select 2nd illegal item
         sidekickTest.toggleAdminItems(['video*.mp4']);
         await waitUntil(() => bulkStore.selection.length === 2);
+        sidekickTest.appStore.status.webPath = '/foo';
 
         await bulkStore.preview();
 
@@ -304,6 +306,7 @@ describe('Test Bulk Store', () => {
           variant: 'warning',
           timeout: 0,
         })).to.be.true;
+        expect(showToastSpy.args[0][0].message).to.include('/foo/video*.mp4');
       });
 
       it('bulk previews selection and displays success toast', async () => {
