@@ -265,7 +265,7 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => debugStub.called);
       });
 
-      it('rejects selection with illegal path', async () => {
+      it('rejects file name with illegal characters', async () => {
         // insert items with illegal file names
         sidekickTest.bulkRoot.querySelector('#appRoot .file')
           .insertAdjacentHTML('beforebegin', mockSharePointFile({
@@ -280,8 +280,33 @@ describe('Test Bulk Store', () => {
             type: 'video',
           }));
 
-        // select 1st illegal item
+        // select illegal items
         sidekickTest.toggleAdminItems(['image?.jpg']);
+        sidekickTest.toggleAdminItems(['video*.mp4']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.preview();
+
+        expect(startJobStub.called).to.be.false;
+        expect(showToastSpy.calledWithMatch({
+          variant: 'warning',
+          timeout: 0,
+        })).to.be.true;
+        const { message } = showToastSpy.args[0][0];
+        expect(message).to.include('/image?.jpg');
+        expect(message).to.include('/video*.mp4');
+      });
+
+      it('rejects file name with only non-latin characters', async () => {
+        // insert item with illegal file name
+        sidekickTest.bulkRoot.querySelector('#appRoot .file')
+          .insertAdjacentHTML('beforebegin', mockSharePointFile({
+            path: '/foo/テスト.docx',
+            file: 'テスト.docx',
+            type: 'docx',
+          }));
+
+        sidekickTest.toggleAdminItems(['テスト']);
         await waitUntil(() => bulkStore.selection.length === 1);
 
         await bulkStore.preview();
@@ -291,22 +316,7 @@ describe('Test Bulk Store', () => {
           variant: 'warning',
           timeout: 0,
         })).to.be.true;
-        expect(showToastSpy.args[0][0].message).to.include('/image?.jpg');
-        showToastSpy.resetHistory();
-
-        // select 2nd illegal item
-        sidekickTest.toggleAdminItems(['video*.mp4']);
-        await waitUntil(() => bulkStore.selection.length === 2);
-        sidekickTest.appStore.status.webPath = '/foo';
-
-        await bulkStore.preview();
-
-        expect(startJobStub.called).to.be.false;
-        expect(showToastSpy.calledWithMatch({
-          variant: 'warning',
-          timeout: 0,
-        })).to.be.true;
-        expect(showToastSpy.args[0][0].message).to.include('/foo/video*.mp4');
+        expect(showToastSpy.args[0][0].message).to.include('/テスト.docx');
       });
 
       it('bulk previews selection and displays success toast', async () => {
@@ -684,46 +694,6 @@ describe('Test Bulk Store', () => {
         await bulkStore.publish();
 
         await waitUntil(() => debugStub.called);
-      });
-
-      it('rejects selection with illegal path', async () => {
-        // insert items with illegal file names
-        sidekickTest.bulkRoot.querySelector('#appRoot .file')
-          .insertAdjacentHTML('beforebegin', mockSharePointFile({
-            path: '/foo/image?.jpg',
-            file: 'image?.jpg',
-            type: 'image',
-          }));
-        sidekickTest.bulkRoot.querySelector('#appRoot .file')
-          .insertAdjacentHTML('beforebegin', mockSharePointFile({
-            path: '/foo/video*.mp4',
-            file: 'video*.mp4',
-            type: 'video',
-          }));
-
-        // select 1st illegal item
-        sidekickTest.toggleAdminItems(['image?.jpg']);
-        await waitUntil(() => bulkStore.selection.length === 1);
-
-        await bulkStore.publish();
-
-        expect(startJobStub.called).to.be.false;
-        expect(showToastSpy.calledWithMatch({
-          variant: 'warning',
-          timeout: 0,
-        })).to.be.true;
-
-        // select 2nd illegal item
-        sidekickTest.toggleAdminItems(['video*.mp4']);
-        await waitUntil(() => bulkStore.selection.length === 2);
-
-        await bulkStore.publish();
-
-        expect(startJobStub.called).to.be.false;
-        expect(showToastSpy.calledWithMatch({
-          variant: 'warning',
-          timeout: 0,
-        })).to.be.true;
       });
 
       it('bulk publishes selection and displays success toast', async () => {
