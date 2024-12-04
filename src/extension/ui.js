@@ -150,16 +150,16 @@ export async function updateContextMenu({
           ],
         });
       }
-      // open view doc source
-      if (await guessAEMSite(id)) {
-        await chrome.contextMenus.create({
-          id: 'openViewDocSource',
-          title: chrome.i18n.getMessage('open_view_doc_source'),
-          contexts: [
-            'action',
-          ],
-        });
-      }
+    }
+    // open view doc source
+    if (await guessAEMSite(id)) {
+      await chrome.contextMenus.create({
+        id: 'openViewDocSource',
+        title: chrome.i18n.getMessage('open_view_doc_source'),
+        contexts: [
+          'action',
+        ],
+      });
     }
     if (await detectLegacySidekick()) {
       // import legacy projects
