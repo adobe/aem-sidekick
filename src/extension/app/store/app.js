@@ -597,10 +597,10 @@ export class AppStore {
    * @returns {boolean} <code>true</code> if URL is SharePoint editor, else <code>false</code>
    */
   isSharePointEditor(url) {
-    const { pathname, search } = url;
+    const { pathname, searchParams } = url;
     return this.isSharePoint(url)
       && pathname.match(/\/_layouts\/15\/[\w]+.aspx/)
-      && search.includes('sourcedoc=');
+      && (searchParams.has('sourcedoc') || searchParams.has('id'));
   }
 
   /**
