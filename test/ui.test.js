@@ -87,7 +87,7 @@ describe('Test UI: updateContextMenu', () => {
 
   it('updateContextMenu: project not added yet', async () => {
     await updateContextMenu({
-      url,
+      ...tab,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -112,7 +112,7 @@ describe('Test UI: updateContextMenu', () => {
 
     await addProject(config);
     await updateContextMenu({
-      url,
+      ...tab,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -124,7 +124,7 @@ describe('Test UI: updateContextMenu', () => {
     const project = await getProject(config);
     await updateProject({ ...project, disabled: true });
     await updateContextMenu({
-      url,
+      ...tab,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
