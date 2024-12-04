@@ -53,6 +53,7 @@ describe('Test UI: updateContextMenu', () => {
   let createSpy;
   let removeAllSpy;
   let addListenerStub;
+  let isAEM;
 
   before(async () => {
     await setUserAgent('HeadlessChrome');
@@ -63,9 +64,10 @@ describe('Test UI: updateContextMenu', () => {
     createSpy = sandbox.spy(chrome.contextMenus, 'create');
     addListenerStub = sandbox.stub(chrome.runtime.onMessage, 'addListener')
       .callsFake((func, _) => func(
-        { isAEM: true },
+        { isAEM },
         { tab: { id: 1 } },
       ));
+    isAEM = true;
   });
 
   afterEach(() => {
@@ -130,6 +132,7 @@ describe('Test UI: updateContextMenu', () => {
   });
 
   it('updateContextMenu: no matching config', async () => {
+    isAEM = false;
     await updateContextMenu({
       url,
     });
@@ -175,6 +178,7 @@ describe('Test UI: updateContextMenu', () => {
   });
 
   it('updateContextMenu: ignore github url', async () => {
+    isAEM = false;
     await updateContextMenu({
       url: 'https://github.com/foo/bar/',
       config,
