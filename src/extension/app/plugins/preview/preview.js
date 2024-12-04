@@ -71,20 +71,20 @@ export function createPreviewPlugin(appStore) {
           const neitherGdocOrGSheet = !isGoogleDocMime && !isGoogleSheetMime;
 
           if (neitherGdocOrGSheet) {
-            const isMsDocMime = contentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+            const isMsWordMime = contentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
             const isMsExcelSheet = contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
             let errorKey = 'error_preview_not_gdoc_generic'; // show generic message by default
 
             // istanbul ignore else
-            if (isMsDocMime) {
-              errorKey = 'error_preview_not_gdoc_ms_word';
+            if (isMsWordMime) {
+              errorKey = 'error_preview_no_docx';
             } else if (isMsExcelSheet) {
-              errorKey = 'error_preview_not_gsheet_ms_excel';
+              errorKey = 'error_preview_no_xlsx';
             }
 
             appStore.showToast({
               message: appStore.i18n(errorKey),
-              variant: 'negative',
+              variant: 'warning',
             });
 
             return;
