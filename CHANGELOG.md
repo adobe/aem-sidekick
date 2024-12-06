@@ -1,3 +1,15 @@
+## [7.1.3](https://github.com/adobe/aem-sidekick/compare/v7.1.2...v7.1.3) (2024-12-06)
+
+
+### Bug Fixes
+
+* **bulk:** illegal file path handling ([#377](https://github.com/adobe/aem-sidekick/issues/377)) ([6b850c6](https://github.com/adobe/aem-sidekick/commit/6b850c6cae84b16214301622186c200dcb498bd0))
+* hardcoded icon colors ([#389](https://github.com/adobe/aem-sidekick/issues/389)) ([8a75140](https://github.com/adobe/aem-sidekick/commit/8a751406160980eda62581406fec0c63ae33e12f))
+* **onboarding:** hardcoded aria-label on close button ([#376](https://github.com/adobe/aem-sidekick/issues/376)) ([c65539f](https://github.com/adobe/aem-sidekick/commit/c65539f6c79e377d7a5ce6d30fe740032177c8c6))
+* **preview:** empty error message ([#385](https://github.com/adobe/aem-sidekick/issues/385)) ([c891325](https://github.com/adobe/aem-sidekick/commit/c891325c81bc24c69996f21bbc3e42e7d21ea8bb))
+* **sharepoint:** mp4 viewer causes 404 in status ([#371](https://github.com/adobe/aem-sidekick/issues/371)) ([f1e5d73](https://github.com/adobe/aem-sidekick/commit/f1e5d73283ed87ec71857b7459bf15a230085b67))
+* **view-doc-source:** check any url ([#392](https://github.com/adobe/aem-sidekick/issues/392)) ([2bf4f7e](https://github.com/adobe/aem-sidekick/commit/2bf4f7e62cc2748e95c94d8997116ab16833f300))
+
 ## [7.1.2](https://github.com/adobe/aem-sidekick/compare/v7.1.1...v7.1.2) (2024-11-19)
 
 
