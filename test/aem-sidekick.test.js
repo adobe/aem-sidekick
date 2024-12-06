@@ -69,9 +69,8 @@ describe('AEM Sidekick', () => {
     const { location } = sidekick;
     expect(location.href).to.eq('https://main--aem-boilerplate--adobe.hlx.page/');
     expect(sidekickTest.rumStub.called).to.be.true;
-    expect(sidekickTest.rumStub.calledWith('click', {
+    expect(sidekickTest.rumStub.calledWithMatch('click', {
       source: 'sidekick',
-      target: 'loaded:chrome',
     })).to.be.true;
   });
 

@@ -194,7 +194,7 @@ describe('Preview plugin', () => {
             edit: {
               status: 200,
               sourceLocation: 'gdrive:driveid',
-              contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+              contentType: 'application/vnd.openxmlformats-officedocument.fooml.document',
             },
           },
         );
@@ -217,8 +217,8 @@ describe('Preview plugin', () => {
       await sidekickTest.clickToastClose();
       expect(closeToastSpy.calledOnce);
       expect(toastSpy.calledOnceWith({
-        message: 'This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets',
-        variant: 'negative',
+        message: 'Preview generation failed. Must be Google document or spreadsheet.',
+        variant: 'warning',
       }));
     });
 
@@ -253,8 +253,8 @@ describe('Preview plugin', () => {
 
       await waitUntil(() => toastSpy.calledOnce);
       expect(toastSpy.calledOnceWith({
-        message: 'This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets',
-        variant: 'negative',
+        message: 'This is a Microsoft Word document. Please convert it to Google Docs first.',
+        variant: 'warning',
       }));
     });
 
@@ -289,8 +289,8 @@ describe('Preview plugin', () => {
 
       await waitUntil(() => toastSpy.calledOnce);
       expect(toastSpy.calledOnceWith({
-        message: 'This is a Microsoft Excel document. Please convert it to Google Sheets: File > Save as Google Sheets',
-        variant: 'negative',
+        message: 'This is a Microsoft Excel document. Please convert it to Google Sheets first.',
+        variant: 'warning',
       }));
     });
   });

@@ -34,7 +34,7 @@ export default {
       sourceMaps: 'inline',
     }),
   ],
-  browserLogs: false,
+  browserLogs: process.env.DEBUG === 'true', // export DEBUG=true to enable browser logs
   testRunnerHtml: (testFramework) => `
   <html>
     <body>
