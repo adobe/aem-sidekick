@@ -17,7 +17,7 @@
     "build:chrome": "node ./build/build-browser.js chrome",
     "publish:prepare": "node ./build/publish-prepare.js",
     "publish:chrome": "npm run publish:prepare && npm run build && node ./build/publish.js chrome",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -89,7 +89,6 @@
     "archiver": "7.0.1",
     "babel-plugin-istanbul": "7.0.0",
     "chokidar": "4.0.1",
-    "codecov": "3.8.3",
     "eslint": "8.57.1",
     "eslint-plugin-mobx": "0.0.13",
     "fetch-mock": "9.11.0",
@@ -98,7 +97,6 @@
     "jsdoc-to-markdown": "9.1.1",
     "lint-staged": "15.2.10",
     "nock": "13.5.6",
-    "request": "2.88.2",
     "rimraf": "6.0.1",
     "rollup": "4.28.0",
     "rollup-plugin-copy": "3.5.0",
