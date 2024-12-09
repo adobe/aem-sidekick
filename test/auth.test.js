@@ -52,20 +52,26 @@ describe('Test auth', () => {
 
   it('setAuthToken', async () => {
     const updateSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'updateSessionRules');
-    const getConfig = sandbox.spy(chrome.storage.session, 'get');
     const setConfig = sandbox.spy(chrome.storage.session, 'set');
     const owner = 'test';
     const repo = 'site';
     const authToken = '1234567890';
     const authTokenExpiry = Date.now() / 1000 + 60;
 
+    const mockTab = { id: 1234, url: 'https://main--site--test.aem.live' };
+    sandbox.stub(chrome.tabs, 'query')
+      .withArgs({ active: true, currentWindow: true })
+      .resolves([mockTab]);
+
+    sandbox.stub(chrome.tabs, 'get')
+      .withArgs(mockTab.id)
+      .resolves(mockTab);
+
     // set auth token
     await setAuthToken(owner, repo, authToken, authTokenExpiry);
-    expect(getConfig.callCount).to.equal(2);
     expect(setConfig.callCount).to.be.equal(1);
     // update auth token without expiry
     await setAuthToken(owner, repo, authToken);
-    expect(getConfig.callCount).to.equal(4);
     expect(setConfig.callCount).to.be.equal(2);
     // remove auth token
     await setAuthToken(owner, repo, '');
@@ -74,11 +80,9 @@ describe('Test auth', () => {
     await setAuthToken(owner, repo, '');
     expect(setConfig.callCount).to.equal(4);
     // testing else paths
-    getConfig.resetHistory();
     setConfig.resetHistory();
     // @ts-ignore
     await setAuthToken();
-    expect(getConfig.notCalled).to.be.true;
     expect(setConfig.notCalled).to.be.true;
 
     expect(updateSessionRules.calledWith({
@@ -145,23 +149,35 @@ describe('Test auth', () => {
 
   it('setAuthToken (added project)', async () => {
     const updateSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'updateSessionRules');
-    const getConfig = sandbox.spy(chrome.storage.session, 'get');
     const setConfig = sandbox.spy(chrome.storage.session, 'set');
     const owner = 'test';
     const repo = 'site';
     const authToken = '1234567890';
 
     sandbox.stub(chrome.storage.sync, 'get').resolves({
+      projects: [
+        'test/site',
+      ],
       'test/site': {
+        owner,
+        repo,
         host: 'production-host.com',
         previewHost: 'custom-preview.com',
         liveHost: 'custom-live.com',
       },
     });
 
+    const mockTab = { id: 1234, url: 'https://production-host.com' };
+    sandbox.stub(chrome.tabs, 'query')
+      .withArgs({ active: true, currentWindow: true })
+      .resolves([mockTab]);
+
+    sandbox.stub(chrome.tabs, 'get')
+      .withArgs(mockTab.id)
+      .resolves(mockTab);
+
     await setAuthToken(owner, repo, authToken);
     expect(setConfig.callCount).to.equal(1);
-    expect(getConfig.callCount).to.equal(2);
 
     expect(updateSessionRules.calledWith({
       addRules: [
@@ -308,7 +324,6 @@ describe('Test auth', () => {
 
   it('setAuthToken with transient site token', async () => {
     const updateSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'updateSessionRules');
-    const getConfig = sandbox.spy(chrome.storage.session, 'get');
     const setConfig = sandbox.spy(chrome.storage.session, 'set');
     const owner = 'test';
     const repo = 'site';
@@ -316,9 +331,17 @@ describe('Test auth', () => {
     const siteToken = '0987654321';
     let expiry = Date.now() / 1000 + 60;
 
+    const mockTab = { id: 1234, url: 'https://main--site--test.aem.live' };
+    sandbox.stub(chrome.tabs, 'query')
+      .withArgs({ active: true, currentWindow: true })
+      .resolves([mockTab]);
+
+    sandbox.stub(chrome.tabs, 'get')
+      .withArgs(mockTab.id)
+      .resolves(mockTab);
+
     await setAuthToken(owner, repo, authToken, expiry, siteToken, expiry);
     expect(setConfig.callCount).to.equal(1);
-    expect(getConfig.callCount).to.equal(2);
 
     expect(updateSessionRules.calledWith({
       addRules: [
@@ -415,13 +438,11 @@ describe('Test auth', () => {
     expiry = Date.now() / 1000 + 120;
     await setAuthToken(owner, repo, authToken, expiry, siteToken, expiry);
     expect(setConfig.callCount).to.equal(2);
-    expect(getConfig.callCount).to.equal(4);
     expect(updateSessionRules.callCount).to.equal(4);
 
     // remove existing auth and site tokens
     await setAuthToken(owner, repo, '', undefined, '', undefined);
     expect(setConfig.callCount).to.equal(3);
-    expect(getConfig.callCount).to.equal(6);
     expect(updateSessionRules.callCount).to.equal(5);
   });
 });

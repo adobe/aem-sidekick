@@ -110,7 +110,7 @@ export async function showSidekickNotification(tabId, data, callback) {
  * @param {string} origin
  * @returns {boolean} true - trusted / false - untrusted
  */
-function isGetAuthInfoTrustedOrigin(origin) {
+export function isGetAuthInfoTrustedOrigin(origin) {
   const TRUSTED_ORIGINS = [
     ADMIN_ORIGIN,
     'https://labs.aem.live',
