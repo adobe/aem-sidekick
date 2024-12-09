@@ -15,7 +15,6 @@
 import { log } from './log.js';
 import { getConfig, setConfig } from './config.js';
 import { ADMIN_ORIGIN } from './utils/admin.js';
-// import { checkTab, getCurrentTab } from './tab.js';
 
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
 
@@ -234,7 +233,4 @@ export async function setAuthToken(
     }
     await setConfig('session', { projects });
   }
-
-  // const currentTab = await getCurrentTab();
-  // await checkTab(currentTab.id);
 }

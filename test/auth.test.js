@@ -17,9 +17,9 @@ import { expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
-import { configureAuthAndCorsHeaders, setAuthToken } from '../src/extension/auth.js';
+import { setAuthToken } from '../src/extension/auth.js';
 import chromeMock from './mocks/chrome.js';
-import { error } from './test-utils.js';
+import { checkTab } from '../src/extension/tab.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -33,21 +33,6 @@ describe('Test auth', () => {
 
   afterEach(() => {
     sandbox.restore();
-  });
-
-  it('configureAuthAndCorsHeaders', async () => {
-    const getSessionRules = sandbox.stub(chrome.declarativeNetRequest, 'getSessionRules')
-      // @ts-ignore
-      .resolves([{ id: 1 }]);
-    const updateSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'updateSessionRules');
-    await configureAuthAndCorsHeaders();
-    expect(getSessionRules.called).to.be.true;
-    expect(updateSessionRules.called).to.be.true;
-    // error handling
-    updateSessionRules.restore();
-    sandbox.stub(chrome.declarativeNetRequest, 'updateSessionRules')
-      .throws(error);
-    await configureAuthAndCorsHeaders();
   });
 
   it('setAuthToken', async () => {
@@ -69,21 +54,57 @@ describe('Test auth', () => {
 
     // set auth token
     await setAuthToken(owner, repo, authToken, authTokenExpiry);
-    expect(setConfig.callCount).to.be.equal(1);
+    expect(setConfig.calledWith({
+      projects: [
+        {
+          id: owner,
+          owner,
+          repo,
+          authToken,
+          authTokenExpiry: authTokenExpiry * 1000,
+          picture: undefined,
+        },
+      ],
+    })).to.be.true;
+
+    await checkTab(mockTab.id);
+
     // update auth token without expiry
     await setAuthToken(owner, repo, authToken);
-    expect(setConfig.callCount).to.be.equal(2);
+    expect(setConfig.calledWith({
+      projects: [
+        {
+          id: owner,
+          owner,
+          repo,
+          authToken,
+          authTokenExpiry: 0,
+          picture: undefined,
+        },
+      ],
+    })).to.be.true;
+    await checkTab(mockTab.id);
+
     // remove auth token
     await setAuthToken(owner, repo, '');
-    expect(setConfig.callCount).to.equal(3);
+    expect(setConfig.calledWith({
+      projects: [],
+    })).to.be.true;
+    await checkTab(mockTab.id);
+
     // remove auth token again
     await setAuthToken(owner, repo, '');
-    expect(setConfig.callCount).to.equal(4);
+    expect(setConfig.calledWith({
+      projects: [],
+    })).to.be.true;
+    await checkTab(mockTab.id);
+
     // testing else paths
     setConfig.resetHistory();
     // @ts-ignore
     await setAuthToken();
     expect(setConfig.notCalled).to.be.true;
+    await checkTab(mockTab.id);
 
     expect(updateSessionRules.calledWith({
       addRules: [
@@ -178,6 +199,7 @@ describe('Test auth', () => {
 
     await setAuthToken(owner, repo, authToken);
     expect(setConfig.callCount).to.equal(1);
+    await checkTab(mockTab.id);
 
     expect(updateSessionRules.calledWith({
       addRules: [
@@ -342,6 +364,7 @@ describe('Test auth', () => {
 
     await setAuthToken(owner, repo, authToken, expiry, siteToken, expiry);
     expect(setConfig.callCount).to.equal(1);
+    await checkTab(mockTab.id);
 
     expect(updateSessionRules.calledWith({
       addRules: [
@@ -437,11 +460,14 @@ describe('Test auth', () => {
     // update existing auth and site tokens
     expiry = Date.now() / 1000 + 120;
     await setAuthToken(owner, repo, authToken, expiry, siteToken, expiry);
+    await checkTab(mockTab.id);
     expect(setConfig.callCount).to.equal(2);
     expect(updateSessionRules.callCount).to.equal(4);
 
     // remove existing auth and site tokens
     await setAuthToken(owner, repo, '', undefined, '', undefined);
+    await checkTab(mockTab.id);
+
     expect(setConfig.callCount).to.equal(3);
     expect(updateSessionRules.callCount).to.equal(5);
   });
