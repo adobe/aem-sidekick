@@ -597,10 +597,10 @@ export class AppStore {
    * @returns {boolean} <code>true</code> if URL is SharePoint editor, else <code>false</code>
    */
   isSharePointEditor(url) {
-    const { pathname, search } = url;
+    const { pathname, searchParams } = url;
     return this.isSharePoint(url)
       && pathname.match(/\/_layouts\/15\/[\w]+.aspx/)
-      && search.includes('sourcedoc=');
+      && (searchParams.has('sourcedoc') || searchParams.has('id'));
   }
 
   /**
@@ -917,7 +917,9 @@ export class AppStore {
     const { siteStore, status } = this;
     path = path || status.webPath;
 
-    this.setState(STATE.PREVIEWING);
+    this.setState(
+      path.startsWith('/.helix') ? STATE.CONFIG : STATE.PREVIEWING,
+    );
 
     // update preview
     const previewStatus = await this.api.updatePreview(path);
@@ -934,8 +936,6 @@ export class AppStore {
   }
 
   async updatePreview(ranBefore) {
-    this.setState(STATE.PREVIEWING);
-
     const res = await this.update();
     if (!res && !ranBefore) {
       // assume document has been renamed, re-fetch status and try again
@@ -1245,12 +1245,7 @@ export class AppStore {
   login(selectAccount) {
     this.setState(STATE.LOGGING_IN);
     const loginUrl = this.api.createUrl('login');
-    let extensionId = window.chrome?.runtime?.id;
-    // istanbul ignore next 3
-    if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
-      extensionId = 'cookie';
-    }
-    loginUrl.searchParams.set('extensionId', extensionId);
+    loginUrl.searchParams.set('extensionId', window.chrome?.runtime?.id);
     if (selectAccount) {
       loginUrl.searchParams.set('selectAccount', 'true');
     }
@@ -1274,10 +1269,6 @@ export class AppStore {
             { once: true },
           );
           await this.siteStore.initStore(siteStore);
-          this.siteStore.authTokenExpiry = (
-            window.hlx
-            && window.hlx.sidekickConfig
-            && window.hlx.sidekickConfig.authTokenExpiry) || 0;
           this.setupPlugins();
           this.fireEvent(EXTERNAL_EVENTS.LOGGED_IN, this.status.profile);
           // refresh page with site token in case of 401
@@ -1309,12 +1300,7 @@ export class AppStore {
   logout() {
     this.setState(STATE.LOGGING_OUT);
     const logoutUrl = this.api.createUrl('logout');
-    let extensionId = window.chrome?.runtime?.id;
-    // istanbul ignore next 3
-    if (!extensionId || window.navigator.vendor.includes('Apple')) { // exclude safari
-      extensionId = 'cookie';
-    }
-    logoutUrl.searchParams.set('extensionId', extensionId);
+    logoutUrl.searchParams.set('extensionId', window.chrome?.runtime?.id);
     const logoutWindow = this.openPage(logoutUrl.toString());
 
     let attempts = 0;
@@ -1328,7 +1314,6 @@ export class AppStore {
         this.status.profile = await this.getProfile();
         if (!this.status.profile) {
           delete this.status.profile;
-          delete this.siteStore.authTokenExpiry;
           await this.siteStore.initStore(siteStore);
           this.setupPlugins();
           this.fetchStatus();

@@ -64,7 +64,6 @@ export function createAdminUrl(
  * @param {string} [opts.method] The method to use
  * @param {Object} [opts.body] The body to send
  * @param {URLSearchParams} [opts.searchParams] The search parameters
- * @param {boolean} [opts.omitCredentials] Should we omit the credentials
  * @returns {Promise<Response>} The admin response
  */
 export async function callAdmin(
@@ -75,14 +74,13 @@ export async function callAdmin(
     method = 'get',
     body = undefined,
     searchParams = new URLSearchParams(),
-    omitCredentials = false,
   } = {},
 ) {
   const url = createAdminUrl(config, api, path, searchParams);
   return fetch(url, {
     method,
     cache: 'no-store',
-    credentials: omitCredentials ? 'omit' : 'include',
+    credentials: 'omit',
     headers: body ? { 'Content-Type': 'application/json' } : undefined,
     body: body ? JSON.stringify(body) : undefined,
   });

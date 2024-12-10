@@ -1,3 +1,31 @@
+## [7.1.3](https://github.com/adobe/aem-sidekick/compare/v7.1.2...v7.1.3) (2024-12-06)
+
+
+### Bug Fixes
+
+* **bulk:** illegal file path handling ([#377](https://github.com/adobe/aem-sidekick/issues/377)) ([6b850c6](https://github.com/adobe/aem-sidekick/commit/6b850c6cae84b16214301622186c200dcb498bd0))
+* hardcoded icon colors ([#389](https://github.com/adobe/aem-sidekick/issues/389)) ([8a75140](https://github.com/adobe/aem-sidekick/commit/8a751406160980eda62581406fec0c63ae33e12f))
+* **onboarding:** hardcoded aria-label on close button ([#376](https://github.com/adobe/aem-sidekick/issues/376)) ([c65539f](https://github.com/adobe/aem-sidekick/commit/c65539f6c79e377d7a5ce6d30fe740032177c8c6))
+* **preview:** empty error message ([#385](https://github.com/adobe/aem-sidekick/issues/385)) ([c891325](https://github.com/adobe/aem-sidekick/commit/c891325c81bc24c69996f21bbc3e42e7d21ea8bb))
+* **sharepoint:** mp4 viewer causes 404 in status ([#371](https://github.com/adobe/aem-sidekick/issues/371)) ([f1e5d73](https://github.com/adobe/aem-sidekick/commit/f1e5d73283ed87ec71857b7459bf15a230085b67))
+* **view-doc-source:** check any url ([#392](https://github.com/adobe/aem-sidekick/issues/392)) ([2bf4f7e](https://github.com/adobe/aem-sidekick/commit/2bf4f7e62cc2748e95c94d8997116ab16833f300))
+
+## [7.1.2](https://github.com/adobe/aem-sidekick/compare/v7.1.1...v7.1.2) (2024-11-19)
+
+
+### Bug Fixes
+
+* Restrict getAuthInfo Action to trusted Adobe Origins ([#366](https://github.com/adobe/aem-sidekick/issues/366)) ([0cc413f](https://github.com/adobe/aem-sidekick/commit/0cc413f5975875b1b1acbd55331c3c8dbdab6b64))
+* show accurate activity message for config files ([#367](https://github.com/adobe/aem-sidekick/issues/367)) ([ace87bd](https://github.com/adobe/aem-sidekick/commit/ace87bde2770c328363c992f190bd1a6e5f09c20))
+
+## [7.1.1](https://github.com/adobe/aem-sidekick/compare/v7.1.0...v7.1.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* cookie-less auth cleanup. remove credentials: include ([#353](https://github.com/adobe/aem-sidekick/issues/353)) ([44cba10](https://github.com/adobe/aem-sidekick/commit/44cba103e74144c9c0676ed6b236dfb8bf879134))
+* disabled action buttons color ([#360](https://github.com/adobe/aem-sidekick/issues/360)) ([a1a8a52](https://github.com/adobe/aem-sidekick/commit/a1a8a52889b4d39424e1a4bea182a90ecde13701))
+
 # [7.1.0](https://github.com/adobe/aem-sidekick/compare/v7.0.2...v7.1.0) (2024-11-12)
 
 

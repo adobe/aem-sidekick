@@ -52,7 +52,7 @@ const { updateContextMenu, updateIcon } = await import('../src/extension/ui.js')
 describe('Test UI: updateContextMenu', () => {
   let createSpy;
   let removeAllSpy;
-  let addListenerStub;
+  let isAEM;
 
   before(async () => {
     await setUserAgent('HeadlessChrome');
@@ -61,11 +61,12 @@ describe('Test UI: updateContextMenu', () => {
   beforeEach(async () => {
     removeAllSpy = sandbox.spy(chrome.contextMenus, 'removeAll');
     createSpy = sandbox.spy(chrome.contextMenus, 'create');
-    addListenerStub = sandbox.stub(chrome.runtime.onMessage, 'addListener')
+    sandbox.stub(chrome.runtime.onMessage, 'addListener')
       .callsFake((func, _) => func(
-        { isAEM: true },
+        { isAEM },
         { tab: { id: 1 } },
       ));
+    isAEM = true;
   });
 
   afterEach(() => {
@@ -85,7 +86,7 @@ describe('Test UI: updateContextMenu', () => {
 
   it('updateContextMenu: project not added yet', async () => {
     await updateContextMenu({
-      url,
+      ...tab,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -110,7 +111,7 @@ describe('Test UI: updateContextMenu', () => {
 
     await addProject(config);
     await updateContextMenu({
-      url,
+      ...tab,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -122,7 +123,7 @@ describe('Test UI: updateContextMenu', () => {
     const project = await getProject(config);
     await updateProject({ ...project, disabled: true });
     await updateContextMenu({
-      url,
+      ...tab,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -130,9 +131,8 @@ describe('Test UI: updateContextMenu', () => {
   });
 
   it('updateContextMenu: no matching config', async () => {
-    await updateContextMenu({
-      url,
-    });
+    isAEM = false;
+    await updateContextMenu(tab);
     expect(removeAllSpy.callCount).to.equal(1);
     expect(createSpy.callCount).to.equal(0);
   });
@@ -147,14 +147,9 @@ describe('Test UI: updateContextMenu', () => {
   });
 
   it('updateContextMenu: project added but not an AEM site', async () => {
-    addListenerStub.restore();
-    addListenerStub = sandbox.stub(chrome.runtime.onMessage, 'addListener')
-      .callsFake((func, _) => func(
-        { isAEM: false },
-        { tab: { id: 1 } },
-      ));
+    isAEM = false;
     await updateContextMenu({
-      url,
+      ...tab,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -166,7 +161,7 @@ describe('Test UI: updateContextMenu', () => {
     sandbox.stub(chrome.scripting, 'executeScript')
       .throws(error);
     await updateContextMenu({
-      url,
+      ...tab,
       config,
     });
     expect(removeAllSpy.callCount).to.equal(1);
@@ -175,7 +170,9 @@ describe('Test UI: updateContextMenu', () => {
   });
 
   it('updateContextMenu: ignore github url', async () => {
+    isAEM = false;
     await updateContextMenu({
+      ...tab,
       url: 'https://github.com/foo/bar/',
       config,
     });
@@ -199,7 +196,7 @@ describe('Test UI: updateContextMenu', () => {
       });
 
     await updateContextMenu({
-      url,
+      ...tab,
       config,
     });
     expect(createSpy.calledWithMatch({ type: 'separator' })).to.be.true;

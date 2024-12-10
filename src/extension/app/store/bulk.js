@@ -111,7 +111,8 @@ export class BulkStore {
   #validateBulkResource(item) {
     // detect illegal characters in file name
     const { file, type } = item;
-    if (['/', '*', '\\', '!', '?'].find((char) => file.includes(char))) {
+    const [normalizedName] = this.#normalize(file);
+    if (normalizedName === '' || ['/', '*', '\\', '!', '?'].find((char) => file.includes(char))) {
       return {
         type,
         file: `${illegalPathPrefix}${file}`,
@@ -125,17 +126,28 @@ export class BulkStore {
   }
 
   /**
-   * Normalizes a file name.
+   * Returns the normalized file name and its extension.
    * @param {string} file The file name
-   * @returns {string} The sanitized file name
+   * @returns {string[]} The normalized file name and extension
    */
   #normalize(file) {
-    return file
+    let name = file;
+    let ext = '';
+    const lastDot = file.lastIndexOf('.');
+    if (lastDot > 0) {
+      name = file.substring(0, lastDot);
+      ext = file.substring(lastDot);
+    }
+
+    // normalize name
+    name = name
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
+
+    return [name, ext];
   }
 
   /**
@@ -163,7 +175,7 @@ export class BulkStore {
       // remove empty entries
       .filter(({ type, file }) => file && type)
       // return validated resources
-      .map(this.#validateBulkResource);
+      .map(this.#validateBulkResource.bind(this));
   }
 
   /**
@@ -208,7 +220,7 @@ export class BulkStore {
       // exclude folders and emtpy entries
       .filter(({ type, file }) => type && type !== 'folder' && file)
       // return validated resources
-      .map(this.#validateBulkResource);
+      .map(this.#validateBulkResource.bind(this));
   }
 
   /**
@@ -231,14 +243,7 @@ export class BulkStore {
   #bulkSelectionToPath(selection, folder) {
     return selection.map((item) => {
       const { file, type } = item;
-
-      let filename = file;
-      let ext = '';
-      const lastDot = file.lastIndexOf('.');
-      if (lastDot > 0) {
-        filename = file.substring(0, lastDot);
-        ext = file.substring(lastDot);
-      }
+      let [filename, ext] = this.#normalize(file);
 
       if (type === 'docx') {
         // omit docx extension
@@ -255,7 +260,7 @@ export class BulkStore {
         filename = '';
       }
 
-      return `${folder}${folder.endsWith('/') ? '' : '/'}${this.#normalize(filename)}${ext}`;
+      return `${folder}${folder.endsWith('/') ? '' : '/'}${filename}${ext}`;
     });
   }
 
@@ -461,7 +466,7 @@ export class BulkStore {
       // check selected files
       const illegalFileNames = this.selection
         .filter(({ file }) => file.startsWith(illegalPathPrefix))
-        .map(({ file }) => `${webPath}${file.substring(10)}`);
+        .map(({ file }) => `${webPath}${webPath.endsWith('/') ? '' : '/'}${file.substring(10)}`);
       if (illegalFileNames.length > 0) {
         invalidMessage = this.appStore
           .i18n(`bulk_error_illegal_file_name${illegalFileNames.length === 1 ? '' : 's'}`)
