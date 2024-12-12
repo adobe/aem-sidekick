@@ -22,6 +22,80 @@ function getRandomId() {
   return Math.floor(Math.random() * 1000000);
 }
 
+export async function configureLocalhostAuth(url, matches) {
+  const sessionRules = await chrome.declarativeNetRequest.getSessionRules();
+  if (new URL(url).hostname !== 'localhost') {
+    return;
+  }
+
+  if (!matches || matches.length === 0) {
+    return;
+  }
+
+  const [project] = matches;
+  const sessionProjects = await getConfig('session', 'projects') || [];
+
+  const sessionProject = sessionProjects.find((sp) => sp.id === `${project.owner}/${project.repo}`);
+
+  const removeRuleIds = [];
+  const addRules = [];
+
+  const siteToken = sessionProject?.siteToken;
+  const rule = {
+    id: getRandomId(),
+    priority: 1,
+    action: {
+      type: 'modifyHeaders',
+      requestHeaders: [{
+        operation: 'set',
+        header: 'authorization',
+        value: `token ${siteToken}`,
+      }],
+    },
+    condition: {
+      // initiatorDomains: ['localhost'],
+      regexFilter: '^http://localhost:3000/.*',
+      requestMethods: ['get', 'post'],
+      resourceTypes: [
+        'main_frame',
+        'script',
+        'stylesheet',
+        'image',
+        'xmlhttprequest',
+        'media',
+        'font',
+      ],
+    },
+  };
+
+  const previousRule = sessionRules.find((r) => r.condition?.regexFilter?.includes('localhost:3000'));
+
+  if (previousRule) {
+    // we had a rule before
+    if (!siteToken) {
+      // but needs to be removed, because there is no site token anymore
+      removeRuleIds.push(previousRule.id);
+    } else if (
+      previousRule.action.requestHeaders[0].value !== rule.action.requestHeaders[0].value
+    ) {
+      // we had a rule before, but the site token is different, so we need to exchange it
+      addRules.push(rule);
+      removeRuleIds.push(previousRule.id);
+    }
+  } else if (siteToken) {
+    // no rule before, so a new site token and the rule needs to be added
+    addRules.push(rule);
+  }
+
+  if (addRules.length === 0 && removeRuleIds.length === 0) {
+    return;
+  }
+
+  const rules = { addRules, removeRuleIds };
+  console.log('updating localhost rules', rules);
+  await chrome.declarativeNetRequest.updateSessionRules(rules);
+}
+
 /**
  * Sets the x-auth-token header for all requests to the Admin API if project config
  * has an auth token. Also sets the Access-Control-Allow-Origin header for

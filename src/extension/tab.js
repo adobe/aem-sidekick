@@ -19,6 +19,7 @@ import {
 import { urlCache } from './url-cache.js';
 import { updateUI } from './ui.js';
 import { getConfig } from './config.js';
+import { configureLocalhostAuth } from './auth.js';
 
 /**
  * Loads the content script in the tab.
@@ -66,6 +67,8 @@ export async function checkTab(id) {
     const adminVersion = await getConfig('session', 'adminVersion');
 
     injectContentScript(id, matches, adminVersion);
+
+    configureLocalhostAuth(url, matches);
 
     updateUI({
       id, url, config, matches,
