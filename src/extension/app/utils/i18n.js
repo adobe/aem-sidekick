@@ -85,6 +85,9 @@ export async function fetchLanguageDict(siteStore, lang) {
     const messages = await res.json();
     Object.keys(messages).forEach((key) => {
       dict[key] = messages[key].message;
+      if (messages[key].description) {
+        dict[`${key}_desc`] = messages[key].description;
+      }
     });
   } catch (e) {
     // eslint-disable-next-line no-console

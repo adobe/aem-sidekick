@@ -82,10 +82,10 @@ export class AdminClient {
    * Returns an error message from the server response.
    * @abstract
    * @param {Response} resp The response
-   * @returns {string} The error message or an empty string
+   * @returns {string[]} The error message (or an empty string) and the error code
    */
   getServerError(resp) {
-    return resp?.headers?.get('x-error') || '';
+    return [resp?.headers?.get('x-error') || '', resp?.headers?.get('x-error-code')];
   }
 
   /**
@@ -98,7 +98,7 @@ export class AdminClient {
     if (resp.status === 429) {
       return this.RATE_LIMITER.ADMIN;
     }
-    const error = this.getServerError(resp);
+    const [error] = this.getServerError(resp);
     if (resp.status === 503 && error.includes('(429)') && error.includes('onedrive')) {
       return this.RATE_LIMITER.ONEDRIVE;
     }
@@ -123,10 +123,30 @@ export class AdminClient {
    * @param {string} action The action
    * @param {number} status The status code
    * @param {string} [error] The error message
+   * @param {string} [errorCode] The error code
    * @returns {string} The localized error message
    */
-  getLocalizedError(action, path, status, error) {
+  getLocalizedError(action, path, status, error, errorCode) {
     let message = '';
+    if (error && errorCode) {
+      const msgTemplate = this.appStore.i18n(`${errorCode}_desc`);
+      if (msgTemplate) {
+        const reSource = msgTemplate
+          .replace('$1', '(?<first>.*?)')
+          .replace('$2', '(?<second>.*?)')
+          .replace('$3', '(?<third>.*?)');
+        const regex = new RegExp(`^${reSource}$`);
+        const matches = error.match(regex);
+        if (matches && matches.groups) {
+          const { first, second, third } = matches.groups;
+          message = this.appStore.i18n(errorCode)
+            .replace('$1', first)
+            .replace('$2', second)
+            .replace('$3', third);
+          return message;
+        }
+      }
+    }
     if (action === 'status' && status === 404) {
       // status: special 404 handling
       message = this.appStore.i18n(this.appStore.isEditor()
@@ -182,11 +202,11 @@ export class AdminClient {
       return;
     }
 
-    const error = this.getServerError(resp);
-    const message = this.getLocalizedError(action, path, resp.status, error);
+    const [error, errorCode] = this.getServerError(resp);
+    const message = this.getLocalizedError(action, path, resp.status, error, errorCode);
     if (message) {
       this.showErrorToast(
-        message.replace('$1', this.getServerError(resp)),
+        message.replace('$1', error),
         resp.status < 500 ? 'warning' : 'negative',
       );
     } else {
@@ -204,7 +224,7 @@ export class AdminClient {
     const msg = this.appStore.i18n(`error_${action}_fatal`)
         || this.appStore.i18n('error_fatal');
     this.showErrorToast(
-      msg.replace('$1', 'https://aemstatus.net/'),
+      msg.replace('$1', 'https://status.adobe.com/'),
       'negative',
     );
   }
