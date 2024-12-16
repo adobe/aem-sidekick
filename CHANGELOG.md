@@ -1,3 +1,10 @@
+## [7.1.4](https://github.com/adobe/aem-sidekick/compare/v7.1.3...v7.1.4) (2024-12-16)
+
+
+### Bug Fixes
+
+* **bulk:** detect selection in gdrive grid ([#401](https://github.com/adobe/aem-sidekick/issues/401)) ([29f7294](https://github.com/adobe/aem-sidekick/commit/29f7294420afd0b598612dc0ebf6c396d18ba9fd))
+
 ## [7.1.3](https://github.com/adobe/aem-sidekick/compare/v7.1.2...v7.1.3) (2024-12-06)
 
 
