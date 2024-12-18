@@ -295,7 +295,7 @@
       "message": "Edited: "
     },
     "error_429": {
-      "message": "429 Too many requests: Your project is being throttled by $1. Please wait and try again later."
+      "message": "Too many requests: Your project is being throttled by $1. Please wait and try again later."
     },
     "error_preview_config": {
       "message": "Failed to activate configuration: $1"
@@ -310,7 +310,7 @@
       "message": "An error occurred: $1"
     },
     "error_job_404": {
-      "message": "404 Not found: No such job."
+      "message": "Job not found."
     },
     "error_login_aborted": {
       "message": "Sign in aborted."
@@ -324,56 +324,14 @@
     "error_preview": {
       "message": "Preview generation failed. Please try again later."
     },
-    "error_preview_400": {
-      "message": "Preview generation failed. Check the file format, name or path."
-    },
-    "error_preview_404": {
-      "message": "Source document does not exist, preview generation failed."
-    },
-    "error_preview_415": {
-      "message": "File type not supported. Refer to the documentation for supported file types."
-    },
-    "error_preview_not_gdoc_generic": {
-      "message": "Preview generation failed. Must be Google document or spreadsheet."
-    },
-    "error_preview_no_docx": {
-      "message": "This is a Microsoft Word document, please convert it to Google Docs first."
-    },
-    "error_preview_no_xlsx": {
-      "message": "This is a Microsoft Excel document, please convert it to Google Sheets first."
-    },
-    "error_preview_too_large": {
-      "message": "File too large. Refer to the documentation for file size limits."
-    },
-    "error_preview_svg_invalid": {
-      "message": "SVG invalid. Make sure it is valid XML and contains no scripts."
-    },
     "error_publish": {
       "message": "Publication failed. Please try again later."
     },
     "error_publish_404": {
       "message": "Publication failed, generate preview first."
     },
-    "error_status_400": {
-      "message": "400 Bad Request: Invalid URL."
-    },
-    "error_status_404_content": {
-      "message": "404 Not found: Check your Sidekick configuration or URL."
-    },
-    "error_status_404_document": {
-      "message": "404 Not found: Check your Sidekick configuration and make sure access to this document is granted."
-    },
-    "error_status_500": {
-      "message": "500 Internal server error: Failed to fetch the page status. Please try again later."
-    },
-    "error_status_502": {
-      "message": "502 Bad gateway: Failed to fetch the page status. Please try again later."
-    },
-    "error_status_504": {
-      "message": "504 Gateway timeout: Failed to fetch the page status. Please try again later."
-    },
-    "error_status_invalid": {
-      "message": "Invalid server response. Check your Sidekick configuration or URL."
+    "error_status": {
+      "message": "Failed to fetch the page status. Please try again later."
     },
     "error_unpublish": {
       "message": "Unpublication failed. Please try again later."
@@ -637,5 +595,69 @@
     },
     "import": {
       "message": "Import"
+    },
+    "AEM_BACKEND_FETCH_FAILED": {
+      "message": "Unable to fetch $1 from $2.",
+      "description": "Unable to fetch '$1' from '$2': $3"
+    },
+    "AEM_BACKEND_NOT_FOUND": {
+      "message": "File not found. The source document is either missing or not shared with AEM.",
+      "description": "File not found: $1"
+    },
+    "AEM_BACKEND_TYPE_UNSUPPORTED": {
+      "message": "File type not supported: $1",
+      "description": "File type not supported: $1"
+    },
+    "AEM_BACKEND_NO_HANDLER": {
+      "message": "No handler found for document $1",
+      "description": "No handler found for document: $1"
+    },
+    "AEM_BACKEND_NON_MATCHING_MEDIA": {
+      "message": "Unable to preview $1. Expected $2 but found $3.",
+      "description": "Unable to preview '$1', content is not a '$2' but: $3"
+    },
+    "AEM_BACKEND_VALIDATION_FAILED": {
+      "message": "Unable to preview $1: $2",
+      "description": "Unable to preview '$1', validation failed: $2"
+    },
+    "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+      "message": "File type $2 is not supported in $1",
+      "description": "'$1' backend does not support file type: $2"
+    },
+    "AEM_BACKEND_NO_CONTENT_TYPE": {
+      "message": "Missing content type header",
+      "description": "Content type header is missing"
+    },
+    "AEM_BACKEND_JSON_INVALD": {
+      "message": "Invalid JSON: $2",
+      "description": "JSON fetched from markup '$1' is invalid: $2"
+    },
+    "AEM_BACKEND_FILE_EMPTY": {
+      "message": "File is empty, no markdown version available",
+      "description": "File is empty, no markdown version available: $1"
+    },
+    "AEM_BACKEND_FILE_TOO_BIG": {
+      "message": "Unable to preview $1, document larger than 100MB.",
+      "description": "Documents larger than 100mb not supported: $1"
+    },
+    "AEM_BACKEND_MP4_TOO_LONG": {
+      "message": "Unable to preview $1: MP4 is longer than 2 minutes",
+      "description": "MP4 is longer than 2 minutes: $1"
+    },
+    "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+      "message": "Unable to preview $1: MP4 bitrate is higher than 300KB/s",
+      "description": "MP4 has a higher bitrate than 300 KB/s: $1"
+    },
+    "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+      "message": "Unable to preview SVG, illegal scripting detected",
+      "description": "script or event handler detected at: $1"
+    },
+    "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+      "message": "Unable to preview SVG, root item missing",
+      "description": "expected XML content with an SVG root item"
+    },
+    "AEM_BACKEND_SVG_PARSING_FAILED": {
+      "message": "Unable to preview SVG, XML is invalid",
+      "description": "unable to parse SVG XML"
     }
-}
+  }
