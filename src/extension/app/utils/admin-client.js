@@ -142,8 +142,8 @@ export class AdminClient {
       if (errTemplate) {
         const errorRegex = this.#createTemplateRegExp(errTemplate);
         const matches = error.match(errorRegex);
-        if (matches && matches.groups) {
-          const { first, second, third } = matches.groups;
+        if (matches) {
+          const { first, second, third } = matches.groups || {};
           message = this.#appStore.i18n(errorCode)
             .replace('$1', first)
             .replace('$2', second)
@@ -154,13 +154,12 @@ export class AdminClient {
     }
     if (status === 401 && path === '/*') {
       // bulk operation requires login
-      message = this.#appStore.i18n(`bulk_error_${action}_login_required`);
-    } else {
-      // error key fallbacks
-      message = this.#appStore.i18n(`error_${action}_${status}`)
-        || this.#appStore.i18n(`error_${action}`)
-        || (error && this.#appStore.i18n('error_generic').replace('$1', error));
+      return this.#appStore.i18n(`bulk_error_${action}_login_required`);
     }
+    // error key fallbacks
+    message = this.#appStore.i18n(`error_${action}_${status}`)
+      || this.#appStore.i18n(`error_${action}`)
+      || (error && this.#appStore.i18n('error_generic').replace('$1', error));
     return `(${status}) ${message}`;
   }
 
