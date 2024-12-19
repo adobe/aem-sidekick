@@ -337,22 +337,22 @@ export const ERRORS = [
   },
   {
     code: 'AEM_BACKEND_MP4_TOO_LONG',
-    template: 'MP4 is longer than 2 minutes: $2',
+    template: 'Unable to preview \'$1\': MP4 is longer than 2 minutes: $2',
   },
   {
     code: 'AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH',
-    template: 'MP4 has a higher bitrate than 300 KB/s: $1',
+    template: 'Unable to preview \'$1\': MP4 has a higher bitrate than 300 KB/s: $2',
   },
   {
     code: 'AEM_BACKEND_SVG_SCRIPTING_DETECTED',
-    template: 'script or event handler detected at: $1',
+    template: 'Unable to preview \'$1\': script or event handler detected in SVG at: $2',
   },
   {
     code: 'AEM_BACKEND_SVG_ROOT_ITEM_MISSING',
-    template: 'expected XML content with an SVG root item',
+    template: 'Unable to preview \'$1\': expected XML content with an SVG root item',
   },
   {
     code: 'AEM_BACKEND_SVG_PARSING_FAILED',
-    template: 'unable to parse SVG XML',
+    template: 'Unable to preview \'$1\': unable to parse SVG XML',
   },
 ];
