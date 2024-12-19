@@ -206,7 +206,13 @@ export class SiteStore {
     if (owner && repo) {
       // look for custom config in project
       try {
-        const res = await callAdmin({ owner, repo, ref }, 'sidekick', '/config.json');
+        const res = await callAdmin(
+          {
+            owner, repo, ref, adminVersion,
+          },
+          'sidekick',
+          '/config.json',
+        );
         this.authorized = res.status === 200;
         if (res.status === 200) {
           this.authorized = true;
