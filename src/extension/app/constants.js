@@ -344,6 +344,10 @@ export const ERRORS = [
     template: 'Unable to preview \'$1\': MP4 has a higher bitrate than 300 KB/s: $2',
   },
   {
+    code: 'AEM_BACKEND_ICO_TOO_BIG',
+    template: 'ICO is larger than 16KB: $1',
+  },
+  {
     code: 'AEM_BACKEND_SVG_SCRIPTING_DETECTED',
     template: 'Unable to preview \'$1\': script or event handler detected in SVG at: $2',
   },
