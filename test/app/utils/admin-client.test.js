@@ -513,10 +513,16 @@ describe('Test Admin Client', () => {
       expect(res3).to.match(/root item missing/);
     });
 
-    it.skip('should return localized error for failed config updates', () => {
+    it('should return localized error for failed config updates', () => {
       path = '/.helix/config.json';
       const res = adminClient.getLocalizedError('preview', path, 500, 'something went wrong');
       expect(res).to.equal('Failed to activate configuration: something went wrong');
+    });
+
+    it('should return localized error for 401 on bulk operation', () => {
+      path = '/*';
+      const res = adminClient.getLocalizedError('publish', path, 401);
+      expect(res).to.equal('You need to sign in to publish more than 100 files.');
     });
 
     it('should return localized error fallbacks', () => {
