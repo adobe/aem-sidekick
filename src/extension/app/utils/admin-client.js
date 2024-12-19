@@ -11,6 +11,7 @@
  */
 
 import { callAdmin, createAdminUrl } from '../../utils/admin.js';
+import { ERRORS } from '../constants.js';
 
 /**
  * @typedef {import('../store/app.js').AppStore} AppStore
@@ -34,10 +35,9 @@ import { callAdmin, createAdminUrl } from '../../utils/admin.js';
 export class AdminClient {
   /**
    * Enumeration of rate limiting sources.
-   * @private
    * @type {RateLimiter}
    */
-  RATE_LIMITER = {
+  #RATE_LIMITER = {
     NONE: '',
     ADMIN: 'AEM',
     ONEDRIVE: 'Microsoft SharePoint',
@@ -45,34 +45,31 @@ export class AdminClient {
 
   /**
    * The app store.
-   * @private
    * @type {AppStore}
    */
-  appStore;
+  #appStore;
 
   /**
    * The site store
-   * @private
    * @type {SiteStore}
    */
-  siteStore;
+  #siteStore;
 
   /**
    * Returns an Admin Client.
    * @param {AppStore} appStore The app store
    */
   constructor(appStore) {
-    this.appStore = appStore;
-    this.siteStore = appStore.siteStore;
+    this.#appStore = appStore;
+    this.#siteStore = appStore.siteStore;
   }
 
   /**
    * Returns the action name based on API and nature of request.
-   * @private
    * @param {string} api The API endpoint called
    * @param {boolean} [del] True if the request was destructive
    */
-  getAction(api, del) {
+  #getAction(api, del) {
     if (api === 'preview' && del) return 'delete';
     if (api === 'live') return del ? 'unpublish' : 'publish';
     return api;
@@ -80,29 +77,41 @@ export class AdminClient {
 
   /**
    * Returns an error message from the server response.
-   * @abstract
    * @param {Response} resp The response
-   * @returns {string} The error message or an empty string
+   * @returns {string[]} The error message (or an empty string) and the error code
    */
-  getServerError(resp) {
-    return resp?.headers?.get('x-error') || '';
+  #getServerError(resp) {
+    return [resp?.headers?.get('x-error') || '', resp?.headers?.get('x-error-code')];
   }
 
   /**
    * Checks if the request has been rate-limited and returns the source.
-   * @abstract
    * @param {Response} resp The response
-   * @returns {string} The rate limiter (see {@link RATE_LIMITER})
+   * @returns {string} The rate limiter (see {@link #RATE_LIMITER})
    */
-  getRateLimiter(resp) {
+  #getRateLimiter(resp) {
     if (resp.status === 429) {
-      return this.RATE_LIMITER.ADMIN;
+      return this.#RATE_LIMITER.ADMIN;
     }
-    const error = this.getServerError(resp);
+    const [error] = this.#getServerError(resp);
     if (resp.status === 503 && error.includes('(429)') && error.includes('onedrive')) {
-      return this.RATE_LIMITER.ONEDRIVE;
+      return this.#RATE_LIMITER.ONEDRIVE;
     }
-    return this.RATE_LIMITER.NONE;
+    return this.#RATE_LIMITER.NONE;
+  }
+
+  /**
+   * Turns an error message template into a regular expression.
+   * @param {string} template The template
+   * @returns {RegExp} The regular expression
+   */
+  #createTemplateRegExp(template) {
+    const reSource = `[admin] ${template}`
+      .replace('$1', '(?<first>.*?)')
+      .replace('$2', '(?<second>.*?)')
+      .replace('$3', '(?<third>.*?)')
+      .replace(/\[/g, '\\[');
+    return new RegExp(`^${reSource}$`);
   }
 
   /**
@@ -110,8 +119,8 @@ export class AdminClient {
    * @param {string} message The error message
    * @param {string} variant The toast variant (positive, warning, negative)
    */
-  showErrorToast(message, variant) {
-    this.appStore.showToast({
+  #showErrorToast(message, variant) {
+    this.#appStore.showToast({
       message,
       variant,
       timeout: 0, // keep open
@@ -123,88 +132,75 @@ export class AdminClient {
    * @param {string} action The action
    * @param {number} status The status code
    * @param {string} [error] The error message
+   * @param {string} [errorCode] The error code
    * @returns {string} The localized error message
    */
-  getLocalizedError(action, path, status, error) {
+  getLocalizedError(action, path, status, error, errorCode) {
     let message = '';
-    if (action === 'status' && status === 404) {
-      // status: special 404 handling
-      message = this.appStore.i18n(this.appStore.isEditor()
-        ? 'error_status_404_document'
-        : 'error_status_404_content');
-    } else if (path.startsWith('/.helix/') && error) {
-      // special error message for config files
-      message = this.appStore.i18n('error_preview_config').replace('$1', error);
-    } else if (status === 400 && (error?.includes('script or event handler')
-      || error?.includes('XML'))) {
-      // preview: invalid svg
-      message = this.appStore.i18n('error_preview_svg_invalid');
-    } else if (status === 413) {
-      // preview: resource too large
-      message = this.appStore.i18n('error_preview_too_large');
-    } else if (status === 415) {
-      if (error?.includes('docx with google not supported')) {
-        // preview: docx in gdrive
-        message = this.appStore.i18n('error_preview_no_docx');
-      } else if (error?.includes('xlsx with google not supported')) {
-        // preview: xlsx in gdrive
-        message = this.appStore.i18n('error_preview_no_xlsx');
-      } else {
-        // preview: unsupported file type
-        message = this.appStore.i18n('error_preview_415');
+    if (error && errorCode) {
+      const errTemplate = ERRORS.find((e) => e.code === errorCode)?.template;
+      if (errTemplate) {
+        const errorRegex = this.#createTemplateRegExp(errTemplate);
+        const matches = error.match(errorRegex);
+        if (matches) {
+          const { first, second, third } = matches.groups || {};
+          message = this.#appStore.i18n(errorCode)
+            .replace('$1', first)
+            .replace('$2', second)
+            .replace('$3', third);
+          return `(${status}) ${message}`;
+        }
       }
-    } else if (status === 401 && path === '/*') {
-      // bulk operation requires login
-      message = this.appStore.i18n(`bulk_error_${action}_login_required`);
-    } else {
-      // error key fallbacks
-      message = this.appStore.i18n(`error_${action}_${status}`)
-        || (error && this.appStore.i18n('error_generic').replace('$1', error))
-        || this.appStore.i18n(`error_${action}`);
     }
-    return message;
+    if (status === 401 && path === '/*') {
+      // bulk operation requires login
+      return this.#appStore.i18n(`bulk_error_${action}_login_required`);
+    }
+    // error key fallbacks
+    message = this.#appStore.i18n(`error_${action}_${status}`)
+      || this.#appStore.i18n(`error_${action}`)
+      || (error && this.#appStore.i18n('error_generic').replace('$1', error));
+    return `(${status}) ${message}`;
   }
 
   /**
    * Shows a toast if the server returned an error.
-   * @private
    * @param {string} action The action
    * @param {Response} resp The response object
    */
-  handleServerError(action, path, resp) {
+  #handleServerError(action, path, resp) {
     // handle rate limiting
-    const limiter = this.getRateLimiter(resp);
+    const limiter = this.#getRateLimiter(resp);
     if (limiter) {
-      this.showErrorToast(
-        this.appStore.i18n('error_429').replace('$1', limiter),
+      this.#showErrorToast(
+        `(429) ${this.#appStore.i18n('error_429').replace('$1', limiter)}`,
         'warning',
       );
       return;
     }
 
-    const error = this.getServerError(resp);
-    const message = this.getLocalizedError(action, path, resp.status, error);
+    const [error, errorCode] = this.#getServerError(resp);
+    const message = this.getLocalizedError(action, path, resp.status, error, errorCode);
     if (message) {
-      this.showErrorToast(
-        message.replace('$1', this.getServerError(resp)),
+      this.#showErrorToast(
+        message.replace('$1', error), // in case of generic error
         resp.status < 500 ? 'warning' : 'negative',
       );
     } else {
-      this.handleFatalError(action);
+      this.#handleFatalError(action);
     }
   }
 
   /**
    * Shows a toast if the request failed or did not contain valid JSON.
-   * @private
    * @param {string} action The action
    */
-  handleFatalError(action) {
+  #handleFatalError(action) {
     // use standard error key fallbacks
-    const msg = this.appStore.i18n(`error_${action}_fatal`)
-        || this.appStore.i18n('error_fatal');
-    this.showErrorToast(
-      msg.replace('$1', 'https://aemstatus.net/'),
+    const msg = this.#appStore.i18n(`error_${action}_fatal`)
+        || this.#appStore.i18n('error_fatal');
+    this.#showErrorToast(
+      msg.replace('$1', 'https://status.adobe.com/'),
       'negative',
     );
   }
@@ -216,7 +212,7 @@ export class AdminClient {
    * @param {URLSearchParams} [searchParams] The search parameters
    */
   createUrl(api, path, searchParams) {
-    return createAdminUrl(this.siteStore, api, path, searchParams);
+    return createAdminUrl(this.#siteStore, api, path, searchParams);
   }
 
   /**
@@ -230,7 +226,7 @@ export class AdminClient {
     let resp;
     try {
       resp = await callAdmin(
-        this.siteStore,
+        this.#siteStore,
         'status',
         path,
         {
@@ -246,12 +242,12 @@ export class AdminClient {
       } else {
         if (resp.status !== 401) {
           // special handling for 401
-          this.handleServerError(this.getAction('status'), path, resp);
+          this.#handleServerError(this.#getAction('status'), path, resp);
         }
         return { status: resp.status };
       }
     } catch (e) {
-      this.handleFatalError(this.getAction('status'));
+      this.#handleFatalError(this.#getAction('status'));
     }
     return null;
   }
@@ -264,7 +260,7 @@ export class AdminClient {
   async getProfile() {
     try {
       const resp = await callAdmin(
-        this.siteStore,
+        this.#siteStore,
         'profile',
       );
       if (resp.ok) {
@@ -288,7 +284,7 @@ export class AdminClient {
     const method = del ? 'delete' : 'post';
     try {
       const resp = await callAdmin(
-        this.siteStore,
+        this.#siteStore,
         api,
         path,
         { method },
@@ -296,10 +292,10 @@ export class AdminClient {
       if (resp.ok) {
         return del ? { status: resp.status } : resp.json();
       } else {
-        this.handleServerError(this.getAction(api, del), path, resp);
+        this.#handleServerError(this.#getAction(api, del), path, resp);
       }
     } catch (e) {
-      this.handleFatalError(this.getAction(api, del));
+      this.#handleFatalError(this.#getAction(api, del));
     }
     return null;
   }
@@ -316,7 +312,7 @@ export class AdminClient {
     const method = del ? 'delete' : 'post';
     try {
       const resp = await callAdmin(
-        this.siteStore,
+        this.#siteStore,
         api,
         path,
         { method },
@@ -324,10 +320,10 @@ export class AdminClient {
       if (resp.ok) {
         return del ? { status: resp.status } : resp.json();
       } else {
-        this.handleServerError(this.getAction(api, del), path, resp);
+        this.#handleServerError(this.#getAction(api, del), path, resp);
       }
     } catch (e) {
-      this.handleFatalError(this.getAction(api, del));
+      this.#handleFatalError(this.#getAction(api, del));
     }
     return null;
   }
@@ -345,7 +341,7 @@ export class AdminClient {
     const path = '/*';
     try {
       const resp = await callAdmin(
-        this.siteStore,
+        this.#siteStore,
         api,
         path,
         {
@@ -359,10 +355,10 @@ export class AdminClient {
       if (resp.ok) {
         return resp.json();
       } else {
-        this.handleServerError(this.getAction(api, del), path, resp);
+        this.#handleServerError(this.#getAction(api, del), path, resp);
       }
     } catch (e) {
-      this.handleFatalError(this.getAction(api, del));
+      this.#handleFatalError(this.#getAction(api, del));
     }
     return null;
   }
@@ -380,17 +376,17 @@ export class AdminClient {
     const path = `/${topic}/${name}${includeDetails ? '/details' : ''}`;
     try {
       const resp = await callAdmin(
-        this.siteStore,
+        this.#siteStore,
         api,
         path,
       );
       if (resp.ok) {
         return resp.json();
       } else {
-        this.handleServerError(this.getAction(api), path, resp);
+        this.#handleServerError(this.#getAction(api), path, resp);
       }
     } catch (e) {
-      this.handleFatalError(this.getAction(api));
+      this.#handleFatalError(this.#getAction(api));
     }
     return null;
   }

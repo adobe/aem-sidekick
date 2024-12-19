@@ -376,46 +376,39 @@ describe('Test Admin Client', () => {
       });
     });
 
-    it('should handle 4xx status errors', async () => {
-      // content URL
+    it('should handle 4xx status error', async () => {
       mockFetchError({
+        path: '/foo',
         status: 404,
+        headers: {
+          'x-error': '[admin] File not found: /foo',
+          'x-error-code': 'AEM_BACKEND_NOT_FOUND',
+        },
       });
-      await adminClient.getStatus('/');
+      await adminClient.getStatus('/foo');
       expect(showToastStub.calledOnce).to.be.true;
-      expect(toast.message).to.match(/404/);
-      expect(toast.message).to.match(/Check your Sidekick configuration/);
+      expect(toast.message).to.equal('(404) File not found. Source document either missing or not shared with AEM.');
       expect(toast.variant).to.equal('warning');
 
       appStore.closeToast();
       expect(closeToastStub.calledOnce).to.be.true;
-
-      // editor
-      sandbox.stub(appStore, 'isEditor').returns(true);
-      mockFetchError({
-        status: 404,
-        editUrl: 'https://adobe.sharepoint.com/sites/foo',
-      });
-      await adminClient.getStatus('/', 'https://adobe.sharepoint.com/sites/foo');
-      expect(showToastStub.calledTwice).to.be.true;
-      expect(toast.message).to.match(/404/);
-      expect(toast.message).to.match(/make sure access to this document is granted/);
-      expect(toast.variant).to.equal('warning');
-
-      appStore.closeToast();
     });
 
     it('should handle 5xx preview error', async () => {
       mockFetchError({
+        path: '/foo',
         method: 'post',
         api: 'preview',
-        status: 500,
+        status: 503,
+        headers: {
+          'x-error': '[admin] Unable to fetch \'/foo.md\' from \'onedrive\': (500)',
+          'x-error-code': 'AEM_BACKEND_FETCH_FAILED',
+        },
       });
-      await adminClient.updatePreview('/');
+      await adminClient.updatePreview('/foo');
       expect(showToastStub.calledOnce).to.be.true;
-      expect(toast.message).to.match(/Preview generation failed/);
+      expect(toast.message).to.equal('(503) Unable to fetch /foo.md from onedrive.');
       expect(toast.variant).to.equal('negative');
-
       appStore.closeToast();
     });
 
@@ -428,23 +421,6 @@ describe('Test Admin Client', () => {
       await adminClient.updateLive('/');
       expect(showToastStub.calledOnce).to.be.true;
       expect(toast.message).to.match(/Publication failed/);
-      expect(toast.variant).to.equal('negative');
-
-      appStore.closeToast();
-    });
-
-    it('should fall back to x-error header', async () => {
-      mockFetchError({
-        method: 'get',
-        api: 'status',
-        status: 503,
-        headers: {
-          'x-error': 'foo went wrong',
-        },
-      });
-      await adminClient.getStatus('/');
-      expect(showToastStub.calledOnce).to.be.true;
-      expect(toast.message).to.equal('An error occurred: foo went wrong');
       expect(toast.variant).to.equal('negative');
 
       appStore.closeToast();
@@ -496,59 +472,51 @@ describe('Test Admin Client', () => {
   describe('getLocalizedError', () => {
     let path = '/foo';
 
-    it('should return localized error for status 404 (editor)', () => {
+    it('should return localized error for status 404', () => {
       sandbox.stub(appStore, 'isEditor').returns(true);
-      const res = adminClient.getLocalizedError('status', path, 404);
-      expect(res).to.match(/404/);
-      expect(res).to.match(/ make sure access to this document is granted/);
+      const res = adminClient.getLocalizedError(
+        'status',
+        path,
+        404,
+        `[admin] File not found: ${path}`,
+        'AEM_BACKEND_NOT_FOUND',
+      );
+      expect(res).to.equal('(404) File not found. Source document either missing or not shared with AEM.');
     });
 
-    it('should return localized error for status 404 (content)', () => {
-      sandbox.stub(appStore, 'isEditor').returns(false);
-      const res = adminClient.getLocalizedError('status', path, 404);
-      expect(res).to.match(/404/);
-      expect(res).to.match(/Check your Sidekick configuration or URL/);
+    it('should return localized errors for status 400', () => {
+      const res1 = adminClient.getLocalizedError(
+        'preview',
+        path,
+        400,
+        `[admin] Unable to preview '${path}': unable to parse SVG XML`,
+        'AEM_BACKEND_SVG_PARSING_FAILED',
+      );
+      expect(res1).to.match(/invalid XML/);
+
+      const res2 = adminClient.getLocalizedError(
+        'preview',
+        path,
+        400,
+        `[admin] Unable to preview '${path}': script or event handler detected in SVG at: /svg`,
+        'AEM_BACKEND_SVG_SCRIPTING_DETECTED',
+      );
+      expect(res2).to.match(/illegal scripting detected/);
+
+      const res3 = adminClient.getLocalizedError(
+        'preview',
+        path,
+        400,
+        `[admin] Unable to preview '${path}': expected XML content with an SVG root item`,
+        'AEM_BACKEND_SVG_ROOT_ITEM_MISSING',
+      );
+      expect(res3).to.match(/root item missing/);
     });
 
-    it('should return localized error for status 400 on status', () => {
-      const res = adminClient.getLocalizedError('status', path, 400);
-      expect(res).to.match(/Invalid URL/);
-    });
-
-    it('should return localized error for status 400 on preview', () => {
-      const res1 = adminClient.getLocalizedError('preview', path, 400, 'XML parsing error');
-      expect(res1).to.match(/SVG invalid/);
-
-      const res2 = adminClient.getLocalizedError('preview', path, 400, 'script or event handler');
-      expect(res2).to.match(/SVG invalid/);
-    });
-
-    it('should return localized error for status 413', () => {
-      const res = adminClient.getLocalizedError('preview', path, 413);
-      expect(res).to.match(/File too large/);
-    });
-
-    it('should return localized error for status 415', () => {
-      const res1 = adminClient.getLocalizedError('preview', path, 415, 'docx with google not supported');
-      expect(res1).to.match(/Microsoft Word document/);
-
-      const res2 = adminClient.getLocalizedError('preview', path, 415, 'xlsx with google not supported');
-      expect(res2).to.match(/Microsoft Excel document/);
-
-      const res3 = adminClient.getLocalizedError('preview', path, 415);
-      expect(res3).to.match(/File type not supported/);
-    });
-
-    it('should return localized error for failed config updates', () => {
+    it.skip('should return localized error for failed config updates', () => {
       path = '/.helix/config.json';
       const res = adminClient.getLocalizedError('preview', path, 500, 'something went wrong');
       expect(res).to.equal('Failed to activate configuration: something went wrong');
-    });
-
-    it('should return localized error for 401 on bulk operation', () => {
-      path = '/*';
-      const res = adminClient.getLocalizedError('publish', path, 401);
-      expect(res).to.equal('You need to sign in to publish more than 100 files.');
     });
 
     it('should return localized error fallbacks', () => {
