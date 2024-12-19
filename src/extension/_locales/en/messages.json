@@ -601,19 +601,19 @@
       "description": "Unable to fetch '$1' from '$2': $3"
     },
     "AEM_BACKEND_NOT_FOUND": {
-      "message": "File not found. The source document is either missing or not shared with AEM.",
+      "message": "File not found. Source document either missing or not shared with AEM.",
       "description": "File not found: $1"
     },
     "AEM_BACKEND_TYPE_UNSUPPORTED": {
-      "message": "File type not supported: $1",
+      "message": "Unable to preview $1: file type not supported",
       "description": "File type not supported: $1"
     },
     "AEM_BACKEND_NO_HANDLER": {
-      "message": "No handler found for document $1",
+      "message": "Unable to preview $1: no handler found",
       "description": "No handler found for document: $1"
     },
     "AEM_BACKEND_NON_MATCHING_MEDIA": {
-      "message": "Unable to preview $1. Expected $2 but found $3.",
+      "message": "Unable to preview $1: expected $2 but found $3",
       "description": "Unable to preview '$1', content is not a '$2' but: $3"
     },
     "AEM_BACKEND_VALIDATION_FAILED": {
@@ -621,43 +621,47 @@
       "description": "Unable to preview '$1', validation failed: $2"
     },
     "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-      "message": "File type $2 is not supported in $1",
+      "message": "Unable to preview $2: file type not supported",
       "description": "'$1' backend does not support file type: $2"
     },
     "AEM_BACKEND_NO_CONTENT_TYPE": {
-      "message": "Missing content type header",
+      "message": "Content type header is missing",
       "description": "Content type header is missing"
     },
     "AEM_BACKEND_JSON_INVALD": {
-      "message": "Invalid JSON: $2",
+      "message": "Unable to preview $2: invalid JSON",
       "description": "JSON fetched from markup '$1' is invalid: $2"
     },
     "AEM_BACKEND_FILE_EMPTY": {
-      "message": "File is empty, no markdown version available",
+      "message": "Unable to preview $1: empty file",
       "description": "File is empty, no markdown version available: $1"
     },
     "AEM_BACKEND_FILE_TOO_BIG": {
-      "message": "Unable to preview $1, document larger than 100MB.",
+      "message": "Unable to preview $1: file larger than 100MB",
       "description": "Documents larger than 100mb not supported: $1"
     },
     "AEM_BACKEND_MP4_TOO_LONG": {
       "message": "Unable to preview $1: MP4 is longer than 2 minutes",
-      "description": "MP4 is longer than 2 minutes: $1"
+      "description": "Unable to preview $1: MP4 is longer than 2 minutes: $2"
     },
     "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
-      "message": "Unable to preview $1: MP4 bitrate is higher than 300KB/s",
-      "description": "MP4 has a higher bitrate than 300 KB/s: $1"
+      "message": "Unable to preview $1: MP4 bit rate is higher than 300KB/s",
+      "description": "Unable to preview $1: MP4 has a higher bitrate than 300 KB/s: $2"
+    },
+    "AEM_BACKEND_ICO_TOO_BIG": {
+      "message": "Unable to preview $1: ICO is larger than 16KB",
+      "description": "ICO is larger than 16KB: $1"
     },
     "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
-      "message": "Unable to preview SVG, illegal scripting detected",
-      "description": "script or event handler detected at: $1"
+      "message": "Unable to preview $1: illegal scripting detected in SVG",
+      "description": "Unable to preview $1: script or event handler detected in SVG at: $2"
     },
     "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
-      "message": "Unable to preview SVG, root item missing",
-      "description": "expected XML content with an SVG root item"
+      "message": "Unable to preview $1: SVG root item missing",
+      "description": "Unable to preview $1: expected XML content with an SVG root item"
     },
     "AEM_BACKEND_SVG_PARSING_FAILED": {
-      "message": "Unable to preview SVG, XML is invalid",
-      "description": "unable to parse SVG XML"
+      "message": "Unable to preview $1: SVG contains invalid XML",
+      "description": "Unable to preview $1: Unable to parse SVG XML"
     }
   }
