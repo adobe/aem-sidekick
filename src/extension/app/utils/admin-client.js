@@ -137,7 +137,16 @@ export class AdminClient {
    */
   getLocalizedError(action, path, status, error, errorCode) {
     let message = '';
+    if (status === 401 && path === '/*') {
+      // bulk operation of 100+ files requires login
+      return this.#appStore.i18n(`bulk_error_${action}_login_required`);
+    }
+    if (path.startsWith('/.helix/') && error) {
+      // special error message for config files
+      return this.#appStore.i18n('error_preview_config').replace('$1', error);
+    }
     if (error && errorCode) {
+      // build error message from template
       const errTemplate = ERRORS.find((e) => e.code === errorCode)?.template;
       if (errTemplate) {
         const errorRegex = this.#createTemplateRegExp(errTemplate);
@@ -151,10 +160,6 @@ export class AdminClient {
           return `(${status}) ${message}`;
         }
       }
-    }
-    if (status === 401 && path === '/*') {
-      // bulk operation requires login
-      return this.#appStore.i18n(`bulk_error_${action}_login_required`);
     }
     // error key fallbacks
     message = this.#appStore.i18n(`error_${action}_${status}`)
