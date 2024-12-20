@@ -513,6 +513,18 @@ describe('Test Admin Client', () => {
       expect(res3).to.match(/root item missing/);
     });
 
+    it('should return localized error without details', () => {
+      path = '/foo';
+      const res = adminClient.getLocalizedError(
+        'preview',
+        path,
+        400,
+        '[admin] Content type header is missing',
+        'AEM_BACKEND_NO_CONTENT_TYPE',
+      );
+      expect(res).to.equal('(400) Content type header is missing');
+    });
+
     it('should return localized error for failed config updates', () => {
       path = '/.helix/config.json';
       const res = adminClient.getLocalizedError('preview', path, 500, 'something went wrong');
@@ -531,6 +543,36 @@ describe('Test Admin Client', () => {
 
       const res2 = adminClient.getLocalizedError('publish', path, 500);
       expect(res2).to.match(/Publication failed/);
+    });
+
+    it('should return generic localized error with x-error details', async () => {
+      const res1 = await adminClient.getLocalizedError(
+        'foo',
+        path,
+        503,
+        '[admin] foo went wrong',
+      );
+      expect(res1).to.equal('(503) An error occurred: foo went wrong');
+
+      // unknown error code
+      const res2 = adminClient.getLocalizedError(
+        'foo',
+        path,
+        415,
+        '[admin] foo went wrong',
+        'AEM_BACKEND_UNKNOWN_ERROR_CODE',
+      );
+      expect(res2).to.equal('(415) An error occurred: foo went wrong');
+
+      // error code but template differs from x-error header
+      const res3 = adminClient.getLocalizedError(
+        'preview',
+        path,
+        400,
+        '[admin] Missing content type header',
+        'AEM_BACKEND_NO_CONTENT_TYPE',
+      );
+      expect(res3).to.equal('(400) An error occurred: foo went wrong');
     });
   });
 });
