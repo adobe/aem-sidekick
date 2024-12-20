@@ -664,4 +664,4 @@
       "message": "Unable to preview $1: SVG contains invalid XML",
       "description": "Unable to preview $1: Unable to parse SVG XML"
     }
-  }
+}
