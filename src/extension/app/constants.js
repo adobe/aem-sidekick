@@ -288,6 +288,7 @@ export const ICONS = {
 
 /**
  * The server error codes and templates.
+ * @see https://github.com/adobe/helix-admin/blob/main/src/contentproxy/errors.js
  * @type {Object<string, string>[]}
  */
 export const ERRORS = [
