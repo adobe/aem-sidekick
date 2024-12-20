@@ -566,10 +566,10 @@ describe('Test Admin Client', () => {
 
       // error code but template differs from x-error header
       const res3 = adminClient.getLocalizedError(
-        'preview',
+        'foo',
         path,
         400,
-        '[admin] Missing content type header',
+        '[admin] foo went wrong',
         'AEM_BACKEND_NO_CONTENT_TYPE',
       );
       expect(res3).to.equal('(400) An error occurred: foo went wrong');
