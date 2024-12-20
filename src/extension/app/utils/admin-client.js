@@ -164,7 +164,7 @@ export class AdminClient {
     // error key fallbacks
     message = this.#appStore.i18n(`error_${action}_${status}`)
       || this.#appStore.i18n(`error_${action}`)
-      || (error && this.#appStore.i18n('error_generic').replace('$1', error));
+      || (error && this.#appStore.i18n('error_generic').replace('$1', error.replace('[admin] ', '')));
     return `(${status}) ${message}`;
   }
 
@@ -186,14 +186,10 @@ export class AdminClient {
 
     const [error, errorCode] = this.#getServerError(resp);
     const message = this.getLocalizedError(action, path, resp.status, error, errorCode);
-    if (message) {
-      this.#showErrorToast(
-        message.replace('$1', error), // in case of generic error
-        resp.status < 500 ? 'warning' : 'negative',
-      );
-    } else {
-      this.#handleFatalError(action);
-    }
+    this.#showErrorToast(
+      message.replace('$1', error), // in case of generic error
+      resp.status < 500 ? 'warning' : 'negative',
+    );
   }
 
   /**
