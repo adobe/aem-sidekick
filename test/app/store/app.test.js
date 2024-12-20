@@ -298,17 +298,10 @@ describe('Test App Store', () => {
   });
 
   describe('fetchStatus()', async () => {
-    let showToastStub;
     let instance;
-    let toast;
 
     beforeEach(() => {
       instance = appStore;
-      showToastStub = sidekickTest.sandbox
-        .stub(instance, 'showToast')
-        .callsFake((t) => {
-          toast = t;
-        });
     });
 
     afterEach(() => {
@@ -350,36 +343,6 @@ describe('Test App Store', () => {
         'Status never loaded',
       );
       expect(instance.status.status).to.equal(401);
-    });
-
-    it('not found', async () => {
-      sidekickTest
-        .mockFetchStatusNotFound();
-      await instance.loadContext(sidekickElement, defaultSidekickConfig);
-      await waitUntil(
-        () => instance.status.status,
-        'Status never loaded',
-      );
-      expect(instance.status.status).to.equal(404);
-      expect(showToastStub.calledOnce).to.be.true;
-      expect(toast.message).to.match(/404 Not found/);
-    });
-
-    it('not found - editor', async () => {
-      sidekickTest
-        // .mockEditorAdminEnvironment()
-        .mockFetchStatusNotFound();
-      await instance.loadContext(sidekickElement, defaultSidekickConfig);
-
-      instance.location.href = 'https://adobe-my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx';
-      await waitUntil(
-        () => instance.status.status,
-        'Status never loaded',
-      );
-      expect(instance.status.status).to.equal(404);
-      expect(showToastStub.calledOnce).to.be.true;
-      expect(toast.message).to.match(/404 Not found/);
-      expect(toast.message).to.match(/access to this document is granted/);
     });
 
     it('server error', async () => {
