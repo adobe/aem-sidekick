@@ -7,7 +7,7 @@
       "message": "Configuration successfully activated."
     },
     "activate_bulk_not_supported": {
-      "message": "Unable to activate multiple configurations."
+      "message": "Activation of multiple configurations not supported."
     },
     "add": {
       "message": "Add"
