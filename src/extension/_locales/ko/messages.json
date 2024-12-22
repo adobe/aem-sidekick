@@ -194,7 +194,7 @@
   "config_remove_project_headline": {
     "message": "제거된 프로젝트"
   },
-  "config_success": {
+  "activate_success": {
     "message": "구성이 정상적으로 활성화되었습니다."
   },
   "confirm": {

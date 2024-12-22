@@ -194,7 +194,7 @@
   "config_remove_project_headline": {
     "message": "Projet supprimé"
   },
-  "config_success": {
+  "activate_success": {
     "message": "La configuration a été activée."
   },
   "confirm": {

@@ -3,6 +3,12 @@
       "message": "Activate",
       "description": "Activate the configuration"
     },
+    "activate_success": {
+      "message": "Configuration successfully activated."
+    },
+    "activate_bulk_not_supported": {
+      "message": "Activation of multiple configurations not supported."
+    },
     "add": {
       "message": "Add"
     },
@@ -21,6 +27,9 @@
     },
     "bulk_confirm_empty": {
       "message": "No file selected"
+    },
+    "bulk_confirm_activate_single": {
+      "message": "Are you sure you want to activate this configuration?"
     },
     "bulk_confirm_preview_multiple": {
       "message": "Are you sure you want to generate the preview of $1 files?"
@@ -193,9 +202,6 @@
     "config_project_removed": {
       "message": "$1 successfully removed",
       "description": "Project removed"
-    },
-    "config_success": {
-      "message": "Configuration successfully activated."
     },
     "confirm": {
       "message": "Please confirm",

@@ -194,7 +194,7 @@
   "config_remove_project_headline": {
     "message": "プロジェクトを削除しました"
   },
-  "config_success": {
+  "activate_success": {
     "message": "設定が正常にアクティブ化されました。"
   },
   "confirm": {

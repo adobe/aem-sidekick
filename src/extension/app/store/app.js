@@ -950,7 +950,7 @@ export class AppStore {
       // special handling of config files
       if (this.status.webPath.startsWith('/.helix/')) {
         this.showToast({
-          message: this.i18n('config_success'),
+          message: this.i18n('activate_success'),
           variant: 'positive',
         });
       } else {

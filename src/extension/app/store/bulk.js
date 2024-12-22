@@ -328,7 +328,7 @@ export class BulkStore {
 
   /**
    * Returns the bulk confirmation text for a given action.
-   * @param {string} operation The bulk operation
+   * @param {string} operation The bulk operation ("preview", "activate" or "publish")
    * @param {number} total The total number of files
    * @returns {string} The bulk confirmation text
    */
@@ -340,7 +340,7 @@ export class BulkStore {
 
   /**
    * Returns the summary text for a bulk operation.
-   * @param {string} operation The bulk operation
+   * @param {string} operation The bulk operation ("preview", "activate" or "publish")
    * @param {number} total The total number of files
    * @param {number} [failed] The number of failed files
    * @returns {string} The summary text
@@ -383,7 +383,7 @@ export class BulkStore {
 
   /**
    * Displays a toast with the bulk operation summary.
-   * @param {string} operation The bulk operation ("preview" or "publish")
+   * @param {string} operation The bulk operation ("preview", "activate" or "publish")
    * @param {AdminJobResource[]} resources The resources
    * @param {string} host The host name to use for URLs
    */
@@ -398,10 +398,10 @@ export class BulkStore {
     const succeeded = resources.filter(({ status }) => status < 400);
     const paths = succeeded.map(({ path }) => path);
 
-    if (paths.find((path) => path.startsWith('/.helix/'))) {
+    if (operation === 'activate' && failed.length === 0) {
       // special handling for config files
       this.appStore.showToast({
-        message: this.appStore.i18n('config_success'),
+        message: this.appStore.i18n('activate_success'),
         variant: 'positive',
       });
     } else {
@@ -447,7 +447,7 @@ export class BulkStore {
 
   /**
    * Validates the selection before performing a bulk operation.
-   * @param {string} operation The bulk operation ("preview" or "publish")
+   * @param {string} operation The bulk operation ("preview", "activate" or "publish")
    * @returns {boolean} True if selection is valid, else false
    */
   #validateSelection(operation) {
@@ -462,6 +462,8 @@ export class BulkStore {
       invalidMessage = this.appStore
         .i18n('bulk_error_illegal_folder_name')
         .replace('$1', illegalPath);
+    } else if (operation === 'activate' && this.selection.length > 1) {
+      invalidMessage = this.appStore.i18n('activate_bulk_not_supported');
     } else {
       // check selected files
       const illegalFileNames = this.selection
@@ -488,16 +490,17 @@ export class BulkStore {
    * Runs a bulk preview operation on the bulk selection.
    */
   async preview() {
-    if (!this.#validateSelection('preview')) {
+    const operation = this.appStore.status.webPath === '/.helix' ? 'activate' : 'preview';
+    if (!this.#validateSelection(operation)) {
       return;
     }
 
     const modal = this.appStore.showModal({
       type: 'confirm',
       data: {
-        headline: this.appStore.i18n('preview'),
-        message: this.#getConfirmText('preview', this.selection.length),
-        confirmLabel: this.appStore.i18n('preview'),
+        headline: this.appStore.i18n(operation),
+        message: this.#getConfirmText(operation, this.selection.length),
+        confirmLabel: this.appStore.i18n(operation),
       },
     });
 
@@ -529,7 +532,7 @@ export class BulkStore {
         }
       }
       if (resources) {
-        this.#showSummary('preview', resources, host);
+        this.#showSummary(operation, resources, host);
         this.appStore.fireEvent(
           EXTERNAL_EVENTS.RESOURCE_PREVIEWED,
           resources.map(({ path }) => path),
