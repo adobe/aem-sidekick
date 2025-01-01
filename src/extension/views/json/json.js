@@ -221,6 +221,32 @@ export class JSONView extends LitElement {
   }
 
   /**
+   * Finds the row with the most keys and returns key names as headers.
+   * @param {Object[]} rows The rows
+   * @returns {string[]} The header names
+   */
+  getHeaders(rows) {
+    const sortedRows = rows.sort((a, b) => Object.keys(b).length - Object.keys(a).length);
+    return Object.keys(sortedRows[0]);
+  }
+
+  /**
+   * Sorts all rows based on the headers
+   * @param {Object[]} rows The rows
+   * @param {string[]} headers The header names
+   * @returns {Object[]} The sorted rows
+   */
+  sortRows(rows, headers) {
+    return rows.map((row) => {
+      const newRow = {};
+      headers.forEach((key) => {
+        newRow[key] = row[key] || '';
+      });
+      return newRow;
+    });
+  }
+
+  /**
    * Render the table
    * @param {Object[]} rows The rows to render
    * @param {string} url The url of the json file
@@ -235,13 +261,13 @@ export class JSONView extends LitElement {
     table.setAttribute('scroller', 'true');
 
     if (rows.length > 0) {
-      const headers = rows[0];
-      const headHTML = Object.keys(headers).reduce((acc, key) => `${acc}<sp-table-head-cell sortable sort-direction="desc" sort-key=${key}>${key.charAt(0).toUpperCase() + key.slice(1)}</sp-table-head-cell>`, '');
+      const headers = this.getHeaders(rows);
+      const headHTML = headers.reduce((acc, key) => `${acc}<sp-table-head-cell sortable sort-direction="desc" sort-key=${key}>${key.charAt(0).toUpperCase() + key.slice(1)}</sp-table-head-cell>`, '');
       const head = document.createElement('sp-table-head');
       head.insertAdjacentHTML('beforeend', headHTML);
       table.appendChild(head);
 
-      table.items = rows;
+      table.items = this.sortRows(rows, headers);
       // @ts-ignore
       table.renderItem = (item) => html`${Object.values(item).map((value) => this.renderValue(value, url))}`;
 
