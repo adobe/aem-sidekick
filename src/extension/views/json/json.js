@@ -153,14 +153,14 @@ export class JSONView extends LitElement {
     const multiSheet = json[':type'] === 'multi-sheet' && json[':names'];
     if (multiSheet) {
       json[':names'].forEach((name) => {
-        const { data } = json[name];
-        if (data) {
+        const { data, columns } = json[name];
+        if (data && columns) {
           sheets[name] = json[name];
         }
       });
     } else {
-      const { data } = json;
-      if (data) {
+      const { data, columns } = json;
+      if (data && columns) {
         sheets['shared-default'] = json;
       }
     }
