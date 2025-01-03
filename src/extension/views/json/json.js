@@ -155,13 +155,13 @@ export class JSONView extends LitElement {
       json[':names'].forEach((name) => {
         const { data } = json[name];
         if (data) {
-          sheets[name] = data;
+          sheets[name] = json[name];
         }
       });
     } else {
       const { data } = json;
       if (data) {
-        sheets['shared-default'] = data;
+        sheets['shared-default'] = json;
       }
     }
 
@@ -213,25 +213,16 @@ export class JSONView extends LitElement {
     if (names.length > 0) {
       const name = names[this.selectedTabIndex];
       const sheet = sheets[name];
+      const { data, columns } = sheet;
 
-      elements.push(this.renderTable(sheet, url));
+      elements.push(this.renderTable(data, columns, url));
     }
 
     return elements;
   }
 
   /**
-   * Finds the row with the most keys and returns key names as headers.
-   * @param {Object[]} rows The rows
-   * @returns {string[]} The header names
-   */
-  getHeaders(rows) {
-    const sortedRows = rows.sort((a, b) => Object.keys(b).length - Object.keys(a).length);
-    return Object.keys(sortedRows[0]);
-  }
-
-  /**
-   * Sorts all rows based on the headers
+   * Sort the rows based on the headers
    * @param {Object[]} rows The rows
    * @param {string[]} headers The header names
    * @returns {Object[]} The sorted rows
@@ -249,10 +240,11 @@ export class JSONView extends LitElement {
   /**
    * Render the table
    * @param {Object[]} rows The rows to render
+   * @param {string[]} headers The header names
    * @param {string} url The url of the json file
    * @returns {HTMLDivElement} The rendered table
    */
-  renderTable(rows, url) {
+  renderTable(rows, headers, url) {
     const tableContainer = document.createElement('div');
     tableContainer.classList.add('tableContainer');
 
@@ -261,7 +253,6 @@ export class JSONView extends LitElement {
     table.setAttribute('scroller', 'true');
 
     if (rows.length > 0) {
-      const headers = this.getHeaders(rows);
       const headHTML = headers.reduce((acc, key) => `${acc}<sp-table-head-cell sortable sort-direction="desc" sort-key=${key}>${key.charAt(0).toUpperCase() + key.slice(1)}</sp-table-head-cell>`, '');
       const head = document.createElement('sp-table-head');
       head.insertAdjacentHTML('beforeend', headHTML);
