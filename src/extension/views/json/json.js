@@ -222,12 +222,12 @@ export class JSONView extends LitElement {
   }
 
   /**
-   * Sort the rows based on the headers
+   * Align the order of the columns within rows to the headers
    * @param {Object[]} rows The rows
    * @param {string[]} headers The header names
    * @returns {Object[]} The sorted rows
    */
-  sortRows(rows, headers) {
+  alignColumnsToHeaders(rows, headers) {
     return rows.map((row) => {
       const newRow = {};
       headers.forEach((key) => {
@@ -258,7 +258,7 @@ export class JSONView extends LitElement {
       head.insertAdjacentHTML('beforeend', headHTML);
       table.appendChild(head);
 
-      table.items = this.sortRows(rows, headers);
+      table.items = this.alignColumnsToHeaders(rows, headers);
       // @ts-ignore
       table.renderItem = (item) => html`${Object.values(item).map((value) => this.renderValue(value, url))}`;
 
