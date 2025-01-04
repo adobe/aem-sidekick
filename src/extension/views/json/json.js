@@ -165,6 +165,12 @@ export class JSONView extends LitElement {
       }
     }
 
+    if (Object.keys(sheets).length === 0) {
+      // No valid sheets found, close view
+      this.onCloseView(false);
+      return '';
+    }
+
     const elements = [];
     const { searchParams } = new URL(window.location.href);
 
@@ -222,12 +228,12 @@ export class JSONView extends LitElement {
   }
 
   /**
-   * Align the order of the columns within rows to the headers
+   * Align the order of columns within rows to the headers
    * @param {Object[]} rows The rows
    * @param {string[]} headers The header names
    * @returns {Object[]} The sorted rows
    */
-  alignColumnsToHeaders(rows, headers) {
+  sortColumns(rows, headers) {
     return rows.map((row) => {
       const newRow = {};
       headers.forEach((key) => {
@@ -258,7 +264,7 @@ export class JSONView extends LitElement {
       head.insertAdjacentHTML('beforeend', headHTML);
       table.appendChild(head);
 
-      table.items = this.alignColumnsToHeaders(rows, headers);
+      table.items = this.sortColumns(rows, headers);
       // @ts-ignore
       table.renderItem = (item) => html`${Object.values(item).map((value) => this.renderValue(value, url))}`;
 
