@@ -25,6 +25,17 @@ export default {
     include: ['./src/**/*'],
     report: true,
     reportDir: 'coverage-wtr',
+    reporters: [
+      'lcov',
+      'text',
+      'text-summary',
+    ],
+    skipFull: true,
+    threshold: {
+      statements: 99,
+      branches: 97,
+      lines: 99,
+    },
   },
   plugins: [
     babel({
