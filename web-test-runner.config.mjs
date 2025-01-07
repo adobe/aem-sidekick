@@ -32,9 +32,9 @@ export default {
     ],
     skipFull: true,
     threshold: {
-      statements: 99,
-      branches: 97,
-      lines: 99,
+      statements: 99.9,
+      branches: 97.4,
+      lines: 99.9,
     },
   },
   plugins: [
