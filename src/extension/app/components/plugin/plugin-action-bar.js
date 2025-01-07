@@ -160,6 +160,7 @@ export class PluginActionBar extends ConnectedElement {
   }
 
   disconnectedCallback() {
+    super.disconnectedCallback();
     this.removeEventListener('click', this.onClick);
   }
 
