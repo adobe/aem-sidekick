@@ -153,16 +153,22 @@ export class JSONView extends LitElement {
     const multiSheet = json[':type'] === 'multi-sheet' && json[':names'];
     if (multiSheet) {
       json[':names'].forEach((name) => {
-        const { data } = json[name];
-        if (data) {
-          sheets[name] = data;
+        const { data, columns } = json[name];
+        if (data && columns) {
+          sheets[name] = json[name];
         }
       });
     } else {
-      const { data } = json;
-      if (data) {
-        sheets['shared-default'] = data;
+      const { data, columns } = json;
+      if (data && columns) {
+        sheets['shared-default'] = json;
       }
+    }
+
+    if (Object.keys(sheets).length === 0) {
+      // No valid sheets found, close view
+      this.onCloseView(false);
+      return '';
     }
 
     const elements = [];
@@ -213,20 +219,38 @@ export class JSONView extends LitElement {
     if (names.length > 0) {
       const name = names[this.selectedTabIndex];
       const sheet = sheets[name];
+      const { data, columns } = sheet;
 
-      elements.push(this.renderTable(sheet, url));
+      elements.push(this.renderTable(data, columns, url));
     }
 
     return elements;
   }
 
   /**
+   * Align the order of columns within rows to the headers
+   * @param {Object[]} rows The rows
+   * @param {string[]} headers The header names
+   * @returns {Object[]} The sorted rows
+   */
+  sortColumns(rows, headers) {
+    return rows.map((row) => {
+      const newRow = {};
+      headers.forEach((key) => {
+        newRow[key] = row[key] || '';
+      });
+      return newRow;
+    });
+  }
+
+  /**
    * Render the table
    * @param {Object[]} rows The rows to render
+   * @param {string[]} headers The header names
    * @param {string} url The url of the json file
    * @returns {HTMLDivElement} The rendered table
    */
-  renderTable(rows, url) {
+  renderTable(rows, headers, url) {
     const tableContainer = document.createElement('div');
     tableContainer.classList.add('tableContainer');
 
@@ -235,13 +259,12 @@ export class JSONView extends LitElement {
     table.setAttribute('scroller', 'true');
 
     if (rows.length > 0) {
-      const headers = rows[0];
-      const headHTML = Object.keys(headers).reduce((acc, key) => `${acc}<sp-table-head-cell sortable sort-direction="desc" sort-key=${key}>${key.charAt(0).toUpperCase() + key.slice(1)}</sp-table-head-cell>`, '');
+      const headHTML = headers.reduce((acc, key) => `${acc}<sp-table-head-cell sortable sort-direction="desc" sort-key=${key}>${key.charAt(0).toUpperCase() + key.slice(1)}</sp-table-head-cell>`, '');
       const head = document.createElement('sp-table-head');
       head.insertAdjacentHTML('beforeend', headHTML);
       table.appendChild(head);
 
-      table.items = rows;
+      table.items = this.sortColumns(rows, headers);
       // @ts-ignore
       table.renderItem = (item) => html`${Object.values(item).map((value) => this.renderValue(value, url))}`;
 
