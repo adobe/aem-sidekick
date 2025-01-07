@@ -219,6 +219,7 @@
  * @property {string} path The resource path
  * @property {number} status The status code
  * @property {string} [error] The error message
+ * @property {string} [errorCode] The error code
  */
 
 /**

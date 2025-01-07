@@ -285,3 +285,79 @@ export const ICONS = {
     </svg>
   `,
 };
+
+/**
+ * The server error codes and templates.
+ * @see https://github.com/adobe/helix-admin/blob/main/src/contentproxy/errors.js
+ * @type {Object<string, string>[]}
+ */
+export const ERRORS = [
+  {
+    code: 'AEM_BACKEND_FETCH_FAILED',
+    template: 'Unable to fetch \'$1\' from \'$2\': $3',
+  },
+  {
+    code: 'AEM_BACKEND_NOT_FOUND',
+    template: 'File not found: $1',
+  },
+  {
+    code: 'AEM_BACKEND_TYPE_UNSUPPORTED',
+    template: 'File type not supported: $1',
+  },
+  {
+    code: 'AEM_BACKEND_NO_HANDLER',
+    template: 'No handler found for document: $1',
+  },
+  {
+    code: 'AEM_BACKEND_NON_MATCHING_MEDIA',
+    template: 'Unable to preview \'$1\', content is not a \'$2\' but: $3',
+  },
+  {
+    code: 'AEM_BACKEND_VALIDATION_FAILED',
+    template: 'Unable to preview \'$1\', validation failed: $2',
+  },
+  {
+    code: 'AEM_BACKEND_UNSUPPORTED_MEDIA',
+    template: '\'$1\' backend does not support file type: $2',
+  },
+  {
+    code: 'AEM_BACKEND_NO_CONTENT_TYPE',
+    template: 'Content type header is missing',
+  },
+  {
+    code: 'AEM_BACKEND_JSON_INVALD',
+    template: 'JSON fetched from markup \'$1\' is invalid: $2',
+  },
+  {
+    code: 'AEM_BACKEND_FILE_EMPTY',
+    template: 'File is empty, no markdown version available: $1',
+  },
+  {
+    code: 'AEM_BACKEND_FILE_TOO_BIG',
+    template: 'Documents larger than 100mb not supported: $1',
+  },
+  {
+    code: 'AEM_BACKEND_MP4_TOO_LONG',
+    template: 'Unable to preview \'$1\': MP4 is longer than 2 minutes: $2',
+  },
+  {
+    code: 'AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH',
+    template: 'Unable to preview \'$1\': MP4 has a higher bitrate than 300 KB/s: $2',
+  },
+  {
+    code: 'AEM_BACKEND_ICO_TOO_BIG',
+    template: 'ICO is larger than 16KB: $1',
+  },
+  {
+    code: 'AEM_BACKEND_SVG_SCRIPTING_DETECTED',
+    template: 'Unable to preview \'$1\': script or event handler detected in SVG at: $2',
+  },
+  {
+    code: 'AEM_BACKEND_SVG_ROOT_ITEM_MISSING',
+    template: 'Unable to preview \'$1\': expected XML content with an SVG root item',
+  },
+  {
+    code: 'AEM_BACKEND_SVG_PARSING_FAILED',
+    template: 'Unable to preview \'$1\': unable to parse SVG XML',
+  },
+];

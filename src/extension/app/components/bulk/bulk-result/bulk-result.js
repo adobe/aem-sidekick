@@ -36,7 +36,9 @@ export class BulkResult extends ConnectedElement {
             ${this.appStore.i18n('bulk_result_path')}
           </div>
         </div>
-        ${summary.resources.map(({ status, path, error }) => html`
+        ${summary.resources.map(({
+          status, path, error, errorCode,
+        }) => html`
           <div class="row">
             <div class="status ${status < 400 ? 'success' : 'error'}">
               ${status < 400 ? ICONS.CHECKMARK : ICONS.ALERT_TRIANGLE}
@@ -50,7 +52,9 @@ export class BulkResult extends ConnectedElement {
               ${error || status >= 400 ? html`
                 <div class="error">
                   <span>
-                    ${this.appStore.api.getLocalizedError(summary.operation, path, status, error)}
+                    ${this.appStore.api.getLocalizedError(
+                      summary.operation, path, status, error, errorCode,
+                    )}
                   </span>
                 </div>
                 `
