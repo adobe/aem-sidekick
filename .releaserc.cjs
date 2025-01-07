@@ -20,6 +20,15 @@ module.exports = {
     ['@semantic-release/exec', {
       publishCmd: 'npm run publish:chrome',
     }],
+    ['semantic-release-slack-bot', {
+      notifyOnSuccess: true,
+      notifyOnFail: true,
+      markdownReleaseNotes: true,
+      slackChannel: 'helix-escalations',
+    }],
+    ['semantic-release-discord-bot', {
+      notifications: [{ branch: 'main' }],
+    }],
   ],
   branches: ['main'],
 };

@@ -187,7 +187,7 @@ export class BulkStore {
     return [...document.querySelectorAll('#drive_main_page [role="row"][aria-selected="true"]')]
       // extract file name and type
       .map((row) => {
-        const file = (row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(4)') // grid layout
+        const file = (row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(2) div[jsname]') // grid layout
           || row.querySelector(':scope div[role="gridcell"] > div:nth-of-type(2)')) // list layout
           ?.textContent.trim();
 

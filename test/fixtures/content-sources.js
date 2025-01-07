@@ -151,12 +151,14 @@ export function mockGdriveFile({ path, type }, viewType = 'list') {
         <div>
           <div></div>
           <div>
-            <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
-          </div>
-          <div></div>
-          <div>${filename}</div>
+            <div>
+              <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
+            </div>
+            <div></div>
+            <div>
+              <div jsname="wuLfrd">${filename}</div>
+            </div>
         </div>
-        <div></div>
       </div>
     </div>
     `;
