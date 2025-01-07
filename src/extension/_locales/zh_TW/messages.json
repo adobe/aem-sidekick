@@ -194,7 +194,7 @@
   "config_remove_project_headline": {
     "message": "已移除專案"
   },
-  "config_success": {
+  "activate_success": {
     "message": "設定已成功啟用。"
   },
   "confirm": {
