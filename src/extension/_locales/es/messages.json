@@ -1,7 +1,64 @@
 {
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "No se puede recuperar $1 de $2."
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "No se puede previsualizar $1: archivo vacío"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "No se puede previsualizar $1: archivo de más de 100 MB"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "No se puede previsualizar $1: ICO supera los 16 KB"
+  },
+  "AEM_BACKEND_JSON_INVALD": {
+    "message": "No se puede previsualizar $2: JSON no válido"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "No se puede previsualizar $1: la velocidad de bits de MP4 es superior a 300 KB/s"
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "No se puede previsualizar $1: MP4 dura más de 2 minutos"
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "No se puede previsualizar $1: se esperaba $2, pero se encontró $3"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "Archivo no encontrado. Falta el documento de origen o no se ha compartido con AEM."
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "Falta el encabezado de tipo de contenido"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "No se puede previsualizar $1: no se ha encontrado ningún controlador"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "No se puede previsualizar $1: el SVG contiene un XML no válido"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "No se puede previsualizar $1: falta el elemento raíz de SVG"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "No se puede previsualizar $1: se han detectado scripts no válidos en SVG"
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "No se puede previsualizar $1: tipo de archivo no admitido"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "No se puede previsualizar $2: tipo de archivo no admitido"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "No se puede previsualizar $1: $2"
+  },
   "activate": {
     "description": "Activar la configuración",
     "message": "Activar"
+  },
+  "activate_bulk_not_supported": {
+    "message": "No se admite la activación de varias configuraciones."
+  },
+  "activate_success": {
+    "message": "Configuración activada con éxito."
   },
   "add": {
     "message": "Añadir"
@@ -18,6 +75,9 @@
   },
   "anonymous": {
     "message": "Anónimo"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "¿Está seguro de que desea activar esta configuración?"
   },
   "bulk_confirm_empty": {
     "message": "No se ha seleccionado ningún archivo"
@@ -194,8 +254,8 @@
   "config_remove_project_headline": {
     "message": "Proyecto eliminado"
   },
-  "activate_success": {
-    "message": "Configuración activada con éxito."
+  "config_state": {
+    "message": "Activando configuración..."
   },
   "confirm": {
     "description": "Encabezado modal de confirmación",
@@ -310,7 +370,7 @@
     "message": "Nunca se guardó"
   },
   "edit_no_source": {
-    "message": "No se encontró el documento de origen"
+    "message": "No se ha encontrado el documento de origen"
   },
   "environments": {
     "message": "Entornos"
@@ -319,7 +379,7 @@
     "message": "Error"
   },
   "error_429": {
-    "message": "Error 429 demasiadas solicitudes: $1 está limitando el proyecto. Espere e inténtelo de nuevo más tarde."
+    "message": "Demasiadas solicitudes: $1 está limitando el proyecto. Espere e inténtelo de nuevo más tarde."
   },
   "error_delete": {
     "message": "No se pudo eliminar. Inténtelo de nuevo más tarde."
@@ -331,7 +391,7 @@
     "message": "Se ha producido un error: $1"
   },
   "error_job_404": {
-    "message": "404 No encontrado: No existe tal trabajo."
+    "message": "Trabajo no encontrado."
   },
   "error_login_aborted": {
     "message": "Inicio de sesión anulado."
@@ -345,32 +405,8 @@
   "error_preview": {
     "message": "Error al generar la vista previa. Inténtelo de nuevo más tarde."
   },
-  "error_preview_400": {
-    "message": "Error al generar vista previa. Compruebe el formato, el nombre o la ruta del archivo."
-  },
-  "error_preview_404": {
-    "message": "El documento de origen no existe. Error al generar la vista previa."
-  },
-  "error_preview_415": {
-    "message": "El tipo de archivo no es compatible. Consulte la documentación para ver los tipos de archivo admitidos."
-  },
   "error_preview_config": {
     "message": "Error al activar la configuración: $1"
-  },
-  "error_preview_no_docx": {
-    "message": "Este es un documento de Microsoft Word, conviértalo primero a Documentos de Google"
-  },
-  "error_preview_no_xlsx": {
-    "message": "Este es un documento de Microsoft Excel, conviértalo primero a Hojas de cálculo de Google."
-  },
-  "error_preview_not_gdoc_generic": {
-    "message": "Error al generar la vista previa. Debe ser un documento o una hoja de cálculo de Google."
-  },
-  "error_preview_svg_invalid": {
-    "message": "El SVG no es válido. Asegúrese de que el XML sea válido y no contenga scripts."
-  },
-  "error_preview_too_large": {
-    "message": "El archivo es demasiado grande. Consulte la documentación para ver los límites de tamaño de los archivos."
   },
   "error_publish": {
     "message": "Error de publicación. Inténtelo de nuevo más tarde."
@@ -378,26 +414,8 @@
   "error_publish_404": {
     "message": "Error de publicación; genere primero la vista previa."
   },
-  "error_status_400": {
-    "message": "400 Error en la solicitud: URL no válida."
-  },
-  "error_status_404_content": {
-    "message": "404 No encontrado: verifique la configuración o la URL de su Sidekick."
-  },
-  "error_status_404_document": {
-    "message": "404 No encontrado: verifique la configuración de su Sidekick y asegúrese de que tenga acceso a este documento."
-  },
-  "error_status_500": {
-    "message": "500 Error interno del servidor: No se pudo recuperar el estado de la página. Inténtelo de nuevo más tarde."
-  },
-  "error_status_502": {
-    "message": "502 Puerta de enlace incorrecta: No se pudo obtener el estado de la página. Inténtelo de nuevo más tarde."
-  },
-  "error_status_504": {
-    "message": "504 Tiempo de espera de la puerta de enlace: No se pudo recuperar el estado de la página. Inténtelo de nuevo más tarde."
-  },
-  "error_status_invalid": {
-    "message": "Respuesta del servidor no válida. Verifique la configuración o la URL de su Sidekick."
+  "error_status": {
+    "message": "No se ha podido recuperar el estado de la página. Inténtelo de nuevo más tarde."
   },
   "error_unpublish": {
     "message": "No se ha podido publicar. Inténtelo de nuevo más tarde."
@@ -421,7 +439,7 @@
     "message": "Información"
   },
   "join_discord": {
-    "message": "Únete a nosotros en Discord"
+    "message": "Únase a nosotros en Discord"
   },
   "json_results_stat": {
     "message": "Mostrando $1 de $2 resultados"
@@ -630,7 +648,7 @@
   },
   "whats_new": {
     "description": "Título del menú de incorporación",
-    "message": "Novedades del sector"
+    "message": "Novedades"
   },
   "yesterday_at": {
     "message": "Ayer a las $1"

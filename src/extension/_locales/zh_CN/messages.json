@@ -1,7 +1,64 @@
 {
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "无法从 $2 中获取 $1。"
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "无法预览 $1：空文件"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "无法预览 $1：文件大于 100MB"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "无法预览 $1：ICO 大于 16KB"
+  },
+  "AEM_BACKEND_JSON_INVALD": {
+    "message": "无法预览 $2：无效的 JSON"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "无法预览 $1：MP4 比特率高于 300KB/s"
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "无法预览 $1：MP4 长度超过 2 分钟"
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "无法预览 $1：预期为 $2，但实际为 $3"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "未找到文件。源文档缺失或未与 AEM 共享。"
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "内容类型标头缺失"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "无法预览 $1：未找到处理程序"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "无法预览 $1：SVG 包含无效的 XML"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "无法预览 $1：SVG 根项缺失"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "无法预览 $1：SVG 中检测到非法脚本"
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "无法预览 $1：文件类型不受支持"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "无法预览 $2：文件类型不受支持"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "无法预览 $1：$2"
+  },
   "activate": {
     "description": "激活配置",
     "message": "激活"
+  },
+  "activate_bulk_not_supported": {
+    "message": "不支持激活多个配置。"
+  },
+  "activate_success": {
+    "message": "配置已成功激活。"
   },
   "add": {
     "message": "添加"
@@ -18,6 +75,9 @@
   },
   "anonymous": {
     "message": "匿名"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "是否确实要激活此配置？"
   },
   "bulk_confirm_empty": {
     "message": "未选中任何文件"
@@ -122,7 +182,7 @@
     "message": "关闭"
   },
   "close_sidekick": {
-    "message": "关闭Sidekick"
+    "message": "关闭 Sidekick"
   },
   "code_state": {
     "message": "代码文件无可用操作"
@@ -189,13 +249,13 @@
   },
   "config_project_removed": {
     "description": "项目已移除",
-    "message": "$1 个已成功删除 "
+    "message": "$1 已成功移除"
   },
   "config_remove_project_headline": {
     "message": "已移除项目"
   },
-  "activate_success": {
-    "message": "配置已成功激活。"
+  "config_state": {
+    "message": "正在激活配置······"
   },
   "confirm": {
     "description": "确认模式标题",
@@ -271,7 +331,7 @@
     "message": "该页面仍有源文档，因此无法删除。"
   },
   "delete_page_success": {
-    "message": "页面已成功删除、重新加载……"
+    "message": "页面已成功删除，正在重新加载……"
   },
   "deleting_state": {
     "message": "删除中……"
@@ -304,7 +364,7 @@
     "message": "已编辑: "
   },
   "edit_last_updated": {
-    "message": "上次编辑 $1 个"
+    "message": "上次编辑：$1"
   },
   "edit_never_updated": {
     "message": "从未保存"
@@ -319,7 +379,7 @@
     "message": "错误"
   },
   "error_429": {
-    "message": "429 请求过多：您的项目正受到 $1 的限制。请稍候再试。"
+    "message": "请求过多：您的项目正受到 $1 的限制。请稍候再试。"
   },
   "error_delete": {
     "message": "删除失败。请稍后再试。"
@@ -331,7 +391,7 @@
     "message": "出现错误：$1"
   },
   "error_job_404": {
-    "message": "404 未找到：没有此类作业。"
+    "message": "找不到作业。"
   },
   "error_login_aborted": {
     "message": "登录已中止。"
@@ -345,32 +405,8 @@
   "error_preview": {
     "message": "预览生成失败。请稍后重试。"
   },
-  "error_preview_400": {
-    "message": "预览生成失败。请检查文件格式、名称或路径。"
-  },
-  "error_preview_404": {
-    "message": "源文档不存在，预览生成失败。"
-  },
-  "error_preview_415": {
-    "message": "不支持的文件类型。请参阅文档以了解支持的文件类型。"
-  },
   "error_preview_config": {
     "message": "无法激活配置：$1"
-  },
-  "error_preview_no_docx": {
-    "message": "这是一份 Microsoft Word 文档，请先将其转换为 Google Docs 文档。"
-  },
-  "error_preview_no_xlsx": {
-    "message": "这是一份 Microsoft Excel 文档，请先将其转换为 Google Sheets 文档。"
-  },
-  "error_preview_not_gdoc_generic": {
-    "message": "预览生成失败。必须是 Google 文档或电子表格。"
-  },
-  "error_preview_svg_invalid": {
-    "message": "SVG 无效。请确保它是有效的 XML 并且不包含脚本。"
-  },
-  "error_preview_too_large": {
-    "message": "文件太大。请参阅文档以了解文件大小限制。"
   },
   "error_publish": {
     "message": "发布失败。请稍后再试。"
@@ -378,26 +414,8 @@
   "error_publish_404": {
     "message": "发布失败，请先生成预览。"
   },
-  "error_status_400": {
-    "message": "400 错误请求：无效 URL。"
-  },
-  "error_status_404_content": {
-    "message": "404 未找到：请检查您的 Sidekick 配置或 URL。"
-  },
-  "error_status_404_document": {
-    "message": "404 未找到：检查您的 Sidekick 配置并确保已授予对该文档的访问权限。"
-  },
-  "error_status_500": {
-    "message": "500 内部服务器错误：获取页面状态失败。请稍后再试。"
-  },
-  "error_status_502": {
-    "message": "502 错误的网关：获取页面状态失败。请稍后再试。"
-  },
-  "error_status_504": {
-    "message": "504 网关超时：获取页面状态失败。请稍后再试。"
-  },
-  "error_status_invalid": {
-    "message": "服务器响应无效。检查您的 Sidekick 配置或 URL。"
+  "error_status": {
+    "message": "获取页面状态失败。请稍后再试。"
   },
   "error_unpublish": {
     "message": "取消发布失败。请稍后再试。"
@@ -421,7 +439,7 @@
     "message": "信息"
   },
   "join_discord": {
-    "message": "不和时加入我们"
+    "message": "加入我们的 Discord"
   },
   "json_results_stat": {
     "message": "显示 $2 个结果中的 $1 个"
@@ -433,7 +451,7 @@
     "message": "实时"
   },
   "live_last_updated": {
-    "message": "上次发布 $1 个"
+    "message": "上次发布：$1"
   },
   "live_never_updated": {
     "message": "从未发布"
@@ -460,14 +478,14 @@
     "message": "无"
   },
   "next": {
-    "description": "下一张入门幻灯片",
+    "description": "下一张加入幻灯片",
     "message": "下一页"
   },
   "no_results": {
     "message": "未找到结果"
   },
   "no_results_subheading": {
-    "message": "尝试细化您的搜索词"
+    "message": "请尝试改进您的搜索词"
   },
   "not_authorized": {
     "message": "未授权"
@@ -516,7 +534,7 @@
     "message": "已预览："
   },
   "preview_last_updated": {
-    "message": "上次更新 $1 个"
+    "message": "上次更新：$1 "
   },
   "preview_never_updated": {
     "message": "从未预览过"
@@ -534,7 +552,7 @@
     "message": "正在更新预览……"
   },
   "prod_last_updated": {
-    "message": "上次发布 $1 个"
+    "message": "上次发布：$1"
   },
   "prod_never_updated": {
     "message": "从未发布"
@@ -555,7 +573,7 @@
     "message": "预览已更新"
   },
   "publish_success": {
-    "message": "发布成功，打开 $1 个……"
+    "message": "发布成功，正在打开$1……"
   },
   "publishing_state": {
     "message": "正在发布..."
@@ -604,7 +622,7 @@
     "message": "该页面仍有源文档，因此无法取消发布。"
   },
   "unpublish_page_success": {
-    "message": "页面已成功取消发布、重新加载……"
+    "message": "页面已成功取消发布，正在重新加载…"
   },
   "unpublishing_state": {
     "message": "正在取消发布……"
@@ -629,7 +647,7 @@
     "message": "切换用户"
   },
   "whats_new": {
-    "description": "入门菜单标题",
+    "description": "加入菜单标题",
     "message": "新增功能"
   },
   "yesterday_at": {
