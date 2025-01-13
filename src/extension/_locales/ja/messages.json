@@ -1,7 +1,64 @@
 {
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "$2 から$1 を取得できません。"
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "$1 をプレビューできません : 空のファイル"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "$1 をプレビューできません : ファイルが 100 MB を超えています"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "$1 をプレビューできません : ICO が 16KB を超えています"
+  },
+  "AEM_BACKEND_JSON_INVALD": {
+    "message": "$2 をプレビューできません : 無効な JSON"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "$1 をプレビューできません : MP4 ビットレートが 300 KB/秒を超えています"
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "$1 をプレビューできません : MP4 が 2 分を超えています"
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "$1 をプレビューできません : $2 が期待されましたが、$3 が見つかりました"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "ファイルが見つかりません。ソースドキュメントがないか、AEM で共有されていません。"
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "コンテンツタイプヘッダーがありません"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "$1 をプレビューできません : ハンドラーが見つかりません"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "$1 をプレビューできません : SVG に無効な XML が含まれています"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "$1 をプレビューできません : SVG ルート項目がありません"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "$1 をプレビューできません : SVG で不正なスクリプトが検出されました"
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "$1 をプレビューできません : ファイルタイプがサポートされていません"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "$2 をプレビューできません : ファイルタイプがサポートされていません"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "$1 をプレビューできません : $2"
+  },
   "activate": {
     "description": "設定をアクティベート",
     "message": "アクティベート"
+  },
+  "activate_bulk_not_supported": {
+    "message": "複数の設定のアクティベーションはサポートされていません。"
+  },
+  "activate_success": {
+    "message": "設定が正常にアクティブ化されました。"
   },
   "add": {
     "message": "追加"
@@ -18,6 +75,9 @@
   },
   "anonymous": {
     "message": "匿名"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "この設定をアクティベートしてもよろしいですか？"
   },
   "bulk_confirm_empty": {
     "message": "ファイルが選択されていません"
@@ -122,7 +182,7 @@
     "message": "閉じる"
   },
   "close_sidekick": {
-    "message": "閉じるSidekick"
+    "message": "Sidekick を閉じる"
   },
   "code_state": {
     "message": "コードファイルに使用できるアクションはありません"
@@ -194,8 +254,8 @@
   "config_remove_project_headline": {
     "message": "プロジェクトを削除しました"
   },
-  "activate_success": {
-    "message": "設定が正常にアクティブ化されました。"
+  "config_state": {
+    "message": "設定をアクティベート中..."
   },
   "confirm": {
     "description": "確認モーダルの見出し",
@@ -319,7 +379,7 @@
     "message": "エラー"
   },
   "error_429": {
-    "message": "429 リクエストが多すぎます : プロジェクトは $1 によって調整されています。しばらく待ってから、もう一度試してください。"
+    "message": "リクエストが多すぎます : プロジェクトは $1 によって調整されています。しばらく待ってから、もう一度試してください。"
   },
   "error_delete": {
     "message": "削除に失敗しました。後でもう一度試してください。"
@@ -331,7 +391,7 @@
     "message": "エラーが発生しました : $1"
   },
   "error_job_404": {
-    "message": "404 見つかりません : そのようなジョブはありません。"
+    "message": "ジョブが見つかりません。"
   },
   "error_login_aborted": {
     "message": "ログインが中止されました。"
@@ -345,32 +405,8 @@
   "error_preview": {
     "message": "プレビューの生成に失敗しました。後で再試行してください。"
   },
-  "error_preview_400": {
-    "message": "プレビューの生成に失敗しました。ファイルの形式、名前またはパスを確認してください。"
-  },
-  "error_preview_404": {
-    "message": "ソースドキュメントが存在しないので、プレビューの生成に失敗しました。"
-  },
-  "error_preview_415": {
-    "message": "ファイルタイプがサポートされていません。サポートされているファイルタイプについては、ドキュメントを参照してください。"
-  },
   "error_preview_config": {
     "message": "設定をアクティブ化できませんでした : $1"
-  },
-  "error_preview_no_docx": {
-    "message": "これは、Microsoft Word ドキュメントです。まず Google ドキュメントに変換してください。"
-  },
-  "error_preview_no_xlsx": {
-    "message": "これは、Microsoft Excel ドキュメントです。まず Google スプレッドシートに変換してください。"
-  },
-  "error_preview_not_gdoc_generic": {
-    "message": "プレビューの生成に失敗しました。Google ドキュメントまたはスプレッドシートにする必要があります。"
-  },
-  "error_preview_svg_invalid": {
-    "message": "SVG が無効です。XML が有効であり、スクリプトが含まれていないことを確認してください。"
-  },
-  "error_preview_too_large": {
-    "message": "ファイルが大きすぎます。ファイルサイズの制限については、ドキュメントを参照してください。"
   },
   "error_publish": {
     "message": "公開に失敗しました。後でもう一度試してください。"
@@ -378,26 +414,8 @@
   "error_publish_404": {
     "message": "公開に失敗しました。まずプレビューを生成してください。"
   },
-  "error_status_400": {
-    "message": "400 無効なリクエスト : 無効な URL。"
-  },
-  "error_status_404_content": {
-    "message": "404 見つかりません : Sidekick の設定または URL を確認してください。"
-  },
-  "error_status_404_document": {
-    "message": "404 見つかりません : Sidekick の設定を確認し、このドキュメントへのアクセス権が付与されていることを確認してください。"
-  },
-  "error_status_500": {
-    "message": "500 内部サーバーエラー : ページのステータスを取得できませんでした。後でもう一度試してください。"
-  },
-  "error_status_502": {
-    "message": "502 無効なゲートウェイです : ページのステータスを取得できませんでした。後でもう一度試してください。"
-  },
-  "error_status_504": {
-    "message": "504 ゲートウェイタイムアウト : ページのステータスを取得できませんでした。後でもう一度試してください。"
-  },
-  "error_status_invalid": {
-    "message": "無効なサーバー応答です。Sidekick の設定または URL を確認してください。"
+  "error_status": {
+    "message": "ページのステータスを取得できませんでした。後でもう一度試してください。"
   },
   "error_unpublish": {
     "message": "非公開に失敗しました。後でもう一度試してください。"
@@ -415,13 +433,13 @@
     "message": "https://www.hlx.live/tools/sidekick/"
   },
   "import": {
-    "message": "インポート"
+    "message": "読み込み"
   },
   "info": {
     "message": "情報"
   },
   "join_discord": {
-    "message": "Discord に参加"
+    "message": "ディスコードに参加"
   },
   "json_results_stat": {
     "message": "結果 $2 個中 $1 個を表示中"

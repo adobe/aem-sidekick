@@ -1,7 +1,64 @@
 {
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "無法從 $2 中擷取 $1。"
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "無法預覽 $1：空的檔案"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "無法預覽 $1：檔案大於 100MB"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "無法預覽 $1：ICO 大於 16KB"
+  },
+  "AEM_BACKEND_JSON_INVALD": {
+    "message": "無法預覽 $2：無效的 JSON"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "無法預覽 $1：MP4 位元率高於 300KB/秒"
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "無法預覽 $1：MP4 長度超過 2 分鐘"
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "無法預覽 $1：預期為 $2，但找到 $3"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "找不到檔案。來源文件遺失或未與 AEM 共用。"
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "內容類型標頭遺失"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "無法預覽 $1：找不到處理常式"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "無法預覽 $1：SVG 包含無效的 XML"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "無法預覽 $1：SVG 根項目遺失"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "無法預覽 $1：在 SVG 中偵測到非法指令碼"
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "無法預覽 $1：檔案類型不受支援"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "無法預覽 $2：檔案類型不受支援"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "無法預覽 $1：$2"
+  },
   "activate": {
     "description": "啟動此設定",
     "message": "啟動"
+  },
+  "activate_bulk_not_supported": {
+    "message": "不支援啟用多個設定。"
+  },
+  "activate_success": {
+    "message": "設定已成功啟用。"
   },
   "add": {
     "message": "新增"
@@ -18,6 +75,9 @@
   },
   "anonymous": {
     "message": "匿名"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "您確定要啟用此設定嗎?"
   },
   "bulk_confirm_empty": {
     "message": "未選取任何檔案"
@@ -38,13 +98,13 @@
     "message": "大量作業失敗。請稍後再試。"
   },
   "bulk_error_illegal_file_name": {
-    "message": "檔案只能包含正規化的小寫拉丁字母、數字和連字號。此檔案包含非法字元：$1"
+    "message": "檔案只能包含正規化的小寫拉丁字母、數字和連字號。此檔案包含違規字元：$1"
   },
   "bulk_error_illegal_file_names": {
-    "message": "檔案只能包含正規化的小寫拉丁字母、數字和連字號。下列檔案包含非法字元：$1"
+    "message": "檔案只能包含正規化的小寫拉丁字母、數字和連字號。下列檔案包含違規字元：$1"
   },
   "bulk_error_illegal_folder_name": {
-    "message": "資料夾只能包含正規化的小寫拉丁字母、數字和連字號。此資料夾包含非法字元：$1"
+    "message": "資料夾只能包含正規化的小寫拉丁字母、數字和連字號。此資料夾包含違規字元：$1"
   },
   "bulk_error_preview_login_required": {
     "message": "您必須登入才能產生超過 100 個檔案的預覽。"
@@ -122,7 +182,7 @@
     "message": "關閉"
   },
   "close_sidekick": {
-    "message": "關閉Sidekick"
+    "message": "關閉 Sidekick"
   },
   "code_state": {
     "message": "沒有可用於程式碼檔案的動作"
@@ -194,8 +254,8 @@
   "config_remove_project_headline": {
     "message": "已移除專案"
   },
-  "activate_success": {
-    "message": "設定已成功啟用。"
+  "config_state": {
+    "message": "正在啟用設定…"
   },
   "confirm": {
     "description": "確認強制回應標題",
@@ -235,13 +295,13 @@
     "message": "複製 URL"
   },
   "copy_urls": {
-    "message": "複製 $1 URL"
+    "message": "複製 $1 個 URL"
   },
   "copy_urls_error": {
     "message": "複製到剪貼簿失敗。請再試一次。"
   },
   "copy_urls_error_focus": {
-    "message": "複製到剪貼簿失敗。請確定焦點仍在視窗中。"
+    "message": "複製到剪貼簿失敗。請確定該視窗仍是焦點視窗。"
   },
   "dark_mode": {
     "message": "深色模式"
@@ -289,7 +349,7 @@
     "message": "抱歉，請確切輸入顯示的文字以進行確認。"
   },
   "destructive_confirmation_prompt": {
-    "message": "輸入 $1 以確認"
+    "message": "請輸入「$1」以確認"
   },
   "development": {
     "message": "開發"
@@ -310,7 +370,7 @@
     "message": "從未儲存過"
   },
   "edit_no_source": {
-    "message": "找不到來原始檔"
+    "message": "找不到來源文件"
   },
   "environments": {
     "message": "環境"
@@ -319,7 +379,7 @@
     "message": "錯誤"
   },
   "error_429": {
-    "message": "429 請求過多：您的專案正受到 $1 的限制。請稍後再試。"
+    "message": "請求過多：您的專案正受到 $1 的限制。請稍後再試。"
   },
   "error_delete": {
     "message": "刪除失敗。請稍後再試。"
@@ -331,7 +391,7 @@
     "message": "發生錯誤：$1"
   },
   "error_job_404": {
-    "message": "404 找不到：沒有此類工作。"
+    "message": "找不到工作。"
   },
   "error_login_aborted": {
     "message": "登入已中止。"
@@ -345,32 +405,8 @@
   "error_preview": {
     "message": "預覽產生失敗。請稍後再試。"
   },
-  "error_preview_400": {
-    "message": "預覽產生失敗。請檢查檔案格式、名稱或路徑。"
-  },
-  "error_preview_404": {
-    "message": "來源文件不存在，預覽產生失敗。"
-  },
-  "error_preview_415": {
-    "message": "檔案類型不受支援。請參閱文件以了解受支援的檔案類型。"
-  },
   "error_preview_config": {
     "message": "啟動設定失敗：$1"
-  },
-  "error_preview_no_docx": {
-    "message": "這是一個 Microsoft Word 文件，請先將其轉換為 Google 文件。"
-  },
-  "error_preview_no_xlsx": {
-    "message": "這是一個 Microsoft Excel 文件，請先將其轉換為 Google 試算表。"
-  },
-  "error_preview_not_gdoc_generic": {
-    "message": "預覽產生失敗。必須是 Google 文件或試算表。"
-  },
-  "error_preview_svg_invalid": {
-    "message": "SVG 無效。請確定它是有效的 XML 且不包含指令碼。"
-  },
-  "error_preview_too_large": {
-    "message": "檔案過大。請參閱文件以了解檔案大小限制。"
   },
   "error_publish": {
     "message": "發佈失敗。請稍後再試。"
@@ -378,26 +414,8 @@
   "error_publish_404": {
     "message": "發佈失敗，請先產生預覽。"
   },
-  "error_status_400": {
-    "message": "400 錯誤的請求：無效的 URL。"
-  },
-  "error_status_404_content": {
-    "message": "404 找不到：請檢查您的 Sidekick 設定或 URL。"
-  },
-  "error_status_404_document": {
-    "message": "404 找不到：請檢查您的 Sidekick 設定，並確保已授予對此文件的存取權。"
-  },
-  "error_status_500": {
-    "message": "500 內部伺服器錯誤：擷取頁面狀態失敗。請稍後再試。"
-  },
-  "error_status_502": {
-    "message": "502 錯誤的閘道：擷取頁面狀態失敗。請稍後再試。"
-  },
-  "error_status_504": {
-    "message": "504 閘道逾時：擷取頁面狀態失敗。請稍後再試。"
-  },
-  "error_status_invalid": {
-    "message": "伺服器回應無效。請檢查您的 Sidekick 設定或 URL。"
+  "error_status": {
+    "message": "擷取頁面狀態失敗。請稍後再試。"
   },
   "error_unpublish": {
     "message": "取消發佈失敗。請稍後再試。"
@@ -421,7 +439,7 @@
     "message": "資訊"
   },
   "join_discord": {
-    "message": "不和諧時加入我們"
+    "message": "在 Discord 加入我們"
   },
   "json_results_stat": {
     "message": "正在顯示 $1 個結果 (共 $2 個)"
@@ -460,7 +478,7 @@
     "message": "從未"
   },
   "next": {
-    "description": "下一張入門投影片",
+    "description": "下一張上線投影片",
     "message": "下一步"
   },
   "no_results": {
@@ -495,7 +513,7 @@
     "message": "開啟 URL"
   },
   "open_urls": {
-    "message": "開啟 $1 URL"
+    "message": "開啟 $1 個 URL"
   },
   "open_urls_confirm": {
     "message": "您確定要開啟 $1 個 URL 嗎?"
@@ -555,7 +573,7 @@
     "message": "預覽已更新"
   },
   "publish_success": {
-    "message": "發佈成功，正在開啟 $1…"
+    "message": "發佈成功，正在開啟$1…"
   },
   "publishing_state": {
     "message": "正在發佈…"
@@ -629,8 +647,8 @@
     "message": "切換使用者"
   },
   "whats_new": {
-    "description": "入門功能表標題",
-    "message": "新功能"
+    "description": "上線選單標題",
+    "message": "新增功能"
   },
   "yesterday_at": {
     "message": "昨天 $1"

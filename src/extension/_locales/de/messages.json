@@ -1,7 +1,64 @@
 {
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "$1 konnte nicht von $2 abgerufen werden."
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "Vorschau von $1 nicht möglich: leere Datei"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "Vorschau von $1 nicht möglich: Datei größer als 100 MB"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "Vorschau von $1 nicht möglich: ICO ist größer als 16 KB"
+  },
+  "AEM_BACKEND_JSON_INVALD": {
+    "message": "Vorschau von $2 nicht möglich: ungültiges JSON"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "Vorschau von $1 nicht möglich: MP4-Bitrate ist höher als 300 KB/s"
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "Vorschau von $1 nicht möglich: MP4 ist länger als 2 Minuten"
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "Vorschau von $1 nicht möglich: $2 erwartet, aber $3 gefunden"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "Datei nicht gefunden. Quelldokument fehlt oder ist nicht für AEM freigegeben."
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "Kopfzeile für Inhaltstyp fehlt"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "Vorschau von $1 nicht möglich: kein Handler gefunden"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "Vorschau von $1 nicht möglich: SVG enthält ungültige XML"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "Vorschau von $1 nicht möglich: SVG-Stammelement fehlt"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "Vorschau von $1 kann nicht angezeigt werden: unzulässiges Skripting in SVG erkannt"
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "Vorschau von $1 nicht möglich: Dateityp nicht unterstützt"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "Vorschau von $2 nicht möglich: Dateityp wird nicht unterstützt"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "Vorschau von $1 nicht möglich: $2"
+  },
   "activate": {
     "description": "Konfiguration aktivieren",
     "message": "Aktivieren"
+  },
+  "activate_bulk_not_supported": {
+    "message": "Die Aktivierung mehrerer Konfigurationen wird nicht unterstützt."
+  },
+  "activate_success": {
+    "message": "Konfiguration erfolgreich aktiviert."
   },
   "add": {
     "message": "Hinzufügen"
@@ -18,6 +75,9 @@
   },
   "anonymous": {
     "message": "Anonym"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "Möchten Sie diese Konfiguration wirklich aktivieren?"
   },
   "bulk_confirm_empty": {
     "message": "Keine Datei ausgewählt"
@@ -194,8 +254,8 @@
   "config_remove_project_headline": {
     "message": "Projekt entfernt"
   },
-  "activate_success": {
-    "message": "Konfiguration erfolgreich aktiviert."
+  "config_state": {
+    "message": "Konfiguration wird aktiviert …"
   },
   "confirm": {
     "description": "Modale Überschrift bestätigen",
@@ -319,7 +379,7 @@
     "message": "Fehler"
   },
   "error_429": {
-    "message": "429 Zu viele Anfragen: Ihr Projekt wird von $1 gedrosselt. Bitte warten Sie und versuchen Sie es später erneut."
+    "message": "Zu viele Anfragen: Ihr Projekt wird von $1 gedrosselt. Bitte warten Sie und versuchen Sie es später erneut."
   },
   "error_delete": {
     "message": "Das Löschen ist fehlgeschlagen. Bitte versuchen Sie es später erneut."
@@ -331,7 +391,7 @@
     "message": "Es ist ein Fehler aufgetreten: $1"
   },
   "error_job_404": {
-    "message": "404 Nicht gefunden: Kein solcher Auftrag."
+    "message": "Auftrag nicht gefunden."
   },
   "error_login_aborted": {
     "message": "Anmeldung abgebrochen."
@@ -345,32 +405,8 @@
   "error_preview": {
     "message": "Das Generieren der Vorschau ist fehlgeschlagen. Bitte versuchen Sie es später erneut."
   },
-  "error_preview_400": {
-    "message": "Generierung der Vorschau fehlgeschlagen. Überprüfen Sie Dateiformat, Name oder Pfad."
-  },
-  "error_preview_404": {
-    "message": "Quelldokument existiert nicht, Erzeugung der Vorschau fehlgeschlagen."
-  },
-  "error_preview_415": {
-    "message": "Dateityp nicht unterstützt. Informationen zu unterstützten Dateitypen finden Sie in der Dokumentation."
-  },
   "error_preview_config": {
     "message": "Konfiguration konnte nicht aktiviert werden: $1"
-  },
-  "error_preview_no_docx": {
-    "message": "Dies ist ein Microsoft Word-Dokument. Bitte konvertieren Sie es zuerst in ein Google-Dokument."
-  },
-  "error_preview_no_xlsx": {
-    "message": "Dies ist ein Microsoft Excel-Dokument. Bitte konvertieren Sie es zuerst in eine Google Sheets-Datei."
-  },
-  "error_preview_not_gdoc_generic": {
-    "message": "Das Generieren der Vorschau ist fehlgeschlagen. Es muss sich um ein Google-Dokument oder eine Google-Tabelle handeln."
-  },
-  "error_preview_svg_invalid": {
-    "message": "SVG ungültig. Vergewissern Sie sich, dass es sich um gültige XML handelt und keine Skripte enthalten sind."
-  },
-  "error_preview_too_large": {
-    "message": "Datei zu groß. Informationen zu Dateigrößenbeschränkungen finden Sie in der Dokumentation."
   },
   "error_publish": {
     "message": "Die Veröffentlichung ist fehlgeschlagen. Bitte versuchen Sie es später erneut."
@@ -378,26 +414,8 @@
   "error_publish_404": {
     "message": "Veröffentlichung fehlgeschlagen, generieren Sie erst eine Vorschau."
   },
-  "error_status_400": {
-    "message": "400 Ungültige Anfrage: ungültige URL."
-  },
-  "error_status_404_content": {
-    "message": "404 Nicht gefunden: Überprüfen Sie die Sidekick-Konfiguration oder URL."
-  },
-  "error_status_404_document": {
-    "message": "404 Nicht gefunden: Überprüfen Sie die Sidekick-Konfiguration und stellen Sie sicher, dass der Zugriff auf dieses Dokument gewährt wurde."
-  },
-  "error_status_500": {
-    "message": "500 Interner Server-Fehler: Der Seitenstatus konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut."
-  },
-  "error_status_502": {
-    "message": "502 Fehlerhaftes Gateway: Der Seitenstatus konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut."
-  },
-  "error_status_504": {
-    "message": "504 Gateway-Timeout: Der Seitenstatus konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut."
-  },
-  "error_status_invalid": {
-    "message": "Ungültige Server-Antwort. Überprüfen Sie die Sidekick-Konfiguration oder URL."
+  "error_status": {
+    "message": "Der Seitenstatus konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut."
   },
   "error_unpublish": {
     "message": "Die Aufhebung der Veröffentlichung ist fehlgeschlagen. Bitte versuchen Sie es später erneut."
@@ -421,7 +439,7 @@
     "message": "Informationen"
   },
   "join_discord": {
-    "message": "Kommen Sie mit uns zu Discord"
+    "message": "Folgen Sie uns auf Discord"
   },
   "json_results_stat": {
     "message": "$1 von $2 Ergebnissen werden angezeigt"
@@ -460,7 +478,7 @@
     "message": "Nie"
   },
   "next": {
-    "description": "Nächste Einstiegsfolie",
+    "description": "Nächste Onboarding-Folie",
     "message": "Weiter"
   },
   "no_results": {
@@ -630,7 +648,7 @@
   },
   "whats_new": {
     "description": "Onboarding-Menütitel",
-    "message": "Neue Funktionen"
+    "message": "Neuigkeiten"
   },
   "yesterday_at": {
     "message": "Gestern um $1"

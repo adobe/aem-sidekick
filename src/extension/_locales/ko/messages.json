@@ -1,7 +1,64 @@
 {
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "$2에서 $1을(를) 가져올 수 없습니다."
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "$1 미리보기 불가: 빈 파일"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "$1 미리보기 불가: 파일이 100MB보다 큽니다."
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "$1 미리보기 불가: ICO가 16KB보다 큽니다."
+  },
+  "AEM_BACKEND_JSON_INVALD": {
+    "message": "$2 미리보기 불가: 잘못된 JSON입니다."
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "$1 미리보기 불가: MP4 비트 전송률이 300KB/s보다 높습니다."
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "$1 미리보기 불가: MP4 재생 시간이 2분을 초과합니다."
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "$1 미리보기 불가: $2을(를) 예상했지만 $3이(가) 발견되었습니다."
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "파일을 찾을 수 없습니다. 소스 문서가 누락되었거나 AEM과 공유되지 않았습니다."
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "콘텐츠 유형 헤더가 누락되었습니다."
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "$1 미리보기 불가: 핸들러를 찾을 수 없습니다."
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "$1 미리보기 불가: SVG에 잘못된 XML이 포함되어 있습니다."
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "$1 미리보기 불가: SVG 루트 항목이 누락되었습니다."
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "$1 미리보기 불가: SVG에서 잘못된 스크립팅이 감지되었습니다."
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "$1 미리보기 불가: 파일 유형이 지원되지 않습니다."
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "$2 미리보기 불가: 파일 유형이 지원되지 않습니다."
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "$1 미리보기 불가: $2"
+  },
   "activate": {
     "description": "구성 활성화",
     "message": "활성화"
+  },
+  "activate_bulk_not_supported": {
+    "message": "여러 구성을 활성화하는 것은 지원되지 않습니다."
+  },
+  "activate_success": {
+    "message": "구성이 정상적으로 활성화되었습니다."
   },
   "add": {
     "message": "추가"
@@ -18,6 +75,9 @@
   },
   "anonymous": {
     "message": "익명"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "이 구성을 활성화하시겠습니까?"
   },
   "bulk_confirm_empty": {
     "message": "선택한 파일 없음"
@@ -194,8 +254,8 @@
   "config_remove_project_headline": {
     "message": "제거된 프로젝트"
   },
-  "activate_success": {
-    "message": "구성이 정상적으로 활성화되었습니다."
+  "config_state": {
+    "message": "구성 활성화 중..."
   },
   "confirm": {
     "description": "확인 모달 제목",
@@ -310,7 +370,7 @@
     "message": "저장된 적 없음"
   },
   "edit_no_source": {
-    "message": "소스 문서를 찾을 수 없음"
+    "message": "소스 문서를 찾을 수 없습니다."
   },
   "environments": {
     "message": "환경"
@@ -319,7 +379,7 @@
     "message": "오류"
   },
   "error_429": {
-    "message": "429 요청이 너무 많음: 프로젝트가 $1에 의해 제한되고 있습니다. 잠시 기다린 후 다시 시도해 주십시오."
+    "message": "요청이 너무 많음: 프로젝트가 $1에 의해 제한되고 있습니다. 잠시 기다린 후 다시 시도해 주십시오."
   },
   "error_delete": {
     "message": "삭제하지 못했습니다. 나중에 다시 시도해 주십시오."
@@ -331,7 +391,7 @@
     "message": "오류 발생: $1"
   },
   "error_job_404": {
-    "message": "404 찾을 수 없음: 해당 작업이 없습니다."
+    "message": "작업을 찾을 수 없습니다."
   },
   "error_login_aborted": {
     "message": "로그인이 중단되었습니다."
@@ -345,32 +405,8 @@
   "error_preview": {
     "message": "미리보기 생성에 실패했습니다. 나중에 다시 시도해 주십시오."
   },
-  "error_preview_400": {
-    "message": "미리보기를 생성하지 못했습니다. 파일 포맷, 이름 또는 경로를 확인하십시오."
-  },
-  "error_preview_404": {
-    "message": "소스 문서가 존재하지 않아 미리보기를 생성하지 못했습니다."
-  },
-  "error_preview_415": {
-    "message": "파일 유형이 지원되지 않습니다. 지원되는 파일 유형에 대해서는 설명서를 참조하십시오."
-  },
   "error_preview_config": {
     "message": "구성 활성화 실패: $1"
-  },
-  "error_preview_no_docx": {
-    "message": "Microsoft Word 문서입니다. 우선 Google Docs로 변환해 주십시오."
-  },
-  "error_preview_no_xlsx": {
-    "message": "Microsoft Excel 문서입니다. 우선 Google Sheets로 변환해 주십시오."
-  },
-  "error_preview_not_gdoc_generic": {
-    "message": "미리보기 생성에 실패했습니다. Google 문서 또는 스프레드시트여야 합니다."
-  },
-  "error_preview_svg_invalid": {
-    "message": "SVG가 잘못되었습니다. 유효한 XML이고 스크립트가 포함되어 있지 않은지 확인하십시오."
-  },
-  "error_preview_too_large": {
-    "message": "파일이 너무 큽니다. 파일 크기 제한에 대해서는 설명서를 참조하십시오."
   },
   "error_publish": {
     "message": "게시하지 못했습니다. 나중에 다시 시도해 주십시오."
@@ -378,26 +414,8 @@
   "error_publish_404": {
     "message": "게시하지 못했습니다. 우선 미리보기를 생성하십시오."
   },
-  "error_status_400": {
-    "message": "400 잘못된 요청: URL이 잘못되었습니다."
-  },
-  "error_status_404_content": {
-    "message": "404 찾을 수 없음: Sidekick 구성 또는 URL을 확인하십시오."
-  },
-  "error_status_404_document": {
-    "message": "404 찾을 수 없음: Sidekick 구성을 확인하고 이 문서에 대한 액세스 권한이 부여되었는지 확인하십시오."
-  },
-  "error_status_500": {
-    "message": "500 내부 서버 오류: 페이지 상태를 가져오지 못했습니다. 나중에 다시 시도해 주십시오."
-  },
-  "error_status_502": {
-    "message": "502 잘못된 게이트웨이: 페이지 상태를 가져오지 못했습니다. 나중에 다시 시도해 주십시오."
-  },
-  "error_status_504": {
-    "message": "504 게이트웨이 시간 초과: 페이지 상태를 가져오지 못했습니다. 나중에 다시 시도해 주십시오."
-  },
-  "error_status_invalid": {
-    "message": "잘못된 서버 응답입니다. Sidekick 구성 또는 URL을 확인하십시오."
+  "error_status": {
+    "message": "페이지 상태를 가져오지 못했습니다. 나중에 다시 시도해 주십시오."
   },
   "error_unpublish": {
     "message": "게시를 취소하지 못했습니다. 나중에 다시 시도해 주십시오."
@@ -421,7 +439,7 @@
     "message": "정보"
   },
   "join_discord": {
-    "message": "Discord에 가입하기"
+    "message": "Discord에서 참여하기"
   },
   "json_results_stat": {
     "message": "$2개 중 $1개 결과 표시 중"

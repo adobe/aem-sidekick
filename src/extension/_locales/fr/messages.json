@@ -1,7 +1,64 @@
 {
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "Impossible de récupérer $1 depuis $2."
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "Impossible de prévisualiser $1 : fichier vide"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : fichier de plus de 100 Mo"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : l’ICO est supérieure à 16 Ko."
+  },
+  "AEM_BACKEND_JSON_INVALD": {
+    "message": "Impossible de prévisualiser $2 : JSON non valide"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "Impossible de prévisualiser $1 : le débit MP4 est supérieur à 300 Ko/s."
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "Impossible de prévisualiser $1 : le fichier MP4 dépasse 2 minutes."
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "Impossible de prévisualiser $1 : $2 attendu, mais $3 trouvé"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "Fichier introuvable. Document source manquant ou non partagé avec AEM."
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "En-tête du type de contenu manquant"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "Impossible de prévisualiser $1 : aucun gestionnaire trouvé"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "Impossible de prévisualiser $1 : le SVG contient un XML non valide"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "Impossible de prévisualiser $1 : élément racine du SVG manquant"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "Impossible de prévisualiser $1 : un script illégal a été détecté dans le SVG."
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "Impossible de prévisualiser $1 : type de fichier non pris en charge"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "Impossible de prévisualiser $2 : type de fichier non pris en charge"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "Impossible de prévisualiser $1 : $2"
+  },
   "activate": {
     "description": "Activer la configuration",
     "message": "Activer"
+  },
+  "activate_bulk_not_supported": {
+    "message": "Activation de plusieurs configurations non prise en charge."
+  },
+  "activate_success": {
+    "message": "La configuration a été activée."
   },
   "add": {
     "message": "Ajouter"
@@ -18,6 +75,9 @@
   },
   "anonymous": {
     "message": "Anonyme"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "Voulez-vous vraiment activer cette configuration ?"
   },
   "bulk_confirm_empty": {
     "message": "Aucun fichier sélectionné"
@@ -122,7 +182,7 @@
     "message": "Fermer"
   },
   "close_sidekick": {
-    "message": "Fermer le Sidekick"
+    "message": "Fermer Sidekick"
   },
   "code_state": {
     "message": "Aucune action disponible pour les fichiers de code"
@@ -194,8 +254,8 @@
   "config_remove_project_headline": {
     "message": "Projet supprimé"
   },
-  "activate_success": {
-    "message": "La configuration a été activée."
+  "config_state": {
+    "message": "Activation de la configuration..."
   },
   "confirm": {
     "description": "Titre modal de confirmation",
@@ -319,7 +379,7 @@
     "message": "Erreur"
   },
   "error_429": {
-    "message": "429 : trop de requêtes. Votre projet est bloqué par $1. Patientez et réessayez plus tard."
+    "message": "Trop de requêtes. Votre projet est bloqué par $1. Patientez et réessayez plus tard."
   },
   "error_delete": {
     "message": "Échec de la suppression. Réessayez plus tard."
@@ -331,7 +391,7 @@
     "message": "Une erreur s’est produite : $1"
   },
   "error_job_404": {
-    "message": "404 : introuvable. Aucun traitement de ce type."
+    "message": "Fonction introuvable."
   },
   "error_login_aborted": {
     "message": "Connexion abandonnée."
@@ -345,32 +405,8 @@
   "error_preview": {
     "message": "La génération de la prévisualisation a échoué. Veuillez réessayer ultérieurement."
   },
-  "error_preview_400": {
-    "message": "La génération de l’aperçu a échoué. Vérifiez le format, le nom ou le chemin du fichier."
-  },
-  "error_preview_404": {
-    "message": "Le document source n’existe pas, la génération de l’aperçu a échoué."
-  },
-  "error_preview_415": {
-    "message": "Type de fichier non pris en charge. Reportez-vous à la documentation pour connaître les types de fichiers pris en charge."
-  },
   "error_preview_config": {
     "message": "Échec de l’activation de la configuration : $1"
-  },
-  "error_preview_no_docx": {
-    "message": "Il s’agit d’un document Microsoft Word. Convertissez-le d’abord au format Google Docs."
-  },
-  "error_preview_no_xlsx": {
-    "message": "Il s’agit d’un document Microsoft Excel. Convertissez-le d’abord au format Google Sheets."
-  },
-  "error_preview_not_gdoc_generic": {
-    "message": "Échec de la génération de la prévisualisation. Il doit s’agir d’un document ou d’une feuille de calcul Google."
-  },
-  "error_preview_svg_invalid": {
-    "message": "SVG non valide. Assurez-vous qu’il s’agit d’un XML valide ne contenant aucun script."
-  },
-  "error_preview_too_large": {
-    "message": "Fichier trop volumineux. Reportez-vous à la documentation pour connaître les limites de taille de fichier."
   },
   "error_publish": {
     "message": "Échec de la publication. Réessayez plus tard."
@@ -378,26 +414,8 @@
   "error_publish_404": {
     "message": "La publication a échoué. Veuillez d’abord ajouter un aperçu."
   },
-  "error_status_400": {
-    "message": "400 : requête incorrecte. URL non valide."
-  },
-  "error_status_404_content": {
-    "message": "404 Introuvable : vérifiez la configuration ou l'URL de Sidekick."
-  },
-  "error_status_404_document": {
-    "message": "404 Introuvable : vérifiez votre configuration de Sidekick et assurez-vous que l'accès au document est autorisé."
-  },
-  "error_status_500": {
-    "message": "500 Erreur interne du serveur : échec de la récupération du statut de la page. Réessayez plus tard."
-  },
-  "error_status_502": {
-    "message": "502 Passerelle incorrecte : échec de la récupération du statut de la page. Réessayez plus tard."
-  },
-  "error_status_504": {
-    "message": "504 Délai d'expiration de la passerelle : échec de la récupération du statut de la page. Réessayez plus tard."
-  },
-  "error_status_invalid": {
-    "message": "Réponse du serveur non valide. Vérifiez la configuration ou l'URL de Sidekick."
+  "error_status": {
+    "message": "Échec de la récupération du statut de la page. Réessayez plus tard."
   },
   "error_unpublish": {
     "message": "Échec de la dépublication. Réessayez plus tard."
@@ -630,7 +648,7 @@
   },
   "whats_new": {
     "description": "Titre du menu Intégration",
-    "message": "Quoi de neuf ?"
+    "message": "Nouveautés"
   },
   "yesterday_at": {
     "message": "Hier à $1"
