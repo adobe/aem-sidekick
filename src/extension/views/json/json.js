@@ -85,6 +85,13 @@ export class JSONView extends LitElement {
   @property({ type: String })
   accessor url;
 
+   /**
+   * The selected theme from sidekick
+   * @type {string}
+   */
+   @property({ type: String })
+   accessor theme;
+
   /**
    * The selected tab index
    * @type {number}
@@ -103,7 +110,12 @@ export class JSONView extends LitElement {
 
     this.theme = await getConfig('local', 'theme') || 'light';
     document.body.setAttribute('color', this.theme);
-
+    chrome.storage.onChanged.addListener(async (changes, area) => {
+      if (area === 'local' && changes.theme?.newValue) {
+        this.theme = await getConfig('local', 'theme');
+        document.body.setAttribute('color', this.theme);
+      }
+    });
     const lang = getLanguage();
     this.languageDict = await fetchLanguageDict(undefined, lang);
 
