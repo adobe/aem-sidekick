@@ -1,3 +1,16 @@
+# [7.2.0](https://github.com/adobe/aem-sidekick/compare/v7.1.4...v7.2.0) (2025-01-14)
+
+
+### Bug Fixes
+
+* **bulk:** consistent UI previewing config files ([#409](https://github.com/adobe/aem-sidekick/issues/409)) ([9f70202](https://github.com/adobe/aem-sidekick/commit/9f702024cb522447a7d1750ad5de2edb8ff9db00))
+* **json:** table header and body can be mismatched ([#412](https://github.com/adobe/aem-sidekick/issues/412)) ([0a96119](https://github.com/adobe/aem-sidekick/commit/0a96119e3fc74f266e4538afcd6bd91964a7f263))
+
+
+### Features
+
+* user-friendly server error messages ([#405](https://github.com/adobe/aem-sidekick/issues/405)) ([d1275a2](https://github.com/adobe/aem-sidekick/commit/d1275a22075c84d980e15f44b0993db75e49171e))
+
 ## [7.1.4](https://github.com/adobe/aem-sidekick/compare/v7.1.3...v7.1.4) (2024-12-16)
 
 
