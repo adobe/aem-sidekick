@@ -1,7 +1,64 @@
 {
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "Impossibile recuperare $1 da $2."
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "Impossibile visualizzare in anteprima $1: file vuoto"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "Impossibile visualizzare in anteprima $1: il file è di dimensioni superiori a 100 MB"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "Impossibile visualizzare in anteprima $1: ICO è superiore a 16 KB"
+  },
+  "AEM_BACKEND_JSON_INVALD": {
+    "message": "Impossibile visualizzare in anteprima $2: JSON non valido"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "Impossibile visualizzare in anteprima $1: il bit rate MP4 è superiore a 300 KB/s"
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "Impossibile visualizzare in anteprima $1: MP4 è più lungo di 2 minuti"
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "Impossibile visualizzare in anteprima $1: previsto $2 ma trovato $3"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "File non trovato. Documento di origine mancante o non condiviso con AEM."
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "Intestazione del tipo di contenuto mancante"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "Impossibile visualizzare in anteprima $1: nessun handler trovato"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "Impossibile visualizzare in anteprima $1: SVG contiene XML non valido"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "Impossibile visualizzare in anteprima $1: elemento principale SVG mancante"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "Impossibile visualizzare in anteprima $1: scripting non valido rilevato in SVG"
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "Impossibile visualizzare in anteprima $1: tipo di file non supportato"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "Impossibile visualizzare in anteprima $2: tipo di file non supportato"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "Impossibile visualizzare in anteprima $1: $2"
+  },
   "activate": {
     "description": "Attiva la configurazione",
     "message": "Attiva"
+  },
+  "activate_bulk_not_supported": {
+    "message": "Attivazione di più configurazioni non supportata."
+  },
+  "activate_success": {
+    "message": "Configurazione attivata."
   },
   "add": {
     "message": "Aggiungi"
@@ -18,6 +75,9 @@
   },
   "anonymous": {
     "message": "Anonimo"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "Attivare questa configurazione?"
   },
   "bulk_confirm_empty": {
     "message": "Nessun file selezionato"
@@ -122,7 +182,7 @@
     "message": "Chiudi"
   },
   "close_sidekick": {
-    "message": "Chiudi Sidekick"
+    "message": "Chiudi barra laterale"
   },
   "code_state": {
     "message": "Nessuna azione disponibile per i file di codice"
@@ -194,8 +254,8 @@
   "config_remove_project_headline": {
     "message": "Progetto rimosso"
   },
-  "config_success": {
-    "message": "Configurazione attivata."
+  "config_state": {
+    "message": "Attivazione della configurazione..."
   },
   "confirm": {
     "description": "Intestazione modale di conferma",
@@ -319,7 +379,7 @@
     "message": "Errore"
   },
   "error_429": {
-    "message": "Errore 429 - Troppe richieste: il progetto è soggetto a limitazioni da parte di $1. Attendi e riprova più tardi."
+    "message": "Troppe richieste: il progetto è soggetto a limitazioni da parte di $1. Attendi e riprova più tardi."
   },
   "error_delete": {
     "message": "Eliminazione non riuscita. Riprova più tardi."
@@ -331,7 +391,7 @@
     "message": "Si è verificato un errore: $1"
   },
   "error_job_404": {
-    "message": "Errore 404 - Non trovato: nessun processo di questo tipo."
+    "message": "Processo non trovato."
   },
   "error_login_aborted": {
     "message": "Accesso interrotto."
@@ -345,32 +405,8 @@
   "error_preview": {
     "message": "Generazione dell’anteprima non riuscita. Riprova più tardi"
   },
-  "error_preview_400": {
-    "message": "Generazione anteprima non riuscita. Controlla il formato, il nome o il percorso del file."
-  },
-  "error_preview_404": {
-    "message": "Il documento di origine non esiste, generazione dell’anteprima non riuscita."
-  },
-  "error_preview_415": {
-    "message": "Tipo di file non supportato. Consulta la documentazione per i tipi di file supportati."
-  },
   "error_preview_config": {
     "message": "Impossibile attivare la configurazione: $1"
-  },
-  "error_preview_no_docx": {
-    "message": "Questo è un documento di Microsoft Word. Convertilo prima in Documenti Google."
-  },
-  "error_preview_no_xlsx": {
-    "message": "Questo è un documento di Microsoft Excel. Convertilo prima in Fogli Google."
-  },
-  "error_preview_not_gdoc_generic": {
-    "message": "Generazione dell’anteprima non riuscita. Deve essere un documento o un foglio Google."
-  },
-  "error_preview_svg_invalid": {
-    "message": "SVG non valido. Verifica che sia un XML valido e che non contenga script."
-  },
-  "error_preview_too_large": {
-    "message": "File troppo grande. Consulta la documentazione per i limiti delle dimensioni dei file."
   },
   "error_publish": {
     "message": "Pubblicazione non riuscita. Riprova più tardi."
@@ -378,26 +414,8 @@
   "error_publish_404": {
     "message": "Pubblicazione non riuscita, genera prima l’anteprima."
   },
-  "error_status_400": {
-    "message": "400 Richiesta non valida: URL non valido."
-  },
-  "error_status_404_content": {
-    "message": "404 - Non trovato: controlla la configurazione o l’URL di Sidekick."
-  },
-  "error_status_404_document": {
-    "message": "404 - Non trovato: controlla la configurazione di Sidekick e assicurati che l’accesso a questo documento sia consentito."
-  },
-  "error_status_500": {
-    "message": "500 - Errore interno del server: impossibile recuperare lo stato della pagina. Riprova più tardi."
-  },
-  "error_status_502": {
-    "message": "502 - Gateway non valido: impossibile recuperare lo stato della pagina. Riprova più tardi."
-  },
-  "error_status_504": {
-    "message": "504 - Timeout gateway: impossibile recuperare lo stato della pagina. Riprova più tardi."
-  },
-  "error_status_invalid": {
-    "message": "Risposta del server non valida. Controlla la configurazione o l’URL di Sidekick."
+  "error_status": {
+    "message": "Impossibile recuperare lo stato della pagina. Riprova più tardi."
   },
   "error_unpublish": {
     "message": "Annullamento della pubblicazione non riuscito. Riprova più tardi."
@@ -630,7 +648,7 @@
   },
   "whats_new": {
     "description": "Titolo del menu di onboarding",
-    "message": "Novità di"
+    "message": "Novità"
   },
   "yesterday_at": {
     "message": "Ieri alle $1"

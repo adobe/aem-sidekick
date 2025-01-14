@@ -1,8 +1,0 @@
-{
-  "reporter": [
-    "lcov",
-    "text",
-    "text-summary"
-  ],
-  "check-coverage": true
-}

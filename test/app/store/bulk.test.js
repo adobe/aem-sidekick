@@ -382,7 +382,47 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => openUrlsSpy.calledWithMatch(appStore.siteStore.innerHost));
       }).timeout(10000);
 
-      it('bulk activated config files', async () => {
+      it('bulk activates config file', async () => {
+        updateStub.resolves(true);
+        sidekickTest.mockFetchDirectoryStatusSuccess(HelixMockContentSources.SHAREPOINT, {
+          webPath: '/.helix',
+        });
+        await appStore.loadContext(sidekickTest.sidekick, sidekickTest.config);
+        sidekickTest.bulkRoot.querySelector('#appRoot .file')
+          .insertAdjacentHTML('beforebegin', mockSharePointFile({
+            path: 'config',
+            file: 'config.xslx',
+            type: 'xlsx',
+          }));
+        sidekickTest.toggleAdminItems([
+          'config',
+        ]);
+        await waitUntil(() => bulkStore.selection.length === 1);
+        await bulkStore.preview();
+
+        // confirm dialog says activate instead of preview
+        await waitUntil(() => recursiveQuery(sidekickTest.sidekick, 'sp-dialog-wrapper'));
+        const dialogWrapper = recursiveQuery(sidekickTest.sidekick, 'sp-dialog-wrapper');
+        expect(recursiveQuery(dialogWrapper, 'h2').textContent.trim()).to.equal('Activate');
+        expect(recursiveQuery(dialogWrapper, 'sp-button[variant="accent"]').textContent.trim()).to.equal('Activate');
+
+        dialogWrapper.dispatchEvent(new CustomEvent(MODAL_EVENTS.CONFIRM));
+        await waitUntil(() => updateStub.called);
+
+        expect(showToastSpy.calledWith({
+          message: 'Configuration successfully activated.',
+          variant: 'positive',
+        })).to.be.true;
+        expect(fireEventStub.calledWithMatch('previewed')).to.be.true;
+
+        // no toast actions
+        await waitUntil(() => recursiveQuery(sidekickTest.sidekick, 'activity-action'));
+        const toast = recursiveQuery(sidekickTest.sidekick, 'activity-action');
+        const buttons = [...recursiveQueryAll(toast, 'sp-action-button:not(.close)')];
+        expect(buttons.length).to.equal(0);
+      }).timeout(10000);
+
+      it('refuses to bulk activate multiple config files', async () => {
         sidekickTest.mockFetchDirectoryStatusSuccess(HelixMockContentSources.SHAREPOINT, {
           webPath: '/.helix',
         });
@@ -405,45 +445,13 @@ describe('Test Bulk Store', () => {
         ]);
         await waitUntil(() => bulkStore.selection.length === 2);
         await bulkStore.preview();
-        await confirmDialog(sidekickTest.sidekick);
-
-        await waitUntil(() => startJobStub.calledWithMatch('preview', [
-          '/.helix/headers.json',
-          '/.helix/config.json',
-        ]));
-        await waitUntil(() => getJobStub.calledWith('preview', '123'), null, { timeout: 2000 });
-        expect(bulkStore.progress.processed).to.equal(1);
-
-        // now getJob() returns stopped job and includes details if requested
-        getJobStub.callsFake(async (topic, name, details) => ({
-          topic,
-          name,
-          state: 'stopped',
-          progress: {
-            total: 3,
-            processed: 3,
-            failed: 0,
-          },
-          data: details ? {
-            resources: [
-              { path: '/.helix/headers.json', status: 304 },
-              { path: '/.helix/config.json', status: 200 },
-            ],
-          } : undefined,
-        }));
-        await waitUntil(() => getJobStub.calledWith('preview', '123'));
-        await waitUntil(() => getJobStub.calledWith('preview', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
         expect(showToastSpy.calledWith({
-          message: 'Configuration successfully activated.',
-          variant: 'positive',
+          message: 'Activation of multiple configurations not supported.',
+          variant: 'warning',
+          timeout: 0,
         })).to.be.true;
-        expect(fireEventStub.calledWithMatch('previewed')).to.be.true;
-
-        // no toast actions
-        const buttons = [...recursiveQueryAll(sidekickTest.sidekick, 'sp-action-button:not(.close)')];
-        expect(buttons.length).to.equal(0);
       }).timeout(10000);
 
       it('bulk previews selection and displays partial success toast', async () => {

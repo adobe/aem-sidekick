@@ -1,7 +1,64 @@
 {
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "Não é possível obter $1 de $2."
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "Não é possível visualizar $1: arquivo vazio"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "Não é possível visualizar $1: arquivo maior que 100 MB"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "Não é possível visualizar $1: o ICO é maior que 16 KB"
+  },
+  "AEM_BACKEND_JSON_INVALD": {
+    "message": "Não é possível visualizar $2: JSON inválido"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "Não é possível visualizar $1: a taxa de bits do MP4 é maior que 300 KB/s"
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "Não é possível visualizar $1: o MP4 tem mais de 2 minutos"
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "Não é possível visualizar $1: esperava $2, mas encontrou $3"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "Arquivo não encontrado. Documento de origem ausente ou não compartilhado com o AEM."
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "Cabeçalho de tipo de conteúdo ausente"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "Não é possível visualizar $1: nenhum manipulador encontrado"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "Não é possível visualizar $1: o SVG contém um XML inválido"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "Não é possível visualizar $1: item raiz SVG ausente"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "Não é possível visualizar $1: script ilegal detectado no SVG"
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "Não é possível visualizar $1: tipo de arquivo não compatível"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "Não é possível visualizar $2: tipo de arquivo não compatível"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "Não é possível visualizar $1: $2"
+  },
   "activate": {
     "description": "Ativar a configuração",
     "message": "Ativar"
+  },
+  "activate_bulk_not_supported": {
+    "message": "Não há suporte para ativação de várias configurações."
+  },
+  "activate_success": {
+    "message": "Configuração ativada com sucesso."
   },
   "add": {
     "message": "Adicionar"
@@ -18,6 +75,9 @@
   },
   "anonymous": {
     "message": "Anônimo"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "Deseja ativar esta configuração?"
   },
   "bulk_confirm_empty": {
     "message": "Nenhum arquivo selecionado"
@@ -194,8 +254,8 @@
   "config_remove_project_headline": {
     "message": "Projeto removido"
   },
-  "config_success": {
-    "message": "Configuração ativada com sucesso."
+  "config_state": {
+    "message": "Ativando configuração..."
   },
   "confirm": {
     "description": "Cabeçalho modal de confirmação",
@@ -319,7 +379,7 @@
     "message": "Erro"
   },
   "error_429": {
-    "message": "429 Muitas solicitações: o projeto está sendo suprimido por $1. Aguarde e tente novamente mais tarde."
+    "message": "Muitas solicitações: seu projeto está sendo limitado em $1. Aguarde e tente novamente mais tarde."
   },
   "error_delete": {
     "message": "A exclusão falhou. Tente novamente mais tarde."
@@ -331,7 +391,7 @@
     "message": "Ocorreu um erro: $1"
   },
   "error_job_404": {
-    "message": "404 Não encontrado: este processo não existe."
+    "message": "Trabalho não encontrado."
   },
   "error_login_aborted": {
     "message": "Logon abortado."
@@ -345,32 +405,8 @@
   "error_preview": {
     "message": "Falha ao gerar a pré-visualização. Tente novamente mais tarde."
   },
-  "error_preview_400": {
-    "message": "Falha ao gerar a visualização. Verifique o formato do arquivo, nome ou caminho."
-  },
-  "error_preview_404": {
-    "message": "O documento de origem não existe. Falha ao gerar a visualização."
-  },
-  "error_preview_415": {
-    "message": "Tipo de arquivo incompatível. Consulte na documentação os tipos de arquivo compatíveis."
-  },
   "error_preview_config": {
     "message": "Falha ao ativar a configuração: $1"
-  },
-  "error_preview_no_docx": {
-    "message": "Este é um documento do Microsoft Word. Primeiro, converta-o em um arquivo dos Documentos Google."
-  },
-  "error_preview_no_xlsx": {
-    "message": "Este é um documento do Microsoft Excel. Primeiro, converta-o em um arquivo das Planilhas Google."
-  },
-  "error_preview_not_gdoc_generic": {
-    "message": "Falha ao gerar a pré-visualização. Deve ser um documento ou uma planilha do Google."
-  },
-  "error_preview_svg_invalid": {
-    "message": "SVG inválido. Certifique-se de que seja um XML válido e não contenha scripts."
-  },
-  "error_preview_too_large": {
-    "message": "Arquivo grande demais. Consulte na documentação os limites de tamanho de arquivo."
   },
   "error_publish": {
     "message": "Falha na publicação. Tente novamente mais tarde."
@@ -378,26 +414,8 @@
   "error_publish_404": {
     "message": "Falha na publicação. Gere a visualização primeiro."
   },
-  "error_status_400": {
-    "message": "400 Solicitação inválida: URL inválido."
-  },
-  "error_status_404_content": {
-    "message": "404 Não encontrado: verifique sua configuração do Sidekick ou o URL."
-  },
-  "error_status_404_document": {
-    "message": "404 Não encontrado: verifique a configuração do Sidekick e certifique-se de que o acesso a este documento esteja concedido."
-  },
-  "error_status_500": {
-    "message": "500 Erro interno do servidor: falha ao buscar o status da página. Tente novamente mais tarde."
-  },
-  "error_status_502": {
-    "message": "502 Gateway incorreto: falha ao buscar o status da página. Tente novamente mais tarde."
-  },
-  "error_status_504": {
-    "message": "504 Tempo limite do gateway: falha ao buscar o status da página. Tente novamente mais tarde."
-  },
-  "error_status_invalid": {
-    "message": "Resposta do servidor inválida. Verifique sua configuração Sidekick ou o URL."
+  "error_status": {
+    "message": "Falha ao buscar o status da página. Tente novamente mais tarde."
   },
   "error_unpublish": {
     "message": "Falha ao cancelar a publicação. Tente novamente mais tarde."
@@ -421,7 +439,7 @@
     "message": "Informações"
   },
   "join_discord": {
-    "message": "Junte-se a nós em Discórdia"
+    "message": "Junte-se a nós no Discord"
   },
   "json_results_stat": {
     "message": "Mostrando $1 de $2 resultados"
@@ -629,7 +647,7 @@
     "message": "Trocar usuário"
   },
   "whats_new": {
-    "description": "Título do menu integrado",
+    "description": "Título do menu de integração",
     "message": "Novidades"
   },
   "yesterday_at": {
