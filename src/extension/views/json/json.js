@@ -435,8 +435,8 @@ export class JSONView extends LitElement {
               .values(item).some((value) => value.toString().toLowerCase()
                 .includes(lowerCaseSearchString),
               ));
-
-            filteredData[sheetName] = { data: filteredSheetData ?? [] };
+            const { columns } = this.originalData[sheetName];
+            filteredData[sheetName] = { data: filteredSheetData ?? [], columns };
           }
         });
       } else {
