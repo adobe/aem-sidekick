@@ -719,9 +719,10 @@ export class AppStore {
         },
         status,
       };
-      sidekick.dispatchEvent(new CustomEvent(name, {
-        detail: data,
-      }));
+      const event = new CustomEvent(name, {
+        detail: JSON.parse(JSON.stringify(data)),
+      });
+      sidekick.dispatchEvent(event);
       const userEvents = [
         'updated',
         'previewed',
