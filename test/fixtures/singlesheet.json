@@ -58,6 +58,20 @@
       "checkSum": 1234,
       "lastModified": "1642643576",
       "video": "/test/fixtures/video.mp4"
+    },
+    {
+      "date": "44582",
+      "image": "/test/fixtures/media_0000.png?width=1200&format=pjpg&optimize=medium",
+      "path": "/en/publish/2022/01/20/register-now-adobe-summit-2022-is-free-virtual-and-global",
+      "title": "//Register now: Adobe Summit 2022 is free, virtual, and global",
+      "author": "Adobe Events Team",
+      "description": "We’re less than eight weeks away from the start of Adobe Summit 2022 — and registration for this free, all-virtual event is officially open.",
+      "tags": "[\"Adobe Summit\",\"Insights & Inspiration\",\"Events\",\"Experience Cloud\",\"Digital Transformation\",\"UK\",\"APAC\"]",
+      "imageAlt": "Adobe Summit 2022.",
+      "robots": "0",
+      "checkSum": 1234,
+      "lastModified": "1642643576",
+      "video": "/test/fixtures/video.mp4"
     }
   ],
   ":type": "sheet"
