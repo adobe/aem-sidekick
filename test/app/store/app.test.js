@@ -1708,4 +1708,40 @@ describe('Test App Store', () => {
       expect(instance.getContentSourceLabel()).to.equal('BYOM');
     });
   });
+
+  describe('fireEvent', async () => {
+    let sandbox;
+    let instance;
+    let listenerStub;
+
+    beforeEach(async () => {
+      sandbox = sinon.createSandbox();
+      instance = appStore;
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
+      await waitUntil(() => instance.status.webPath);
+      listenerStub = sandbox.stub();
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('dispatches event on sidekick element with default detail', async () => {
+      sidekickElement.addEventListener('custom:foo', listenerStub);
+      instance.fireEvent('custom:foo');
+
+      expect(listenerStub.calledOnce).to.be.true;
+      const { detail } = listenerStub.args[0][0];
+      expect(detail.config.devUrl).to.equal('http://localhost:3000/');
+      expect(detail.location.host).to.equal('localhost:2000');
+      expect(detail.status.webPath).to.equal('/');
+    });
+
+    it('dispatches event on sidekick element with custom detail', async () => {
+      sidekickElement.addEventListener('foo', listenerStub);
+      instance.fireEvent('foo', { foo: 'bar' });
+
+      expect(listenerStub.calledWithMatch({ detail: { foo: 'bar' } })).to.be.true;
+    });
+  });
 });
