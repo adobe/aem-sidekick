@@ -29,6 +29,33 @@ import { getConfig } from './config.js';
 async function injectContentScript(tabId, matches, adminVersion) {
   // execute content script
   try {
+    // prepare document
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        const { documentElement, body } = document;
+        if (body) {
+          // html
+          return;
+        }
+        if (documentElement) {
+          // svg
+          if (documentElement.tagName === 'svg') {
+            const svg = documentElement.outerHTML;
+            const newDoc = document.implementation.createHTMLDocument();
+            newDoc.body.style.margin = '0';
+            newDoc.body.innerHTML = svg;
+            document.replaceChild(newDoc.documentElement, documentElement);
+            const docType = document.implementation.createDocumentType('html', '', '');
+            if (document.doctype) {
+              document.replaceChild(docType, document.doctype);
+            } else {
+              document.insertBefore(docType, document.childNodes[0]);
+            }
+          }
+        }
+      },
+    });
     await chrome.scripting.executeScript({
       target: { tabId },
       files: ['./content.js'],
