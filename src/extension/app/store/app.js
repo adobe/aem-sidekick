@@ -1072,7 +1072,7 @@ export class AppStore {
           }
         }
       });
-      // handle side kick hide event
+      // handle sidekick hide event
       this.sidekick.addEventListener('hidden', () => {
         [...this.sidekick.parentElement.children].forEach((el) => {
           if (el !== this.sidekick) {
