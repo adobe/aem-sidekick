@@ -44,7 +44,6 @@ function removeCacheParam(href = window.location.href) {
 
   const { getDisplay, toggleDisplay } = await import('./display.js');
   const display = await getDisplay();
-
   /**
    * Load the sidekick custom element and add it to the DOM
    * @param {OptionsConfig} config The config to load the sidekick with
@@ -75,7 +74,6 @@ function removeCacheParam(href = window.location.href) {
     sidekick.setAttribute('open', `${display}`);
     document.body.prepend(sidekick);
     window.hlx.sidekick = sidekick;
-
     // Listen for display toggle events from application
     sidekick.addEventListener('hidden', () => {
       toggleDisplay();
@@ -131,6 +129,18 @@ function removeCacheParam(href = window.location.href) {
       if (sidekick) {
         // Toggle sidekick display
         sidekick.setAttribute('open', `${display}`);
+        if (!display) {
+          [...sidekick.parentElement.children].forEach((el) => {
+            if (el !== sidekick) {
+              try {
+                // @ts-ignore
+                el.style.display = 'initial';
+              } catch (e) {
+                // ignore
+              }
+            }
+          });
+        }
       } else if (display) {
         // Load custom element polyfill
         await import('./lib/polyfills.min.js');
