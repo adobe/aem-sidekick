@@ -129,9 +129,12 @@ function removeCacheParam(href = window.location.href) {
       if (sidekick) {
         // Toggle sidekick display
         sidekick.setAttribute('open', `${display}`);
-        if (!display) {
+        const hasCustomView = sidekick.shadowRoot.querySelector('.aem-sk-special-view');
+        if (!display && hasCustomView) {
           [...sidekick.parentElement.children].forEach((el) => {
-            if (el !== sidekick) {
+            if (el !== sidekick
+              && (el.hasAttribute('style')
+              && el.getAttribute('style') === 'display: none;')) {
               try {
                 // @ts-ignore
                 el.style.display = 'initial';
