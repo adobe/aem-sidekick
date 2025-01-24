@@ -118,6 +118,7 @@ export async function configureAuthAndCorsHeaders() {
               'xmlhttprequest',
               'media',
               'font',
+              'other',
             ],
           },
         });
