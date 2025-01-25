@@ -45,7 +45,6 @@ export const style = css`
     align-items: center;
     flex-direction: row;
     width: 100%;
-    white-space: pre-wrap;
   }
 
   .toast-container .message {
@@ -53,6 +52,10 @@ export const style = css`
     align-items: center;
     gap: 12px;
     flex-grow: 1;
+  }
+
+  .toast-container .message > span {
+    white-space:pre-wrap;
   }
 
   .toast-container .message > svg {
