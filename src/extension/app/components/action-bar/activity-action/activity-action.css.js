@@ -55,6 +55,10 @@ export const style = css`
     flex-grow: 1;
   }
 
+  .toast-container .message > svg {
+    flex-shrink:0;
+  }
+
   .toast-container .actions {
     display: flex;
     align-items: center;
