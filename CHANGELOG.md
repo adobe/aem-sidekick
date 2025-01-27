@@ -1,3 +1,16 @@
+## [7.2.1](https://github.com/adobe/aem-sidekick/compare/v7.2.0...v7.2.1) (2025-01-27)
+
+
+### Bug Fixes
+
+* add authorization header for preload request ([#437](https://github.com/adobe/aem-sidekick/issues/437)) ([25e7d8e](https://github.com/adobe/aem-sidekick/commit/25e7d8ea748467ae470d597fd2580c738f278bb6))
+* displaying the json content when sidekick is closed  ([#429](https://github.com/adobe/aem-sidekick/issues/429)) ([b42d833](https://github.com/adobe/aem-sidekick/commit/b42d83393e17622da041591dbec825ab086bb518))
+* passing event detail as json object ([#430](https://github.com/adobe/aem-sidekick/issues/430)) ([17776e1](https://github.com/adobe/aem-sidekick/commit/17776e100be035e48cb93bb90053e3d8d5008c01))
+* **regression:** search in multi-sheet crashes json view ([#424](https://github.com/adobe/aem-sidekick/issues/424)) ([4fea7b8](https://github.com/adobe/aem-sidekick/commit/4fea7b806d0752ce7c2a827a77eaeb574c0b10c2))
+* rendering issues in combo with JSON Vue extension ([#423](https://github.com/adobe/aem-sidekick/issues/423)) ([9257c2a](https://github.com/adobe/aem-sidekick/commit/9257c2a951cfbd31ca9c936166724c07beceb3a1))
+* strings starting with // characters break preview of spreadsheet ([#432](https://github.com/adobe/aem-sidekick/issues/432)) ([f11a728](https://github.com/adobe/aem-sidekick/commit/f11a7287dc26d453c94d7922064c49d61e3811a4))
+* watch for theme change and apply to json view ([#419](https://github.com/adobe/aem-sidekick/issues/419)) ([6aa3c98](https://github.com/adobe/aem-sidekick/commit/6aa3c980d8952a4c54bcf04244b30f6bab32adac))
+
 # [7.2.0](https://github.com/adobe/aem-sidekick/compare/v7.1.4...v7.2.0) (2025-01-14)
 
 
