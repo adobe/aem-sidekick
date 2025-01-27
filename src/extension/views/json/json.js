@@ -85,6 +85,13 @@ export class JSONView extends LitElement {
   @property({ type: String })
   accessor url;
 
+   /**
+   * The selected theme from sidekick
+   * @type {string}
+   */
+   @property({ type: String })
+   accessor theme;
+
   /**
    * The selected tab index
    * @type {number}
@@ -103,7 +110,12 @@ export class JSONView extends LitElement {
 
     this.theme = await getConfig('local', 'theme') || 'light';
     document.body.setAttribute('color', this.theme);
-
+    chrome.storage.onChanged.addListener(async (changes, area) => {
+      if (area === 'local' && changes.theme?.newValue) {
+        this.theme = await getConfig('local', 'theme');
+        document.body.setAttribute('color', this.theme);
+      }
+    });
     const lang = getLanguage();
     this.languageDict = await fetchLanguageDict(undefined, lang);
 
@@ -325,7 +337,7 @@ export class JSONView extends LitElement {
         valueContainer.classList.add('number');
         valueContainer.textContent = value;
       }
-    } else if (value.startsWith('/') || value.startsWith('http')) {
+    } else if (/\/^\/[a-z0-9]+$\/i/.test(value) || value.startsWith('http')) {
       // check if the value contains a glob pattern
       if (!value.includes('*')) {
         // assume link
@@ -435,8 +447,8 @@ export class JSONView extends LitElement {
               .values(item).some((value) => value.toString().toLowerCase()
                 .includes(lowerCaseSearchString),
               ));
-
-            filteredData[sheetName] = { data: filteredSheetData ?? [] };
+            const { columns } = this.originalData[sheetName];
+            filteredData[sheetName] = { data: filteredSheetData ?? [], columns };
           }
         });
       } else {

@@ -404,6 +404,7 @@ describe('Test auth', () => {
               'xmlhttprequest',
               'media',
               'font',
+              'other',
             ],
           },
         },
