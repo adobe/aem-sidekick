@@ -44,6 +44,7 @@ export const style = css`
     width: auto;
     min-width: 640px;
     max-width: var(--sidekick-max-width);
+    white-space:nowrap;
   }
 
   .aem-sk-special-view {
