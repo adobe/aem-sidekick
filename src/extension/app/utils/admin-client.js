@@ -141,10 +141,6 @@ export class AdminClient {
       // bulk operation of 100+ files requires login
       return this.#appStore.i18n(`bulk_error_${action}_login_required`);
     }
-    if (path.startsWith('/.helix/') && error) {
-      // special error message for config files
-      return this.#appStore.i18n('error_preview_config').replace('$1', error);
-    }
     if (error && errorCode) {
       // build error message from template
       const errTemplate = ERRORS.find((e) => e.code === errorCode)?.template;
@@ -157,14 +153,21 @@ export class AdminClient {
             .replace('$1', first)
             .replace('$2', second)
             .replace('$3', third);
-          return `(${status}) ${message}`;
         }
       }
     }
-    // error key fallbacks
-    message = this.#appStore.i18n(`error_${action}_${status}`)
-      || this.#appStore.i18n(`error_${action}`)
-      || (error && this.#appStore.i18n('error_generic').replace('$1', error.replace('[admin] ', '')));
+    if (!message) {
+      // generic fallbacks based on status and action
+      message = this.#appStore.i18n(`error_${action}_${status}`)
+        || this.#appStore.i18n(`error_${action}`)
+        || (error && this.#appStore.i18n('error_generic')
+          .replace('$1', error.replace('[admin] ', '')));
+    }
+    if (path.startsWith('/.helix/')) {
+      // special error message for config files
+      message = this.#appStore.i18n('error_preview_config')
+        .replace('$1', message);
+    }
     return `(${status}) ${message}`;
   }
 
