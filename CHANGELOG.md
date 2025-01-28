@@ -1,3 +1,12 @@
+## [7.2.2](https://github.com/adobe/aem-sidekick/compare/v7.2.1...v7.2.2) (2025-01-28)
+
+
+### Bug Fixes
+
+* better localized config error messages ([#444](https://github.com/adobe/aem-sidekick/issues/444)) ([9d45562](https://github.com/adobe/aem-sidekick/commit/9d4556217ab303a1daef0bdf39141aa8aef60324))
+* **i18n:** readd deleted strings ([#447](https://github.com/adobe/aem-sidekick/issues/447)) ([dad582b](https://github.com/adobe/aem-sidekick/commit/dad582bd702d3ba9bfb84dc9f48689b7bf52aa76))
+* setting inital theme as dark for json view ([#445](https://github.com/adobe/aem-sidekick/issues/445)) ([dab680a](https://github.com/adobe/aem-sidekick/commit/dab680adcf90f2511dc001b434f993ebe2459158))
+
 ## [7.2.1](https://github.com/adobe/aem-sidekick/compare/v7.2.0...v7.2.1) (2025-01-27)
 
 
