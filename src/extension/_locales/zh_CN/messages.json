@@ -408,6 +408,15 @@
   "error_preview_config": {
     "message": "无法激活配置：$1"
   },
+  "error_preview_no_docx": {
+    "message": "这是一份 Microsoft Word 文档，请先将其转换为 Google Docs 文档。"
+  },
+  "error_preview_no_xlsx": {
+    "message": "这是一份 Microsoft Excel 文档，请先将其转换为 Google Sheets 文档。"
+  },
+  "error_preview_not_gdoc_generic": {
+    "message": "预览生成失败。必须是 Google 文档或电子表格。"
+  },
   "error_publish": {
     "message": "发布失败。请稍后再试。"
   },

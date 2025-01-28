@@ -408,6 +408,15 @@
   "error_preview_config": {
     "message": "設定をアクティブ化できませんでした : $1"
   },
+  "error_preview_no_docx": {
+    "message": "これは、Microsoft Word ドキュメントです。まず Google ドキュメントに変換してください。"
+  },
+  "error_preview_no_xlsx": {
+    "message": "これは、Microsoft Excel ドキュメントです。まず Google スプレッドシートに変換してください。"
+  },
+  "error_preview_not_gdoc_generic": {
+    "message": "プレビューの生成に失敗しました。Google ドキュメントまたはスプレッドシートにする必要があります。"
+  },
   "error_publish": {
     "message": "公開に失敗しました。後でもう一度試してください。"
   },

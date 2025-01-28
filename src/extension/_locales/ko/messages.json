@@ -408,6 +408,15 @@
   "error_preview_config": {
     "message": "구성 활성화 실패: $1"
   },
+  "error_preview_no_docx": {
+    "message": "Microsoft Word 문서입니다. 우선 Google Docs로 변환해 주십시오."
+  },
+  "error_preview_no_xlsx": {
+    "message": "Microsoft Excel 문서입니다. 우선 Google Sheets로 변환해 주십시오."
+  },
+  "error_preview_not_gdoc_generic": {
+    "message": "미리보기 생성에 실패했습니다. Google 문서 또는 스프레드시트여야 합니다."
+  },
   "error_publish": {
     "message": "게시하지 못했습니다. 나중에 다시 시도해 주십시오."
   },

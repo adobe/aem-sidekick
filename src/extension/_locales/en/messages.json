@@ -330,6 +330,15 @@
     "error_preview": {
       "message": "Preview generation failed. Please try again later."
     },
+    "error_preview_not_gdoc_generic": {
+      "message": "Preview generation failed. Must be Google document or spreadsheet."
+    },
+    "error_preview_no_docx2": {
+      "message": "This is a Microsoft Word document, please convert it to Google Docs first."
+    },
+    "error_preview_no_xlsx": {
+      "message": "This is a Microsoft Excel document, please convert it to Google Sheets first."
+    },
     "error_publish": {
       "message": "Publication failed. Please try again later."
     },

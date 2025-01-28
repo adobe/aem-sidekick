@@ -408,6 +408,15 @@
   "error_preview_config": {
     "message": "Konfiguration konnte nicht aktiviert werden: $1"
   },
+  "error_preview_no_docx": {
+    "message": "Dies ist ein Microsoft Word-Dokument. Bitte konvertieren Sie es zuerst in ein Google-Dokument."
+  },
+  "error_preview_no_xlsx": {
+    "message": "Dies ist ein Microsoft Excel-Dokument. Bitte konvertieren Sie es zuerst in eine Google Sheets-Datei."
+  },
+  "error_preview_not_gdoc_generic": {
+    "message": "Das Generieren der Vorschau ist fehlgeschlagen. Es muss sich um ein Google-Dokument oder eine Google-Tabelle handeln."
+  },
   "error_publish": {
     "message": "Die Veröffentlichung ist fehlgeschlagen. Bitte versuchen Sie es später erneut."
   },
