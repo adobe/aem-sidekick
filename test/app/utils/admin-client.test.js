@@ -527,8 +527,14 @@ describe('Test Admin Client', () => {
 
     it('should return localized error for failed config updates', () => {
       path = '/.helix/config.json';
-      const res = adminClient.getLocalizedError('preview', path, 500, 'something went wrong');
-      expect(res).to.equal('Failed to activate configuration: something went wrong');
+      const res = adminClient.getLocalizedError(
+        'preview',
+        path,
+        500,
+        `[admin] Unable to fetch '${path}' from 'onedrive': backend read error`,
+        'AEM_BACKEND_FETCH_FAILED',
+      );
+      expect(res).to.equal('(500) Failed to activate configuration: Unable to fetch /.helix/config.json from onedrive.');
     });
 
     it('should return localized error for 401 on bulk operation', () => {
