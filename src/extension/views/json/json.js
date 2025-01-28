@@ -108,7 +108,7 @@ export class JSONView extends LitElement {
   async connectedCallback() {
     super.connectedCallback();
 
-    this.theme = await getConfig('local', 'theme') || 'light';
+    this.theme = await getConfig('local', 'theme') || 'dark';
     document.body.setAttribute('color', this.theme);
     chrome.storage.onChanged.addListener(async (changes, area) => {
       if (area === 'local' && changes.theme?.newValue) {
