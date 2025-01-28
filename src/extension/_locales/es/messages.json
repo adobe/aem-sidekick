@@ -408,6 +408,15 @@
   "error_preview_config": {
     "message": "Error al activar la configuración: $1"
   },
+  "error_preview_no_docx": {
+    "message": "Este es un documento de Microsoft Word, conviértalo primero a Documentos de Google"
+  },
+  "error_preview_no_xlsx": {
+    "message": "Este es un documento de Microsoft Excel, conviértalo primero a Hojas de cálculo de Google."
+  },
+  "error_preview_not_gdoc_generic": {
+    "message": "Error al generar la vista previa. Debe ser un documento o una hoja de cálculo de Google."
+  },
   "error_publish": {
     "message": "Error de publicación. Inténtelo de nuevo más tarde."
   },

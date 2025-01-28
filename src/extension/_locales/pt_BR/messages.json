@@ -408,6 +408,15 @@
   "error_preview_config": {
     "message": "Falha ao ativar a configuração: $1"
   },
+  "error_preview_no_docx": {
+    "message": "Este é um documento do Microsoft Word. Primeiro, converta-o em um arquivo dos Documentos Google."
+  },
+  "error_preview_no_xlsx": {
+    "message": "Este é um documento do Microsoft Excel. Primeiro, converta-o em um arquivo das Planilhas Google."
+  },
+  "error_preview_not_gdoc_generic": {
+    "message": "Falha ao gerar a pré-visualização. Deve ser um documento ou uma planilha do Google."
+  },
   "error_publish": {
     "message": "Falha na publicação. Tente novamente mais tarde."
   },

@@ -408,6 +408,15 @@
   "error_preview_config": {
     "message": "Impossibile attivare la configurazione: $1"
   },
+  "error_preview_no_docx": {
+    "message": "Questo è un documento di Microsoft Word. Convertilo prima in Documenti Google."
+  },
+  "error_preview_no_xlsx": {
+    "message": "Questo è un documento di Microsoft Excel. Convertilo prima in Fogli Google."
+  },
+  "error_preview_not_gdoc_generic": {
+    "message": "Generazione dell’anteprima non riuscita. Deve essere un documento o un foglio Google."
+  },
   "error_publish": {
     "message": "Pubblicazione non riuscita. Riprova più tardi."
   },
