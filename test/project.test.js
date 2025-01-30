@@ -389,7 +389,9 @@ describe('Test project', () => {
     mockDiscoveryCall({ multipleOriginalSites: true });
     const tab = mockTab('https://foo.sharepoint.com/something/boo/Shared%20Documents/root1');
     await urlCache.set(tab);
-    expect((await getProjectMatches([], tab)).length).to.equal(2);
+    const matches = await getProjectMatches([], tab);
+    expect(matches.length).to.equal(2);
+    expect(matches[0].id).to.equal('foo/bar1');
   }).timeout(5000);
 
   it('getGitHubSettings', async () => {

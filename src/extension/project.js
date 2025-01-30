@@ -519,6 +519,8 @@ export async function getProjectMatches(configs, tab) {
     }
   }
   return matches
+    // ensure each match has an id
+    .map((cfg) => (cfg.id ? cfg : { ...cfg, id: `${cfg.owner}/${cfg.repo}` }))
     // exclude disabled configs
     .filter(({ owner, repo }) => !configs
       .find((cfg) => cfg.owner === owner && cfg.repo === repo && cfg.disabled));
