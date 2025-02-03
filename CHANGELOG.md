@@ -1,3 +1,10 @@
+## [7.2.3](https://github.com/adobe/aem-sidekick/compare/v7.2.2...v7.2.3) (2025-02-03)
+
+
+### Bug Fixes
+
+* ensure every project match has an id ([2c58af1](https://github.com/adobe/aem-sidekick/commit/2c58af1957b0e1f4ffd8f212b40916ab33d81dc4))
+
 ## [7.2.2](https://github.com/adobe/aem-sidekick/compare/v7.2.1...v7.2.2) (2025-01-28)
 
 
