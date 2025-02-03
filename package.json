@@ -63,7 +63,7 @@
     "@spectrum-web-components/theme": "0.43.0",
     "@spectrum-web-components/toast": "0.43.0",
     "lit": "3.2.1",
-    "mobx": "6.13.5"
+    "mobx": "6.13.6"
   },
   "devDependencies": {
     "@adobe/eslint-config-helix": "2.0.8",
@@ -81,7 +81,7 @@
     "@semantic-release/git": "10.0.1",
     "semantic-release-discord-bot": "1.1.0",
     "semantic-release-slack-bot": "4.0.2",
-    "@types/chrome": "0.0.299",
+    "@types/chrome": "0.0.301",
     "@types/mocha": "10.0.10",
     "@web/rollup-plugin-html": "2.3.0",
     "@web/rollup-plugin-import-meta-assets": "2.2.1",
@@ -101,7 +101,7 @@
     "lint-staged": "15.4.3",
     "nock": "14.0.0",
     "rimraf": "6.0.1",
-    "rollup": "4.32.0",
+    "rollup": "4.34.1",
     "rollup-plugin-copy": "3.5.0",
     "rollup-plugin-esbuild": "6.1.1",
     "semantic-release": "24.2.1",
