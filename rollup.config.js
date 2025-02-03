@@ -63,6 +63,7 @@ function extensionPlugins(browser) {
       targets: [
         { src: 'src/extension/*', ignore: ['src/extension/app', 'src/extension/views', 'src/extension/types'], dest: `./dist/${browser}` },
         { src: 'src/extension/views/json/json.html', dest: `./dist/${browser}/views/json` },
+        { src: 'src/extension/views/login/login.html', dest: `./dist/${browser}/views/login` },
         { src: 'src/extension/views/doc-source', dest: `./dist/${browser}/views/` },
       ],
     }),
@@ -97,6 +98,10 @@ export default [
   {
     input: 'src/extension/views/json/json.js',
     ...viewBuild('chrome', '/views/json'),
+  },
+  {
+    input: 'src/extension/views/login/login.js',
+    ...viewBuild('chrome', '/views/login'),
   },
   ...createExtension('chrome'),
 ];

@@ -1092,12 +1092,38 @@ export class AppStore {
         search,
       },
     } = this;
+    let view;
+    if ((this.location.host.endsWith('.aem.page')
+      || this.location.host.endsWith('.aem.live')
+      || this.location.hostname === 'localhost')
+      && !document.querySelector('body > main > div')
+      && document.querySelector('body > pre') === document.body.children[1]) {
+      // 401
+      if (document.querySelector('body > pre').textContent.trim() === '401 Unauthorized') {
+        view = {
+          viewer: chrome.runtime.getURL('views/login/login.html'),
+          title: () => this.i18n(
+            !this.isAuthenticated() ? 'site_login_required' : 'site_relogin_required',
+          ),
+        };
+      }
+      // 403
+      if (document.querySelector('body > pre').textContent.trim() === '403 Forbidden') {
+        view = {
+          viewer: chrome.runtime.getURL('views/login/login.html'),
+          title: () => this.i18n('site_forbidden'),
+        };
+      }
+    }
+
     const searchParams = new URLSearchParams(search);
     if (searchParams.get('path')) {
       // custom view
       return;
     }
-    const [view] = this.findViews(VIEWS.DEFAULT);
+    if (!view) {
+      [view] = this.findViews(VIEWS.DEFAULT);
+    }
     if (view && !this.getViewOverlay()) {
       const { viewer, title } = view;
       if (viewer) {
