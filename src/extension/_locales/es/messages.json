@@ -408,7 +408,7 @@
   "error_preview_config": {
     "message": "Error al activar la configuración: $1"
   },
-  "error_preview_no_docx": {
+  "error_preview_no_docx2": {
     "message": "Este es un documento de Microsoft Word, conviértalo primero a Documentos de Google"
   },
   "error_preview_no_xlsx": {

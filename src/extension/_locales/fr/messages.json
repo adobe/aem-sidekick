@@ -408,11 +408,11 @@
   "error_preview_config": {
     "message": "Échec de l’activation de la configuration : $1"
   },
-  "error_preview_no_docx": {
-    "message": "Il s’agit d’un document Microsoft Word. Convertissez-le d’abord au format Google Docs."
+  "error_preview_no_docx2": {
+    "message": "Il s’agit d’un document Microsoft Word. Convertissez-le d’abord au format Google Docs."
   },
   "error_preview_no_xlsx": {
-    "message": "Il s’agit d’un document Microsoft Excel. Convertissez-le d’abord au format Google Sheets."
+    "message": "Il s’agit d’un document Microsoft Excel. Convertissez-le d’abord au format Google Sheets."
   },
   "error_preview_not_gdoc_generic": {
     "message": "Échec de la génération de la prévisualisation. Il doit s’agir d’un document ou d’une feuille de calcul Google."

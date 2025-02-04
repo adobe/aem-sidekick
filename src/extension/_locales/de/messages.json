@@ -408,7 +408,7 @@
   "error_preview_config": {
     "message": "Konfiguration konnte nicht aktiviert werden: $1"
   },
-  "error_preview_no_docx": {
+  "error_preview_no_docx2": {
     "message": "Dies ist ein Microsoft Word-Dokument. Bitte konvertieren Sie es zuerst in ein Google-Dokument."
   },
   "error_preview_no_xlsx": {

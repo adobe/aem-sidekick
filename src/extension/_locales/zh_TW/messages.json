@@ -408,7 +408,7 @@
   "error_preview_config": {
     "message": "啟動設定失敗：$1"
   },
-  "error_preview_no_docx": {
+  "error_preview_no_docx2": {
     "message": "這是一個 Microsoft Word 文件，請先將其轉換為 Google 文件。"
   },
   "error_preview_no_xlsx": {

@@ -408,7 +408,7 @@
   "error_preview_config": {
     "message": "구성 활성화 실패: $1"
   },
-  "error_preview_no_docx": {
+  "error_preview_no_docx2": {
     "message": "Microsoft Word 문서입니다. 우선 Google Docs로 변환해 주십시오."
   },
   "error_preview_no_xlsx": {
