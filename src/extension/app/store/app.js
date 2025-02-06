@@ -1071,6 +1071,9 @@ export class AppStore {
               }
             });
           }
+          if (data.detail.event === 'hlx-login') {
+            this.login(false);
+          }
         }
       });
     }
@@ -1098,6 +1101,13 @@ export class AppStore {
       || this.location.hostname === 'localhost')
       && !document.querySelector('body > main > div')
       && document.querySelector('body > pre') === document.body.children[1]) {
+      // assert viewport meta tag
+      if (!document.head.querySelector('meta[name="viewport"]')) {
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1';
+        document.head.appendChild(meta);
+      }
       // 401
       if (document.querySelector('body > pre').textContent.trim() === '401 Unauthorized') {
         view = {

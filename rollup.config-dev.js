@@ -20,5 +20,9 @@ export default [
     input: 'src/extension/views/json/json.js',
     ...viewBuild('chrome', '/views/json'),
   },
+  {
+    input: 'src/extension/views/login/login.js',
+    ...viewBuild('chrome', '/views/login'),
+  },
   ...createExtension('chrome'),
 ];
