@@ -170,6 +170,8 @@ export const spectrum2 = css`
     --mod-popover-border-color: var(--spectrum2-sidekick-border-color);
     --mod-popover-content-area-spacing-vertical: 0;
 
+    --mod-modal-confirm-border-radius: var(--spectrum2-xlarge-border-radius);
+
     --mod-menu-item-background-color-hover: var(--spectrum2-sidekick-menu-item-background-color-hover);
     --mod-menu-item-top-edge-to-text: 7px;
 
