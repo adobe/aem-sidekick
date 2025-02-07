@@ -61,27 +61,18 @@ export class LoginView extends LitElement {
     });
     const lang = getLanguage();
     this.languageDict = await fetchLanguageDict(undefined, lang);
-    this.title = new URL(window.location.href).searchParams.get('title')
+    this.title = i18n(this.languageDict, 'unauthorized');
+    this.description = new URL(window.location.href).searchParams.get('title')
       || i18n(this.languageDict, 'site_login_required');
-  }
-
-  /**
-   * Close the json view
-   */
-  onCloseView(trackRum = true) {
-    const customEventDetail = { detail: { event: 'hlx-close-view' } };
-    window.parent.postMessage(customEventDetail, '*');
-    if (trackRum) {
-      sampleRUM('click', {
-        source: 'sidekick',
-        target: 'loginview:closed',
-      });
-    }
   }
 
   onClicked() {
     const customEventDetail = { detail: { event: 'hlx-login' } };
     window.parent.postMessage(customEventDetail, '*');
+    sampleRUM('click', {
+      source: 'sidekick',
+      target: 'loginview:logged-in',
+    });
   }
 
   render() {
@@ -92,11 +83,9 @@ export class LoginView extends LitElement {
             <div class="content">
               <sp-icon slot="icon">
                 ${ICONS.USER_ICON_LARGE}
-                <sp-icon slot="icon">
-                  ${ICONS.USER_ICON}
-                </sp-icon>
               </sp-icon>
-              <h3>${this.title}</h3>
+              <h2>${this.title}</h2>
+              <span>${this.description}</span>
               <sp-button
                 id="login"
                 size="l"

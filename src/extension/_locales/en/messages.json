@@ -589,6 +589,9 @@
     "logging_out_state": {
       "message": "Signing out..."
     },
+    "unauthorized": {
+      "message": "Unauthorized"
+    },
     "unauthorized_state": {
       "message": "Account not authorized for this site"
     },

@@ -38,10 +38,9 @@ export const style = css`
     
   sp-icon {
     position: relative;
-    padding: 32px;
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
+    padding: 0;
+    width: 164px;
+    height: 164px;
   }
 
   sp-icon svg {
@@ -49,18 +48,12 @@ export const style = css`
     height: 100%;
   }
     
-  sp-icon > svg {
-    border-radius: 50%;
-  }  
-
-  sp-icon > sp-icon {
-    position: absolute;
-    transform: scale(1.4);
-    left: 0;
-    top: 0;
-    color: var(--sidekick-color-light);
+  h2, span {
+    margin: 0 0 16px;
   }
-  h3 {
-    margin-bottom: 2em;
+
+  span {
+    font-size: 16px;
+    line-height: 20px;
   }
 `;
