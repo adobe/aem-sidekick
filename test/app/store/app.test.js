@@ -1355,6 +1355,20 @@ describe('Test App Store', () => {
       fetchMock.restore();
     });
 
+    const getViewOverlayFrame = (sidekick) => {
+      const overlayContainer = document.createElement('div');
+      overlayContainer.className = 'aem-sk-special-view';
+
+      const frame = document.createElement('iframe');
+      frame.className = 'container';
+      overlayContainer.appendChild(frame);
+
+      getViewOverlayStub.onCall(1).returns(overlayContainer);
+      sidekick.shadowRoot.appendChild(overlayContainer);
+
+      return frame;
+    };
+
     it('does nothing if isProject returns false', async () => {
       isProjectStub.returns(false);
       findViewsSpy = sinon.spy(instance, 'findViews');
@@ -1398,21 +1412,64 @@ describe('Test App Store', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
 
-      const overlayContainer = document.createElement('div');
-      overlayContainer.className = 'aem-sk-special-view';
-
-      const frame = document.createElement('iframe');
-      frame.className = 'container';
-      overlayContainer.appendChild(frame);
-
-      getViewOverlayStub.onCall(1).returns(overlayContainer);
-      sidekick.shadowRoot.appendChild(overlayContainer);
+      const frame = getViewOverlayFrame(sidekick);
 
       await instance.showView();
 
       expect(frame.src).to.equal('http://viewer.com/?url=https%3A%2F%2Fmain--aem-boilerplate--adobe.hlx.page%2Fplaceholders.json&title=Test+Title');
       expect(findViewsStub.calledWith(VIEWS.DEFAULT)).to.be.true;
       expect(getViewOverlayStub.calledTwice).to.be.true;
+    });
+
+    it('loads login view on 401 site response', async () => {
+      const i18nSpy = sinon.spy(instance, 'i18n');
+
+      sidekickTest.mockFetchSidekickConfigSuccess(true, false);
+      isProjectStub.returns(true);
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/protected');
+      getViewOverlayStub.onCall(0).returns(undefined);
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      instance.sidekick = sidekick;
+      document.body.innerHTML = '<pre>401 Unauthorized</pre>';
+      document.body.prepend(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
+
+      const frame = getViewOverlayFrame(sidekick);
+
+      await instance.showView();
+
+      const frameUrl = new URL(frame.src);
+      expect(frameUrl.pathname.endsWith('/views/login/login.html')).to.be.true;
+      expect(frameUrl.searchParams.get('url')).to.equal('https://main--aem-boilerplate--adobe.aem.page/protected');
+      expect(i18nSpy.calledWith('site_login_required')).to.be.true;
+    });
+
+    it('loads login view on 403 site response', async () => {
+      const i18nSpy = sinon.spy(instance, 'i18n');
+
+      sidekickTest.mockFetchSidekickConfigSuccess(true, false);
+      isProjectStub.returns(true);
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/protected');
+      getViewOverlayStub.onCall(0).returns(undefined);
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      instance.sidekick = sidekick;
+
+      document.body.innerHTML = '<pre>403 Forbidden</pre>';
+      document.body.prepend(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
+
+      const frame = getViewOverlayFrame(sidekick);
+
+      await instance.showView();
+
+      const frameUrl = new URL(frame.src);
+      expect(frameUrl.pathname.endsWith('/views/login/login.html')).to.be.true;
+      expect(frameUrl.searchParams.get('url')).to.equal('https://main--aem-boilerplate--adobe.aem.page/protected');
+      expect(i18nSpy.calledWith('site_forbidden')).to.be.true;
     });
   });
 
