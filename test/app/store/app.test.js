@@ -1450,8 +1450,6 @@ describe('Test App Store', () => {
     });
 
     it('loads login view on 401 site response', async () => {
-      const i18nSpy = sinon.spy(instance, 'i18n');
-
       sidekickTest.mockFetchSidekickConfigSuccess(true, false);
       isProjectStub.returns(true);
       instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/protected');
@@ -1471,12 +1469,10 @@ describe('Test App Store', () => {
       const frameUrl = new URL(frame.src);
       expect(frameUrl.pathname.endsWith('/views/login/login.html')).to.be.true;
       expect(frameUrl.searchParams.get('url')).to.equal('https://main--aem-boilerplate--adobe.aem.page/protected');
-      expect(i18nSpy.calledWith('site_login_required')).to.be.true;
+      expect(frameUrl.searchParams.get('status')).to.equal('401');
     });
 
     it('loads login view on 403 site response', async () => {
-      const i18nSpy = sinon.spy(instance, 'i18n');
-
       sidekickTest.mockFetchSidekickConfigSuccess(true, false);
       isProjectStub.returns(true);
       instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/protected');
@@ -1497,7 +1493,7 @@ describe('Test App Store', () => {
       const frameUrl = new URL(frame.src);
       expect(frameUrl.pathname.endsWith('/views/login/login.html')).to.be.true;
       expect(frameUrl.searchParams.get('url')).to.equal('https://main--aem-boilerplate--adobe.aem.page/protected');
-      expect(i18nSpy.calledWith('site_forbidden')).to.be.true;
+      expect(frameUrl.searchParams.get('status')).to.equal('403');
     });
   });
 
