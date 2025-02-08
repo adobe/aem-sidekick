@@ -15,7 +15,7 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import {
-  aTimeout, expect, waitUntil,
+  expect, waitUntil,
 } from '@open-wc/testing';
 import { AppStore, VIEWS } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
@@ -1275,9 +1275,37 @@ describe('Test App Store', () => {
       // @ts-ignore
       eventListenerCallback(messageEvent);
 
-      await aTimeout(1000);
       expect(instance.sidekick.shadowRoot.querySelector('.aem-sk-special-view')).to.be.null;
       expect(sibling.style.display).to.equal('initial');
+    }).timeout(5000);
+
+    it('calls login on receiving a valid hlx-login message', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true, false);
+
+      const addEventListenerStub = sandbox.stub(window, 'addEventListener');
+      const loginStub = sandbox.stub(instance, 'login');
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      appStore.sidekick = sidekick;
+      appStore.getViewOverlay(true); // Create a new view
+
+      // Simulate receiving a valid message
+      const messageEvent = new MessageEvent('message', {
+        data: { detail: { event: 'hlx-login' } },
+        origin: `chrome-extension://${chrome.runtime.id}`,
+      });
+
+      // Trigger the event listener manually
+      const eventListenerCallback = addEventListenerStub.getCalls().find((call) => call.calledWith('message')).args[1];
+      // @ts-ignore
+      eventListenerCallback(messageEvent);
+
+      expect(loginStub.calledOnce).to.be.true;
     }).timeout(5000);
   });
 
