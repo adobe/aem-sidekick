@@ -61,9 +61,10 @@ export class LoginView extends LitElement {
     });
     const lang = getLanguage();
     this.languageDict = await fetchLanguageDict(undefined, lang);
-    this.title = i18n(this.languageDict, 'unauthorized');
+    this.title = i18n(this.languageDict, 'site_protected');
     this.description = new URL(window.location.href).searchParams.get('title')
       || i18n(this.languageDict, 'site_login_required');
+    this.buttonText = i18n(this.languageDict, 'user_login');
   }
 
   onClicked() {
@@ -93,7 +94,7 @@ export class LoginView extends LitElement {
                 treatment="fill"
                 @click=${this.onClicked}
               >
-                ${i18n(this.languageDict, 'user_login')}
+                ${this.buttonText}
               </sp-button>
             </div>
           </sp-dialog-base>
