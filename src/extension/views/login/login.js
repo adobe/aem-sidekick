@@ -61,14 +61,25 @@ export class LoginView extends LitElement {
     });
     const lang = getLanguage();
     this.languageDict = await fetchLanguageDict(undefined, lang);
+    const params = new URL(window.location.href).searchParams;
+    this.status = params.get('status');
+    this.auth = params.get('auth');
     this.title = i18n(this.languageDict, 'site_protected');
-    this.description = new URL(window.location.href).searchParams.get('title')
-      || i18n(this.languageDict, 'site_login_required');
+    this.description = this.status === '403'
+      ? i18n(this.languageDict, 'site_forbidden')
+      : i18n(this.languageDict, this.auth === 'false'
+        ? 'site_login_required'
+        : 'site_relogin_required');
     this.buttonText = i18n(this.languageDict, 'user_login');
   }
 
   onClicked() {
-    const customEventDetail = { detail: { event: 'hlx-login' } };
+    const customEventDetail = {
+      detail: {
+        event: 'hlx-login',
+        selectAccount: this.status === '403',
+      },
+    };
     window.parent.postMessage(customEventDetail, '*');
     sampleRUM('click', {
       source: 'sidekick',

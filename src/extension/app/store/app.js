@@ -1072,7 +1072,7 @@ export class AppStore {
             });
           }
           if (data.detail.event === 'hlx-login') {
-            this.login(false);
+            this.login(!!data.detail.selectAccount);
           }
         }
       });
@@ -1108,20 +1108,17 @@ export class AppStore {
         meta.content = 'width=device-width, initial-scale=1';
         document.head.appendChild(meta);
       }
+      const auth = this.isAuthenticated();
       // 401
       if (document.querySelector('body > pre').textContent.trim() === '401 Unauthorized') {
         view = {
-          viewer: chrome.runtime.getURL('views/login/login.html'),
-          title: () => this.i18n(
-            !this.isAuthenticated() ? 'site_login_required' : 'site_relogin_required',
-          ),
+          viewer: chrome.runtime.getURL(`views/login/login.html?status=401&auth=${auth}`),
         };
       }
       // 403
       if (document.querySelector('body > pre').textContent.trim() === '403 Forbidden') {
         view = {
-          viewer: chrome.runtime.getURL('views/login/login.html'),
-          title: () => this.i18n('site_forbidden'),
+          viewer: chrome.runtime.getURL('views/login/login.html?status=403'),
         };
       }
     }
@@ -1135,7 +1132,7 @@ export class AppStore {
       [view] = this.findViews(VIEWS.DEFAULT);
     }
     if (view && !this.getViewOverlay()) {
-      const { viewer, title } = view;
+      const { viewer, title = () => '' } = view;
       if (viewer) {
         const viewUrl = new URL(viewer, origin);
         viewUrl.searchParams.set('url', href);
