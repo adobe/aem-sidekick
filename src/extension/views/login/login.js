@@ -71,7 +71,7 @@ export class LoginView extends LitElement {
     window.parent.postMessage(customEventDetail, '*');
     sampleRUM('click', {
       source: 'sidekick',
-      target: 'loginview:logged-in',
+      target: 'site:logged-in',
     });
   }
 
