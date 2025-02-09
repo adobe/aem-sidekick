@@ -73,7 +73,7 @@ export class LoginView extends LitElement {
     this.buttonText = i18n(this.languageDict, 'user_login');
   }
 
-  onClicked() {
+  onClicked({ target: button }) {
     const customEventDetail = {
       detail: {
         event: 'hlx-login',
@@ -81,6 +81,8 @@ export class LoginView extends LitElement {
       },
     };
     window.parent.postMessage(customEventDetail, '*');
+
+    button.closest('sp-dialog-base').removeAttribute('open');
     sampleRUM('click', {
       source: 'sidekick',
       target: 'site:logged-in',
