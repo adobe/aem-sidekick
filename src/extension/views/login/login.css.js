@@ -34,6 +34,8 @@ export const style = css`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 0 32px;
+    box-sizing: border-box;
   }
     
   sp-icon {
@@ -55,5 +57,6 @@ export const style = css`
   span {
     font-size: 16px;
     line-height: 20px;
+    text-align: center;
   }
 `;
