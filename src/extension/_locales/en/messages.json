@@ -444,6 +444,18 @@
     "share_description": {
       "message": "Share your Sidekick"
     },
+    "site_login_required": {
+      "message": "Please sign in to continue."
+    },
+    "site_relogin_required": {
+      "message": "Access expired. Please sign in again to continue."
+    },
+    "site_forbidden": {
+      "message": "Access denied. Try signing in with a different user or ask your administrator for sufficient permissions."
+    },
+    "site_protected": {
+      "message": "This site is protected"
+    },
     "standard": {
       "message": "Standard",
       "description": "Standard config mode"

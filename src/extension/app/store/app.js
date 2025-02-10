@@ -1060,16 +1060,9 @@ export class AppStore {
           const { data } = event;
           if (data.detail.event === 'hlx-close-view') {
             view.remove();
-            [...this.sidekick.parentElement.children].forEach((el) => {
-              if (el !== this.sidekick) {
-                try {
-                  // @ts-ignore
-                  el.style.display = 'initial';
-                } catch (e) {
-                  // ignore
-                }
-              }
-            });
+          }
+          if (data.detail.event === 'hlx-login') {
+            this.login(!!data.detail.selectAccount);
           }
         }
       });
@@ -1092,31 +1085,50 @@ export class AppStore {
         search,
       },
     } = this;
+    let view;
+    if ((this.location.host.endsWith('.aem.page')
+      || this.location.host.endsWith('.aem.live')
+      || this.location.hostname === 'localhost')
+      && !document.querySelector('body > main > div')
+      && document.querySelector('body > pre') === document.body.children[1]) {
+      // assert viewport meta tag
+      if (!document.head.querySelector('meta[name="viewport"]')) {
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1';
+        document.head.appendChild(meta);
+      }
+      const auth = this.isAuthenticated();
+      // 401
+      if (document.querySelector('body > pre').textContent.trim() === '401 Unauthorized') {
+        view = {
+          viewer: chrome.runtime.getURL(`views/login/login.html?status=401&auth=${auth}`),
+        };
+      }
+      // 403
+      if (document.querySelector('body > pre').textContent.trim() === '403 Forbidden') {
+        view = {
+          viewer: chrome.runtime.getURL('views/login/login.html?status=403'),
+        };
+      }
+    }
+
     const searchParams = new URLSearchParams(search);
     if (searchParams.get('path')) {
       // custom view
       return;
     }
-    const [view] = this.findViews(VIEWS.DEFAULT);
+    if (!view) {
+      [view] = this.findViews(VIEWS.DEFAULT);
+    }
     if (view && !this.getViewOverlay()) {
-      const { viewer, title } = view;
+      const { viewer, title = () => '' } = view;
       if (viewer) {
         const viewUrl = new URL(viewer, origin);
         viewUrl.searchParams.set('url', href);
         viewUrl.searchParams.set('title', title(this.sidekick));
         const viewOverlay = this.getViewOverlay(true);
         viewOverlay.querySelector('.container').setAttribute('src', viewUrl.toString());
-        // hide original content
-        [...this.sidekick.parentElement.children].forEach((el) => {
-          if (el !== this.sidekick) {
-            try {
-              // @ts-ignore
-              el.style.display = 'none';
-            } catch (e) {
-              // ignore
-            }
-          }
-        });
       }
     }
   }

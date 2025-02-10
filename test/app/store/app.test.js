@@ -15,7 +15,7 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import {
-  aTimeout, expect, waitUntil,
+  expect, waitUntil,
 } from '@open-wc/testing';
 import { AppStore, VIEWS } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
@@ -1246,7 +1246,7 @@ describe('Test App Store', () => {
       expect(iframe.getAttribute('allow')).to.equal('clipboard-write *');
     });
 
-    it('removes the view and resets siblings display on receiving a valid hlx-close-view message', async () => {
+    it('removes the view on receiving a valid hlx-close-view message', async () => {
       sidekickTest
         .mockFetchSidekickConfigSuccess(true, false);
 
@@ -1260,10 +1260,6 @@ describe('Test App Store', () => {
       appStore.sidekick = sidekick;
       appStore.getViewOverlay(true); // Create a new view
 
-      const sibling = document.createElement('div');
-      sibling.style.display = 'none';
-      instance.sidekick.parentElement.appendChild(sibling);
-
       // Simulate receiving a valid message
       const messageEvent = new MessageEvent('message', {
         data: { detail: { event: 'hlx-close-view' } },
@@ -1275,9 +1271,36 @@ describe('Test App Store', () => {
       // @ts-ignore
       eventListenerCallback(messageEvent);
 
-      await aTimeout(1000);
       expect(instance.sidekick.shadowRoot.querySelector('.aem-sk-special-view')).to.be.null;
-      expect(sibling.style.display).to.equal('initial');
+    }).timeout(5000);
+
+    it('calls login on receiving a valid hlx-login message', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true, false);
+
+      const addEventListenerStub = sandbox.stub(window, 'addEventListener');
+      const loginStub = sandbox.stub(instance, 'login');
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      appStore.sidekick = sidekick;
+      appStore.getViewOverlay(true); // Create a new view
+
+      // Simulate receiving a valid message
+      const messageEvent = new MessageEvent('message', {
+        data: { detail: { event: 'hlx-login' } },
+        origin: `chrome-extension://${chrome.runtime.id}`,
+      });
+
+      // Trigger the event listener manually
+      const eventListenerCallback = addEventListenerStub.getCalls().find((call) => call.calledWith('message')).args[1];
+      // @ts-ignore
+      eventListenerCallback(messageEvent);
+
+      expect(loginStub.calledOnce).to.be.true;
     }).timeout(5000);
   });
 
@@ -1355,6 +1378,20 @@ describe('Test App Store', () => {
       fetchMock.restore();
     });
 
+    const getViewOverlayFrame = (sidekick) => {
+      const overlayContainer = document.createElement('div');
+      overlayContainer.className = 'aem-sk-special-view';
+
+      const frame = document.createElement('iframe');
+      frame.className = 'container';
+      overlayContainer.appendChild(frame);
+
+      getViewOverlayStub.onCall(1).returns(overlayContainer);
+      sidekick.shadowRoot.appendChild(overlayContainer);
+
+      return frame;
+    };
+
     it('does nothing if isProject returns false', async () => {
       isProjectStub.returns(false);
       findViewsSpy = sinon.spy(instance, 'findViews');
@@ -1398,21 +1435,60 @@ describe('Test App Store', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
 
-      const overlayContainer = document.createElement('div');
-      overlayContainer.className = 'aem-sk-special-view';
-
-      const frame = document.createElement('iframe');
-      frame.className = 'container';
-      overlayContainer.appendChild(frame);
-
-      getViewOverlayStub.onCall(1).returns(overlayContainer);
-      sidekick.shadowRoot.appendChild(overlayContainer);
+      const frame = getViewOverlayFrame(sidekick);
 
       await instance.showView();
 
       expect(frame.src).to.equal('http://viewer.com/?url=https%3A%2F%2Fmain--aem-boilerplate--adobe.hlx.page%2Fplaceholders.json&title=Test+Title');
       expect(findViewsStub.calledWith(VIEWS.DEFAULT)).to.be.true;
       expect(getViewOverlayStub.calledTwice).to.be.true;
+    });
+
+    it('loads login view on 401 site response', async () => {
+      sidekickTest.mockFetchSidekickConfigSuccess(true, false);
+      isProjectStub.returns(true);
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/protected');
+      getViewOverlayStub.onCall(0).returns(undefined);
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      instance.sidekick = sidekick;
+      document.body.innerHTML = '<pre>401 Unauthorized</pre>';
+      document.body.prepend(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
+
+      const frame = getViewOverlayFrame(sidekick);
+
+      await instance.showView();
+
+      const frameUrl = new URL(frame.src);
+      expect(frameUrl.pathname.endsWith('/views/login/login.html')).to.be.true;
+      expect(frameUrl.searchParams.get('url')).to.equal('https://main--aem-boilerplate--adobe.aem.page/protected');
+      expect(frameUrl.searchParams.get('status')).to.equal('401');
+    });
+
+    it('loads login view on 403 site response', async () => {
+      sidekickTest.mockFetchSidekickConfigSuccess(true, false);
+      isProjectStub.returns(true);
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/protected');
+      getViewOverlayStub.onCall(0).returns(undefined);
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      instance.sidekick = sidekick;
+
+      document.body.innerHTML = '<pre>403 Forbidden</pre>';
+      document.body.prepend(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
+
+      const frame = getViewOverlayFrame(sidekick);
+
+      await instance.showView();
+
+      const frameUrl = new URL(frame.src);
+      expect(frameUrl.pathname.endsWith('/views/login/login.html')).to.be.true;
+      expect(frameUrl.searchParams.get('url')).to.equal('https://main--aem-boilerplate--adobe.aem.page/protected');
+      expect(frameUrl.searchParams.get('status')).to.equal('403');
     });
   });
 

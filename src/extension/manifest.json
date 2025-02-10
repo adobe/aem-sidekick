@@ -51,7 +51,8 @@
         "utis/admin.js",
         "utils/rum.js",
         "url-cache.js",
-        "views/json/*"
+        "views/json/*",
+        "views/login/*"
       ],
       "matches": [
         "<all_urls>"
