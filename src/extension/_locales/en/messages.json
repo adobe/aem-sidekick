@@ -348,6 +348,9 @@
     "error_status": {
       "message": "Failed to fetch the page status. Please try again later."
     },
+    "error_status_404": {
+      "message": "Failed to fetch the page status. Make sure this document is being shared with AEM."
+    },
     "error_unpublish": {
       "message": "Unpublication failed. Please try again later."
     },
