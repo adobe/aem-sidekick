@@ -1060,16 +1060,6 @@ export class AppStore {
           const { data } = event;
           if (data.detail.event === 'hlx-close-view') {
             view.remove();
-            [...this.sidekick.parentElement.children].forEach((el) => {
-              if (el !== this.sidekick) {
-                try {
-                  // @ts-ignore
-                  el.style.display = 'initial';
-                } catch (e) {
-                  // ignore
-                }
-              }
-            });
           }
           if (data.detail.event === 'hlx-login') {
             this.login(!!data.detail.selectAccount);
@@ -1139,17 +1129,6 @@ export class AppStore {
         viewUrl.searchParams.set('title', title(this.sidekick));
         const viewOverlay = this.getViewOverlay(true);
         viewOverlay.querySelector('.container').setAttribute('src', viewUrl.toString());
-        // hide original content
-        [...this.sidekick.parentElement.children].forEach((el) => {
-          if (el !== this.sidekick) {
-            try {
-              // @ts-ignore
-              el.style.display = 'none';
-            } catch (e) {
-              // ignore
-            }
-          }
-        });
       }
     }
   }
