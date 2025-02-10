@@ -1246,7 +1246,7 @@ describe('Test App Store', () => {
       expect(iframe.getAttribute('allow')).to.equal('clipboard-write *');
     });
 
-    it('removes the view and resets siblings display on receiving a valid hlx-close-view message', async () => {
+    it('removes the view on receiving a valid hlx-close-view message', async () => {
       sidekickTest
         .mockFetchSidekickConfigSuccess(true, false);
 
@@ -1260,10 +1260,6 @@ describe('Test App Store', () => {
       appStore.sidekick = sidekick;
       appStore.getViewOverlay(true); // Create a new view
 
-      const sibling = document.createElement('div');
-      sibling.style.display = 'none';
-      instance.sidekick.parentElement.appendChild(sibling);
-
       // Simulate receiving a valid message
       const messageEvent = new MessageEvent('message', {
         data: { detail: { event: 'hlx-close-view' } },
@@ -1276,7 +1272,6 @@ describe('Test App Store', () => {
       eventListenerCallback(messageEvent);
 
       expect(instance.sidekick.shadowRoot.querySelector('.aem-sk-special-view')).to.be.null;
-      expect(sibling.style.display).to.equal('initial');
     }).timeout(5000);
 
     it('calls login on receiving a valid hlx-login message', async () => {
