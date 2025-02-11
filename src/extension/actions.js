@@ -110,7 +110,7 @@ export async function showSidekickNotification(tabId, data, callback) {
  * @param {string} origin
  * @returns {boolean} true - trusted / false - untrusted
  */
-function isGetAuthInfoTrustedOrigin(origin) {
+function isTrustedOrigin(origin) {
   const TRUSTED_ORIGINS = [
     ADMIN_ORIGIN,
     'https://labs.aem.live',
@@ -141,7 +141,7 @@ function isGetAuthInfoTrustedOrigin(origin) {
 async function getAuthInfo(message, sender) {
   const { origin } = new URL(sender.url);
 
-  if (!isGetAuthInfoTrustedOrigin(origin)) {
+  if (!isTrustedOrigin(origin)) {
     return []; // don't give out any information
   }
 
@@ -149,6 +149,20 @@ async function getAuthInfo(message, sender) {
   return projects
     .filter(({ authToken, authTokenExpiry }) => !!authToken && authTokenExpiry > Date.now() / 1000)
     .map(({ owner }) => owner);
+}
+
+/**
+ * Returns the configured sites.
+ * @returns {Promise<Object[]>} The sites
+ */
+async function getSites(message, sender) {
+  const { origin } = new URL(sender.url);
+
+  if (!isTrustedOrigin(origin)) {
+    return []; // don't give out any information
+  }
+
+  return await getConfig('sync', 'projects') || [];
 }
 
 /**
@@ -306,4 +320,5 @@ export const internalActions = {
 export const externalActions = {
   updateAuthToken,
   getAuthInfo,
+  getSites,
 };

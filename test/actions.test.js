@@ -156,6 +156,49 @@ describe('Test actions', () => {
     expect(resp).to.deep.equal([]);
   });
 
+  it('external: getSites', async () => {
+    const getStub = sandbox.stub(chrome.storage.sync, 'get');
+    const projects = [
+      'foo/bar',
+      'foo1/baz',
+      'foo2/baz',
+    ];
+    let resp;
+
+    // without projects
+    getStub.resolves({});
+    resp = await externalActions.getSites({}, mockTab('https://tools.aem.live'));
+    expect(resp).to.deep.equal([]);
+
+    // with auth info
+    getStub.resolves({
+      projects,
+    });
+
+    // trusted actors
+    resp = await externalActions.getSites({}, mockTab('https://tools.aem.live/foo'));
+    expect(resp).to.deep.equal(projects);
+
+    resp = await externalActions.getSites({}, mockTab('https://labs.aem.live/foo'));
+    expect(resp).to.deep.equal(projects);
+
+    resp = await externalActions.getSites({}, mockTab('https://feature--helix-labs-website--adobe.aem.page/feature'));
+    expect(resp).to.deep.equal(projects);
+
+    // untrusted actors
+    resp = await externalActions.getSites({}, mockTab('https://evil.live'));
+    expect(resp).to.deep.equal([]);
+
+    resp = await externalActions.getSites({}, mockTab('https://main--site--owner.aem.live'));
+    expect(resp).to.deep.equal([]);
+
+    resp = await externalActions.getSites({}, mockTab('https://tools.aem.live.evil.com'));
+    expect(resp).to.deep.equal([]);
+
+    resp = await externalActions.getSites({}, mockTab('https://main--helix-tools-website--adobe-evl.aem.live'));
+    expect(resp).to.deep.equal([]);
+  });
+
   it('internal: addRemoveProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const remove = sandbox.spy(chrome.storage.sync, 'remove');
