@@ -544,6 +544,12 @@
     "search": {
       "message": "Search"
     },
+    "no_data": {
+      "message": "No Data"
+    },
+    "no_data_subheading": {
+      "message": "This sheet is empty"
+    },
     "no_results": {
       "message": "No Results Found"
     },
