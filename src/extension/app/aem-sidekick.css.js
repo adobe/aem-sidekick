@@ -24,6 +24,7 @@ export const style = css`
     color: initial;
     font: initial;
     letter-spacing: initial;
+    text-align: initial;
   }
 
   :host([open='true']) {
