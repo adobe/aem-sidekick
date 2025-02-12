@@ -333,7 +333,7 @@
     "error_preview_not_gdoc_generic": {
       "message": "Preview generation failed. Must be Google document or spreadsheet."
     },
-    "error_preview_no_docx2": {
+    "error_preview_no_docx": {
       "message": "This is a Microsoft Word document, please convert it to Google Docs first."
     },
     "error_preview_no_xlsx": {
