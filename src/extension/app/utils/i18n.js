@@ -36,6 +36,7 @@ export const LANGS = [
   'it',
   'ja',
   'ko',
+  'pl',
   'pt_BR',
   'zh_CN',
   'zh_TW',
@@ -54,6 +55,7 @@ export function i18n(languageDict, key) {
 
 export function getLanguage() {
   for (const navLang of languagesService.getNavigatorLanguages()) {
+    console.log('navlang', navLang);
     const prefLang = navLang.replace('-', '_');
     const exactMatch = LANGS.includes(prefLang);
     if (exactMatch) {
