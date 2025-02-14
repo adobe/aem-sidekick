@@ -51,7 +51,6 @@
     "message": "Impossible de prévisualiser $1 : $2"
   },
   "activate": {
-    "description": "Activer la configuration",
     "message": "Activer"
   },
   "activate_bulk_not_supported": {
@@ -70,7 +69,6 @@
     "message": "Version d'Admin : xyz"
   },
   "advanced": {
-    "description": "Mode de configuration avancé",
     "message": "Avancé"
   },
   "anonymous": {
@@ -197,14 +195,12 @@
     "message": "Ajouter ce projet"
   },
   "config_project_added": {
-    "description": "Projet ajouté",
     "message": "$1 ajouté(s)"
   },
   "config_project_disable": {
     "message": "Désactiver ce projet"
   },
   "config_project_disabled": {
-    "description": "Projet désactivé",
     "message": "$1 désactivé"
   },
   "config_project_disabled_headline": {
@@ -214,7 +210,6 @@
     "message": "Activer ce projet"
   },
   "config_project_enabled": {
-    "description": "Projet activé",
     "message": "$1 activé"
   },
   "config_project_enabled_headline": {
@@ -248,7 +243,6 @@
     "message": "Supprimer ce projet"
   },
   "config_project_removed": {
-    "description": "Projet supprimé",
     "message": "$1 supprimé(s)"
   },
   "config_remove_project_headline": {
@@ -258,7 +252,6 @@
     "message": "Activation de la configuration..."
   },
   "confirm": {
-    "description": "Titre modal de confirmation",
     "message": "Veuillez confirmer."
   },
   "copied": {
@@ -409,7 +402,7 @@
     "message": "Échec de l’activation de la configuration : $1"
   },
   "error_preview_no_docx": {
-    "message": "Il s’agit d’un document Microsoft Word. Convertissez-le d’abord au format Google Docs."
+    "message": "Il s’agit d’un document Microsoft Word. Convertissez-le d’abord au format Google Docs."
   },
   "error_preview_no_xlsx": {
     "message": "Il s’agit d’un document Microsoft Excel. Convertissez-le d’abord au format Google Sheets."
@@ -425,6 +418,9 @@
   },
   "error_status": {
     "message": "Échec de la récupération du statut de la page. Réessayez plus tard."
+  },
+  "error_status_404": {
+    "message": "Échec de récupération du statut de la page. Vérifiez que ce document est partagé avec AEM."
   },
   "error_unpublish": {
     "message": "Échec de la dépublication. Réessayez plus tard."
@@ -487,7 +483,6 @@
     "message": "Jamais"
   },
   "next": {
-    "description": "Diapositive d’intégration suivante",
     "message": "Suivant"
   },
   "no_results": {
@@ -515,7 +510,6 @@
     "message": "Ouvrir dans $1"
   },
   "open_preview": {
-    "description": "Permet d'ouvrir l'URL d'aperçu d'une branche GitHub donnée.",
     "message": "Ouvrir l'URL d'aperçu"
   },
   "open_url": {
@@ -599,11 +593,22 @@
   "share_description": {
     "message": "Partager votre Sidekick"
   },
+  "site_forbidden": {
+    "message": "Accès refusé. Essayez de vous connecter avec un autre compte ou demandez à votre équipe d’administration des autorisations suffisantes."
+  },
+  "site_login_required": {
+    "message": "Connectez-vous pour continuer."
+  },
+  "site_protected": {
+    "message": "Ce site est protégé."
+  },
+  "site_relogin_required": {
+    "message": "Accès arrivé à expiration. Reconnectez-vous pour continuer."
+  },
   "source": {
     "message": "Source"
   },
   "standard": {
-    "description": "Mode de configuration standard",
     "message": "Standard"
   },
   "switch_view": {
@@ -637,7 +642,6 @@
     "message": "Dépublication..."
   },
   "update": {
-    "description": "Mettre à jour l’aperçu d’une page",
     "message": "Mettre à jour"
   },
   "update_success": {
@@ -656,7 +660,6 @@
     "message": "Changer d'utilisateur"
   },
   "whats_new": {
-    "description": "Titre du menu Intégration",
     "message": "Nouveautés"
   },
   "yesterday_at": {

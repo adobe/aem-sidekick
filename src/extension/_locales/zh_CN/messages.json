@@ -51,7 +51,6 @@
     "message": "无法预览 $1：$2"
   },
   "activate": {
-    "description": "激活配置",
     "message": "激活"
   },
   "activate_bulk_not_supported": {
@@ -70,7 +69,6 @@
     "message": "管理员版本：x.y.z"
   },
   "advanced": {
-    "description": "高级配置模式",
     "message": "高级"
   },
   "anonymous": {
@@ -197,14 +195,12 @@
     "message": "添加该项目"
   },
   "config_project_added": {
-    "description": "项目已添加",
     "message": "$1 已成功添加 "
   },
   "config_project_disable": {
     "message": "禁用该项目"
   },
   "config_project_disabled": {
-    "description": "项目已禁用",
     "message": "已禁用 $1"
   },
   "config_project_disabled_headline": {
@@ -214,7 +210,6 @@
     "message": "启用该项目"
   },
   "config_project_enabled": {
-    "description": "项目已启用",
     "message": "已启用 $1"
   },
   "config_project_enabled_headline": {
@@ -248,7 +243,6 @@
     "message": "删除该项目"
   },
   "config_project_removed": {
-    "description": "项目已移除",
     "message": "$1 已成功移除"
   },
   "config_remove_project_headline": {
@@ -258,7 +252,6 @@
     "message": "正在激活配置······"
   },
   "confirm": {
-    "description": "确认模式标题",
     "message": "请确认"
   },
   "copied": {
@@ -426,6 +419,9 @@
   "error_status": {
     "message": "获取页面状态失败。请稍后再试。"
   },
+  "error_status_404": {
+    "message": "无法获取页面状态。请确保此文档已与 AEM 共享。"
+  },
   "error_unpublish": {
     "message": "取消发布失败。请稍后再试。"
   },
@@ -487,7 +483,6 @@
     "message": "无"
   },
   "next": {
-    "description": "下一张加入幻灯片",
     "message": "下一页"
   },
   "no_results": {
@@ -515,7 +510,6 @@
     "message": "在 $1 中打开"
   },
   "open_preview": {
-    "description": "打开给定 GitHub 分支的预览 URL",
     "message": "打开预览 URL"
   },
   "open_url": {
@@ -599,11 +593,22 @@
   "share_description": {
     "message": "共享您的 Sidekick"
   },
+  "site_forbidden": {
+    "message": "访问被拒。请尝试以其他用户身份登录或向管理员申请足够的权限。"
+  },
+  "site_login_required": {
+    "message": "请登录以继续。"
+  },
+  "site_protected": {
+    "message": "此网站受保护"
+  },
+  "site_relogin_required": {
+    "message": "访问过期。请重新登录以继续。"
+  },
   "source": {
     "message": "源"
   },
   "standard": {
-    "description": "标准配置模式",
     "message": "标准"
   },
   "switch_view": {
@@ -637,7 +642,6 @@
     "message": "正在取消发布……"
   },
   "update": {
-    "description": "更新页面预览",
     "message": "更新"
   },
   "update_success": {
@@ -656,7 +660,6 @@
     "message": "切换用户"
   },
   "whats_new": {
-    "description": "加入菜单标题",
     "message": "新增功能"
   },
   "yesterday_at": {

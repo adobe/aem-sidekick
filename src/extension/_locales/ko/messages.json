@@ -51,7 +51,6 @@
     "message": "$1 미리보기 불가: $2"
   },
   "activate": {
-    "description": "구성 활성화",
     "message": "활성화"
   },
   "activate_bulk_not_supported": {
@@ -70,7 +69,6 @@
     "message": "관리 버전: x.y.z"
   },
   "advanced": {
-    "description": "고급 구성 모드",
     "message": "고급"
   },
   "anonymous": {
@@ -197,14 +195,12 @@
     "message": "이 프로젝트 추가"
   },
   "config_project_added": {
-    "description": "프로젝트 추가됨",
     "message": "$1이(가) 정상적으로 추가됨"
   },
   "config_project_disable": {
     "message": "이 프로젝트 비활성화"
   },
   "config_project_disabled": {
-    "description": "프로젝트 비활성화됨",
     "message": "$1 비활성화됨"
   },
   "config_project_disabled_headline": {
@@ -214,7 +210,6 @@
     "message": "이 프로젝트 활성화"
   },
   "config_project_enabled": {
-    "description": "프로젝트 활성화됨",
     "message": "$1 활성화됨"
   },
   "config_project_enabled_headline": {
@@ -248,7 +243,6 @@
     "message": "이 프로젝트 제거"
   },
   "config_project_removed": {
-    "description": "프로젝트 제거됨",
     "message": "$1이(가) 정상적으로 제거됨"
   },
   "config_remove_project_headline": {
@@ -258,7 +252,6 @@
     "message": "구성 활성화 중..."
   },
   "confirm": {
-    "description": "확인 모달 제목",
     "message": "확인해 주십시오."
   },
   "copied": {
@@ -426,6 +419,9 @@
   "error_status": {
     "message": "페이지 상태를 가져오지 못했습니다. 나중에 다시 시도해 주십시오."
   },
+  "error_status_404": {
+    "message": "페이지 상태를 가져오지 못했습니다. 이 문서가 AEM과 공유되고 있는지 확인하십시오."
+  },
   "error_unpublish": {
     "message": "게시를 취소하지 못했습니다. 나중에 다시 시도해 주십시오."
   },
@@ -487,7 +483,6 @@
     "message": "사용 안 함"
   },
   "next": {
-    "description": "다음 온보딩 슬라이드",
     "message": "다음"
   },
   "no_results": {
@@ -515,7 +510,6 @@
     "message": "$1에서 열기"
   },
   "open_preview": {
-    "description": "지정된 GitHub 분기의 미리보기 URL을 엽니다.",
     "message": "미리보기 URL 열기"
   },
   "open_url": {
@@ -599,11 +593,22 @@
   "share_description": {
     "message": "Sidekick 공유"
   },
+  "site_forbidden": {
+    "message": "액세스가 거부되었습니다. 다른 사용자로 로그인을 시도하거나 관리자에게 권한을 요청하시기 바랍니다."
+  },
+  "site_login_required": {
+    "message": "계속하려면 로그인하십시오."
+  },
+  "site_protected": {
+    "message": "이 사이트는 보호됩니다."
+  },
+  "site_relogin_required": {
+    "message": "액세스가 만료되었습니다. 계속하려면 다시 로그인하십시오."
+  },
   "source": {
     "message": "소스"
   },
   "standard": {
-    "description": "표준 구성 모드",
     "message": "표준"
   },
   "switch_view": {
@@ -637,7 +642,6 @@
     "message": "게시 취소 중..."
   },
   "update": {
-    "description": "페이지 미리보기 업데이트",
     "message": "업데이트"
   },
   "update_success": {
@@ -656,7 +660,6 @@
     "message": "사용자 전환"
   },
   "whats_new": {
-    "description": "온보딩 메뉴 제목",
     "message": "새로운 기능"
   },
   "yesterday_at": {
