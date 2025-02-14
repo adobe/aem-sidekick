@@ -1,3 +1,10 @@
+# [7.3.0](https://github.com/adobe/aem-sidekick/compare/v7.2.4...v7.3.0) (2025-02-14)
+
+
+### Features
+
+* login screen for protected sites ([#461](https://github.com/adobe/aem-sidekick/issues/461)) ([5884d5c](https://github.com/adobe/aem-sidekick/commit/5884d5cd5f720bf567551c16a26e2f6588d46e7c))
+
 ## [7.2.4](https://github.com/adobe/aem-sidekick/compare/v7.2.3...v7.2.4) (2025-02-04)
 
 
