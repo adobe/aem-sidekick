@@ -51,7 +51,6 @@
     "message": "$1 をプレビューできません : $2"
   },
   "activate": {
-    "description": "設定をアクティベート",
     "message": "アクティベート"
   },
   "activate_bulk_not_supported": {
@@ -70,7 +69,6 @@
     "message": "管理バージョン : x.y.z"
   },
   "advanced": {
-    "description": "詳細設定モード",
     "message": "詳細"
   },
   "anonymous": {
@@ -197,14 +195,12 @@
     "message": "このプロジェクトを追加"
   },
   "config_project_added": {
-    "description": "プロジェクトが追加されました",
     "message": "$1 が正常に追加されました"
   },
   "config_project_disable": {
     "message": "このプロジェクトを無効にする"
   },
   "config_project_disabled": {
-    "description": "プロジェクトが無効になりました",
     "message": "$1 個が無効になりました"
   },
   "config_project_disabled_headline": {
@@ -214,7 +210,6 @@
     "message": "このプロジェクトを有効にする"
   },
   "config_project_enabled": {
-    "description": "プロジェクトが有効になりました",
     "message": "$1 個が有効になりました"
   },
   "config_project_enabled_headline": {
@@ -248,7 +243,6 @@
     "message": "このプロジェクトを削除"
   },
   "config_project_removed": {
-    "description": "プロジェクトが削除されました",
     "message": "$1 個が正常に削除されました"
   },
   "config_remove_project_headline": {
@@ -258,7 +252,6 @@
     "message": "設定をアクティベート中..."
   },
   "confirm": {
-    "description": "確認モーダルの見出し",
     "message": "確認してください"
   },
   "copied": {
@@ -426,6 +419,9 @@
   "error_status": {
     "message": "ページのステータスを取得できませんでした。後でもう一度試してください。"
   },
+  "error_status_404": {
+    "message": "ページのステータスを取得できませんでした。このドキュメントが AEM で共有されていることを確認してください。"
+  },
   "error_unpublish": {
     "message": "非公開に失敗しました。後でもう一度試してください。"
   },
@@ -487,7 +483,6 @@
     "message": "なし"
   },
   "next": {
-    "description": "次のオンボーディングスライド",
     "message": "次へ"
   },
   "no_results": {
@@ -515,7 +510,6 @@
     "message": "$1 で開く"
   },
   "open_preview": {
-    "description": "特定の GitHub ブランチのプレビュー URL を開く",
     "message": "プレビュー URL を開く"
   },
   "open_url": {
@@ -599,11 +593,22 @@
   "share_description": {
     "message": "Sidekick を共有"
   },
+  "site_forbidden": {
+    "message": "アクセスが拒否されました。別のユーザーでログインするか、管理者に十分な権限を求めてください。"
+  },
+  "site_login_required": {
+    "message": "続行するには、ログインしてください。"
+  },
+  "site_protected": {
+    "message": "このサイトは保護されています"
+  },
+  "site_relogin_required": {
+    "message": "アクセスの有効期限が切れています。続行するには、もう一度ログインしてください。"
+  },
   "source": {
     "message": "ソース"
   },
   "standard": {
-    "description": "標準設定モード",
     "message": "標準"
   },
   "switch_view": {
@@ -637,7 +642,6 @@
     "message": "非公開にしています..."
   },
   "update": {
-    "description": "ページのプレビューを更新",
     "message": "更新"
   },
   "update_success": {
@@ -656,7 +660,6 @@
     "message": "ユーザーを切り替え"
   },
   "whats_new": {
-    "description": "オンボーディングメニュータイトル",
     "message": "最新情報"
   },
   "yesterday_at": {

@@ -333,7 +333,7 @@
     "error_preview_not_gdoc_generic": {
       "message": "Preview generation failed. Must be Google document or spreadsheet."
     },
-    "error_preview_no_docx2": {
+    "error_preview_no_docx": {
       "message": "This is a Microsoft Word document, please convert it to Google Docs first."
     },
     "error_preview_no_xlsx": {
@@ -347,6 +347,9 @@
     },
     "error_status": {
       "message": "Failed to fetch the page status. Please try again later."
+    },
+    "error_status_404": {
+      "message": "Failed to fetch the page status. Make sure this document is being shared with AEM."
     },
     "error_unpublish": {
       "message": "Unpublication failed. Please try again later."
@@ -443,6 +446,18 @@
     },
     "share_description": {
       "message": "Share your Sidekick"
+    },
+    "site_login_required": {
+      "message": "Please sign in to continue."
+    },
+    "site_relogin_required": {
+      "message": "Access expired. Please sign in again to continue."
+    },
+    "site_forbidden": {
+      "message": "Access denied. Try signing in with a different user or ask your administrator for sufficient permissions."
+    },
+    "site_protected": {
+      "message": "This site is protected"
     },
     "standard": {
       "message": "Standard",

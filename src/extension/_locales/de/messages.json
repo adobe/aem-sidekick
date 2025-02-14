@@ -51,7 +51,6 @@
     "message": "Vorschau von $1 nicht möglich: $2"
   },
   "activate": {
-    "description": "Konfiguration aktivieren",
     "message": "Aktivieren"
   },
   "activate_bulk_not_supported": {
@@ -70,7 +69,6 @@
     "message": "Admin-Version: x.y.z"
   },
   "advanced": {
-    "description": "Erweiterter Konfigurationsmodus",
     "message": "Erweitert"
   },
   "anonymous": {
@@ -197,14 +195,12 @@
     "message": "Dieses Projekt hinzufügen"
   },
   "config_project_added": {
-    "description": "Projekt hinzugefügt",
     "message": "$1 erfolgreich hinzugefügt"
   },
   "config_project_disable": {
     "message": "Dieses Projekt deaktivieren"
   },
   "config_project_disabled": {
-    "description": "Projekt deaktiviert",
     "message": "$1 deaktiviert"
   },
   "config_project_disabled_headline": {
@@ -214,7 +210,6 @@
     "message": "Dieses Projekt aktivieren"
   },
   "config_project_enabled": {
-    "description": "Projekt aktiviert",
     "message": "$1 aktiviert"
   },
   "config_project_enabled_headline": {
@@ -248,7 +243,6 @@
     "message": "Dieses Projekt entfernen"
   },
   "config_project_removed": {
-    "description": "Projekt entfernt",
     "message": "$1 erfolgreich entfernt"
   },
   "config_remove_project_headline": {
@@ -258,7 +252,6 @@
     "message": "Konfiguration wird aktiviert …"
   },
   "confirm": {
-    "description": "Modale Überschrift bestätigen",
     "message": "Bitte bestätigen"
   },
   "copied": {
@@ -426,6 +419,9 @@
   "error_status": {
     "message": "Der Seitenstatus konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut."
   },
+  "error_status_404": {
+    "message": "Der Seitenstatus konnte nicht abgerufen werden. Stellen Sie sicher, dass dieses Dokument für AEM freigegeben ist."
+  },
   "error_unpublish": {
     "message": "Die Aufhebung der Veröffentlichung ist fehlgeschlagen. Bitte versuchen Sie es später erneut."
   },
@@ -487,7 +483,6 @@
     "message": "Nie"
   },
   "next": {
-    "description": "Nächste Onboarding-Folie",
     "message": "Weiter"
   },
   "no_results": {
@@ -515,7 +510,6 @@
     "message": "In $1 öffnen"
   },
   "open_preview": {
-    "description": "Öffnet die Vorschau-URL für einen bestimmten GitHub-Zweig",
     "message": "Vorschau-URL öffnen"
   },
   "open_url": {
@@ -599,11 +593,22 @@
   "share_description": {
     "message": "Sidekick freigeben"
   },
+  "site_forbidden": {
+    "message": "Zugriff verweigert. Versuchen Sie, sich mit einem anderen Benutzerkonto anzumelden, oder bitten Sie Ihre bzw. Ihren Admin um ausreichende Berechtigungen."
+  },
+  "site_login_required": {
+    "message": "Melden Sie sich an, um fortzufahren."
+  },
+  "site_protected": {
+    "message": "Diese Site ist geschützt."
+  },
+  "site_relogin_required": {
+    "message": "Zugriff abgelaufen. Melden Sie sich erneut an, um fortzufahren."
+  },
   "source": {
     "message": "Quelle"
   },
   "standard": {
-    "description": "Standardkonfigurationsmodus",
     "message": "Standard"
   },
   "switch_view": {
@@ -637,7 +642,6 @@
     "message": "Veröffentlichung wird rückgängig gemacht …"
   },
   "update": {
-    "description": "Seitenvorschau aktualisieren",
     "message": "Aktualisieren"
   },
   "update_success": {
@@ -656,7 +660,6 @@
     "message": "Benutzer/in wechseln"
   },
   "whats_new": {
-    "description": "Onboarding-Menütitel",
     "message": "Neuigkeiten"
   },
   "yesterday_at": {

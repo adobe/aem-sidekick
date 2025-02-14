@@ -51,7 +51,6 @@
     "message": "Não é possível visualizar $1: $2"
   },
   "activate": {
-    "description": "Ativar a configuração",
     "message": "Ativar"
   },
   "activate_bulk_not_supported": {
@@ -70,7 +69,6 @@
     "message": "Versão do administrador: x.y.z"
   },
   "advanced": {
-    "description": "Modo de configuração avançada",
     "message": "Avançado"
   },
   "anonymous": {
@@ -197,14 +195,12 @@
     "message": "Adicionar este projeto"
   },
   "config_project_added": {
-    "description": "Projeto adicionado",
     "message": "$1 adicionado(s) com sucesso"
   },
   "config_project_disable": {
     "message": "Desativar este projeto"
   },
   "config_project_disabled": {
-    "description": "Projeto desabilitado",
     "message": "$1 desabilitado"
   },
   "config_project_disabled_headline": {
@@ -214,7 +210,6 @@
     "message": "Habilitar este projeto"
   },
   "config_project_enabled": {
-    "description": "Projeto habilitado",
     "message": "$1 habilitado"
   },
   "config_project_enabled_headline": {
@@ -248,7 +243,6 @@
     "message": "Remover este projeto"
   },
   "config_project_removed": {
-    "description": "Projeto removido",
     "message": "$1 removido(s) com sucesso"
   },
   "config_remove_project_headline": {
@@ -258,7 +252,6 @@
     "message": "Ativando configuração..."
   },
   "confirm": {
-    "description": "Cabeçalho modal de confirmação",
     "message": "Confirme"
   },
   "copied": {
@@ -426,6 +419,9 @@
   "error_status": {
     "message": "Falha ao buscar o status da página. Tente novamente mais tarde."
   },
+  "error_status_404": {
+    "message": "Falha ao obter o status da página. Certifique-se de que este documento esteja sendo compartilhado com o AEM."
+  },
   "error_unpublish": {
     "message": "Falha ao cancelar a publicação. Tente novamente mais tarde."
   },
@@ -487,7 +483,6 @@
     "message": "Nunca"
   },
   "next": {
-    "description": "Próximo slide de integração",
     "message": "Próximo"
   },
   "no_results": {
@@ -515,7 +510,6 @@
     "message": "Abrir no $1"
   },
   "open_preview": {
-    "description": "Abre o URL de visualização para uma determinada ramificação do GitHub",
     "message": "Abrir URL de visualização"
   },
   "open_url": {
@@ -599,11 +593,22 @@
   "share_description": {
     "message": "Compartilhe seu Sidekick"
   },
+  "site_forbidden": {
+    "message": "Acesso negado. Tente fazer logon com um usuário diferente ou peça permissões suficientes à administração."
+  },
+  "site_login_required": {
+    "message": "Faça logon para continuar."
+  },
+  "site_protected": {
+    "message": "Este site está protegido"
+  },
+  "site_relogin_required": {
+    "message": "Acesso expirado. Faça logon novamente para continuar."
+  },
   "source": {
     "message": "Origem"
   },
   "standard": {
-    "description": "Modo de configuração padrão",
     "message": "Padrão"
   },
   "switch_view": {
@@ -637,7 +642,6 @@
     "message": "Cancelando a publicação..."
   },
   "update": {
-    "description": "Atualizar a visualização de uma página",
     "message": "Atualizar"
   },
   "update_success": {
@@ -656,7 +660,6 @@
     "message": "Trocar usuário"
   },
   "whats_new": {
-    "description": "Título do menu de integração",
     "message": "Novidades"
   },
   "yesterday_at": {

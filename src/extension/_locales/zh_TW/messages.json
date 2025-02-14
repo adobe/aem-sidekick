@@ -51,7 +51,6 @@
     "message": "無法預覽 $1：$2"
   },
   "activate": {
-    "description": "啟動此設定",
     "message": "啟動"
   },
   "activate_bulk_not_supported": {
@@ -70,7 +69,6 @@
     "message": "管理員版本：x.y.z"
   },
   "advanced": {
-    "description": "進階設定模式",
     "message": "進階"
   },
   "anonymous": {
@@ -197,14 +195,12 @@
     "message": "新增此專案"
   },
   "config_project_added": {
-    "description": "專案已新增",
     "message": "$1 已成功新增"
   },
   "config_project_disable": {
     "message": "停用此專案"
   },
   "config_project_disabled": {
-    "description": "專案已停用",
     "message": "$1 已停用"
   },
   "config_project_disabled_headline": {
@@ -214,7 +210,6 @@
     "message": "啟用此專案"
   },
   "config_project_enabled": {
-    "description": "專案已啟用",
     "message": "$1 已啟用"
   },
   "config_project_enabled_headline": {
@@ -248,7 +243,6 @@
     "message": "移除此專案"
   },
   "config_project_removed": {
-    "description": "專案已移除",
     "message": "$1 已成功移除"
   },
   "config_remove_project_headline": {
@@ -258,7 +252,6 @@
     "message": "正在啟用設定…"
   },
   "confirm": {
-    "description": "確認強制回應標題",
     "message": "請確認"
   },
   "copied": {
@@ -426,6 +419,9 @@
   "error_status": {
     "message": "擷取頁面狀態失敗。請稍後再試。"
   },
+  "error_status_404": {
+    "message": "擷取頁面狀態失敗。請確定此文件正與 AEM 共用。"
+  },
   "error_unpublish": {
     "message": "取消發佈失敗。請稍後再試。"
   },
@@ -487,7 +483,6 @@
     "message": "從未"
   },
   "next": {
-    "description": "下一張上線投影片",
     "message": "下一步"
   },
   "no_results": {
@@ -515,7 +510,6 @@
     "message": "在 $1 中開啟"
   },
   "open_preview": {
-    "description": "開啟給定 GitHub 分支的預覽 URL",
     "message": "開啟預覽 URL"
   },
   "open_url": {
@@ -599,11 +593,22 @@
   "share_description": {
     "message": "共用您的 Sidekick"
   },
+  "site_forbidden": {
+    "message": "存取已遭拒。請嘗試使用不同的使用者登入，或向管理員要求足夠的權限。"
+  },
+  "site_login_required": {
+    "message": "請登入以繼續。"
+  },
+  "site_protected": {
+    "message": "此網站已受保護"
+  },
+  "site_relogin_required": {
+    "message": "存取已到期。請重新登入以繼續。"
+  },
   "source": {
     "message": "來源"
   },
   "standard": {
-    "description": "標準設定模式",
     "message": "標準"
   },
   "switch_view": {
@@ -637,7 +642,6 @@
     "message": "正在取消發佈…"
   },
   "update": {
-    "description": "更新頁面的預覽",
     "message": "更新"
   },
   "update_success": {
@@ -656,7 +660,6 @@
     "message": "切換使用者"
   },
   "whats_new": {
-    "description": "上線選單標題",
     "message": "新增功能"
   },
   "yesterday_at": {
