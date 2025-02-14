@@ -518,7 +518,7 @@
     "message": "Nie znaleziono dokumentu źródłowego"
   },
   "preview_never_updated": {
-    "message": "Nigdy nie podglądano"
+    "message": "Nie utworzono podglądu"
   },
   "live_never_updated": {
     "message": "Nigdy nie publikowano"
