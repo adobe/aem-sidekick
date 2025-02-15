@@ -19,6 +19,8 @@ import {
 import { urlCache } from './url-cache.js';
 import { updateUI } from './ui.js';
 import { getConfig } from './config.js';
+import { configureAuthAndCorsHeaders } from './auth.js';
+import { isGetAuthInfoTrustedOrigin } from './actions.js';
 
 /**
  * Loads the content script in the tab.
@@ -66,6 +68,12 @@ export async function checkTab(id) {
     const adminVersion = await getConfig('session', 'adminVersion');
 
     injectContentScript(id, matches, adminVersion);
+
+    if (!isGetAuthInfoTrustedOrigin(new URL(url).origin)) {
+      await configureAuthAndCorsHeaders(matches);
+    } else {
+      await configureAuthAndCorsHeaders('all');
+    }
 
     updateUI({
       id, url, config, matches,

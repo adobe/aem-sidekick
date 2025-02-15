@@ -28,16 +28,41 @@ function getRandomId() {
  * all requests from tools.aem.live and labs.aem.live.
  * @returns {Promise<void>}
  */
-export async function configureAuthAndCorsHeaders() {
+export async function configureAuthAndCorsHeaders(projectFilter) {
   try {
     // remove all rules first
     await chrome.declarativeNetRequest.updateSessionRules({
       removeRuleIds: (await chrome.declarativeNetRequest.getSessionRules())
         .map((rule) => rule.id),
     });
-    // find projects with auth tokens and add rules for each
-    const projects = await getConfig('session', 'projects') || [];
-    const addRulesPromises = projects.map(async ({
+
+    if (!projectFilter || projectFilter.length === 0) {
+      return;
+    }
+
+    const sessionProjects = await getConfig('session', 'projects') || [];
+
+    let result = [];
+    if (projectFilter !== 'all') {
+      projectFilter.forEach((project) => {
+        const sessionOrgProject = sessionProjects.find(
+          (sessionProject) => sessionProject.id === project.owner,
+        );
+        if (sessionOrgProject) {
+          result.push(sessionOrgProject);
+        }
+        const sessionSiteProject = sessionProjects.find(
+          (sessionProject) => sessionProject.id === `${project.owner}/${project.repo}`,
+        );
+        if (sessionSiteProject) {
+          result.push(sessionSiteProject);
+        }
+      });
+    } else {
+      result = sessionProjects;
+    }
+
+    const addRulesPromises = result.map(async ({
       owner, repo, authToken, siteToken,
     }) => {
       const rules = [];
@@ -166,7 +191,7 @@ export async function setAuthToken(
     const siteHandle = `${owner}/${repo}`;
     const siteExists = projects.find(({ id }) => id === siteHandle);
     if (authToken) {
-      authTokenExpiry *= 1000; // store in milliseconds
+      authTokenExpiry *= 1000;
       if (!orgExists) {
         projects.push({
           id: orgHandle,
@@ -189,12 +214,13 @@ export async function setAuthToken(
     }
     if (siteToken) {
       if (!siteExists) {
+        siteTokenExpiry *= 1000; // store in milliseconds
         projects.push({
           id: siteHandle,
           owner,
           repo,
           siteToken,
-          siteTokenExpiry: siteTokenExpiry * 1000, // store in milliseconds
+          siteTokenExpiry,
         });
       } else {
         const siteIndex = projects.findIndex(({ id }) => id === siteHandle);
@@ -207,6 +233,5 @@ export async function setAuthToken(
       projects.splice(siteIndex, 1);
     }
     await setConfig('session', { projects });
-    await configureAuthAndCorsHeaders();
   }
 }

@@ -20,7 +20,6 @@ import {
   internalActions,
   checkViewDocSource,
 } from './actions.js';
-import { configureAuthAndCorsHeaders } from './auth.js';
 
 chrome.action.onClicked.addListener(async () => {
   // toggle the sidekick when the action is clicked
@@ -35,8 +34,8 @@ chrome.tabs.onUpdated.addListener(async (id, info, tab) => {
   }
 });
 
-chrome.tabs.onActivated.addListener(({ tabId: id }) => {
-  checkTab(id);
+chrome.tabs.onActivated.addListener((tab) => {
+  checkTab(tab.tabId);
 });
 
 // external messaging API to execute actions
@@ -74,8 +73,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   sendResponse(null);
   return false;
 });
-
-// add existing auth token headers
-configureAuthAndCorsHeaders();
 
 log.info('sidekick initialized');
