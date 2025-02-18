@@ -138,7 +138,7 @@ function isTrustedOrigin(origin) {
  * Returns the organizations the user is currently authenticated for.
  * @returns {Promise<string[]>} The organizations
  */
-async function getAuthInfo(message, sender) {
+async function getAuthInfo(_, sender) {
   const { origin } = new URL(sender.url);
 
   if (!isTrustedOrigin(origin)) {
@@ -155,14 +155,18 @@ async function getAuthInfo(message, sender) {
  * Returns the configured sites.
  * @returns {Promise<Object[]>} The sites
  */
-async function getSites(message, sender) {
+async function getSites(_, sender) {
   const { origin } = new URL(sender.url);
 
   if (!isTrustedOrigin(origin)) {
     return []; // don't give out any information
   }
 
-  return await getConfig('sync', 'projects') || [];
+  return (await getConfig('sync', 'projects') || [])
+    .map((handle) => {
+      const [org, site] = handle.split('/');
+      return { org, site };
+    });
 }
 
 /**

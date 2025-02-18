@@ -163,6 +163,12 @@ describe('Test actions', () => {
       'foo1/baz',
       'foo2/baz',
     ];
+    const expectedOutput = [
+      { org: 'foo', site: 'bar' },
+      { org: 'foo1', site: 'baz' },
+      { org: 'foo2', site: 'baz' },
+    ];
+
     let resp;
 
     // without projects
@@ -177,13 +183,13 @@ describe('Test actions', () => {
 
     // trusted actors
     resp = await externalActions.getSites({}, mockTab('https://tools.aem.live/foo'));
-    expect(resp).to.deep.equal(projects);
+    expect(resp).to.deep.equal(expectedOutput);
 
     resp = await externalActions.getSites({}, mockTab('https://labs.aem.live/foo'));
-    expect(resp).to.deep.equal(projects);
+    expect(resp).to.deep.equal(expectedOutput);
 
     resp = await externalActions.getSites({}, mockTab('https://feature--helix-labs-website--adobe.aem.page/feature'));
-    expect(resp).to.deep.equal(projects);
+    expect(resp).to.deep.equal(expectedOutput);
 
     // untrusted actors
     resp = await externalActions.getSites({}, mockTab('https://evil.live'));
