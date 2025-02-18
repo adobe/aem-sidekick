@@ -295,7 +295,7 @@ export class JSONView extends LitElement {
 
       tableContainer.appendChild(table);
     } else {
-      const noResults = `
+      const noResults = this.filterText ? `
         <sp-illustrated-message
             heading="${i18n(this.languageDict, 'no_results')}"
             description="${i18n(this.languageDict, 'no_results_subheading')}"
@@ -308,7 +308,22 @@ export class JSONView extends LitElement {
             </g>
           </svg>
         </sp-illustrated-message>
-      `;
+        ` : `
+        <sp-illustrated-message
+          heading="${i18n(this.languageDict, 'no_data')}"
+          description="${i18n(this.languageDict, 'no_data_subheading')}"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="100.25" height="87.2">
+            <path d="M94.55,87.2H5.85c-3.1,0-5.7-2.5-5.7-5.7V5.7C.15,2.6,2.65,0,5.85,0h88.7c3.1,0,5.7,2.5,5.7,5.7v75.8c0,3.1-2.5,5.7-5.7,5.7ZM5.85.5C2.95.5.65,2.8.65,5.7v75.8c0,2.9,2.3,5.2,5.2,5.2h88.7c2.9,0,5.2-2.3,5.2-5.2V5.7c0-2.9-2.3-5.2-5.2-5.2H5.85Z"/>
+            <rect x=".45" y="15.5" width="99.5" height=".5"/>
+            <rect x=".45" y="33.1" width="99.5" height=".5"/>
+            <rect x=".45" y="51.2" width="99.5" height=".5"/>
+            <rect x=".45" y="69.4" width="99.5" height=".5"/>
+            <rect x="33.33" y="15.1" width=".5" height="71.8"/>
+            <rect x="66.67" y="15.1" width=".5" height="71.8"/>
+          </svg>
+        </sp-illustrated-message>
+        `;
       tableContainer.innerHTML = noResults;
     }
 
