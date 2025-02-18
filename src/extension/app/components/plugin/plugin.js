@@ -271,7 +271,7 @@ export class Plugin {
         src.searchParams.set('theme', this.appStore.theme);
         return html`
           <overlay-trigger receivesFocus="true" offset="-3">
-            <sk-action-button slot="trigger">${this.getButtonText()}</sk-action-button>
+            <sk-action-button quiet slot="trigger">${this.getButtonText()}</sk-action-button>
             <sp-popover slot="click-content" placement="top" tip style=${ifDefined(this.config.popoverRect)}>
               <div class="content">
                 <iframe title="Popover content" src=${src}></iframe>
