@@ -337,6 +337,8 @@ export class AppStore {
             passConfig,
             passReferrer,
             isPalette,
+            isPopover,
+            popoverRect,
             event: eventName,
             environments,
             excludePaths,
@@ -417,7 +419,10 @@ export class AppStore {
             pinned,
             confirm,
             container: containerId,
+            url,
             isBadge,
+            isPopover,
+            popoverRect,
             badgeVariant,
           };
 

@@ -18,6 +18,8 @@ import '@spectrum-web-components/divider/sp-divider.js';
 import '@spectrum-web-components/dialog/sp-dialog-base.js';
 import '@spectrum-web-components/menu/sp-menu-divider.js';
 import '@spectrum-web-components/overlay/sp-overlay.js';
+import '@spectrum-web-components/overlay/overlay-trigger.js';
+import '@spectrum-web-components/popover/sp-popover.js';
 import '@spectrum-web-components/picker/sp-picker.js';
 import '@spectrum-web-components/status-light/sp-status-light.js';
 import '@spectrum-web-components/switch/sp-switch.js';

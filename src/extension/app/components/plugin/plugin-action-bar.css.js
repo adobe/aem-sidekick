@@ -143,6 +143,18 @@ export const style = css`
     opacity: 0.5;
   }
 
+  action-bar overlay-trigger sp-popover .content {
+    padding: 10px;
+    height: 100%;
+  }
+
+  action-bar overlay-trigger sp-popover .content iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    color-scheme: auto;
+  }
+
   #plugin-menu sp-menu-group [slot="header"] {
     text-transform: uppercase;
     font-size: var(--spectrum-global-dimension-font-size-75);

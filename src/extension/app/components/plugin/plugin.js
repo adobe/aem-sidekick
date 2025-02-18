@@ -13,6 +13,7 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**
@@ -151,6 +152,14 @@ export class Plugin {
   }
 
   /**
+   * Is this plugin a popover?
+   * @returns {boolean} True if the plugin is a popover
+   */
+  isPopover() {
+    return this.config.isPopover;
+  }
+
+  /**
    * Adds a plugin to this plugin's children.
    * @param {Plugin} plugin The plugin to add
    */
@@ -257,13 +266,29 @@ export class Plugin {
         `;
       }
 
+      if (this.isPopover() && this.config.url) {
+        const src = new URL(this.config.url);
+        src.searchParams.set('theme', this.appStore.theme);
+        return html`
+          <overlay-trigger receivesFocus="true" offset="-3">
+            <sk-action-button slot="trigger">${this.getButtonText()}</sk-action-button>
+            <sp-popover slot="click-content" placement="top" tip style=${ifDefined(this.config.popoverRect)}>
+              <div class="content">
+                <iframe title="Popover content" src=${src}></iframe>
+              </div>
+            </sp-popover>
+          </overlay-trigger>`;
+      }
+
       return html`
         <sk-action-button
           class=${this.getId()}
           .disabled=${!this.isEnabled()}
           quiet
           @click=${(evt) => this.onButtonClick(evt)}
-        >${this.getButtonText()}</sk-action-button>
+        >
+          ${this.getButtonText()}
+        </sk-action-button>
       `;
     }
 
