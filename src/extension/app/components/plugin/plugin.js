@@ -267,14 +267,29 @@ export class Plugin {
       }
 
       if (this.isPopover() && this.config.url) {
-        const src = new URL(this.config.url);
+        const {
+          url, popoverRect, title, titleI18n,
+        } = this.config;
+
+        const popoverTitle = titleI18n?.[this.appStore.siteStore.lang] || title;
+        const src = new URL(url);
         src.searchParams.set('theme', this.appStore.theme);
+
+        let filteredPopoverRect = popoverRect;
+        if (popoverRect) {
+          filteredPopoverRect = `${popoverRect
+            .split(';')
+            .map((s) => s.trim())
+            .filter((s) => s.startsWith('width:') || s.startsWith('height:'))
+            .join('; ')};`;
+        }
+
         return html`
           <overlay-trigger receivesFocus="true" offset="-3">
             <sk-action-button quiet slot="trigger">${this.getButtonText()}</sk-action-button>
-            <sp-popover slot="click-content" placement="top" tip style=${ifDefined(this.config.popoverRect)}>
+            <sp-popover slot="click-content" placement="top" tip style=${ifDefined(filteredPopoverRect)}>
               <div class="content">
-                <iframe title="Popover content" src=${src}></iframe>
+                <iframe title=${popoverTitle || 'Popover content'} src=${src}></iframe>
               </div>
             </sp-popover>
           </overlay-trigger>`;

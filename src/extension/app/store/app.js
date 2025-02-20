@@ -380,6 +380,8 @@ export class AppStore {
           const plugin = {
             custom: true,
             id,
+            title,
+            titleI18n,
             condition,
             button: {
               text: (titleI18n && titleI18n[lang]) || title,
