@@ -51,9 +51,10 @@ const TEST_BADGE_CONFIG = {
 
 const TEST_POPOVER_CONFIG = {
   id: 'test',
+  title: 'Test Popover',
   isPopover: true,
   popoverRect: 'width: 100px; height: 100px;',
-  url: 'https://labs.aem.live/tools/snapshot-admin/palette.html',
+  url: 'https://labs.aem.live/tools/snapshot-admin/palette.html?foo=bar',
   button: {
     text: 'Test Child',
     action: () => {},
@@ -137,6 +138,7 @@ describe('Plugin', () => {
   });
 
   it('renders a popover plugin', async () => {
+    appStore.theme = 'dark';
     const plugin = new Plugin({ ...TEST_POPOVER_CONFIG }, appStore);
 
     const container = document.createElement('div');
@@ -158,7 +160,9 @@ describe('Plugin', () => {
 
     const iframe = container.querySelector('iframe');
     expect(iframe).to.exist;
+    expect(iframe.getAttribute('title')).to.equal(TEST_POPOVER_CONFIG.title);
     expect(iframe.getAttribute('src')).to.include(TEST_POPOVER_CONFIG.url);
+    expect(iframe.getAttribute('src')).to.include('?foo=bar&theme=dark');
   });
 
   it('renders a popover plugin with filtered popoverRect', async () => {
