@@ -61,7 +61,7 @@ export async function configureAuthAndCorsHeaders() {
           },
         });
 
-        const corsFilters = [`^https://[0-9a-z-]+--[0-9a-z-]+--${owner}.aem.(live|page)/.*`];
+        const corsFilters = [`^https://[0-9a-z-]+--[0-9a-z-]+--${owner}.aem.(page|live|reviews)/.*`];
         const project = await getConfig('sync', `${owner}/${repo}`);
         if (project) {
           const { host, previewHost, liveHost } = project;
@@ -108,7 +108,7 @@ export async function configureAuthAndCorsHeaders() {
             }],
           },
           condition: {
-            regexFilter: `^https://[a-z0-9-]+--${repo}--${owner}.aem.(page|live)/.*`,
+            regexFilter: `^https://[a-z0-9-]+--${repo}--${owner}.aem.(page|live|reviews)/.*`,
             requestMethods: ['get', 'post'],
             resourceTypes: [
               'main_frame',

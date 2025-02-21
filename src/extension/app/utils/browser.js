@@ -91,7 +91,7 @@ export function matchProjectHost(baseHost, host) {
     return true;
   }
   // check for matching domain suffixes
-  const previewSuffixes = ['.aem.page', '.hlx.page'];
+  const previewSuffixes = ['.aem.page', '.hlx.page', 'aem.reviews'];
   const liveSuffixes = ['.aem.live', '.hlx.live'];
   const isPreview = previewSuffixes.some((suffix) => baseHost.endsWith(suffix))
       && previewSuffixes.some((suffix) => host.endsWith(suffix));
@@ -232,16 +232,16 @@ export function detectBrowser(userAgent) {
 }
 
 /**
- * Detects an AEM 401 error page.
+ * Detects an AEM error page.
  * @param {Location} location The location object
  * @aparm {Document} document The document object
- * @returns {boolean} True if 401 page
+ * @returns {boolean} True if error page
  */
-export function is401Page(location, document) {
+export function isErrorPage(location, document) {
   return ((location.host.endsWith('.aem.page')
     || location.host.endsWith('.aem.live')
+    || location.host.endsWith('.aem.reviews')
     || location.hostname === 'localhost')
     && !document.querySelector('body > main > div')
-    && document.querySelector('body > pre') === document.body.children[1]
-    && document.querySelector('body > pre').textContent.trim() === '401 Unauthorized');
+    && document.querySelector('body > pre'));
 }

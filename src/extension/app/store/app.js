@@ -20,8 +20,11 @@ import { AdminClient } from '../utils/admin-client.js';
 import sampleRUM from '../../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
 import {
-  getLocation, matchProjectHost, isSupportedFileExtension, globToRegExp,
-  is401Page,
+  getLocation,
+  matchProjectHost,
+  isSupportedFileExtension,
+  globToRegExp,
+  isErrorPage,
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
@@ -1086,11 +1089,7 @@ export class AppStore {
       },
     } = this;
     let view;
-    if ((this.location.host.endsWith('.aem.page')
-      || this.location.host.endsWith('.aem.live')
-      || this.location.hostname === 'localhost')
-      && !document.querySelector('body > main > div')
-      && document.querySelector('body > pre') === document.body.children[1]) {
+    if (isErrorPage(location, document)) {
       // assert viewport meta tag
       if (!document.head.querySelector('meta[name="viewport"]')) {
         const meta = document.createElement('meta');
@@ -1285,7 +1284,7 @@ export class AppStore {
           this.setupPlugins();
           this.fireEvent(EXTERNAL_EVENTS.LOGGED_IN, this.status.profile);
           // refresh page with site token in case of 401
-          if (is401Page(this.location, window.document)) {
+          if (isErrorPage(this.location, window.document)) {
             this.reloadPage();
           } else {
             this.fetchStatus();
