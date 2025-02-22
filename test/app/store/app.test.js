@@ -1537,6 +1537,7 @@ describe('Test App Store', () => {
     let toastSpy;
 
     beforeEach(async () => {
+      document.body.innerHTML = '';
       instance = appStore;
       instance.languageDict = await fetchLanguageDict(undefined, 'en');
       const config = {
