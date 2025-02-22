@@ -255,7 +255,7 @@ export class SiteStore {
     const domain = previewHost?.endsWith('.aem.page') ? 'aem' : 'hlx';
     const stdInnerHost = hostPrefix ? `${hostPrefix}.${domain}.page` : null;
     const stdOuterHost = hostPrefix ? `${hostPrefix}.${domain}.live` : null;
-    const reviewsHost = hostPrefix ? `${hostPrefix}.aem.reviews` : null;
+    const reviewHost = hostPrefix ? `${hostPrefix}.aem.reviews` : null;
     const devUrl = new URL(devOrigin);
 
     // default views
@@ -291,7 +291,7 @@ export class SiteStore {
     this.outerHost = liveHost || legacyLiveHost || stdOuterHost;
     this.stdInnerHost = stdInnerHost;
     this.stdOuterHost = stdOuterHost;
-    this.reviewsHost = reviewsHost;
+    this.reviewHost = reviewHost;
     this.host = publicHost;
     this.project = project;
     this.devUrl = devUrl;
@@ -322,7 +322,7 @@ export class SiteStore {
       liveHost: this.liveHost,
       outerHost: this.outerHost,
       stdOuterHost: this.stdOuterHost,
-      reviewsHost: this.reviewsHost,
+      reviewHost: this.reviewHost,
       devOrigin: this.devOrigin,
       adminVersion: this.adminVersion,
       lang: this.lang,
