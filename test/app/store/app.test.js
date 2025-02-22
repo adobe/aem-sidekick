@@ -65,6 +65,7 @@ describe('Test App Store', () => {
   let appStore;
 
   beforeEach(() => {
+    document.body.innerHTML = '';
     appStore = new AppStore();
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
     sidekickTest
@@ -1537,7 +1538,6 @@ describe('Test App Store', () => {
     let toastSpy;
 
     beforeEach(async () => {
-      document.body.innerHTML = '';
       instance = appStore;
       instance.languageDict = await fetchLanguageDict(undefined, 'en');
       const config = {
