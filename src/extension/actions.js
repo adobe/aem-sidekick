@@ -110,7 +110,7 @@ export async function showSidekickNotification(tabId, data, callback) {
  * @param {string} origin
  * @returns {boolean} true - trusted / false - untrusted
  */
-function isGetAuthInfoTrustedOrigin(origin) {
+function isTrustedOrigin(origin) {
   const TRUSTED_ORIGINS = [
     ADMIN_ORIGIN,
     'https://labs.aem.live',
@@ -138,10 +138,10 @@ function isGetAuthInfoTrustedOrigin(origin) {
  * Returns the organizations the user is currently authenticated for.
  * @returns {Promise<string[]>} The organizations
  */
-async function getAuthInfo(message, sender) {
+async function getAuthInfo(_, sender) {
   const { origin } = new URL(sender.url);
 
-  if (!isGetAuthInfoTrustedOrigin(origin)) {
+  if (!isTrustedOrigin(origin)) {
     return []; // don't give out any information
   }
 
@@ -149,6 +149,24 @@ async function getAuthInfo(message, sender) {
   return projects
     .filter(({ authToken, authTokenExpiry }) => !!authToken && authTokenExpiry > Date.now() / 1000)
     .map(({ owner }) => owner);
+}
+
+/**
+ * Returns the configured sites.
+ * @returns {Promise<Object[]>} The sites
+ */
+async function getSites(_, sender) {
+  const { origin } = new URL(sender.url);
+
+  if (!isTrustedOrigin(origin)) {
+    return []; // don't give out any information
+  }
+
+  return (await getConfig('sync', 'projects') || [])
+    .map((handle) => {
+      const [org, site] = handle.split('/');
+      return { org, site };
+    });
 }
 
 /**
@@ -306,4 +324,5 @@ export const internalActions = {
 export const externalActions = {
   updateAuthToken,
   getAuthInfo,
+  getSites,
 };
