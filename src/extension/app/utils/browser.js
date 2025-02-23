@@ -68,8 +68,8 @@ export function getProjectDetails(host) {
   if (details.length < 2) {
     throw new Error('not a project host');
   }
-  if (details.length === 3) {
-    // lose ref
+  while (details.length > 2) {
+    // keep only repo and owner
     details.shift();
   }
   return details;
