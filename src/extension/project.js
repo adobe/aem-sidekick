@@ -166,7 +166,7 @@ export async function getProjectFromUrl(tab) {
     try {
       // check if hlx.page, hlx.live, aem.page, aem.live or aem.reviews url
       const { host } = new URL(url);
-      const res = /(.*)--(.*)--(.*)\.(aem|hlx)\.(page|live|reviews)/.exec(host);
+      const res = /(.*--)?(.*)--(.*)--(.*)\.(aem|hlx)\.(page|live|reviews)/.exec(host);
       const [, urlRef, urlRepo, urlOwner] = res || [];
       if (urlOwner && urlRepo && urlRef) {
         return {
@@ -247,12 +247,16 @@ export async function getProjectEnv({
     const {
       previewHost,
       liveHost,
+      reviewHost,
       host,
       project,
       contentSourceUrl,
     } = await res.json();
     if (previewHost) {
       env.previewHost = previewHost;
+    }
+    if (reviewHost) {
+      env.reviewHost = reviewHost;
     }
     if (liveHost) {
       env.liveHost = liveHost;
@@ -386,7 +390,7 @@ export function isValidHost(host, owner, repo) {
   const [third, second, first] = host.split('.');
   const any = '([0-9a-z-]+)';
   return host.endsWith(first)
-    && ['page', 'live'].includes(first)
+    && ['page', 'reviews', 'live'].includes(first)
     && ['aem', 'hlx'].includes(second)
     && new RegExp(`--${repo || any}--${owner || any}$`, 'i').test(third);
 }
@@ -399,7 +403,13 @@ export function isValidHost(host, owner, repo) {
  */
 function getConfigDetails(host) {
   if (isValidHost(host)) {
-    return host.split('.')[0].split('--');
+    const details = host.split('.')[0].split('--');
+    if (details.length >= 3) {
+      const owner = details.pop();
+      const repo = details.pop();
+      const ref = details.pop();
+      return [ref, repo, owner];
+    }
   }
   return [];
 }
@@ -471,11 +481,13 @@ export async function getProjectMatches(configs, tab) {
         repo,
         host: prodHost,
         previewHost,
+        reviewHost,
         liveHost,
       } = cfg;
       return checkHost === prodHost // production host
-        || checkHost === previewHost // custom inner
-        || checkHost === liveHost // custom outer
+        || checkHost === previewHost // custom preview host
+        || checkHost === reviewHost // custom review host
+        || checkHost === liveHost // custom live host
         || isValidHost(checkHost, owner, repo); // inner or outer
     });
   // check url cache if no matches
