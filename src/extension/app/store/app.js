@@ -373,6 +373,7 @@ export class AppStore {
               edit: appStore.isEditor,
               preview: appStore.isPreview,
               live: appStore.isLive,
+              review: appStore.isReview,
               prod: appStore.isProd,
             };
             return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
@@ -454,8 +455,8 @@ export class AppStore {
   }
 
   /**
-   * Checks if the current location is an inner CDN URL.
-   * @returns {boolean} <code>true</code> if inner CDN URL, else <code>false</code>
+   * Checks if the current location is a preview URL.
+   * @returns {boolean} <code>true</code> if preview URL, else <code>false</code>
    */
   isPreview() {
     const { siteStore, location } = this;
@@ -464,8 +465,18 @@ export class AppStore {
   }
 
   /**
-   * Checks if the current location is an outer CDN URL.
-   * @returns {boolean} <code>true</code> if outer CDN URL, else <code>false</code>
+   * Checks if the current location is a review URL.
+   * @returns {boolean} <code>true</code> if review URL, else <code>false</code>
+   */
+  isReview() {
+    const { siteStore, location } = this;
+    return matchProjectHost(siteStore.reviewHost, location.host)
+      || matchProjectHost(siteStore.stdReviewHost, location.host);
+  }
+
+  /**
+   * Checks if the current location is a live URL.
+   * @returns {boolean} <code>true</code> if live URL, else <code>false</code>
    */
   isLive() {
     const { siteStore, location } = this;
@@ -498,7 +509,7 @@ export class AppStore {
   isProject() {
     const { siteStore } = this;
     return siteStore.owner && siteStore.repo
-        && (this.isDev() || this.isPreview() || this.isLive() || this.isProd());
+      && (this.isDev() || this.isPreview() || this.isReview() || this.isLive() || this.isProd());
   }
 
   /**
