@@ -84,6 +84,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       dev: this.appStore.i18n('development'),
       edit: this.appStore.i18n('source'),
       preview: this.appStore.i18n('preview'),
+      review: this.appStore.i18n('review'),
       live: this.appStore.i18n('live'),
       prod: this.appStore.i18n('production'),
     };
@@ -95,6 +96,8 @@ export class EnvironmentSwitcher extends ConnectedElement {
       this.currentEnv = 'dev';
     } else if (this.appStore.isPreview()) {
       this.currentEnv = 'preview';
+    } else if (this.appStore.isReview()) {
+      this.currentEnv = 'review';
     } else if (this.appStore.isLive()) {
       this.currentEnv = 'live';
     } else if (this.appStore.isProd()) {
@@ -239,6 +242,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
     const devMenuItem = this.createMenuItem('dev', {}, previewLastMod);
     const editMenuItem = this.createMenuItem('edit', {}, editLastMod);
     const previewMenuItem = this.createMenuItem('preview', {}, previewLastMod);
+    const reviewMenuItem = this.createMenuItem('review', {}, previewLastMod);
     const liveMenuItem = this.createMenuItem('live', {}, liveLastMod);
     const prodMenuItem = this.createMenuItem('prod', {}, liveLastMod);
 
@@ -276,6 +280,16 @@ export class EnvironmentSwitcher extends ConnectedElement {
           environmentsHeader,
           editMenuItem,
           previewMenuItem,
+          liveMenuItem,
+        );
+        break;
+      case 'review':
+        reviewMenuItem.classList.add('current-env');
+        picker.append(
+          environmentsHeader,
+          editMenuItem,
+          previewMenuItem,
+          reviewMenuItem,
           liveMenuItem,
         );
         break;

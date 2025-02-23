@@ -47,7 +47,8 @@ export const style = css`
     color: var(--spectrum2-sidekick-color);
   }
 
-  :host(.current-env.env-preview){
+  :host(.current-env.env-preview),
+  :host(.current-env.env-review) {
     background-color: var(--spectrum2-preview-background-default);
     border: 1px solid var(--spectrum2-preview-border-default);
     border-radius: var(--spectrum2-default-border-radius);
@@ -56,6 +57,7 @@ export const style = css`
 
   :host(.current-env.env-dev) #label,
   :host(.current-env.env-preview) #label,
+  :host(.current-env.env-review) #label,
   :host(.current-env.env-live) #label,
   :host(.current-env.env-prod) #label {
     color: var(--spectrum-gray-800);
