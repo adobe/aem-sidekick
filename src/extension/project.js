@@ -404,12 +404,10 @@ export function isValidHost(host, owner, repo) {
 function getConfigDetails(host) {
   if (isValidHost(host)) {
     const details = host.split('.')[0].split('--');
-    if (details.length >= 3) {
-      const owner = details.pop();
-      const repo = details.pop();
-      const ref = details.pop();
-      return [ref, repo, owner];
-    }
+    const owner = details.pop();
+    const repo = details.pop();
+    const ref = details.pop();
+    return [ref, repo, owner];
   }
   return [];
 }
