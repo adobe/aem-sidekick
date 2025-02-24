@@ -47,12 +47,18 @@ export const style = css`
     color: var(--spectrum2-sidekick-color);
   }
 
-  :host(.current-env.env-preview),
-  :host(.current-env.env-review) {
+  :host(.current-env.env-preview) {
     background-color: var(--spectrum2-preview-background-default);
     border: 1px solid var(--spectrum2-preview-border-default);
     border-radius: var(--spectrum2-default-border-radius);
     --mod-menu-item-background-color-hover: var(--spectrum2-preview-background-hover);
+  }
+
+  :host(.current-env.env-review) {
+    background-color: var(--spectrum2-review-background-default);
+    border: 1px solid var(--spectrum2-review-border-default);
+    border-radius: var(--spectrum2-default-border-radius);
+    --mod-menu-item-background-color-hover: var(--spectrum2-review-background-hover);
   }
 
   :host(.current-env.env-dev) #label,

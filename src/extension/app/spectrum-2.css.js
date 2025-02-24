@@ -69,6 +69,13 @@ export const spectrum2 = css`
     --spectrum2-preview-border-hover: var(--preview-border-hover-dark);
     --spectrum2-preview-border-open: var(--preview-border-open-dark);
 
+    --spectrum2-review-background-default: var(--preview-background-default-dark);
+    --spectrum2-review-background-hover: var(--preview-background-hover-dark);
+    --spectrum2-review-content-default: var(--preview-content-default-dark);
+    --spectrum2-review-border-default: var(--preview-border-default-dark);
+    --spectrum2-review-border-hover: var(--preview-border-hover-dark);
+    --spectrum2-review-border-open: var(--preview-border-open-dark);
+
     --spectrum2-live-content-default: var(--live-content-default-dark);
     --spectrum2-live-background-default: var(--live-background-default-dark);
     --spectrum2-live-background-hover: var(--live-background-hover-dark);
@@ -198,6 +205,13 @@ export const spectrum2 = css`
     --spectrum2-preview-border-default: var(--preview-border-default-light);
     --spectrum2-preview-border-hover: var(--preview-border-hover-light);
     --spectrum2-preview-border-open: var(--preview-border-open-light);
+
+    --spectrum2-review-background-default: var(--preview-background-default-light);
+    --spectrum2-review-background-hover: var(--preview-background-hover-light);
+    --spectrum2-review-content-default: var(--preview-content-default-light);
+    --spectrum2-review-border-default: var(--preview-border-default-light);
+    --spectrum2-review-border-hover: var(--preview-border-hover-light);
+    --spectrum2-review-border-open: var(--preview-border-open-light);
 
     --spectrum2-live-content-default: var(--live-content-default-light);
     --spectrum2-live-background-default: var(--live-background-default-light);
