@@ -485,6 +485,12 @@
   "next": {
     "message": "Weiter"
   },
+  "no_data": {
+    "message": "Keine Daten"
+  },
+  "no_data_subheading": {
+    "message": "Dieses Blatt ist leer"
+  },
   "no_results": {
     "message": "Keine Ergebnisse gefunden"
   },

@@ -485,6 +485,12 @@
   "next": {
     "message": "다음"
   },
+  "no_data": {
+    "message": "데이터 없음"
+  },
+  "no_data_subheading": {
+    "message": "이 시트는 비어 있습니다."
+  },
   "no_results": {
     "message": "검색 결과 없음"
   },
