@@ -49,6 +49,7 @@ export const HelixSecondLevelDomains = {
 export const HelixMockEnvironments = {
   DEV: 'dev',
   PREVIEW: 'preview',
+  REVIEW: 'review',
   LIVE: 'live',
   PROD: 'prod',
 };
@@ -103,6 +104,7 @@ export function getDefaultHelixEnviromentLocations(contentType, sld) {
       return {
         dev: 'http://localhost:3000/',
         preview: `https://main--aem-boilerplate--adobe.${sld}.page`,
+        review: 'https://default--main--aem-boilerplate--adobe.aem.reviews',
         live: `https://main--aem-boilerplate--adobe.${sld}.live`,
         prod: 'https://www.aemboilerplate.com',
       };
@@ -110,6 +112,7 @@ export function getDefaultHelixEnviromentLocations(contentType, sld) {
       return {
         dev: 'http://localhost:3000/placeholders.json',
         preview: `https://main--aem-boilerplate--adobe.${sld}.page/placeholders.json`,
+        review: 'https://default--main--aem-boilerplate--adobe.aem.reviews/placeholders.json',
         live: `https://main--aem-boilerplate--adobe.${sld}.live/placeholders.json`,
         prod: 'https://www.aemboilerplate.com/placeholders.json',
       };
@@ -117,6 +120,7 @@ export function getDefaultHelixEnviromentLocations(contentType, sld) {
       return {
         dev: 'http://localhost:3000/media_foobar.png?width=750&format=png&optimize=medium',
         preview: `https://main--aem-boilerplate--adobe.${sld}.page/media_foobar.png?width=750&format=png&optimize=medium`,
+        review: 'https://default--main--aem-boilerplate--adobe.aem.reviews/media_foobar.png?width=750&format=png&optimize=medium',
         live: `https://main--aem-boilerplate--adobe.${sld}.live/media_foobar.png?width=750&format=png&optimize=medium`,
         prod: 'https://www.aemboilerplate.com/media_foobar.png?width=750&format=png&optimize=medium',
       };
