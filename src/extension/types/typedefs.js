@@ -110,7 +110,7 @@
  * @prop {boolean} [isPalette] Determines whether a URL is opened in a palette instead of a new tab
  * @prop {string} [paletteRect] The dimensions and position of a palette (optional)
  * @prop {boolean} [isPopover] Determines whether a URL is opened in a popover instead of a new tab
- * @prop {string} [popoverRect] The dimensions and position of a popover (optional)
+ * @prop {string} [popoverRect] The dimensions of a popover (optional)
  * @prop {boolean} [isBadge] Determines whether the plugin is a badge (optional)
  * @prop {string} [badgeVariant] The color variant of the badge (optional)
  * @prop {string[]} [environments] Specifies when to show this plugin (admin, edit, dev, preview, live, prod)
