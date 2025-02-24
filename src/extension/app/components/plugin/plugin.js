@@ -13,6 +13,7 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**
@@ -151,6 +152,14 @@ export class Plugin {
   }
 
   /**
+   * Is this plugin a popover?
+   * @returns {boolean} True if the plugin is a popover
+   */
+  isPopover() {
+    return this.config.isPopover;
+  }
+
+  /**
    * Adds a plugin to this plugin's children.
    * @param {Plugin} plugin The plugin to add
    */
@@ -257,13 +266,44 @@ export class Plugin {
         `;
       }
 
+      if (this.isPopover() && this.config.url) {
+        const {
+          url, popoverRect, title, titleI18n,
+        } = this.config;
+
+        const popoverTitle = titleI18n?.[this.appStore.siteStore.lang] || title;
+        const src = new URL(url);
+        src.searchParams.set('theme', this.appStore.theme);
+
+        let filteredPopoverRect = popoverRect;
+        if (popoverRect) {
+          filteredPopoverRect = `${popoverRect
+            .split(';')
+            .map((s) => s.trim())
+            .filter((s) => s.startsWith('width:') || s.startsWith('height:'))
+            .join('; ')};`;
+        }
+
+        return html`
+          <overlay-trigger receivesFocus="true" offset="-3">
+            <sk-action-button quiet slot="trigger">${this.getButtonText()}</sk-action-button>
+            <sp-popover slot="click-content" placement="top" tip style=${ifDefined(filteredPopoverRect)}>
+              <div class="content">
+                <iframe title=${popoverTitle || 'Popover content'} src=${src}></iframe>
+              </div>
+            </sp-popover>
+          </overlay-trigger>`;
+      }
+
       return html`
         <sk-action-button
           class=${this.getId()}
           .disabled=${!this.isEnabled()}
           quiet
           @click=${(evt) => this.onButtonClick(evt)}
-        >${this.getButtonText()}</sk-action-button>
+        >
+          ${this.getButtonText()}
+        </sk-action-button>
       `;
     }
 
