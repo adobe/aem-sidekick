@@ -340,6 +340,8 @@ export class AppStore {
             passConfig,
             passReferrer,
             isPalette,
+            isPopover,
+            popoverRect,
             event: eventName,
             environments,
             excludePaths,
@@ -382,6 +384,8 @@ export class AppStore {
           const plugin = {
             custom: true,
             id,
+            title,
+            titleI18n,
             condition,
             button: {
               text: (titleI18n && titleI18n[lang]) || title,
@@ -421,7 +425,10 @@ export class AppStore {
             pinned,
             confirm,
             container: containerId,
+            url,
             isBadge,
+            isPopover,
+            popoverRect,
             badgeVariant,
           };
 

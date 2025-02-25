@@ -12,6 +12,7 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
 import { expect } from '@open-wc/testing';
+import { render } from 'lit';
 import chromeMock from '../../../mocks/chrome.js';
 import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
@@ -42,6 +43,18 @@ const TEST_BADGE_CONFIG = {
   id: 'test',
   isBadge: true,
   badgeVariant: 'orange',
+  button: {
+    text: 'Test Child',
+    action: () => {},
+  },
+};
+
+const TEST_POPOVER_CONFIG = {
+  id: 'test',
+  title: 'Test Popover',
+  isPopover: true,
+  popoverRect: 'width: 100px; height: 100px;',
+  url: 'https://labs.aem.live/tools/snapshot-admin/palette.html?foo=bar',
   button: {
     text: 'Test Child',
     action: () => {},
@@ -122,6 +135,66 @@ describe('Plugin', () => {
       container: 'tools',
     }, appStore);
     parent.append(child);
+  });
+
+  it('renders a popover plugin', async () => {
+    appStore.theme = 'dark';
+    const plugin = new Plugin({ ...TEST_POPOVER_CONFIG }, appStore);
+
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+
+    // Wait for next time to let lit process the update
+    await Promise.resolve();
+
+    const overlayTrigger = container.querySelector('overlay-trigger');
+    expect(overlayTrigger).to.exist;
+    expect(overlayTrigger.getAttribute('offset')).to.equal('-3');
+
+    const popover = container.querySelector('sp-popover');
+    expect(popover).to.exist;
+    expect(popover.getAttribute('placement')).to.equal('top');
+
+    const popoverStyle = popover.getAttribute('style');
+    expect(popoverStyle).to.include('width: 100px; height: 100px;');
+
+    const iframe = container.querySelector('iframe');
+    expect(iframe).to.exist;
+    expect(iframe.getAttribute('title')).to.equal(TEST_POPOVER_CONFIG.title);
+    expect(iframe.getAttribute('src')).to.include(TEST_POPOVER_CONFIG.url);
+    expect(iframe.getAttribute('src')).to.include('?foo=bar&theme=dark');
+  });
+
+  it('renders a popover plugin with filtered popoverRect', async () => {
+    const config = { ...TEST_POPOVER_CONFIG };
+    config.popoverRect = 'width: 100px; height: 100px; background-color: red;';
+    const plugin = new Plugin({ ...config }, appStore);
+
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+
+    // Wait for next time to let lit process the update
+    await Promise.resolve();
+
+    const popover = container.querySelector('sp-popover');
+    const popoverStyle = popover.getAttribute('style');
+    expect(popoverStyle).to.include('width: 100px; height: 100px;');
+  });
+
+  it('renders a popover without a popoverRect', async () => {
+    const config = { ...TEST_POPOVER_CONFIG };
+    config.popoverRect = undefined;
+    const plugin = new Plugin({ ...config }, appStore);
+
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+
+    // Wait for next time to let lit process the update
+    await Promise.resolve();
+
+    const popover = container.querySelector('sp-popover');
+    const popoverStyle = popover.getAttribute('style');
+    expect(popoverStyle).to.be.null;
   });
 
   it('does not render if not pinned', async () => {
