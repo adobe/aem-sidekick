@@ -178,8 +178,13 @@ describe('Test project', () => {
       .onFirstCall()
       .resolves(new Response(JSON.stringify(CONFIG_JSON)))
       .onSecondCall()
-      .resolves(new Response(JSON.stringify({})))
+      .resolves(new Response(JSON.stringify({
+        ...CONFIG_JSON,
+        reviewHost: 'review.example.com',
+      })))
       .onThirdCall()
+      .resolves(new Response(JSON.stringify({})))
+      .onCall(4)
       .throws(error);
     const {
       host, project, mountpoints = [],
@@ -193,6 +198,14 @@ describe('Test project', () => {
 
     // Check that mountpoints is an array
     expect(Array.isArray(mountpoints)).to.be.true;
+
+    // env with custom reviewHost
+    const customReviewHost = await getProjectEnv({
+      owner: 'adobe',
+      repo: 'blog',
+    });
+    expect(customReviewHost.reviewHost).to.equal('review.example.com');
+
     // testing else paths
     const empty = await getProjectEnv({
       owner: 'adobe',

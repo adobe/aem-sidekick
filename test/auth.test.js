@@ -125,7 +125,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(live|page)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
               'labs.aem.live',
@@ -207,7 +207,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(live|page)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
               'labs.aem.live',
@@ -364,7 +364,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(live|page)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
               'labs.aem.live',
@@ -391,7 +391,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[a-z0-9-]+--site--test.aem.(page|live)/.*',
+            regexFilter: '^https://[a-z0-9-]+--site--test.aem.(page|live|reviews)/.*',
             requestMethods: [
               'get',
               'post',

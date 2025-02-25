@@ -267,13 +267,26 @@ export class Plugin {
       }
 
       if (this.isPopover() && this.config.url) {
+        const { siteStore } = this.appStore;
         const {
           url, popoverRect, title, titleI18n,
+          passConfig, passReferrer,
         } = this.config;
 
         const popoverTitle = titleI18n?.[this.appStore.siteStore.lang] || title;
         const src = new URL(url);
         src.searchParams.set('theme', this.appStore.theme);
+
+        if (passConfig) {
+          src.searchParams.append('ref', siteStore.ref);
+          src.searchParams.append('repo', siteStore.repo);
+          src.searchParams.append('owner', siteStore.owner);
+          if (siteStore.host) src.searchParams.append('host', siteStore.host);
+          if (siteStore.project) src.searchParams.append('project', siteStore.project);
+        }
+        if (passReferrer) {
+          src.searchParams.append('referrer', this.appStore.location.href);
+        }
 
         let filteredPopoverRect = popoverRect;
         if (popoverRect) {

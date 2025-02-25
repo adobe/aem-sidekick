@@ -237,6 +237,24 @@ describe('Environment Switcher', () => {
       expect(switchEnvStub.called).to.be.true;
       expect(switchEnvStub.calledWith('edit', true)).to.be.true;
     }).timeout(20000);
+
+    it('shows review menu item in review env', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.REVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+      const reviewItem = recursiveQuery(picker, '.env-review');
+
+      expect(reviewItem).to.exist;
+    });
   });
 
   describe('edit item variants', () => {

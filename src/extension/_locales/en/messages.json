@@ -434,6 +434,9 @@
     "publish_date": {
       "message": "Published: "
     },
+    "review": {
+      "message": "Review"
+    },
     "update": {
       "message": "Update",
       "description": "Update the preview of a page"
@@ -512,6 +515,9 @@
       "message": "Preview has been updated"
     },
     "preview_last_updated": {
+      "message": "Last updated $1"
+    },
+    "review_last_updated": {
       "message": "Last updated $1"
     },
     "edit": {
