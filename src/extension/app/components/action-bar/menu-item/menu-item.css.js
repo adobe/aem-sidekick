@@ -40,10 +40,21 @@ export const style = css`
     border-radius: var(--spectrum2-medium-border-radius);
   }
 
-  :host(.current-env.env-edit[aria-disabled="true"]) #label,
-  :host(.current-env.env-edit[disabled]) #label,
-  :host(.current-env.env-edit[aria-disabled="true"]) [name="description"]::slotted(*),
-  :host(.current-env.env-edit[disabled]) [name="description"]::slotted(*) {
+  :host(.current-env) {
+    background-color: var(--spectrum2-edit-background-default);
+    border: 1px solid var(--spectrum2-edit-border-default);
+    border-radius: var(--spectrum2-default-border-radius);
+  }
+
+  :host(.current-env) [name="description"]::slotted(*){
+    color: var(--spectrum2-sidekick-color);
+    font-weight: 400;
+  }
+
+  :host(.current-env[aria-disabled="true"]) #label,
+  :host(.current-env[disabled]) #label,
+  :host(.current-env[aria-disabled="true"]) [name="description"]::slotted(*),
+  :host(.current-env[disabled]) [name="description"]::slotted(*) {
     color: var(--spectrum2-sidekick-color);
   }
 
@@ -54,25 +65,13 @@ export const style = css`
     --mod-menu-item-background-color-hover: var(--spectrum2-preview-background-hover);
   }
 
-  :host(.current-env.env-review) {
-    background-color: var(--spectrum2-review-background-default);
-    border: 1px solid var(--spectrum2-review-border-default);
-    border-radius: var(--spectrum2-default-border-radius);
-    --mod-menu-item-background-color-hover: var(--spectrum2-review-background-hover);
+  :host(.current-env.env-preview) [name="description"]::slotted(*){
+    color: var(--spectrum2-preview-content-default);
   }
 
-  :host(.current-env.env-dev) #label,
-  :host(.current-env.env-preview) #label,
-  :host(.current-env.env-review) #label,
-  :host(.current-env.env-live) #label,
-  :host(.current-env.env-prod) #label {
+  :host(.current-env) #label {
     color: var(--spectrum-gray-800);
     font-weight: 700;
-  }
-
-  :host(.current-env) [name="description"]::slotted(*){
-    color: var(--spectrum2-preview-content-default);
-    font-weight: 400;
   }
 
   :host(.current-env.env-live),
