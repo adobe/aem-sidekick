@@ -285,7 +285,7 @@ export class Plugin {
           if (siteStore.project) src.searchParams.append('project', siteStore.project);
         }
         if (passReferrer) {
-          src.searchParams.append('referrer', window.location.href);
+          src.searchParams.append('referrer', this.appStore.location.href);
         }
 
         let filteredPopoverRect = popoverRect;
