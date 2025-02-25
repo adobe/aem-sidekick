@@ -485,6 +485,12 @@
   "next": {
     "message": "次へ"
   },
+  "no_data": {
+    "message": "データなし"
+  },
+  "no_data_subheading": {
+    "message": "このシートは空です"
+  },
   "no_results": {
     "message": "結果が見つかりません"
   },
