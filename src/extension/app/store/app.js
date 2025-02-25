@@ -424,6 +424,8 @@ export class AppStore {
             url,
             isBadge,
             isPopover,
+            passConfig,
+            passReferrer,
             popoverRect,
             badgeVariant,
           };
