@@ -97,7 +97,7 @@ export const spectrum2 = css`
     --spectrum2-background-color-hover-dark: rgba(255, 255, 255, 0.05);
 
     /* Sidekick theme tokens */
-    --sidekick-max-width: 800px;
+    --sidekick-max-width: 805px;
     --sidekick-color-light: #292929;
     --sidekick-color-dark: #DBDBDB;
     --sidekick-background-light: #FFFFFFCC;

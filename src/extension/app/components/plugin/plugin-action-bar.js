@@ -148,6 +148,13 @@ export class PluginActionBar extends ConnectedElement {
     );
 
     reaction(
+      () => this.appStore.theme,
+      async () => {
+        this.setupPlugins();
+      },
+    );
+
+    reaction(
       () => this.appStore.bulkStore.selection,
       () => {
         this.setupPlugins();

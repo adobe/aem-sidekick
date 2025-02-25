@@ -485,6 +485,12 @@
   "next": {
     "message": "下一步"
   },
+  "no_data": {
+    "message": "無資料"
+  },
+  "no_data_subheading": {
+    "message": "此工作表是空的"
+  },
   "no_results": {
     "message": "找不到任何結果"
   },
