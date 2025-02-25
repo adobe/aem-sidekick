@@ -1,3 +1,19 @@
+# [7.4.0](https://github.com/adobe/aem-sidekick/compare/v7.3.0...v7.4.0) (2025-02-25)
+
+
+### Bug Fixes
+
+* close button overhang ([#477](https://github.com/adobe/aem-sidekick/issues/477)) ([c9846af](https://github.com/adobe/aem-sidekick/commit/c9846af06f7f73c1a7cfbded4d7017a8a8c05981))
+* **css:** body text-align bleed ([#466](https://github.com/adobe/aem-sidekick/issues/466)) ([4872eae](https://github.com/adobe/aem-sidekick/commit/4872eae4a7af3983ecb2daf9e3fe6c10826e7a83))
+* **deps:** update external fixes ([#473](https://github.com/adobe/aem-sidekick/issues/473)) ([75cc0a3](https://github.com/adobe/aem-sidekick/commit/75cc0a3d1dcc7842769021e075b6051bd91bb270))
+
+
+### Features
+
+* allow tools.aem.live and labs.aem.live to list configured sites ([#468](https://github.com/adobe/aem-sidekick/issues/468)) ([5729c25](https://github.com/adobe/aem-sidekick/commit/5729c25287a38668382fe75ebc904217d955a349))
+* **json:** improved empty message ([#467](https://github.com/adobe/aem-sidekick/issues/467)) ([acb4774](https://github.com/adobe/aem-sidekick/commit/acb477435d757b21739daa3bcf1bd59848a0535b))
+* popover plugin support ([#475](https://github.com/adobe/aem-sidekick/issues/475)) ([c90a111](https://github.com/adobe/aem-sidekick/commit/c90a11162f27de67385b1cdd48dbebe1f676343c))
+
 # [7.3.0](https://github.com/adobe/aem-sidekick/compare/v7.2.4...v7.3.0) (2025-02-14)
 
 
