@@ -1,3 +1,10 @@
+# [7.5.0](https://github.com/adobe/aem-sidekick/compare/v7.4.0...v7.5.0) (2025-03-03)
+
+
+### Features
+
+* support aem.reviews ([#480](https://github.com/adobe/aem-sidekick/issues/480)) ([19e2d5c](https://github.com/adobe/aem-sidekick/commit/19e2d5c805f524d4e8fb7c81d9a82cd05eb94f79))
+
 # [7.4.0](https://github.com/adobe/aem-sidekick/compare/v7.3.0...v7.4.0) (2025-02-25)
 
 
