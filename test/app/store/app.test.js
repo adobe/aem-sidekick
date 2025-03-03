@@ -65,6 +65,7 @@ describe('Test App Store', () => {
   let appStore;
 
   beforeEach(() => {
+    document.body.innerHTML = '';
     appStore = new AppStore();
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
     sidekickTest
@@ -143,6 +144,23 @@ describe('Test App Store', () => {
 
     appStore.location.host = 'foobar.com';
     expect(appStore.isPreview()).to.be.false;
+  });
+
+  it('isReview()', async () => {
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+    appStore.location.port = '';
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.reviews';
+    expect(appStore.isReview()).to.be.true;
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.page';
+    expect(appStore.isReview()).to.be.false;
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.live';
+    expect(appStore.isReview()).to.be.false;
+
+    appStore.location.host = 'foobar.com';
+    expect(appStore.isReview()).to.be.false;
   });
 
   it('isProd()', async () => {

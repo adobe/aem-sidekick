@@ -29,6 +29,7 @@
  * @prop {string} contentSourceType The content source type ("onedrive", "google" or "markup")
  * @prop {string[]} [mountpoints] The content source URL (deprecated)
  * @prop {string} [previewHost] The host name of a custom preview CDN
+ * @prop {string} [reviewHost] The host name of a custom review CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
  * @description The derived sidekick configuration from the server-side configuration

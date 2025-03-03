@@ -20,8 +20,11 @@ import { AdminClient } from '../utils/admin-client.js';
 import sampleRUM from '../../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
 import {
-  getLocation, matchProjectHost, isSupportedFileExtension, globToRegExp,
-  is401Page,
+  getLocation,
+  matchProjectHost,
+  isSupportedFileExtension,
+  globToRegExp,
+  isErrorPage,
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
@@ -372,6 +375,7 @@ export class AppStore {
               edit: appStore.isEditor,
               preview: appStore.isPreview,
               live: appStore.isLive,
+              review: appStore.isReview,
               prod: appStore.isProd,
             };
             return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
@@ -424,6 +428,8 @@ export class AppStore {
             url,
             isBadge,
             isPopover,
+            passConfig,
+            passReferrer,
             popoverRect,
             badgeVariant,
           };
@@ -458,8 +464,8 @@ export class AppStore {
   }
 
   /**
-   * Checks if the current location is an inner CDN URL.
-   * @returns {boolean} <code>true</code> if inner CDN URL, else <code>false</code>
+   * Checks if the current location is a preview URL.
+   * @returns {boolean} <code>true</code> if preview URL, else <code>false</code>
    */
   isPreview() {
     const { siteStore, location } = this;
@@ -468,8 +474,18 @@ export class AppStore {
   }
 
   /**
-   * Checks if the current location is an outer CDN URL.
-   * @returns {boolean} <code>true</code> if outer CDN URL, else <code>false</code>
+   * Checks if the current location is a review URL.
+   * @returns {boolean} <code>true</code> if review URL, else <code>false</code>
+   */
+  isReview() {
+    const { siteStore, location } = this;
+    return matchProjectHost(siteStore.reviewHost, location.host)
+      || matchProjectHost(siteStore.stdReviewHost, location.host);
+  }
+
+  /**
+   * Checks if the current location is a live URL.
+   * @returns {boolean} <code>true</code> if live URL, else <code>false</code>
    */
   isLive() {
     const { siteStore, location } = this;
@@ -502,7 +518,7 @@ export class AppStore {
   isProject() {
     const { siteStore } = this;
     return siteStore.owner && siteStore.repo
-        && (this.isDev() || this.isPreview() || this.isLive() || this.isProd());
+      && (this.isDev() || this.isPreview() || this.isReview() || this.isLive() || this.isProd());
   }
 
   /**
@@ -1093,11 +1109,7 @@ export class AppStore {
       },
     } = this;
     let view;
-    if ((this.location.host.endsWith('.aem.page')
-      || this.location.host.endsWith('.aem.live')
-      || this.location.hostname === 'localhost')
-      && !document.querySelector('body > main > div')
-      && document.querySelector('body > pre') === document.body.children[1]) {
+    if (isErrorPage(location, document)) {
       // assert viewport meta tag
       if (!document.head.querySelector('meta[name="viewport"]')) {
         const meta = document.createElement('meta');
@@ -1292,7 +1304,7 @@ export class AppStore {
           this.setupPlugins();
           this.fireEvent(EXTERNAL_EVENTS.LOGGED_IN, this.status.profile);
           // refresh page with site token in case of 401
-          if (is401Page(this.location, window.document)) {
+          if (isErrorPage(this.location, window.document)) {
             this.reloadPage();
           } else {
             this.fetchStatus();
