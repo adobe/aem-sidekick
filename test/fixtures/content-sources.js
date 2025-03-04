@@ -216,16 +216,17 @@ export function mockSharePointFile({ path, type }, viewType = 'list', nonLatin =
   const descriptor = spDescriptors[type];
   const filename = path.split('/').pop();
 
-  let fileInfo = nonLatin
-    ? `${filename}, ${descriptor} 文件, 专用, 已于 2/6/2023 修改, 编辑者: John Doe, 365 KB`
-    : `${filename}, ${descriptor} File, Private, Modified 4/9/2023, edited by John Doe, 356 KB`;
-
-  const newSharepointList = viewType === 'new-sharepoint-list';
-  if (newSharepointList) {
+  let fileInfo;
+  const isNewSharepointList = viewType === 'new-sharepoint-list';
+  if (isNewSharepointList) {
     fileInfo = filename;
+  } else {
+    fileInfo = nonLatin
+      ? `${filename}, ${descriptor} 文件, 专用, 已于 2/6/2023 修改, 编辑者: John Doe, 365 KB`
+      : `${filename}, ${descriptor} File, Private, Modified 4/9/2023, edited by John Doe, 356 KB`;
   }
 
-  const result = viewType === 'list' || newSharepointList ? `
+  const result = viewType === 'list' || isNewSharepointList ? `
     <div class="file" id="file-${type}" role="row" aria-selected="false"
       aria-label="${fileInfo}">
       <img src="./icons/${type}.svg">
