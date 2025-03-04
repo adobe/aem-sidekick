@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@adobe/eslint-config-helix": "2.0.9",
-    "@adobe/fetch": "4.1.11",
+    "@adobe/fetch": "4.2.0",
     "@babel/eslint-parser": "7.26.8",
     "@babel/plugin-proposal-decorators": "7.25.9",
     "@custom-elements-manifest/analyzer": "0.10.4",
