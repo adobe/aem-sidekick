@@ -156,7 +156,7 @@ export class BulkStore {
    * @returns {BulkSelection} The selection
    */
   #getSharepointBulkSelection(document) {
-    return [...document.querySelectorAll('#appRoot [role="presentation"] div[aria-selected="true"]')]
+    return [...document.querySelectorAll('#appRoot [aria-selected="true"]:not([aria-checked="true"]')]
       // exclude folders
       .filter((row) => !row.querySelector('img')?.getAttribute('src').includes('/foldericons/')
         && !row.querySelector('img')?.getAttribute('src').endsWith('folder.svg')
@@ -164,9 +164,15 @@ export class BulkStore {
       // extract file name and type
       .map((row) => {
         const info = row.getAttribute('aria-label') || row.querySelector('span')?.textContent;
+
         // info format: bla.docx, docx File, Private, Modified 8/28/2023, edited by Jane, 1 KB
-        const type = info.match(/, ([\p{L}\p{N}]+) [\p{L}\p{N}]+,/u)?.[1];
-        const file = type && info.split(`, ${type}`)[0];
+        let type = info.match(/, ([\p{L}\p{N}]+) [\p{L}\p{N}]+,/u)?.[1];
+        let file = type && info.split(`, ${type}`)[0];
+
+        if (!type) {
+          type = info.split('.').pop();
+          file = info;
+        }
         return {
           file,
           type,

@@ -102,6 +102,32 @@ describe('Test Bulk Store', () => {
         });
       });
 
+      const testFn = adminEnv === HelixMockContentSources.SHAREPOINT ? describe : describe.skip;
+      testFn(`selection in ${adminEnv} (newer sharepoint admin view)`, () => {
+        beforeEach(async () => {
+          sidekickTest.mockAdminDOM(adminEnv, 'new-sharepoint-list');
+        });
+
+        it('has empty selection when initialized', async () => {
+          bulkStore.initStore(appStore.location);
+          expect(bulkStore.selection.length).to.equal(0);
+        });
+
+        it('uses existing selection when initialized', async () => {
+          sidekickTest.toggleAdminItems(['document']);
+          bulkStore.initStore(appStore.location);
+          await waitUntil(() => bulkStore.selection.length === 1);
+        });
+
+        it('updates initial selection when user toggles files', async () => {
+          bulkStore.initStore(appStore.location);
+          expect(bulkStore.selection.length).to.equal(0);
+
+          sidekickTest.toggleAdminItems(['document']);
+          await waitUntil(() => bulkStore.selection.length === 1);
+        });
+      });
+
       describe(`selection in ${adminEnv} (grid)`, () => {
         beforeEach(async () => {
           sidekickTest.mockAdminDOM(adminEnv, 'grid');
