@@ -1,3 +1,11 @@
+## [7.5.1](https://github.com/adobe/aem-sidekick/compare/v7.5.0...v7.5.1) (2025-03-05)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([#481](https://github.com/adobe/aem-sidekick/issues/481)) ([74fb81b](https://github.com/adobe/aem-sidekick/commit/74fb81b0124ef4d3df59feaf359b8f85dc7204db))
+* support newer sharepoint structure ([#490](https://github.com/adobe/aem-sidekick/issues/490)) ([8582c9c](https://github.com/adobe/aem-sidekick/commit/8582c9c5f0c26af83c623adcd769345e85973293))
+
 # [7.5.0](https://github.com/adobe/aem-sidekick/compare/v7.4.0...v7.5.0) (2025-03-03)
 
 
