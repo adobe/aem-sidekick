@@ -1,0 +1,665 @@
+{
+  "activate": {
+    "message": "Aktywuj",
+    "description": "Aktywuj konfigurację"
+  },
+  "activate_success": {
+    "message": "Konfiguracja została pomyślnie aktywowana."
+  },
+  "activate_bulk_not_supported": {
+    "message": "Aktywacja wielu konfiguracji nie jest obsługiwana."
+  },
+  "add": {
+    "message": "Dodaj"
+  },
+  "admin_version": {
+    "message": "Użyj określonej wersji Admin API"
+  },
+  "admin_version_placeholder": {
+    "message": "Wersja Admin: x.y.z"
+  },
+  "advanced": {
+    "message": "Zaawansowane",
+    "description": "Tryb zaawansowanej konfiguracji"
+  },
+  "anonymous": {
+    "message": "Anonimowy"
+  },
+  "bulk_confirm_empty": {
+    "message": "Nie wybrano pliku"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "Czy na pewno chcesz aktywować tę konfigurację?"
+  },
+  "bulk_confirm_preview_multiple": {
+    "message": "Czy na pewno chcesz wygenerować podgląd $1 plików?"
+  },
+  "bulk_confirm_preview_single": {
+    "message": "Czy na pewno chcesz wygenerować podgląd tego pliku?"
+  },
+  "bulk_confirm_publish_multiple": {
+    "message": "Czy na pewno chcesz opublikować $1 plików?"
+  },
+  "bulk_confirm_publish_single": {
+    "message": "Czy na pewno chcesz opublikować ten plik?"
+  },
+  "bulk_error": {
+    "message": "Operacja zbiorcza nie powiodła się. Spróbuj ponownie później."
+  },
+  "bulk_error_illegal_folder_name": {
+    "message": "Foldery mogą zawierać tylko znormalizowane, małe litery łacińskie, cyfry i myślniki. Ten folder zawiera nielegalne znaki: $1"
+  },
+  "bulk_error_illegal_file_name": {
+    "message": "Pliki mogą zawierać tylko znormalizowane, małe litery łacińskie, cyfry i myślniki. Ten plik zawiera nielegalne znaki: $1"
+  },
+  "bulk_error_illegal_file_names": {
+    "message": "Pliki mogą zawierać tylko znormalizowane, małe litery łacińskie, cyfry i myślniki. Następujące pliki zawierają nielegalne znaki: $1"
+  },
+  "bulk_error_preview_login_required": {
+    "message": "Musisz się zalogować, aby wygenerować podgląd więcej niż 100 plików."
+  },
+  "bulk_error_publish_login_required": {
+    "message": "Musisz się zalogować, aby opublikować więcej niż 100 plików."
+  },
+  "bulk_previewing_state": {
+    "message": "Podgląd dla $1 z $2 plików wygenerowany..."
+  },
+  "bulk_publishing_state": {
+    "message": "$1 z $2 plików opublikowanych..."
+  },
+  "bulk_result_details": {
+    "message": "Szczegóły"
+  },
+  "bulk_result_path": {
+    "message": "Ścieżka"
+  },
+  "bulk_result_preview_multiple_failure": {
+    "message": "Nie udało się wygenerować podglądu wszystkich plików."
+  },
+  "bulk_result_preview_multiple_partial_success": {
+    "message": "Podgląd $1 plików wygenerowany pomyślnie, ale $2 nie powiodło się."
+  },
+  "bulk_result_preview_multiple_partial_success_1": {
+    "message": "Podgląd $1 pliku wygenerowany pomyślnie, ale $2 nie powiodło się."
+  },
+  "bulk_result_preview_multiple_success": {
+    "message": "Podgląd $1 plików wygenerowany pomyślnie."
+  },
+  "bulk_result_preview_single_failure": {
+    "message": "Nie udało się wygenerować podglądu tego pliku."
+  },
+  "bulk_result_preview_single_success": {
+    "message": "Podgląd tego pliku wygenerowany pomyślnie."
+  },
+  "bulk_result_publish_multiple_failure": {
+    "message": "Nie udało się opublikować wszystkich plików."
+  },
+  "bulk_result_publish_multiple_partial_success": {
+    "message": "$1 plików opublikowanych pomyślnie, ale $2 nie powiodło się."
+  },
+  "bulk_result_publish_multiple_partial_success_1": {
+    "message": "1 plik opublikowany pomyślnie, ale $2 nie powiodło się."
+  },
+  "bulk_result_publish_multiple_success": {
+    "message": "$1 plików opublikowanych pomyślnie."
+  },
+  "bulk_result_publish_single_error_no_source": {
+    "message": "Plik musi być najpierw podglądany"
+  },
+  "bulk_result_publish_single_failure": {
+    "message": "Nie udało się opublikować tego pliku."
+  },
+  "bulk_result_publish_single_success": {
+    "message": "Plik opublikowany pomyślnie."
+  },
+  "bulk_selection_empty": {
+    "message": "Wybierz pliki"
+  },
+  "bulk_selection_multiple": {
+    "message": "Wybrano $1 plików"
+  },
+  "bulk_selection_single": {
+    "message": "Wybrano 1 plik"
+  },
+  "cancel": {
+    "message": "Anuluj"
+  },
+  "caution_side_effects": {
+    "message": "Uwaga: nieoczekiwane skutki uboczne!"
+  },
+  "code_state": {
+    "message": "Brak dostępnych działań dla plików kodu"
+  },
+  "close": {
+    "message": "Zamknij"
+  },
+  "close_sidekick": {
+    "message": "Zamknij Sidekick"
+  },
+  "config_add_success": {
+    "message": "Projekt dodany do Sidekick"
+  },
+  "config_project_add": {
+    "message": "Dodaj ten projekt"
+  },
+  "config_add_project_headline": {
+    "message": "Dodano projekt"
+  },
+  "config_remove_project_headline": {
+    "message": "Usunięto projekt"
+  },
+  "config_project_added": {
+    "message": "$1 pomyślnie dodany",
+    "description": "Projekt dodany"
+  },
+  "config_project_disable": {
+    "message": "Wyłącz ten projekt"
+  },
+  "config_project_enabled_headline": {
+    "message": "Projekt włączony"
+  },
+  "config_project_disabled_headline": {
+    "message": "Projekt wyłączony"
+  },
+  "config_project_disabled": {
+    "message": "$1 wyłączony",
+    "description": "Projekt wyłączony"
+  },
+  "config_project_enable": {
+    "message": "Włącz ten projekt"
+  },
+  "config_project_enabled": {
+    "message": "$1 włączony",
+    "description": "Projekt włączony"
+  },
+  "config_project_exists": {
+    "message": "Konfiguracja dla tego projektu już istnieje."
+  },
+  "config_project_import": {
+    "message": "Importuj projekty z AEM Sidekick v6"
+  },
+  "config_project_imported_none": {
+    "message": "Nie znaleziono nowych projektów w AEM Sidekick v6."
+  },
+  "config_project_imported_single": {
+    "message": "Pomyślnie zaimportowano 1 projekt z AEM Sidekick v6."
+  },
+  "config_project_imported_multiple": {
+    "message": "Pomyślnie zaimportowano $1 projektów z AEM Sidekick v6."
+  },
+  "config_project_import_headline": {
+    "message": "Importuj projekty"
+  },
+  "config_project_import_sidekick_not_found": {
+    "message": "Nie znaleziono starszej wersji sidekick. Jeśli rozszerzenie jest zainstalowane, ale obecnie wyłączone, włącz je i spróbuj ponownie."
+  },
+  "config_project_pick": {
+    "message": "Wybierz projekt"
+  },
+  "config_project_remove": {
+    "message": "Usuń ten projekt"
+  },
+  "config_project_removed": {
+    "message": "$1 pomyślnie usunięty",
+    "description": "Projekt usunięty"
+  },
+  "confirm": {
+    "message": "Proszę potwierdzić",
+    "description": "Nagłówek okna potwierdzenia"
+  },
+  "copied": {
+    "message": "Skopiowano"
+  },
+  "copied_url": {
+    "message": "URL skopiowany do schowka."
+  },
+  "copied_urls": {
+    "message": "URL-e skopiowane do schowka."
+  },
+  "copy": {
+    "message": "Kopiuj"
+  },
+  "copy_live_url": {
+    "message": "Kopiuj URL na żywo"
+  },
+  "copy_live_urls": {
+    "message": "Kopiuj URL-e na żywo"
+  },
+  "copy_preview_url": {
+    "message": "Kopiuj URL podglądu"
+  },
+  "copy_preview_urls": {
+    "message": "Kopiuj URL-e podglądu"
+  },
+  "copy_prod_url": {
+    "message": "Kopiuj URL produkcyjny"
+  },
+  "copy_prod_urls": {
+    "message": "Kopiuj URL-e produkcyjne"
+  },
+  "copy_url": {
+    "message": "Kopiuj URL"
+  },
+  "copy_urls": {
+    "message": "Kopiuj $1 URL-e"
+  },
+  "copy_urls_error": {
+    "message": "Kopiowanie do schowka nie powiodło się. Spróbuj ponownie."
+  },
+  "copy_urls_error_focus": {
+    "message": "Kopiowanie do schowka nie powiodło się. Upewnij się, że okno pozostaje aktywne."
+  },
+  "dark_mode": {
+    "message": "Tryb ciemny"
+  },
+  "delete": {
+    "message": "Usuń"
+  },
+  "delete_file_confirm": {
+    "message": "Czy na pewno chcesz usunąć ten plik?"
+  },
+  "delete_file_no_source_confirm": {
+    "message": "Ten plik nie istnieje już w repozytorium, usunięcie go nie może być cofnięte!\n\nCzy na pewno chcesz go usunąć?"
+  },
+  "delete_file_source_exists": {
+    "message": "Ten plik nadal istnieje w repozytorium i nie może być usunięty."
+  },
+  "delete_file_success": {
+    "message": "Plik pomyślnie usunięty."
+  },
+  "delete_page_confirm": {
+    "message": "Czy na pewno chcesz usunąć tę stronę?"
+  },
+  "delete_page_no_source_confirm": {
+    "message": "Ta strona nie ma już dokumentu źródłowego, usunięcie jej nie może być cofnięte!\n\nCzy na pewno chcesz ją usunąć?"
+  },
+  "delete_page_source_exists": {
+    "message": "Ta strona nadal ma dokument źródłowy i nie może być usunięta."
+  },
+  "delete_page_success": {
+    "message": "Strona pomyślnie usunięta, przeładowanie..."
+  },
+  "description": {
+    "message": "AEM Sidekick pozwala autorom stron AEM łatwo przeglądać i publikować treści."
+  },
+  "description_shortcut": {
+    "message": "Przełącz Sidekick"
+  },
+  "development": {
+    "message": "Rozwój"
+  },
+  "docs": {
+    "message": "https://www.hlx.live/docs/sidekick"
+  },
+  "source": {
+    "message": "Źródło"
+  },
+  "open_in": {
+    "message": "Otwórz w $1"
+  },
+  "edit_date": {
+    "message": "Edytowano: "
+  },
+  "error_429": {
+    "message": "Zbyt wiele żądań: Twój projekt jest ograniczany przez $1. Proszę poczekać i spróbować ponownie później."
+  },
+  "error_preview_config": {
+    "message": "Nie udało się aktywować konfiguracji: $1"
+  },
+  "error_delete": {
+    "message": "Usunięcie nie powiodło się. Spróbuj ponownie później."
+  },
+  "error_fatal": {
+    "message": "Przepraszamy, mamy obecnie problemy. Spróbuj ponownie później."
+  },
+  "error_generic": {
+    "message": "Wystąpił błąd: $1"
+  },
+  "error_job_404": {
+    "message": "Zadanie nie znalezione."
+  },
+  "error_login_aborted": {
+    "message": "Logowanie przerwane."
+  },
+  "error_login_timeout": {
+    "message": "Logowanie przekroczyło limit czasu. Spróbuj ponownie później."
+  },
+  "error_logout": {
+    "message": "Wylogowanie nie powiodło się. Spróbuj ponownie później."
+  },
+  "error_preview": {
+    "message": "Generowanie podglądu nie powiodło się. Spróbuj ponownie później."
+  },
+  "error_preview_not_gdoc_generic": {
+    "message": "Generowanie podglądu nie powiodło się. Musi to być dokument Google lub arkusz kalkulacyjny."
+  },
+  "error_preview_no_docx2": {
+    "message": "To jest dokument Microsoft Word, proszę najpierw przekonwertować go na Google Docs."
+  },
+  "error_preview_no_xlsx": {
+    "message": "To jest dokument Microsoft Excel, proszę najpierw przekonwertować go na Google Sheets."
+  },
+  "error_publish": {
+    "message": "Publikacja nie powiodła się. Spróbuj ponownie później."
+  },
+  "error_publish_404": {
+    "message": "Publikacja nie powiodła się, najpierw wygeneruj podgląd."
+  },
+  "error_status": {
+    "message": "Nie udało się pobrać statusu strony. Spróbuj ponownie później."
+  },
+  "error_unpublish": {
+    "message": "Wycofanie publikacji nie powiodło się. Spróbuj ponownie później."
+  },
+  "extensions": {
+    "message": "Rozszerzenia"
+  },
+  "next": {
+    "message": "Następny",
+    "description": "Następny slajd wprowadzający"
+  },
+  "homepage": {
+    "message": "https://www.hlx.live/tools/sidekick/"
+  },
+  "info": {
+    "message": "Informacja"
+  },
+  "json_view_description": {
+    "message": "Rendycja danych"
+  },
+  "live": {
+    "message": "Na żywo"
+  },
+  "media_state": {
+    "message": "Brak dostępnych działań dla plików multimedialnych"
+  },
+  "minutes_ago": {
+    "message": "$1 minut temu"
+  },
+  "never": {
+    "message": "Nigdy"
+  },
+  "now": {
+    "message": "Teraz"
+  },
+  "open_preview": {
+    "message": "Otwórz URL podglądu",
+    "description": "Otwiera URL podglądu dla danej gałęzi GitHub"
+  },
+  "open_view_doc_source": {
+    "message": "Wyświetl źródło dokumentu"
+  },
+  "open_url": {
+    "message": "Otwórz URL"
+  },
+  "open_urls": {
+    "message": "Otwórz $1 URL-e"
+  },
+  "open": {
+    "message": "Otwórz"
+  },
+  "open_urls_confirm": {
+    "message": "Czy na pewno chcesz otworzyć $1 URL-e?"
+  },
+  "please_wait": {
+    "message": "Proszę czekać..."
+  },
+  "plugins_more": {
+    "message": "Więcej wtyczek..."
+  },
+  "preview": {
+    "message": "Podgląd"
+  },
+  "preview_date": {
+    "message": "Podgląd: "
+  },
+  "preview_onedrive": {
+    "message": "Porada: Naciśnij Ctrl + S przed generowaniem podglądu, aby natychmiast zobaczyć najnowsze zmiany..."
+  },
+  "preview_onedrive_mac": {
+    "message": "Porada: Naciśnij ⌘ + S przed generowaniem podglądu, aby natychmiast zobaczyć najnowsze zmiany..."
+  },
+  "production": {
+    "message": "Produkcja"
+  },
+  "publish": {
+    "message": "Publikuj"
+  },
+  "publish_confirm": {
+    "message": "Czy na pewno chcesz opublikować tę stronę?"
+  },
+  "publish_date": {
+    "message": "Opublikowano: "
+  },
+  "update": {
+    "message": "Aktualizuj",
+    "description": "Aktualizuj podgląd strony"
+  },
+  "save": {
+    "message": "Zapisz"
+  },
+  "seconds_ago": {
+    "message": "$1 sekund temu"
+  },
+  "share_description": {
+    "message": "Udostępnij swojego Sidekicka"
+  },
+  "standard": {
+    "message": "Standardowy",
+    "description": "Tryb standardowej konfiguracji"
+  },
+  "switch_view": {
+    "message": "Widok"
+  },
+  "title": {
+    "message": "AEM Sidekick"
+  },
+  "today_at": {
+    "message": "Dzisiaj o $1"
+  },
+  "unpublish": {
+    "message": "Cofnij publikację"
+  },
+  "unpublish_page_confirm": {
+    "message": "Czy na pewno chcesz cofnąć publikację tej strony?"
+  },
+  "unpublish_page_source_exists": {
+    "message": "Ta strona nadal ma dokument źródłowy i nie może być cofnięta."
+  },
+  "unpublish_page_no_source_confirm": {
+    "message": "Ta strona nie ma już dokumentu źródłowego, cofnięcie publikacji nie może być cofnięte!\n\nCzy na pewno chcesz cofnąć publikację?"
+  },
+  "unpublish_page_success": {
+    "message": "Strona pomyślnie cofnięta, przeładowanie..."
+  },
+  "user_login": {
+    "message": "Zaloguj się"
+  },
+  "user_login_hint": {
+    "message": "Musisz się zalogować, zanim będziesz mógł używać Sidekicka."
+  },
+  "user_logout": {
+    "message": "Wyloguj się"
+  },
+  "user_switch": {
+    "message": "Zmień użytkownika"
+  },
+  "yesterday_at": {
+    "message": "Wczoraj o $1"
+  },
+  "environments": {
+    "message": "Środowiska"
+  },
+  "notifications": {
+    "message": "Powiadomienia"
+  },
+  "publish_outdated": {
+    "message": "Podgląd został zaktualizowany"
+  },
+  "preview_last_updated": {
+    "message": "Ostatnia aktualizacja $1"
+  },
+  "edit": {
+    "message": "Edytuj"
+  },
+  "edit_last_updated": {
+    "message": "Ostatnia edycja $1"
+  },
+  "live_last_updated": {
+    "message": "Ostatnia publikacja $1"
+  },
+  "prod_last_updated": {
+    "message": "Ostatnia publikacja $1"
+  },
+  "edit_never_updated": {
+    "message": "Nigdy nie zapisano"
+  },
+  "edit_no_source": {
+    "message": "Nie znaleziono dokumentu źródłowego"
+  },
+  "preview_never_updated": {
+    "message": "Nie utworzono podglądu"
+  },
+  "live_never_updated": {
+    "message": "Nigdy nie publikowano"
+  },
+  "prod_never_updated": {
+    "message": "Nigdy nie publikowano"
+  },
+  "ok": {
+    "message": "OK"
+  },
+  "error": {
+    "message": "Błąd"
+  },
+  "not_authorized": {
+    "message": "Nieautoryzowany"
+  },
+  "login_wait": {
+    "message": "Proszę się zalogować..."
+  },
+  "json_results_stat": {
+    "message": "Wyświetlanie $1 z $2 wyników"
+  },
+  "search": {
+    "message": "Szukaj"
+  },
+  "no_results": {
+    "message": "Nie znaleziono wyników"
+  },
+  "no_results_subheading": {
+    "message": "Spróbuj doprecyzować swoje wyszukiwanie"
+  },
+  "destructive_confirmation": {
+    "message": "Czy na pewno chcesz $1 to?"
+  },
+  "destructive_confirmation_prompt": {
+    "message": "Wpisz $1, aby potwierdzić"
+  },
+  "destructive_confirmation_invalid": {
+    "message": "Przepraszamy, wpisz dokładnie wyświetlony tekst, aby potwierdzić."
+  },
+  "update_success": {
+    "message": "Podgląd pomyślnie zaktualizowany, przeładowanie..."
+  },
+  "preview_success": {
+    "message": "Podgląd pomyślnie zaktualizowany, otwieranie podglądu..."
+  },
+  "publish_success": {
+    "message": "Publikacja zakończona sukcesem, otwieranie $1..."
+  },
+  "fetching_status_state": {
+    "message": "Ładowanie statusu..."
+  },
+  "login_required_state": {
+    "message": "Zaloguj się, aby kontynuować"
+  },
+  "logging_in_state": {
+    "message": "Logowanie..."
+  },
+  "logging_out_state": {
+    "message": "Wylogowywanie..."
+  },
+  "unauthorized_state": {
+    "message": "Konto nieautoryzowane dla tej strony"
+  },
+  "config_state": {
+    "message": "Aktywowanie konfiguracji..."
+  },
+  "previewing_state": {
+    "message": "Aktualizowanie podglądu..."
+  },
+  "publishing_state": {
+    "message": "Publikowanie..."
+  },
+  "unpublishing_state": {
+    "message": "Cofanie publikacji..."
+  },
+  "deleting_state": {
+    "message": "Usuwanie..."
+  },
+  "help_documentation": {
+    "message": "Pomoc i dokumentacja"
+  },
+  "whats_new": {
+    "message": "Co nowego",
+    "description": "Tytuł menu wprowadzającego"
+  },
+  "join_discord": {
+    "message": "Dołącz do nas na Discordzie"
+  },
+  "import": {
+    "message": "Importuj"
+  },
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "Nie można pobrać $1 z $2."
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "Plik nie znaleziony. Dokument źródłowy jest albo brakujący, albo nieudostępniony z AEM."
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "Nie można wyświetlić podglądu $1: typ pliku nieobsługiwany"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "Nie można wyświetlić podglądu $1: nie znaleziono obsługującego"
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "Nie można wyświetlić podglądu $1: oczekiwano $2, ale znaleziono $3"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "Nie można wyświetlić podglądu $1: $2"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "Nie można wyświetlić podglądu $2: typ pliku nieobsługiwany"
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "Nagłówek typu zawartości jest brakujący"
+  },
+  "AEM_BACKEND_JSON_INVALD": {
+    "message": "Nie można wyświetlić podglądu $2: nieprawidłowy JSON"
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "Nie można wyświetlić podglądu $1: pusty plik"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "Nie można wyświetlić podglądu $1: plik większy niż 100MB"
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "Nie można wyświetlić podglądu $1: MP4 jest dłuższy niż 2 minuty"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "Nie można wyświetlić podglądu $1: bit rate MP4 jest wyższy niż 300KB/s"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "Nie można wyświetlić podglądu $1: ICO jest większy niż 16KB"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "Nie można wyświetlić podglądu $1: wykryto nielegalne skrypty w SVG"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "Nie można wyświetlić podglądu $1: brak głównego elementu SVG"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "Nie można wyświetlić podglądu $1: SVG zawiera nieprawidłowy XML"
+  }
+}
