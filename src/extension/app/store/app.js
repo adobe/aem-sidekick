@@ -397,6 +397,7 @@ export class AppStore {
                     target.searchParams.append('repo', this.siteStore.repo);
                     target.searchParams.append('owner', this.siteStore.owner);
                     if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
+                    if (this.siteStore.reviewHost) target.searchParams.append('reviewHost', this.siteStore.reviewHost);
                     if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
                   }
                   if (passReferrer) {
