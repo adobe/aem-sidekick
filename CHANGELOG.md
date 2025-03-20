@@ -1,3 +1,11 @@
+## [7.5.2](https://github.com/adobe/aem-sidekick/compare/v7.5.1...v7.5.2) (2025-03-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency mobx to v6.13.7 ([#503](https://github.com/adobe/aem-sidekick/issues/503)) ([5c10601](https://github.com/adobe/aem-sidekick/commit/5c10601de8b52acb5d22a347b4fa5be8a4bcea06))
+* optionally pass reviewHost ([#510](https://github.com/adobe/aem-sidekick/issues/510)) ([fdf4af6](https://github.com/adobe/aem-sidekick/commit/fdf4af690fd93e805c001c50eb88c5b6f30fe6fb))
+
 ## [7.5.1](https://github.com/adobe/aem-sidekick/compare/v7.5.0...v7.5.1) (2025-03-05)
 
 
