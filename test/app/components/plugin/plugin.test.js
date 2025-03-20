@@ -175,7 +175,7 @@ describe('Plugin', () => {
     appStore.siteStore.owner = 'test-owner';
     appStore.siteStore.host = 'example.com';
     appStore.siteStore.project = 'test-project';
-
+    appStore.siteStore.reviewHost = 'review.example.com';
     const config = { ...TEST_POPOVER_CONFIG };
     config.passConfig = true;
     config.passReferrer = true;
@@ -209,6 +209,7 @@ describe('Plugin', () => {
     expect(iframe.getAttribute('src')).to.include('owner=test-owner');
     expect(iframe.getAttribute('src')).to.include('referrer=https%3A%2F%2Fwww.example.com%2F');
     expect(iframe.getAttribute('src')).to.include('host=example.com');
+    expect(iframe.getAttribute('src')).to.include('reviewHost=review.example.com');
     expect(iframe.getAttribute('src')).to.include('project=test-project');
   });
 
