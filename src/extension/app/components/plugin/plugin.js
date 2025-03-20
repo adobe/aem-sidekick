@@ -282,6 +282,7 @@ export class Plugin {
           src.searchParams.append('repo', siteStore.repo);
           src.searchParams.append('owner', siteStore.owner);
           if (siteStore.host) src.searchParams.append('host', siteStore.host);
+          if (siteStore.reviewHost) src.searchParams.append('reviewHost', siteStore.reviewHost);
           if (siteStore.project) src.searchParams.append('project', siteStore.project);
         }
         if (passReferrer) {
