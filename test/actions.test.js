@@ -208,20 +208,9 @@ describe('Test actions', () => {
 
   it('external: launch', async () => {
     const localStorageSetStub = sandbox.stub(chrome.storage.local, 'set');
-    const urlCacheGetStub = sandbox.stub(urlCache, 'get');
     const urlCacheSetStub = sandbox.stub(urlCache, 'set');
 
-    // without owner and repo
-    urlCacheGetStub.resolves([CONFIGS[0]]);
-    await externalActions.launch({}, mockTab('https://main--bar1--foo.aem.page/'));
-    expect(urlCacheGetStub.calledOnce).to.be.true;
-    expect(urlCacheSetStub.called).to.be.false;
-    expect(localStorageSetStub.calledWith({ display: true })).to.be.true;
-
-    // with owner and repo
-    urlCacheGetStub.resolves([]);
     await externalActions.launch({ owner: 'foo', repo: 'bar' }, mockTab('https://foo.live/'));
-    expect(urlCacheGetStub.calledTwice).to.be.true;
     expect(urlCacheSetStub.called).to.be.true;
     expect(localStorageSetStub.calledWith({ display: true })).to.be.true;
   });

@@ -174,14 +174,20 @@ async function getSites(_, sender) {
  * Launches the sidekick in the sender's tab.
  * @returns {Promise<boolean>} True if sidekick launched, else false
  */
-async function launch({ owner, repo }, { tab }) {
-  const matches = await urlCache.get(tab);
-  if (matches.length === 0 && owner && repo) {
-    // force launch sidekick with owner and repo on this url
+async function launch({
+  owner, repo, org, site,
+}, { tab }) {
+  owner = org || owner;
+  repo = site || repo;
+  if (owner && repo) {
+    // launch sidekick with owner and repo on this url
     await urlCache.set(tab, { owner, repo });
+    await setDisplay(true);
+    return true;
+  } else {
+    log.warn('launch: missing required parameters org and site or owner and repo');
+    return false;
   }
-  await setDisplay(true);
-  return true;
 }
 
 /**
