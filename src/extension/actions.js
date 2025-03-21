@@ -28,7 +28,6 @@ import { ADMIN_ORIGIN } from './utils/admin.js';
 import { getConfig } from './config.js';
 import { getDisplay, setDisplay } from './display.js';
 import { urlCache } from './url-cache.js';
-import { checkTab } from './tab.js';
 
 /**
  * Updates the auth token via external messaging API (admin only).
@@ -176,18 +175,13 @@ async function getSites(_, sender) {
  * @returns {Promise<boolean>} True if sidekick launched, else false
  */
 async function launch({ owner, repo }, { tab }) {
-  await setDisplay(true);
   const matches = await urlCache.get(tab);
-  if (matches.length === 0) {
-    if (owner && repo) {
-      await urlCache.set(tab, { owner, repo });
-    }
-    await checkTab(tab.id);
-    return true;
-  } else {
-    // sidekick if not already launched for this specific url
-    return false;
+  if (matches.length === 0 && owner && repo) {
+    // force launch sidekick with owner and repo on this url
+    await urlCache.set(tab, { owner, repo });
   }
+  await setDisplay(true);
+  return true;
 }
 
 /**
