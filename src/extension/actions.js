@@ -28,7 +28,6 @@ import { ADMIN_ORIGIN } from './utils/admin.js';
 import { getConfig } from './config.js';
 import { getDisplay, setDisplay } from './display.js';
 import { urlCache } from './url-cache.js';
-// eslint-disable-next-line import/no-cycle
 import { checkTab } from './tab.js';
 
 /**
