@@ -24,6 +24,7 @@ import {
 import chromeMock from './mocks/chrome.js';
 import { error, mockTab } from './test-utils.js';
 import { log } from '../src/extension/log.js';
+import { urlCache } from '../src/extension/url-cache.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -203,6 +204,15 @@ describe('Test actions', () => {
 
     resp = await externalActions.getSites({}, mockTab('https://main--helix-tools-website--adobe-evl.aem.live'));
     expect(resp).to.deep.equal([]);
+  });
+
+  it('external: launch', async () => {
+    const localStorageSetStub = sandbox.stub(chrome.storage.local, 'set');
+    const urlCacheSetStub = sandbox.stub(urlCache, 'set');
+
+    await externalActions.launch({ owner: 'foo', repo: 'bar' }, mockTab('https://foo.live/'));
+    expect(urlCacheSetStub.called).to.be.true;
+    expect(localStorageSetStub.calledWith({ display: true })).to.be.true;
   });
 
   it('internal: addRemoveProject', async () => {
