@@ -54,6 +54,7 @@ export async function configureAuthAndCorsHeaders() {
             }],
           },
           condition: {
+            excludedInitiatorDomains: ['da.live'],
             regexFilter: `^https://${adminHost}/(config/${owner}.json|[a-z]+/${owner}/.*)`,
             requestDomains: [adminHost],
             requestMethods: ['get', 'post', 'delete'],
