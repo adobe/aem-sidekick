@@ -11,6 +11,8 @@
  */
 /* eslint-disable no-unused-expressions */
 
+// @ts-ignore
+import fetchMock from 'fetch-mock/esm/client.js';
 import { expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
@@ -24,6 +26,10 @@ import {
 import chromeMock from './mocks/chrome.js';
 import { error, mockTab } from './test-utils.js';
 import { log } from '../src/extension/log.js';
+import {
+  OUTPUT_AEM,
+  OUTPUT_RANDOM,
+} from './fixtures/html-output.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -52,6 +58,7 @@ describe('Test actions', () => {
 
   afterEach(() => {
     sandbox.restore();
+    fetchMock.restore();
   });
 
   it('external: updateAuthToken', async () => {
@@ -491,6 +498,34 @@ describe('Test actions', () => {
       const { getProfilePicture } = internalActions;
       const picture = await getProfilePicture(null, { owner: 'foo' });
       expect(picture).to.be.undefined;
+    });
+  });
+
+  describe('internal: guessAEMSite', () => {
+    it('correctly guesses an AEM site', async () => {
+      fetchMock.get('https://www.example.com/foo', {
+        status: 200,
+        body: OUTPUT_AEM,
+      }, { overwriteRoutes: true });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
+      expect(isAEM).to.be.true;
+    });
+
+    it('detects a non-AEM site', async () => {
+      fetchMock.get('https://www.example.com/foo', {
+        status: 200,
+        body: OUTPUT_RANDOM,
+      }, { overwriteRoutes: true });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
+      expect(isAEM).to.be.false;
+    });
+
+    it('returns false if response not ok', async () => {
+      fetchMock.get('https://www.example.com/foo', {
+        status: 404,
+      }, { overwriteRoutes: true });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
+      expect(isAEM).to.be.false;
     });
   });
 

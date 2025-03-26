@@ -1193,10 +1193,7 @@ export class AppStore {
     }
     const { siteStore, location: { href, search, hash }, status } = this;
     let envHost = siteStore[hostType];
-    if (targetEnv === 'prod' && !envHost) {
-      // no production host defined yet, use live instead
-      envHost = siteStore.outerHost;
-    }
+
     if (!status.webPath) {
       // eslint-disable-next-line no-console
       console.log('not ready yet, trying again in a second ...');
@@ -1206,6 +1203,21 @@ export class AppStore {
       );
       return;
     }
+
+    if (targetEnv === 'prod') {
+      if (envHost) {
+        // only switch to production host if AEM site
+        const isAEM = await chrome.runtime.sendMessage({
+          action: 'guessAEMSite',
+          url: `https://${envHost}${status.webPath}`,
+        });
+        envHost = isAEM ? envHost : siteStore.outerHost;
+      } else {
+        // no production host defined yet, use live instead
+        envHost = siteStore.outerHost;
+      }
+    }
+
     const envOrigin = targetEnv === 'dev' ? siteStore.devUrl.origin : `https://${envHost}`;
     let envUrl = `${envOrigin}${status.webPath}`;
     if (!this.isEditor()) {
