@@ -27,6 +27,7 @@ import {
 import { ADMIN_ORIGIN } from './utils/admin.js';
 import { getConfig } from './config.js';
 import { getDisplay, setDisplay } from './display.js';
+import { urlCache } from './url-cache.js';
 
 /**
  * Updates the auth token via external messaging API (admin only).
@@ -167,6 +168,26 @@ async function getSites(_, sender) {
       const [org, site] = handle.split('/');
       return { org, site };
     });
+}
+
+/**
+ * Launches the sidekick in the sender's tab.
+ * @returns {Promise<boolean>} True if sidekick launched, else false
+ */
+async function launch({
+  owner, repo, org, site,
+}, { tab }) {
+  owner = org || owner;
+  repo = site || repo;
+  if (owner && repo) {
+    // launch sidekick with owner and repo on this url
+    await urlCache.set(tab, { owner, repo });
+    await setDisplay(true);
+    return true;
+  } else {
+    log.warn('launch: missing required parameters org and site or owner and repo');
+    return false;
+  }
 }
 
 /**
@@ -325,4 +346,5 @@ export const externalActions = {
   updateAuthToken,
   getAuthInfo,
   getSites,
+  launch,
 };
