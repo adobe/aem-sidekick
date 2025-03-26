@@ -97,6 +97,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
+            excludedInitiatorDomains: ['da.live'],
             regexFilter: '^https://admin.hlx.page/(config/test.json|[a-z]+/test/.*)',
             requestDomains: [
               'admin.hlx.page',
@@ -179,6 +180,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
+            excludedInitiatorDomains: ['da.live'],
             regexFilter: '^https://admin.hlx.page/(config/test.json|[a-z]+/test/.*)',
             requestDomains: [
               'admin.hlx.page',
@@ -336,6 +338,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
+            excludedInitiatorDomains: ['da.live'],
             regexFilter: '^https://admin.hlx.page/(config/test.json|[a-z]+/test/.*)',
             requestDomains: [
               'admin.hlx.page',
