@@ -250,6 +250,11 @@ export class JSONView extends LitElement {
         </sp-action-group>
         <div class="stats">
           <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
+          ${this.liveData ? html`
+            <sp-action-button @click=${this.toggleDiffView} .selected=${this.diffMode}>
+              ${i18n(this.languageDict, this.diffMode ? 'hide_diff' : 'show_diff')}
+            </sp-action-button>
+          ` : ''}
         </div>
         <sp-action-group selects="single">
           ${this.liveData ? html`
