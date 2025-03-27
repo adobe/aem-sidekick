@@ -19,6 +19,7 @@
     "@spectrum-web-components/menu",
     "@spectrum-web-components/overlay",
     "@spectrum-web-components/picker",
+    "@spectrum-web-components/popover",
     "@spectrum-web-components/progress-circle",
     "@spectrum-web-components/search",
     "@spectrum-web-components/status-light",

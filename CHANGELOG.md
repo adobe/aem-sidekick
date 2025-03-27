@@ -1,3 +1,16 @@
+# [7.6.0](https://github.com/adobe/aem-sidekick/compare/v7.5.2...v7.6.0) (2025-03-26)
+
+
+### Bug Fixes
+
+* **deps:** update external major ([#487](https://github.com/adobe/aem-sidekick/issues/487)) ([cdd9eac](https://github.com/adobe/aem-sidekick/commit/cdd9eacaa6b5f1e16c1fafd908a4bbca58c209a0))
+* Do not inject admin token for requests originatin on da.live ([#516](https://github.com/adobe/aem-sidekick/issues/516)) ([4fc0ef7](https://github.com/adobe/aem-sidekick/commit/4fc0ef7e83e6e3153088780f8e7798911ab2ff88))
+
+
+### Features
+
+* launch externally ([#513](https://github.com/adobe/aem-sidekick/issues/513)) ([1603299](https://github.com/adobe/aem-sidekick/commit/16032993bd5b2c97e715102588dacee9e0cf3875))
+
 ## [7.5.2](https://github.com/adobe/aem-sidekick/compare/v7.5.1...v7.5.2) (2025-03-20)
 
 

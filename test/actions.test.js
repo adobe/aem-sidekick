@@ -30,6 +30,7 @@ import {
   OUTPUT_AEM,
   OUTPUT_RANDOM,
 } from './fixtures/html-output.js';
+import { urlCache } from '../src/extension/url-cache.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -210,6 +211,24 @@ describe('Test actions', () => {
 
     resp = await externalActions.getSites({}, mockTab('https://main--helix-tools-website--adobe-evl.aem.live'));
     expect(resp).to.deep.equal([]);
+  });
+
+  it('external: launch', async () => {
+    const localStorageSetStub = sandbox.stub(chrome.storage.local, 'set');
+    const urlCacheSetStub = sandbox.stub(urlCache, 'set');
+    const logWarnSpy = sandbox.spy(log, 'warn');
+
+    await externalActions.launch({ owner: 'foo', repo: 'bar' }, mockTab('https://foo.live/'));
+    expect(urlCacheSetStub.called).to.be.true;
+    expect(localStorageSetStub.calledWith({ display: true })).to.be.true;
+
+    sandbox.resetHistory();
+
+    // missing mandatory parameters
+    await externalActions.launch({}, mockTab('https://foo.live/'));
+    expect(urlCacheSetStub.called).to.be.false;
+    expect(localStorageSetStub.called).to.be.false;
+    expect(logWarnSpy.calledWith('launch: missing required parameters org and site or owner and repo')).to.be.true;
   });
 
   it('internal: addRemoveProject', async () => {
