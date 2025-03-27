@@ -688,5 +688,11 @@
     },
     "AEM_BACKEND_SVG_PARSING_FAILED": {
       "message": "Unable to preview $1: SVG contains invalid XML"
+    },
+    "show_diff": {
+      "message": "Show Diff"
+    },
+    "hide_diff": {
+      "message": "Hide Diff"
     }
 }

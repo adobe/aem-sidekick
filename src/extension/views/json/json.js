@@ -85,6 +85,20 @@ export class JSONView extends LitElement {
   @property({ type: String })
   accessor url;
 
+  /**
+   * The live version of the JSON data
+   * @type {Object}
+   */
+  @property({ type: Object, state: false })
+  accessor liveData;
+
+  /**
+   * The diff view mode
+   * @type {boolean}
+   */
+  @property({ type: Boolean })
+  accessor diffMode = false;
+
    /**
    * The selected theme from sidekick
    * @type {string}
@@ -122,6 +136,7 @@ export class JSONView extends LitElement {
     try {
       const url = new URL(window.location.href).searchParams.get('url');
       if (url) {
+        // Fetch preview version
         const res = await fetch(url, { cache: 'no-store' });
         if (res.ok) {
           let json = {};
@@ -133,6 +148,18 @@ export class JSONView extends LitElement {
           this.url = url;
           this.originalData = json;
           this.filteredData = json;
+
+          // Fetch live version
+          const liveUrl = url.replace('.page', '.live');
+          const liveRes = await fetch(liveUrl, { cache: 'no-store' });
+          if (liveRes.ok) {
+            try {
+              this.liveData = await liveRes.json();
+            } catch (e) {
+              // eslint-disable-next-line no-console
+              console.warn(`Could not load live version: ${e}`);
+            }
+          }
         } else {
           throw new Error(`failed to load ${url}: ${res.status}`);
         }
@@ -223,6 +250,11 @@ export class JSONView extends LitElement {
         </sp-action-group>
         <div class="stats">
           <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
+          ${this.liveData ? html`
+            <sp-action-button @click=${this.toggleDiffView} .selected=${this.diffMode}>
+              ${i18n(this.languageDict, this.diffMode ? 'hide_diff' : 'show_diff')}
+            </sp-action-button>
+          ` : ''}
         </div>
       </div>
     `;
@@ -260,74 +292,65 @@ export class JSONView extends LitElement {
    * @param {Object[]} rows The rows to render
    * @param {string[]} headers The header names
    * @param {string} url The url of the json file
-   * @returns {HTMLDivElement} The rendered table
+   * @returns {TemplateResult} The rendered table
    */
   renderTable(rows, headers, url) {
-    const tableContainer = document.createElement('div');
-    tableContainer.classList.add('tableContainer');
-
-    const table = document.createElement('sp-table');
-    table.style.height = '100%';
-    table.setAttribute('scroller', 'true');
-
-    if (rows.length > 0) {
-      const headHTML = headers.reduce((acc, key) => `${acc}<sp-table-head-cell sortable sort-direction="desc" sort-key=${key}>${key.charAt(0).toUpperCase() + key.slice(1)}</sp-table-head-cell>`, '');
-      const head = document.createElement('sp-table-head');
-      head.insertAdjacentHTML('beforeend', headHTML);
-      table.appendChild(head);
-
-      table.items = this.sortColumns(rows, headers);
-      // @ts-ignore
-      table.renderItem = (item) => html`${Object.values(item).map((value) => this.renderValue(value, url))}`;
-
-      table.addEventListener('sorted', (event) => {
-        // @ts-ignore
-        const { sortDirection, sortKey } = event.detail;
-        rows = rows.sort((a, b) => {
-          const first = String(a[sortKey]);
-          const second = String(b[sortKey]);
-          return sortDirection === 'asc'
-            ? first.localeCompare(second)
-            : second.localeCompare(first);
-        });
-        table.items = [...rows];
-      });
-
-      tableContainer.appendChild(table);
-    } else {
-      const noResults = this.filterText ? `
-        <sp-illustrated-message
-            heading="${i18n(this.languageDict, 'no_results')}"
-            description="${i18n(this.languageDict, 'no_results_subheading')}"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="99.039" height="94.342">
-            <g fill="none" strokeLinecap="round" strokeLinejoin="round" >
-              <path d="M93.113 88.415a5.38 5.38 0 0 1-7.61 0L58.862 61.773a1.018 1.018 0 0 1 0-1.44l6.17-6.169a1.018 1.018 0 0 1 1.439 0l26.643 26.643a5.38 5.38 0 0 1 0 7.608z" strokeWidth="2.99955"/>
-              <path strokeWidth="2" d="M59.969 59.838l-3.246-3.246M61.381 51.934l3.246 3.246M64.609 61.619l13.327 13.327" />
-              <path strokeWidth="3" d="M13.311 47.447A28.87 28.87 0 1 0 36.589 1.5c-10.318 0-20.141 5.083-24.7 13.46M2.121 38.734l15.536-15.536M17.657 38.734L2.121 23.198" />
-            </g>
-          </svg>
-        </sp-illustrated-message>
-        ` : `
-        <sp-illustrated-message
-          heading="${i18n(this.languageDict, 'no_data')}"
-          description="${i18n(this.languageDict, 'no_data_subheading')}"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="100.25" height="87.2">
-            <path d="M94.55,87.2H5.85c-3.1,0-5.7-2.5-5.7-5.7V5.7C.15,2.6,2.65,0,5.85,0h88.7c3.1,0,5.7,2.5,5.7,5.7v75.8c0,3.1-2.5,5.7-5.7,5.7ZM5.85.5C2.95.5.65,2.8.65,5.7v75.8c0,2.9,2.3,5.2,5.2,5.2h88.7c2.9,0,5.2-2.3,5.2-5.2V5.7c0-2.9-2.3-5.2-5.2-5.2H5.85Z"/>
-            <rect x=".45" y="15.5" width="99.5" height=".5"/>
-            <rect x=".45" y="33.1" width="99.5" height=".5"/>
-            <rect x=".45" y="51.2" width="99.5" height=".5"/>
-            <rect x=".45" y="69.4" width="99.5" height=".5"/>
-            <rect x="33.33" y="15.1" width=".5" height="71.8"/>
-            <rect x="66.67" y="15.1" width=".5" height="71.8"/>
-          </svg>
-        </sp-illustrated-message>
-        `;
-      tableContainer.innerHTML = noResults;
+    if (rows.length === 0) {
+      return html`
+        <div class="tableContainer">
+          ${this.filterText ? html`
+            <sp-illustrated-message
+              heading="${i18n(this.languageDict, 'no_results')}"
+              description="${i18n(this.languageDict, 'no_results_subheading')}"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="99.039" height="94.342">
+                <g fill="none" strokeLinecap="round" strokeLinejoin="round" >
+                  <path d="M93.113 88.415a5.38 5.38 0 0 1-7.61 0L58.862 61.773a1.018 1.018 0 0 1 0-1.44l6.17-6.169a1.018 1.018 0 0 1 1.439 0l26.643 26.643a5.38 5.38 0 0 1 0 7.608z" strokeWidth="2.99955"/>
+                  <path strokeWidth="2" d="M59.969 59.838l-3.246-3.246M61.381 51.934l3.246 3.246M64.609 61.619l13.327 13.327" />
+                  <path strokeWidth="3" d="M13.311 47.447A28.87 28.87 0 1 0 36.589 1.5c-10.318 0-20.141 5.083-24.7 13.46M2.121 38.734l15.536-15.536M17.657 38.734L2.121 23.198" />
+                </g>
+              </svg>
+            </sp-illustrated-message>
+          ` : html`
+            <sp-illustrated-message
+              heading="${i18n(this.languageDict, 'no_data')}"
+              description="${i18n(this.languageDict, 'no_data_subheading')}"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="100.25" height="87.2">
+                <path d="M94.55,87.2H5.85c-3.1,0-5.7-2.5-5.7-5.7V5.7C.15,2.6,2.65,0,5.85,0h88.7c3.1,0,5.7,2.5,5.7,5.7v75.8c0,3.1-2.5,5.7-5.7,5.7ZM5.85.5C2.95.5.65,2.8.65,5.7v75.8c0,2.9,2.3,5.2,5.2,5.2h88.7c2.9,0,5.2-2.3,5.2-5.2V5.7c0-2.9-2.3-5.2-5.2-5.2H5.85Z"/>
+                <rect x=".45" y="15.5" width="99.5" height=".5"/>
+                <rect x=".45" y="33.1" width="99.5" height=".5"/>
+                <rect x=".45" y="51.2" width="99.5" height=".5"/>
+                <rect x=".45" y="69.4" width="99.5" height=".5"/>
+                <rect x="33.33" y="15.1" width=".5" height="71.8"/>
+                <rect x="66.67" y="15.1" width=".5" height="71.8"/>
+              </svg>
+            </sp-illustrated-message>
+          `}
+        </div>
+      `;
     }
 
-    return tableContainer;
+    return html`
+      <div class="tableContainer">
+        <sp-table scroller style="height: 100%">
+          <sp-table-head>
+            ${headers.map((header) => html`
+              <sp-table-head-cell sortable sort-direction="desc" sort-key=${header}>
+                ${header.charAt(0).toUpperCase() + header.slice(1)}
+              </sp-table-head-cell>
+            `)}
+          </sp-table-head>
+          <sp-table-body>
+            ${rows.map((row) => html`
+              <sp-table-row class=${this.diffMode && row.diff ? `diff-row ${row.diff}` : ''}>
+                ${Object.values(row).map((value) => this.renderValue(value, url))}
+              </sp-table-row>
+            `)}
+          </sp-table-body>
+        </sp-table>
+      </div>
+    `;
   }
 
   /**
@@ -337,7 +360,21 @@ export class JSONView extends LitElement {
    * @returns {TemplateResult} The rendered value
    */
   renderValue(value, url) {
-    const valueContainer = document.createElement('div');
+    // Handle diff values
+    if (this.diffMode && value && typeof value === 'object' && 'diff' in value) {
+      return html`
+        <sp-table-cell>
+          <div class="diff-value ${value.diff}">
+            ${value.preview !== undefined && value.live !== undefined ? html`
+              <div class="preview">${value.preview}</div>
+              <div class="live">${value.live}</div>
+            ` : JSON.stringify(value)}
+          </div>
+        </sp-table-cell>
+      `;
+    }
+
+    // Handle regular values
     if (value && !Number.isNaN(+value)) {
       // check for date
       const date = +value > 99999
@@ -345,55 +382,64 @@ export class JSONView extends LitElement {
         : new Date(Math.round((+value - (1 + 25567 + 1)) * 86400 * 1000)); // excel date
       if (date.toString() !== 'Invalid Date'
         && nearFuture > date.valueOf() && recentPast < date.valueOf()) {
-        valueContainer.classList.add('date');
-        valueContainer.textContent = date.toLocaleString();
-      } else {
-        // number
-        valueContainer.classList.add('number');
-        valueContainer.textContent = value;
+        return html`<sp-table-cell><div class="date">${date.toLocaleString()}</div></sp-table-cell>`;
       }
+      // number
+      return html`<sp-table-cell><div class="number">${value}</div></sp-table-cell>`;
     } else if (/\/^\/[a-z0-9]+$\/i/.test(value) || value.startsWith('http')) {
       // check if the value contains a glob pattern
       if (!value.includes('*')) {
         // assume link
-        const link = valueContainer.appendChild(document.createElement('a'));
         const target = new URL(value, url).toString();
-        link.href = target;
-        link.title = value;
-        link.target = '_blank';
         if (value.endsWith('.mp4')) {
           // linked mp4 video
-          valueContainer.classList.add('video');
-          const video = link.appendChild(document.createElement('video'));
-          const source = video.appendChild(document.createElement('source'));
-          source.src = target;
-          source.type = 'video/mp4';
+          return html`
+            <sp-table-cell>
+              <div class="video">
+                <a href=${target} title=${value} target="_blank">
+                  <video>
+                    <source src=${target} type="video/mp4">
+                  </video>
+                </a>
+              </div>
+            </sp-table-cell>
+          `;
         } else if (value.includes('media_')) {
           // linked image
-          valueContainer.classList.add('image');
-          const img = link.appendChild(document.createElement('img'));
-          img.src = target;
-        } else {
-          // text link
-          link.textContent = value;
+          return html`
+            <sp-table-cell>
+              <div class="image">
+                <a href=${target} title=${value} target="_blank">
+                  <img src=${target} alt=${value}>
+                </a>
+              </div>
+            </sp-table-cell>
+          `;
         }
-      } else {
-        // Text
-        valueContainer.textContent = value;
+        // text link
+        return html`
+          <sp-table-cell>
+            <a href=${target} title=${value} target="_blank">${value}</a>
+          </sp-table-cell>
+        `;
       }
+      // Text
+      return html`<sp-table-cell>${value}</sp-table-cell>`;
     } else if (value.startsWith('[') && value.endsWith(']')) {
       // assume array
-      valueContainer.classList.add('list');
-      const list = valueContainer.appendChild(document.createElement('ul'));
-      JSON.parse(value).forEach((v) => {
-        const item = list.appendChild(document.createElement('li'));
-        item.textContent = v;
-      });
-    } else {
-      // text
-      valueContainer.textContent = value;
+      const list = JSON.parse(value);
+      return html`
+        <sp-table-cell>
+          <div class="list">
+            <ul>
+              ${list.map((v) => html`<li>${v}</li>`)}
+            </ul>
+          </div>
+        </sp-table-cell>
+      `;
     }
-    return html`<sp-table-cell>${valueContainer}</sp-table-cell>`;
+    // text
+    return html`<sp-table-cell>${value}</sp-table-cell>`;
   }
 
   /**
@@ -504,6 +550,121 @@ export class JSONView extends LitElement {
         target: 'jsonview:closed',
       });
     }
+  }
+
+  /**
+   * Toggle diff view mode
+   */
+  toggleDiffView() {
+    this.diffMode = !this.diffMode;
+    if (this.diffMode && this.liveData) {
+      this.filteredData = this.computeDiff(this.originalData, this.liveData);
+    } else {
+      this.filteredData = this.originalData;
+    }
+  }
+
+  /**
+   * Compute diff between preview and live versions
+   * @param {Object} preview The preview version
+   * @param {Object} live The live version
+   * @returns {Object} The diff result
+   */
+  computeDiff(preview, live) {
+    if (!preview || !live) {
+      // eslint-disable-next-line no-console
+      console.warn('Missing preview or live data:', { preview: !!preview, live: !!live });
+      return preview;
+    }
+
+    const diff = { ...preview };
+
+    if (preview[':type'] === 'multi-sheet' && preview[':names']) {
+      preview[':names'].forEach((name) => {
+        if (preview[name] && live[name]) {
+          const { data: previewData, columns } = preview[name];
+          const { data: liveData } = live[name];
+
+          if (previewData && liveData) {
+            const diffData = previewData.map((row, index) => {
+              const liveRow = liveData[index];
+              if (!liveRow) {
+                return { ...row, diff: 'added' };
+              }
+
+              const diffRow = { ...row };
+              let hasChanges = false;
+
+              Object.keys(row).forEach((key) => {
+                if (row[key] !== liveRow[key]) {
+                  diffRow[key] = {
+                    preview: row[key],
+                    live: liveRow[key],
+                    diff: 'modified',
+                  };
+                  hasChanges = true;
+                }
+              });
+
+              if (hasChanges) {
+                // eslint-disable-next-line no-underscore-dangle
+                diffRow.diff = 'modified';
+              }
+
+              return diffRow;
+            });
+
+            // Add removed rows
+            liveData.slice(previewData.length).forEach((row) => {
+              diffData.push({ ...row, diff: 'removed' });
+            });
+
+            diff[name] = { data: diffData, columns };
+          }
+        }
+      });
+    } else {
+      const { data: previewData, columns } = preview;
+      const { data: liveData } = live;
+
+      if (previewData && liveData) {
+        const diffData = previewData.map((row, index) => {
+          const liveRow = liveData[index];
+          if (!liveRow) {
+            return { ...row, diff: 'added' };
+          }
+
+          const diffRow = { ...row };
+          let hasChanges = false;
+
+          Object.keys(row).forEach((key) => {
+            if (row[key] !== liveRow[key]) {
+              diffRow[key] = {
+                preview: row[key],
+                live: liveRow[key],
+                diff: 'modified',
+              };
+              hasChanges = true;
+            }
+          });
+
+          if (hasChanges) {
+            diffRow.diff = 'modified';
+          }
+
+          return diffRow;
+        });
+
+        // Add removed rows
+        liveData.slice(previewData.length).forEach((row) => {
+          diffData.push({ ...row, diff: 'removed' });
+        });
+        diff.data = diffData;
+        diff.columns = columns;
+      }
+    }
+
+    return diff;
   }
 
   render() {

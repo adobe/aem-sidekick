@@ -235,4 +235,48 @@ export const style = css`
       min-width: 324px;
     }
   }
+  
+  .diff-value {
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
+
+  .diff-value.added {
+    background-color: var(--spectrum2-color-positive);
+  }
+
+  .diff-value.modified {
+    background-color: var(--spectrum2-color-warning);
+  }
+
+  .diff-value.removed {
+    background-color: var(--spectrum2-background-color-negative);
+  }
+
+  .diff-value .preview {
+    color: var(--spectrum2-color-positive);
+    margin-bottom: 0.25rem;
+  }
+
+  .diff-value .live {
+    color: var(--spectrum2-background-color-negative);
+  }
+
+  /* Diff row styles */
+  .diff-row {
+    background-color: var(--spectrum-global-color-gray-100);
+  }
+
+  .diff-row.added {
+    background-color: var(--spectrum2-color-positive);
+  }
+
+  .diff-row.modified {
+    background-color: var(--spectrum2-color-warning);
+  }
+
+  .diff-row.removed {
+    background-color: var(--spectrum2-background-color-negative);
+  }
+
 `;
