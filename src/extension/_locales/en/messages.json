@@ -517,6 +517,9 @@
     "preview_last_updated": {
       "message": "Last updated $1"
     },
+    "preview_last_updated_by": {
+      "message": "Last updated $1 by $2"
+    },
     "review_last_updated": {
       "message": "Last updated $1"
     },
@@ -529,8 +532,14 @@
     "live_last_updated": {
       "message": "Last published $1"
     },
+    "live_last_updated_by": {
+      "message": "Last published $1 by $2"
+    },
     "prod_last_updated": {
       "message": "Last published $1"
+    },
+    "prod_last_updated_by": {
+      "message": "Last published $1 by $2"
     },
     "edit_never_updated": {
       "message": "Never saved"

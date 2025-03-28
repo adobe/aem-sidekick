@@ -202,6 +202,7 @@ export const defaultSharepointStatusResponse = {
     contentBusId: 'helix-content-bus/content-bus-id/live/index.md',
     contentType: 'text/plain; charset=utf-8',
     lastModified: 'Tue, 19 Dec 2023 15:42:45 GMT',
+    lastModifiedBy: 'jdoe@example.com',
     sourceLocation: 'onedrive:/drives/drive-id/items/item-id',
     sourceLastModified: 'Wed, 01 Nov 2023 17:22:52 GMT',
     permissions: [
@@ -215,6 +216,7 @@ export const defaultSharepointStatusResponse = {
     contentBusId: 'helix-content-bus/content-bus-id/preview/index.md',
     contentType: 'text/plain; charset=utf-8',
     lastModified: 'Tue, 19 Dec 2023 15:42:34 GMT',
+    lastModifiedBy: 'jdoe@example.com',
     sourceLocation: 'onedrive:/drives/drive-id/items/item-id',
     sourceLastModified: 'Wed, 01 Nov 2023 17:22:52 GMT',
     permissions: [
