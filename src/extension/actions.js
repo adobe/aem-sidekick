@@ -336,8 +336,14 @@ export async function getProfilePicture(_, { owner }) {
 export async function guessAEMSite(_, { url }) {
   const resp = await fetch(url);
   if (resp.ok) {
-    const html = await resp.text();
-    return /<body>\n {4}<header><\/header>\n {4}<main>\n {6}<div>/gm.test(html);
+    const payload = await resp.text();
+    const [type, html, head, titl, link, meta] = payload.substring(0, 400).split('\n');
+    return type === '<!DOCTYPE html>'
+      && html.startsWith('<html')
+      && head === '  <head>'
+      && titl.startsWith('    <title>')
+      && link.startsWith('    <link rel="canonical"')
+      && meta.startsWith('    <meta');
   } else {
     return false;
   }

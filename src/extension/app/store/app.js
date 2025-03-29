@@ -1182,6 +1182,37 @@ export class AppStore {
    * @fires Sidekick#envswitched
    */
   async switchEnv(targetEnv, open = false, cacheBust = false) {
+    const getCacheBuster = (url) => {
+      // Check if cache busting should be applied based on the environment and conditions.
+      // The logic prevents cache busting if:
+      // The target environment is 'prod' && the envUrl does not include any of the live
+      // domains & the sidekick is running in transient mode.
+      const liveDomains = ['aem.live', 'hlx.live'];
+      if (cacheBust
+        && !(targetEnv === 'prod' && !liveDomains.some((domain) => url.includes(domain)) && this.siteStore.transient)) {
+        return `?nocache=${Date.now()}`;
+      }
+      return '';
+    };
+
+    const getEditUrl = async () => {
+      const updatedStatus = await this.fetchStatus(false, true);
+      const editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
+      if (editUrl) {
+        return new URL(editUrl);
+      }
+      return null;
+    };
+
+    const getEnvUrl = (envHost, webPath, location, devUrl = {}) => {
+      const envOrigin = targetEnv === 'dev' ? devUrl.origin : `https://${envHost}`;
+      let envUrl = `${envOrigin}${webPath}`;
+      if (!this.isEditor()) {
+        envUrl += `${location.search}${location.hash}`;
+      }
+      return new URL(`${envUrl}${getCacheBuster(envUrl)}`);
+    };
+
     const hostType = ENVS[targetEnv];
     if (!hostType) {
       // eslint-disable-next-line no-console
@@ -1191,8 +1222,8 @@ export class AppStore {
     if (this.status.error) {
       return;
     }
-    const { siteStore, location: { href, search, hash }, status } = this;
-    let envHost = siteStore[hostType];
+
+    const { siteStore, location, status } = this;
 
     if (!status.webPath) {
       // eslint-disable-next-line no-console
@@ -1204,29 +1235,15 @@ export class AppStore {
       return;
     }
 
-    if (targetEnv === 'prod') {
-      if (envHost) {
-        // only switch to production host if AEM site
-        const isAEM = await chrome.runtime.sendMessage({
-          action: 'guessAEMSite',
-          url: `https://${envHost}${status.webPath}`,
-        });
-        envHost = isAEM ? envHost : siteStore.outerHost;
-      } else {
-        // no production host defined yet, use live instead
-        envHost = siteStore.outerHost;
-      }
+    let envHost = siteStore[hostType];
+    if (!envHost && hostType === ENVS.prod) {
+      // no production host defined yet, use live instead
+      envHost = siteStore[ENVS.live];
     }
 
-    const envOrigin = targetEnv === 'dev' ? siteStore.devUrl.origin : `https://${envHost}`;
-    let envUrl = `${envOrigin}${status.webPath}`;
-    if (!this.isEditor()) {
-      envUrl += `${search}${hash}`;
-    }
-
+    let envUrl;
     if (targetEnv === 'edit') {
-      const updatedStatus = await this.fetchStatus(false, true);
-      envUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
+      envUrl = await getEditUrl();
       if (!envUrl) {
         this.showToast({
           message: this.i18n('edit_no_source'),
@@ -1234,36 +1251,39 @@ export class AppStore {
         });
         return;
       }
+    } else {
+      envUrl = getEnvUrl(envHost, status.webPath, location, siteStore.devUrl);
+    }
+
+    if (targetEnv === 'prod' && siteStore[hostType]) {
+      // only switch to production host if AEM site
+      const isAEM = await chrome.runtime.sendMessage({
+        action: 'guessAEMSite',
+        url: envUrl,
+      });
+      if (!isAEM) {
+        // fall back to live host
+        envUrl.host = siteStore[ENVS.live];
+      }
     }
 
     const [customView] = this.findViews(VIEWS.CUSTOM);
     if (customView) {
       const customViewUrl = new URL(customView.viewer, envUrl);
       customViewUrl.searchParams.set('path', status.webPath);
-      envUrl = customViewUrl.href;
-    }
-
-    // Check if cache busting should be applied based on the environment and conditions.
-    // The logic prevents cache busting if:
-    // The target environment is 'prod' && the envUrl does not include any of the live
-    // domains & the sidekick is running in transient mode.
-    const liveDomains = ['aem.live', 'hlx.live'];
-    if (cacheBust
-      && !(targetEnv === 'prod' && !liveDomains.some((domain) => envUrl.includes(domain)) && this.siteStore.transient)) {
-      const separator = envUrl.includes('?') ? '&' : '?';
-      envUrl = `${envUrl}${separator}nocache=${Date.now()}`;
+      envUrl = customViewUrl;
     }
 
     // switch or open env
     if (open || this.isEditor()) {
-      this.openPage(envUrl, open
+      this.openPage(envUrl.href, open
         ? '' : `aem-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
     } else {
-      this.loadPage(envUrl);
+      this.loadPage(envUrl.href);
     }
     this.fireEvent(EXTERNAL_EVENTS.EVIRONMENT_SWITCHED, {
-      sourceUrl: href,
-      targetUrl: envUrl,
+      sourceUrl: location.href,
+      targetUrl: envUrl.href,
     });
   }
 
