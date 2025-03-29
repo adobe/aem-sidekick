@@ -11,8 +11,7 @@
  */
 /* eslint-disable no-unused-expressions */
 
-export const OUTPUT_AEM = `
-<!DOCTYPE html>
+export const OUTPUT_AEM = `<!DOCTYPE html>
 <html>
   <head>
     <title>Home | AEM Boilerplate</title>
@@ -89,8 +88,7 @@ export const OUTPUT_AEM = `
   </body>
 </html>`;
 
-export const OUTPUT_RANDOM = `
-<html><head>
+export const OUTPUT_RANDOM = `<html><head>
   <script src="/foo.js" type="module"></script>
   <link rel="stylesheet" href="/foo.css">
   </head><body>
