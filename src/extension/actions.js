@@ -327,6 +327,29 @@ export async function getProfilePicture(_, { owner }) {
 }
 
 /**
+ * Tries to guess if a URL is an AEM site.
+ * @param {chrome.tabs.Tab} _ The tab
+ * @param {Object} message The message object
+ * @param {string} message.url The URL to check
+ * @returns {Promise<boolean>} True if the provided URL is an AEM site
+ */
+export async function guessAEMSite(_, { url }) {
+  const resp = await fetch(url);
+  if (resp.ok) {
+    const payload = await resp.text();
+    const [type, html, head, titl, link, meta] = payload.substring(0, 400).split('\n');
+    return type === '<!DOCTYPE html>'
+      && html.startsWith('<html')
+      && head === '  <head>'
+      && titl.startsWith('    <title>')
+      && link.startsWith('    <link rel="canonical"')
+      && meta.startsWith('    <meta');
+  } else {
+    return false;
+  }
+}
+
+/**
  * Actions which can be executed via internal messaging API.
  * @type {Object} The internal actions
  */
@@ -336,6 +359,7 @@ export const internalActions = {
   openViewDocSource,
   importProjects,
   getProfilePicture,
+  guessAEMSite,
 };
 
 /**
