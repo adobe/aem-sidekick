@@ -11,7 +11,7 @@
  */
 /* eslint-disable no-unused-expressions */
 
-export const OUTPUT_AEM = `<!DOCTYPE html>
+export const PIPELINE_HTML = `<!DOCTYPE html>
 <html>
   <head>
     <title>Home | AEM Boilerplate</title>
@@ -88,10 +88,21 @@ export const OUTPUT_AEM = `<!DOCTYPE html>
   </body>
 </html>`;
 
-export const OUTPUT_RANDOM = `<html><head>
+export const PIPELINE_JSON = `{
+  "total":1,
+  "offset":0,
+  "limit":1,
+  "data":[{ "Foo":"", "Bar":"" }],
+  "columns": ["Foo","Bar"],
+  ":type":"sheet"
+}`;
+
+export const RANDOM_HTML = `<html><head>
   <script src="/foo.js" type="module"></script>
   <link rel="stylesheet" href="/foo.css">
   </head><body>
   <h1 id="congrats-you-are-ready-to-go">Congrats, you are ready to go!</h1>
   <p>Lorem ipsum dolor sit amet.</p>
 </body></html>`;
+
+export const RANDOM_JSON = '{"foo":"bar"}';

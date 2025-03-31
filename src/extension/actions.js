@@ -334,18 +334,44 @@ export async function getProfilePicture(_, { owner }) {
  * @returns {Promise<boolean>} True if the provided URL is an AEM site
  */
 export async function guessAEMSite(_, { url }) {
-  const resp = await fetch(url);
-  if (resp.ok) {
-    const payload = await resp.text();
-    const [type, html, head, titl, link, meta] = payload.substring(0, 400).split('\n');
-    return type === '<!DOCTYPE html>'
-      && html.startsWith('<html')
-      && head === '  <head>'
-      && titl.startsWith('    <title>')
-      && link.startsWith('    <link rel="canonical"')
-      && meta.startsWith('    <meta');
-  } else {
-    return false;
+  try {
+    const resp = await fetch(url, { redirect: 'manual' }); // don't allow redirects
+    if (resp.ok) {
+      const mimeType = resp.headers.get('content-type');
+      if (mimeType.startsWith('text/html')) {
+        // payload must match pipeline output
+        const payload = await resp.text();
+        const [type, html, head, titl, link, meta] = payload.substring(0, 400).split('\n');
+        return type === '<!DOCTYPE html>'
+          && html.startsWith('<html')
+          && head === '  <head>'
+          && titl.startsWith('    <title>')
+          && link.startsWith('    <link rel="canonical"')
+          && meta.startsWith('    <meta');
+      } else if (mimeType.startsWith('application/json')) {
+        // payload must match pipeline output
+        try {
+          const payload = await resp.json();
+          return !!payload[':type'];
+        } catch (e) {
+          // invalid json
+          return false;
+        }
+      } else {
+        // unable to guess. assume AEM
+        return true;
+      }
+    } else {
+      if (resp.status === 404 || resp.status >= 500) {
+        // unexpected not found or server error, assume incorrect prod setup
+        return false;
+      }
+      // otherwise assume AEM (e.g. protected)
+      return true;
+    }
+  } catch (e) {
+    // unable to connect, assume AEM (e.g. firewalled)
+    return true;
   }
 }
 
