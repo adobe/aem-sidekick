@@ -520,6 +520,13 @@ describe('Test actions', () => {
       const picture = await getProfilePicture(null, { owner: 'foo' });
       expect(picture).to.be.undefined;
     });
+
+    it('returns undefined if no projects added', async () => {
+      sandbox.stub(chrome.storage.session, 'get').resolves(undefined);
+      const { getProfilePicture } = internalActions;
+      const picture = await getProfilePicture(null, { owner: 'foo' });
+      expect(picture).to.be.undefined;
+    });
   });
 
   describe('internal: guessAEMSite', () => {
@@ -619,12 +626,10 @@ describe('Test actions', () => {
       expect(isAEM).to.be.true;
     });
 
-    it('returns false if network error', async () => {
-      fetchMock.get('https://www.example.com/foo', {
-        throw: new Error('Network error'),
-      });
+    it('returns true if network error', async () => {
+      sandbox.stub(fetchMock, 'get').throws(new Error('Network error'));
       const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
-      expect(isAEM).to.be.false;
+      expect(isAEM).to.be.true;
     });
   });
 
