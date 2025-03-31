@@ -279,4 +279,7 @@ export const style = css`
     background-color: var(--spectrum2-background-color-negative);
   }
 
+  .diff-row a {
+    color: var(--spectrum-white-color);
+  }
 `;

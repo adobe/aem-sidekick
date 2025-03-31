@@ -250,12 +250,14 @@ export class JSONView extends LitElement {
         </sp-action-group>
         <div class="stats">
           <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
+        </div>
+        <sp-action-group selects="single">
           ${this.liveData ? html`
             <sp-action-button @click=${this.toggleDiffView} .selected=${this.diffMode}>
               ${i18n(this.languageDict, this.diffMode ? 'hide_diff' : 'show_diff')}
             </sp-action-button>
           ` : ''}
-        </div>
+        </sp-action-group>
       </div>
     `;
     elements.push(actions);
@@ -285,6 +287,77 @@ export class JSONView extends LitElement {
       });
       return newRow;
     });
+  }
+
+  /**
+   * Format the value for the table
+   * @param {string} value The value to format
+   * @param {string} url The url of the json file
+   * @returns {TemplateResult} The formatted value
+  */
+  formatValue(value, url) {
+    // Handle regular values
+    if (value && !Number.isNaN(+value)) {
+      // check for date
+      const date = +value > 99999
+        ? new Date(+value * 1000)
+        : new Date(Math.round((+value - (1 + 25567 + 1)) * 86400 * 1000)); // excel date
+      if (date.toString() !== 'Invalid Date'
+        && nearFuture > date.valueOf() && recentPast < date.valueOf()) {
+        return html`<div class="date">${date.toLocaleString()}</div>`;
+      }
+      // number
+      return html`<div class="number">${value}</div>`;
+    } else if (/\/^\/[a-z0-9]+$\/i/.test(value) || value.startsWith('http')) {
+      // check if the value contains a glob pattern
+      if (!value.includes('*')) {
+        // assume link
+        const target = new URL(value, url).toString();
+        if (value.endsWith('.mp4')) {
+          // linked mp4 video
+          return html`
+            <div class="video">
+              <a href=${target} title=${value} target="_blank">
+                <video>
+                    <source src=${target} type="video/mp4">
+                  </video>
+                </a>
+              </div>
+            </div>
+          `;
+        } else if (value.includes('media_')) {
+          // linked image
+          return html`
+            <div class="image">
+              <a href=${target} title=${value} target="_blank">
+                <img src=${target} alt=${value}>
+                </a>
+              </div>
+            </div>
+          `;
+        }
+        // text link
+        return html`
+          <div>
+            <a href=${target} title=${value} target="_blank">${value}</a>
+          </div>
+        `;
+      }
+      // Text
+      return html`<div>${value}</div>`;
+    } else if (value.startsWith('[') && value.endsWith(']')) {
+      // assume array
+      const list = JSON.parse(value);
+      return html`
+        <div class="list">
+          <ul>
+            ${list.map((v) => html`<li>${v}</li>`)}
+            </ul>
+        </div>
+      `;
+    }
+    // text
+    return html`<div>${value}</div>`;
   }
 
   /**
@@ -366,8 +439,8 @@ export class JSONView extends LitElement {
         <sp-table-cell>
           <div class="diff-value ${value.diff}">
             ${value.preview !== undefined && value.live !== undefined ? html`
-              <div class="preview">${value.preview}</div>
-              <div class="live">${value.live}</div>
+              <div class="preview">${this.formatValue(value.preview, url)}</div>
+              <div class="live">${this.formatValue(value.live, url)}</div>
             ` : JSON.stringify(value)}
           </div>
         </sp-table-cell>
@@ -375,71 +448,7 @@ export class JSONView extends LitElement {
     }
 
     // Handle regular values
-    if (value && !Number.isNaN(+value)) {
-      // check for date
-      const date = +value > 99999
-        ? new Date(+value * 1000)
-        : new Date(Math.round((+value - (1 + 25567 + 1)) * 86400 * 1000)); // excel date
-      if (date.toString() !== 'Invalid Date'
-        && nearFuture > date.valueOf() && recentPast < date.valueOf()) {
-        return html`<sp-table-cell><div class="date">${date.toLocaleString()}</div></sp-table-cell>`;
-      }
-      // number
-      return html`<sp-table-cell><div class="number">${value}</div></sp-table-cell>`;
-    } else if (/\/^\/[a-z0-9]+$\/i/.test(value) || value.startsWith('http')) {
-      // check if the value contains a glob pattern
-      if (!value.includes('*')) {
-        // assume link
-        const target = new URL(value, url).toString();
-        if (value.endsWith('.mp4')) {
-          // linked mp4 video
-          return html`
-            <sp-table-cell>
-              <div class="video">
-                <a href=${target} title=${value} target="_blank">
-                  <video>
-                    <source src=${target} type="video/mp4">
-                  </video>
-                </a>
-              </div>
-            </sp-table-cell>
-          `;
-        } else if (value.includes('media_')) {
-          // linked image
-          return html`
-            <sp-table-cell>
-              <div class="image">
-                <a href=${target} title=${value} target="_blank">
-                  <img src=${target} alt=${value}>
-                </a>
-              </div>
-            </sp-table-cell>
-          `;
-        }
-        // text link
-        return html`
-          <sp-table-cell>
-            <a href=${target} title=${value} target="_blank">${value}</a>
-          </sp-table-cell>
-        `;
-      }
-      // Text
-      return html`<sp-table-cell>${value}</sp-table-cell>`;
-    } else if (value.startsWith('[') && value.endsWith(']')) {
-      // assume array
-      const list = JSON.parse(value);
-      return html`
-        <sp-table-cell>
-          <div class="list">
-            <ul>
-              ${list.map((v) => html`<li>${v}</li>`)}
-            </ul>
-          </div>
-        </sp-table-cell>
-      `;
-    }
-    // text
-    return html`<sp-table-cell>${value}</sp-table-cell>`;
+    return html`<sp-table-cell>${this.formatValue(value, url)}</sp-table-cell>`;
   }
 
   /**
@@ -565,6 +574,106 @@ export class JSONView extends LitElement {
   }
 
   /**
+   * Helper to create a unique key for a row
+   * @param {Object} row The row
+   * @returns {string} The unique key
+   */
+  getRowKey(row, isPathBasedConfiguration = false) {
+    const rowKey = Object.entries(row)
+      .filter(([key]) => !key.startsWith(':')) // Exclude metadata fields
+      .map(([key, value]) => `${key}:${value}`)
+      .join('|');
+    if (isPathBasedConfiguration) {
+      return rowKey.split('|')[0];
+    }
+    return rowKey;
+  }
+
+  /**
+   * Check if the current url is a path based configuration sheet like redirects, metadata, etc.
+   * @returns {boolean} True if the url is a configuration
+   */
+  isPathBasedConfiguration() {
+    const url = new URL(window.location.href).searchParams.get('url');
+    // if url matches metadata or redirects.json, return true
+    return url.includes('metadata') || url.includes('redirects.json');
+  }
+
+  /**
+   * Compare rows between preview and live versions
+   * @param {Object} preview The preview version
+   * @param {Object} live The live version
+   * @param {Object} diff The diff object
+   * @param {boolean} isPathBasedConfiguration True if the current url is a path-based config sheet
+   */
+  compareRows(preview, live, diff, isPathBasedConfiguration = false) {
+    if (preview && live) {
+      const { data: previewData, columns } = preview;
+      const { data: liveData } = live;
+
+      if (previewData && liveData) {
+        // Create maps of rows by their content for easier comparison
+        const previewMap = new Map();
+        const liveMap = new Map();
+
+        // Index preview rows
+        previewData.forEach((row) => {
+          const key = this.getRowKey(row, isPathBasedConfiguration);
+          previewMap.set(key, row);
+        });
+
+        // Index live rows
+        liveData.forEach((row) => {
+          const key = this.getRowKey(row, isPathBasedConfiguration);
+          liveMap.set(key, row);
+        });
+
+        // Compare rows and build diff data
+        const diffData = [];
+
+        // Check for modified and unchanged rows
+        previewMap.forEach((previewRow, key) => {
+          const liveRow = liveMap.get(key);
+          if (liveRow) {
+            // Row exists in both, check for modifications
+            const diffRow = { ...previewRow };
+            let hasChanges = false;
+
+            Object.keys(previewRow).forEach((field) => {
+              if (previewRow[field] !== liveRow[field]) {
+                diffRow[field] = {
+                  preview: previewRow[field],
+                  live: liveRow[field],
+                  diff: 'modified',
+                };
+                hasChanges = true;
+              }
+            });
+
+            if (hasChanges) {
+              diffRow.diff = 'modified';
+            }
+            diffData.push(diffRow);
+          } else {
+            // Row exists only in preview
+            diffData.push({ ...previewRow, diff: 'added' });
+          }
+        });
+
+        // Add rows that exist only in live
+        liveMap.forEach((liveRow, key) => {
+          if (!previewMap.has(key)) {
+            diffData.push({ ...liveRow, diff: 'removed' });
+          }
+        });
+
+        diff = { data: diffData, columns };
+      }
+    }
+    return diff;
+  }
+
+  /**
    * Compute diff between preview and live versions
    * @param {Object} preview The preview version
    * @param {Object} live The live version
@@ -578,90 +687,26 @@ export class JSONView extends LitElement {
     }
 
     const diff = { ...preview };
-
+    const isPathBasedConfiguration = this.isPathBasedConfiguration();
     if (preview[':type'] === 'multi-sheet' && preview[':names']) {
       preview[':names'].forEach((name) => {
-        if (preview[name] && live[name]) {
-          const { data: previewData, columns } = preview[name];
-          const { data: liveData } = live[name];
-
-          if (previewData && liveData) {
-            const diffData = previewData.map((row, index) => {
-              const liveRow = liveData[index];
-              if (!liveRow) {
-                return { ...row, diff: 'added' };
-              }
-
-              const diffRow = { ...row };
-              let hasChanges = false;
-
-              Object.keys(row).forEach((key) => {
-                if (row[key] !== liveRow[key]) {
-                  diffRow[key] = {
-                    preview: row[key],
-                    live: liveRow[key],
-                    diff: 'modified',
-                  };
-                  hasChanges = true;
-                }
-              });
-
-              if (hasChanges) {
-                // eslint-disable-next-line no-underscore-dangle
-                diffRow.diff = 'modified';
-              }
-
-              return diffRow;
-            });
-
-            // Add removed rows
-            liveData.slice(previewData.length).forEach((row) => {
-              diffData.push({ ...row, diff: 'removed' });
-            });
-
-            diff[name] = { data: diffData, columns };
-          }
-        }
+        const differences = this.compareRows(
+          preview[name],
+          live[name],
+          diff,
+          isPathBasedConfiguration,
+        );
+        diff[name] = differences;
       });
     } else {
-      const { data: previewData, columns } = preview;
-      const { data: liveData } = live;
-
-      if (previewData && liveData) {
-        const diffData = previewData.map((row, index) => {
-          const liveRow = liveData[index];
-          if (!liveRow) {
-            return { ...row, diff: 'added' };
-          }
-
-          const diffRow = { ...row };
-          let hasChanges = false;
-
-          Object.keys(row).forEach((key) => {
-            if (row[key] !== liveRow[key]) {
-              diffRow[key] = {
-                preview: row[key],
-                live: liveRow[key],
-                diff: 'modified',
-              };
-              hasChanges = true;
-            }
-          });
-
-          if (hasChanges) {
-            diffRow.diff = 'modified';
-          }
-
-          return diffRow;
-        });
-
-        // Add removed rows
-        liveData.slice(previewData.length).forEach((row) => {
-          diffData.push({ ...row, diff: 'removed' });
-        });
-        diff.data = diffData;
-        diff.columns = columns;
-      }
+      const differences = this.compareRows(
+        preview,
+        live,
+        diff,
+        isPathBasedConfiguration,
+      );
+      diff.data = differences.data;
+      diff.columns = differences.columns;
     }
 
     return diff;
