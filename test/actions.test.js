@@ -602,6 +602,14 @@ describe('Test actions', () => {
       expect(isAEM).to.be.false;
     });
 
+    it('returns false if redirected', async () => {
+      fetchMock.get('https://www.example.com/foo', {
+        status: 0,
+      });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
+      expect(isAEM).to.be.false;
+    });
+
     it('returns false if 404', async () => {
       fetchMock.get('https://www.example.com/foo', {
         status: 404,

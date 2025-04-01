@@ -362,8 +362,8 @@ export async function guessAEMSite(_, { url }) {
         return true;
       }
     } else {
-      if (resp.status === 404 || resp.status >= 500) {
-        // unexpected not found or server error, assume incorrect prod setup
+      if (resp.status === 0 || resp.status === 404 || resp.status >= 500) {
+        // unexpected redirect, not found or server error, assume incorrect prod setup
         return false;
       }
       // otherwise assume AEM (e.g. protected)
