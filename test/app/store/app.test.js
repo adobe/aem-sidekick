@@ -554,8 +554,6 @@ describe('Test App Store', () => {
     });
 
     it('switches from preview to production host', async () => {
-      sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').resolves(true);
-
       const prodHost = 'aem-boilerplate.com';
       instance.siteStore.host = prodHost;
 
@@ -568,8 +566,6 @@ describe('Test App Store', () => {
     });
 
     it('switches from preview to production host, maintains url params', async () => {
-      sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').resolves(true);
-
       const prodHost = 'aem-boilerplate.com';
       instance.siteStore.host = prodHost;
 
@@ -582,7 +578,22 @@ describe('Test App Store', () => {
       expect(openPageArgs[0]).to.include('foo=bar');
     });
 
-    it('switches from preview to live if production host not AEM', async () => {
+    it('prodCheck: switches to production if AEM', async () => {
+      sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').resolves(true);
+
+      const prodHost = 'not-aem.com';
+      const liveHost = 'main--aem-boilerplate--adobe.hlx.live';
+      instance.siteStore.host = prodHost;
+      instance.siteStore.liveHost = liveHost;
+
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('prod', true, true, true);
+      const openPageArgs = openPage.args[0];
+      expect(openPageArgs[0]).to.include(prodHost);
+    });
+
+    it('prodCheck: switches to live instead of production if not AEM', async () => {
       sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').resolves(false);
 
       const prodHost = 'not-aem.com';
@@ -592,7 +603,7 @@ describe('Test App Store', () => {
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
-      await instance.switchEnv('prod', true, true);
+      await instance.switchEnv('prod', true, true, true);
       const openPageArgs = openPage.args[0];
       expect(openPageArgs[0]).to.include(liveHost);
     });
