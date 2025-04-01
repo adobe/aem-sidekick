@@ -1179,9 +1179,11 @@ export class AppStore {
    * @param {string} targetEnv One of the following environments:
    *        edit, dev, preview, live or prod
    * @param {boolean} [open] true if environment should be opened in new tab
+   * @param {boolean} [cacheBust] true if cache busting should be applied
+   * @param {boolean} [prodCheck] true if the prod site should be checked
    * @fires Sidekick#envswitched
    */
-  async switchEnv(targetEnv, open = false, cacheBust = false) {
+  async switchEnv(targetEnv, open = false, cacheBust = false, prodCheck = false) {
     const getCacheBuster = (url) => {
       // Check if cache busting should be applied based on the environment and conditions.
       // The logic prevents cache busting if:
@@ -1255,7 +1257,7 @@ export class AppStore {
       envUrl = getEnvUrl(envHost, status.webPath, location, siteStore.devUrl);
     }
 
-    if (targetEnv === 'prod' && siteStore[hostType]) {
+    if (targetEnv === 'prod' && siteStore[hostType] && prodCheck) {
       // only switch to production host if AEM site
       const isAEM = await chrome.runtime.sendMessage({
         action: 'guessAEMSite',
