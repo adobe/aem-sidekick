@@ -23,7 +23,8 @@
       "description": "Advanced config mode"
     },
     "anonymous": {
-      "message": "Anonymous"
+      "message": "Anonymous",
+      "description": "Anonymous user"
     },
     "bulk_confirm_empty": {
       "message": "No file selected"
@@ -468,6 +469,10 @@
     },
     "switch_view": {
       "message": "View"
+    },
+    "system": {
+      "message": "AEM System User",
+      "description": "System user"
     },
     "title": {
       "message": "AEM Sidekick"

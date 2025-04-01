@@ -120,6 +120,9 @@ export class EnvironmentSwitcher extends ConnectedElement {
   getLastModifiedLabel(id, lastModified, lastModifiedBy) {
     const envId = id === 'dev' ? 'preview' : id;
     const i18nKey = `${envId}_last_updated${lastModifiedBy ? '_by' : ''}`;
+    if (['anonymous', 'system'].includes(lastModifiedBy)) {
+      lastModifiedBy = this.appStore.i18n(lastModifiedBy);
+    }
     return lastModified
       ? this.appStore.i18n(i18nKey)
         .replace('$1', getTimeAgo(this.appStore.languageDict, lastModified))
