@@ -11,6 +11,8 @@
  */
 /* eslint-disable no-unused-expressions */
 
+// @ts-ignore
+import fetchMock from 'fetch-mock/esm/client.js';
 import { expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
@@ -24,6 +26,12 @@ import {
 import chromeMock from './mocks/chrome.js';
 import { error, mockTab } from './test-utils.js';
 import { log } from '../src/extension/log.js';
+import {
+  PIPELINE_HTML,
+  PIPELINE_JSON,
+  RANDOM_HTML,
+  RANDOM_JSON,
+} from './fixtures/payloads.js';
 import { urlCache } from '../src/extension/url-cache.js';
 
 // @ts-ignore
@@ -53,6 +61,7 @@ describe('Test actions', () => {
 
   afterEach(() => {
     sandbox.restore();
+    fetchMock.restore();
   });
 
   it('external: updateAuthToken', async () => {
@@ -510,6 +519,125 @@ describe('Test actions', () => {
       const { getProfilePicture } = internalActions;
       const picture = await getProfilePicture(null, { owner: 'foo' });
       expect(picture).to.be.undefined;
+    });
+
+    it('returns undefined if no projects added', async () => {
+      sandbox.stub(chrome.storage.session, 'get').resolves(undefined);
+      const { getProfilePicture } = internalActions;
+      const picture = await getProfilePicture(null, { owner: 'foo' });
+      expect(picture).to.be.undefined;
+    });
+  });
+
+  describe('internal: guessAEMSite', () => {
+    it('recognizes pipeline html', async () => {
+      fetchMock.get('https://www.example.com/foo', {
+        status: 200,
+        body: PIPELINE_HTML,
+        headers: {
+          'content-Type': 'text/html',
+        },
+      });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
+      expect(isAEM).to.be.true;
+    });
+
+    it('recognizes pipeline json', async () => {
+      fetchMock.get('https://www.example.com/foo.json', {
+        status: 200,
+        body: PIPELINE_JSON,
+        headers: {
+          'content-Type': 'application/json',
+        },
+      });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo.json' });
+      expect(isAEM).to.be.true;
+    });
+
+    it('recognizes non-pipeline html', async () => {
+      fetchMock.get('https://www.example.com/foo', {
+        status: 200,
+        body: RANDOM_HTML,
+        headers: {
+          'content-Type': 'text/html',
+        },
+      });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
+      expect(isAEM).to.be.false;
+    });
+
+    it('recognizes non-pipeline json', async () => {
+      fetchMock.get('https://www.example.com/foo.json', {
+        status: 200,
+        body: RANDOM_JSON,
+        headers: {
+          'content-Type': 'application/json',
+        },
+      });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo.json' });
+      expect(isAEM).to.be.false;
+    });
+
+    it('returns true for other mime types if ok', async () => {
+      fetchMock.get('https://www.example.com/foo.png', {
+        status: 200,
+        body: '',
+        headers: {
+          'content-Type': 'image/png',
+        },
+      });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo.png' });
+      expect(isAEM).to.be.true;
+    });
+
+    it('returns false if invalid json', async () => {
+      fetchMock.get('https://www.example.com/foo.json', {
+        status: 200,
+        body: "{ 'foo': 'bar' }",
+        headers: {
+          'content-Type': 'application/json',
+        },
+      });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo.json' });
+      expect(isAEM).to.be.false;
+    });
+
+    it('returns false if redirected', async () => {
+      fetchMock.get('https://www.example.com/foo', {
+        status: 0,
+      });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
+      expect(isAEM).to.be.false;
+    });
+
+    it('returns false if 404', async () => {
+      fetchMock.get('https://www.example.com/foo', {
+        status: 404,
+      });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
+      expect(isAEM).to.be.false;
+    });
+
+    it('returns false if 5xx', async () => {
+      fetchMock.get('https://www.example.com/foo', {
+        status: 500,
+      });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
+      expect(isAEM).to.be.false;
+    });
+
+    it('returns true if 401', async () => {
+      fetchMock.get('https://www.example.com/foo', {
+        status: 401,
+      });
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
+      expect(isAEM).to.be.true;
+    });
+
+    it('returns true if network error', async () => {
+      sandbox.stub(fetchMock, 'get').throws(new Error('Network error'));
+      const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
+      expect(isAEM).to.be.true;
     });
   });
 

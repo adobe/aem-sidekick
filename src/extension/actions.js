@@ -327,6 +327,55 @@ export async function getProfilePicture(_, { owner }) {
 }
 
 /**
+ * Tries to guess if a URL is an AEM site.
+ * @param {chrome.tabs.Tab} _ The tab
+ * @param {Object} message The message object
+ * @param {string} message.url The URL to check
+ * @returns {Promise<boolean>} True if the provided URL is an AEM site
+ */
+export async function guessAEMSite(_, { url }) {
+  try {
+    const resp = await fetch(url, { redirect: 'manual' }); // don't allow redirects
+    if (resp.ok) {
+      const mimeType = resp.headers.get('content-type');
+      if (mimeType.startsWith('text/html')) {
+        // payload must match pipeline output
+        const payload = await resp.text();
+        const [type, html, head, titl, link, meta] = payload.substring(0, 400).split('\n');
+        return type === '<!DOCTYPE html>'
+          && html.startsWith('<html')
+          && head === '  <head>'
+          && titl.startsWith('    <title>')
+          && link.startsWith('    <link rel="canonical"')
+          && meta.startsWith('    <meta');
+      } else if (mimeType.startsWith('application/json')) {
+        // payload must match pipeline output
+        try {
+          const payload = await resp.json();
+          return !!payload[':type'];
+        } catch (e) {
+          // invalid json
+          return false;
+        }
+      } else {
+        // unable to guess. assume AEM
+        return true;
+      }
+    } else {
+      if (resp.status === 0 || resp.status === 404 || resp.status >= 500) {
+        // unexpected redirect, not found or server error, assume incorrect prod setup
+        return false;
+      }
+      // otherwise assume AEM (e.g. protected)
+      return true;
+    }
+  } catch (e) {
+    // unable to connect, assume AEM (e.g. firewalled)
+    return true;
+  }
+}
+
+/**
  * Actions which can be executed via internal messaging API.
  * @type {Object} The internal actions
  */
@@ -336,6 +385,7 @@ export const internalActions = {
   openViewDocSource,
   importProjects,
   getProfilePicture,
+  guessAEMSite,
 };
 
 /**
