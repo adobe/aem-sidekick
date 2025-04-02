@@ -25,6 +25,7 @@ import {
   HelixMockEnvironments,
 } from '../../../mocks/environment.js';
 import { SidekickTest } from '../../../sidekick-test.js';
+import { defaultSharepointStatusResponse } from '../../../fixtures/helix-admin.js';
 
 /**
  * The AEMSidekick object type
@@ -320,6 +321,65 @@ describe('Environment Switcher', () => {
       await sidekickTest.awaitEnvSwitcher();
       const icon = recursiveQuery(getPicker(), '.env-edit sp-icon svg');
       expect(icon.getElementById('clip0_632_13678')).to.exist;
+    });
+  });
+
+  describe('preview and live item variants', () => {
+    const getPicker = () => {
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      return recursiveQuery(envPlugin, 'action-bar-picker');
+    };
+
+    const getCurrentEnvLabel = () => recursiveQuery(getPicker(), '.current-env span')?.textContent || '';
+
+    it('last modified user: show if present in status', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(true)
+        .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceType: 'onedrive',
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getCurrentEnvLabel()).to.include('by jdoe@example.com');
+    });
+
+    it('last modified user: anonymous', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(true, {
+          preview: {
+            ...defaultSharepointStatusResponse.preview,
+            lastModifiedBy: 'anonymous',
+          },
+        })
+        .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceType: 'onedrive',
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getCurrentEnvLabel()).to.include('by Anonymous');
+    });
+
+    it('last modified user: system', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(true, {
+          preview: {
+            ...defaultSharepointStatusResponse.preview,
+            lastModifiedBy: 'system',
+          },
+        })
+        .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceType: 'onedrive',
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getCurrentEnvLabel()).to.include('by AEM');
     });
   });
 
