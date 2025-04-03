@@ -153,6 +153,12 @@ function removeCacheParam(href = window.location.href) {
       sidekick.replaceWith(''); // remove() doesn't work for custom element
       delete window.hlx.sidekick;
     }
+
+    const configPicker = document.querySelector('aem-config-picker');
+    if (configPicker) {
+      configPicker.setAttribute('open', `${display}`);
+    }
+
     chrome.runtime.onMessage.removeListener(onMessageListener);
   }
 
