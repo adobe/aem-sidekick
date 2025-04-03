@@ -458,6 +458,9 @@
   "live_last_updated": {
     "message": "上次发布：$1"
   },
+  "live_last_updated_by": {
+    "message": "上次发布 $1 个，发布者 $2"
+  },
   "live_never_updated": {
     "message": "从未发布"
   },
@@ -545,6 +548,9 @@
   "preview_last_updated": {
     "message": "上次更新：$1 "
   },
+  "preview_last_updated_by": {
+    "message": "上次更新 $1 个，更新者 $2"
+  },
   "preview_never_updated": {
     "message": "从未预览过"
   },
@@ -562,6 +568,9 @@
   },
   "prod_last_updated": {
     "message": "上次发布：$1"
+  },
+  "prod_last_updated_by": {
+    "message": "上次发布 $1 个，发布者 $2"
   },
   "prod_never_updated": {
     "message": "从未发布"
@@ -586,6 +595,12 @@
   },
   "publishing_state": {
     "message": "正在发布..."
+  },
+  "review": {
+    "message": "审查"
+  },
+  "review_last_updated": {
+    "message": "上次更新 $1 个"
   },
   "save": {
     "message": "保存"
@@ -619,6 +634,9 @@
   },
   "switch_view": {
     "message": "查看"
+  },
+  "system": {
+    "message": "AEM 系统用户"
   },
   "title": {
     "message": "AEM Sidekick"
