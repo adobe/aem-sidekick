@@ -458,6 +458,9 @@
   "live_last_updated": {
     "message": "Última publicación $1"
   },
+  "live_last_updated_by": {
+    "message": "Última publicación $1 por $2"
+  },
   "live_never_updated": {
     "message": "Nunca publicado"
   },
@@ -545,6 +548,9 @@
   "preview_last_updated": {
     "message": "Última actualización $1"
   },
+  "preview_last_updated_by": {
+    "message": "Última actualización $1 por $2"
+  },
   "preview_never_updated": {
     "message": "Nunca vista previa"
   },
@@ -562,6 +568,9 @@
   },
   "prod_last_updated": {
     "message": "Última publicación $1"
+  },
+  "prod_last_updated_by": {
+    "message": "Última publicación $1 por $2"
   },
   "prod_never_updated": {
     "message": "Nunca publicado"
@@ -586,6 +595,12 @@
   },
   "publishing_state": {
     "message": "Publicando..."
+  },
+  "review": {
+    "message": "Revisar"
+  },
+  "review_last_updated": {
+    "message": "Última actualización $1"
   },
   "save": {
     "message": "Guardar"
@@ -619,6 +634,9 @@
   },
   "switch_view": {
     "message": "Ver"
+  },
+  "system": {
+    "message": "Usuario del sistema AEM"
   },
   "title": {
     "message": "AEM Sidekick"

@@ -458,6 +458,9 @@
   "live_last_updated": {
     "message": "最終公開日 : $1"
   },
+  "live_last_updated_by": {
+    "message": "$2 が $1 に最終公開"
+  },
   "live_never_updated": {
     "message": "未公開"
   },
@@ -545,6 +548,9 @@
   "preview_last_updated": {
     "message": "最終更新 $1"
   },
+  "preview_last_updated_by": {
+    "message": "$2 が $1 に最終更新"
+  },
   "preview_never_updated": {
     "message": "未プレビュー"
   },
@@ -562,6 +568,9 @@
   },
   "prod_last_updated": {
     "message": "最終公開日 : $1"
+  },
+  "prod_last_updated_by": {
+    "message": "$2 が $1 に最終公開"
   },
   "prod_never_updated": {
     "message": "未公開"
@@ -586,6 +595,12 @@
   },
   "publishing_state": {
     "message": "公開中..."
+  },
+  "review": {
+    "message": "レビュー"
+  },
+  "review_last_updated": {
+    "message": "最終更新 $1"
   },
   "save": {
     "message": "保存"
@@ -619,6 +634,9 @@
   },
   "switch_view": {
     "message": "表示"
+  },
+  "system": {
+    "message": "AEM システムユーザー"
   },
   "title": {
     "message": "AEM Sidekick"

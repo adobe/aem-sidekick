@@ -458,6 +458,9 @@
   "live_last_updated": {
     "message": "마지막으로 게시됨: $1"
   },
+  "live_last_updated_by": {
+    "message": "$2에 의해 마지막으로 게시된 $1"
+  },
   "live_never_updated": {
     "message": "게시된 적 없음"
   },
@@ -545,6 +548,9 @@
   "preview_last_updated": {
     "message": "마지막 업데이트: $1"
   },
+  "preview_last_updated_by": {
+    "message": "$2에 의해 마지막으로 업데이트된 $1"
+  },
   "preview_never_updated": {
     "message": "미리보기된 적 없음"
   },
@@ -562,6 +568,9 @@
   },
   "prod_last_updated": {
     "message": "마지막으로 게시됨: $1"
+  },
+  "prod_last_updated_by": {
+    "message": "$2에 의해 마지막으로 게시된 $1"
   },
   "prod_never_updated": {
     "message": "게시된 적 없음"
@@ -586,6 +595,12 @@
   },
   "publishing_state": {
     "message": "게시 중..."
+  },
+  "review": {
+    "message": "검토"
+  },
+  "review_last_updated": {
+    "message": "마지막으로 업데이트된 $1"
   },
   "save": {
     "message": "저장"
@@ -619,6 +634,9 @@
   },
   "switch_view": {
     "message": "보기"
+  },
+  "system": {
+    "message": "AEM 시스템 사용자"
   },
   "title": {
     "message": "AEM Sidekick"
