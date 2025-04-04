@@ -375,6 +375,8 @@ export function defaultStatusResponse(contentSource = 'sharepoint', withProfile 
   if (withProfile) {
     status.preview.permissions.push('delete');
     status.live.permissions.push('delete');
+    status.preview.lastModifiedBy = 'jdoe@example.com';
+    status.live.lastModifiedBy = 'jdoe@example.com';
   }
   return {
     ...status,

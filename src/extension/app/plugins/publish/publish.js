@@ -50,7 +50,7 @@ export function createPublishPlugin(appStore) {
                 await fetch(prodURL, { cache: 'reload', mode: 'no-cors' });
               }
 
-              appStore.switchEnv('prod', newTab(evt), !isSameOrigin);
+              appStore.switchEnv('prod', newTab(evt), !isSameOrigin, true);
             };
 
             const { host } = siteStore;

@@ -15,6 +15,14 @@
 import { css } from 'lit';
 
 export const style = css`
+  :host {
+    max-width: 304px;
+  }
+    
+  :host [name="description"]::slotted(*) {
+    white-space: normal;
+  }
+
   :host(.current-env) #label {
     font-weight: 700;
   }
