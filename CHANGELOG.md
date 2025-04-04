@@ -1,3 +1,16 @@
+# [7.7.0](https://github.com/adobe/aem-sidekick/compare/v7.6.0...v7.7.0) (2025-04-04)
+
+
+### Bug Fixes
+
+* toggle config picker ([#526](https://github.com/adobe/aem-sidekick/issues/526)) ([3efcf02](https://github.com/adobe/aem-sidekick/commit/3efcf02d4465b5fc535394d9d03359574cd4e9c0))
+
+
+### Features
+
+* show user with last mod date ([#524](https://github.com/adobe/aem-sidekick/issues/524)) ([ecf4558](https://github.com/adobe/aem-sidekick/commit/ecf455894b4ed2fd3edaccc08b3de872a39ca1d7))
+* switch to live instead of production if not aem ([#519](https://github.com/adobe/aem-sidekick/issues/519)) ([0adda69](https://github.com/adobe/aem-sidekick/commit/0adda698b2177b749f97fe1925586858d057c3f0))
+
 # [7.6.0](https://github.com/adobe/aem-sidekick/compare/v7.5.2...v7.6.0) (2025-03-26)
 
 
