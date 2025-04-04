@@ -549,7 +549,7 @@
     "message": "Dernière mise à jour : $1"
   },
   "preview_last_updated_by": {
-    "message": "Dernière mise à jour le $1 de $2"
+    "message": "Dernière mise à jour le $1 par $2"
   },
   "preview_never_updated": {
     "message": "Jamais prévisualisé"
