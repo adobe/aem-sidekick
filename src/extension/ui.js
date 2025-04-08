@@ -95,7 +95,9 @@ async function guessAEMSite(id) {
       chrome.scripting.executeScript({
         target: { tabId: id },
         func: () => {
-          const isAEM = document.body.querySelector(':scope > main > div') !== null;
+          const isAEM = document.body.querySelector(':scope > main > div') !== null
+            && document.body.querySelector(':scope > header') != null
+            && document.body.querySelector(':scope > footer') != null;
           chrome.runtime.sendMessage({ isAEM });
         },
       });
