@@ -1,3 +1,10 @@
+## [7.7.1](https://github.com/adobe/aem-sidekick/compare/v7.7.0...v7.7.1) (2025-04-09)
+
+
+### Bug Fixes
+
+* **guessAEMSite:** DOM check not tight enough ([a447e69](https://github.com/adobe/aem-sidekick/commit/a447e69e2866933ecbcfa309e03949ccb62b0ebe))
+
 # [7.7.0](https://github.com/adobe/aem-sidekick/compare/v7.6.0...v7.7.0) (2025-04-04)
 
 
