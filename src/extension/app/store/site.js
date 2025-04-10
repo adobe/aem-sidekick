@@ -300,6 +300,24 @@ export class SiteStore {
     this.lang = lang || getLanguage();
     this.transient = transient;
     this.setReady();
+
+    // send config to service worker to update sync storage
+    if (!this.transient && this.owner && this.repo) {
+      chrome.runtime.sendMessage({
+        action: 'updateProject',
+        config: {
+          owner: this.owner,
+          repo: this.repo,
+          ref: this.ref,
+          project: this.project,
+          previewHost: this.previewHost,
+          reviewHost: this.reviewHost,
+          liveHost: this.liveHost,
+          host: this.host,
+          mountpoints: this.mountpoints,
+        },
+      });
+    }
   }
 
   /**

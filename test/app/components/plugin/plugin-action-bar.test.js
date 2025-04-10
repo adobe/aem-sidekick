@@ -922,7 +922,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
 
-      expect(messageSpy.calledTwice).to.be.true;
+      expect(messageSpy.callCount).to.equal(3);
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'project-removed',
