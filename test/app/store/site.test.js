@@ -53,38 +53,44 @@ describe('Test Site Store', () => {
     mountpoints: ['https://drive.google.com/drive/folders/folder-id'],
   };
 
-  describe('loadContext', () => {
+  let sandbox;
+
   /**
    * @type {SidekickTest}
    */
-    let sidekickTest;
+  let sidekickTest;
 
-    /**
+  /**
    * @type {AEMSidekick}
    */
-    let sidekickElement;
+  let sidekickElement;
 
-    /**
+  /**
    * @type {AppStore}
    */
-    let appStore;
+  let appStore;
 
-    beforeEach(() => {
-      appStore = new AppStore();
-      sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+  beforeEach(() => {
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
 
-      sidekickTest
-        .mockFetchStatusSuccess()
-        .mockFetchSidekickConfigNotFound();
+    sidekickTest
+      .mockFetchStatusSuccess()
+      .mockFetchSidekickConfigNotFound();
 
-      // @ts-ignore
-      sidekickElement = document.createElement('div');
-    });
+    // @ts-ignore
+    sidekickElement = document.createElement('helix-sidekick');
+    document.body.appendChild(sidekickElement);
+    sandbox = sidekickTest.sandbox;
+  });
 
-    afterEach(() => {
-      sidekickTest.destroy();
-    });
+  afterEach(() => {
+    document.body.removeChild(sidekickElement);
+    sandbox.restore();
+    sidekickTest.destroy();
+  });
 
+  describe('loadContext', () => {
     it('minimum config', async () => {
       await appStore.loadContext(sidekickElement, defaultConfig);
 
@@ -205,6 +211,65 @@ describe('Test Site Store', () => {
       };
       await appStore.loadContext(sidekickElement, config);
       expect(appStore.siteStore.contentSourceEditLabel).to.equal('Universal Editor');
+    });
+  });
+
+  describe('update project config', () => {
+    it('sends current config to service worker', async () => {
+      const config = {
+        id: 'business-website',
+        owner: 'adobe',
+        repo: 'business-website',
+        ref: 'main',
+        previewHost: 'old-preview.example.com',
+        liveHost: 'old-live.example.com',
+        reviewHost: 'old-review.example.com',
+        project: 'business-website',
+        host: 'business-website.example.com',
+        contentSourceUrl: 'https://adobe.sharepoint.com/sites/business-website',
+        contentSourceType: 'sharepoint',
+      };
+
+      const sendMessageStub = sandbox.stub(chrome.runtime, 'sendMessage');
+
+      await appStore.loadContext(sidekickElement, config);
+
+      expect(sendMessageStub.calledOnce).to.be.true;
+      expect(sendMessageStub.firstCall.args[0]).to.deep.equal({
+        action: 'updateProject',
+        config: {
+          owner: 'adobe',
+          repo: 'business-website',
+          ref: 'main',
+          previewHost: 'old-preview.example.com',
+          liveHost: 'old-live.example.com',
+          reviewHost: 'old-review.example.com',
+          project: 'business-website',
+          mountpoints: ['https://adobe.sharepoint.com/sites/business-website'],
+          host: 'business-website.example.com',
+        },
+      });
+    });
+
+    it('does not send config for transient projects', async () => {
+      const config = {
+        id: 'business-website',
+        owner: 'adobe',
+        repo: 'business-website',
+        ref: 'main',
+        transient: true,
+        previewHost: 'old-preview.example.com',
+        project: 'business-website',
+        host: 'business-website.example.com',
+        contentSourceUrl: 'https://adobe.sharepoint.com/sites/business-website',
+        contentSourceType: 'onedrive',
+      };
+
+      const sendMessageStub = sandbox.stub(chrome.runtime, 'sendMessage');
+
+      await appStore.loadContext(sidekickElement, config);
+
+      expect(sendMessageStub.called).to.be.false;
     });
   });
 });
