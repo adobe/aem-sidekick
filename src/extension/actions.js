@@ -23,6 +23,7 @@ import {
   getProjectMatches,
   importLegacyProjects,
   detectLegacySidekick,
+  updateProject as updateProjectConfig,
 } from './project.js';
 import { ADMIN_ORIGIN } from './utils/admin.js';
 import { getConfig } from './config.js';
@@ -376,6 +377,29 @@ export async function guessAEMSite(_, { url }) {
 }
 
 /**
+ * Updates a project based on the given message and sender.
+ * @param {chrome.tabs.Tab} _ The tab
+ * @param {Object} message The message object
+ */
+async function updateProject(_, { config }) {
+  if (!config?.owner || !config?.repo) {
+    return;
+  }
+
+  // only update if project exists and has different properties
+  const existingProject = await getProject(config);
+  if (existingProject) {
+    const hasChanges = Object.keys(config)
+      .filter((key) => key !== 'owner' && key !== 'repo')
+      .some((key) => config[key] !== existingProject[key]);
+
+    if (hasChanges) {
+      await updateProjectConfig(config);
+    }
+  }
+}
+
+/**
  * Actions which can be executed via internal messaging API.
  * @type {Object} The internal actions
  */
@@ -386,6 +410,7 @@ export const internalActions = {
   importProjects,
   getProfilePicture,
   guessAEMSite,
+  updateProject,
 };
 
 /**
