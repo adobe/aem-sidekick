@@ -1,3 +1,10 @@
+# [7.8.0](https://github.com/adobe/aem-sidekick/compare/v7.7.1...v7.8.0) (2025-04-14)
+
+
+### Features
+
+* auto-update of added project ([#535](https://github.com/adobe/aem-sidekick/issues/535)) ([5db2213](https://github.com/adobe/aem-sidekick/commit/5db22133da08818a589cab0b6e57fb0cb28eed20))
+
 ## [7.7.1](https://github.com/adobe/aem-sidekick/compare/v7.7.0...v7.7.1) (2025-04-09)
 
 
