@@ -9,6 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+import '@spectrum-web-components/theme/sp-theme.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-light-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-dark-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/scale-medium-core-tokens.js';
@@ -40,9 +41,7 @@ import './app/components/plugin/login/login.js';
 import './app/components/dialog-wrapper/dialog-wrapper.js';
 import './app/components/spectrum/action-menu/action-menu.js';
 import './app/components/spectrum/menu-group/menu-group.js';
-import './app/components/spectrum/action-button/action-button.js';
 import './app/components/spectrum/progress-circle/progress-circle.js';
-import './app/components/spectrum/theme/theme.js';
 import './app/components/bulk/bulk-result/bulk-result.js';
 import './app/components/onboarding/onboarding-dialog.js';
 
