@@ -688,4 +688,109 @@ describe('Test actions', () => {
     await callback();
     expect(reloadStub.calledOnce).to.be.true;
   });
+
+  describe('updateProject', () => {
+    it('updates existing project config when properties have changed', async () => {
+      const project = {
+        owner: 'adobe',
+        repo: 'business-website',
+        ref: 'main',
+        previewHost: 'old-preview.example.com',
+        liveHost: 'old-live.example.com',
+        reviewHost: 'old-review.example.com',
+        project: 'business-website',
+        mountpoints: ['/content/business-website'],
+        host: 'business-website.example.com',
+      };
+
+      const existingProject = {
+        ...project,
+        previewHost: 'different-preview.example.com', // trigger an update
+      };
+
+      // mock getProject to return existing project
+      const getStub = sandbox.stub(chrome.storage.sync, 'get');
+      getStub.withArgs('projects').resolves({ projects: ['adobe/business-website'] });
+      getStub.withArgs('adobe/business-website').resolves({ 'adobe/business-website': existingProject });
+
+      // mock updateProject to verify it's called
+      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set')
+        .resolves();
+
+      await internalActions.updateProject({}, { config: project });
+
+      expect(updateProjectStub.calledOnce).to.be.true;
+      expect(updateProjectStub.firstCall.args[0]).to.deep.equal({
+        'adobe/business-website': project,
+      });
+    });
+
+    it('does not update project when no properties have changed', async () => {
+      const project = {
+        owner: 'adobe',
+        repo: 'business-website',
+        ref: 'main',
+        previewHost: 'old-preview.example.com',
+        liveHost: 'old-live.example.com',
+        reviewHost: 'old-review.example.com',
+        project: 'business-website',
+        mountpoints: ['/content/business-website'],
+        host: 'business-website.example.com',
+      };
+
+      // mock getProject to return existing project with same values
+      const getStub = sandbox.stub(chrome.storage.sync, 'get');
+      getStub.withArgs('projects').resolves({ projects: ['adobe/business-website'] });
+      getStub.withArgs('adobe/business-website').resolves({ 'adobe/business-website': project });
+
+      // mock updateProject to verify it's not called
+      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set');
+
+      await internalActions.updateProject({}, { config: project });
+
+      expect(updateProjectStub.called).to.be.false;
+    });
+
+    it('does not update non-existent project', async () => {
+      const project = {
+        owner: 'adobe',
+        repo: 'business-website',
+        ref: 'main',
+        previewHost: 'old-preview.example.com',
+        liveHost: 'old-live.example.com',
+        reviewHost: 'old-review.example.com',
+        project: 'business-website',
+        mountpoints: ['/content/business-website'],
+        host: 'business-website.example.com',
+      };
+
+      // mock getProject to return null (project doesn't exist)
+      const getStub = sandbox.stub(chrome.storage.sync, 'get');
+      getStub.withArgs('projects').resolves({ projects: [] });
+      getStub.withArgs('adobe/business-website').resolves({});
+
+      // mock updateProject to verify it's not called
+      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set');
+
+      await internalActions.updateProject({}, { config: project });
+
+      expect(updateProjectStub.called).to.be.false;
+    });
+
+    it('does not update project with missing required fields', async () => {
+      const project = {
+        owner: 'adobe',
+        // missing repo
+        ref: 'main',
+        previewHost: 'old-preview.example.com',
+      };
+
+      // mock updateProject to verify it's not called
+      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set');
+
+      await internalActions.updateProject({}, { config: project });
+
+      expect(updateProjectStub.called).to.be.false;
+    });
+  });
 });
