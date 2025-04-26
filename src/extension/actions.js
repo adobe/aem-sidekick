@@ -25,7 +25,7 @@ import {
   detectLegacySidekick,
   updateProject as updateProjectConfig,
 } from './project.js';
-import { ADMIN_ORIGIN } from './utils/admin.js';
+import { ADMIN_ORIGIN, createAdminUrl } from './utils/admin.js';
 import { getConfig } from './config.js';
 import { getDisplay, setDisplay } from './display.js';
 import { urlCache } from './url-cache.js';
@@ -51,11 +51,10 @@ async function updateAuthToken({
   siteToken,
   siteTokenExpiry,
   picture,
-}, sender) {
-  const { url } = sender;
+}, { tab }) {
   if (owner) {
     try {
-      if (new URL(url).origin === ADMIN_ORIGIN
+      if (new URL(tab.url).origin === ADMIN_ORIGIN
         && authToken !== undefined) {
         await setAuthToken(
           owner,
@@ -140,9 +139,8 @@ function isTrustedOrigin(origin) {
  * Returns the organizations the user is currently authenticated for.
  * @returns {Promise<string[]>} The organizations
  */
-async function getAuthInfo(_, sender) {
-  const { origin } = new URL(sender.url);
-
+async function getAuthInfo(_, { tab }) {
+  const { origin } = new URL(tab.url);
   if (!isTrustedOrigin(origin)) {
     return []; // don't give out any information
   }
@@ -157,8 +155,8 @@ async function getAuthInfo(_, sender) {
  * Returns the configured sites.
  * @returns {Promise<Object[]>} The sites
  */
-async function getSites(_, sender) {
-  const { origin } = new URL(sender.url);
+async function getSites(_, { tab }) {
+  const { origin } = new URL(tab.url);
 
   if (!isTrustedOrigin(origin)) {
     return []; // don't give out any information
@@ -187,6 +185,34 @@ async function launch({
     return true;
   } else {
     log.warn('launch: missing required parameters org and site or owner and repo');
+    return false;
+  }
+}
+
+/**
+ * Starts the login flow for a given org.
+ * @returns {Promise<boolean>} True if login flow started, else false
+ */
+async function login({
+  owner, repo, org, site, selectAccount = false,
+}, { tab }) {
+  owner = org || owner;
+  repo = site || repo;
+  if (owner && repo) {
+    // start login flow for this org
+    const params = new URLSearchParams();
+    params.set('extensionId', window.chrome?.runtime?.id);
+    if (selectAccount) {
+      params.set('selectAccount', 'true');
+    }
+    const loginUrl = createAdminUrl({ owner, repo }, 'login', '', params);
+    await chrome.tabs.create({
+      url: loginUrl.toString(),
+      openerTabId: tab.id,
+    });
+    return true;
+  } else {
+    log.warn('launch: missing required parameter org or owner');
     return false;
   }
 }
@@ -422,4 +448,5 @@ export const externalActions = {
   getAuthInfo,
   getSites,
   launch,
+  login,
 };

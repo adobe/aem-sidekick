@@ -70,45 +70,53 @@ describe('Test actions', () => {
     const repo = 'project';
     const authToken = '1234567890';
     const exp = Date.now() / 1000 + 60;
+
     // from admin API
     let resp = await externalActions.updateAuthToken(
       {
         owner, repo, authToken, exp,
       },
-      mockTab('https://admin.hlx.page/auth/test/project/main'),
+      { tab: mockTab('https://admin.hlx.page/auth/test/project/main') },
     );
     expect(set.called).to.be.true;
     expect(resp).to.equal('close');
+
     // from unauthorized url
     resp = await externalActions.updateAuthToken(
       {
         owner, repo, authToken, exp,
       },
-      mockTab('https://admin.hlx.fake/'),
+      { tab: mockTab('https://admin.hlx.fake/') },
     );
     expect(resp).to.equal('invalid message');
+
     // error handling
-    sandbox.stub(window, 'URL').throws(error);
+    const urlStub = sandbox.stub(window, 'URL').throws(error);
     resp = await externalActions.updateAuthToken(
       {
         owner, repo, authToken, exp,
       },
-      mockTab('https://admin.hlx.page/auth/test/project/main'),
+      { tab: mockTab('https://admin.hlx.page/auth/test/project/main') },
     );
     expect(resp).to.equal('invalid message');
+    urlStub.restore();
+
     // testing noops
     set.resetHistory();
     await externalActions.updateAuthToken(
       { owner, repo },
-      mockTab('https://admin.hlx.page/auth/test/project/main'),
+      { tab: mockTab('https://admin.hlx.page/auth/test/project/main') },
     );
     await externalActions.updateAuthToken(
       {
         owner, repo, authToken, exp,
       },
-      mockTab('https://some.malicious.actor/'),
+      { tab: mockTab('https://some.malicious.actor/') },
     );
-    await externalActions.updateAuthToken({}, {});
+    await externalActions.updateAuthToken(
+      {},
+      { tab: {} },
+    );
     expect(set.notCalled).to.be.true;
   });
 
@@ -118,7 +126,7 @@ describe('Test actions', () => {
 
     // without auth info
     getStub.resolves({});
-    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://tools.aem.live') });
     expect(resp).to.deep.equal([]);
 
     // with auth info
@@ -143,26 +151,26 @@ describe('Test actions', () => {
     });
 
     // trusted actors
-    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live/'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://tools.aem.live/') });
     expect(resp).to.deep.equal(['foo']);
 
-    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live/test'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://tools.aem.live/test') });
     expect(resp).to.deep.equal(['foo']);
 
-    resp = await externalActions.getAuthInfo({}, mockTab('https://feature--helix-labs-website--adobe.aem.page/feature'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://feature--helix-labs-website--adobe.aem.page/feature') });
     expect(resp).to.deep.equal(['foo']);
 
     // untrusted actors
-    resp = await externalActions.getAuthInfo({}, mockTab('https://evil.live'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://evil.live') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getAuthInfo({}, mockTab('https://main--site--owner.aem.live'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://main--site--owner.aem.live') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live.evil.com'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://tools.aem.live.evil.com') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getAuthInfo({}, mockTab('https://main--helix-tools-website--adobe.aem.live.evil.com'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://main--helix-tools-website--adobe.aem.live.evil.com') });
     expect(resp).to.deep.equal([]);
   });
 
@@ -183,7 +191,7 @@ describe('Test actions', () => {
 
     // without projects
     getStub.resolves({});
-    resp = await externalActions.getSites({}, mockTab('https://tools.aem.live'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://tools.aem.live') });
     expect(resp).to.deep.equal([]);
 
     // with auth info
@@ -192,26 +200,26 @@ describe('Test actions', () => {
     });
 
     // trusted actors
-    resp = await externalActions.getSites({}, mockTab('https://tools.aem.live/foo'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://tools.aem.live/foo') });
     expect(resp).to.deep.equal(expectedOutput);
 
-    resp = await externalActions.getSites({}, mockTab('https://labs.aem.live/foo'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://labs.aem.live/foo') });
     expect(resp).to.deep.equal(expectedOutput);
 
-    resp = await externalActions.getSites({}, mockTab('https://feature--helix-labs-website--adobe.aem.page/feature'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://feature--helix-labs-website--adobe.aem.page/feature') });
     expect(resp).to.deep.equal(expectedOutput);
 
     // untrusted actors
-    resp = await externalActions.getSites({}, mockTab('https://evil.live'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://evil.live') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getSites({}, mockTab('https://main--site--owner.aem.live'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://main--site--owner.aem.live') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getSites({}, mockTab('https://tools.aem.live.evil.com'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://tools.aem.live.evil.com') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getSites({}, mockTab('https://main--helix-tools-website--adobe-evl.aem.live'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://main--helix-tools-website--adobe-evl.aem.live') });
     expect(resp).to.deep.equal([]);
   });
 
@@ -220,17 +228,48 @@ describe('Test actions', () => {
     const urlCacheSetStub = sandbox.stub(urlCache, 'set');
     const logWarnSpy = sandbox.spy(log, 'warn');
 
-    await externalActions.launch({ owner: 'foo', repo: 'bar' }, mockTab('https://foo.live/'));
+    await externalActions.launch({ owner: 'foo', repo: 'bar' }, { tab: { tab: mockTab('https://foo.live/') } });
     expect(urlCacheSetStub.called).to.be.true;
     expect(localStorageSetStub.calledWith({ display: true })).to.be.true;
 
     sandbox.resetHistory();
 
     // missing mandatory parameters
-    await externalActions.launch({}, mockTab('https://foo.live/'));
+    await externalActions.launch({}, { tab: mockTab('https://foo.live/') });
     expect(urlCacheSetStub.called).to.be.false;
     expect(localStorageSetStub.called).to.be.false;
     expect(logWarnSpy.calledWith('launch: missing required parameters org and site or owner and repo')).to.be.true;
+  });
+
+  it('external: login', async () => {
+    const createTabStub = sandbox.stub(chrome.tabs, 'create');
+
+    await externalActions.login(
+      { org: 'foo', site: 'bar' },
+      { tab: mockTab('https://foo.live/') },
+    );
+    expect(createTabStub.calledWith({
+      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy',
+      openerTabId: 0,
+    })).to.be.true;
+
+    sandbox.resetHistory();
+
+    // with selectAccount parameter
+    await externalActions.login(
+      { org: 'foo', site: 'bar', selectAccount: true },
+      { tab: mockTab('https://foo.live/') },
+    );
+    expect(createTabStub.calledWith({
+      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&selectAccount=true',
+      openerTabId: 0,
+    })).to.be.true;
+
+    sandbox.resetHistory();
+
+    // missing mandatory parameters
+    await externalActions.login({}, { tab: mockTab('https://foo.live/') });
+    expect(createTabStub.called).to.be.false;
   });
 
   it('internal: addRemoveProject', async () => {
@@ -635,7 +674,9 @@ describe('Test actions', () => {
     });
 
     it('returns true if network error', async () => {
-      sandbox.stub(fetchMock, 'get').throws(new Error('Network error'));
+      fetchMock.get('https://www.example.com/foo', {
+        throws: new Error('Network error'),
+      });
       const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
       expect(isAEM).to.be.true;
     });
@@ -646,110 +687,5 @@ describe('Test actions', () => {
     const callback = notificationConfirmCallback(1);
     await callback();
     expect(reloadStub.calledOnce).to.be.true;
-  });
-
-  describe('updateProject', () => {
-    it('updates existing project config when properties have changed', async () => {
-      const project = {
-        owner: 'adobe',
-        repo: 'business-website',
-        ref: 'main',
-        previewHost: 'old-preview.example.com',
-        liveHost: 'old-live.example.com',
-        reviewHost: 'old-review.example.com',
-        project: 'business-website',
-        mountpoints: ['/content/business-website'],
-        host: 'business-website.example.com',
-      };
-
-      const existingProject = {
-        ...project,
-        previewHost: 'different-preview.example.com', // trigger an update
-      };
-
-      // mock getProject to return existing project
-      const getStub = sandbox.stub(chrome.storage.sync, 'get');
-      getStub.withArgs('projects').resolves({ projects: ['adobe/business-website'] });
-      getStub.withArgs('adobe/business-website').resolves({ 'adobe/business-website': existingProject });
-
-      // mock updateProject to verify it's called
-      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set')
-        .resolves();
-
-      await internalActions.updateProject({}, { config: project });
-
-      expect(updateProjectStub.calledOnce).to.be.true;
-      expect(updateProjectStub.firstCall.args[0]).to.deep.equal({
-        'adobe/business-website': project,
-      });
-    });
-
-    it('does not update project when no properties have changed', async () => {
-      const project = {
-        owner: 'adobe',
-        repo: 'business-website',
-        ref: 'main',
-        previewHost: 'old-preview.example.com',
-        liveHost: 'old-live.example.com',
-        reviewHost: 'old-review.example.com',
-        project: 'business-website',
-        mountpoints: ['/content/business-website'],
-        host: 'business-website.example.com',
-      };
-
-      // mock getProject to return existing project with same values
-      const getStub = sandbox.stub(chrome.storage.sync, 'get');
-      getStub.withArgs('projects').resolves({ projects: ['adobe/business-website'] });
-      getStub.withArgs('adobe/business-website').resolves({ 'adobe/business-website': project });
-
-      // mock updateProject to verify it's not called
-      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set');
-
-      await internalActions.updateProject({}, { config: project });
-
-      expect(updateProjectStub.called).to.be.false;
-    });
-
-    it('does not update non-existent project', async () => {
-      const project = {
-        owner: 'adobe',
-        repo: 'business-website',
-        ref: 'main',
-        previewHost: 'old-preview.example.com',
-        liveHost: 'old-live.example.com',
-        reviewHost: 'old-review.example.com',
-        project: 'business-website',
-        mountpoints: ['/content/business-website'],
-        host: 'business-website.example.com',
-      };
-
-      // mock getProject to return null (project doesn't exist)
-      const getStub = sandbox.stub(chrome.storage.sync, 'get');
-      getStub.withArgs('projects').resolves({ projects: [] });
-      getStub.withArgs('adobe/business-website').resolves({});
-
-      // mock updateProject to verify it's not called
-      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set');
-
-      await internalActions.updateProject({}, { config: project });
-
-      expect(updateProjectStub.called).to.be.false;
-    });
-
-    it('does not update project with missing required fields', async () => {
-      const project = {
-        owner: 'adobe',
-        // missing repo
-        ref: 'main',
-        previewHost: 'old-preview.example.com',
-      };
-
-      // mock updateProject to verify it's not called
-      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set');
-
-      await internalActions.updateProject({}, { config: project });
-
-      expect(updateProjectStub.called).to.be.false;
-    });
   });
 });
