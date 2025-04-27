@@ -243,11 +243,14 @@ describe('Test actions', () => {
 
   it('external: login', async () => {
     const createTabStub = sandbox.stub(chrome.tabs, 'create');
+    let resp;
 
-    await externalActions.login(
+    // trusted actor
+    resp = await externalActions.login(
       { org: 'foo', site: 'bar' },
-      { tab: mockTab('https://foo.live/') },
+      { tab: mockTab('https://tools.aem.live/tools/foo.html') },
     );
+    expect(resp).to.be.true;
     expect(createTabStub.calledWith({
       url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy',
       openerTabId: 0,
@@ -255,21 +258,30 @@ describe('Test actions', () => {
 
     sandbox.resetHistory();
 
-    // with selectAccount parameter
-    await externalActions.login(
+    // trusted actor with selectAccount parameter
+    resp = await externalActions.login(
       { org: 'foo', site: 'bar', selectAccount: true },
-      { tab: mockTab('https://foo.live/') },
+      { tab: mockTab('https://tools.aem.live/tools/foo.html') },
     );
+    expect(resp).to.be.true;
     expect(createTabStub.calledWith({
       url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&selectAccount=true',
       openerTabId: 0,
     })).to.be.true;
 
-    sandbox.resetHistory();
-
     // missing mandatory parameters
-    await externalActions.login({}, { tab: mockTab('https://foo.live/') });
-    expect(createTabStub.called).to.be.false;
+    resp = await externalActions.login(
+      {},
+      { tab: mockTab('https://tools.aem.live/tools/foo.html') },
+    );
+    expect(resp).to.be.false;
+
+    // untrusted actors
+    await externalActions.login(
+      { org: 'foo', site: 'bar' },
+      { tab: mockTab('https://tools.aem.live.evil/tools/foo.html') },
+    );
+    expect(resp).to.be.false;
   });
 
   it('internal: addRemoveProject', async () => {

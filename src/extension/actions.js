@@ -198,6 +198,10 @@ async function login({
 }, { tab }) {
   owner = org || owner;
   repo = site || repo;
+  const { origin } = new URL(tab.url);
+  if (!isTrustedOrigin(origin)) {
+    return false; // don't start login flow
+  }
   if (owner && repo) {
     // start login flow for this org
     const params = new URLSearchParams();
