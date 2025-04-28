@@ -300,7 +300,7 @@ export class Plugin {
 
         return html`
           <overlay-trigger receivesFocus="true" offset="-3">
-            <sk-action-button quiet slot="trigger">${this.getButtonText()}</sk-action-button>
+            <sp-action-button quiet slot="trigger">${this.getButtonText()}</sp-action-button>
             <sp-popover slot="click-content" placement="top" tip style=${ifDefined(filteredPopoverRect)}>
               <div class="content">
                 <iframe title=${popoverTitle || 'Popover content'} src=${src}></iframe>
@@ -310,14 +310,14 @@ export class Plugin {
       }
 
       return html`
-        <sk-action-button
+        <sp-action-button
           class=${this.getId()}
           .disabled=${!this.isEnabled()}
           quiet
           @click=${(evt) => this.onButtonClick(evt)}
         >
           ${this.getButtonText()}
-        </sk-action-button>
+        </sp-action-button>
       `;
     }
 

@@ -170,7 +170,7 @@ describe('Activity', () => {
 
       await sidekickTest.awaitToast();
 
-      const actionButton = recursiveQuery(sidekick, '.toast-container .actions sk-action-button');
+      const actionButton = recursiveQuery(sidekick, '.toast-container .actions sp-action-button');
       actionButton.click();
       expect(openPageStub.calledWith('https://www.aem.live/')).to.be.true;
 
@@ -194,7 +194,7 @@ describe('Activity', () => {
 
       await sidekickTest.awaitToast();
 
-      recursiveQueryAll(sidekick, '.toast-container .actions sk-action-button')
+      recursiveQueryAll(sidekick, '.toast-container .actions sp-action-button')
         .forEach((button) => button.click());
       expect(openPageStub.calledWith('https://www.aem.live/')).to.be.true;
       expect(openPageStub.calledWith('https://www.aem.live/docs/')).to.be.true;

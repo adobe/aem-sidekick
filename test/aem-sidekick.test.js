@@ -63,7 +63,7 @@ describe('AEM Sidekick', () => {
     const theme = sidekick.shadowRoot.querySelector('theme-wrapper');
     expect(theme).to.exist;
 
-    const spTheme = recursiveQuery(theme, 'sk-theme');
+    const spTheme = recursiveQuery(theme, 'sp-theme');
     expect(spTheme).to.exist;
 
     const { location } = sidekick;
@@ -106,7 +106,7 @@ describe('AEM Sidekick', () => {
       await sidekickTest.awaitEnvSwitcher();
       const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
 
-      const spTheme = themeWrapper.shadowRoot.querySelector('sk-theme');
+      const spTheme = themeWrapper.shadowRoot.querySelector('sp-theme');
       expect(spTheme).to.exist;
       expect(themeWrapper.getAttribute('theme')).to.equal('dark');
       expect(spTheme.getAttribute('color')).to.equal('dark');
@@ -117,7 +117,7 @@ describe('AEM Sidekick', () => {
       await sidekickTest.awaitEnvSwitcher();
       const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
 
-      const spTheme = themeWrapper.shadowRoot.querySelector('sk-theme');
+      const spTheme = themeWrapper.shadowRoot.querySelector('sp-theme');
       expect(spTheme).to.exist;
 
       const menu = recursiveQuery(sidekick, '#sidekick-menu');

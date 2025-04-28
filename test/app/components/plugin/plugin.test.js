@@ -116,7 +116,7 @@ describe('Plugin', () => {
     const plugin = new Plugin(TEST_CONFIG, appStore);
     // @ts-ignore
     const renderedPlugin = plugin.render().strings.join('');
-    expect(renderedPlugin).to.contain('sk-action-button');
+    expect(renderedPlugin).to.contain('sp-action-button');
   });
 
   it('renders plugin as badge', async () => {

@@ -36,13 +36,13 @@ export class ThemeWrapper extends ConnectedElement {
 
   render() {
     return html`
-      <sk-theme
+      <sp-theme
         system="spectrum-two"
         color=${this.theme}
         scale="medium"
       >
         <slot></slot>
-      </sk-theme>
+      </sp-theme>
     `;
   }
 }

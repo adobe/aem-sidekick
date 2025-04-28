@@ -92,7 +92,7 @@ describe('Plugin action bar', () => {
 
   function expectInActionBar(pluginIds) {
     const actionGroup = recursiveQuery(sidekickTest.sidekick, '.action-group');
-    const plugins = recursiveQueryAll(actionGroup, 'sk-action-button, env-switcher, bulk-info, action-bar-picker');
+    const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, bulk-info, action-bar-picker');
     expect(
       [...plugins].map((plugin) => plugin.className.replace('plugin-container ', '')
         || plugin.tagName.toLowerCase()),
@@ -1061,7 +1061,7 @@ describe('Plugin action bar', () => {
       const sidekickMenuFocusSpy = createFocusSpy(sidekickMenu);
 
       const loginButton = recursiveQuery(actionBar, 'login-button');
-      const loginActionButton = recursiveQuery(loginButton, 'sk-action-button.login');
+      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button.login');
       const loginButtonFocusSpy = createFocusSpy(loginActionButton);
 
       // Tab into location input

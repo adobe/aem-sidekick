@@ -113,18 +113,18 @@ export class ActivityAction extends ConnectedElement {
             </div>
             <div class="actions">
               ${this.appStore.toast.secondaryCallback && this.appStore.toast.secondaryLabel ? html`
-                <sk-action-button class="action" quiet @click=${this.appStore.toast.secondaryCallback}>
+                <sp-action-button class="action" quiet @click=${this.appStore.toast.secondaryCallback}>
                   ${this.appStore.toast.secondaryLabel}
-                </sk-action-button>
+                </sp-action-button>
               ` : html``}
               ${this.appStore.toast.actionCallback && this.appStore.toast.actionLabel ? html`
-                <sk-action-button class="action" quiet @click=${this.appStore.toast.actionCallback}>
+                <sp-action-button class="action" quiet @click=${this.appStore.toast.actionCallback}>
                   ${this.appStore.toast.actionLabel}
-                </sk-action-button>
+                </sp-action-button>
               ` : html``}
-              <sk-action-button class="close" quiet @click=${this.handleCloseToast}>
+              <sp-action-button class="close" quiet @click=${this.handleCloseToast}>
                 <sp-icon slot="icon">${ICONS.CLOSE_X}</sp-icon>
-              </sk-action-button>
+              </sp-action-button>
             </div>
           </div>
         `;
