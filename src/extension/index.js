@@ -22,6 +22,7 @@ import '@spectrum-web-components/overlay/sp-overlay.js';
 import '@spectrum-web-components/overlay/overlay-trigger.js';
 import '@spectrum-web-components/popover/sp-popover.js';
 import '@spectrum-web-components/picker/sp-picker.js';
+import '@spectrum-web-components/progress-circle/sp-progress-circle.js';
 import '@spectrum-web-components/status-light/sp-status-light.js';
 import '@spectrum-web-components/switch/sp-switch.js';
 import '@spectrum-web-components/tabs/sp-tabs.js';
@@ -41,7 +42,6 @@ import './app/components/plugin/login/login.js';
 import './app/components/dialog-wrapper/dialog-wrapper.js';
 import './app/components/spectrum/action-menu/action-menu.js';
 import './app/components/spectrum/menu-group/menu-group.js';
-import './app/components/spectrum/progress-circle/progress-circle.js';
 import './app/components/bulk/bulk-result/bulk-result.js';
 import './app/components/onboarding/onboarding-dialog.js';
 

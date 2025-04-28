@@ -89,7 +89,7 @@ export class LoginButton extends ConnectedElement {
       border-radius: 50%;
     }
     
-    sk-progress-circle[size="s"] {
+    sp-progress-circle[size="s"] {
       margin: 0 8px;
     }
 

@@ -74,12 +74,12 @@ export class ActivityAction extends ConnectedElement {
       case STATE.DELETING:
       case STATE.CONFIG:
         return html`
-          <sk-progress-circle size="s" indeterminate></sk-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
+          <sp-progress-circle size="s" indeterminate></sp-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
       case STATE.BULK_PREVIEWING:
       case STATE.BULK_PUBLISHING:
         return html`
-          <sk-progress-circle size="s" indeterminate></sk-progress-circle>
+          <sp-progress-circle size="s" indeterminate></sp-progress-circle>
           <span>
             ${this.appStore.bulkStore?.progress
               ? this.appStore.i18n(this.appStore.state)

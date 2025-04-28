@@ -76,7 +76,7 @@ describe('Activity', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'activity-action'));
       const activityAction = recursiveQuery(sidekick, 'activity-action');
-      await waitUntil(() => recursiveQuery(activityAction, 'sk-progress-circle[indeterminate]'));
+      await waitUntil(() => recursiveQuery(activityAction, 'sp-progress-circle[indeterminate]'));
       await waitUntil(() => recursiveQuery(activityAction, 'span')
         .textContent.trim() === 'Loading status...');
     }).timeout(5000);
@@ -95,7 +95,7 @@ describe('Activity', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'activity-action'));
       const activityAction = recursiveQuery(sidekick, 'activity-action');
-      await waitUntil(() => recursiveQuery(activityAction, 'sk-progress-circle'));
+      await waitUntil(() => recursiveQuery(activityAction, 'sp-progress-circle'));
       await waitUntil(() => recursiveQuery(activityAction, 'span')
         .textContent.trim() === 'Preview for 1 of 20 files generated...');
 
