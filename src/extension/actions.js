@@ -210,11 +210,21 @@ async function login({
       params.set('selectAccount', 'true');
     }
     const loginUrl = createAdminUrl({ owner, repo }, 'login', '', params);
-    await chrome.tabs.create({
+    const loginTab = await chrome.tabs.create({
       url: loginUrl.toString(),
       openerTabId: tab.id,
     });
-    return true;
+    return new Promise((resolve) => {
+      // close login tab on admin response
+      const adminResponseListener = async (message, sender) => {
+        if (sender.tab.id === loginTab.id && message.action === 'updateAuthToken') {
+          await chrome.tabs.remove(loginTab.id);
+          chrome.runtime.onMessageExternal.removeListener(adminResponseListener);
+          resolve(true);
+        }
+      };
+      chrome.runtime.onMessageExternal.addListener(adminResponseListener);
+    });
   } else {
     log.warn('launch: missing required parameter org or owner');
     return false;
