@@ -1303,10 +1303,16 @@ describe('Test App Store', () => {
       const sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
 
+      const pre = document.createElement('pre');
+      pre.textContent = 'test';
+      document.body.appendChild(pre);
+
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
       appStore.sidekick = sidekick;
       appStore.getViewOverlay(true); // Create a new view
+
+      expect(pre.style.display).to.equal('none');
 
       // Simulate receiving a valid message
       const messageEvent = new MessageEvent('message', {
@@ -1319,6 +1325,7 @@ describe('Test App Store', () => {
       // @ts-ignore
       eventListenerCallback(messageEvent);
 
+      await waitUntil(() => pre.style.display === 'block');
       expect(instance.sidekick.shadowRoot.querySelector('.aem-sk-special-view')).to.be.null;
     }).timeout(5000);
 

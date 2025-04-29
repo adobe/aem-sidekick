@@ -1077,12 +1077,22 @@ export class AppStore {
       iframe.setAttribute('allow', 'clipboard-write *');
       view.appendChild(iframe);
 
+      // hide the pre element if it exists (JSON view)
+      const pre = document.querySelector('pre');
+      if (pre) {
+        pre.style.display = 'none';
+      }
+
       // listen for messages from the view
       window.addEventListener('message', (event) => {
         // only accept messages from the extension
         if (event.origin === `chrome-extension://${chrome.runtime.id}`) {
           const { data } = event;
           if (data.detail.event === 'hlx-close-view') {
+            // restore the pre element if it exists (JSON view)
+            if (pre) {
+              pre.style.display = 'block';
+            }
             view.remove();
           }
           if (data.detail.event === 'hlx-login') {

@@ -129,6 +129,14 @@ function removeCacheParam(href = window.location.href) {
       if (sidekick) {
         // Toggle sidekick display
         sidekick.setAttribute('open', `${display}`);
+
+        // Are we on a JSON page?
+        const pre = document.querySelector('pre');
+        if (pre && window.location.pathname.endsWith('.json')) {
+          // If the sidekick is open and the JSON view is open, hide the pre tag, else show it
+          const jsonViewOpen = sidekick.shadowRoot.querySelector('.aem-sk-special-view');
+          pre.style.display = display && jsonViewOpen ? 'none' : 'block';
+        }
       } else if (display) {
         // Load custom element polyfill
         await import('./lib/polyfills.min.js');
