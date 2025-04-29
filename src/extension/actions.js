@@ -205,7 +205,7 @@ async function login({
   if (owner && repo) {
     // start login flow for this org
     const params = new URLSearchParams();
-    params.set('extensionId', window.chrome?.runtime?.id);
+    params.set('extensionId', chrome.runtime.id);
     if (selectAccount) {
       params.set('selectAccount', 'true');
     }
