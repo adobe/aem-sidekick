@@ -217,7 +217,7 @@ export class SidekickTest {
   async clickToastClose(variant = 'positive') {
     await this.awaitToast();
     await waitUntil(() => recursiveQuery(this.sidekick, `action-bar.${variant}`) !== null);
-    const closeButton = recursiveQuery(this.sidekick, 'sk-action-button.close');
+    const closeButton = recursiveQuery(this.sidekick, 'sp-action-button.close');
     closeButton.click();
   }
 
@@ -229,7 +229,7 @@ export class SidekickTest {
   async clickToastAction(variant = 'positive') {
     await this.awaitToast();
     await waitUntil(() => recursiveQuery(this.sidekick, `action-bar.${variant}`) !== null);
-    const closeButton = recursiveQuery(this.sidekick, 'sk-action-button.action');
+    const closeButton = recursiveQuery(this.sidekick, 'sp-action-button.action');
     closeButton.click();
   }
 

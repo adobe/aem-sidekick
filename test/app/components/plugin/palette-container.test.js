@@ -83,14 +83,14 @@ describe('Palette container', () => {
     await openPallete();
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
-    await waitUntil(() => recursiveQuery(paletteContainer, 'sk-action-button'));
+    await waitUntil(() => recursiveQuery(paletteContainer, 'sp-action-button'));
 
     expect(sidekickTest.rumStub.calledWith('click', {
       source: 'sidekick',
       target: 'palette-opened',
     })).to.be.true;
 
-    const closeButton = recursiveQuery(paletteContainer, 'sk-action-button');
+    const closeButton = recursiveQuery(paletteContainer, 'sp-action-button');
     closeButton.click();
 
     const container = recursiveQuery(paletteContainer, '.container');

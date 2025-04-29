@@ -89,7 +89,7 @@ export class LoginButton extends ConnectedElement {
       border-radius: 50%;
     }
     
-    sk-progress-circle[size="s"] {
+    sp-progress-circle[size="s"] {
       margin: 0 8px;
     }
 
@@ -123,7 +123,7 @@ export class LoginButton extends ConnectedElement {
       display: none;
     }
 
-    :host(.not-authorized) sk-action-button.login {
+    :host(.not-authorized) sp-action-button.login {
       background-color: var(--spectrum2-sidekick-cta-background-color);
       color: #fff;
     }
@@ -187,7 +187,7 @@ export class LoginButton extends ConnectedElement {
     }
 
     if (!authenticated) {
-      return html`<sk-action-button quiet class="login" @click=${this.login}>${this.appStore.i18n('user_login')}</sk-action-button>`;
+      return html`<sp-action-button quiet class="login" @click=${this.login}>${this.appStore.i18n('user_login')}</sp-action-button>`;
     } else {
       return html`
         <sp-action-menu

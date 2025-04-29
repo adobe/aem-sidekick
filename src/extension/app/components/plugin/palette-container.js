@@ -191,9 +191,9 @@ export class PaletteContainer extends ConnectedElement {
         tabindex="0">
         <div class="header">
           <div class="title">${paletteTitle}</div>
-          <sk-action-button class="close" quiet @click=${this.closed}>
+          <sp-action-button class="close" quiet @click=${this.closed}>
             <sp-icon slot="icon">${ICONS.CLOSE_X}</sp-icon>
-          </sk-action-button>
+          </sp-action-button>
         </div>
         <sp-divider></sp-divider>
         <iframe width="100%" height="100%" title=${paletteTitle} src=${url} allow="clipboard-write *"></iframe>

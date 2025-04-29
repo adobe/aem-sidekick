@@ -71,17 +71,41 @@ function extensionPlugins(browser) {
   ];
 }
 
+function rewriteSPTagNames() {
+  return {
+    name: 'rename-sp-custom-elements',
+    generateBundle(_, bundle) {
+      for (const [_, file] of Object.entries(bundle)) {
+        if (file.type === 'chunk') {
+          file.code = file.code.replaceAll('sp-theme', 'sk-theme');
+          file.code = file.code.replaceAll('sp-overlay', 'sk-overlay');
+          file.code = file.code.replaceAll('sp-action-menu', 'sk-action-menu');
+          file.code = file.code.replaceAll('sp-action-button', 'sk-action-button');
+          file.code = file.code.replaceAll('sp-progress-circle', 'sk-progress-circle');
+        }
+      }
+    },
+  };
+}
+
 function extensionBuild(browser) {
   return {
     ...shared(browser),
-    plugins: [...commonPlugins(), ...extensionPlugins(browser)],
+    plugins: [
+      ...commonPlugins(),
+      ...extensionPlugins(browser),
+      rewriteSPTagNames(),
+    ],
   };
 }
 
 export function viewBuild(browser, path) {
   return {
     ...shared(browser, path),
-    plugins: [...commonPlugins()],
+    plugins: [
+      ...commonPlugins(),
+      rewriteSPTagNames(),
+    ],
   };
 }
 

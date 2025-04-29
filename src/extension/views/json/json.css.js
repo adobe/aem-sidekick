@@ -153,11 +153,11 @@ export const style = css`
     --mod-table-row-background-color-hover: rgb(29, 29, 29);
   }
 
-  sk-theme[color='light'] sp-table-row {
+  sp-theme[color='light'] sp-table-row {
     --mod-table-row-background-color-hover: rgb(255, 255, 255);
   }
 
-  sk-theme[color='light'] .header sp-search {
+  sp-theme[color='light'] .header sp-search {
     --mod-textfield-background-color: #ffffff;
   }
 

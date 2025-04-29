@@ -398,9 +398,9 @@ describe('Test Bulk Store', () => {
 
         // test toast actions
         const activityAction = recursiveQuery(sidekickTest.sidekick, 'activity-action');
-        const copyUrlsButton = recursiveQuery(activityAction, 'sk-action-button:nth-of-type(1)');
+        const copyUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(1)');
         expect(copyUrlsButton.textContent.trim()).to.equal('Copy 3 URLs');
-        const openUrlsButton = recursiveQuery(activityAction, 'sk-action-button:nth-of-type(2)');
+        const openUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(2)');
         expect(openUrlsButton.textContent.trim()).to.equal('Open 3 URLs');
         copyUrlsButton.click();
         openUrlsButton.click();
@@ -557,7 +557,7 @@ describe('Test Bulk Store', () => {
 
         // test toast action
         const activityAction = recursiveQuery(sidekickTest.sidekick, 'activity-action');
-        const detailsButton = recursiveQuery(activityAction, 'sk-action-button');
+        const detailsButton = recursiveQuery(activityAction, 'sp-action-button');
         expect(detailsButton.textContent.trim()).to.equal('Details');
         detailsButton.click();
         await waitUntil(() => showModalSpy.calledWithMatch({
@@ -770,9 +770,9 @@ describe('Test Bulk Store', () => {
 
         // test toast actions
         const activityAction = recursiveQuery(sidekickTest.sidekick, 'activity-action');
-        const copyUrlsButton = recursiveQuery(activityAction, 'sk-action-button:nth-of-type(1)');
+        const copyUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(1)');
         expect(copyUrlsButton.textContent.trim()).to.equal('Copy 2 URLs');
-        const openUrlsButton = recursiveQuery(activityAction, 'sk-action-button:nth-of-type(2)');
+        const openUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(2)');
         expect(openUrlsButton.textContent.trim()).to.equal('Open 2 URLs');
         copyUrlsButton.click();
         openUrlsButton.click();
