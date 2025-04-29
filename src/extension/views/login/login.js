@@ -11,11 +11,11 @@
  */
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import '@spectrum-web-components/theme/sp-theme.js';
 import '@spectrum-web-components/dialog/sp-dialog-base.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-light-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-dark-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/scale-medium-core-tokens.js';
-import '../../app/components/spectrum/theme/theme.js';
 import '../../app/components/theme/theme.js';
 import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';
 import { style } from './login.css.js';

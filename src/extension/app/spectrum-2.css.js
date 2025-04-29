@@ -190,7 +190,7 @@ export const spectrum2 = css`
     --mod-badge-corner-radius: 7px;
   }
 
-  sk-theme[color='light'] {
+  sp-theme[color='light'] {
     /* Enviroment alias tokens */
     --spectrum2-preview-background-default: var(--preview-background-default-light);
     --spectrum2-preview-background-hover: var(--preview-background-hover-light);

@@ -13,6 +13,7 @@ import { html, LitElement } from 'lit';
 import {
   customElement, property, queryAsync,
 } from 'lit/decorators.js';
+import '@spectrum-web-components/theme/sp-theme.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-light-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-dark-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/scale-medium-core-tokens.js';
@@ -27,7 +28,6 @@ import '@spectrum-web-components/table/sp-table-row.js';
 import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-close.js';
-import '../../app/components/spectrum/theme/theme.js';
 import '../../app/components/theme/theme.js';
 import '../../app/components/search/search.js';
 import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';

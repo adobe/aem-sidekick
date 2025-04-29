@@ -76,7 +76,7 @@ describe('Activity', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'activity-action'));
       const activityAction = recursiveQuery(sidekick, 'activity-action');
-      await waitUntil(() => recursiveQuery(activityAction, 'sk-progress-circle[indeterminate]'));
+      await waitUntil(() => recursiveQuery(activityAction, 'sp-progress-circle[indeterminate]'));
       await waitUntil(() => recursiveQuery(activityAction, 'span')
         .textContent.trim() === 'Loading status...');
     }).timeout(5000);
@@ -95,7 +95,7 @@ describe('Activity', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'activity-action'));
       const activityAction = recursiveQuery(sidekick, 'activity-action');
-      await waitUntil(() => recursiveQuery(activityAction, 'sk-progress-circle'));
+      await waitUntil(() => recursiveQuery(activityAction, 'sp-progress-circle'));
       await waitUntil(() => recursiveQuery(activityAction, 'span')
         .textContent.trim() === 'Preview for 1 of 20 files generated...');
 
@@ -170,7 +170,7 @@ describe('Activity', () => {
 
       await sidekickTest.awaitToast();
 
-      const actionButton = recursiveQuery(sidekick, '.toast-container .actions sk-action-button');
+      const actionButton = recursiveQuery(sidekick, '.toast-container .actions sp-action-button');
       actionButton.click();
       expect(openPageStub.calledWith('https://www.aem.live/')).to.be.true;
 
@@ -194,7 +194,7 @@ describe('Activity', () => {
 
       await sidekickTest.awaitToast();
 
-      recursiveQueryAll(sidekick, '.toast-container .actions sk-action-button')
+      recursiveQueryAll(sidekick, '.toast-container .actions sp-action-button')
         .forEach((button) => button.click());
       expect(openPageStub.calledWith('https://www.aem.live/')).to.be.true;
       expect(openPageStub.calledWith('https://www.aem.live/docs/')).to.be.true;
