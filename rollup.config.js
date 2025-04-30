@@ -79,6 +79,7 @@ function rewriteSPTagNames() {
         if (file.type === 'chunk') {
           file.code = file.code.replaceAll('sp-theme', 'sk-theme');
           file.code = file.code.replaceAll('sp-overlay', 'sk-overlay');
+          file.code = file.code.replaceAll('sp-button', 'sk-button');
           file.code = file.code.replaceAll('sp-action-menu', 'sk-action-menu');
           file.code = file.code.replaceAll('sp-action-button', 'sk-action-button');
           file.code = file.code.replaceAll('sp-progress-circle', 'sk-progress-circle');
