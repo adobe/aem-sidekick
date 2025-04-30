@@ -74,12 +74,12 @@ export class ActivityAction extends ConnectedElement {
       case STATE.DELETING:
       case STATE.CONFIG:
         return html`
-          <sk-progress-circle size="s" indeterminate></sk-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
+          <sp-progress-circle size="s" indeterminate></sp-progress-circle><span>${this.appStore.i18n(this.appStore.state)}</span>
         `;
       case STATE.BULK_PREVIEWING:
       case STATE.BULK_PUBLISHING:
         return html`
-          <sk-progress-circle size="s" indeterminate></sk-progress-circle>
+          <sp-progress-circle size="s" indeterminate></sp-progress-circle>
           <span>
             ${this.appStore.bulkStore?.progress
               ? this.appStore.i18n(this.appStore.state)
@@ -113,18 +113,18 @@ export class ActivityAction extends ConnectedElement {
             </div>
             <div class="actions">
               ${this.appStore.toast.secondaryCallback && this.appStore.toast.secondaryLabel ? html`
-                <sk-action-button class="action" quiet @click=${this.appStore.toast.secondaryCallback}>
+                <sp-action-button class="action" quiet @click=${this.appStore.toast.secondaryCallback}>
                   ${this.appStore.toast.secondaryLabel}
-                </sk-action-button>
+                </sp-action-button>
               ` : html``}
               ${this.appStore.toast.actionCallback && this.appStore.toast.actionLabel ? html`
-                <sk-action-button class="action" quiet @click=${this.appStore.toast.actionCallback}>
+                <sp-action-button class="action" quiet @click=${this.appStore.toast.actionCallback}>
                   ${this.appStore.toast.actionLabel}
-                </sk-action-button>
+                </sp-action-button>
               ` : html``}
-              <sk-action-button class="close" quiet @click=${this.handleCloseToast}>
+              <sp-action-button class="close" quiet @click=${this.handleCloseToast}>
                 <sp-icon slot="icon">${ICONS.CLOSE_X}</sp-icon>
-              </sk-action-button>
+              </sp-action-button>
             </div>
           </div>
         `;

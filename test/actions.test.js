@@ -70,45 +70,53 @@ describe('Test actions', () => {
     const repo = 'project';
     const authToken = '1234567890';
     const exp = Date.now() / 1000 + 60;
+
     // from admin API
     let resp = await externalActions.updateAuthToken(
       {
         owner, repo, authToken, exp,
       },
-      mockTab('https://admin.hlx.page/auth/test/project/main'),
+      { tab: mockTab('https://admin.hlx.page/auth/test/project/main') },
     );
     expect(set.called).to.be.true;
     expect(resp).to.equal('close');
+
     // from unauthorized url
     resp = await externalActions.updateAuthToken(
       {
         owner, repo, authToken, exp,
       },
-      mockTab('https://admin.hlx.fake/'),
+      { tab: mockTab('https://admin.hlx.fake/') },
     );
     expect(resp).to.equal('invalid message');
+
     // error handling
-    sandbox.stub(window, 'URL').throws(error);
+    const urlStub = sandbox.stub(window, 'URL').throws(error);
     resp = await externalActions.updateAuthToken(
       {
         owner, repo, authToken, exp,
       },
-      mockTab('https://admin.hlx.page/auth/test/project/main'),
+      { tab: mockTab('https://admin.hlx.page/auth/test/project/main') },
     );
     expect(resp).to.equal('invalid message');
+    urlStub.restore();
+
     // testing noops
     set.resetHistory();
     await externalActions.updateAuthToken(
       { owner, repo },
-      mockTab('https://admin.hlx.page/auth/test/project/main'),
+      { tab: mockTab('https://admin.hlx.page/auth/test/project/main') },
     );
     await externalActions.updateAuthToken(
       {
         owner, repo, authToken, exp,
       },
-      mockTab('https://some.malicious.actor/'),
+      { tab: mockTab('https://some.malicious.actor/') },
     );
-    await externalActions.updateAuthToken({}, {});
+    await externalActions.updateAuthToken(
+      {},
+      { tab: {} },
+    );
     expect(set.notCalled).to.be.true;
   });
 
@@ -118,7 +126,7 @@ describe('Test actions', () => {
 
     // without auth info
     getStub.resolves({});
-    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://tools.aem.live') });
     expect(resp).to.deep.equal([]);
 
     // with auth info
@@ -143,26 +151,26 @@ describe('Test actions', () => {
     });
 
     // trusted actors
-    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live/'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://tools.aem.live/') });
     expect(resp).to.deep.equal(['foo']);
 
-    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live/test'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://tools.aem.live/test') });
     expect(resp).to.deep.equal(['foo']);
 
-    resp = await externalActions.getAuthInfo({}, mockTab('https://feature--helix-labs-website--adobe.aem.page/feature'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://feature--helix-labs-website--adobe.aem.page/feature') });
     expect(resp).to.deep.equal(['foo']);
 
     // untrusted actors
-    resp = await externalActions.getAuthInfo({}, mockTab('https://evil.live'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://evil.live') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getAuthInfo({}, mockTab('https://main--site--owner.aem.live'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://main--site--owner.aem.live') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getAuthInfo({}, mockTab('https://tools.aem.live.evil.com'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://tools.aem.live.evil.com') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getAuthInfo({}, mockTab('https://main--helix-tools-website--adobe.aem.live.evil.com'));
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://main--helix-tools-website--adobe.aem.live.evil.com') });
     expect(resp).to.deep.equal([]);
   });
 
@@ -183,7 +191,7 @@ describe('Test actions', () => {
 
     // without projects
     getStub.resolves({});
-    resp = await externalActions.getSites({}, mockTab('https://tools.aem.live'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://tools.aem.live') });
     expect(resp).to.deep.equal([]);
 
     // with auth info
@@ -192,26 +200,26 @@ describe('Test actions', () => {
     });
 
     // trusted actors
-    resp = await externalActions.getSites({}, mockTab('https://tools.aem.live/foo'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://tools.aem.live/foo') });
     expect(resp).to.deep.equal(expectedOutput);
 
-    resp = await externalActions.getSites({}, mockTab('https://labs.aem.live/foo'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://labs.aem.live/foo') });
     expect(resp).to.deep.equal(expectedOutput);
 
-    resp = await externalActions.getSites({}, mockTab('https://feature--helix-labs-website--adobe.aem.page/feature'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://feature--helix-labs-website--adobe.aem.page/feature') });
     expect(resp).to.deep.equal(expectedOutput);
 
     // untrusted actors
-    resp = await externalActions.getSites({}, mockTab('https://evil.live'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://evil.live') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getSites({}, mockTab('https://main--site--owner.aem.live'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://main--site--owner.aem.live') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getSites({}, mockTab('https://tools.aem.live.evil.com'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://tools.aem.live.evil.com') });
     expect(resp).to.deep.equal([]);
 
-    resp = await externalActions.getSites({}, mockTab('https://main--helix-tools-website--adobe-evl.aem.live'));
+    resp = await externalActions.getSites({}, { tab: mockTab('https://main--helix-tools-website--adobe-evl.aem.live') });
     expect(resp).to.deep.equal([]);
   });
 
@@ -220,17 +228,87 @@ describe('Test actions', () => {
     const urlCacheSetStub = sandbox.stub(urlCache, 'set');
     const logWarnSpy = sandbox.spy(log, 'warn');
 
-    await externalActions.launch({ owner: 'foo', repo: 'bar' }, mockTab('https://foo.live/'));
+    await externalActions.launch({ owner: 'foo', repo: 'bar' }, { tab: { tab: mockTab('https://foo.live/') } });
     expect(urlCacheSetStub.called).to.be.true;
     expect(localStorageSetStub.calledWith({ display: true })).to.be.true;
 
     sandbox.resetHistory();
 
     // missing mandatory parameters
-    await externalActions.launch({}, mockTab('https://foo.live/'));
+    await externalActions.launch({}, { tab: mockTab('https://foo.live/') });
     expect(urlCacheSetStub.called).to.be.false;
     expect(localStorageSetStub.called).to.be.false;
     expect(logWarnSpy.calledWith('launch: missing required parameters org and site or owner and repo')).to.be.true;
+  });
+
+  it('external: login', async () => {
+    const createTabStub = sandbox.stub(chrome.tabs, 'create');
+    const removeTabStub = sandbox.stub(chrome.tabs, 'remove');
+    const addListenerStub = sandbox.stub(chrome.runtime.onMessageExternal, 'addListener');
+    createTabStub.callsFake(({ url }) => ({ id: 7, url }));
+    addListenerStub.callsFake((listener) => {
+      listener({
+        action: 'updateAuthToken',
+      }, {
+        tab: mockTab('https://admin.hlx.page/login/foo/bar/main?extensionId=dummy', { id: 7 }),
+      }, () => {});
+    });
+    let resp;
+
+    // trusted actor
+    resp = await externalActions.login(
+      { org: 'foo', site: 'bar' },
+      { tab: mockTab('https://tools.aem.live/tools/foo.html') },
+    );
+    expect(resp).to.be.true;
+    expect(createTabStub.calledWith({
+      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy',
+      openerTabId: 0,
+      windowId: 0,
+    })).to.be.true;
+    expect(removeTabStub.called).to.be.true;
+
+    sandbox.resetHistory();
+
+    // trusted actor with selectAccount parameter
+    resp = await externalActions.login(
+      { org: 'foo', site: 'bar', selectAccount: true },
+      { tab: mockTab('https://tools.aem.live/tools/foo.html') },
+    );
+    expect(resp).to.be.true;
+    expect(createTabStub.calledWith({
+      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&selectAccount=true',
+      openerTabId: 0,
+      windowId: 0,
+    })).to.be.true;
+
+    // missing mandatory parameters
+    resp = await externalActions.login(
+      {},
+      { tab: mockTab('https://tools.aem.live/tools/foo.html') },
+    );
+    expect(resp).to.be.false;
+
+    // untrusted actors
+    await externalActions.login(
+      { org: 'foo', site: 'bar' },
+      { tab: mockTab('https://tools.aem.live.evil/tools/foo.html') },
+    );
+    expect(resp).to.be.false;
+
+    // message from wrong tab
+    addListenerStub.callsFake((listener) => {
+      listener({
+        action: 'somethingElse',
+      }, {
+        tab: mockTab('https://admin.hlx.page/login/foo/bar/main?extensionId=dummy', { id: 8 }),
+      }, () => {});
+    });
+    resp = await externalActions.login(
+      { org: 'foo', site: 'bar' },
+      { tab: mockTab('https://tools.aem.live/tools/foo.html') },
+    );
+    expect(resp).to.be.false;
   });
 
   it('internal: addRemoveProject', async () => {
@@ -635,7 +713,9 @@ describe('Test actions', () => {
     });
 
     it('returns true if network error', async () => {
-      sandbox.stub(fetchMock, 'get').throws(new Error('Network error'));
+      fetchMock.get('https://www.example.com/foo', {
+        throws: new Error('Network error'),
+      });
       const isAEM = await internalActions.guessAEMSite(null, { url: 'https://www.example.com/foo' });
       expect(isAEM).to.be.true;
     });
