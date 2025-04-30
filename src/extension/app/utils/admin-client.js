@@ -155,6 +155,9 @@ export class AdminClient {
             .replace('$3', third);
         }
       }
+    } else if (error && action === 'preview' && status === 400) {
+      // use raw error message
+      message = error.replace('[admin] ', '');
     }
     if (!message) {
       // generic fallbacks based on status and action
