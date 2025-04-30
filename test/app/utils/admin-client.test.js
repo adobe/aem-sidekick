@@ -394,6 +394,25 @@ describe('Test Admin Client', () => {
       expect(closeToastStub.calledOnce).to.be.true;
     });
 
+    it('should show x-error on 400 preview error', async () => {
+      mockFetchError({
+        path: '/foo',
+        method: 'post',
+        api: 'preview',
+        status: 400,
+        headers: {
+          'x-error': '[admin] Foo is invalid',
+        },
+      });
+      await adminClient.updatePreview('/foo');
+      expect(showToastStub.calledOnce).to.be.true;
+      expect(toast.message).to.equal('(400) Foo is invalid');
+      expect(toast.variant).to.equal('warning');
+
+      appStore.closeToast();
+      expect(closeToastStub.calledOnce).to.be.true;
+    });
+
     it('should handle 5xx preview error', async () => {
       mockFetchError({
         path: '/foo',
