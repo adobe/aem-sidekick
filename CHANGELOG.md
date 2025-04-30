@@ -1,3 +1,19 @@
+# [7.9.0](https://github.com/adobe/aem-sidekick/compare/v7.8.0...v7.9.0) (2025-04-30)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([#536](https://github.com/adobe/aem-sidekick/issues/536)) ([687ccae](https://github.com/adobe/aem-sidekick/commit/687ccaeef30965e0065468beeef8fed96ff150a8))
+* hide the overflow caused by the pre element in JSON view ([#547](https://github.com/adobe/aem-sidekick/issues/547)) ([94bb468](https://github.com/adobe/aem-sidekick/commit/94bb4682fb3530e124a3ca31750eb95c78064a79))
+* rename conflicting spectrum custom elements ([#542](https://github.com/adobe/aem-sidekick/issues/542)) ([3fcfcfd](https://github.com/adobe/aem-sidekick/commit/3fcfcfdb3caa18bea7b2f88266bca2e11e95d2fd))
+* rename sp-button ([#550](https://github.com/adobe/aem-sidekick/issues/550)) ([2ac3c3c](https://github.com/adobe/aem-sidekick/commit/2ac3c3c2c3129dd1795ad21f635d06656a294b7c))
+* show x-error on 400 preview error if no error code ([#551](https://github.com/adobe/aem-sidekick/issues/551)) ([fc85bb5](https://github.com/adobe/aem-sidekick/commit/fc85bb5526dcf33c928a24af1e70766df446a3e0))
+
+
+### Features
+
+* trigger login flow for org ([#543](https://github.com/adobe/aem-sidekick/issues/543)) ([e40ef73](https://github.com/adobe/aem-sidekick/commit/e40ef73542ac9415d36808fd570c410f533e049b))
+
 # [7.8.0](https://github.com/adobe/aem-sidekick/compare/v7.7.1...v7.8.0) (2025-04-14)
 
 
