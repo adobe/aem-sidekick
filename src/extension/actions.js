@@ -213,6 +213,7 @@ async function login({
     const loginTab = await chrome.tabs.create({
       url: loginUrl.toString(),
       openerTabId: tab.id,
+      windowId: tab.windowId,
     });
     return new Promise((resolve) => {
       // close login tab on admin response
@@ -221,6 +222,8 @@ async function login({
           await chrome.tabs.remove(loginTab.id);
           chrome.runtime.onMessageExternal.removeListener(adminResponseListener);
           resolve(true);
+        } else {
+          resolve(false);
         }
       };
       chrome.runtime.onMessageExternal.addListener(adminResponseListener);
