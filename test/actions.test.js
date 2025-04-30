@@ -243,6 +243,16 @@ describe('Test actions', () => {
 
   it('external: login', async () => {
     const createTabStub = sandbox.stub(chrome.tabs, 'create');
+    const removeTabStub = sandbox.stub(chrome.tabs, 'remove');
+    const addListenerStub = sandbox.stub(chrome.runtime.onMessageExternal, 'addListener');
+    createTabStub.callsFake(({ url }) => ({ id: 7, url }));
+    addListenerStub.callsFake((listener) => {
+      listener({
+        action: 'updateAuthToken',
+      }, {
+        tab: mockTab('https://admin.hlx.page/login/foo/bar/main?extensionId=dummy', { id: 7 }),
+      }, () => {});
+    });
     let resp;
 
     // trusted actor
@@ -254,7 +264,9 @@ describe('Test actions', () => {
     expect(createTabStub.calledWith({
       url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy',
       openerTabId: 0,
+      windowId: 0,
     })).to.be.true;
+    expect(removeTabStub.called).to.be.true;
 
     sandbox.resetHistory();
 
@@ -267,6 +279,7 @@ describe('Test actions', () => {
     expect(createTabStub.calledWith({
       url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&selectAccount=true',
       openerTabId: 0,
+      windowId: 0,
     })).to.be.true;
 
     // missing mandatory parameters
@@ -280,6 +293,20 @@ describe('Test actions', () => {
     await externalActions.login(
       { org: 'foo', site: 'bar' },
       { tab: mockTab('https://tools.aem.live.evil/tools/foo.html') },
+    );
+    expect(resp).to.be.false;
+
+    // message from wrong tab
+    addListenerStub.callsFake((listener) => {
+      listener({
+        action: 'somethingElse',
+      }, {
+        tab: mockTab('https://admin.hlx.page/login/foo/bar/main?extensionId=dummy', { id: 8 }),
+      }, () => {});
+    });
+    resp = await externalActions.login(
+      { org: 'foo', site: 'bar' },
+      { tab: mockTab('https://tools.aem.live/tools/foo.html') },
     );
     expect(resp).to.be.false;
   });
