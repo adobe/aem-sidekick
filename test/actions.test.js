@@ -181,10 +181,21 @@ describe('Test actions', () => {
       'foo1/baz',
       'foo2/baz',
     ];
+    const projectConfigs = [
+      { org: 'foo', site: 'bar', project: 'Foo Bar' },
+      { org: 'foo1', site: 'baz', host: 'foo1.baz' },
+      { owner: 'foo2', repo: 'baz', host: 'foo2.baz' },
+    ];
     const expectedOutput = [
-      { org: 'foo', site: 'bar' },
-      { org: 'foo1', site: 'baz' },
-      { org: 'foo2', site: 'baz' },
+      {
+        org: 'foo', site: 'bar', project: 'Foo Bar',
+      },
+      {
+        org: 'foo1', site: 'baz', host: 'foo1.baz',
+      },
+      {
+        org: 'foo2', site: 'baz', owner: 'foo2', repo: 'baz', host: 'foo2.baz',
+      },
     ];
 
     let resp;
@@ -194,9 +205,14 @@ describe('Test actions', () => {
     resp = await externalActions.getSites({}, { tab: mockTab('https://tools.aem.live') });
     expect(resp).to.deep.equal([]);
 
-    // with auth info
+    // with projects
     getStub.resolves({
       projects,
+    });
+    projects.forEach((handle, i) => {
+      getStub.withArgs(handle).resolves({
+        [handle]: projectConfigs[i],
+      });
     });
 
     // trusted actors
@@ -221,6 +237,96 @@ describe('Test actions', () => {
 
     resp = await externalActions.getSites({}, { tab: mockTab('https://main--helix-tools-website--adobe-evl.aem.live') });
     expect(resp).to.deep.equal([]);
+  });
+
+  it('external: updateSite', async () => {
+    const oldConfig = { owner: 'foo', repo: 'bar', project: 'Foo Bar' };
+    const newConfig = { owner: 'foo', repo: 'bar', project: 'New Foo Bar' };
+
+    const getStub = sandbox.stub(chrome.storage.sync, 'get');
+    const setStub = sandbox.stub(chrome.storage.sync, 'set');
+    getStub.withArgs('projects').resolves({
+      projects: ['foo/bar'],
+    });
+    getStub.withArgs('foo/bar').resolves({
+      'foo/bar': oldConfig,
+    });
+
+    let resp;
+
+    // trusted actor
+    resp = await externalActions.updateSite({
+      config: newConfig,
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    expect(setStub.calledWith({ 'foo/bar': newConfig })).to.be.true;
+    expect(resp).to.be.true;
+
+    setStub.resetHistory();
+
+    // trusted actor with unknown site
+    resp = await externalActions.updateSite({
+      config: { owner: 'foo', repo: 'baz', project: 'Foo Baz' },
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    expect(setStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    // trusted actor with missing owner and repo
+    resp = await externalActions.updateSite({
+      config: { project: 'Foo Baz' },
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    expect(setStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    // untrusted actor
+    resp = await externalActions.updateSite({
+      config: newConfig,
+    }, { tab: mockTab('https://evil.live') });
+    expect(setStub.called).to.be.false;
+    expect(resp).to.be.false;
+  });
+
+  it('external: removeSite', async () => {
+    const config = { owner: 'foo', repo: 'bar', project: 'Foo Bar' };
+
+    const getStub = sandbox.stub(chrome.storage.sync, 'get');
+    const removeStub = sandbox.stub(chrome.storage.sync, 'remove');
+    const setStub = sandbox.stub(chrome.storage.sync, 'set');
+    getStub.withArgs('projects').resolves({
+      projects: ['foo/bar'],
+    });
+    getStub.withArgs('foo/bar').resolves({
+      'foo/bar': config,
+    });
+
+    let resp;
+
+    // trusted actor
+    resp = await externalActions.removeSite({
+      config,
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    console.log('removeSite', removeStub.args, resp); // eslint-disable-line no-console
+    expect(removeStub.called).to.be.true;
+    expect(setStub.calledWith({ projects: [] })).to.be.true;
+    expect(resp).to.be.true;
+
+    removeStub.resetHistory();
+    setStub.resetHistory();
+
+    // trusted actor with missing owner and repo
+    resp = await externalActions.removeSite({
+      config: { project: 'Foo Baz' },
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    expect(removeStub.called).to.be.false;
+    expect(setStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    // untrusted actor
+    resp = await externalActions.removeSite({
+      config,
+    }, { tab: mockTab('https://evil.live') });
+    expect(removeStub.called).to.be.false;
+    expect(setStub.called).to.be.false;
+    expect(resp).to.be.false;
   });
 
   it('external: launch', async () => {
@@ -281,6 +387,30 @@ describe('Test actions', () => {
       openerTabId: 0,
       windowId: 0,
     })).to.be.true;
+
+    // trusted actor with idp parameter
+    resp = await externalActions.login(
+      { org: 'foo', site: 'bar', idp: 'microsoft' },
+      { tab: mockTab('https://tools.aem.live/tools/foo.html') },
+    );
+    expect(resp).to.be.true;
+    expect(createTabStub.calledWith({
+      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&idp=microsoft',
+      openerTabId: 0,
+      windowId: 0,
+    })).to.be.true;
+
+    // trusted actor with unsupported idp
+    resp = await externalActions.login(
+      { org: 'foo', site: 'bar', idp: 'foo' },
+      { tab: mockTab('https://tools.aem.live/tools/foo.html') },
+    );
+    expect(resp).to.be.false;
+    expect(createTabStub.calledWith({
+      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&idp=foo',
+      openerTabId: 0,
+      windowId: 0,
+    })).to.be.false;
 
     // missing mandatory parameters
     resp = await externalActions.login(
