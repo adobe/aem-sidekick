@@ -187,6 +187,11 @@ async function updateSite({ config }, { tab }) {
   const owner = config.owner || config.org;
   const repo = config.repo || config.site;
   if (owner && repo) {
+    config = {
+      owner,
+      repo,
+      ...config,
+    };
     const project = await getConfig('sync', `${config.owner}/${config.repo}`);
     if (!project) {
       log.warn(`updateSite: project ${config.owner}/${config.repo} not found`);
