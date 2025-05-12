@@ -1,3 +1,10 @@
+# [7.10.0](https://github.com/adobe/aem-sidekick/compare/v7.9.0...v7.10.0) (2025-05-12)
+
+
+### Features
+
+* allow trusted origins to update project config ([#553](https://github.com/adobe/aem-sidekick/issues/553)) ([247b42e](https://github.com/adobe/aem-sidekick/commit/247b42e4a2e01e2b907d54df638bb213c30b0892))
+
 # [7.9.0](https://github.com/adobe/aem-sidekick/compare/v7.8.0...v7.9.0) (2025-04-30)
 
 
