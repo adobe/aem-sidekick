@@ -449,6 +449,12 @@
   "json_results_stat": {
     "message": "显示 $2 个结果中的 $1 个"
   },
+  "hide_diff": {
+    "message": "隐藏差异"
+  },
+  "show_diff": {
+    "message": "显示差异"
+  },
   "json_view_description": {
     "message": "数据演绎版"
   },

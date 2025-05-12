@@ -449,6 +449,12 @@
   "json_results_stat": {
     "message": "結果 $2 個中 $1 個を表示中"
   },
+  "hide_diff": {
+    "message": "差分を非表示"
+  },
+  "show_diff": {
+    "message": "差分を表示"
+  },
   "json_view_description": {
     "message": "データレンディション"
   },

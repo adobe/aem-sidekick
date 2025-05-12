@@ -449,6 +449,12 @@
   "json_results_stat": {
     "message": "$2개 중 $1개 결과 표시 중"
   },
+  "hide_diff": {
+    "message": "차이 숨김"
+  },
+  "show_diff": {
+    "message": "차이 표시"
+  },
   "json_view_description": {
     "message": "데이터 렌디션"
   },

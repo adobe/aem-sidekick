@@ -441,15 +441,19 @@ export class JSONView extends LitElement {
    * @returns {TemplateResult} The rendered value
    */
   renderValue(value, url) {
+    if (!value) {
+      return html`<sp-table-cell></sp-table-cell>`;
+    }
+    const typedValue = /** @type {any} */ (value);
     // Handle diff values
-    if (this.diffMode && value && typeof value === 'object' && 'diff' in value) {
+    if (this.diffMode && typedValue !== null && typeof typedValue === 'object' && 'diff' in typedValue) {
       return html`
         <sp-table-cell>
-          <div class="diff-value ${value.diff}">
-            ${value.preview !== undefined && value.live !== undefined ? html`
-              <div class="preview">${this.formatValue(value.preview, url)}</div>
-              <div class="live">${this.formatValue(value.live, url)}</div>
-            ` : JSON.stringify(value)}
+          <div class="diff-value ${typedValue.diff}">
+            ${typedValue.preview !== undefined && typedValue.live !== undefined ? html`
+              <div class="preview">${this.formatValue(typedValue.preview, url)}</div>
+              <div class="live">${this.formatValue(typedValue.live, url)}</div>
+            ` : JSON.stringify(typedValue)}
           </div>
         </sp-table-cell>
       `;

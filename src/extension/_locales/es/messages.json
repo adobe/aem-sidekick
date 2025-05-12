@@ -449,6 +449,12 @@
   "json_results_stat": {
     "message": "Mostrando $1 de $2 resultados"
   },
+  "hide_diff": {
+    "message": "Ocultar diferencias"
+  },
+  "show_diff": {
+    "message": "Mostrar diferencias"
+  },
   "json_view_description": {
     "message": "Representación de datos"
   },

@@ -449,6 +449,12 @@
   "json_results_stat": {
     "message": "正在顯示 $1 個結果 (共 $2 個)"
   },
+  "hide_diff": {
+    "message": "隱藏差異"
+  },
+  "show_diff": {
+    "message": "顯示差異"
+  },
   "json_view_description": {
     "message": "資料轉譯"
   },
