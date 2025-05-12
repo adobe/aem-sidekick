@@ -599,15 +599,6 @@ export class JSONView extends LitElement {
   }
 
   /**
-   * Check if the current url is a path based configuration sheet like redirects, metadata, etc.
-   * @returns {boolean} True if the url is a configuration
-   */
-  // isPathBasedConfiguration() {
-  //   const url = new URL(window.location.href).searchParams.get('url');
-  //   return url.includes('metadata') || url.includes('redirects.json');
-  // }
-
-  /**
    * Compare rows between preview and live versions
    * @param {Object} preview The preview version
    * @param {Object} live The live version
@@ -702,7 +693,6 @@ export class JSONView extends LitElement {
     }
 
     const diff = { ...preview };
-    // const isPathBasedConfiguration = this.isPathBasedConfiguration();
     if (preview[':type'] === 'multi-sheet' && preview[':names']) {
       preview[':names'].forEach((name) => {
         const differences = this.compareRows(
