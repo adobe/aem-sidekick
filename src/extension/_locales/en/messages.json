@@ -582,6 +582,9 @@
     "show_diff": {
       "message": "Show Diff"
     },
+    "show_changed": {
+      "message": "Show Only Changed"
+    },
     "search": {
       "message": "Search"
     },

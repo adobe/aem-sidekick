@@ -99,6 +99,13 @@ export class JSONView extends LitElement {
   @property({ type: Boolean })
   accessor diffMode = false;
 
+  /**
+   * Show only changed rows in diff view
+   * @type {boolean}
+   */
+  @property({ type: Boolean })
+  accessor showOnlyChanged = false;
+
    /**
    * The selected theme from sidekick
    * @type {string}
@@ -256,6 +263,14 @@ export class JSONView extends LitElement {
             <sp-action-button @click=${this.toggleDiffView} .selected=${this.diffMode}>
               ${i18n(this.languageDict, this.diffMode ? 'hide_diff' : 'show_diff')}
             </sp-action-button>
+            ${this.diffMode ? html`
+              <label class="checkbox-label">
+                <input type="checkbox" 
+                  ?checked=${this.showOnlyChanged} 
+                  @change=${this.toggleShowOnlyChanged}>
+                ${i18n(this.languageDict, 'show_changed')}
+              </label>
+            ` : ''}
           ` : ''}
         </sp-action-group>
       </div>
@@ -587,6 +602,18 @@ export class JSONView extends LitElement {
   }
 
   /**
+   * Toggle show only changed rows
+   * @param {Event} event The change event
+   */
+  toggleShowOnlyChanged(event) {
+    const checkbox = /** @type {HTMLInputElement} */ (event.target);
+    this.showOnlyChanged = checkbox.checked;
+    if (this.diffMode && this.liveData) {
+      this.filteredData = this.computeDiff(this.originalData, this.liveData);
+    }
+  }
+
+  /**
    * Helper to create a unique key for a row
    * @param {Object} row The row
    * @returns {string} The unique key
@@ -711,6 +738,19 @@ export class JSONView extends LitElement {
       );
       diff.data = differences.data;
       diff.columns = differences.columns;
+    }
+
+    // Filter to show only changed rows if enabled
+    if (this.showOnlyChanged) {
+      if (diff[':type'] === 'multi-sheet' && diff[':names']) {
+        diff[':names'].forEach((name) => {
+          if (diff[name] && diff[name].data) {
+            diff[name].data = diff[name].data.filter((row) => row.diff);
+          }
+        });
+      } else if (diff.data) {
+        diff.data = diff.data.filter((row) => row.diff);
+      }
     }
 
     return diff;

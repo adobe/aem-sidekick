@@ -134,6 +134,16 @@ export const style = css`
     justify-content: flex-end;
   }
 
+  .actions .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .actions .checkbox-label input {
+    margin: 0;
+  }
+  
   .tableContainer {
     padding-top: 15px;
     width: 100%;
