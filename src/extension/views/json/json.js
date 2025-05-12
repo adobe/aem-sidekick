@@ -516,25 +516,26 @@ export class JSONView extends LitElement {
   onSearch(event) {
     this.filterText = event.target.value;
     if (!this.filterText) {
-      this.filteredData = this.originalData;
+      this.filteredData = { ...this.originalData };
+      this.diffMode = false;
     } else {
-      const filteredData = { ...this.originalData };
+      const filteredData = this.diffMode ? { ...this.filteredData } : { ...this.originalData };
       const lowerCaseSearchString = this.filterText.toLowerCase();
 
-      if (this.originalData[':type'] === 'multi-sheet') {
-        Object.keys(this.originalData).forEach((sheetName) => {
+      if (filteredData[':type'] === 'multi-sheet') {
+        Object.keys(filteredData).forEach((sheetName) => {
           // Filter the data array in the current sheet
-          if (this.originalData[sheetName] && this.originalData[sheetName].data) {
-            const filteredSheetData = this.originalData[sheetName].data.filter((item) => Object
+          if (filteredData[sheetName] && filteredData[sheetName].data) {
+            const filteredSheetData = filteredData[sheetName].data.filter((item) => Object
               .values(item).some((value) => value.toString().toLowerCase()
                 .includes(lowerCaseSearchString),
               ));
-            const { columns } = this.originalData[sheetName];
+            const { columns } = filteredData[sheetName];
             filteredData[sheetName] = { data: filteredSheetData ?? [], columns };
           }
         });
       } else {
-        const filteredSheetData = this.originalData.data.filter((item) => Object
+        const filteredSheetData = filteredData.data.filter((item) => Object
           .values(item).some((value) => value.toString().toLowerCase()
             .includes(lowerCaseSearchString),
           ));
