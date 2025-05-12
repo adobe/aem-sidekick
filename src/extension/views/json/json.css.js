@@ -221,10 +221,6 @@ export const style = css`
     background-color: transparent;
   }
 
-  @media (min-width: 600px) {
-
-  }
-
   @media (min-width: 900px) {
     .header .right {
       flex: 1;
@@ -241,51 +237,14 @@ export const style = css`
     border-radius: 4px;
   }
 
-  .diff-value.added {
-    background-color: var(--spectrum2-color-positive);
-  }
-
-  .diff-value.modified {
-    background-color: var(--spectrum2-color-warning);
-  }
-
-  .diff-value.removed {
-    background-color: var(--spectrum2-background-color-negative);
-  }
-
-  .diff-value .preview {
-    color: var(--spectrum2-color-positive);
-    margin-bottom: 0.25rem;
-  }
-
-  .diff-value .live {
-    color: var(--spectrum2-background-color-negative);
-  }
 
   /* Diff row styles */
   .diff-row {
     background-color: var(--spectrum-global-color-gray-100);
-  }
-
-  .diff-row.added {
-    background-color: var(--spectrum2-color-positive);
-  }
-
-  .diff-row.modified {
-    background-color: var(--spectrum2-color-warning);
-  }
-
-  .diff-row.removed {
-    background-color: var(--spectrum2-background-color-negative);
   }
 
   .diff-row a {
     color: var(--spectrum-white-color);
-  }
-
-  /* Diff row styles */
-  .diff-row {
-    background-color: var(--spectrum-global-color-gray-100);
   }
 
   .diff-row.added {
@@ -296,7 +255,11 @@ export const style = css`
     background-color: #ffcecb;
   }
 
-  .diff-row sp-table-cell {
-    color: black;
+  theme-wrapper[theme='dark'] .diff-row.added {
+    background-color: #3fb9504d;
+  }
+
+  theme-wrapper[theme='dark'] .diff-row.removed {
+    background-color: #f851494d;
   }
 `;
