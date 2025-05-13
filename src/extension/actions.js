@@ -187,17 +187,15 @@ async function updateSite({ config }, { tab }) {
   const owner = config.owner || config.org;
   const repo = config.repo || config.site;
   if (owner && repo) {
-    config = {
-      owner,
-      repo,
-      ...config,
-    };
-    const project = await getConfig('sync', `${config.owner}/${config.repo}`);
+    const project = await getConfig('sync', `${owner}/${repo}`);
     if (!project) {
-      log.warn(`updateSite: project ${config.owner}/${config.repo} not found`);
+      log.warn(`updateSite: project ${owner}/${repo} not found`);
       return false;
     }
-    return !!(await updateProjectConfig(config));
+    return !!(await updateProjectConfig({
+      ...project,
+      ...config,
+    }));
   } else {
     log.warn('updateSite: missing required parameters org (or owner) and site (or repo)');
     return false;
@@ -497,7 +495,17 @@ async function updateProject(_, { config }) {
   if (existingProject) {
     const hasChanges = Object.keys(config)
       .filter((key) => key !== 'owner' && key !== 'repo')
-      .some((key) => config[key] !== existingProject[key]);
+      .filter((key) => config[key])
+      .some((key) => {
+        if (key === 'mountpoints') {
+          return config[key][0] !== existingProject[key][0];
+        } else if (key === 'project') {
+          // don't override existing project name
+          return !existingProject.project;
+        } else {
+          return config[key] !== existingProject[key];
+        }
+      });
 
     if (hasChanges) {
       await updateProjectConfig(config);

@@ -858,7 +858,7 @@ describe('Test actions', () => {
     expect(reloadStub.calledOnce).to.be.true;
   });
 
-  describe('updateProject', () => {
+  describe('internal: updateProject', () => {
     it('updates existing project config when properties have changed', async () => {
       const project = {
         owner: 'adobe',
@@ -911,6 +911,32 @@ describe('Test actions', () => {
       const getStub = sandbox.stub(chrome.storage.sync, 'get');
       getStub.withArgs('projects').resolves({ projects: ['adobe/business-website'] });
       getStub.withArgs('adobe/business-website').resolves({ 'adobe/business-website': project });
+
+      // mock updateProject to verify it's not called
+      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set');
+
+      await internalActions.updateProject({}, { config: project });
+
+      expect(updateProjectStub.called).to.be.false;
+    });
+
+    it('does not overwrite existing project name', async () => {
+      const project = {
+        owner: 'adobe',
+        repo: 'business-website',
+        ref: 'main',
+        project: 'Business Website',
+      };
+
+      const existingProject = {
+        ...project,
+        project: 'existing project name',
+      };
+
+      // mock getProject to return existing project
+      const getStub = sandbox.stub(chrome.storage.sync, 'get');
+      getStub.withArgs('projects').resolves({ projects: ['adobe/business-website'] });
+      getStub.withArgs('adobe/business-website').resolves({ 'adobe/business-website': existingProject });
 
       // mock updateProject to verify it's not called
       const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set');
