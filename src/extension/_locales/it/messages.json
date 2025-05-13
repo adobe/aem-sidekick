@@ -449,12 +449,6 @@
   "json_results_stat": {
     "message": "Visualizzazione di $1 di $2 risultati"
   },
-  "hide_diff": {
-    "message": "Nascondi Diff"
-  },
-  "show_diff": {
-    "message": "Mostra Diff"
-  },
   "json_view_description": {
     "message": "Rappresentazione dei dati"
   },
