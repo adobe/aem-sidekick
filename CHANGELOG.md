@@ -1,3 +1,10 @@
+## [7.10.1](https://github.com/adobe/aem-sidekick/compare/v7.10.0...v7.10.1) (2025-05-14)
+
+
+### Bug Fixes
+
+* update site deletes project properties ([#564](https://github.com/adobe/aem-sidekick/issues/564)) ([36690eb](https://github.com/adobe/aem-sidekick/commit/36690eba10eb24138ace37171064a5b919d59d4a))
+
 # [7.10.0](https://github.com/adobe/aem-sidekick/compare/v7.9.0...v7.10.0) (2025-05-12)
 
 
