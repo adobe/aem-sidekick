@@ -74,9 +74,9 @@ export class JSONView extends LitElement {
   /**
    * The original diff json data
    * @type {Object}
-   */
-    @property({ type: Object })
-    accessor originalDiffData;
+  */
+  @property({ type: Object })
+  accessor originalDiffData;
 
   /**
    * The diff json data
@@ -112,6 +112,13 @@ export class JSONView extends LitElement {
    */
   @property({ type: Boolean })
   accessor diffMode = false;
+
+   /**
+   * The flag for live data loaded
+   * @type {boolean}
+   */
+   @property({ type: Boolean })
+   accessor liveDataLoaded = false;
 
   /**
    * Show only changed rows in diff view
@@ -170,17 +177,6 @@ export class JSONView extends LitElement {
           this.originalData = json;
           this.filteredData = json;
           this.diffData = json;
-          // Fetch live version
-          const liveUrl = url.replace('.page', '.live');
-          const liveRes = await fetch(liveUrl, { cache: 'no-store' });
-          if (liveRes.ok) {
-            try {
-              this.liveData = await liveRes.json();
-            } catch (e) {
-              // eslint-disable-next-line no-console
-              console.warn(`Could not load live version: ${e}`);
-            }
-          }
         } else {
           throw new Error(`failed to load ${url}: ${res.status}`);
         }
@@ -274,7 +270,7 @@ export class JSONView extends LitElement {
           <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
         </div>
         <sp-action-group selects="single">
-          ${this.liveData ? html`
+          ${this.url ? html`
             <sp-action-button @click=${this.toggleDiffView} .selected=${this.diffMode}>
               ${i18n(this.languageDict, this.diffMode ? 'hide_diff' : 'show_diff')}
             </sp-action-button>
@@ -605,8 +601,24 @@ export class JSONView extends LitElement {
   /**
    * Toggle diff view mode
    */
-  toggleDiffView() {
+  async toggleDiffView() {
     this.diffMode = !this.diffMode;
+    if (this.diffMode && !this.liveDataLoaded && !this.liveData) {
+      // Fetch live version
+      const liveUrl = this.url.replace('.page', '.live');
+      const liveRes = await fetch(liveUrl, { cache: 'no-store' });
+      if (liveRes.ok) {
+        try {
+          this.liveData = await liveRes.json();
+          this.diffData = this.computeDiff(this.originalData, this.liveData);
+          this.originalDiffData = this.diffData;
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn(`Could not load live version: ${e}`);
+        }
+      }
+      this.liveDataLoaded = true;
+    }
     if (this.diffMode && this.liveData) {
       this.diffData = this.computeDiff(this.originalData, this.liveData);
       this.originalDiffData = this.diffData;
