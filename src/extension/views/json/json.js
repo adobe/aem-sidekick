@@ -72,6 +72,20 @@ export class JSONView extends LitElement {
   accessor filteredData;
 
   /**
+   * The original diff json data
+   * @type {Object}
+   */
+    @property({ type: Object })
+    accessor originalDiffData;
+
+  /**
+   * The diff json data
+   * @type {Object}
+   */
+  @property({ type: Object })
+  accessor diffData;
+
+  /**
    * The filtered json data
    * @type {string}
    */
@@ -155,7 +169,7 @@ export class JSONView extends LitElement {
           this.url = url;
           this.originalData = json;
           this.filteredData = json;
-
+          this.diffData = json;
           // Fetch live version
           const liveUrl = url.replace('.page', '.live');
           const liveRes = await fetch(liveUrl, { cache: 'no-store' });
@@ -184,7 +198,8 @@ export class JSONView extends LitElement {
    * Render the json data
    */
   renderData() {
-    const { filteredData: json, url } = this;
+    const json = this.diffMode ? this.diffData : this.filteredData;
+    const { url } = this;
     if (!json || !url) {
       return '';
     }
@@ -281,7 +296,6 @@ export class JSONView extends LitElement {
       const name = names[this.selectedTabIndex];
       const sheet = sheets[name];
       const { data, columns } = sheet;
-
       elements.push(this.renderTable(data, columns, url));
     }
 
@@ -421,9 +435,9 @@ export class JSONView extends LitElement {
 
     return html`
       <div class="tableContainer">
-        <sp-table scroller style="height: 100%">
+        <sp-table scroller>
           <sp-table-head>
-            <sp-table-head-cell>#</sp-table-head-cell>
+            ${rows.some((r) => r.line) ? html`<sp-table-head-cell>#</sp-table-head-cell>` : ''}
             ${headers.map((header) => html`
               <sp-table-head-cell sortable sort-direction="desc" sort-key=${header}>
                 ${header.charAt(0).toUpperCase() + header.slice(1)}
@@ -431,18 +445,14 @@ export class JSONView extends LitElement {
             `)}
           </sp-table-head>
           <sp-table-body>
-            ${rows.map((row, index) => {
-              const addedRow = !row.diff || row.diff === 'added';
-              const lineNumber = rows.slice(0, index + 1).reduce((count, r) => count + (r.diff !== 'removed' ? 1 : 0), 0);
-              return html`
+            ${rows.map((row) => html`
                 <sp-table-row class=${row.diff ? `diff-row ${row.diff}` : ''}>
-                  <sp-table-cell>${addedRow ? lineNumber : ''}</sp-table-cell>
+                  ${row.line ? html`<sp-table-cell>${row.line}</sp-table-cell>` : ''}
                   ${Object.entries(row)
-                    .filter(([key]) => key !== 'diff') // Filter out the diff property
+                    .filter(([key]) => key !== 'diff' && key !== 'line')
                     .map(([_, value]) => this.renderValue(value, url))}
                 </sp-table-row>
-              `;
-            })}
+              `)}
           </sp-table-body>
         </sp-table>
       </div>
@@ -531,10 +541,10 @@ export class JSONView extends LitElement {
   onSearch(event) {
     this.filterText = event.target.value;
     if (!this.filterText) {
-      this.filteredData = { ...this.originalData };
-      this.diffMode = false;
+      this.diffData = this.originalDiffData;
+      this.filteredData = this.diffMode ? { ...this.diffData } : { ...this.originalData };
     } else {
-      const filteredData = this.diffMode ? { ...this.filteredData } : { ...this.originalData };
+      const filteredData = this.diffMode ? { ...this.diffData } : { ...this.originalData };
       const lowerCaseSearchString = this.filterText.toLowerCase();
 
       if (filteredData[':type'] === 'multi-sheet') {
@@ -557,8 +567,11 @@ export class JSONView extends LitElement {
 
         filteredData.data = filteredSheetData;
       }
-
-      this.filteredData = filteredData;
+      if (this.diffMode) {
+        this.diffData = filteredData;
+      } else {
+        this.filteredData = filteredData;
+      }
     }
     this.debouncedFilterRUM();
   }
@@ -595,8 +608,10 @@ export class JSONView extends LitElement {
   toggleDiffView() {
     this.diffMode = !this.diffMode;
     if (this.diffMode && this.liveData) {
-      this.filteredData = this.computeDiff(this.originalData, this.liveData);
+      this.diffData = this.computeDiff(this.originalData, this.liveData);
+      this.originalDiffData = this.diffData;
     } else {
+      this.diffData = this.originalData;
       this.filteredData = this.originalData;
     }
   }
@@ -609,7 +624,10 @@ export class JSONView extends LitElement {
     const checkbox = /** @type {HTMLInputElement} */ (event.target);
     this.showOnlyChanged = checkbox.checked;
     if (this.diffMode && this.liveData) {
-      this.filteredData = this.computeDiff(this.originalData, this.liveData);
+      this.diffData = this.computeDiff(this.originalData, this.liveData);
+      if (this.filterText) {
+        this.onSearch({ target: { value: this.filterText } });
+      }
     }
   }
 
@@ -656,11 +674,11 @@ export class JSONView extends LitElement {
 
           if (!previewRow) {
             // Only live row exists
-            diffData.push({ ...liveRow, diff: 'removed' });
+            diffData.push({ ...liveRow, diff: 'removed', line: liveIndex + 1 });
             liveIndex += 1;
           } else if (!liveRow) {
             // Only preview row exists
-            diffData.push({ ...previewRow, diff: 'added' });
+            diffData.push({ ...previewRow, diff: 'added', line: previewIndex + 1 });
             previewIndex += 1;
           } else {
             const previewKey = getKey(previewRow);
@@ -677,10 +695,10 @@ export class JSONView extends LitElement {
               });
 
               if (hasChanges) {
-                diffData.push({ ...previewRow, diff: 'added' });
-                diffData.push({ ...liveRow, diff: 'removed' });
+                diffData.push({ ...previewRow, diff: 'added', line: previewIndex + 1 });
+                diffData.push({ ...liveRow, diff: 'removed', line: liveIndex + 1 });
               } else {
-                diffData.push({ ...previewRow });
+                diffData.push({ ...previewRow, line: previewIndex + 1 });
               }
 
               previewIndex += 1;
@@ -690,11 +708,11 @@ export class JSONView extends LitElement {
               const comparison = compareKeys(previewRow, liveRow);
               if (comparison < 0) {
                 // Preview row comes first
-                diffData.push({ ...previewRow, diff: 'added' });
+                diffData.push({ ...previewRow, diff: 'added', line: previewIndex + 1 });
                 previewIndex += 1;
               } else {
                 // Live row comes first
-                diffData.push({ ...liveRow, diff: 'removed' });
+                diffData.push({ ...liveRow, diff: 'removed', line: liveIndex + 1 });
                 liveIndex += 1;
               }
             }
