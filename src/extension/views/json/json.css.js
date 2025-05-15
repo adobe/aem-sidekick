@@ -30,7 +30,7 @@ export const style = css`
     display: flex;
     align-items: center;
     gap: 10px;
-    height: 64px;
+    min-height: 64px;
     padding-left: 16px;
     padding-right: 16px;
     background-color: var(--spectrum2-sidekick-layer-1);
@@ -143,7 +143,7 @@ export const style = css`
   .actions .checkbox-label input {
     margin: 0;
   }
-  
+   
   .tableContainer {
     padding-top: 15px;
     width: 100%;
@@ -246,7 +246,6 @@ export const style = css`
     padding: 0.5rem;
     border-radius: 4px;
   }
-
 
   /* Diff row styles */
   .diff-row {
