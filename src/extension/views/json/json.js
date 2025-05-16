@@ -294,8 +294,33 @@ export class JSONView extends LitElement {
       const { data, columns } = sheet;
       elements.push(this.renderTable(data, columns, url));
     }
-
     return elements;
+  }
+
+  /**
+   * Handle the table sorted event
+   */
+  onTableSorted(event) {
+    const { sortDirection, sortKey } = event.detail;
+    const data = this.diffMode
+      ? this.diffData?.data || []
+      : this.filteredData?.data || [];
+    const columns = this.diffMode
+      ? this.diffData?.columns || []
+      : this.filteredData?.columns || [];
+    const sortedData = [...data].sort((a, b) => {
+      const first = String(a[sortKey]);
+      const second = String(b[sortKey]);
+      return sortDirection === 'asc'
+        ? first.localeCompare(second)
+        : second.localeCompare(first);
+    });
+    if (this.diffMode) {
+      this.diffData = { ...this.diffData, data: sortedData, columns };
+    } else {
+      this.filteredData = { ...this.filteredData, data: sortedData, columns };
+    }
+    this.table.items = this.sortColumns(sortedData, columns);
   }
 
   /**
@@ -431,24 +456,26 @@ export class JSONView extends LitElement {
 
     return html`
       <div class="tableContainer">
-        <sp-table scroller>
+        <sp-table scroller="true" style="height: 100%" @sorted=${this.onTableSorted}>
           <sp-table-head>
-            ${rows.some((r) => r.line) ? html`<sp-table-head-cell>#</sp-table-head-cell>` : ''}
+            ${rows.some((r) => r.line) ? html`
+              <sp-table-head-cell sortable sort-direction="desc" sort-key="line">#</sp-table-head-cell>
+            ` : ''}
             ${headers.map((header) => html`
-              <sp-table-head-cell sortable sort-direction="desc" sort-key=${header}>
+              <sp-table-head-cell sortable sort-direction="desc" sort-key="${header}">
                 ${header.charAt(0).toUpperCase() + header.slice(1)}
               </sp-table-head-cell>
             `)}
           </sp-table-head>
           <sp-table-body>
             ${rows.map((row) => html`
-                <sp-table-row class=${row.diff ? `diff-row ${row.diff}` : ''}>
-                  ${row.line ? html`<sp-table-cell>${row.line}</sp-table-cell>` : ''}
-                  ${Object.entries(row)
-                    .filter(([key]) => key !== 'diff' && key !== 'line')
-                    .map(([_, value]) => this.renderValue(value, url))}
-                </sp-table-row>
-              `)}
+              <sp-table-row class="${row.diff ? `diff-row ${row.diff}` : ''}">
+                ${row.line ? html`<sp-table-cell>${row.line}</sp-table-cell>` : ''}
+                ${Object.entries(row)
+                  .filter(([key]) => key !== 'diff' && key !== 'line')
+                  .map(([_, value]) => this.renderValue(value, url))}
+              </sp-table-row>
+            `)}
           </sp-table-body>
         </sp-table>
       </div>
@@ -618,8 +645,7 @@ export class JSONView extends LitElement {
         }
       }
       this.liveDataLoaded = true;
-    }
-    if (this.diffMode && this.liveData) {
+    } else if (this.diffMode && this.liveData) {
       this.diffData = this.computeDiff(this.originalData, this.liveData);
       this.originalDiffData = this.diffData;
     } else {
