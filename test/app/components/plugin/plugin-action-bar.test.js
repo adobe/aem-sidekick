@@ -949,6 +949,40 @@ describe('Plugin action bar', () => {
       expect(closeSpy.calledOnce).to.be.true;
     }).timeout(10000);
 
+    it('open project admin', async () => {
+      sidekickTest.sandbox.stub(chrome.storage.sync, 'get').resolves({
+        projects: ['foo/bar'],
+      });
+
+      const { sandbox } = sidekickTest;
+      sidekick = sidekickTest.createSidekick({
+        ...defaultSidekickConfig,
+        transient: false,
+      });
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const sidekickMenuButton = recursiveQuery(sidekick, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
+
+      sidekickMenuButton.click();
+
+      await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
+
+      const openPageStub = sandbox.stub(sidekickTest.appStore, 'openPage').returns(null);
+      const projectAdminButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="project-admin-opened"]');
+      expect(projectAdminButton).to.exist;
+      projectAdminButton.click();
+
+      await aTimeout(200);
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
+      expect(openPageStub.calledOnce).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'project-admin-opened',
+      })).to.be.true;
+    }).timeout(10000);
+
     it('open documentation', async () => {
       const { sandbox } = sidekickTest;
       sidekick = sidekickTest.createSidekick({
