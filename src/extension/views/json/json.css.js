@@ -173,6 +173,7 @@ export const style = css`
 
   sp-table-head {
     overflow-x: scroll;
+    min-height: fit-content;
   }
 
   sp-table-head::-webkit-scrollbar {
