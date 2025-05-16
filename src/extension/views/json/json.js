@@ -459,7 +459,7 @@ export class JSONView extends LitElement {
         <sp-table scroller="true" style="height: 100%" @sorted=${this.onTableSorted}>
           <sp-table-head>
             ${rows.some((r) => r.line) ? html`
-              <sp-table-head-cell sortable sort-direction="desc" sort-key="line">#</sp-table-head-cell>
+              <sp-table-head-cell sortable sort-direction="desc" sort-key="line" class="line">#</sp-table-head-cell>
             ` : ''}
             ${headers.map((header) => html`
               <sp-table-head-cell sortable sort-direction="desc" sort-key="${header}">
@@ -470,7 +470,7 @@ export class JSONView extends LitElement {
           <sp-table-body>
             ${rows.map((row) => html`
               <sp-table-row class="${row.diff ? `diff-row ${row.diff}` : ''}">
-                ${row.line ? html`<sp-table-cell>${row.line}</sp-table-cell>` : ''}
+                ${row.line ? html`<sp-table-cell class="line">${row.line}</sp-table-cell>` : ''}
                 ${Object.entries(row)
                   .filter(([key]) => key !== 'diff' && key !== 'line')
                   .map(([_, value]) => this.renderValue(value, url))}

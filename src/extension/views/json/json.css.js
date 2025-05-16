@@ -242,13 +242,17 @@ export const style = css`
       min-width: 324px;
     }
   }
-  
+
+  .line {
+    max-width: 150px;
+  }
+
+  /* Diff row styles */
   .diff-value {
     padding: 0.5rem;
     border-radius: 4px;
   }
 
-  /* Diff row styles */
   .diff-row {
     background-color: var(--spectrum-global-color-gray-100);
   }
