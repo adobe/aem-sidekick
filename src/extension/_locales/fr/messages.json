@@ -621,7 +621,7 @@
     "message": "Connectez-vous pour continuer."
   },
   "site_protected": {
-    "message": "Ce site est protégé."
+    "message": "Site protégé"
   },
   "site_relogin_required": {
     "message": "Accès arrivé à expiration. Reconnectez-vous pour continuer."
