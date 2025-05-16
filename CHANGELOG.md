@@ -1,3 +1,10 @@
+# [7.11.0](https://github.com/adobe/aem-sidekick/compare/v7.10.1...v7.11.0) (2025-05-16)
+
+
+### Features
+
+* **env-switcher:** show review env if custom review host defined ([#567](https://github.com/adobe/aem-sidekick/issues/567)) ([5bb9fd4](https://github.com/adobe/aem-sidekick/commit/5bb9fd495314df1c2fc917c2f6f7de4391f5ccf4))
+
 ## [7.10.1](https://github.com/adobe/aem-sidekick/compare/v7.10.0...v7.10.1) (2025-05-14)
 
 
