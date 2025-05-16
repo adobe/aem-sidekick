@@ -118,7 +118,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
    * @returns {string} - The last modified label
    */
   getLastModifiedLabel(id, lastModified, lastModifiedBy) {
-    const envId = id === 'dev' ? 'preview' : id;
+    const envId = ['review', 'dev'].includes(id) ? 'preview' : id;
     const i18nKey = `${envId}_last_updated${lastModifiedBy ? '_by' : ''}`;
     if (['anonymous', 'system'].includes(lastModifiedBy)) {
       lastModifiedBy = this.appStore.i18n(lastModifiedBy);
@@ -271,6 +271,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
           editMenuItem,
           devMenuItem,
           previewMenuItem,
+          reviewMenuItem,
           liveMenuItem,
         );
         break;
@@ -280,6 +281,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
           environmentsHeader,
           editMenuItem,
           previewMenuItem,
+          reviewMenuItem,
           liveMenuItem,
         );
         break;
@@ -289,6 +291,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
           environmentsHeader,
           editMenuItem,
           previewMenuItem,
+          reviewMenuItem,
           liveMenuItem,
         );
         break;
@@ -308,6 +311,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
           environmentsHeader,
           editMenuItem,
           previewMenuItem,
+          reviewMenuItem,
           liveMenuItem,
         );
         break;
@@ -317,6 +321,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
           environmentsHeader,
           editMenuItem,
           previewMenuItem,
+          reviewMenuItem,
           liveMenuItem,
           prodMenuItem,
         );
@@ -332,6 +337,11 @@ export class EnvironmentSwitcher extends ConnectedElement {
     if (this.currentEnv !== 'live' && (showProd || this.currentEnv === 'prod')) {
       // TODO: show/hide live based on alt/option key
       liveMenuItem.remove();
+    }
+
+    if (this.currentEnv !== 'review'
+      && this.appStore.siteStore.reviewHost === this.appStore.siteStore.stdReviewHost) {
+      reviewMenuItem.remove();
     }
 
     if (this.appStore.status?.webPath && !this.appStore.status?.webPath.startsWith('/.helix')) {

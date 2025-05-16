@@ -22,6 +22,7 @@ export const ENVS = {
   edit: 'edit',
   dev: 'localhost',
   preview: 'innerHost',
+  review: 'reviewHost',
   live: 'outerHost',
   prod: 'host',
 };

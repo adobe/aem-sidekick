@@ -256,6 +256,26 @@ describe('Environment Switcher', () => {
 
       expect(reviewItem).to.exist;
     });
+
+    it('shows review menu item if custom review host defined', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false, false, {
+          reviewHost: 'custom-review-host.com',
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+      const reviewItem = recursiveQuery(picker, '.env-review');
+
+      expect(reviewItem).to.exist;
+    });
   });
 
   describe('edit item variants', () => {
