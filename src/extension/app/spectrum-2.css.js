@@ -121,10 +121,10 @@ export const spectrum2 = css`
       0px 0px 3px 0px rgba(0, 0, 0, 0.12),
       0px 3px 8px 0px rgba(0, 0, 0, 0.04),
       0px 4px 16px 0px rgba(0, 0, 0, 0.08);
-    --sidekick-foreground-experimental-light: #9a47e2;
-    --sidekick-background-experimental-light: #e5d6f1;
-    --sidekick-foreground-experimental-dark: var(--sidekick-background-experimental-light);
-    --sidekick-background-experimental-dark: var(--sidekick-foreground-experimental-light);
+    --sidekick-foreground-experimental-light: rgb(143, 76, 218);
+    --sidekick-background-experimental-light: rgb(230, 223, 238);
+    --sidekick-foreground-experimental-dark: rgb(163, 108, 226);
+    --sidekick-background-experimental-dark: rgb(45, 4, 92);
 
     /* Radius tokens */
     --spectrum2-small-border-radius: 4px;
