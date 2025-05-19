@@ -441,7 +441,6 @@ export class PluginActionBar extends ConnectedElement {
 
   async handleItemSelection(event) {
     const { value } = event.target;
-    console.log('handleItemSelection', event.target, value);
     const menu = await this.sidekickMenu;
     menu.removeAttribute('open');
 
