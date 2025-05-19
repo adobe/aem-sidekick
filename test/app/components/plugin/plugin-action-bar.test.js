@@ -969,14 +969,17 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
 
-      const openPageStub = sandbox.stub(sidekickTest.appStore, 'openPage').returns(null);
+      const sendMessageStub = sandbox.stub(window.chrome.runtime, 'sendMessage').returns(null);
       const projectAdminButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="project-admin-opened"]');
       expect(projectAdminButton).to.exist;
       projectAdminButton.click();
 
       await aTimeout(200);
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
-      expect(openPageStub.calledOnce).to.be.true;
+      expect(sendMessageStub.calledWith({
+        // @ts-ignore
+        action: 'manageProjects',
+      })).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'project-admin-opened',

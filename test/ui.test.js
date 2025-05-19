@@ -137,6 +137,15 @@ describe('Test UI: updateContextMenu', () => {
     expect(createSpy.callCount).to.equal(0);
   });
 
+  it('updateContextMenu: manage projects', async () => {
+    await updateContextMenu({
+      ...tab,
+      numProjects: 3,
+    });
+    expect(removeAllSpy.callCount).to.equal(1);
+    expect(createSpy.calledWithMatch({ id: 'manageProjects' })).to.be.true;
+  });
+
   it('updateContextMenu: chrome.contextMenus API missing', async () => {
     const originalContextMenus = chrome.contextMenus;
     delete chrome.contextMenus;

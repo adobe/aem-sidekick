@@ -455,7 +455,7 @@ export class PluginActionBar extends ConnectedElement {
       chrome.runtime.sendMessage({ action: 'addRemoveProject' });
     } else if (value === 'project-admin-opened') {
       this.appStore.sampleRUM('click', { source: 'sidekick', target: 'project-admin-opened' });
-      this.appStore.openPage('https://labs.aem.live/tools/project-admin/index.html');
+      chrome.runtime.sendMessage({ action: 'manageProjects' });
     }
   }
 
