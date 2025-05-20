@@ -138,6 +138,7 @@ export const style = css`
     display: flex;
     align-items: center;
     gap: 5px;
+    padding: 0 10px;
   }
 
   .actions .checkbox-label input {

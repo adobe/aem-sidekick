@@ -277,11 +277,8 @@ export class JSONView extends LitElement {
             <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
           `}
         </div>
-        <sp-action-group selects="single">
+        <sp-action-group>
           ${this.url.includes('.page') ? html`
-            <sp-switch @change=${this.toggleDiffView} ?checked=${this.diffMode}>
-                ${i18n(this.languageDict, this.diffMode ? 'hide_diff' : 'show_diff')}
-            </sp-switch>
             ${this.diffMode ? html`
               <label class="checkbox-label">
                 <input type="checkbox" 
@@ -290,6 +287,9 @@ export class JSONView extends LitElement {
                 ${i18n(this.languageDict, 'show_changed')}
               </label>
             ` : ''}
+            <sp-switch @change=${this.toggleDiffView} ?checked=${this.diffMode}>
+                ${i18n(this.languageDict, this.diffMode ? 'hide_diff' : 'show_diff')}
+            </sp-switch>
           ` : ''}
         </sp-action-group>
       </div>
