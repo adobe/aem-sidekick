@@ -1209,6 +1209,25 @@ describe('Test Bulk Store', () => {
       expect(updateStub.calledWith('/spreadsheet.xlsx')).to.be.true;
     });
 
+    it('missing file name in sharepoint', async () => {
+      // mock sharepoint
+      sidekickTest
+        .mockLocation(getAdminLocation(HelixMockContentSources.SHAREPOINT))
+        .mockAdminDOM(HelixMockContentSources.SHAREPOINT);
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      await aTimeout(500);
+
+      // remove file name from first file
+      sidekickTest.bulkRoot.querySelector('[data-id="heroField"]').remove();
+      // select first file
+      sidekickTest.bulkRoot.querySelector('.file').setAttribute('aria-selected', 'true');
+
+      bulkStore.initStore(appStore.location);
+      await aTimeout(500);
+
+      expect(bulkStore.selection.length).to.equal(0);
+    });
+
     it('rejects illegal folder path', async () => {
       const showToastSpy = sidekickTest.sandbox.spy(appStore, 'showToast');
 
