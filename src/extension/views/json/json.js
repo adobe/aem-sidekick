@@ -359,7 +359,7 @@ export class JSONView extends LitElement {
       }
       // number
       return html`<div class="number">${value}</div>`;
-    } else if (/\/^\/[a-z0-9]+$\/i/.test(value) || value.startsWith('http')) {
+    } else if (/^\/[a-z0-9]+/i.test(value) || value.startsWith('http')) {
       // check if the value contains a glob pattern
       if (!value.includes('*')) {
         // assume link
