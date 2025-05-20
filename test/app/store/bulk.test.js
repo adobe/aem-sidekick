@@ -363,7 +363,7 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => startJobStub.calledWith('preview', [
           '/foo/document',
           '/foo/spreadsheet.json',
-          '/foo/other',
+          '/foo/other.unknown',
         ]));
         await waitUntil(() => getJobStub.calledWith('preview', '123'), null, { timeout: 2000 });
         expect(bulkStore.progress.processed).to.equal(1);
@@ -1207,6 +1207,25 @@ describe('Test Bulk Store', () => {
 
       await waitUntil(() => updateStub.called);
       expect(updateStub.calledWith('/spreadsheet.xlsx')).to.be.true;
+    });
+
+    it('missing file name in sharepoint', async () => {
+      // mock sharepoint
+      sidekickTest
+        .mockLocation(getAdminLocation(HelixMockContentSources.SHAREPOINT))
+        .mockAdminDOM(HelixMockContentSources.SHAREPOINT);
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      await aTimeout(500);
+
+      // remove file name from first file
+      sidekickTest.bulkRoot.querySelector('[data-id="heroField"]').remove();
+      // select first file
+      sidekickTest.bulkRoot.querySelector('.file').setAttribute('aria-selected', 'true');
+
+      bulkStore.initStore(appStore.location);
+      await aTimeout(500);
+
+      expect(bulkStore.selection.length).to.equal(0);
     });
 
     it('rejects illegal folder path', async () => {

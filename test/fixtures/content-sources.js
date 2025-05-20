@@ -25,17 +25,6 @@ const gdriveDescriptors = {
   svg: 'SVG File',
 };
 
-const spDescriptors = {
-  folder: 'SharePoint Folder',
-  docx: 'docx',
-  xlsx: 'xlsx',
-  unknown: 'unknown',
-  pdf: 'pdf',
-  image: 'jpg',
-  video: 'mp4',
-  svg: 'svg',
-};
-
 export const DEFAULT_GDRIVE_BULK_SELECTION = [
   { path: '/foo/bar', file: 'bar', type: 'folder' },
   { path: '/foo/index', file: 'index', type: 'gdoc' },
@@ -57,7 +46,7 @@ export const DEFAULT_SHAREPOINT_BULK_SELECTION = [
   { path: '/foo/image.jpg', file: 'image.jpg', type: 'image' },
   { path: '/foo/video.mp4', file: 'video.mp4', type: 'video' },
   { path: '/foo/icon.svg', file: 'icon.svg', type: 'svg' },
-  { path: '/foo/other', file: 'other', type: 'unknown' },
+  { path: '/foo/other.unknown', file: 'other.unknown', type: 'unknown' },
 ];
 
 /*
@@ -209,34 +198,17 @@ export function mockSharePointFolder(name, viewType = 'list') {
  * @param {string} viewType The view type: "list" (default) or "grid"
  * @returns {string} The markup for the resource
  */
-export function mockSharePointFile({ path, type }, viewType = 'list', nonLatin = false) {
+export function mockSharePointFile({ path, type }, viewType = 'list') {
   if (type === 'folder') {
     return mockSharePointFolder(path.split('/').pop(), viewType);
   }
-  const descriptor = spDescriptors[type];
   const filename = path.split('/').pop();
 
-  let fileInfo;
-  const isNewSharepointList = viewType === 'new-sharepoint-list';
-  if (isNewSharepointList) {
-    fileInfo = filename;
-  } else {
-    fileInfo = nonLatin
-      ? `${filename}, ${descriptor} 文件, 专用, 已于 2/6/2023 修改, 编辑者: John Doe, 365 KB`
-      : `${filename}, ${descriptor} File, Private, Modified 4/9/2023, edited by John Doe, 356 KB`;
-  }
-
-  const result = viewType === 'list' || isNewSharepointList ? `
-    <div class="file" id="file-${type}" role="row" aria-selected="false"
-      aria-label="${fileInfo}">
-      <img src="./icons/${type}.svg">
-      <button>${filename}</button>
+  const result = viewType === 'list' ? `
+    <div class="file" id="file-${type}" role="row" aria-selected="false">
+      <span role="button" data-id="heroField">${filename}</span>
     </div>` : `
     <div class="file" id="file-${type}" role="row" aria-selected="false">
-      <span>${fileInfo}</span>
-      <i data-icon-name="svg/${type}_16x1.svg" aria-label="${type}">
-        <img src="./icons/${type}.svg">
-      </i>
       <div data-automationid="name">${filename}</div>
     </div>`;
   return result;

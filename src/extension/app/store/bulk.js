@@ -163,16 +163,26 @@ export class BulkStore {
         && !row.querySelector('svg')?.parentElement.className.toLowerCase().includes('folder'))
       // extract file name and type
       .map((row) => {
-        const info = row.getAttribute('aria-label') || row.querySelector('span')?.textContent;
+        let file = row
+          .querySelector('[data-id="heroField"], [data-automationid="name"]') // list, grid
+          ?.textContent.trim();
+        let type = (file || '').split('.').pop();
 
-        // info format: bla.docx, docx File, Private, Modified 8/28/2023, edited by Jane, 1 KB
-        let type = info.match(/, ([\p{L}\p{N}]+) [\p{L}\p{N}]+,/u)?.[1];
-        let file = type && info.split(`, ${type}`)[0];
+        // istanbul ignore next 13
+        if (!file) {
+          // fallback to previous SP DOM version and retrieve type and file from info string
+          const info = row.getAttribute('aria-label') || row.querySelector('span')?.textContent || '';
 
-        if (!type) {
-          type = info.split('.').pop();
-          file = info;
+          // info format: bla.docx, docx File, Private, Modified 8/28/2023, edited by Jane, 1 KB
+          type = info.match(/, ([\p{L}\p{N}]+) [\p{L}\p{N}]+,/u)?.[1];
+          file = type && info.split(`, ${type}`)[0];
+
+          if (!type) {
+            type = info.split('.').pop();
+            file = info;
+          }
         }
+
         return {
           file,
           type,
