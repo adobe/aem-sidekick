@@ -347,6 +347,7 @@ export class JSONView extends LitElement {
    * @returns {TemplateResult} The formatted value
   */
   formatValue(value, url) {
+    const valueContainer = document.createElement('div');
     let dir = 'ltr';
     // Handle regular values
     if (value && !Number.isNaN(+value)) {
@@ -356,61 +357,59 @@ export class JSONView extends LitElement {
         : new Date(Math.round((+value - (1 + 25567 + 1)) * 86400 * 1000)); // excel date
       if (date.toString() !== 'Invalid Date'
         && nearFuture > date.valueOf() && recentPast < date.valueOf()) {
-        return html`<div class="date">${date.toLocaleString()}</div>`;
+        valueContainer.classList.add('date');
+        valueContainer.textContent = date.toLocaleString();
+      } else {
+        // number
+        valueContainer.classList.add('number');
+        valueContainer.textContent = value;
       }
-      // number
-      return html`<div class="number">${value}</div>`;
     } else if (/^\/[a-z0-9]+/i.test(value) || value.startsWith('http')) {
       // check if the value contains a glob pattern
       if (!value.includes('*')) {
         // assume link
+        const link = valueContainer.appendChild(document.createElement('a'));
         const target = new URL(value, url).toString();
+        link.href = target;
+        link.title = value;
+        link.target = '_blank';
         if (value.endsWith('.mp4')) {
           // linked mp4 video
-          return html`
-            <div class="video">
-              <a href=${target} title=${value} target="_blank">
-                <video>
-                    <source src=${target} type="video/mp4">
-                </video>
-              </a>
-            </div>
-          `;
+          valueContainer.classList.add('video');
+          const video = link.appendChild(document.createElement('video'));
+          const source = video.appendChild(document.createElement('source'));
+          source.src = target;
+          source.type = 'video/mp4';
         } else if (value.includes('media_')) {
           // linked image
-          return html`
-            <div class="image">
-              <a href=${target} title=${value} target="_blank">
-                <img src=${target} alt=${value}>
-              </a>
-            </div>
-          `;
+          valueContainer.classList.add('image');
+          const img = link.appendChild(document.createElement('img'));
+          img.src = target;
+        } else {
+          // text link
+          link.textContent = value;
         }
-        // text link
-        return html`
-          <div>
-            <a href=${target} title=${value} target="_blank">${value}</a>
-          </div>
-        `;
+      } else {
+        // Text
+        valueContainer.textContent = value;
       }
-      // Text
-      return html`<div>${value}</div>`;
     } else if (value.startsWith('[') && value.endsWith(']')) {
       // assume array
-      const list = JSON.parse(value);
-      return html`
-        <div class="list">
-          <ul>
-            ${list.map((v) => html`<li>${v}</li>`)}
-            </ul>
-        </div>
-      `;
+      valueContainer.classList.add('list');
+      const list = valueContainer.appendChild(document.createElement('ul'));
+      JSON.parse(value).forEach((v) => {
+        const item = list.appendChild(document.createElement('li'));
+        item.textContent = v;
+      });
+    } else {
+      // text
+      valueContainer.textContent = value;
     }
     // check if the value contains any rtl characters
-    if (/[\u0590-\u06FF]/.test(value)) {
+    if (/[\u0590-\u06FF]/.test(valueContainer.textContent)) {
       dir = 'rtl';
     }
-    return html`<div dir=${dir}>${value}</div>`;
+    return html`<div dir=${dir}>${valueContainer}</div>`;
   }
 
   /**
