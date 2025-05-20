@@ -194,6 +194,9 @@
     "config_project_import_sidekick_not_found": {
       "message": "Legacy sidekick not found. If the extension is installed but currently disabled, please enable it and try again."
     },
+    "config_project_manage": {
+      "message": "Manage projects"
+    },
     "config_project_pick": {
       "message": "Pick a project"
     },
@@ -251,7 +254,7 @@
       "message": "Copy to clipboard failed. Please make sure the window remains focused."
     },
     "dark_mode": {
-      "message": "Dark Mode"
+      "message": "Dark theme"
     },
     "delete": {
       "message": "Delete"
@@ -640,10 +643,10 @@
       "message": "Deleting..."
     },
     "help_documentation": {
-      "message": "Help & Documentation"
+      "message": "Help & documentation"
     },
     "whats_new": {
-      "message": "What's New",
+      "message": "What's new",
       "description": "Onboarding menu title"
     },
     "join_discord": {

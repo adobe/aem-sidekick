@@ -121,6 +121,10 @@ export const spectrum2 = css`
       0px 0px 3px 0px rgba(0, 0, 0, 0.12),
       0px 3px 8px 0px rgba(0, 0, 0, 0.04),
       0px 4px 16px 0px rgba(0, 0, 0, 0.08);
+    --sidekick-foreground-experimental-light: rgb(143, 76, 218);
+    --sidekick-background-experimental-light: rgb(230, 223, 238);
+    --sidekick-foreground-experimental-dark: rgb(163, 108, 226);
+    --sidekick-background-experimental-dark: rgb(45, 4, 92);
 
     /* Radius tokens */
     --spectrum2-small-border-radius: 4px;
@@ -156,6 +160,8 @@ export const spectrum2 = css`
     --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-background-color-hover-dark);
     --spectrum2-sidekick-border-radius: var(--spectrum2-large-border-radius);
     --spectrum2-sidekick-cta-background-color: var(--sidekick-cta-background-color-dark);
+    --spectrum2-sidekick-foreground-experimental: var(--sidekick-foreground-experimental-dark);
+    --spectrum2-sidekick-background-experimental: var(--sidekick-background-experimental-dark);
 
     /**
      * SPECTRUM OVERRIDES
@@ -226,6 +232,8 @@ export const spectrum2 = css`
     --spectrum2-sidekick-border-color: var(--sidekick-border-color-light);
     --spectrum2-sidekick-menu-item-background-color-hover: var(--spectrum2-background-color-hover-light);
     --spectrum2-sidekick-cta-background-color: var(--sidekick-cta-background-color-light);
+    --spectrum2-sidekick-foreground-experimental: var(--sidekick-foreground-experimental-light);
+    --spectrum2-sidekick-background-experimental: var(--sidekick-background-experimental-light);
 
     /**
      * SPECTRUM ALIAS TOKENS
