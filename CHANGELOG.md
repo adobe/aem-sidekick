@@ -1,3 +1,10 @@
+## [7.11.1](https://github.com/adobe/aem-sidekick/compare/v7.11.0...v7.11.1) (2025-05-20)
+
+
+### Bug Fixes
+
+* **bulk:** selection no longer detected in sharepoint ([#575](https://github.com/adobe/aem-sidekick/issues/575)) ([4b9c56e](https://github.com/adobe/aem-sidekick/commit/4b9c56e80d90bc6e648caf99d0298981f2a90585))
+
 # [7.11.0](https://github.com/adobe/aem-sidekick/compare/v7.10.1...v7.11.0) (2025-05-16)
 
 
