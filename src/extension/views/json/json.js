@@ -177,7 +177,6 @@ export class JSONView extends LitElement {
           this.url = url;
           this.originalData = json;
           this.filteredData = json;
-          this.diffData = json;
         } else {
           throw new Error(`failed to load ${url}: ${res.status}`);
         }
@@ -256,6 +255,10 @@ export class JSONView extends LitElement {
       ?? Object.values(this.filteredData || {})[this.selectedTabIndex]?.data.length
       ?? 0;
 
+    const diffFilteredCount = this.diffData?.data?.length
+      ?? Object.values(this.diffData || {})[this.selectedTabIndex]?.data.length
+      ?? 0;
+
     const total = this.originalData?.total
       ?? Object.values(this.originalData || {})[this.selectedTabIndex]?.total
       ?? 0;
@@ -268,7 +271,11 @@ export class JSONView extends LitElement {
           `)}
         </sp-action-group>
         <div class="stats">
-          <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
+          ${this.diffMode ? html`
+            <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', diffFilteredCount).replace('$2', total)}</p>
+          ` : html`
+            <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
+          `}
         </div>
         <sp-action-group selects="single">
           ${this.url.includes('.page') ? html`
@@ -632,7 +639,7 @@ export class JSONView extends LitElement {
    */
   async toggleDiffView() {
     this.diffMode = !this.diffMode;
-    if (this.diffMode && !this.liveDataLoaded && !this.liveData) {
+    if (this.diffMode && !this.liveDataLoaded && !this.liveData && !this.originalDiffData) {
       // Fetch live version
       const liveUrl = this.url.replace('.page', '.live');
       const liveRes = await fetch(liveUrl, { cache: 'no-store' });
@@ -647,11 +654,10 @@ export class JSONView extends LitElement {
         }
       }
       this.liveDataLoaded = true;
-    } else if (this.diffMode && this.liveData) {
+    } else if (this.diffMode && this.liveData && !this.originalDiffData) {
       this.diffData = this.computeDiff(this.originalData, this.liveData);
       this.originalDiffData = this.diffData;
     } else {
-      this.diffData = this.originalData;
       this.filteredData = this.originalData;
     }
   }
@@ -665,6 +671,7 @@ export class JSONView extends LitElement {
     this.showOnlyChanged = checkbox.checked;
     if (this.diffMode && this.liveData) {
       this.diffData = this.computeDiff(this.originalData, this.liveData);
+      this.originalDiffData = this.diffData;
       if (this.filterText) {
         this.onSearch({ target: { value: this.filterText } });
       }
@@ -826,7 +833,6 @@ export class JSONView extends LitElement {
         diff.data = diff.data.filter((row) => row.diff);
       }
     }
-
     return diff;
   }
 
