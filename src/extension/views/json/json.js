@@ -72,6 +72,20 @@ export class JSONView extends LitElement {
   accessor filteredData;
 
   /**
+   * The original diff json data
+   * @type {Object}
+  */
+  @property({ type: Object })
+  accessor originalDiffData;
+
+  /**
+   * The diff json data
+   * @type {Object}
+   */
+  @property({ type: Object })
+  accessor diffData;
+
+  /**
    * The filtered json data
    * @type {string}
    */
@@ -84,6 +98,34 @@ export class JSONView extends LitElement {
    */
   @property({ type: String })
   accessor url;
+
+  /**
+   * The live version of the JSON data
+   * @type {Object}
+   */
+  @property({ type: Object, state: false })
+  accessor liveData;
+
+  /**
+   * The diff view mode
+   * @type {boolean}
+   */
+  @property({ type: Boolean })
+  accessor diffMode = false;
+
+   /**
+   * The flag for live data loaded
+   * @type {boolean}
+   */
+   @property({ type: Boolean })
+   accessor liveDataLoaded = false;
+
+  /**
+   * Show only changed rows in diff view
+   * @type {boolean}
+   */
+  @property({ type: Boolean })
+  accessor showOnlyChanged = false;
 
    /**
    * The selected theme from sidekick
@@ -122,6 +164,7 @@ export class JSONView extends LitElement {
     try {
       const url = new URL(window.location.href).searchParams.get('url');
       if (url) {
+        // Fetch preview version
         const res = await fetch(url, { cache: 'no-store' });
         if (res.ok) {
           let json = {};
@@ -133,6 +176,7 @@ export class JSONView extends LitElement {
           this.url = url;
           this.originalData = json;
           this.filteredData = json;
+          this.diffData = json;
         } else {
           throw new Error(`failed to load ${url}: ${res.status}`);
         }
@@ -150,7 +194,8 @@ export class JSONView extends LitElement {
    * Render the json data
    */
   renderData() {
-    const { filteredData: json, url } = this;
+    const json = this.diffMode ? this.diffData : this.filteredData;
+    const { url } = this;
     if (!json || !url) {
       return '';
     }
@@ -224,6 +269,21 @@ export class JSONView extends LitElement {
         <div class="stats">
           <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
         </div>
+        <sp-action-group selects="single">
+          ${this.url ? html`
+            <sp-action-button @click=${this.toggleDiffView} .selected=${this.diffMode}>
+              ${i18n(this.languageDict, this.diffMode ? 'hide_diff' : 'show_diff')}
+            </sp-action-button>
+            ${this.diffMode ? html`
+              <label class="checkbox-label">
+                <input type="checkbox" 
+                  ?checked=${this.showOnlyChanged} 
+                  @change=${this.toggleShowOnlyChanged}>
+                ${i18n(this.languageDict, 'show_changed')}
+              </label>
+            ` : ''}
+          ` : ''}
+        </sp-action-group>
       </div>
     `;
     elements.push(actions);
@@ -232,11 +292,35 @@ export class JSONView extends LitElement {
       const name = names[this.selectedTabIndex];
       const sheet = sheets[name];
       const { data, columns } = sheet;
-
       elements.push(this.renderTable(data, columns, url));
     }
-
     return elements;
+  }
+
+  /**
+   * Handle the table sorted event
+   */
+  onTableSorted(event) {
+    const { sortDirection, sortKey } = event.detail;
+    const data = this.diffMode
+      ? this.diffData?.data || []
+      : this.filteredData?.data || [];
+    const columns = this.diffMode
+      ? this.diffData?.columns || []
+      : this.filteredData?.columns || [];
+    const sortedData = [...data].sort((a, b) => {
+      const first = String(a[sortKey]);
+      const second = String(b[sortKey]);
+      return sortDirection === 'asc'
+        ? first.localeCompare(second)
+        : second.localeCompare(first);
+    });
+    if (this.diffMode) {
+      this.diffData = { ...this.diffData, data: sortedData, columns };
+    } else {
+      this.filteredData = { ...this.filteredData, data: sortedData, columns };
+    }
+    this.table.items = this.sortColumns(sortedData, columns);
   }
 
   /**
@@ -256,78 +340,150 @@ export class JSONView extends LitElement {
   }
 
   /**
+   * Format the value for the table
+   * @param {string} value The value to format
+   * @param {string} url The url of the json file
+   * @returns {TemplateResult} The formatted value
+  */
+  formatValue(value, url) {
+    let dir = 'ltr';
+    // Handle regular values
+    if (value && !Number.isNaN(+value)) {
+      // check for date
+      const date = +value > 99999
+        ? new Date(+value * 1000)
+        : new Date(Math.round((+value - (1 + 25567 + 1)) * 86400 * 1000)); // excel date
+      if (date.toString() !== 'Invalid Date'
+        && nearFuture > date.valueOf() && recentPast < date.valueOf()) {
+        return html`<div class="date">${date.toLocaleString()}</div>`;
+      }
+      // number
+      return html`<div class="number">${value}</div>`;
+    } else if (/\/^\/[a-z0-9]+/i.test(value) || value.startsWith('http')) {
+      // check if the value contains a glob pattern
+      if (!value.includes('*')) {
+        // assume link
+        const target = new URL(value, url).toString();
+        if (value.endsWith('.mp4')) {
+          // linked mp4 video
+          return html`
+            <div class="video">
+              <a href=${target} title=${value} target="_blank">
+                <video>
+                    <source src=${target} type="video/mp4">
+                  </video>
+                </a>
+              </div>
+            </div>
+          `;
+        } else if (value.includes('media_')) {
+          // linked image
+          return html`
+            <div class="image">
+              <a href=${target} title=${value} target="_blank">
+                <img src=${target} alt=${value}>
+                </a>
+              </div>
+            </div>
+          `;
+        }
+        // text link
+        return html`
+          <div>
+            <a href=${target} title=${value} target="_blank">${value}</a>
+          </div>
+        `;
+      }
+      // Text
+      return html`<div>${value}</div>`;
+    } else if (value.startsWith('[') && value.endsWith(']')) {
+      // assume array
+      const list = JSON.parse(value);
+      return html`
+        <div class="list">
+          <ul>
+            ${list.map((v) => html`<li>${v}</li>`)}
+            </ul>
+        </div>
+      `;
+    }
+    // check if the value contains any rtl characters
+    if (/[\u0590-\u06FF]/.test(value)) {
+      dir = 'rtl';
+    }
+    return html`<div dir=${dir}>${value}</div>`;
+  }
+
+  /**
    * Render the table
    * @param {Object[]} rows The rows to render
    * @param {string[]} headers The header names
    * @param {string} url The url of the json file
-   * @returns {HTMLDivElement} The rendered table
+   * @returns {TemplateResult} The rendered table
    */
   renderTable(rows, headers, url) {
-    const tableContainer = document.createElement('div');
-    tableContainer.classList.add('tableContainer');
-
-    const table = document.createElement('sp-table');
-    table.style.height = '100%';
-    table.setAttribute('scroller', 'true');
-
-    if (rows.length > 0) {
-      const headHTML = headers.reduce((acc, key) => `${acc}<sp-table-head-cell sortable sort-direction="desc" sort-key=${key}>${key.charAt(0).toUpperCase() + key.slice(1)}</sp-table-head-cell>`, '');
-      const head = document.createElement('sp-table-head');
-      head.insertAdjacentHTML('beforeend', headHTML);
-      table.appendChild(head);
-
-      table.items = this.sortColumns(rows, headers);
-      // @ts-ignore
-      table.renderItem = (item) => html`${Object.values(item).map((value) => this.renderValue(value, url))}`;
-
-      table.addEventListener('sorted', (event) => {
-        // @ts-ignore
-        const { sortDirection, sortKey } = event.detail;
-        rows = rows.sort((a, b) => {
-          const first = String(a[sortKey]);
-          const second = String(b[sortKey]);
-          return sortDirection === 'asc'
-            ? first.localeCompare(second)
-            : second.localeCompare(first);
-        });
-        table.items = [...rows];
-      });
-
-      tableContainer.appendChild(table);
-    } else {
-      const noResults = this.filterText ? `
-        <sp-illustrated-message
-            heading="${i18n(this.languageDict, 'no_results')}"
-            description="${i18n(this.languageDict, 'no_results_subheading')}"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="99.039" height="94.342">
-            <g fill="none" strokeLinecap="round" strokeLinejoin="round" >
-              <path d="M93.113 88.415a5.38 5.38 0 0 1-7.61 0L58.862 61.773a1.018 1.018 0 0 1 0-1.44l6.17-6.169a1.018 1.018 0 0 1 1.439 0l26.643 26.643a5.38 5.38 0 0 1 0 7.608z" strokeWidth="2.99955"/>
-              <path strokeWidth="2" d="M59.969 59.838l-3.246-3.246M61.381 51.934l3.246 3.246M64.609 61.619l13.327 13.327" />
-              <path strokeWidth="3" d="M13.311 47.447A28.87 28.87 0 1 0 36.589 1.5c-10.318 0-20.141 5.083-24.7 13.46M2.121 38.734l15.536-15.536M17.657 38.734L2.121 23.198" />
-            </g>
-          </svg>
-        </sp-illustrated-message>
-        ` : `
-        <sp-illustrated-message
-          heading="${i18n(this.languageDict, 'no_data')}"
-          description="${i18n(this.languageDict, 'no_data_subheading')}"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="100.25" height="87.2">
-            <path d="M94.55,87.2H5.85c-3.1,0-5.7-2.5-5.7-5.7V5.7C.15,2.6,2.65,0,5.85,0h88.7c3.1,0,5.7,2.5,5.7,5.7v75.8c0,3.1-2.5,5.7-5.7,5.7ZM5.85.5C2.95.5.65,2.8.65,5.7v75.8c0,2.9,2.3,5.2,5.2,5.2h88.7c2.9,0,5.2-2.3,5.2-5.2V5.7c0-2.9-2.3-5.2-5.2-5.2H5.85Z"/>
-            <rect x=".45" y="15.5" width="99.5" height=".5"/>
-            <rect x=".45" y="33.1" width="99.5" height=".5"/>
-            <rect x=".45" y="51.2" width="99.5" height=".5"/>
-            <rect x=".45" y="69.4" width="99.5" height=".5"/>
-            <rect x="33.33" y="15.1" width=".5" height="71.8"/>
-            <rect x="66.67" y="15.1" width=".5" height="71.8"/>
-          </svg>
-        </sp-illustrated-message>
-        `;
-      tableContainer.innerHTML = noResults;
+    if (rows.length === 0) {
+      return html`
+        <div class="tableContainer">
+          ${this.filterText ? html`
+            <sp-illustrated-message
+              heading="${i18n(this.languageDict, 'no_results')}"
+              description="${i18n(this.languageDict, 'no_results_subheading')}"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="99.039" height="94.342">
+                <g fill="none" strokeLinecap="round" strokeLinejoin="round" >
+                  <path d="M93.113 88.415a5.38 5.38 0 0 1-7.61 0L58.862 61.773a1.018 1.018 0 0 1 0-1.44l6.17-6.169a1.018 1.018 0 0 1 1.439 0l26.643 26.643a5.38 5.38 0 0 1 0 7.608z" strokeWidth="2.99955"/>
+                  <path strokeWidth="2" d="M59.969 59.838l-3.246-3.246M61.381 51.934l3.246 3.246M64.609 61.619l13.327 13.327" />
+                  <path strokeWidth="3" d="M13.311 47.447A28.87 28.87 0 1 0 36.589 1.5c-10.318 0-20.141 5.083-24.7 13.46M2.121 38.734l15.536-15.536M17.657 38.734L2.121 23.198" />
+                </g>
+              </svg>
+            </sp-illustrated-message>
+          ` : html`
+            <sp-illustrated-message
+              heading="${i18n(this.languageDict, 'no_data')}"
+              description="${i18n(this.languageDict, 'no_data_subheading')}"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="100.25" height="87.2">
+                <path d="M94.55,87.2H5.85c-3.1,0-5.7-2.5-5.7-5.7V5.7C.15,2.6,2.65,0,5.85,0h88.7c3.1,0,5.7,2.5,5.7,5.7v75.8c0,3.1-2.5,5.7-5.7,5.7ZM5.85.5C2.95.5.65,2.8.65,5.7v75.8c0,2.9,2.3,5.2,5.2,5.2h88.7c2.9,0,5.2-2.3,5.2-5.2V5.7c0-2.9-2.3-5.2-5.2-5.2H5.85Z"/>
+                <rect x=".45" y="15.5" width="99.5" height=".5"/>
+                <rect x=".45" y="33.1" width="99.5" height=".5"/>
+                <rect x=".45" y="51.2" width="99.5" height=".5"/>
+                <rect x=".45" y="69.4" width="99.5" height=".5"/>
+                <rect x="33.33" y="15.1" width=".5" height="71.8"/>
+                <rect x="66.67" y="15.1" width=".5" height="71.8"/>
+              </svg>
+            </sp-illustrated-message>
+          `}
+        </div>
+      `;
     }
 
-    return tableContainer;
+    return html`
+      <div class="tableContainer">
+        <sp-table scroller="true" style="height: 100%" @sorted=${this.onTableSorted}>
+          <sp-table-head>
+            ${rows.some((r) => r.line) ? html`
+              <sp-table-head-cell sortable sort-direction="desc" sort-key="line" class="line">#</sp-table-head-cell>
+            ` : ''}
+            ${headers.map((header) => html`
+              <sp-table-head-cell sortable sort-direction="desc" sort-key="${header}">
+                ${header.charAt(0).toUpperCase() + header.slice(1)}
+              </sp-table-head-cell>
+            `)}
+          </sp-table-head>
+          <sp-table-body>
+            ${rows.map((row) => html`
+              <sp-table-row class="${row.diff ? `diff-row ${row.diff}` : ''}">
+                ${row.line ? html`<sp-table-cell class="line">${row.line}</sp-table-cell>` : ''}
+                ${Object.entries(row)
+                  .filter(([key]) => key !== 'diff' && key !== 'line')
+                  .map(([_, value]) => this.renderValue(value, url))}
+              </sp-table-row>
+            `)}
+          </sp-table-body>
+        </sp-table>
+      </div>
+    `;
   }
 
   /**
@@ -337,63 +493,26 @@ export class JSONView extends LitElement {
    * @returns {TemplateResult} The rendered value
    */
   renderValue(value, url) {
-    const valueContainer = document.createElement('div');
-    if (value && !Number.isNaN(+value)) {
-      // check for date
-      const date = +value > 99999
-        ? new Date(+value * 1000)
-        : new Date(Math.round((+value - (1 + 25567 + 1)) * 86400 * 1000)); // excel date
-      if (date.toString() !== 'Invalid Date'
-        && nearFuture > date.valueOf() && recentPast < date.valueOf()) {
-        valueContainer.classList.add('date');
-        valueContainer.textContent = date.toLocaleString();
-      } else {
-        // number
-        valueContainer.classList.add('number');
-        valueContainer.textContent = value;
-      }
-    } else if (/\/^\/[a-z0-9]+$\/i/.test(value) || value.startsWith('http')) {
-      // check if the value contains a glob pattern
-      if (!value.includes('*')) {
-        // assume link
-        const link = valueContainer.appendChild(document.createElement('a'));
-        const target = new URL(value, url).toString();
-        link.href = target;
-        link.title = value;
-        link.target = '_blank';
-        if (value.endsWith('.mp4')) {
-          // linked mp4 video
-          valueContainer.classList.add('video');
-          const video = link.appendChild(document.createElement('video'));
-          const source = video.appendChild(document.createElement('source'));
-          source.src = target;
-          source.type = 'video/mp4';
-        } else if (value.includes('media_')) {
-          // linked image
-          valueContainer.classList.add('image');
-          const img = link.appendChild(document.createElement('img'));
-          img.src = target;
-        } else {
-          // text link
-          link.textContent = value;
-        }
-      } else {
-        // Text
-        valueContainer.textContent = value;
-      }
-    } else if (value.startsWith('[') && value.endsWith(']')) {
-      // assume array
-      valueContainer.classList.add('list');
-      const list = valueContainer.appendChild(document.createElement('ul'));
-      JSON.parse(value).forEach((v) => {
-        const item = list.appendChild(document.createElement('li'));
-        item.textContent = v;
-      });
-    } else {
-      // text
-      valueContainer.textContent = value;
+    if (!value) {
+      return html`<sp-table-cell></sp-table-cell>`;
     }
-    return html`<sp-table-cell>${valueContainer}</sp-table-cell>`;
+    const typedValue = /** @type {any} */ (value);
+    // Handle diff values
+    if (this.diffMode && typedValue !== null && typeof typedValue === 'object' && 'diff' in typedValue) {
+      return html`
+        <sp-table-cell>
+          <div class="diff-value ${typedValue.diff}">
+            ${typedValue.preview !== undefined && typedValue.live !== undefined ? html`
+              <div class="preview">${this.formatValue(typedValue.preview, url)}</div>
+              <div class="live">${this.formatValue(typedValue.live, url)}</div>
+            ` : JSON.stringify(typedValue)}
+          </div>
+        </sp-table-cell>
+      `;
+    }
+
+    // Handle regular values
+    return html`<sp-table-cell>${this.formatValue(value, url)}</sp-table-cell>`;
   }
 
   /**
@@ -449,33 +568,37 @@ export class JSONView extends LitElement {
   onSearch(event) {
     this.filterText = event.target.value;
     if (!this.filterText) {
-      this.filteredData = this.originalData;
+      this.diffData = this.originalDiffData;
+      this.filteredData = this.diffMode ? { ...this.diffData } : { ...this.originalData };
     } else {
-      const filteredData = { ...this.originalData };
+      const filteredData = this.diffMode ? { ...this.diffData } : { ...this.originalData };
       const lowerCaseSearchString = this.filterText.toLowerCase();
 
-      if (this.originalData[':type'] === 'multi-sheet') {
-        Object.keys(this.originalData).forEach((sheetName) => {
+      if (filteredData[':type'] === 'multi-sheet') {
+        Object.keys(filteredData).forEach((sheetName) => {
           // Filter the data array in the current sheet
-          if (this.originalData[sheetName] && this.originalData[sheetName].data) {
-            const filteredSheetData = this.originalData[sheetName].data.filter((item) => Object
+          if (filteredData[sheetName] && filteredData[sheetName].data) {
+            const filteredSheetData = filteredData[sheetName].data.filter((item) => Object
               .values(item).some((value) => value.toString().toLowerCase()
                 .includes(lowerCaseSearchString),
               ));
-            const { columns } = this.originalData[sheetName];
+            const { columns } = filteredData[sheetName];
             filteredData[sheetName] = { data: filteredSheetData ?? [], columns };
           }
         });
       } else {
-        const filteredSheetData = this.originalData.data.filter((item) => Object
+        const filteredSheetData = filteredData.data.filter((item) => Object
           .values(item).some((value) => value.toString().toLowerCase()
             .includes(lowerCaseSearchString),
           ));
 
         filteredData.data = filteredSheetData;
       }
-
-      this.filteredData = filteredData;
+      if (this.diffMode) {
+        this.diffData = filteredData;
+      } else {
+        this.filteredData = filteredData;
+      }
     }
     this.debouncedFilterRUM();
   }
@@ -504,6 +627,209 @@ export class JSONView extends LitElement {
         target: 'jsonview:closed',
       });
     }
+  }
+
+  /**
+   * Toggle diff view mode
+   */
+  async toggleDiffView() {
+    this.diffMode = !this.diffMode;
+    if (this.diffMode && !this.liveDataLoaded && !this.liveData) {
+      // Fetch live version
+      const liveUrl = this.url.replace('.page', '.live');
+      const liveRes = await fetch(liveUrl, { cache: 'no-store' });
+      if (liveRes.ok) {
+        try {
+          this.liveData = await liveRes.json();
+          this.diffData = this.computeDiff(this.originalData, this.liveData);
+          this.originalDiffData = this.diffData;
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn(`Could not load live version: ${e}`);
+        }
+      }
+      this.liveDataLoaded = true;
+    } else if (this.diffMode && this.liveData) {
+      this.diffData = this.computeDiff(this.originalData, this.liveData);
+      this.originalDiffData = this.diffData;
+    } else {
+      this.diffData = this.originalData;
+      this.filteredData = this.originalData;
+    }
+  }
+
+  /**
+   * Toggle show only changed rows
+   * @param {Event} event The change event
+   */
+  toggleShowOnlyChanged(event) {
+    const checkbox = /** @type {HTMLInputElement} */ (event.target);
+    this.showOnlyChanged = checkbox.checked;
+    if (this.diffMode && this.liveData) {
+      this.diffData = this.computeDiff(this.originalData, this.liveData);
+      if (this.filterText) {
+        this.onSearch({ target: { value: this.filterText } });
+      }
+    }
+  }
+
+  /**
+   * Helper to create a unique key for a row
+   * @param {Object} row The row
+   * @returns {string} The unique key
+   */
+  getRowKey(row) {
+    const rowKey = Object.entries(row)
+      .filter(([key]) => !key.startsWith(':') && key !== 'diff' && key !== 'line') // Exclude metadata fields
+      .map(([key, value]) => `${key}:${value}`)
+      .join('|');
+    return rowKey.split('|')[0];
+  }
+
+  /**
+   * Compare rows between preview and live versions
+   * @param {Object} preview The preview version
+   * @param {Object} live The live version
+   * @param {Object} diff The diff object
+   */
+  compareRows(preview, live, diff) {
+    if (preview && live) {
+      const { data: previewData, columns } = preview;
+      const { data: liveData } = live;
+
+      if (previewData && liveData) {
+        let diffData = [];
+        let previewIndex = 0;
+        let liveIndex = 0;
+
+        const getKey = (row) => this.getRowKey(row);
+
+        const compareKeys = (row1, row2) => {
+          const key1 = getKey(row1);
+          const key2 = getKey(row2);
+          return key1.localeCompare(key2);
+        };
+
+        while (liveIndex < liveData.length || previewIndex < previewData.length) {
+          const previewRow = previewData[previewIndex];
+          const liveRow = liveData[liveIndex];
+
+          if (!previewRow) {
+            // Only live row exists
+            diffData.push({ ...liveRow, diff: 'removed', line: liveIndex + 1 });
+            liveIndex += 1;
+          } else if (!liveRow) {
+            // Only preview row exists
+            diffData.push({ ...previewRow, diff: 'added', line: previewIndex + 1 });
+            previewIndex += 1;
+          } else {
+            const previewKey = getKey(previewRow);
+            const liveKey = getKey(liveRow);
+
+            if (previewKey === liveKey) {
+              // Same row exists in both - check for modifications
+              let hasChanges = false;
+
+              Object.keys(previewRow).forEach((field) => {
+                if (previewRow[field] !== liveRow[field]) {
+                  hasChanges = true;
+                }
+              });
+
+              if (hasChanges) {
+                diffData.push({ ...previewRow, diff: 'added', line: previewIndex + 1 });
+                diffData.push({ ...liveRow, diff: 'removed', line: liveIndex + 1 });
+              } else {
+                diffData.push({ ...previewRow, line: previewIndex + 1 });
+              }
+
+              previewIndex += 1;
+              liveIndex += 1;
+            } else {
+              // Different rows - determine which one comes first
+              const comparison = compareKeys(previewRow, liveRow);
+              if (comparison < 0) {
+                // Preview row comes first
+                diffData.push({ ...previewRow, diff: 'added', line: previewIndex + 1 });
+                previewIndex += 1;
+              } else {
+                // Live row comes first
+                diffData.push({ ...liveRow, diff: 'removed', line: liveIndex + 1 });
+                liveIndex += 1;
+              }
+            }
+          }
+        }
+
+        const uniqueKeys = new Set();
+        const uniqueData = [];
+        diffData.forEach((row) => {
+          const key = this.getRowKey(row);
+          if (!uniqueKeys.has(key)) {
+            uniqueKeys.add(key);
+            uniqueData.push(row);
+          } else {
+            const existingRow = uniqueData.find((r) => this.getRowKey(r) === key);
+            if (existingRow) {
+              // existingRow.line = `${row.line}  ${existingRow.line} `;
+              existingRow.diff = '';
+            }
+          }
+        });
+        diffData = uniqueData;
+        diff = { data: diffData, columns };
+      }
+    }
+    return diff;
+  }
+
+  /**
+   * Compute diff between preview and live versions
+   * @param {Object} preview The preview version
+   * @param {Object} live The live version
+   * @returns {Object} The diff result
+   */
+  computeDiff(preview, live) {
+    if (!preview || !live) {
+      // eslint-disable-next-line no-console
+      console.warn('Missing preview or live data:', { preview: !!preview, live: !!live });
+      return preview;
+    }
+
+    const diff = { ...preview };
+    if (preview[':type'] === 'multi-sheet' && preview[':names']) {
+      preview[':names'].forEach((name) => {
+        const differences = this.compareRows(
+          preview[name],
+          live[name],
+          diff,
+        );
+        diff[name] = differences;
+      });
+    } else {
+      const differences = this.compareRows(
+        preview,
+        live,
+        diff,
+      );
+      diff.data = differences.data;
+      diff.columns = differences.columns;
+    }
+
+    // Filter to show only changed rows if enabled
+    if (this.showOnlyChanged) {
+      if (diff[':type'] === 'multi-sheet' && diff[':names']) {
+        diff[':names'].forEach((name) => {
+          if (diff[name] && diff[name].data) {
+            diff[name].data = diff[name].data.filter((row) => row.diff);
+          }
+        });
+      } else if (diff.data) {
+        diff.data = diff.data.filter((row) => row.diff);
+      }
+    }
+
+    return diff;
   }
 
   render() {

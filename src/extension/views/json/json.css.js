@@ -30,7 +30,7 @@ export const style = css`
     display: flex;
     align-items: center;
     gap: 10px;
-    height: 64px;
+    min-height: 64px;
     padding-left: 16px;
     padding-right: 16px;
     background-color: var(--spectrum2-sidekick-layer-1);
@@ -134,6 +134,16 @@ export const style = css`
     justify-content: flex-end;
   }
 
+  .actions .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .actions .checkbox-label input {
+    margin: 0;
+  }
+   
   .tableContainer {
     padding-top: 15px;
     width: 100%;
@@ -163,6 +173,7 @@ export const style = css`
 
   sp-table-head {
     overflow-x: scroll;
+    min-height: fit-content;
   }
 
   sp-table-head::-webkit-scrollbar {
@@ -221,10 +232,6 @@ export const style = css`
     background-color: transparent;
   }
 
-  @media (min-width: 600px) {
-
-  }
-
   @media (min-width: 900px) {
     .header .right {
       flex: 1;
@@ -234,5 +241,39 @@ export const style = css`
       justify-content: flex-end;
       min-width: 324px;
     }
+  }
+
+  .line {
+    max-width: 150px;
+  }
+
+  /* Diff row styles */
+  .diff-value {
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
+
+  .diff-row {
+    background-color: var(--spectrum-global-color-gray-100);
+  }
+
+  .diff-row a {
+    color: var(--spectrum-white-color);
+  }
+
+  .diff-row.added {
+    background-color: #aceebb;
+  }
+
+  .diff-row.removed {
+    background-color: #ffcecb;
+  }
+
+  theme-wrapper[theme='dark'] .diff-row.added {
+    background-color: #3fb9504d;
+  }
+
+  theme-wrapper[theme='dark'] .diff-row.removed {
+    background-color: #f851494d;
   }
 `;
