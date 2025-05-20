@@ -580,13 +580,16 @@
       "message": "Showing $1 of $2 results"
     },
     "show_diff": {
-      "message": "Show Changes"
+      "message": "Show Changes",
+      "description": "Show changes between preview and published"
     },
     "hide_diff": {
-      "message": "Hide Changes"
+      "message": "Hide Changes",
+      "description": "Hide changes between preview and published"
     },
     "show_changed": {
-      "message": "Show only changed"
+      "message": "Show only changed",
+      "description": "Show only changed values between preview and published"
     },
     "search": {
       "message": "Search"
