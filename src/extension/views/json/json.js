@@ -372,9 +372,8 @@ export class JSONView extends LitElement {
               <a href=${target} title=${value} target="_blank">
                 <video>
                     <source src=${target} type="video/mp4">
-                  </video>
-                </a>
-              </div>
+                </video>
+              </a>
             </div>
           `;
         } else if (value.includes('media_')) {
@@ -383,8 +382,7 @@ export class JSONView extends LitElement {
             <div class="image">
               <a href=${target} title=${value} target="_blank">
                 <img src=${target} alt=${value}>
-                </a>
-              </div>
+              </a>
             </div>
           `;
         }
