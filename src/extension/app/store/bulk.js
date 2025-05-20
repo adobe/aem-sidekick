@@ -204,7 +204,7 @@ export class BulkStore {
       // extract file name and type
       .map((row) => {
         const file = (row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(2) div[jsname]') // grid layout
-          || row.querySelector(':scope div[role="gridcell"] > div:nth-of-type(2)')) // list layout
+          || row.querySelector(':scope div[role="gridcell"] > div:nth-of-type(2) > div:not([role="button"])')) // list layout
           ?.textContent.trim();
 
         // use path in icon svg to determine type

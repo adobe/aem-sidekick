@@ -123,7 +123,6 @@ export function mockGdriveFile({ path, type }, viewType = 'list') {
   const icon = gdriveIcons[type] || '0000';
   const descriptor = gdriveDescriptors[type];
   const filename = path.split('/').pop();
-
   return viewType === 'list' ? `
     <div class="file" id="file-${type}" role="row" aria-selected="false">
       <div role="gridcell">
@@ -132,7 +131,11 @@ export function mockGdriveFile({ path, type }, viewType = 'list') {
         </div>
         <div>
           <div data-tooltip="${descriptor}: ${filename}" aria-label="${filename} Shared ${descriptor}">${filename}</div>
+          <div role="button" tabindex="-1" data-tooltip-delay="0" data-tooltip="Catch me up" aria-label="Catch me up">
+            <span class="cS0c5e">Catch me up</span>
+          </div>
         </div>
+     </div>
       </div>
     </div>` : `
     <div class="file" id="file-${type}" role="row" aria-selected="false">
@@ -146,6 +149,9 @@ export function mockGdriveFile({ path, type }, viewType = 'list') {
             <div></div>
             <div>
               <div jsname="wuLfrd">${filename}</div>
+              <div role="button" tabindex="-1" data-tooltip-delay="0" data-tooltip="Catch me up" aria-label="Catch me up">
+                <span class="cS0c5e">Catch me up</span>
+              </div>
             </div>
         </div>
       </div>
