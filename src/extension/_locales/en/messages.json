@@ -579,6 +579,15 @@
     "json_results_stat": {
       "message": "Showing $1 of $2 results"
     },
+    "show_diff": {
+      "message": "Show Changes"
+    },
+    "hide_diff": {
+      "message": "Hide Changes"
+    },
+    "show_changed": {
+      "message": "Show only changed"
+    },
     "search": {
       "message": "Search"
     },
