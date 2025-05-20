@@ -28,6 +28,7 @@ import '@spectrum-web-components/table/sp-table-row.js';
 import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-close.js';
+import '@spectrum-web-components/switch/sp-switch.js';
 import '../../app/components/theme/theme.js';
 import '../../app/components/search/search.js';
 import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';
@@ -271,9 +272,9 @@ export class JSONView extends LitElement {
         </div>
         <sp-action-group selects="single">
           ${this.url.includes('.page') ? html`
-            <sp-action-button @click=${this.toggleDiffView} .selected=${this.diffMode}>
-              ${i18n(this.languageDict, this.diffMode ? 'hide_diff' : 'show_diff')}
-            </sp-action-button>
+            <sp-switch @change=${this.toggleDiffView} ?checked=${this.diffMode}>
+                ${i18n(this.languageDict, this.diffMode ? 'hide_diff' : 'show_diff')}
+            </sp-switch>
             ${this.diffMode ? html`
               <label class="checkbox-label">
                 <input type="checkbox" 
