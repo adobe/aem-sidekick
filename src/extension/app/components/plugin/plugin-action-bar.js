@@ -21,6 +21,7 @@ import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
 import '../action-bar/activity-action/activity-action.js';
 import '../bulk/bulk-info/bulk-info.js';
+import { getConfig } from '../../../config.js';
 
 /**
  * @typedef {import('../plugin/plugin.js').Plugin} Plugin
@@ -84,6 +85,12 @@ export class PluginActionBar extends ConnectedElement {
    */
   actionBarWidth = 0;
 
+  /**
+   * The configured projects
+   * @type {Array}
+   */
+  projects = [];
+
   @queryAsync('action-bar')
   accessor actionBar;
 
@@ -127,6 +134,9 @@ export class PluginActionBar extends ConnectedElement {
 
   async connectedCallback() {
     super.connectedCallback();
+
+    // Get configured projects
+    this.projects = await getConfig('sync', 'projects') || [];
 
     reaction(
       () => this.appStore.state,
@@ -431,7 +441,6 @@ export class PluginActionBar extends ConnectedElement {
 
   async handleItemSelection(event) {
     const { value } = event.target;
-
     const menu = await this.sidekickMenu;
     menu.removeAttribute('open');
 
@@ -444,6 +453,9 @@ export class PluginActionBar extends ConnectedElement {
     } else if (value === 'project-added' || value === 'project-removed') {
       this.appStore.sampleRUM('click', { source: 'sidekick', target: value });
       chrome.runtime.sendMessage({ action: 'addRemoveProject' });
+    } else if (value === 'project-admin-opened') {
+      this.appStore.sampleRUM('click', { source: 'sidekick', target: 'project-admin-opened' });
+      chrome.runtime.sendMessage({ action: 'manageProjects' });
     }
   }
 
@@ -483,6 +495,19 @@ export class PluginActionBar extends ConnectedElement {
             </sk-menu-item>
           `
       }
+        ${this.projects.length > 0
+        ? html`
+          <sk-menu-item class="icon-item" value="project-admin-opened" @click=${this.handleItemSelection}>
+            <sp-icon slot="icon" size="m">
+              ${ICONS.GEAR_ICON}
+            </sp-icon>
+            ${this.appStore.i18n('config_project_manage')}
+            <sp-icon class="experimental">
+              ${ICONS.VIAL_ICON}
+            </sp-icon>
+          </sk-menu-item>
+        ` : ''
+        }
         <sk-menu-item class="icon-item" value="help-opened"  @click=${this.handleItemSelection}>
           <sp-icon slot="icon" size="m">
             ${ICONS.HELP_ICON}
