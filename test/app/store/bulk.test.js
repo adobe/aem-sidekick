@@ -363,7 +363,7 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => startJobStub.calledWith('preview', [
           '/foo/document',
           '/foo/spreadsheet.json',
-          '/foo/other',
+          '/foo/other.unknown',
         ]));
         await waitUntil(() => getJobStub.calledWith('preview', '123'), null, { timeout: 2000 });
         expect(bulkStore.progress.processed).to.equal(1);
