@@ -338,6 +338,7 @@ export class JSONView extends LitElement {
    */
   renderValue(value, url) {
     const valueContainer = document.createElement('div');
+    let dir = 'ltr';
     if (value && !Number.isNaN(+value)) {
       // check for date
       const date = +value > 99999
@@ -352,7 +353,7 @@ export class JSONView extends LitElement {
         valueContainer.classList.add('number');
         valueContainer.textContent = value;
       }
-    } else if (/\/^\/[a-z0-9]+$\/i/.test(value) || value.startsWith('http')) {
+    } else if (/^\/[a-z0-9]+/i.test(value) || value.startsWith('http')) {
       // check if the value contains a glob pattern
       if (!value.includes('*')) {
         // assume link
@@ -393,7 +394,11 @@ export class JSONView extends LitElement {
       // text
       valueContainer.textContent = value;
     }
-    return html`<sp-table-cell>${valueContainer}</sp-table-cell>`;
+    // check if the value contains any rtl characters
+    if (/[\u0590-\u06FF]/.test(valueContainer.textContent)) {
+      dir = 'rtl';
+    }
+    return html`<sp-table-cell dir=${dir}>${valueContainer}</sp-table-cell>`;
   }
 
   /**

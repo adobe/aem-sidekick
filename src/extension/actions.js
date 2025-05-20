@@ -384,6 +384,18 @@ async function importProjects(tab) {
 }
 
 /**
+ * Opens the project admin tab.
+ * @param {chrome.tabs.Tab} tab The tab
+ */
+async function manageProjects(tab) {
+  await chrome.tabs.create({
+    url: 'https://labs.aem.live/tools/project-admin/index.html',
+    openerTabId: tab.id,
+    windowId: tab.windowId,
+  });
+}
+
+/**
  * Opens the view document source popup.
  * @param {chrome.tabs.Tab} tab The tab
  */
@@ -520,6 +532,7 @@ async function updateProject(_, { config }) {
 export const internalActions = {
   addRemoveProject,
   enableDisableProject,
+  manageProjects,
   openViewDocSource,
   importProjects,
   getProfilePicture,

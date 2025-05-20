@@ -459,7 +459,7 @@
     "message": "Dernière publication : $1"
   },
   "live_last_updated_by": {
-    "message": "Dernière publication de $1 par $2"
+    "message": "Dernière publication : $1 par $2"
   },
   "live_never_updated": {
     "message": "Jamais publié"
@@ -549,7 +549,7 @@
     "message": "Dernière mise à jour : $1"
   },
   "preview_last_updated_by": {
-    "message": "Dernière mise à jour le $1 par $2"
+    "message": "Dernière mise à jour : $1 par $2"
   },
   "preview_never_updated": {
     "message": "Jamais prévisualisé"
@@ -570,7 +570,7 @@
     "message": "Dernière publication : $1"
   },
   "prod_last_updated_by": {
-    "message": "Dernière publication de $1 par $2"
+    "message": "Dernière publication : $1 par $2"
   },
   "prod_never_updated": {
     "message": "Jamais publié"
@@ -597,7 +597,7 @@
     "message": "Publication..."
   },
   "review": {
-    "message": "Consulter"
+    "message": "Révision"
   },
   "review_last_updated": {
     "message": "Dernière mise à jour : $1"
@@ -621,7 +621,7 @@
     "message": "Connectez-vous pour continuer."
   },
   "site_protected": {
-    "message": "Ce site est protégé."
+    "message": "Site protégé"
   },
   "site_relogin_required": {
     "message": "Accès arrivé à expiration. Reconnectez-vous pour continuer."
