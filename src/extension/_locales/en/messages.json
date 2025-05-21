@@ -581,15 +581,11 @@
     },
     "show_diff": {
       "message": "Show Changes",
-      "description": "Show changes between preview and published"
-    },
-    "hide_diff": {
-      "message": "Hide Changes",
-      "description": "Hide changes between preview and published"
+      "description": "See what's changed between preview and published"
     },
     "show_changed": {
       "message": "Show only changed",
-      "description": "Show only changed values between preview and published"
+      "description": "See only rows that have changed between preview and published"
     },
     "search": {
       "message": "Search"

@@ -288,7 +288,7 @@ export class JSONView extends LitElement {
               </label>
             ` : ''}
             <sp-switch @change=${this.toggleDiffView} ?checked=${this.diffMode}>
-                ${i18n(this.languageDict, this.diffMode ? 'hide_diff' : 'show_diff')}
+                ${i18n(this.languageDict, 'show_diff')}
             </sp-switch>
           ` : ''}
         </sp-action-group>
