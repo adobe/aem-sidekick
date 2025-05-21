@@ -172,8 +172,11 @@ export const style = css`
     --mod-textfield-background-color: #ffffff;
   }
 
-  sp-table-head {
+  sp-table {
     overflow-x: scroll;
+  }
+
+  sp-table-head {
     min-height: fit-content;
   }
 
