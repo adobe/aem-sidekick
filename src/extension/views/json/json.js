@@ -688,7 +688,7 @@ export class JSONView extends LitElement {
       .filter(([key]) => !key.startsWith(':') && key !== 'diff' && key !== 'line') // Exclude metadata fields
       .map(([key, value]) => `${key}:${value}`)
       .join('|');
-    return rowKey.split('|')[0];
+    return rowKey;
   }
 
   /**
@@ -703,85 +703,55 @@ export class JSONView extends LitElement {
       const { data: liveData } = live;
 
       if (previewData && liveData) {
-        let diffData = [];
-        let previewIndex = 0;
-        let liveIndex = 0;
-
-        const getKey = (row) => this.getRowKey(row);
-
-        const compareKeys = (row1, row2) => {
-          const key1 = getKey(row1);
-          const key2 = getKey(row2);
-          return key1.localeCompare(key2);
-        };
-
-        while (liveIndex < liveData.length || previewIndex < previewData.length) {
-          const previewRow = previewData[previewIndex];
-          const liveRow = liveData[liveIndex];
-
-          if (!previewRow) {
-            // Only live row exists
-            diffData.push({ ...liveRow, diff: 'removed', line: liveIndex + 1 });
-            liveIndex += 1;
-          } else if (!liveRow) {
-            // Only preview row exists
-            diffData.push({ ...previewRow, diff: 'added', line: previewIndex + 1 });
-            previewIndex += 1;
-          } else {
-            const previewKey = getKey(previewRow);
-            const liveKey = getKey(liveRow);
-
-            if (previewKey === liveKey) {
-              // Same row exists in both - check for modifications
-              let hasChanges = false;
-
-              Object.keys(previewRow).forEach((field) => {
-                if (previewRow[field] !== liveRow[field]) {
-                  hasChanges = true;
-                }
-              });
-
-              if (hasChanges) {
-                diffData.push({ ...previewRow, diff: 'added', line: previewIndex + 1 });
-                diffData.push({ ...liveRow, diff: 'removed', line: liveIndex + 1 });
-              } else {
-                diffData.push({ ...previewRow, line: previewIndex + 1 });
-              }
-
-              previewIndex += 1;
-              liveIndex += 1;
-            } else {
-              // Different rows - determine which one comes first
-              const comparison = compareKeys(previewRow, liveRow);
-              if (comparison < 0) {
-                // Preview row comes first
-                diffData.push({ ...previewRow, diff: 'added', line: previewIndex + 1 });
-                previewIndex += 1;
-              } else {
-                // Live row comes first
-                diffData.push({ ...liveRow, diff: 'removed', line: liveIndex + 1 });
-                liveIndex += 1;
-              }
-            }
-          }
-        }
-
-        const uniqueKeys = new Set();
-        const uniqueData = [];
-        diffData.forEach((row) => {
+        const previewMap = new Map();
+        const liveMap = new Map();
+        previewData.forEach((row, index) => {
           const key = this.getRowKey(row);
-          if (!uniqueKeys.has(key)) {
-            uniqueKeys.add(key);
-            uniqueData.push(row);
+          previewMap.set(key, { row, index });
+        });
+        liveData.forEach((row, index) => {
+          const key = this.getRowKey(row);
+          liveMap.set(key, { row, index });
+        });
+
+        const allKeys = new Set([...previewMap.keys(), ...liveMap.keys()]);
+        // build diff data
+        const diffData = [];
+        [...allKeys].sort().forEach((key) => {
+          const previewItem = previewMap.get(key);
+          const liveItem = liveMap.get(key);
+
+          if (!previewItem) {
+            // Only in live
+            diffData.push({ ...liveItem.row, diff: 'removed', line: liveItem.index + 1 });
+          } else if (!liveItem) {
+            // Only in preview
+            diffData.push({ ...previewItem.row, diff: 'added', line: previewItem.index + 1 });
           } else {
-            const existingRow = uniqueData.find((r) => this.getRowKey(r) === key);
-            if (existingRow) {
-              // existingRow.line = `${row.line}  ${existingRow.line} `;
-              existingRow.diff = '';
+            // In both - check for modifications
+            const hasChanges = Object.keys(previewItem.row).some(
+              (field) => {
+                if (field !== 'diff' && field !== 'line' && !field.startsWith(':')) {
+                  return previewItem.row[field] !== liveItem.row[field];
+                }
+                return false;
+              },
+            );
+
+            if (hasChanges) {
+              diffData.push({ ...liveItem.row, diff: 'removed', line: liveItem.index + 1 });
+              diffData.push({ ...previewItem.row, diff: 'added', line: previewItem.index + 1 });
+            } else {
+              diffData.push({ ...previewItem.row, line: previewItem.index + 1 });
             }
           }
         });
-        diffData = uniqueData;
+        diffData.sort((a, b) => {
+          if (a.line - b.line === 0) {
+            return a.diff.localeCompare(b.diff);
+          }
+          return a.line - b.line;
+        });
         diff = { data: diffData, columns };
       }
     }
