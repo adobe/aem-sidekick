@@ -284,7 +284,7 @@ export class JSONView extends LitElement {
                 <input type="checkbox" 
                   ?checked=${this.showOnlyChanged} 
                   @change=${this.toggleShowOnlyChanged}>
-                ${i18n(this.languageDict, 'show_changed')}
+                ${i18n(this.languageDict, 'show_only_changed')}
               </label>
             ` : ''}
             <sp-switch @change=${this.toggleDiffView} ?checked=${this.diffMode}>

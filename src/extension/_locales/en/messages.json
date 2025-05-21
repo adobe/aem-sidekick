@@ -580,12 +580,12 @@
       "message": "Showing $1 of $2 results"
     },
     "show_diff": {
-      "message": "Show Changes",
-      "description": "See what's changed between preview and published"
+      "message": "Show changes",
+      "description": "See what's changed between preview and live"
     },
-    "show_changed": {
-      "message": "Show only changed",
-      "description": "See only rows that have changed between preview and published"
+    "show_only_changed": {
+      "message": "Changed rows only",
+      "description": "See only changed rows between preview and live"
     },
     "search": {
       "message": "Search"
