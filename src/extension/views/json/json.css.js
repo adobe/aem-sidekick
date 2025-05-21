@@ -144,6 +144,10 @@ export const style = css`
   .actions .checkbox-label input {
     margin: 0;
   }
+
+  .actions sp-switch {
+    padding: 0 10px;
+  }
    
   .tableContainer {
     padding-top: 15px;
