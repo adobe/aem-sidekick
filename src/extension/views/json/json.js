@@ -194,7 +194,7 @@ export class JSONView extends LitElement {
    * Render the json data
    */
   renderData() {
-    const json = this.diffMode ? this.diffData : this.filteredData;
+    const json = this.diffMode && this.diffData ? this.diffData : this.filteredData;
     const { url } = this;
     if (!json || !url) {
       return '';
