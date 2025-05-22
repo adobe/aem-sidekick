@@ -24,6 +24,7 @@ export const style = css`
     color: var(--spectrum2-sidekick-color);
     box-sizing: border-box;
     margin-bottom: 40px;
+    overflow: hidden;
   }
 
   .header {
@@ -153,6 +154,7 @@ export const style = css`
     padding-top: 15px;
     width: 100%;
     height: 100%;
+    overflow: auto;
   }
 
   .tableContainer .tableHeader {
