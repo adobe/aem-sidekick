@@ -177,7 +177,7 @@ export const style = css`
   }
 
   sp-table {
-    overflow-x: scroll;
+    overflow: scroll;
   }
 
   sp-table-head {
