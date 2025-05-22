@@ -189,7 +189,7 @@ export const style = css`
   }
 
   sp-table-head-cell {
-    min-width: 50px;
+    min-width: 150px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -198,7 +198,11 @@ export const style = css`
   sp-table-cell {
     background-color: transparent;
     word-break: break-word;
-    min-width: 50px;
+    min-width: 150px;
+  }
+
+  .line {
+    min-width: 60px;
   }
 
   sp-table-cell a {
@@ -249,10 +253,6 @@ export const style = css`
       justify-content: flex-end;
       min-width: 324px;
     }
-  }
-
-  .line {
-    max-width: 60px;
   }
 
   /* Diff row styles */
