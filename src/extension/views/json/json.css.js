@@ -205,6 +205,7 @@ export const style = css`
 
   .line {
     min-width: 60px;
+    max-width: 60px;
   }
 
   sp-table-cell a {
