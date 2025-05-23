@@ -340,16 +340,9 @@ export class PluginActionBar extends ConnectedElement {
     return plugin.isContainer()
       ? html`<sp-menu-group id="plugin-group-${plugin.id}" selects="single">
           <span slot="header">${plugin.getButtonText()}</span>
-          ${Object.values(plugin.children).map((p) => p.render())}
+          ${Object.values(plugin.children).map((p) => p.renderMenuItem())}
         </sp-menu-group>`
-      : html`<sk-menu-item
-          class="${plugin.id}"
-          id="plugin-${plugin.id}"
-          @click=${(evt) => plugin.onButtonClick(evt)}
-          tabindex="0"
-          .disabled=${!plugin.isEnabled()}>
-          ${plugin.getButtonText()}
-        </sk-menu-item>`;
+      : html`${plugin.renderMenuItem()}`;
   }
 
   /**

@@ -211,6 +211,58 @@ export class Plugin {
   }
 
   /**
+   * Renders the plugin with a popover.
+   * @param {TemplateResult} template The plugin template to wrap
+   * @param {string} [placement] The placement of the popover (default: 'top')
+   * @returns {TemplateResult} The rendered popover
+   */
+  #renderWithPopover(template, placement = 'top') {
+    const {
+      url, popoverRect, title, titleI18n,
+    } = this.config;
+
+    const popoverTitle = titleI18n?.[this.appStore.siteStore.lang] || title;
+
+    let filteredPopoverRect = popoverRect;
+    if (popoverRect) {
+      filteredPopoverRect = `${popoverRect
+        .split(';')
+        .map((s) => s.trim())
+        .filter((s) => s.startsWith('width:') || s.startsWith('height:'))
+        .join('; ')};`;
+    }
+
+    return html`
+      <overlay-trigger receivesFocus="true" offset="-3">
+        ${template}
+        <sp-popover slot="click-content" placement="${placement}" tip style=${ifDefined(filteredPopoverRect)}>
+          <div class="content">
+            <iframe title=${popoverTitle || 'Popover content'} src=${url}></iframe>
+          </div>
+        </sp-popover>
+      </overlay-trigger>
+    `;
+  }
+
+  /**
+   * Renders the plugin as a menu item.
+   * @returns {string|TemplateResult} The rendered plugin
+   */
+  renderMenuItem() {
+    const menuItem = html`
+      <sk-menu-item
+        .disabled=${!this.isEnabled()}
+        value=${this.getId()}
+        class=${this.getId()}
+        tabindex="0"
+        slot=${this.isPopover() ? 'trigger' : ''}
+        @click=${this.isPopover() ? undefined : (evt) => this.onButtonClick(evt)}
+      >${this.getButtonText()}</sk-menu-item>
+    `;
+    return this.isPopover() ? this.#renderWithPopover(menuItem, 'left') : menuItem;
+  }
+
+  /**
    * Returns the rendered plugin.
    * @returns {string|TemplateResult} The rendered plugin
    */
@@ -256,69 +308,19 @@ export class Plugin {
           return '';
         }
       } else if (this.isChild()) {
-        return html`
-          <sk-menu-item
-            .disabled=${!this.isEnabled()}
-            value=${this.getId()}
-            class=${this.getId()}
-            @click=${(evt) => this.onButtonClick(evt)}
-          >${this.getButtonText()}</sk-menu-item>
-        `;
+        return this.renderMenuItem();
       }
 
-      if (this.isPopover() && this.config.url) {
-        const { siteStore } = this.appStore;
-        const {
-          url, popoverRect, title, titleI18n,
-          passConfig, passReferrer,
-        } = this.config;
-
-        const popoverTitle = titleI18n?.[this.appStore.siteStore.lang] || title;
-        const src = new URL(url);
-        src.searchParams.set('theme', this.appStore.theme);
-
-        if (passConfig) {
-          src.searchParams.append('ref', siteStore.ref);
-          src.searchParams.append('repo', siteStore.repo);
-          src.searchParams.append('owner', siteStore.owner);
-          if (siteStore.host) src.searchParams.append('host', siteStore.host);
-          if (siteStore.reviewHost) src.searchParams.append('reviewHost', siteStore.reviewHost);
-          if (siteStore.project) src.searchParams.append('project', siteStore.project);
-        }
-        if (passReferrer) {
-          src.searchParams.append('referrer', this.appStore.location.href);
-        }
-
-        let filteredPopoverRect = popoverRect;
-        if (popoverRect) {
-          filteredPopoverRect = `${popoverRect
-            .split(';')
-            .map((s) => s.trim())
-            .filter((s) => s.startsWith('width:') || s.startsWith('height:'))
-            .join('; ')};`;
-        }
-
-        return html`
-          <overlay-trigger receivesFocus="true" offset="-3">
-            <sp-action-button quiet slot="trigger">${this.getButtonText()}</sp-action-button>
-            <sp-popover slot="click-content" placement="top" tip style=${ifDefined(filteredPopoverRect)}>
-              <div class="content">
-                <iframe title=${popoverTitle || 'Popover content'} src=${src}></iframe>
-              </div>
-            </sp-popover>
-          </overlay-trigger>`;
-      }
-
-      return html`
+      const actionButton = html`
         <sp-action-button
           class=${this.getId()}
           .disabled=${!this.isEnabled()}
           quiet
-          @click=${(evt) => this.onButtonClick(evt)}
-        >
-          ${this.getButtonText()}
-        </sp-action-button>
+          slot=${this.isPopover() ? 'trigger' : ''}
+          @click=${this.isPopover() ? undefined : (evt) => this.onButtonClick(evt)}
+        >${this.getButtonText()}</sp-action-button>
       `;
+      return this.isPopover() ? this.#renderWithPopover(actionButton) : actionButton;
     }
 
     return '';

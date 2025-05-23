@@ -74,7 +74,7 @@
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
- * @prop {Plugin[]} [plugins] An array of {@link Plugin|plugin configurations}
+ * @prop {SitePlugin[]} [plugins] An array of {@link SitePlugin|plugin configurations}
  * @prop {ViewConfig[]} [specialViews] An array of custom {@link ViewConfig|view configurations}
  * @description The configuration file from the project's respository (`config.json`).
  * @link https://github.com/adobe/helix-sidekick-extension/blob/main/docs/config.schema.json
