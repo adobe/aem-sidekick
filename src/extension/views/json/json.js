@@ -651,6 +651,11 @@ export class JSONView extends LitElement {
           // eslint-disable-next-line no-console
           console.warn(`Could not load live version: ${e}`);
         }
+      } else if (liveRes.status === 404) {
+        // If live version doesn't exist yet, treat it as empty
+        this.liveData = { data: [], columns: this.originalData.columns };
+        this.diffData = this.computeDiff(this.originalData, this.liveData);
+        this.originalDiffData = this.diffData;
       }
       this.liveDataLoaded = true;
     } else if (this.diffMode && this.liveData && !this.originalDiffData) {
