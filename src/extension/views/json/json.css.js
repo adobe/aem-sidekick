@@ -24,13 +24,14 @@ export const style = css`
     color: var(--spectrum2-sidekick-color);
     box-sizing: border-box;
     margin-bottom: 40px;
+    overflow: hidden;
   }
 
   .header {
     display: flex;
     align-items: center;
     gap: 10px;
-    height: 64px;
+    min-height: 64px;
     padding-left: 16px;
     padding-right: 16px;
     background-color: var(--spectrum2-sidekick-layer-1);
@@ -134,10 +135,26 @@ export const style = css`
     justify-content: flex-end;
   }
 
+  .actions .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 10px;
+  }
+
+  .actions .checkbox-label input {
+    margin: 0;
+  }
+
+  .actions sp-switch {
+    padding: 0 10px;
+  }
+   
   .tableContainer {
     padding-top: 15px;
     width: 100%;
     height: 100%;
+    overflow: auto;
   }
 
   .tableContainer .tableHeader {
@@ -161,8 +178,12 @@ export const style = css`
     --mod-textfield-background-color: #ffffff;
   }
 
+  sp-table {
+    overflow: scroll;
+  }
+
   sp-table-head {
-    overflow-x: scroll;
+    min-height: fit-content;
   }
 
   sp-table-head::-webkit-scrollbar {
@@ -180,6 +201,10 @@ export const style = css`
     background-color: transparent;
     word-break: break-word;
     min-width: 150px;
+  }
+
+  .line {
+    min-width: 60px;
   }
 
   sp-table-cell a {
@@ -221,10 +246,6 @@ export const style = css`
     background-color: transparent;
   }
 
-  @media (min-width: 600px) {
-
-  }
-
   @media (min-width: 900px) {
     .header .right {
       flex: 1;
@@ -234,5 +255,35 @@ export const style = css`
       justify-content: flex-end;
       min-width: 324px;
     }
+  }
+
+  /* Diff row styles */
+  .diff-value {
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
+
+  .diff-row {
+    background-color: var(--spectrum-global-color-gray-100);
+  }
+
+  .diff-row a {
+    color: var(--spectrum-white-color);
+  }
+
+  .diff-row.added {
+    background-color: #aceebb;
+  }
+
+  .diff-row.removed {
+    background-color: #ffcecb;
+  }
+
+  theme-wrapper[theme='dark'] .diff-row.added {
+    background-color: #3fb9504d;
+  }
+
+  theme-wrapper[theme='dark'] .diff-row.removed {
+    background-color: #f851494d;
   }
 `;
