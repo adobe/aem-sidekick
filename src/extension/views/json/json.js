@@ -747,7 +747,14 @@ export class JSONView extends LitElement {
         });
         diffData.sort((a, b) => {
           if (a.line - b.line === 0) {
-            return a.diff.localeCompare(b.diff);
+            if (a.diff && b.diff) {
+              return a.diff.localeCompare(b.diff);
+            } else if (a.diff) {
+              return 1;
+            } else if (b.diff) {
+              return -1;
+            }
+            return 0;
           }
           return a.line - b.line;
         });
