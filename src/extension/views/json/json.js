@@ -121,12 +121,12 @@ export class JSONView extends LitElement {
    @property({ type: Boolean })
    accessor liveDataLoaded = false;
 
-  /**
-   * Show only changed rows in diff view
-   * @type {boolean}
-   */
-  @property({ type: Boolean })
-  accessor showOnlyChanged = false;
+    /**
+     * Show all rows in diff view
+     * @type {boolean}
+     */
+    @property({ type: Boolean })
+    accessor showAll = false;
 
    /**
    * The selected theme from sidekick
@@ -281,9 +281,9 @@ export class JSONView extends LitElement {
             ${this.diffMode ? html`
               <label class="checkbox-label">
                 <input type="checkbox" 
-                  ?checked=${this.showOnlyChanged} 
-                  @change=${this.toggleShowOnlyChanged}>
-                ${i18n(this.languageDict, 'show_only_changed')}
+                  ?checked=${this.showAll} 
+                  @change=${this.toggleShowAll}>
+                ${i18n(this.languageDict, 'show_all')}
               </label>
             ` : ''}
             <sp-switch @change=${this.toggleDiffView} ?checked=${this.diffMode}>
@@ -662,12 +662,12 @@ export class JSONView extends LitElement {
   }
 
   /**
-   * Toggle show only changed rows
+   * Toggle show all rows
    * @param {Event} event The change event
    */
-  toggleShowOnlyChanged(event) {
+  toggleShowAll(event) {
     const checkbox = /** @type {HTMLInputElement} */ (event.target);
-    this.showOnlyChanged = checkbox.checked;
+    this.showAll = checkbox.checked;
     if (this.diffMode && this.liveData) {
       this.diffData = this.computeDiff(this.originalData, this.liveData);
       this.originalDiffData = this.diffData;
@@ -797,8 +797,8 @@ export class JSONView extends LitElement {
       diff.columns = differences.columns;
     }
 
-    // Filter to show only changed rows if enabled
-    if (this.showOnlyChanged) {
+    // Filter to show only changed rows if showAll is false
+    if (!this.showAll) {
       if (diff[':type'] === 'multi-sheet' && diff[':names']) {
         diff[':names'].forEach((name) => {
           if (diff[name] && diff[name].data) {

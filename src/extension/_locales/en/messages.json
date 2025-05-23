@@ -583,9 +583,9 @@
       "message": "Show changes",
       "description": "See what's changed between preview and live"
     },
-    "show_only_changed": {
-      "message": "Changed rows only",
-      "description": "See only changed rows between preview and live"
+    "show_all": {
+      "message": "Show all",
+      "description": "Show all rows including unchanged ones"
     },
     "search": {
       "message": "Search"
