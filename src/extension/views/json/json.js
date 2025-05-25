@@ -44,6 +44,9 @@ import { getConfig } from '../../config.js';
 
 const nearFuture = new Date().setUTCFullYear(new Date().getUTCFullYear() + 20);
 const recentPast = new Date().setUTCFullYear(new Date().getUTCFullYear() - 20);
+const LOW_BATCH_SIZE = 5000;
+const HIGH_BATCH_SIZE = 10000;
+const DEFAULT_BATCH_SIZE = 1000;
 
 @customElement('json-view')
 export class JSONView extends LitElement {
@@ -633,30 +636,78 @@ export class JSONView extends LitElement {
   }
 
   /**
+   * Fetch all items from the JSON endpoint
+   * @param {string} url The base URL
+   * @param {number} total Total number of items
+   * @returns {Promise<Object>} The complete JSON data
+   */
+  async fetchAllItems(url, total, isLive = false) {
+    if (total <= DEFAULT_BATCH_SIZE) {
+      return isLive ? this.liveData : this.originalData;
+    }
+    const batchSize = total > HIGH_BATCH_SIZE ? HIGH_BATCH_SIZE : LOW_BATCH_SIZE;
+    const allData = isLive ? { ...this.liveData } : { ...this.originalData };
+    const batches = Math.ceil((total - DEFAULT_BATCH_SIZE) / batchSize);
+    const batchRequests = Array.from({ length: batches }, (_, i) => {
+      const offset = DEFAULT_BATCH_SIZE + (i * batchSize);
+      const limit = Math.min(batchSize, total - offset);
+      const batchUrl = new URL(url);
+      batchUrl.searchParams.set('offset', offset.toString());
+      batchUrl.searchParams.set('limit', limit.toString());
+      return fetch(batchUrl.toString());
+    });
+    const responses = await Promise.all(batchRequests);
+    const batchDataPromises = responses.map(async (res, i) => {
+      if (!res.ok) {
+        const offset = DEFAULT_BATCH_SIZE + (i * batchSize);
+        throw new Error(`Failed to fetch batch at offset ${offset}: ${res.status}`);
+      }
+      return res.json();
+    });
+    const batchDataResults = await Promise.all(batchDataPromises);
+    batchDataResults.forEach((batchData) => {
+      if (batchData.data) {
+        allData.data = [...allData.data, ...batchData.data];
+      }
+    });
+    return allData;
+  }
+
+  /**
    * Toggle diff view mode
    */
   async toggleDiffView() {
     this.diffMode = !this.diffMode;
     if (this.diffMode && !this.liveDataLoaded && !this.liveData && !this.originalDiffData) {
-      // Fetch live version
-      const liveUrl = this.url.replace('.page', '.live');
-      const liveRes = await fetch(liveUrl, { cache: 'no-store' });
-      if (liveRes.ok) {
-        try {
+      try {
+        // Fetch live version
+        const liveUrl = this.url.replace('.page', '.live');
+        const liveRes = await fetch(liveUrl, { cache: 'no-store' });
+        const previewTotal = this.originalData.total || 0;
+        if (liveRes.ok) {
           this.liveData = await liveRes.json();
+          // Fetch all items if needed
+          const liveTotal = this.liveData.total || 0;
+          if (previewTotal > DEFAULT_BATCH_SIZE || liveTotal > DEFAULT_BATCH_SIZE) {
+            this.originalData = await this.fetchAllItems(this.url, previewTotal);
+            this.liveData = await this.fetchAllItems(liveUrl, liveTotal, true);
+          }
           this.diffData = this.computeDiff(this.originalData, this.liveData);
           this.originalDiffData = this.diffData;
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.warn(`Could not load live version: ${e}`);
+        } else if (liveRes.status === 404) {
+          // If live version doesn't exist yet, treat it as empty
+          this.liveData = { data: [], columns: this.originalData.columns };
+          if (previewTotal > DEFAULT_BATCH_SIZE) {
+            this.originalData = await this.fetchAllItems(this.url, previewTotal);
+          }
+          this.diffData = this.computeDiff(this.originalData, this.liveData);
+          this.originalDiffData = this.diffData;
         }
-      } else if (liveRes.status === 404) {
-        // If live version doesn't exist yet, treat it as empty
-        this.liveData = { data: [], columns: this.originalData.columns };
-        this.diffData = this.computeDiff(this.originalData, this.liveData);
-        this.originalDiffData = this.diffData;
+        this.liveDataLoaded = true;
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn(`Could not load live version: ${e}`);
       }
-      this.liveDataLoaded = true;
     } else if (this.diffMode && this.liveData && !this.originalDiffData) {
       this.diffData = this.computeDiff(this.originalData, this.liveData);
       this.originalDiffData = this.diffData;
