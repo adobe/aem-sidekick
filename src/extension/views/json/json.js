@@ -339,6 +339,10 @@ export class JSONView extends LitElement {
   sortColumns(rows, headers) {
     return rows.map((row) => {
       const newRow = {};
+      // Preserve diff and line information
+      if (row.diff) newRow.diff = row.diff;
+      if (row.line) newRow.line = row.line;
+      // Sort other columns according to headers
       headers.forEach((key) => {
         newRow[key] = row[key] || '';
       });
@@ -462,32 +466,28 @@ export class JSONView extends LitElement {
       `;
     }
 
-    return html`
-      <div class="tableContainer">
-        <sp-table scroller="true" style="height: 100%" @sorted=${this.onTableSorted}>
-          <sp-table-head>
-            ${rows.some((r) => r.line) ? html`
-              <sp-table-head-cell sortable sort-direction="desc" sort-key="line" class="line">#</sp-table-head-cell>
-            ` : ''}
-            ${headers.map((header) => html`
-              <sp-table-head-cell sortable sort-direction="desc" sort-key="${header}">
-                ${header.charAt(0).toUpperCase() + header.slice(1)}
-              </sp-table-head-cell>
-            `)}
-          </sp-table-head>
-          <sp-table-body>
-            ${rows.map((row) => html`
-              <sp-table-row class="${row.diff ? `diff-row ${row.diff}` : ''}">
-                ${row.line ? html`<sp-table-cell class="line">${row.line}</sp-table-cell>` : ''}
-                ${Object.entries(row)
-                  .filter(([key]) => key !== 'diff' && key !== 'line')
-                  .map(([_, value]) => this.renderValue(value, url))}
-              </sp-table-row>
-            `)}
-          </sp-table-body>
-        </sp-table>
-      </div>
+    const tableContainer = document.createElement('div');
+    tableContainer.classList.add('tableContainer');
+    const table = document.createElement('sp-table');
+    table.setAttribute('scroller', 'true');
+    table.style.height = '100%';
+    table.addEventListener('sorted', this.onTableSorted);
+    const headHTML = `
+    <sp-table-head>
+      ${rows.some((r) => r.line) ? '<sp-table-head-cell sortable sort-direction="desc" sort-key="line" class="line">#</sp-table-head-cell>' : ''}
+      ${headers.map((header) => `<sp-table-head-cell sortable sort-direction="desc" sort-key="${header}">${header.charAt(0).toUpperCase() + header.slice(1)}</sp-table-head-cell>`).join('')}
+    </sp-table-head>`;
+    table.insertAdjacentHTML('beforeend', headHTML);
+    table.items = this.sortColumns(rows, headers);
+    table.renderItem = (item) => html`
+          ${item.line ? html`<sp-table-cell class="line" data-diff=${item.diff || ''}>${item.line}</sp-table-cell>` : ''}
+          ${Object.entries(item)
+            .filter(([key]) => key !== 'diff' && key !== 'line')
+            // @ts-ignore
+            .map(([_, value]) => this.renderValue(value, url))}
     `;
+    tableContainer.appendChild(table);
+    return html`${tableContainer}`;
   }
 
   /**
@@ -531,7 +531,6 @@ export class JSONView extends LitElement {
       tableHead.addEventListener('scroll', () => {
         tableBody.scrollLeft = tableHead.scrollLeft;
       });
-
       tableBody.addEventListener('scroll', () => {
         tableHead.scrollLeft = tableBody.scrollLeft;
       });

@@ -272,19 +272,19 @@ export const style = css`
     color: var(--spectrum-white-color);
   }
 
-  .diff-row.added {
+  .diff-row.added, sp-table-row:has([data-diff="added"]) {
     background-color: #aceebb;
   }
 
-  .diff-row.removed {
+  .diff-row.removed, sp-table-row:has([data-diff="removed"]) {
     background-color: #ffcecb;
   }
 
-  theme-wrapper[theme='dark'] .diff-row.added {
+  theme-wrapper[theme='dark'] .diff-row.added, theme-wrapper[theme='dark'] sp-table-row:has([data-diff="added"]) {
     background-color: #3fb9504d;
   }
 
-  theme-wrapper[theme='dark'] .diff-row.removed {
+  theme-wrapper[theme='dark'] .diff-row.removed, theme-wrapper[theme='dark'] sp-table-row:has([data-diff="removed"]) {
     background-color: #f851494d;
   }
 `;
