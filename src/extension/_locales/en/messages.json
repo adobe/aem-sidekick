@@ -590,6 +590,12 @@
     "loading_diff": {
       "message": "Loading changes..."
     },
+    "no_diffs": {
+      "message": "No changes found"
+    },
+    "no_diffs_subheading": {
+      "message": "No changes found between preview and live content"
+    },
     "search": {
       "message": "Search"
     },
