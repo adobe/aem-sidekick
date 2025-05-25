@@ -29,6 +29,7 @@ import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-close.js';
 import '@spectrum-web-components/switch/sp-switch.js';
+import '@spectrum-web-components/progress-circle/sp-progress-circle.js';
 import '../../app/components/theme/theme.js';
 import '../../app/components/search/search.js';
 import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';
@@ -150,6 +151,9 @@ export class JSONView extends LitElement {
 
   @queryAsync('sp-table')
   accessor table;
+
+  @property({ type: Boolean })
+  accessor isLoading = false;
 
   async connectedCallback() {
     super.connectedCallback();
@@ -642,35 +646,44 @@ export class JSONView extends LitElement {
    * @returns {Promise<Object>} The complete JSON data
    */
   async fetchAllItems(url, total, isLive = false) {
-    if (total <= DEFAULT_BATCH_SIZE) {
-      return isLive ? this.liveData : this.originalData;
-    }
-    const batchSize = total > HIGH_BATCH_SIZE ? HIGH_BATCH_SIZE : LOW_BATCH_SIZE;
-    const allData = isLive ? { ...this.liveData } : { ...this.originalData };
-    const batches = Math.ceil((total - DEFAULT_BATCH_SIZE) / batchSize);
-    const batchRequests = Array.from({ length: batches }, (_, i) => {
-      const offset = DEFAULT_BATCH_SIZE + (i * batchSize);
-      const limit = Math.min(batchSize, total - offset);
-      const batchUrl = new URL(url);
-      batchUrl.searchParams.set('offset', offset.toString());
-      batchUrl.searchParams.set('limit', limit.toString());
-      return fetch(batchUrl.toString());
-    });
-    const responses = await Promise.all(batchRequests);
-    const batchDataPromises = responses.map(async (res, i) => {
-      if (!res.ok) {
+    this.isLoading = true;
+    try {
+      if (total <= DEFAULT_BATCH_SIZE) {
+        return isLive ? this.liveData : this.originalData;
+      }
+      const batchSize = total > HIGH_BATCH_SIZE ? HIGH_BATCH_SIZE : LOW_BATCH_SIZE;
+      const allData = isLive ? { ...this.liveData } : { ...this.originalData };
+      const batches = Math.ceil((total - DEFAULT_BATCH_SIZE) / batchSize);
+
+      const batchRequests = Array.from({ length: batches }, (_, i) => {
         const offset = DEFAULT_BATCH_SIZE + (i * batchSize);
-        throw new Error(`Failed to fetch batch at offset ${offset}: ${res.status}`);
-      }
-      return res.json();
-    });
-    const batchDataResults = await Promise.all(batchDataPromises);
-    batchDataResults.forEach((batchData) => {
-      if (batchData.data) {
-        allData.data = [...allData.data, ...batchData.data];
-      }
-    });
-    return allData;
+        const limit = Math.min(batchSize, total - offset);
+        const batchUrl = new URL(url);
+        batchUrl.searchParams.set('offset', offset.toString());
+        batchUrl.searchParams.set('limit', limit.toString());
+        return fetch(batchUrl.toString());
+      });
+
+      const responses = await Promise.all(batchRequests);
+      const batchDataPromises = responses.map(async (res, i) => {
+        if (!res.ok) {
+          const offset = DEFAULT_BATCH_SIZE + (i * batchSize);
+          throw new Error(`Failed to fetch batch at offset ${offset}: ${res.status}`);
+        }
+        return res.json();
+      });
+
+      const batchDataResults = await Promise.all(batchDataPromises);
+      batchDataResults.forEach((batchData) => {
+        if (batchData.data) {
+          allData.data = [...allData.data, ...batchData.data];
+        }
+      });
+
+      return allData;
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   /**
@@ -871,6 +884,12 @@ export class JSONView extends LitElement {
     return html`
       <theme-wrapper theme=${this.theme}>
         <div class="container">
+          ${this.isLoading ? html`
+            <div class="loading-overlay">
+              <sp-progress-circle indeterminate></sp-progress-circle>
+              <p>${i18n(this.languageDict, 'loading_diff')}</p>
+            </div>
+          ` : ''}
           ${this.renderData()}
         </div>
       </theme-wrapper>

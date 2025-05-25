@@ -587,6 +587,9 @@
       "message": "Show all",
       "description": "Show all rows including unchanged ones"
     },
+    "loading_diff": {
+      "message": "Loading changes..."
+    },
     "search": {
       "message": "Search"
     },

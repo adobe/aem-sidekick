@@ -287,4 +287,28 @@ export const style = css`
   theme-wrapper[theme='dark'] .diff-row.removed, theme-wrapper[theme='dark'] sp-table-row:has([data-diff="removed"]) {
     background-color: #f851494d;
   }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .loading-overlay p {
+    color: var(--spectrum-white-color);
+    margin-top: 16px;
+    font-size: 14px;
+  }
+
+  theme-wrapper[theme='dark'] .loading-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
 `;
