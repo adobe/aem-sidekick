@@ -41,7 +41,7 @@ export function isSharePointHost(url, projects = []) {
  */
 export function isPersonalOneDriveFolder(url) {
   const { pathname } = new URL(url);
-  return pathname.endsWith('/onedrive.aspx')
+  return pathname.toLowerCase().endsWith('/onedrive.aspx')
     || [
       '/personal/',
       '/:f:/r/personal/',
