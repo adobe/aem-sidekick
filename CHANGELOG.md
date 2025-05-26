@@ -1,3 +1,10 @@
+## [7.11.3](https://github.com/adobe/aem-sidekick/compare/v7.11.2...v7.11.3) (2025-05-26)
+
+
+### Bug Fixes
+
+* popover plugin pre-loading iframe and not working in menu ([#540](https://github.com/adobe/aem-sidekick/issues/540), [#579](https://github.com/adobe/aem-sidekick/issues/579)) ([30a5377](https://github.com/adobe/aem-sidekick/commit/30a53774bdf431e97513f0a9c751267082185d7b))
+
 ## [7.11.2](https://github.com/adobe/aem-sidekick/compare/v7.11.1...v7.11.2) (2025-05-20)
 
 
