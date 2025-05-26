@@ -18,6 +18,7 @@ import sinon from 'sinon';
 import chromeMock from './mocks/chrome.js';
 import {
   isSharePointHost,
+  isPersonalOneDriveFolder,
   urlCache,
 } from '../src/extension/url-cache.js';
 import {
@@ -50,6 +51,23 @@ describe('Test url-cache', () => {
       [{
         mountpoints: ['https://some.custom.host/sites/bar'],
       }],
+    )).to.be.true;
+  });
+
+  it('isPersonalOneDriveFolder', async () => {
+    // sharepoint folder
+    expect(isPersonalOneDriveFolder(
+      'https://acme.sharepoint.com/sites/ACME/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FACME%2FShared%20Documents%2Ffoo&viewid=07cb4d37%2D3ae2%2D4762%2D87ef%2D5ad0e1059258',
+    )).to.be.false;
+    // personal onedrive folders
+    expect(isPersonalOneDriveFolder(
+      'https://acme-my.sharepoint.com/personal/someone_acme_com/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fsomeone_acme_com2FDocuments&view=0',
+    )).to.be.true;
+    expect(isPersonalOneDriveFolder(
+      'https://acme-my.sharepoint.com/:f:/r/personal/someone_acme_com/Documents/ACME',
+    )).to.be.true;
+    expect(isPersonalOneDriveFolder(
+      'https://acme-my.sharepoint.com/:f:/p/someone/EoYJVIqcrKFHu1NVLXhq9c8BZx8zwWqfEtGZ1otwW9W0mQ?e=kuqPBr',
     )).to.be.true;
   });
 
