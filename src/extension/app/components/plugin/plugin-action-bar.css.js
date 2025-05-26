@@ -79,19 +79,19 @@ export const style = css`
    * Work around the fact that we can't tab into sp-action-group
    */
 
-  action-bar sp-action-menu sk-menu-item {
+  action-bar sp-action-menu > *:is(sk-menu-item, overlay-trigger) {
     margin: 0 8px;
   }
 
-  action-bar sp-action-menu sk-menu-item:first-of-type {
+  action-bar sp-action-menu > *:is(sk-menu-item, overlay-trigger):first-of-type {
     margin: 8px 8px 0;
   }
 
-  action-bar sp-action-menu sk-menu-item:last-of-type {
+  action-bar sp-action-menu > *:is(sk-menu-item, overlay-trigger):last-of-type {
     margin: 0 8px 8px;
   }
 
-  action-bar sp-action-menu sk-menu-item:only-of-type {
+  action-bar sp-action-menu > *:is(sk-menu-item, overlay-trigger):only-of-type {
     margin: 8px;
   }
 
