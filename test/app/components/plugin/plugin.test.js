@@ -177,7 +177,32 @@ describe('Plugin', () => {
     const iframe = container.querySelector('iframe');
     expect(iframe).to.exist;
     expect(iframe.getAttribute('title')).to.equal(TEST_POPOVER_CONFIG.title);
+    expect(iframe.getAttribute('src')).to.be.null;
+  });
+
+  it('sets popover iframe url on click', async () => {
+    appStore.theme = 'dark';
+    const plugin = new Plugin({ ...TEST_POPOVER_CONFIG }, appStore);
+
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+
+    // Wait for next time to let lit process the update
+    await Promise.resolve();
+
+    const overlayTrigger = container.querySelector('overlay-trigger');
+    expect(overlayTrigger).to.exist;
+
+    // simulate click on plugin
+    // @ts-ignore
+    overlayTrigger.firstElementChild.click();
+
+    const iframe = container.querySelector('iframe');
     expect(iframe.getAttribute('src')).to.equal(TEST_POPOVER_CONFIG.url);
+
+    // test else path
+    // @ts-ignore
+    overlayTrigger.firstElementChild.click();
   });
 
   it('popover plugin renders as menu item', async () => {
@@ -199,8 +224,15 @@ describe('Plugin', () => {
     // Wait for next time to let lit process the update
     await Promise.resolve();
 
-    expect(container.querySelector('sk-menu-item')).to.exist;
-    expect(container.querySelector('iframe')).to.exist;
+    const menuItem = container.querySelector('sk-menu-item');
+    expect(menuItem).to.exist;
+    const iframe = container.querySelector('iframe');
+    expect(iframe).to.exist;
+
+    // @ts-ignore
+    menuItem.click();
+
+    expect(iframe.getAttribute('src')).to.equal(TEST_POPOVER_CONFIG.url);
   });
 
   it('default title is used for popover plugin', async () => {

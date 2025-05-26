@@ -211,6 +211,18 @@ export class Plugin {
   }
 
   /**
+   * Initializes the popover
+   */
+  initPopover(evt) {
+    const { target } = evt;
+    const iframe = target.parentElement.querySelector(':scope iframe');
+    if (!iframe?.src) {
+      // set iframe src to the popover url
+      iframe.src = this.config.url;
+    }
+  }
+
+  /**
    * Renders the plugin with a popover.
    * @param {TemplateResult} template The plugin template to wrap
    * @param {string} [placement] The placement of the popover (default: 'top')
@@ -218,7 +230,7 @@ export class Plugin {
    */
   #renderWithPopover(template, placement = 'top') {
     const {
-      url, popoverRect, title, titleI18n,
+      popoverRect, title, titleI18n,
     } = this.config;
 
     const popoverTitle = titleI18n?.[this.appStore.siteStore.lang] || title;
@@ -237,7 +249,7 @@ export class Plugin {
         ${template}
         <sp-popover slot="click-content" placement="${placement}" tip style=${ifDefined(filteredPopoverRect)}>
           <div class="content">
-            <iframe title=${popoverTitle || 'Popover content'} src=${url}></iframe>
+            <iframe title=${popoverTitle || 'Popover content'}></iframe>
           </div>
         </sp-popover>
       </overlay-trigger>
@@ -256,7 +268,9 @@ export class Plugin {
         class=${this.getId()}
         tabindex="0"
         slot=${this.isPopover() ? 'trigger' : ''}
-        @click=${this.isPopover() ? undefined : (evt) => this.onButtonClick(evt)}
+        @click=${this.isPopover()
+          ? (evt) => this.initPopover(evt)
+          : (evt) => this.onButtonClick(evt)}
       >${this.getButtonText()}</sk-menu-item>
     `;
     return this.isPopover() ? this.#renderWithPopover(menuItem, 'left') : menuItem;
@@ -317,7 +331,9 @@ export class Plugin {
           .disabled=${!this.isEnabled()}
           quiet
           slot=${this.isPopover() ? 'trigger' : ''}
-          @click=${this.isPopover() ? undefined : (evt) => this.onButtonClick(evt)}
+          @click=${this.isPopover()
+            ? (evt) => this.initPopover(evt)
+            : (evt) => this.onButtonClick(evt)}
         >${this.getButtonText()}</sp-action-button>
       `;
       return this.isPopover() ? this.#renderWithPopover(actionButton) : actionButton;
