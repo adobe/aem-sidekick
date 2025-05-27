@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "Un projet importé depuis AEM Sidekick v6."
   },
+  "config_project_manage": {
+    "message": "Gérer les projets"
+  },
   "config_project_pick": {
     "message": "Choisissez un projet"
   },
@@ -297,7 +300,7 @@
     "message": "La copie dans le presse-papiers a échoué. Veuillez vous assurer que la fenêtre reste au premier plan."
   },
   "dark_mode": {
-    "message": "Mode Sombre"
+    "message": "Thème sombre"
   },
   "delete": {
     "message": "Supprimer"
