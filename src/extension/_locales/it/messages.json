@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "$1 progetto importato correttamente da AEM Sidekick v6."
   },
+  "config_project_manage": {
+    "message": "Gestisci i progetti"
+  },
   "config_project_pick": {
     "message": "Scegli un progetto"
   },
@@ -297,7 +300,7 @@
     "message": "Copia negli Appunti non riuscita. Assicurati che la finestra rimanga attiva."
   },
   "dark_mode": {
-    "message": "Modalità scura"
+    "message": "Tema scuro"
   },
   "delete": {
     "message": "Elimina"
@@ -432,7 +435,7 @@
     "message": "Caricamento dello stato in corso..."
   },
   "help_documentation": {
-    "message": "Assistenza e documentazione"
+    "message": "Guida e documentazione"
   },
   "homepage": {
     "message": "https://www.hlx.live/tools/sidekick/"

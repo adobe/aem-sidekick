@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "AEM Sidekick v6 から 1 個のプロジェクトを正常に読み込みました。"
   },
+  "config_project_manage": {
+    "message": "プロジェクトを管理"
+  },
   "config_project_pick": {
     "message": "プロジェクトを選択"
   },
@@ -297,7 +300,7 @@
     "message": "クリップボードへのコピーに失敗しました。ウィンドウに焦点が当てられたままになっていることを確認してください。"
   },
   "dark_mode": {
-    "message": "ダークモード"
+    "message": "ダークテーマ"
   },
   "delete": {
     "message": "削除"
@@ -684,7 +687,7 @@
     "message": "ユーザーを切り替え"
   },
   "whats_new": {
-    "message": "最新情報"
+    "message": "新機能"
   },
   "yesterday_at": {
     "message": "昨日の $1"

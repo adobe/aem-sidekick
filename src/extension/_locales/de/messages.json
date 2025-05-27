@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "1 Projekt erfolgreich von AEM Sidekick v6 importiert."
   },
+  "config_project_manage": {
+    "message": "Projekte verwalten"
+  },
   "config_project_pick": {
     "message": "Projekt auswählen"
   },
@@ -297,7 +300,7 @@
     "message": "Kopieren in Zwischenablage fehlgeschlagen. Bitte stellen Sie sicher, dass das Fenster im Eingabefokus bleibt."
   },
   "dark_mode": {
-    "message": "Dunkler Modus"
+    "message": "Dunkles Design"
   },
   "delete": {
     "message": "Löschen"

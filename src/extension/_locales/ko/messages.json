@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "AEM Sidekick v6에서 1개 프로젝트를 정상적으로 가져왔습니다."
   },
+  "config_project_manage": {
+    "message": "프로젝트 관리"
+  },
   "config_project_pick": {
     "message": "프로젝트 선택"
   },
@@ -297,7 +300,7 @@
     "message": "클립보드에 복사하지 못했습니다. 창에 초점을 맞추고 있는지 확인해 주십시오."
   },
   "dark_mode": {
-    "message": "다크 모드"
+    "message": "어두운 테마"
   },
   "delete": {
     "message": "삭제"
