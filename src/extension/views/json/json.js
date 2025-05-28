@@ -183,8 +183,14 @@ export class JSONView extends LitElement {
           this.url = url;
           this.originalData = json;
           this.filteredData = json;
-          // toggle diff mode by default
-          this.toggleDiffView();
+          const subUrl = new URL(url);
+          if (subUrl.searchParams.get('diff') === 'only') {
+            this.toggleDiffView();
+            this.showAll = false;
+          } else if (subUrl.searchParams.get('diff') === 'all') {
+            this.toggleDiffView();
+            this.showAll = true;
+          }
         } else {
           throw new Error(`failed to load ${url}: ${res.status}`);
         }
@@ -193,7 +199,6 @@ export class JSONView extends LitElement {
       // eslint-disable-next-line no-console
       console.error('error rendering view', e);
     }
-
     // Wait for 3 seconds after last search input to track RUM
     this.debouncedFilterRUM = this.debounceFilterRUM(this.trackFilterRUM.bind(this), 3000);
   }
