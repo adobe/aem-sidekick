@@ -210,12 +210,14 @@ export class JSONView extends LitElement {
     const json = this.diffMode && this.diffData ? this.diffData : this.filteredData;
     const { url } = this;
     if (!json || !url) {
+      this.isLoading = false;
       return '';
     }
 
     if (!json[':type']) {
       // Not a sheet backed json file, close view
       this.onCloseView(false);
+      this.isLoading = false;
       return [];
     }
 
@@ -238,6 +240,7 @@ export class JSONView extends LitElement {
     if (Object.keys(sheets).length === 0) {
       // No valid sheets found, close view
       this.onCloseView(false);
+      this.isLoading = false;
       return '';
     }
 
@@ -719,6 +722,7 @@ export class JSONView extends LitElement {
    * Toggle diff view mode
    */
   async toggleDiffView() {
+    this.isLoading = true;
     this.diffMode = !this.diffMode;
     if (this.diffMode && !this.liveDataLoaded && !this.liveData && !this.originalDiffData) {
       try {
@@ -764,6 +768,7 @@ export class JSONView extends LitElement {
    * @param {Event} event The change event
    */
   toggleShowAll(event) {
+    this.isLoading = true;
     const checkbox = /** @type {HTMLInputElement} */ (event.target);
     this.showAll = checkbox.checked;
     if (this.diffMode && this.liveData) {
@@ -773,6 +778,7 @@ export class JSONView extends LitElement {
         this.onSearch({ target: { value: this.filterText } });
       }
     }
+    this.isLoading = false;
   }
 
   /**
