@@ -16,7 +16,7 @@ import {
   getProjectMatches,
   getProjectFromUrl,
 } from './project.js';
-import { urlCache } from './url-cache.js';
+import { isSharePointHost, urlCache } from './url-cache.js';
 import { updateUI } from './ui.js';
 import { getConfig } from './config.js';
 
@@ -40,6 +40,39 @@ async function injectContentScript(tabId, matches, adminVersion) {
   } catch (e) {
     log.warn('injectContentScript: unable to inject content script', tabId, e);
   }
+}
+
+export async function injectPreviewListener(id, tabUrl) {
+  chrome.scripting.executeScript({
+    target: {
+      tabId: id,
+      allFrames: true,
+    },
+    func: (extensionId, origin) => {
+      if (window.location.origin === 'https://word-edit.officeapps.live.com' && !window.hlx?.saveListenerAdded) {
+        console.log('********************     docFrame: adding save listener');
+        window.hlx = window.hlx || {
+          saveListenerAdded: true,
+        };
+        chrome.runtime.onMessage.addListener(({ action, url }, { id: senderId }, sendResponse) => {
+          if (action === 'saveDocument'
+            && url.startsWith(origin)
+            && senderId === extensionId) {
+            console.log('******************** docFrame: force-saving document');
+            const res = document.dispatchEvent(new KeyboardEvent('keydown', {
+              key: 's', metaKey: true,
+            }));
+            sendResponse(res);
+            return res;
+          }
+          sendResponse(false);
+          return false;
+        });
+      }
+    },
+    args: [chrome.runtime.id, new URL(tabUrl).origin],
+    injectImmediately: true,
+  });
 }
 
 /**
@@ -70,6 +103,10 @@ export async function checkTab(id) {
     updateUI({
       id, url, config, matches,
     });
+
+    if (isSharePointHost(tab.url, projects)) {
+      injectPreviewListener(id, tab.url);
+    }
   } catch (e) {
     log.warn(`checkTab: error checking tab ${id}`, e);
   }

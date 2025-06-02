@@ -514,6 +514,18 @@ async function updateProject(_, { config }) {
 }
 
 /**
+ * Sends a message to the tab to trigger a save event
+ * @param {chrome.tabs.Tab} tab The tab
+ * @returns {Promise<boolean>} True if the message was relayed, else false
+ */
+async function saveDocument({ id, url }) {
+  return chrome.tabs.sendMessage(id, {
+    action: 'saveDocument',
+    url,
+  });
+}
+
+/**
  * Actions which can be executed via internal messaging API.
  * @type {Object} The internal actions
  */
@@ -525,6 +537,7 @@ export const internalActions = {
   getProfilePicture,
   guessAEMSite,
   updateProject,
+  saveDocument,
 };
 
 /**

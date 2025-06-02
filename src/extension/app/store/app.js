@@ -954,7 +954,9 @@ export class AppStore {
     );
 
     // update preview
+    console.log('******************** appStore: updating preview');
     const previewStatus = await this.api.updatePreview(path);
+    console.log('******************** appStore: preview updated');
     if (previewStatus) {
       // If we are on preview, we need to bust the cache on the page to ensure the latest
       // content is loaded.
@@ -968,6 +970,15 @@ export class AppStore {
   }
 
   async updatePreview(ranBefore) {
+    if (this.isSharePointEditor(new URL(window.location.href))) {
+      console.log('******************** appStore: forcing save');
+      await Promise.all([chrome.runtime.sendMessage({
+        action: 'saveDocument',
+        url: window.location.href,
+      }, (res) => {
+        console.log('******************** appStore: saved?', res);
+      })]);
+    }
     const res = await this.update();
     if (!res && !ranBefore) {
       // assume document has been renamed, re-fetch status and try again
