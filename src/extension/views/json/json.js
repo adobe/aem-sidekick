@@ -111,33 +111,33 @@ export class JSONView extends LitElement {
   @property({ type: Object, state: false })
   accessor liveData;
 
-   /**
-    * The diff view mode
-    * @type {boolean}
-    */
-   @property({ type: Boolean })
-   accessor diffMode = false;
+  /**
+   * The diff view mode
+   * @type {boolean}
+   */
+  @property({ type: Boolean })
+  accessor diffMode = false;
 
-   /**
+  /**
    * The flag for live data loaded
    * @type {boolean}
    */
-   @property({ type: Boolean })
-   accessor liveDataLoaded = false;
+  @property({ type: Boolean })
+  accessor liveDataLoaded = false;
 
-    /**
-     * Show all rows in diff view
-     * @type {boolean}
-     */
-    @property({ type: Boolean })
-    accessor showAll = false;
+  /**
+   * Show all rows in diff view
+   * @type {boolean}
+   */
+  @property({ type: Boolean })
+  accessor showAll = false;
 
-   /**
+  /**
    * The selected theme from sidekick
    * @type {string}
    */
-   @property({ type: String })
-   accessor theme;
+  @property({ type: String })
+  accessor theme;
 
   /**
    * The selected tab index
