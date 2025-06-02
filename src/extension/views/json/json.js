@@ -502,6 +502,7 @@ export class JSONView extends LitElement {
 
     const tableContainer = document.createElement('div');
     tableContainer.classList.add('tableContainer');
+    tableContainer.classList.add(this.isLoading ? 'loading' : 'loaded');
     const table = document.createElement('sp-table');
     table.setAttribute('scroller', 'true');
     table.style.height = '100%';

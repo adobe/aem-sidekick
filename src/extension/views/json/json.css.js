@@ -157,6 +157,10 @@ export const style = css`
     overflow: auto;
   }
 
+  .tableContainer.loading {
+    display: none;
+  }
+
   .tableContainer .tableHeader {
     display: flex;
     align-items: center;
