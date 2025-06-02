@@ -325,7 +325,7 @@ export class JSONView extends LitElement {
   /**
    * Handle the table sorted event
    */
-  onTableSorted(event) {
+  async onTableSorted(event) {
     const { sortDirection, sortKey } = event.detail;
     const data = this.diffMode
       ? this.diffData?.data || []
@@ -345,7 +345,14 @@ export class JSONView extends LitElement {
     } else {
       this.filteredData = { ...this.filteredData, data: sortedData, columns };
     }
-    this.table.items = this.sortColumns(sortedData, columns);
+    const table = await this.table;
+    table.items = this.sortColumns(sortedData, columns);
+
+    // Update the sort direction on the header cell
+    const headerCell = table.querySelector(`sp-table-head-cell[sort-key="${sortKey}"]`);
+    if (headerCell) {
+      headerCell.setAttribute('sort-direction', sortDirection);
+    }
   }
 
   /**
@@ -506,11 +513,10 @@ export class JSONView extends LitElement {
     const table = document.createElement('sp-table');
     table.setAttribute('scroller', 'true');
     table.style.height = '100%';
-    table.addEventListener('sorted', this.onTableSorted);
     const headHTML = `
     <sp-table-head>
-      ${rows.some((r) => r.line) ? '<sp-table-head-cell sortable sort-direction="desc" sort-key="line" class="line">#</sp-table-head-cell>' : ''}
-      ${headers.map((header) => `<sp-table-head-cell sortable sort-direction="desc" sort-key="${header}">${header.charAt(0).toUpperCase() + header.slice(1)}</sp-table-head-cell>`).join('')}
+      ${rows.some((r) => r.line) ? '<sp-table-head-cell sortable sort-key="line" class="line">#</sp-table-head-cell>' : ''}
+      ${headers.map((header) => `<sp-table-head-cell sortable sort-key="${header}">${header.charAt(0).toUpperCase() + header.slice(1)}</sp-table-head-cell>`).join('')}
     </sp-table-head>`;
     table.insertAdjacentHTML('beforeend', headHTML);
     table.items = this.sortColumns(rows, headers);
@@ -522,6 +528,7 @@ export class JSONView extends LitElement {
             .map(([_, value]) => this.renderValue(value, url))}
     `;
     tableContainer.appendChild(table);
+    table.addEventListener('sorted', this.onTableSorted.bind(this));
     return html`${tableContainer}`;
   }
 
