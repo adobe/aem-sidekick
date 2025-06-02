@@ -196,8 +196,8 @@ export class JSONView extends LitElement {
         }
       }
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('error rendering view', e);
+      this.isLoading = false;
+      this.onCloseView(false);
     }
     // Wait for 3 seconds after last search input to track RUM
     this.debouncedFilterRUM = this.debounceFilterRUM(this.trackFilterRUM.bind(this), 3000);
