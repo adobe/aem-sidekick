@@ -440,6 +440,48 @@ export class JSONView extends LitElement {
     return html`<div dir=${dir}>${valueContainer}</div>`;
   }
 
+  renderEmptyState(type) {
+    let heading = '';
+    let description = '';
+    let svg = html`<svg xmlns="http://www.w3.org/2000/svg" width="100.25" height="87.2">
+                <path d="M94.55,87.2H5.85c-3.1,0-5.7-2.5-5.7-5.7V5.7C.15,2.6,2.65,0,5.85,0h88.7c3.1,0,5.7,2.5,5.7,5.7v75.8c0,3.1-2.5,5.7-5.7,5.7ZM5.85.5C2.95.5.65,2.8.65,5.7v75.8c0,2.9,2.3,5.2,5.2,5.2h88.7c2.9,0,5.2-2.3,5.2-5.2V5.7c0-2.9-2.3-5.2-5.2-5.2H5.85Z"/>
+                <rect x=".45" y="15.5" width="99.5" height=".5"/>
+                <rect x=".45" y="33.1" width="99.5" height=".5"/>
+                <rect x=".45" y="51.2" width="99.5" height=".5"/>
+                <rect x=".45" y="69.4" width="99.5" height=".5"/>
+                <rect x="33.33" y="15.1" width=".5" height="71.8"/>
+                <rect x="66.67" y="15.1" width=".5" height="71.8"/>
+              </svg>`;
+
+    if (type === 'no_results') {
+      heading = i18n(this.languageDict, 'no_results');
+      description = i18n(this.languageDict, 'no_results_subheading');
+      svg = html`<svg xmlns="http://www.w3.org/2000/svg" width="99.039" height="94.342">
+                <g fill="none" strokeLinecap="round" strokeLinejoin="round" >
+                  <path d="M93.113 88.415a5.38 5.38 0 0 1-7.61 0L58.862 61.773a1.018 1.018 0 0 1 0-1.44l6.17-6.169a1.018 1.018 0 0 1 1.439 0l26.643 26.643a5.38 5.38 0 0 1 0 7.608z" strokeWidth="2.99955"/>
+                  <path strokeWidth="2" d="M59.969 59.838l-3.246-3.246M61.381 51.934l3.246 3.246M64.609 61.619l13.327 13.327" />
+                  <path strokeWidth="3" d="M13.311 47.447A28.87 28.87 0 1 0 36.589 1.5c-10.318 0-20.141 5.083-24.7 13.46M2.121 38.734l15.536-15.536M17.657 38.734L2.121 23.198" />
+                </g>
+              </svg>`;
+    } else if (type === 'no_diffs') {
+      heading = i18n(this.languageDict, 'no_diffs');
+      description = i18n(this.languageDict, 'no_diffs_subheading');
+    } else if (type === 'no_data') {
+      heading = i18n(this.languageDict, 'no_data');
+      description = i18n(this.languageDict, 'no_data_subheading');
+    }
+    return html`
+          <div class="tableContainer">
+            <sp-illustrated-message
+              heading="${heading}"
+              description="${description}"
+            >
+              ${svg}
+            </sp-illustrated-message>
+          </div>
+    `;
+  }
+
   /**
    * Render the table
    * @param {Object[]} rows The rows to render
@@ -450,60 +492,11 @@ export class JSONView extends LitElement {
   renderTable(rows, headers, url) {
     if (rows.length === 0) {
       if (this.filterText) {
-        return html`
-          <div class="tableContainer">
-              <sp-illustrated-message
-                heading="${i18n(this.languageDict, 'no_results')}"
-                description="${i18n(this.languageDict, 'no_results_subheading')}"
-              >
-              <svg xmlns="http://www.w3.org/2000/svg" width="99.039" height="94.342">
-                <g fill="none" strokeLinecap="round" strokeLinejoin="round" >
-                  <path d="M93.113 88.415a5.38 5.38 0 0 1-7.61 0L58.862 61.773a1.018 1.018 0 0 1 0-1.44l6.17-6.169a1.018 1.018 0 0 1 1.439 0l26.643 26.643a5.38 5.38 0 0 1 0 7.608z" strokeWidth="2.99955"/>
-                  <path strokeWidth="2" d="M59.969 59.838l-3.246-3.246M61.381 51.934l3.246 3.246M64.609 61.619l13.327 13.327" />
-                  <path strokeWidth="3" d="M13.311 47.447A28.87 28.87 0 1 0 36.589 1.5c-10.318 0-20.141 5.083-24.7 13.46M2.121 38.734l15.536-15.536M17.657 38.734L2.121 23.198" />
-                </g>
-              </svg>
-            </sp-illustrated-message>
-          </div>
-        `;
+        return this.renderEmptyState('no_results');
       } else if (this.diffMode) {
-        return html`
-          <div class="tableContainer">          
-            <sp-illustrated-message
-              heading="${i18n(this.languageDict, 'no_diffs')}"
-              description="${i18n(this.languageDict, 'no_diffs_subheading')}"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="100.25" height="87.2">
-                <path d="M94.55,87.2H5.85c-3.1,0-5.7-2.5-5.7-5.7V5.7C.15,2.6,2.65,0,5.85,0h88.7c3.1,0,5.7,2.5,5.7,5.7v75.8c0,3.1-2.5,5.7-5.7,5.7ZM5.85.5C2.95.5.65,2.8.65,5.7v75.8c0,2.9,2.3,5.2,5.2,5.2h88.7c2.9,0,5.2-2.3,5.2-5.2V5.7c0-2.9-2.3-5.2-5.2-5.2H5.85Z"/>
-                <rect x=".45" y="15.5" width="99.5" height=".5"/>
-                <rect x=".45" y="33.1" width="99.5" height=".5"/>
-                <rect x=".45" y="51.2" width="99.5" height=".5"/>
-                <rect x=".45" y="69.4" width="99.5" height=".5"/>
-                <rect x="33.33" y="15.1" width=".5" height="71.8"/>
-                <rect x="66.67" y="15.1" width=".5" height="71.8"/>
-              </svg>
-            </sp-illustrated-message>
-          </div>
-        `;
+        return this.renderEmptyState('no_diffs');
       } else {
-        return html`
-          <div class="tableContainer">
-            <sp-illustrated-message
-              heading="${i18n(this.languageDict, 'no_data')}"
-              description="${i18n(this.languageDict, 'no_data_subheading')}"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="100.25" height="87.2">
-                <path d="M94.55,87.2H5.85c-3.1,0-5.7-2.5-5.7-5.7V5.7C.15,2.6,2.65,0,5.85,0h88.7c3.1,0,5.7,2.5,5.7,5.7v75.8c0,3.1-2.5,5.7-5.7,5.7ZM5.85.5C2.95.5.65,2.8.65,5.7v75.8c0,2.9,2.3,5.2,5.2,5.2h88.7c2.9,0,5.2-2.3,5.2-5.2V5.7c0-2.9-2.3-5.2-5.2-5.2H5.85Z"/>
-                <rect x=".45" y="15.5" width="99.5" height=".5"/>
-                <rect x=".45" y="33.1" width="99.5" height=".5"/>
-                <rect x=".45" y="51.2" width="99.5" height=".5"/>
-                <rect x=".45" y="69.4" width="99.5" height=".5"/>
-                <rect x="33.33" y="15.1" width=".5" height="71.8"/>
-                <rect x="66.67" y="15.1" width=".5" height="71.8"/>
-              </svg>
-            </sp-illustrated-message>
-          </div>
-        `;
+        return this.renderEmptyState('no_data');
       }
     }
 
