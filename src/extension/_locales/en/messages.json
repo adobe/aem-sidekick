@@ -594,7 +594,7 @@
       "message": "No changes found"
     },
     "no_diffs_subheading": {
-      "message": "No changes found between preview and live content"
+      "message": "Previewed and published content are identical"
     },
     "search": {
       "message": "Search"
