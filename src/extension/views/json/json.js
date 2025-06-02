@@ -171,6 +171,7 @@ export class JSONView extends LitElement {
     this.isLoading = true;
     try {
       const url = new URL(window.location.href).searchParams.get('url');
+      const isLive = url.includes('.live');
       if (url) {
         const res = await fetch(url, { cache: 'no-store' });
         if (res.ok) {
@@ -184,10 +185,10 @@ export class JSONView extends LitElement {
           this.originalData = json;
           this.filteredData = json;
           const subUrl = new URL(url);
-          if (subUrl.searchParams.get('diff') === 'only') {
+          if (subUrl.searchParams.get('diff') === 'only' && !isLive) {
             this.toggleDiffView();
             this.showAll = false;
-          } else if (subUrl.searchParams.get('diff') === 'all') {
+          } else if (subUrl.searchParams.get('diff') === 'all' && !isLive) {
             this.toggleDiffView();
             this.showAll = true;
           }
