@@ -584,7 +584,7 @@
       "description": "See what's changed between preview and live"
     },
     "show_all": {
-      "message": "Show all",
+      "message": "Show all rows",
       "description": "Show all rows including unchanged ones"
     },
     "loading_diff": {
