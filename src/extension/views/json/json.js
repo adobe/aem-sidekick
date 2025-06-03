@@ -334,8 +334,13 @@ export class JSONView extends LitElement {
       ? this.diffData?.columns || []
       : this.filteredData?.columns || [];
     const sortedData = [...data].sort((a, b) => {
-      const first = String(a[sortKey]);
-      const second = String(b[sortKey]);
+      const first = sortKey === 'line' ? a[sortKey] : String(a[sortKey]);
+      const second = sortKey === 'line' ? b[sortKey] : String(b[sortKey]);
+      if (sortKey === 'line') {
+        return sortDirection === 'asc'
+          ? first - second
+          : second - first;
+      }
       return sortDirection === 'asc'
         ? first.localeCompare(second)
         : second.localeCompare(first);
