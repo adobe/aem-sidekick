@@ -812,43 +812,50 @@ export class JSONView extends LitElement {
         const liveMap = new Map();
         previewData.forEach((row, index) => {
           const key = this.getRowKey(row);
-          previewMap.set(key, { row, index });
+          if (!previewMap.has(key)) {
+            previewMap.set(key, []);
+          }
+          previewMap.get(key).push({ row, index });
         });
         liveData.forEach((row, index) => {
           const key = this.getRowKey(row);
-          liveMap.set(key, { row, index });
+          if (!liveMap.has(key)) {
+            liveMap.set(key, []);
+          }
+          liveMap.get(key).push({ row, index });
         });
 
         const allKeys = new Set([...previewMap.keys(), ...liveMap.keys()]);
         // build diff data
         const diffData = [];
         [...allKeys].sort().forEach((key) => {
-          const previewItem = previewMap.get(key);
-          const liveItem = liveMap.get(key);
+          const previewItems = previewMap.get(key);
+          const liveItems = liveMap.get(key);
 
-          if (!previewItem) {
+          if (!previewItems) {
             // Only in live
-            diffData.push({ ...liveItem.row, diff: 'removed', line: liveItem.index + 1 });
-          } else if (!liveItem) {
+            liveItems.forEach((item) => {
+              diffData.push({ ...item.row, diff: 'removed', line: item.index + 1 });
+            });
+          } else if (!liveItems) {
             // Only in preview
-            diffData.push({ ...previewItem.row, diff: 'added', line: previewItem.index + 1 });
+            previewItems.forEach((item) => {
+              diffData.push({ ...item.row, diff: 'added', line: item.index + 1 });
+            });
+          } else if (previewItems.length === liveItems.length) {
+            // Same number of entries with same content (since keys match)
+            previewItems.forEach((item) => {
+              diffData.push({ ...item.row, line: item.index + 1 });
+            });
           } else {
-            // In both - check for modifications
-            const hasChanges = Object.keys(previewItem.row).some(
-              (field) => {
-                if (field !== 'diff' && field !== 'line' && !field.startsWith(':')) {
-                  return previewItem.row[field] !== liveItem.row[field];
-                }
-                return false;
-              },
-            );
-
-            if (hasChanges) {
-              diffData.push({ ...liveItem.row, diff: 'removed', line: liveItem.index + 1 });
-              diffData.push({ ...previewItem.row, diff: 'added', line: previewItem.index + 1 });
-            } else {
-              diffData.push({ ...previewItem.row, line: previewItem.index + 1 });
-            }
+            // Different number of entries - mark all as added/removed
+            // not worth the complexity to tell which one was added/removed
+            previewItems.forEach((item) => {
+              diffData.push({ ...item.row, diff: 'added', line: item.index + 1 });
+            });
+            liveItems.forEach((item) => {
+              diffData.push({ ...item.row, diff: 'removed', line: item.index + 1 });
+            });
           }
         });
         diffData.sort((a, b) => {
