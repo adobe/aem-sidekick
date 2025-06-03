@@ -315,4 +315,18 @@ export const style = css`
   theme-wrapper[theme='dark'] .loading-overlay {
     background-color: rgba(0, 0, 0, 0.7);
   }
+
+  sp-table-cell[data-diff="added"]::before {
+    content: "+";
+    color: var(--spectrum-semantic-positive-color-default);
+    margin-right: 8px;
+    font-weight: bold;
+  }
+
+  sp-table-cell[data-diff="removed"]::before {
+    content: "-";
+    color: var(--spectrum-semantic-negative-color-default);
+    margin-right: 8px;
+    font-weight: bold;
+  }
 `;
