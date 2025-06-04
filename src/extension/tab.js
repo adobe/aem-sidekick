@@ -42,12 +42,13 @@ async function injectContentScript(tabId, matches, adminVersion) {
   }
 }
 
-export async function injectSharePointListener(id, tabUrl) {
+async function injectSharePointListener(id, tabUrl) {
   chrome.scripting.executeScript({
     target: {
       tabId: id,
       allFrames: true,
     },
+    // istanbul ignore next 20
     func: (extensionId, origin) => {
       if (window.location.origin === 'https://word-edit.officeapps.live.com' && !window.hlx?.previewListenerAdded) {
         window.hlx = window.hlx || {
@@ -102,7 +103,7 @@ export async function checkTab(id) {
       id, url, config, matches,
     });
 
-    if (isSharePointHost(tab.url, projects)) {
+    if (isSharePointHost(tab.url, projects) && new URL(tab.url).pathname.startsWith('/:w:/')) {
       injectSharePointListener(id, tab.url);
     }
   } catch (e) {
