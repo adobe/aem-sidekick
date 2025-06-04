@@ -195,13 +195,14 @@ describe('Test check-tab', () => {
     const tab = TABS[5];
 
     // Restore and re-stub executeScript
-    executeScriptSpy.restore();
+    executeScriptSpy.resetHistory();
 
     await checkTab(tab.id);
 
     // Verify SharePoint specific behavior
     expect(executeScriptSpy.calledWithMatch({
       target: { tabId: tab.id, allFrames: true },
+      injectImmediately: true,
     })).to.be.true;
   });
 
