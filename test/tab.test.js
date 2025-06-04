@@ -17,32 +17,20 @@ import sinon from 'sinon';
 
 import chromeMock from './mocks/chrome.js';
 import { checkTab, getCurrentTab } from '../src/extension/tab.js';
-import { error } from './test-utils.js';
+import { error, mockTab } from './test-utils.js';
 import { log } from '../src/extension/log.js';
+import { urlCache } from '../src/extension/url-cache.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
 
 const TABS = {
-  0: {
-    id: 0,
-  },
-  1: {
-    id: 1,
-    url: 'https://main--blog--adobe.hlx.page/',
-  },
-  2: {
-    id: 2,
-    url: 'https://www.example.com/',
-  },
-  3: {
-    id: 3,
-    url: 'http://localhost:2001/',
-  },
-  4: {
-    id: 4,
-    url: 'http://github.com/foo/bar',
-  },
+  0: mockTab(null, { id: '0' }),
+  1: mockTab('https://main--blog--adobe.hlx.page/', { id: '1' }),
+  2: mockTab('https://www.example.com/', { id: '2' }),
+  3: mockTab('http://localhost:2001/', { id: '3' }),
+  4: mockTab('http://github.com/foo/bar', { id: '4' }),
+  5: mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=bla.docx&action=default&mobileredirect=true', { id: '5' }),
 };
 
 const PROJECTS = {
@@ -67,29 +55,28 @@ describe('Test check-tab', () => {
 
   function fakeListenerCallback({ msg, api = chrome.runtime.onMessage, tab = TABS[1] }) {
     const stub = sandbox.stub(api, 'addListener')
-      // @ts-ignore
-      .callsFake((func, _) => func(
-        msg,
-        {
-          tab,
-        },
-      ));
+      .callsFake((callback) => {
+        // @ts-ignore - Chrome types are not fully accurate
+        callback(msg, { tab }, () => {});
+        return true;
+      });
     return stub;
   }
 
   function fakeGetProjects(cfg = {}) {
-    const stub = sandbox.stub(chrome.storage.sync, 'get')
-      .callsFake(async (prop) => new Promise((resolve) => {
-        if (prop === 'projects') {
-          // @ts-ignore
-          resolve({ projects: Object.keys(cfg) });
-        }
-        if (cfg[prop]) {
-          // @ts-ignore
-          resolve({ [prop]: cfg[prop] });
-        }
-        resolve();
-      }));
+    const stub = sandbox.stub(chrome.storage.sync, 'get');
+
+    // Handle different ways the storage API can be called
+    stub.withArgs('projects').resolves({ projects: Object.keys(cfg) });
+
+    // Handle individual project lookups
+    Object.keys(cfg).forEach((key) => {
+      stub.withArgs(key).resolves({ [key]: cfg[key] });
+    });
+
+    // Default case
+    stub.resolves({});
+
     return stub;
   }
 
@@ -101,7 +88,8 @@ describe('Test check-tab', () => {
     fakeGetProjects(PROJECTS);
     executeScriptSpy = sandbox.spy(chrome.scripting, 'executeScript');
     onMessageAddListenerStub = fakeListenerCallback({ msg: { isAEM: true } });
-    getTabSpy = sandbox.stub(chrome.tabs, 'get').callsFake(async (id) => TABS[id]);
+    sandbox.stub(urlCache, 'set').resolves();
+    getTabSpy = sandbox.stub(chrome.tabs, 'get').callsFake(async (id) => TABS[String(id)]);
   });
 
   afterEach(() => {
@@ -203,10 +191,99 @@ describe('Test check-tab', () => {
     expect(executeScriptSpy.callCount).to.equal(1);
   });
 
+  it('checkTab: injects sharepoint listener if sharepoint host', async () => {
+    const tab = TABS[5];
+
+    // Restore and re-stub executeScript
+    executeScriptSpy.restore();
+
+    await checkTab(tab.id);
+
+    // Verify SharePoint specific behavior
+    expect(executeScriptSpy.calledWithMatch({
+      target: { tabId: tab.id, allFrames: true },
+    })).to.be.true;
+  });
+
+  it('checkTab: handles multiple project matches', async () => {
+    const tab = TABS[1];
+
+    // Start fresh with a new sandbox
+    sandbox.restore();
+
+    // Setup all required stubs for this test
+    sandbox.stub(chrome.storage.local, 'get')
+      .withArgs('display')
+      .resolves({ display: true });
+
+    executeScriptSpy = sandbox.spy(chrome.scripting, 'executeScript');
+
+    // Setup message listener to indicate it's an AEM page
+    onMessageAddListenerStub = fakeListenerCallback({
+      msg: { isAEM: true },
+      tab,
+    });
+
+    // Setup tab spy
+    getTabSpy = sandbox.stub(chrome.tabs, 'get')
+      .callsFake(async (id) => TABS[String(id)]);
+
+    // Setup storage stub with multiple projects and their configs
+    const storageStub = sandbox.stub(chrome.storage.sync, 'get');
+    storageStub.withArgs('projects')
+      .resolves({ projects: ['adobe/blog', 'adobe/blog-test'] });
+    storageStub.withArgs('adobe/blog')
+      .resolves({ 'adobe/blog': PROJECTS['adobe/blog'] });
+    storageStub.withArgs('adobe/blog-test')
+      .resolves({ 'adobe/blog-test': { ...PROJECTS['adobe/blog'], repo: 'blog-test' } });
+    storageStub.resolves({});
+
+    await checkTab(tab.id);
+
+    // Verify script injection still happens with multiple matches
+    expect(executeScriptSpy.callCount).to.equal(1);
+    expect(executeScriptSpy.calledWith({
+      target: { tabId: tab.id },
+      files: ['./content.js'],
+    })).to.be.true;
+  });
+
   it('getCurrentTab', async () => {
     // @ts-ignore
     sandbox.stub(chrome.tabs, 'query').withArgs({ active: true, currentWindow: true }).resolves([TABS[1]]);
     const tab = await getCurrentTab();
     expect(tab).to.equal(TABS[1]);
+  });
+
+  it('getCurrentTab: no active tab', async () => {
+    sandbox.stub(chrome.tabs, 'query')
+      .withArgs({ active: true, currentWindow: true })
+      .resolves([]);
+    const tab = await getCurrentTab();
+    expect(tab).to.be.undefined;
+  });
+
+  it('getCurrentTab: multiple tabs returned', async () => {
+    const mockTabs = [
+      mockTab('https://example.com/1', { id: '1' }),
+      mockTab('https://example.com/2', { id: '2' }),
+    ];
+    sandbox.stub(chrome.tabs, 'query')
+      .withArgs({ active: true, currentWindow: true })
+      .resolves(mockTabs);
+    const tab = await getCurrentTab();
+    expect(tab).to.equal(mockTabs[0]); // Should return first tab
+  });
+
+  it('getCurrentTab: handles query error', async () => {
+    sandbox.stub(chrome.tabs, 'query')
+      .withArgs({ active: true, currentWindow: true })
+      .rejects(new Error('Query failed'));
+    try {
+      await getCurrentTab();
+      expect.fail('Should have thrown an error');
+    } catch (e) {
+      expect(e.message).to.equal('Query failed');
+    }
   });
 });
