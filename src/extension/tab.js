@@ -58,8 +58,9 @@ async function injectSharePointListener(id, tabUrl) {
           if (action === 'saveDocument'
             && url.startsWith(origin)
             && senderId === extensionId) {
+            const metaKey = navigator.userAgent.includes('Macintosh');
             const res = document.dispatchEvent(new KeyboardEvent('keydown', {
-              key: 's', keyCode: 83, code: 'KeyS', composed: true, metaKey: true,
+              key: 's', keyCode: 83, code: 'KeyS', composed: true, metaKey, ctrlKey: !metaKey,
             }));
             sendResponse(res);
             return res;
