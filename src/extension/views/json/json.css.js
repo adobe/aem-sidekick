@@ -188,6 +188,7 @@ export const style = css`
 
   sp-table-head {
     min-height: fit-content;
+    overflow-x: scroll;
   }
 
   sp-table-head::-webkit-scrollbar {
