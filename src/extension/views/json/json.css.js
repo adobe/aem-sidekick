@@ -154,7 +154,6 @@ export const style = css`
     padding-top: 15px;
     width: 100%;
     height: 100%;
-    overflow: auto;
   }
 
   .tableContainer.loading {
@@ -180,10 +179,6 @@ export const style = css`
 
   sp-theme[color='light'] .header sp-search {
     --mod-textfield-background-color: #ffffff;
-  }
-
-  sp-table {
-    overflow: scroll;
   }
 
   sp-table-head {
