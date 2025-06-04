@@ -954,9 +954,7 @@ export class AppStore {
     );
 
     // update preview
-    console.log('******************** appStore: updating preview');
     const previewStatus = await this.api.updatePreview(path);
-    console.log('******************** appStore: preview updated');
     if (previewStatus) {
       // If we are on preview, we need to bust the cache on the page to ensure the latest
       // content is loaded.
