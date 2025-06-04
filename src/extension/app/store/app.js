@@ -970,14 +970,16 @@ export class AppStore {
   }
 
   async updatePreview(ranBefore) {
-    if (this.isSharePointEditor(new URL(window.location.href))) {
-      console.log('******************** appStore: forcing save');
-      await Promise.all([chrome.runtime.sendMessage({
+    const url = new URL(window.location.href);
+    if (this.isSharePointEditor(url) && url.pathname.startsWith('/:w:/')) {
+      chrome.runtime.sendMessage({
         action: 'saveDocument',
-        url: window.location.href,
-      }, (res) => {
-        console.log('******************** appStore: saved?', res);
-      })]);
+        url: url.toString(),
+      });
+      // wait for save to complete
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1100);
+      });
     }
     const res = await this.update();
     if (!res && !ranBefore) {

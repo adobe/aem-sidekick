@@ -42,25 +42,23 @@ async function injectContentScript(tabId, matches, adminVersion) {
   }
 }
 
-export async function injectPreviewListener(id, tabUrl) {
+export async function injectSharePointListener(id, tabUrl) {
   chrome.scripting.executeScript({
     target: {
       tabId: id,
       allFrames: true,
     },
     func: (extensionId, origin) => {
-      if (window.location.origin === 'https://word-edit.officeapps.live.com' && !window.hlx?.saveListenerAdded) {
-        console.log('********************     docFrame: adding save listener');
+      if (window.location.origin === 'https://word-edit.officeapps.live.com' && !window.hlx?.previewListenerAdded) {
         window.hlx = window.hlx || {
-          saveListenerAdded: true,
+          previewListenerAdded: true,
         };
         chrome.runtime.onMessage.addListener(({ action, url }, { id: senderId }, sendResponse) => {
           if (action === 'saveDocument'
             && url.startsWith(origin)
             && senderId === extensionId) {
-            console.log('******************** docFrame: force-saving document');
             const res = document.dispatchEvent(new KeyboardEvent('keydown', {
-              key: 's', metaKey: true,
+              key: 's', keyCode: 83, code: 'KeyS', composed: true, metaKey: true,
             }));
             sendResponse(res);
             return res;
@@ -105,7 +103,7 @@ export async function checkTab(id) {
     });
 
     if (isSharePointHost(tab.url, projects)) {
-      injectPreviewListener(id, tab.url);
+      injectSharePointListener(id, tab.url);
     }
   } catch (e) {
     log.warn(`checkTab: error checking tab ${id}`, e);

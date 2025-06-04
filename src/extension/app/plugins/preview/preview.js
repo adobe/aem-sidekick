@@ -56,14 +56,7 @@ export function createPreviewPlugin(appStore) {
           });
           return;
         }
-        if (status.edit && status.edit.sourceLocation
-            && status.edit.sourceLocation.startsWith('onedrive:')
-            && !location.pathname.startsWith('/:x:/')) {
-          // show ctrl/cmd + s hint on onedrive docs
-          // istanbul ignore next
-          const mac = navigator.platform.toLowerCase().includes('mac') ? '_mac' : '';
-          appStore.showToast({ message: appStore.i18n(`preview_onedrive${mac}`) });
-        } else if (status.edit.sourceLocation?.startsWith('gdrive:')) {
+        if (status.edit.sourceLocation?.startsWith('gdrive:')) {
           const { contentType } = status.edit;
 
           const isGoogleDocMime = contentType === 'application/vnd.google-apps.document';
