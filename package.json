@@ -67,7 +67,7 @@
     "mobx": "6.13.7"
   },
   "devDependencies": {
-    "@adobe/eslint-config-helix": "2.0.9",
+    "@adobe/eslint-config-helix": "3.0.3",
     "@adobe/fetch": "4.2.2",
     "@babel/eslint-parser": "7.27.1",
     "@babel/plugin-proposal-decorators": "7.27.1",
