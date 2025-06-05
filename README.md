@@ -21,16 +21,12 @@
 $ npm install
 ```
 
-### Start Development Server
+### Build and Test Locally
 
-Changes to project will trigger build
-
-```bash
-$ npm run build:watch
-```
-
-### Test Locally
-
+1. Start the development server to trigger a build on each code change:
+   ```
+   $ npm run build:watch
+   ```
 1. Open Chrome and navigate to `chrome://extensions`
 1. Turn on _Developer mode_ at the top right of the header bar<br />
 ![Developer mode](docs/imgs/install_developer_mode.png)
@@ -43,7 +39,7 @@ $ npm run build:watch
 ![Extensions icon](docs/imgs/install_extensions_icon.png)
 1. Verify that there's an icon like this:<br />
 ![Sidekick extension icon](docs/imgs/install_toolbar_icon.png)<br />
-1. Click the pin button next to it to make sure it always stays visible.
+1. Click the pin icon next to it to make sure it always stays visible.
 
 #### Code Changes
 
