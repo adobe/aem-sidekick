@@ -968,17 +968,6 @@ export class AppStore {
   }
 
   async updatePreview(ranBefore) {
-    const url = new URL(window.location.href);
-    if (this.isSharePointEditor(url) && url.pathname.startsWith('/:w:/')) {
-      chrome.runtime.sendMessage({
-        action: 'saveDocument',
-        url: url.toString(),
-      });
-      // wait for save to complete
-      await new Promise((resolve) => {
-        setTimeout(resolve, 1100);
-      });
-    }
     const res = await this.update();
     if (!res && !ranBefore) {
       // assume document has been renamed, re-fetch status and try again
