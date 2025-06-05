@@ -312,6 +312,13 @@ export const style = css`
     background-color: rgba(0, 0, 0, 0.7);
   }
 
+  sp-table-head-cell.line::before {
+    content: "+";
+    color: transparent;
+    margin-right: 8px;
+    font-weight: bold;
+  }
+
   sp-table-cell[data-diff="added"]::before {
     content: "+";
     color: var(--spectrum-semantic-positive-color-default);
@@ -320,7 +327,7 @@ export const style = css`
   }
 
   sp-table-cell[data-diff="removed"]::before {
-    content: "-";
+    content: "−";
     color: var(--spectrum-semantic-negative-color-default);
     margin-right: 8px;
     font-weight: bold;
