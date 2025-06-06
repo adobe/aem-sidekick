@@ -200,15 +200,16 @@ export class BulkStore {
    * @returns {BulkSelection} The selection
    */
   #getGoogleDriveBulkSelection(document) {
-    return [...document.querySelectorAll('#drive_main_page [role="row"][aria-selected="true"]')]
+    return [...document.querySelectorAll('#drive_main_page [aria-selected="true"]')]
       // extract file name and type
       .map((row) => {
-        const file = (row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(2) div[jsname]') // grid layout
-          || row.querySelector(':scope div[role="gridcell"] > div:nth-of-type(2) > div:not([role="button"])')) // list layout
+        const file = (row.querySelector(':scope td div[data-id] > span > strong') // list layout
+          || row.querySelector(':scope div > div:nth-child(2) > div:nth-child(2) > div')) // grid layout
           ?.textContent.trim();
 
         // use path in icon svg to determine type
-        const typeHint = row.querySelector(':scope div[role="gridcell"] > div path') // list & grid layout
+        const typeHint = (row.querySelector(':scope td div > svg > path') // list layout
+          || row.querySelector(':scope div > div:nth-child(2) > div:nth-child(1) div > svg > path')) // grid layout
           ?.getAttribute('d').slice(-4);
         let type = 'unknown';
         if (typeHint) {
