@@ -173,6 +173,28 @@ export const style = css`
     padding-top: 1px;
   }
 
+  .icon-item #label {
+    padding-top: 2px;
+    display: flex;
+    align-items: center;
+  }
+    
+  .icon-item #label slot::slotted(sp-icon.experimental) {
+    position: relative;
+    right: 0;
+    margin-left: 16px;
+    border-radius: 8px;
+    background: var(--spectrum2-sidekick-background-experimental);
+    color: var(--spectrum2-sidekick-foreground-experimental);
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    box-sizing: border-box;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   :host(.icon-item.destructive) {
     color: var(--spectrum2-foreground-color-negative);
     --highcontrast-menu-item-color-default: var(--spectrum2-foreground-color-negative);

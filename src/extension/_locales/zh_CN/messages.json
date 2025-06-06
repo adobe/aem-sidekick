@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "已成功从 AEM Sidekick v6 导入 1 个项目。"
   },
+  "config_project_manage": {
+    "message": "管理项目"
+  },
   "config_project_pick": {
     "message": "选择一个项目"
   },
@@ -297,7 +300,7 @@
     "message": "无法复制到剪贴板。请确保窗口保持聚焦状态。"
   },
   "dark_mode": {
-    "message": "深色模式"
+    "message": "深色主题"
   },
   "delete": {
     "message": "删除"
@@ -464,6 +467,9 @@
   "live_never_updated": {
     "message": "从未发布"
   },
+  "loading_diff": {
+    "message": "正在加载更改……"
+  },
   "logging_in_state": {
     "message": "正在登录……"
   },
@@ -493,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "此表为空"
+  },
+  "no_diffs": {
+    "message": "未发现任何更改"
+  },
+  "no_diffs_subheading": {
+    "message": "预览和发布的内容相同"
   },
   "no_results": {
     "message": "未找到结果"
@@ -613,6 +625,12 @@
   },
   "share_description": {
     "message": "共享您的 Sidekick"
+  },
+  "show_all": {
+    "message": "显示所有行"
+  },
+  "show_diff": {
+    "message": "显示更改"
   },
   "site_forbidden": {
     "message": "访问被拒。请尝试以其他用户身份登录或向管理员申请足够的权限。"

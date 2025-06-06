@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "已成功從 AEM Sidekick v6 中匯入 1 個專案。"
   },
+  "config_project_manage": {
+    "message": "管理專案"
+  },
   "config_project_pick": {
     "message": "選取一個專案"
   },
@@ -297,7 +300,7 @@
     "message": "複製到剪貼簿失敗。請確定該視窗仍是焦點視窗。"
   },
   "dark_mode": {
-    "message": "深色模式"
+    "message": "深色主題"
   },
   "delete": {
     "message": "刪除"
@@ -464,6 +467,9 @@
   "live_never_updated": {
     "message": "從未發佈過"
   },
+  "loading_diff": {
+    "message": "正在載入變更…"
+  },
   "logging_in_state": {
     "message": "正在登入…"
   },
@@ -493,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "此工作表是空的"
+  },
+  "no_diffs": {
+    "message": "找不到任何變更"
+  },
+  "no_diffs_subheading": {
+    "message": "預覽和發佈的內容完全相同"
   },
   "no_results": {
     "message": "找不到任何結果"
@@ -613,6 +625,12 @@
   },
   "share_description": {
     "message": "共用您的 Sidekick"
+  },
+  "show_all": {
+    "message": "顯示所有列"
+  },
+  "show_diff": {
+    "message": "顯示變更"
   },
   "site_forbidden": {
     "message": "存取已遭拒。請嘗試使用不同的使用者登入，或向管理員要求足夠的權限。"

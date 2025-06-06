@@ -68,7 +68,7 @@ export async function checkTab(id) {
     injectContentScript(id, matches, adminVersion);
 
     updateUI({
-      id, url, config, matches,
+      id, url, config, matches, numProjects: projects.length,
     });
   } catch (e) {
     log.warn(`checkTab: error checking tab ${id}`, e);
