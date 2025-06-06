@@ -467,6 +467,9 @@
   "live_never_updated": {
     "message": "未公開"
   },
+  "loading_diff": {
+    "message": "変更を読み込み中..."
+  },
   "logging_in_state": {
     "message": "ログイン中..."
   },
@@ -496,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "このシートは空です"
+  },
+  "no_diffs": {
+    "message": "変更が見つかりません"
+  },
+  "no_diffs_subheading": {
+    "message": "プレビュー済みコンテンツと公開済みコンテンツが同じ"
   },
   "no_results": {
     "message": "結果が見つかりません"
@@ -616,6 +625,12 @@
   },
   "share_description": {
     "message": "Sidekick を共有"
+  },
+  "show_all": {
+    "message": "すべての行を表示"
+  },
+  "show_diff": {
+    "message": "変更を表示"
   },
   "site_forbidden": {
     "message": "アクセスが拒否されました。別のユーザーでログインするか、管理者に十分な権限を求めてください。"

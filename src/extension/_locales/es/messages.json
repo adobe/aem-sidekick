@@ -467,6 +467,9 @@
   "live_never_updated": {
     "message": "Nunca publicado"
   },
+  "loading_diff": {
+    "message": "Cargando cambios..."
+  },
   "logging_in_state": {
     "message": "Iniciando sesión..."
   },
@@ -496,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "Esta hoja está vacía"
+  },
+  "no_diffs": {
+    "message": "No se ha encontrado ningún cambio"
+  },
+  "no_diffs_subheading": {
+    "message": "El contenido de la vista previa y el publicado son idénticos"
   },
   "no_results": {
     "message": "No se han encontrado resultados"
@@ -616,6 +625,12 @@
   },
   "share_description": {
     "message": "Comparta su Sidekick"
+  },
+  "show_all": {
+    "message": "Mostrar todas las filas"
+  },
+  "show_diff": {
+    "message": "Mostrar cambios"
   },
   "site_forbidden": {
     "message": "Acceso denegado. Intente iniciar sesión con un usuario diferente o solicite al administrador los permisos necesarios."

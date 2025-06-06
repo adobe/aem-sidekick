@@ -462,10 +462,13 @@
     "message": "마지막으로 게시됨: $1"
   },
   "live_last_updated_by": {
-    "message": "$2에 의해 마지막으로 게시된 $1"
+    "message": "$1에 $2님이 마지막으로 게시함"
   },
   "live_never_updated": {
     "message": "게시된 적 없음"
+  },
+  "loading_diff": {
+    "message": "변경 사항 로드 중..."
   },
   "logging_in_state": {
     "message": "로그인 중..."
@@ -496,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "이 시트는 비어 있습니다."
+  },
+  "no_diffs": {
+    "message": "변경 사항 없음"
+  },
+  "no_diffs_subheading": {
+    "message": "미리보기한 콘텐츠와 게시된 콘텐츠가 동일함"
   },
   "no_results": {
     "message": "검색 결과 없음"
@@ -552,7 +561,7 @@
     "message": "마지막 업데이트: $1"
   },
   "preview_last_updated_by": {
-    "message": "$2에 의해 마지막으로 업데이트된 $1"
+    "message": "$1에 $2님이 마지막으로 업데이트함"
   },
   "preview_never_updated": {
     "message": "미리보기된 적 없음"
@@ -616,6 +625,12 @@
   },
   "share_description": {
     "message": "Sidekick 공유"
+  },
+  "show_all": {
+    "message": "모든 행 표시"
+  },
+  "show_diff": {
+    "message": "변경 사항 표시"
   },
   "site_forbidden": {
     "message": "액세스가 거부되었습니다. 다른 사용자로 로그인을 시도하거나 관리자에게 권한을 요청하시기 바랍니다."

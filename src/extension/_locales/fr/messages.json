@@ -467,6 +467,9 @@
   "live_never_updated": {
     "message": "Jamais publié"
   },
+  "loading_diff": {
+    "message": "Chargement des modifications..."
+  },
   "logging_in_state": {
     "message": "Connexion..."
   },
@@ -496,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "Cette feuille est vide."
+  },
+  "no_diffs": {
+    "message": "Aucune modification trouvée"
+  },
+  "no_diffs_subheading": {
+    "message": "Le contenu prévisualisé et le contenu publié sont identiques."
   },
   "no_results": {
     "message": "Aucun résultat trouvé"
@@ -616,6 +625,12 @@
   },
   "share_description": {
     "message": "Partager votre Sidekick"
+  },
+  "show_all": {
+    "message": "Afficher toutes les lignes"
+  },
+  "show_diff": {
+    "message": "Afficher les modifications"
   },
   "site_forbidden": {
     "message": "Accès refusé. Essayez de vous connecter avec un autre compte ou demandez à votre équipe d’administration des autorisations suffisantes."
