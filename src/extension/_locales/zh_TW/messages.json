@@ -467,6 +467,9 @@
   "live_never_updated": {
     "message": "從未發佈過"
   },
+  "loading_diff": {
+    "message": "正在載入變更…"
+  },
   "logging_in_state": {
     "message": "正在登入…"
   },
@@ -496,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "此工作表是空的"
+  },
+  "no_diffs": {
+    "message": "找不到任何變更"
+  },
+  "no_diffs_subheading": {
+    "message": "預覽和發佈的內容完全相同"
   },
   "no_results": {
     "message": "找不到任何結果"
@@ -616,6 +625,12 @@
   },
   "share_description": {
     "message": "共用您的 Sidekick"
+  },
+  "show_all": {
+    "message": "顯示所有列"
+  },
+  "show_diff": {
+    "message": "顯示變更"
   },
   "site_forbidden": {
     "message": "存取已遭拒。請嘗試使用不同的使用者登入，或向管理員要求足夠的權限。"

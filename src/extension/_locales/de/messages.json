@@ -467,6 +467,9 @@
   "live_never_updated": {
     "message": "Nie veröffentlicht"
   },
+  "loading_diff": {
+    "message": "Änderungen werden geladen …"
+  },
   "logging_in_state": {
     "message": "Anmelden …"
   },
@@ -496,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "Dieses Blatt ist leer"
+  },
+  "no_diffs": {
+    "message": "Keine Änderungen gefunden"
+  },
+  "no_diffs_subheading": {
+    "message": "Die Vorschau und die veröffentlichten Inhalte sind identisch"
   },
   "no_results": {
     "message": "Keine Ergebnisse gefunden"
@@ -616,6 +625,12 @@
   },
   "share_description": {
     "message": "Sidekick freigeben"
+  },
+  "show_all": {
+    "message": "Alle Zeilen anzeigen"
+  },
+  "show_diff": {
+    "message": "Änderungen anzeigen"
   },
   "site_forbidden": {
     "message": "Zugriff verweigert. Versuchen Sie, sich mit einem anderen Benutzerkonto anzumelden, oder bitten Sie Ihre bzw. Ihren Admin um ausreichende Berechtigungen."

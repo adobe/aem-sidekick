@@ -467,6 +467,9 @@
   "live_never_updated": {
     "message": "Pubblicazione mai eseguita"
   },
+  "loading_diff": {
+    "message": "Caricamento delle modifiche..."
+  },
   "logging_in_state": {
     "message": "Accesso in corso..."
   },
@@ -496,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "Il foglio è vuoto"
+  },
+  "no_diffs": {
+    "message": "Nessuna modifica trovata"
+  },
+  "no_diffs_subheading": {
+    "message": "I contenuti visualizzati in anteprima e pubblicati sono identici"
   },
   "no_results": {
     "message": "Nessun risultato"
@@ -616,6 +625,12 @@
   },
   "share_description": {
     "message": "Condividi Sidekick"
+  },
+  "show_all": {
+    "message": "Mostra tutte le righe"
+  },
+  "show_diff": {
+    "message": "Mostra modifiche"
   },
   "site_forbidden": {
     "message": "Accesso negato. Prova ad accedere con un altro nome utente o chiedi all’amministratore le autorizzazioni necessarie."

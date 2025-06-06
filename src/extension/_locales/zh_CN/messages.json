@@ -467,6 +467,9 @@
   "live_never_updated": {
     "message": "从未发布"
   },
+  "loading_diff": {
+    "message": "正在加载更改……"
+  },
   "logging_in_state": {
     "message": "正在登录……"
   },
@@ -496,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "此表为空"
+  },
+  "no_diffs": {
+    "message": "未发现任何更改"
+  },
+  "no_diffs_subheading": {
+    "message": "预览和发布的内容相同"
   },
   "no_results": {
     "message": "未找到结果"
@@ -616,6 +625,12 @@
   },
   "share_description": {
     "message": "共享您的 Sidekick"
+  },
+  "show_all": {
+    "message": "显示所有行"
+  },
+  "show_diff": {
+    "message": "显示更改"
   },
   "site_forbidden": {
     "message": "访问被拒。请尝试以其他用户身份登录或向管理员申请足够的权限。"
