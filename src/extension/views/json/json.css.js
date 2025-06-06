@@ -206,6 +206,8 @@ export const style = css`
   .line {
     min-width: 90px;
     max-width: 90px;
+    text-align: right;
+    white-space: nowrap;
   }
 
   sp-table-cell a {
@@ -310,13 +312,6 @@ export const style = css`
 
   theme-wrapper[theme='dark'] .loading-overlay {
     background-color: rgba(0, 0, 0, 0.7);
-  }
-
-  sp-table-head-cell.line::before {
-    content: "+";
-    color: transparent;
-    margin-right: 8px;
-    font-weight: bold;
   }
 
   sp-table-cell[data-diff="added"]::before {
