@@ -205,6 +205,7 @@ export class BulkStore {
       .map((row) => {
         const file = (row.querySelector(':scope td div[data-id] > span > strong') // list layout
           || row.querySelector(':scope div > div:nth-child(2) > div:nth-child(2) > div') // grid layout
+          // istanbul ignore next 2
           || row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(2) div[jsname]') // legacy grid layout
           || row.querySelector(':scope div[role="gridcell"] > div:nth-of-type(2) > div:not([role="button"])')) // legacy list layout
           ?.textContent.trim();
@@ -212,6 +213,7 @@ export class BulkStore {
         // use path in icon svg to determine type
         const typeHint = (row.querySelector(':scope td div > svg > path') // list layout
           || row.querySelector(':scope div > div:nth-child(2) > div:nth-child(1) div > svg > path')
+          // istanbul ignore next
           || row.querySelector(':scope div[role="gridcell"] > div path')) // legacy list & grid layout
           ?.getAttribute('d').slice(-4);
         let type = 'unknown';
