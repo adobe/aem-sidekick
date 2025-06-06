@@ -159,7 +159,7 @@ describe('Test Bulk Store', () => {
           : DEFAULT_GDRIVE_BULK_SELECTION).map((item) => item.file);
 
         beforeEach(async () => {
-          sidekickTest.mockAdminDOM(adminEnv, 'list');
+          sidekickTest.mockAdminDOM(adminEnv);
           // select all files
           sidekickTest.toggleAdminItems(allItems);
         });
