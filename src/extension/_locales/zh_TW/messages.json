@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "已成功從 AEM Sidekick v6 中匯入 1 個專案。"
   },
+  "config_project_manage": {
+    "message": "管理專案"
+  },
   "config_project_pick": {
     "message": "選取一個專案"
   },
@@ -297,7 +300,7 @@
     "message": "複製到剪貼簿失敗。請確定該視窗仍是焦點視窗。"
   },
   "dark_mode": {
-    "message": "深色模式"
+    "message": "深色主題"
   },
   "delete": {
     "message": "刪除"

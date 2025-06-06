@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "1 projeto importado com sucesso do AEM Sidekick v6."
   },
+  "config_project_manage": {
+    "message": "Gerenciar projetos"
+  },
   "config_project_pick": {
     "message": "Escolha um projeto"
   },
@@ -297,7 +300,7 @@
     "message": "Falha ao copiar para a área de transferência. Certifique-se de que a janela permaneça em foco."
   },
   "dark_mode": {
-    "message": "Modo escuro"
+    "message": "Tema escuro"
   },
   "delete": {
     "message": "Excluir"
