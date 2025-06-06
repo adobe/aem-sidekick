@@ -159,7 +159,7 @@ describe('Test Bulk Store', () => {
           : DEFAULT_GDRIVE_BULK_SELECTION).map((item) => item.file);
 
         beforeEach(async () => {
-          sidekickTest.mockAdminDOM(adminEnv);
+          sidekickTest.mockAdminDOM(adminEnv, 'list');
           // select all files
           sidekickTest.toggleAdminItems(allItems);
         });
@@ -1150,7 +1150,7 @@ describe('Test Bulk Store', () => {
 
       // delete file icon to simulate unknown file type
       sidekickTest.toggleAdminItems(['document']);
-      sidekickTest.bulkRoot.querySelector('div.file[aria-selected="true"] svg').remove();
+      sidekickTest.bulkRoot.querySelector('.file[aria-selected="true"] svg').remove();
       bulkStore.initStore(appStore.location);
       await waitUntil(() => bulkStore.selection.length === 1);
 
@@ -1169,7 +1169,7 @@ describe('Test Bulk Store', () => {
 
       // add .docx extension to file name
       sidekickTest.bulkRoot
-        .querySelector('div#file-gdoc div[data-tooltip]')
+        .querySelector('#file-gdoc strong')
         .textContent = 'document.docx';
       sidekickTest.toggleAdminItems(['document']);
 
@@ -1195,7 +1195,7 @@ describe('Test Bulk Store', () => {
 
       // add .xlsx extension to file name
       sidekickTest.bulkRoot
-        .querySelector('div#file-gsheet div[data-tooltip]')
+        .querySelector('#file-gsheet strong')
         .textContent = 'spreadsheet.xlsx';
       sidekickTest.toggleAdminItems(['spreadsheet']);
 
