@@ -398,7 +398,7 @@ export class JSONView extends LitElement {
       if (date.toString() !== 'Invalid Date'
         && nearFuture > date.valueOf() && recentPast < date.valueOf()) {
         valueContainer.classList.add('date');
-        valueContainer.textContent = date.toLocaleString();
+        valueContainer.textContent = date.toUTCString();
       } else {
         // number
         valueContainer.classList.add('number');
