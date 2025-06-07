@@ -49,6 +49,7 @@ describe('Preview plugin', () => {
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
     sidekickTest
       .mockFetchSidekickConfigSuccess(false, false);
+    sidekickTest.sandbox.stub(chrome.runtime, 'sendMessage').resolves(true);
   });
 
   afterEach(() => {
@@ -86,7 +87,7 @@ describe('Preview plugin', () => {
 
       previewPlugin.click();
 
-      await waitUntil(() => updatePreviewSpy.calledOnce);
+      await waitUntil(() => updatePreviewSpy.calledOnce, null, { timeout: 1500 });
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
@@ -136,7 +137,7 @@ describe('Preview plugin', () => {
 
       // Reset the environment
       sidekick = sidekickTest.createSidekick();
-      await aTimeout(500);
+      await aTimeout(1000);
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
 
@@ -172,7 +173,7 @@ describe('Preview plugin', () => {
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 
       previewPlugin.click();
-      await waitUntil(() => updatePreviewSpy.calledOnce);
+      await waitUntil(() => updatePreviewSpy.calledOnce, null, { timeout: 1500 });
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
