@@ -51,9 +51,8 @@ async function injectSharePointListener(id, tabUrl) {
     // istanbul ignore next 20
     func: (extensionId, origin) => {
       if (window.location.origin === 'https://word-edit.officeapps.live.com' && !window.hlx?.previewListenerAdded) {
-        window.hlx = window.hlx || {
-          previewListenerAdded: true,
-        };
+        window.hlx = window.hlx || {};
+        window.hlx.previewListenerAdded = true;
         chrome.runtime.onMessage.addListener(({ action, url }, { id: senderId }, sendResponse) => {
           if (action === 'saveDocument'
             && url.startsWith(origin)
