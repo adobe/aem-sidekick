@@ -90,6 +90,7 @@ export function createPreviewPlugin(appStore) {
             previewTimestamp: Date.now(),
           }));
           appStore.reloadPage();
+          return;
         }
         if (location.pathname.startsWith('/:w:/')) {
           // tell word to save document before previewing
@@ -102,7 +103,6 @@ export function createPreviewPlugin(appStore) {
             setTimeout(resolve, 1100);
           });
         }
-
         appStore.updatePreview();
         appStore.fireEvent(
           EXTERNAL_EVENTS.RESOURCE_PREVIEWED,
