@@ -19,6 +19,7 @@ import {
 import { isSharePointHost, urlCache } from './url-cache.js';
 import { updateUI } from './ui.js';
 import { getConfig } from './config.js';
+import { injectWordHelper } from './sharepoint.js';
 
 /**
  * Loads the content script in the tab.
@@ -40,38 +41,6 @@ async function injectContentScript(tabId, matches, adminVersion) {
   } catch (e) {
     log.warn('injectContentScript: unable to inject content script', tabId, e);
   }
-}
-
-async function injectSharePointListener(id, tabUrl) {
-  chrome.scripting.executeScript({
-    target: {
-      tabId: id,
-      allFrames: true,
-    },
-    // istanbul ignore next 20
-    func: (extensionId, origin) => {
-      if (window.location.origin === 'https://word-edit.officeapps.live.com' && !window.hlx?.previewListenerAdded) {
-        window.hlx = window.hlx || {};
-        window.hlx.previewListenerAdded = true;
-        chrome.runtime.onMessage.addListener(({ action, url }, { id: senderId }, sendResponse) => {
-          if (action === 'saveDocument'
-            && url.startsWith(origin)
-            && senderId === extensionId) {
-            const metaKey = navigator.userAgent.includes('Macintosh');
-            const res = document.dispatchEvent(new KeyboardEvent('keydown', {
-              key: 's', keyCode: 83, code: 'KeyS', composed: true, metaKey, ctrlKey: !metaKey,
-            }));
-            sendResponse(res);
-            return res;
-          }
-          sendResponse(false);
-          return false;
-        });
-      }
-    },
-    args: [chrome.runtime.id, new URL(tabUrl).origin],
-    injectImmediately: true,
-  });
 }
 
 /**
@@ -104,7 +73,7 @@ export async function checkTab(id) {
     });
 
     if (isSharePointHost(tab.url, projects) && new URL(tab.url).pathname.startsWith('/:w:/')) {
-      injectSharePointListener(id, tab.url);
+      injectWordHelper(id, tab.url);
     }
   } catch (e) {
     log.warn(`checkTab: error checking tab ${id}`, e);
