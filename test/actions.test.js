@@ -987,5 +987,11 @@ describe('Test actions', () => {
 
       expect(updateProjectStub.called).to.be.false;
     });
+
+    it('saves document in sharepoint', async () => {
+      const saveDocumentStub = sandbox.stub(chrome.tabs, 'sendMessage');
+      await internalActions.saveDocument({ id: 1, url: 'https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=bla.docx&action=default&mobileredirect=true' });
+      expect(saveDocumentStub.calledWithMatch(1, { action: 'saveDocument' })).to.be.true;
+    });
   });
 });
