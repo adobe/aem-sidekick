@@ -100,7 +100,7 @@ export function createPreviewPlugin(appStore) {
           });
           // wait for save to complete
           await new Promise((resolve) => {
-            setTimeout(resolve, 1100);
+            setTimeout(resolve, 1500);
           });
         }
         appStore.updatePreview();

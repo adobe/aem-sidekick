@@ -87,7 +87,7 @@ describe('Preview plugin', () => {
 
       previewPlugin.click();
 
-      await waitUntil(() => updatePreviewSpy.calledOnce, null, { timeout: 1500 });
+      await waitUntil(() => updatePreviewSpy.calledOnce, null, { timeout: 2000 });
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
@@ -173,7 +173,7 @@ describe('Preview plugin', () => {
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 
       previewPlugin.click();
-      await waitUntil(() => updatePreviewSpy.calledOnce, null, { timeout: 1500 });
+      await waitUntil(() => updatePreviewSpy.calledOnce, null, { timeout: 2000 });
 
       expect(updatePreviewSpy.calledOnce).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
