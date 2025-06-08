@@ -29,6 +29,7 @@ import { ADMIN_ORIGIN, createAdminUrl } from './utils/admin.js';
 import { getConfig } from './config.js';
 import { getDisplay, setDisplay } from './display.js';
 import { urlCache } from './url-cache.js';
+import { saveDocument } from './sharepoint.js';
 
 /**
  * Updates the auth token via external messaging API (admin only).
@@ -511,18 +512,6 @@ async function updateProject(_, { config }) {
       await updateProjectConfig(config);
     }
   }
-}
-
-/**
- * Sends a message to the tab to trigger a save event
- * @param {chrome.tabs.Tab} tab The tab
- * @returns {Promise<boolean>} True if the message was relayed, else false
- */
-async function saveDocument({ id, url }) {
-  return chrome.tabs.sendMessage(id, {
-    action: 'saveDocument',
-    url,
-  });
 }
 
 /**

@@ -54,3 +54,15 @@ export async function injectWordHelper(tabId, tabUrl) {
     injectImmediately: true,
   });
 }
+
+/**
+ * Sends a message to the tab to trigger a save event
+ * @param {chrome.tabs.Tab} tab The tab
+ * @returns {Promise<boolean>} True if the message was relayed, else false
+ */
+export async function saveDocument({ id, url }) {
+  return chrome.tabs.sendMessage(id, {
+    action: 'saveDocument',
+    url,
+  });
+}
