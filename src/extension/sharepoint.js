@@ -17,7 +17,6 @@
  * @param {Window} [win] The window object for testing
  */
 export async function wordHelper(extensionId, sharePointUrl, win = window) {
-  // istanbul ignore next 18
   if (win.location.origin === 'https://word-edit.officeapps.live.com' && !win.hlx?.previewListenerAdded) {
     win.hlx = win.hlx || {};
     win.hlx.previewListenerAdded = true;

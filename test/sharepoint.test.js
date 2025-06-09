@@ -21,67 +21,89 @@ window.chrome = chromeMock;
 
 const sandbox = sinon.createSandbox();
 
-/**
- * @type {Window}
- */
-const fakeWindow = {
-  // @ts-ignore
-  location: {
-    origin: 'https://word-edit.officeapps.live.com',
-  },
+const mockSender = {
+  id: chrome.runtime.id,
 };
-const fakeUrl = 'https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=bla.docx&action=default&mobileredirect=true';
+const mockUrl = 'https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=bla.docx&action=default&mobileredirect=true';
 
-// write describe and it for injectWordHelper
 describe('sharepoint helper', () => {
+  /**
+   * @type {Window}
+   */
+  let mockWindow;
+  let listenerAdded;
+  let addListenerStub;
+  let sendResponse;
+  let dispatchEventStub;
+
+  beforeEach(() => {
+    mockWindow = {
+      // @ts-ignore
+      location: {
+        origin: 'https://word-edit.officeapps.live.com',
+      },
+    };
+    addListenerStub = sandbox.stub(chrome.runtime.onMessage, 'addListener');
+    addListenerStub.callsFake((listener) => {
+      listenerAdded = listener;
+    });
+    sendResponse = sandbox.stub();
+    dispatchEventStub = sandbox.stub(document, 'dispatchEvent');
+  });
+
   afterEach(() => {
     sandbox.restore();
   });
 
   it('adds message listener to word editor frame and saves document', async () => {
-    let listenerAdded;
-    sandbox.stub(chrome.runtime.onMessage, 'addListener').callsFake((listener) => {
-      listenerAdded = listener;
-    });
-    const dispatchEventStub = sandbox.stub(document, 'dispatchEvent');
-
     wordHelper(
       chrome.runtime.id,
-      fakeUrl,
-      fakeWindow,
+      mockUrl,
+      mockWindow,
     );
     expect(listenerAdded).to.be.a('function');
 
     // trigger the message listener
     const message = {
       action: 'saveDocument',
-      url: fakeUrl,
+      url: mockUrl,
     };
-    const sender = {
-      id: chrome.runtime.id,
-    };
-    const sendResponse = sandbox.stub();
     // @ts-ignore
-    await listenerAdded(message, sender, sendResponse);
+    await listenerAdded(message, mockSender, sendResponse);
 
-    // @ts-ignore
     expect(dispatchEventStub.calledWithMatch({ key: 's' })).to.be.true;
     expect(sendResponse.calledWith(true)).to.be.true;
   });
 
   it('only adds message listener once', async () => {
-    const addLlistenerStub = sandbox.stub(chrome.runtime.onMessage, 'addListener');
-
     wordHelper(
       chrome.runtime.id,
-      fakeUrl,
+      mockUrl,
       {
-        ...fakeWindow,
+        ...mockWindow,
         hlx: {
           previewListenerAdded: true,
         },
       },
     );
-    expect(addLlistenerStub.called).to.be.false;
+    expect(addListenerStub.called).to.be.false;
+  });
+
+  it('only reacts to save messages from the same tab', async () => {
+    wordHelper(
+      chrome.runtime.id,
+      mockUrl,
+      mockWindow,
+    );
+    expect(addListenerStub.called).to.be.true;
+
+    // send an unrelated message to the tab
+    const message = {
+      action: 'somethingElse',
+    };
+    // @ts-ignore
+    await listenerAdded(message, mockSender, sendResponse);
+
+    expect(sendResponse.calledWith(false)).to.be.true;
   });
 });
