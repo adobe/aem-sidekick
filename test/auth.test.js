@@ -445,7 +445,7 @@ describe('Test auth', () => {
           requestHeaders: [{
             header: 'User-Agent',
             operation: 'set',
-            value: 'HeadlessChrome Sidekick/0.0.0',
+            value: 'HeadlessChrome AEMSidekick/0.0.0',
           }],
         },
         condition: {
