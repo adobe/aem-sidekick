@@ -217,7 +217,7 @@ export async function setAuthToken(
  * @returns {Promise<void>}
  */
 export async function updateUserAgent() {
-  const userAgent = `${navigator.userAgent} Sidekick/${chrome.runtime.getManifest().version}`;
+  const userAgent = `${navigator.userAgent} AEMSidekick/${chrome.runtime.getManifest().version}`;
   const addRules = [{
     id: getRandomId(),
     priority: 1,
