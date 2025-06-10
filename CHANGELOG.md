@@ -1,3 +1,10 @@
+# [7.12.0](https://github.com/adobe/aem-sidekick/compare/v7.11.4...v7.12.0) (2025-06-10)
+
+
+### Features
+
+* project management and json diff ([9c5602a](https://github.com/adobe/aem-sidekick/commit/9c5602aa09d01d88c86df82cd97331c27f74146b))
+
 ## [7.11.4](https://github.com/adobe/aem-sidekick/compare/v7.11.3...v7.11.4) (2025-06-06)
 
 
