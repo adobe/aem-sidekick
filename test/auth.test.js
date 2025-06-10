@@ -17,7 +17,11 @@ import { expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
-import { configureAuthAndCorsHeaders, setAuthToken } from '../src/extension/auth.js';
+import {
+  configureAuthAndCorsHeaders,
+  setAuthToken,
+  updateUserAgent,
+} from '../src/extension/auth.js';
 import chromeMock from './mocks/chrome.js';
 import { error } from './test-utils.js';
 
@@ -427,5 +431,29 @@ describe('Test auth', () => {
     expect(setConfig.callCount).to.equal(3);
     expect(getConfig.callCount).to.equal(6);
     expect(updateSessionRules.callCount).to.equal(5);
+  });
+
+  it('updateUserAgent', async () => {
+    const updateDynamicRules = sandbox.spy(chrome.declarativeNetRequest, 'updateDynamicRules');
+    await updateUserAgent();
+    expect(updateDynamicRules.calledWith({
+      addRules: [{
+        id: sinon.match.number,
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          requestHeaders: [{
+            header: 'User-Agent',
+            operation: 'set',
+            value: 'HeadlessChrome Sidekick/0.0.0',
+          }],
+        },
+        condition: {
+          regexFilter: '^https://admin.hlx.page/.*',
+          requestMethods: ['get', 'post', 'delete'],
+          resourceTypes: ['xmlhttprequest'],
+        },
+      }],
+    })).to.be.true;
   });
 });
