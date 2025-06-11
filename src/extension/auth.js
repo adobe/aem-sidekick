@@ -211,3 +211,32 @@ export async function setAuthToken(
     await configureAuthAndCorsHeaders();
   }
 }
+
+/**
+ * Adds the sidekick version to the user agent for requests to the Admin API.
+ * @returns {Promise<void>}
+ */
+export async function updateUserAgent() {
+  const userAgent = `${navigator.userAgent} AEMSidekick/${chrome.runtime.getManifest().version}`;
+  const addRules = [{
+    id: getRandomId(),
+    priority: 1,
+    action: {
+      type: 'modifyHeaders',
+      requestHeaders: [{
+        header: 'User-Agent',
+        operation: 'set',
+        value: userAgent,
+      }],
+    },
+    condition: {
+      regexFilter: '^https://admin.hlx.page/.*',
+      requestMethods: ['get', 'post', 'delete'],
+      resourceTypes: ['xmlhttprequest'],
+    },
+  }];
+
+  // @ts-ignore
+  await chrome.declarativeNetRequest.updateDynamicRules({ addRules });
+  log.debug(`updateUserAgent: ${userAgent}`);
+}

@@ -325,13 +325,13 @@ export class SidekickTest {
    */
   mockAdminDOM(
     contentSource,
-    viewType,
-    resources,
+    viewType = 'list',
+    resources = [],
   ) {
     if (!contentSource) {
       contentSource = HelixMockContentSources.SHAREPOINT;
     }
-    if (!resources) {
+    if (resources.length === 0) {
       resources = contentSource === HelixMockContentSources.SHAREPOINT
         ? DEFAULT_SHAREPOINT_BULK_SELECTION
         : DEFAULT_GDRIVE_BULK_SELECTION;
@@ -352,14 +352,18 @@ export class SidekickTest {
 
       root = mockSharePointRoot();
       root.firstElementChild.innerHTML = resources
-        .map((resource) => mockSharePointFile(resource, viewType || 'list'))
+        .map((resource) => mockSharePointFile(resource, viewType))
         .join('');
       document.body.appendChild(root);
     } else {
       root = mockGdriveRoot();
-      root.innerHTML = resources
-        .map((resource) => mockGdriveFile(resource, viewType || 'list'))
-        .join('');
+      root.innerHTML = `
+        ${viewType === 'list' ? '<table><tbody>' : ''}
+          ${resources
+            .map((resource) => mockGdriveFile(resource, viewType))
+            .join('')}
+        ${viewType === 'list' ? '</tbody></table>' : ''}
+        `;
       document.body.appendChild(root);
     }
     this.bulkRoot = root;

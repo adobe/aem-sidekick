@@ -20,7 +20,7 @@ import {
   internalActions,
   checkViewDocSource,
 } from './actions.js';
-import { configureAuthAndCorsHeaders } from './auth.js';
+import { configureAuthAndCorsHeaders, updateUserAgent } from './auth.js';
 
 chrome.action.onClicked.addListener(async () => {
   // toggle the sidekick when the action is clicked
@@ -37,6 +37,23 @@ chrome.tabs.onUpdated.addListener(async (id, info, tab) => {
 
 chrome.tabs.onActivated.addListener(({ tabId: id }) => {
   checkTab(id);
+});
+
+// internal messaging API to execute actions
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  const { action: actionFromTab } = message;
+  const { tab } = sender;
+
+  // check if message contains action and is sent from tab
+  if (tab && tab.url && typeof internalActions[actionFromTab] === 'function') {
+    internalActions[actionFromTab](tab, message)
+      .then((response) => sendResponse(response))
+      .catch(() => sendResponse(null));
+    return true;
+  }
+
+  sendResponse(null);
+  return false;
 });
 
 // external messaging API to execute actions
@@ -58,24 +75,10 @@ chrome.storage.onChanged.addListener(async (changes, storageArea) => {
   }
 });
 
-// internal messaging API to execute actions
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  const { action: actionFromTab } = message;
-  const { tab } = sender;
-
-  // check if message contains action and is sent from tab
-  if (tab && tab.url && typeof internalActions[actionFromTab] === 'function') {
-    internalActions[actionFromTab](tab, message)
-      .then((response) => sendResponse(response))
-      .catch(() => sendResponse(null));
-    return true;
-  }
-
-  sendResponse(null);
-  return false;
-});
-
 // add existing auth token headers
 configureAuthAndCorsHeaders();
+
+// update the user agent for requests to the Admin API
+updateUserAgent();
 
 log.info('sidekick initialized');
