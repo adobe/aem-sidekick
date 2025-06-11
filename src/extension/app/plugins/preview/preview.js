@@ -56,14 +56,7 @@ export function createPreviewPlugin(appStore) {
           });
           return;
         }
-        if (status.edit && status.edit.sourceLocation
-            && status.edit.sourceLocation.startsWith('onedrive:')
-            && !location.pathname.startsWith('/:x:/')) {
-          // show ctrl/cmd + s hint on onedrive docs
-          // istanbul ignore next
-          const mac = navigator.platform.toLowerCase().includes('mac') ? '_mac' : '';
-          appStore.showToast({ message: appStore.i18n(`preview_onedrive${mac}`) });
-        } else if (status.edit.sourceLocation?.startsWith('gdrive:')) {
+        if (status.edit.sourceLocation?.startsWith('gdrive:')) {
           const { contentType } = status.edit;
 
           const isGoogleDocMime = contentType === 'application/vnd.google-apps.document';
@@ -97,13 +90,24 @@ export function createPreviewPlugin(appStore) {
             previewTimestamp: Date.now(),
           }));
           appStore.reloadPage();
-        } else {
-          appStore.updatePreview();
-          appStore.fireEvent(
-            EXTERNAL_EVENTS.RESOURCE_PREVIEWED,
-            appStore.status.webPath,
-          );
+          return;
         }
+        if (location.pathname.startsWith('/:w:/')) {
+          // tell word to save document before previewing
+          await chrome.runtime.sendMessage({
+            action: 'saveDocument',
+            url: location.href,
+          });
+          // wait for save to complete
+          await new Promise((resolve) => {
+            setTimeout(resolve, 1500);
+          });
+        }
+        appStore.updatePreview();
+        appStore.fireEvent(
+          EXTERNAL_EVENTS.RESOURCE_PREVIEWED,
+          appStore.status.webPath,
+        );
       },
       isEnabled: (store) => store.isAuthorized('preview', 'write')
           && store.status.webPath,

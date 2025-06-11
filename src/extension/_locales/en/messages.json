@@ -420,12 +420,6 @@
     "preview_date": {
       "message": "Previewed: "
     },
-    "preview_onedrive": {
-      "message": "Pro tip: Press Ctrl + S before generating previewing to see the latest changes immediately..."
-    },
-    "preview_onedrive_mac": {
-      "message": "Pro tip: Press ⌘ + S before generating previewing to see the latest changes immediately..."
-    },
     "production": {
       "message": "Production"
     },

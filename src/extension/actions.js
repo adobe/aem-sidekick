@@ -29,6 +29,7 @@ import { ADMIN_ORIGIN, createAdminUrl } from './utils/admin.js';
 import { getConfig } from './config.js';
 import { getDisplay, setDisplay } from './display.js';
 import { urlCache } from './url-cache.js';
+import { saveDocument } from './sharepoint.js';
 
 /**
  * Updates the auth token via external messaging API (admin only).
@@ -538,6 +539,7 @@ export const internalActions = {
   getProfilePicture,
   guessAEMSite,
   updateProject,
+  saveDocument,
 };
 
 /**
