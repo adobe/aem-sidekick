@@ -1,3 +1,10 @@
+# [7.13.0](https://github.com/adobe/aem-sidekick/compare/v7.12.0...v7.13.0) (2025-06-11)
+
+
+### Features
+
+* force word to save on preview ([#588](https://github.com/adobe/aem-sidekick/issues/588)) ([e182fc4](https://github.com/adobe/aem-sidekick/commit/e182fc441d3318aa958445c5d78ae87f67a11121)), closes [#596](https://github.com/adobe/aem-sidekick/issues/596)
+
 # [7.12.0](https://github.com/adobe/aem-sidekick/compare/v7.11.4...v7.12.0) (2025-06-10)
 
 
