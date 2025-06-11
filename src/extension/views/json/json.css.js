@@ -24,13 +24,14 @@ export const style = css`
     color: var(--spectrum2-sidekick-color);
     box-sizing: border-box;
     margin-bottom: 40px;
+    overflow: hidden;
   }
 
   .header {
     display: flex;
     align-items: center;
     gap: 10px;
-    height: 64px;
+    min-height: 64px;
     padding-left: 16px;
     padding-right: 16px;
     background-color: var(--spectrum2-sidekick-layer-1);
@@ -134,10 +135,29 @@ export const style = css`
     justify-content: flex-end;
   }
 
+  .actions .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 10px;
+  }
+
+  .actions .checkbox-label input {
+    margin: 0;
+  }
+
+  .actions sp-switch {
+    padding: 0 10px;
+  }
+   
   .tableContainer {
     padding-top: 15px;
     width: 100%;
     height: 100%;
+  }
+
+  .tableContainer.loading {
+    display: none;
   }
 
   .tableContainer .tableHeader {
@@ -162,6 +182,7 @@ export const style = css`
   }
 
   sp-table-head {
+    min-height: fit-content;
     overflow-x: scroll;
   }
 
@@ -180,6 +201,13 @@ export const style = css`
     background-color: transparent;
     word-break: break-word;
     min-width: 150px;
+  }
+
+  .line {
+    min-width: 90px;
+    max-width: 90px;
+    text-align: right;
+    white-space: nowrap;
   }
 
   sp-table-cell a {
@@ -221,10 +249,6 @@ export const style = css`
     background-color: transparent;
   }
 
-  @media (min-width: 600px) {
-
-  }
-
   @media (min-width: 900px) {
     .header .right {
       flex: 1;
@@ -234,5 +258,73 @@ export const style = css`
       justify-content: flex-end;
       min-width: 324px;
     }
+  }
+
+  /* Diff row styles */
+  .diff-value {
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
+
+  .diff-row {
+    background-color: var(--spectrum-global-color-gray-100);
+  }
+
+  .diff-row a {
+    color: var(--spectrum-white-color);
+  }
+
+  .diff-row.added, sp-table-row:has([data-diff="added"]) {
+    background-color: #aceebb;
+  }
+
+  .diff-row.removed, sp-table-row:has([data-diff="removed"]) {
+    background-color: #ffcecb;
+  }
+
+  theme-wrapper[theme='dark'] .diff-row.added, theme-wrapper[theme='dark'] sp-table-row:has([data-diff="added"]) {
+    background-color: #3fb9504d;
+  }
+
+  theme-wrapper[theme='dark'] .diff-row.removed, theme-wrapper[theme='dark'] sp-table-row:has([data-diff="removed"]) {
+    background-color: #f851494d;
+  }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .loading-overlay p {
+    color: var(--spectrum-white-color);
+    margin-top: 16px;
+    font-size: 14px;
+  }
+
+  theme-wrapper[theme='dark'] .loading-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  sp-table-cell[data-diff="added"]::before {
+    content: "+";
+    color: var(--spectrum-semantic-positive-color-default);
+    margin-right: 8px;
+    font-weight: bold;
+  }
+
+  sp-table-cell[data-diff="removed"]::before {
+    content: "−";
+    color: var(--spectrum-semantic-negative-color-default);
+    margin-right: 8px;
+    font-weight: bold;
   }
 `;

@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "1 projeto importado com sucesso do AEM Sidekick v6."
   },
+  "config_project_manage": {
+    "message": "Gerenciar projetos"
+  },
   "config_project_pick": {
     "message": "Escolha um projeto"
   },
@@ -297,7 +300,7 @@
     "message": "Falha ao copiar para a área de transferência. Certifique-se de que a janela permaneça em foco."
   },
   "dark_mode": {
-    "message": "Modo escuro"
+    "message": "Tema escuro"
   },
   "delete": {
     "message": "Excluir"
@@ -464,6 +467,9 @@
   "live_never_updated": {
     "message": "Nunca publicado"
   },
+  "loading_diff": {
+    "message": "Carregando alterações..."
+  },
   "logging_in_state": {
     "message": "Fazendo logon..."
   },
@@ -493,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "Esta folha está vazia"
+  },
+  "no_diffs": {
+    "message": "Nenhuma alteração encontrada"
+  },
+  "no_diffs_subheading": {
+    "message": "O conteúdo visualizado é idêntico ao publicado"
   },
   "no_results": {
     "message": "Nenhum resultado encontrado"
@@ -613,6 +625,12 @@
   },
   "share_description": {
     "message": "Compartilhe seu Sidekick"
+  },
+  "show_all": {
+    "message": "Mostrar todas as linhas"
+  },
+  "show_diff": {
+    "message": "Mostrar alterações"
   },
   "site_forbidden": {
     "message": "Acesso negado. Tente fazer logon com um usuário diferente ou peça permissões suficientes à administração."

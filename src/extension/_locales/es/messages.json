@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "Se ha importado correctamente 1 proyecto desde AEM Sidekick v6."
   },
+  "config_project_manage": {
+    "message": "Administrar proyectos"
+  },
   "config_project_pick": {
     "message": "Elija un proyecto"
   },
@@ -297,7 +300,7 @@
     "message": "Error al copiar en el portapapeles. Asegúrese de que la ventana permanezca enfocada."
   },
   "dark_mode": {
-    "message": "Modo oscuro"
+    "message": "Tema oscuro"
   },
   "delete": {
     "message": "Eliminar"
@@ -464,6 +467,9 @@
   "live_never_updated": {
     "message": "Nunca publicado"
   },
+  "loading_diff": {
+    "message": "Cargando cambios..."
+  },
   "logging_in_state": {
     "message": "Iniciando sesión..."
   },
@@ -493,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "Esta hoja está vacía"
+  },
+  "no_diffs": {
+    "message": "No se ha encontrado ningún cambio"
+  },
+  "no_diffs_subheading": {
+    "message": "El contenido de la vista previa y el publicado son idénticos"
   },
   "no_results": {
     "message": "No se han encontrado resultados"
@@ -613,6 +625,12 @@
   },
   "share_description": {
     "message": "Comparta su Sidekick"
+  },
+  "show_all": {
+    "message": "Mostrar todas las filas"
+  },
+  "show_diff": {
+    "message": "Mostrar cambios"
   },
   "site_forbidden": {
     "message": "Acceso denegado. Intente iniciar sesión con un usuario diferente o solicite al administrador los permisos necesarios."

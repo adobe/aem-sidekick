@@ -69,7 +69,7 @@ export async function checkTab(id) {
     injectContentScript(id, matches, adminVersion);
 
     updateUI({
-      id, url, config, matches,
+      id, url, config, matches, numProjects: projects.length,
     });
 
     if (isSharePointHost(tab.url, projects) && new URL(tab.url).pathname.startsWith('/:w:/')) {

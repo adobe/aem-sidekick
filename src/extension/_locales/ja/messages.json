@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "AEM Sidekick v6 から 1 個のプロジェクトを正常に読み込みました。"
   },
+  "config_project_manage": {
+    "message": "プロジェクトを管理"
+  },
   "config_project_pick": {
     "message": "プロジェクトを選択"
   },
@@ -297,7 +300,7 @@
     "message": "クリップボードへのコピーに失敗しました。ウィンドウに焦点が当てられたままになっていることを確認してください。"
   },
   "dark_mode": {
-    "message": "ダークモード"
+    "message": "ダークテーマ"
   },
   "delete": {
     "message": "削除"
@@ -464,6 +467,9 @@
   "live_never_updated": {
     "message": "未公開"
   },
+  "loading_diff": {
+    "message": "変更を読み込み中..."
+  },
   "logging_in_state": {
     "message": "ログイン中..."
   },
@@ -493,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "このシートは空です"
+  },
+  "no_diffs": {
+    "message": "変更が見つかりません"
+  },
+  "no_diffs_subheading": {
+    "message": "プレビュー済みコンテンツと公開済みコンテンツが同じ"
   },
   "no_results": {
     "message": "結果が見つかりません"
@@ -614,6 +626,12 @@
   "share_description": {
     "message": "Sidekick を共有"
   },
+  "show_all": {
+    "message": "すべての行を表示"
+  },
+  "show_diff": {
+    "message": "変更を表示"
+  },
   "site_forbidden": {
     "message": "アクセスが拒否されました。別のユーザーでログインするか、管理者に十分な権限を求めてください。"
   },
@@ -684,7 +702,7 @@
     "message": "ユーザーを切り替え"
   },
   "whats_new": {
-    "message": "最新情報"
+    "message": "新機能"
   },
   "yesterday_at": {
     "message": "昨日の $1"
