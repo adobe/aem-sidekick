@@ -5,7 +5,7 @@ executors:
       - image: cimg/node:current
 
 orbs:
-  browser-tools: circleci/browser-tools@1.5.3
+  browser-tools: circleci/browser-tools@2.1.0
   codecov: codecov/codecov@5.4.3
 
 commands:
@@ -28,7 +28,7 @@ jobs:
       - run:
           name: Lint
           command: npm run lint
-      - browser-tools/install-chrome
+      - browser-tools/install_chrome
       - run:
           name: Test
           command: |
