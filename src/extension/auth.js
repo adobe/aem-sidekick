@@ -113,6 +113,7 @@ export async function configureAuthAndCorsHeaders() {
             requestMethods: ['get', 'post'],
             resourceTypes: [
               'main_frame',
+              'sub_frame',
               'script',
               'stylesheet',
               'image',
