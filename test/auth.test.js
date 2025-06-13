@@ -405,6 +405,7 @@ describe('Test auth', () => {
             ],
             resourceTypes: [
               'main_frame',
+              'sub_frame',
               'script',
               'stylesheet',
               'image',
