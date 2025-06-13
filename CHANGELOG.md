@@ -1,3 +1,10 @@
+## [7.13.1](https://github.com/adobe/aem-sidekick/compare/v7.13.0...v7.13.1) (2025-06-13)
+
+
+### Bug Fixes
+
+* also inject site token in sub frames ([#598](https://github.com/adobe/aem-sidekick/issues/598)) ([f6b672d](https://github.com/adobe/aem-sidekick/commit/f6b672dcea66a9bd26a0d4e3b2e058cf7d23db5b))
+
 # [7.13.0](https://github.com/adobe/aem-sidekick/compare/v7.12.0...v7.13.0) (2025-06-11)
 
 
