@@ -1,3 +1,10 @@
+## [7.13.2](https://github.com/adobe/aem-sidekick/compare/v7.13.1...v7.13.2) (2025-06-16)
+
+
+### Bug Fixes
+
+* abort auto-save after 2s ([#602](https://github.com/adobe/aem-sidekick/issues/602)) ([836719e](https://github.com/adobe/aem-sidekick/commit/836719e8a7f41f25fe990294a4457b563aa71435))
+
 ## [7.13.1](https://github.com/adobe/aem-sidekick/compare/v7.13.0...v7.13.1) (2025-06-13)
 
 
