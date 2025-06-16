@@ -176,8 +176,9 @@ export async function getProjectFromUrl(tab) {
         };
       } else {
         // check if url is known in url cache
-        const { org, site } = (await urlCache.get(tab))
-          .find((r) => r.originalSite) || {};
+        const cachedResults = await urlCache.get(tab);
+        const { org, site } = cachedResults.length === 1
+          ? cachedResults[0] : cachedResults.find((r) => r.originalSite) || {};
         if (org && site) {
           return {
             owner: org,
@@ -203,6 +204,7 @@ export function assembleProject({
   owner,
   repo,
   ref = 'main',
+  transient: _, // omit transient flag
   ...opts
 }) {
   if (giturl && !owner && !repo) {
