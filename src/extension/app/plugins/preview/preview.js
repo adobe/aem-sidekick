@@ -94,20 +94,18 @@ export function createPreviewPlugin(appStore) {
         }
         if (location.pathname.startsWith('/:w:/')) {
           // tell word to save document before previewing
-          try {
-            await new Promise((resolve) => {
-              chrome.runtime.sendMessage({
-                action: 'saveDocument',
-                url: location.href,
-              }).then(() => {
-                setTimeout(resolve, 1500);
-              });
-              // don't wait longer than 2s
-              setTimeout(resolve, 2000);
+          await new Promise((resolve) => {
+            chrome.runtime.sendMessage({
+              action: 'saveDocument',
+              url: location.href,
+            }).then(() => {
+              setTimeout(resolve, 1500);
+            }).catch(() => {
+              resolve();
             });
-          } catch (_) {
-            // ignore
-          }
+            // don't wait longer than 2s
+            setTimeout(resolve, 2000);
+          });
         }
         appStore.updatePreview();
         appStore.fireEvent(
