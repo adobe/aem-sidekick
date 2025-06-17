@@ -56,7 +56,7 @@ export class AEMSidekick extends LitElement {
     await this.appStore.loadContext(this, config);
 
     const browser = detectBrowser(navigator.userAgent);
-    this.appStore.sampleRUM('click', {
+    this.appStore.sampleRUM('top', {
       source: 'sidekick',
       target: `loaded:${browser}`,
     });
