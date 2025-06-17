@@ -12,7 +12,7 @@
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
-import { recursiveQuery } from '../../../test-utils.js';
+import { error, recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import '../../../../src/extension/index.js';
@@ -44,11 +44,18 @@ describe('Preview plugin', () => {
    */
   let appStore;
 
+  let updatePreviewStub;
+  let sendMessageStub;
+
   beforeEach(async () => {
     appStore = new AppStore();
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
     sidekickTest
       .mockFetchSidekickConfigSuccess(false, false);
+
+    updatePreviewStub = sidekickTest.sandbox.stub(appStore, 'updatePreview').resolves();
+    sendMessageStub = sidekickTest.sandbox.stub(chrome.runtime, 'sendMessage');
+    sendMessageStub.resolves(true);
   });
 
   afterEach(() => {
@@ -57,7 +64,6 @@ describe('Preview plugin', () => {
 
   describe('switching between environments', () => {
     it('previewing from sharepoint editor - docx', async () => {
-      const { sandbox } = sidekickTest;
       sidekickTest
         .mockEditorAdminEnvironment(
           EditorMockEnvironments.EDITOR,
@@ -76,8 +82,6 @@ describe('Preview plugin', () => {
 
       sidekick = sidekickTest.createSidekick();
 
-      const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
-
       await sidekickTest.awaitEnvSwitcher();
 
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
@@ -86,8 +90,8 @@ describe('Preview plugin', () => {
 
       previewPlugin.click();
 
-      await waitUntil(() => updatePreviewSpy.calledOnce);
-      expect(updatePreviewSpy.calledOnce).to.be.true;
+      await waitUntil(() => updatePreviewStub.calledOnce, null, { timeout: 2000 });
+      expect(updatePreviewStub.calledOnce).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'previewed',
@@ -98,7 +102,6 @@ describe('Preview plugin', () => {
       const { sandbox } = sidekickTest;
       // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
-      const updatePreviewSpy = sidekickTest.sandbox.stub(appStore, 'updatePreview').resolves();
 
       sidekickTest
         .mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT,
@@ -136,9 +139,9 @@ describe('Preview plugin', () => {
 
       // Reset the environment
       sidekick = sidekickTest.createSidekick();
-      await aTimeout(500);
+      await aTimeout(1000);
 
-      expect(updatePreviewSpy.calledOnce).to.be.true;
+      expect(updatePreviewStub.calledOnce).to.be.true;
 
       // Make sure the aem-sk-preview flag is unset
       expect(window.sessionStorage.getItem('aem-sk-preview')).to.be.null;
@@ -162,9 +165,6 @@ describe('Preview plugin', () => {
           },
         );
 
-      const { sandbox } = sidekickTest;
-      const updatePreviewSpy = sandbox.stub(appStore, 'updatePreview').resolves();
-
       sidekick = sidekickTest.createSidekick();
 
       await sidekickTest.awaitEnvSwitcher();
@@ -172,9 +172,9 @@ describe('Preview plugin', () => {
       const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
 
       previewPlugin.click();
-      await waitUntil(() => updatePreviewSpy.calledOnce);
+      await waitUntil(() => updatePreviewStub.calledOnce, null, { timeout: 2000 });
 
-      expect(updatePreviewSpy.calledOnce).to.be.true;
+      expect(updatePreviewStub.calledOnce).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'previewed',
@@ -293,9 +293,51 @@ describe('Preview plugin', () => {
         variant: 'warning',
       }));
     });
+
+    it('previewing a config file', async () => {
+      sidekickTest
+        .mockEditorAdminEnvironment(
+          EditorMockEnvironments.EDITOR,
+          HelixMockContentType.DOC,
+          HelixMockContentSources.SHAREPOINT,
+        ).mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT,
+          HelixMockContentType.ADMIN,
+          {
+            webPath: '/.helix/config.json',
+          },
+        );
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
+      expect(previewPlugin.textContent).to.equal('Activate');
+    });
   });
 
   describe('error handling', () => {
+    it('fails gracefully if save document call fails', async () => {
+      sidekickTest
+        .mockEditorAdminEnvironment(
+          EditorMockEnvironments.EDITOR,
+          HelixMockContentType.DOC,
+          HelixMockContentSources.SHAREPOINT,
+        ).mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT,
+          HelixMockContentType.DOC);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      sendMessageStub.rejects(error);
+
+      const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
+      previewPlugin.click();
+
+      await waitUntil(() => updatePreviewStub.calledOnce, null, { timeout: 3000 });
+
+      expect(updatePreviewStub.called).to.be.true;
+    });
+
     it('does not preview from illegal path', async () => {
       const { sandbox } = sidekickTest;
       sidekickTest
@@ -317,7 +359,6 @@ describe('Preview plugin', () => {
 
       sidekick = sidekickTest.createSidekick();
 
-      const updatePreviewStub = sandbox.stub(appStore, 'updatePreview').resolves();
       const showToastSpy = sandbox.spy(appStore, 'showToast');
 
       await sidekickTest.awaitEnvSwitcher();

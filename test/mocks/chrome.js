@@ -10,8 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-import { readFile } from '@web/test-runner-commands';
-
 const ID = 'dummy';
 
 class StorageMock {
@@ -49,7 +47,7 @@ export default {
   },
   runtime: {
     id: ID,
-    getManifest: async () => readFile({ path: '../../src/extension/manifest.json' }).then((mf) => JSON.parse(mf)),
+    getManifest: () => ({ version: '0.0.0' }),
     getURL: (path) => `/test/fixtures/${path}`.replace('//', '/'),
     lastError: null,
     sendMessage: () => {},
@@ -69,6 +67,7 @@ export default {
   },
   declarativeNetRequest: {
     getSessionRules: async () => ([]),
+    updateDynamicRules: async () => undefined,
     updateSessionRules: async () => undefined,
   },
   tabs: {

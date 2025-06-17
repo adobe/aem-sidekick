@@ -236,6 +236,9 @@
   "config_project_imported_single": {
     "message": "Un projet importé depuis AEM Sidekick v6."
   },
+  "config_project_manage": {
+    "message": "Gérer les projets"
+  },
   "config_project_pick": {
     "message": "Choisissez un projet"
   },
@@ -297,7 +300,7 @@
     "message": "La copie dans le presse-papiers a échoué. Veuillez vous assurer que la fenêtre reste au premier plan."
   },
   "dark_mode": {
-    "message": "Mode Sombre"
+    "message": "Thème sombre"
   },
   "delete": {
     "message": "Supprimer"
@@ -459,10 +462,13 @@
     "message": "Dernière publication : $1"
   },
   "live_last_updated_by": {
-    "message": "Dernière publication de $1 par $2"
+    "message": "Dernière publication : $1 par $2"
   },
   "live_never_updated": {
     "message": "Jamais publié"
+  },
+  "loading_diff": {
+    "message": "Chargement des modifications..."
   },
   "logging_in_state": {
     "message": "Connexion..."
@@ -493,6 +499,12 @@
   },
   "no_data_subheading": {
     "message": "Cette feuille est vide."
+  },
+  "no_diffs": {
+    "message": "Aucune modification trouvée"
+  },
+  "no_diffs_subheading": {
+    "message": "Le contenu prévisualisé et le contenu publié sont identiques."
   },
   "no_results": {
     "message": "Aucun résultat trouvé"
@@ -549,7 +561,7 @@
     "message": "Dernière mise à jour : $1"
   },
   "preview_last_updated_by": {
-    "message": "Dernière mise à jour le $1 par $2"
+    "message": "Dernière mise à jour : $1 par $2"
   },
   "preview_never_updated": {
     "message": "Jamais prévisualisé"
@@ -570,7 +582,7 @@
     "message": "Dernière publication : $1"
   },
   "prod_last_updated_by": {
-    "message": "Dernière publication de $1 par $2"
+    "message": "Dernière publication : $1 par $2"
   },
   "prod_never_updated": {
     "message": "Jamais publié"
@@ -597,7 +609,7 @@
     "message": "Publication..."
   },
   "review": {
-    "message": "Consulter"
+    "message": "Révision"
   },
   "review_last_updated": {
     "message": "Dernière mise à jour : $1"
@@ -614,6 +626,12 @@
   "share_description": {
     "message": "Partager votre Sidekick"
   },
+  "show_all": {
+    "message": "Afficher toutes les lignes"
+  },
+  "show_diff": {
+    "message": "Afficher les modifications"
+  },
   "site_forbidden": {
     "message": "Accès refusé. Essayez de vous connecter avec un autre compte ou demandez à votre équipe d’administration des autorisations suffisantes."
   },
@@ -621,7 +639,7 @@
     "message": "Connectez-vous pour continuer."
   },
   "site_protected": {
-    "message": "Ce site est protégé."
+    "message": "Site protégé"
   },
   "site_relogin_required": {
     "message": "Accès arrivé à expiration. Reconnectez-vous pour continuer."

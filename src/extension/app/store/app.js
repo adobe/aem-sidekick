@@ -352,6 +352,25 @@ export class AppStore {
             badgeVariant,
             confirm,
           } = cfg;
+
+          let processedUrl;
+          if (url) {
+            const target = new URL(url, `https://${innerHost}/`);
+            target.searchParams.set('theme', this.theme);
+            if (passConfig) {
+              target.searchParams.append('ref', this.siteStore.ref);
+              target.searchParams.append('repo', this.siteStore.repo);
+              target.searchParams.append('owner', this.siteStore.owner);
+              if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
+              if (this.siteStore.reviewHost) target.searchParams.append('reviewHost', this.siteStore.reviewHost);
+              if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+            }
+            if (passReferrer) {
+              target.searchParams.append('referrer', location.href);
+            }
+            processedUrl = target.toString();
+          }
+
           const condition = (appStore) => {
             let excluded = false;
             const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
@@ -390,31 +409,19 @@ export class AppStore {
             button: {
               text: (titleI18n && titleI18n[lang]) || title,
               action: () => {
-                if (url) {
-                  const target = new URL(url, `https://${innerHost}/`);
-                  if (passConfig) {
-                    target.searchParams.append('ref', this.siteStore.ref);
-                    target.searchParams.append('repo', this.siteStore.repo);
-                    target.searchParams.append('owner', this.siteStore.owner);
-                    if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
-                    if (this.siteStore.reviewHost) target.searchParams.append('reviewHost', this.siteStore.reviewHost);
-                    if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
-                  }
-                  if (passReferrer) {
-                    target.searchParams.append('referrer', location.href);
-                  }
+                if (processedUrl) {
                   if (isPalette) {
                     EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_PALETTE, {
                       detail: {
                         plugin: {
                           ...cfg,
-                          url: target.toString(),
+                          url: processedUrl,
                         },
                       },
                     }));
                   } else {
                     // open url in new window
-                    this.openPage(target.toString(), `aem-sk-${id}`);
+                    this.openPage(processedUrl, `aem-sk-${id}`);
                   }
                 } else if (eventName) {
                   // fire custom event
@@ -426,7 +433,7 @@ export class AppStore {
             pinned,
             confirm,
             container: containerId,
-            url,
+            url: processedUrl,
             isBadge,
             isPopover,
             passConfig,

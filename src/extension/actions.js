@@ -29,6 +29,7 @@ import { ADMIN_ORIGIN, createAdminUrl } from './utils/admin.js';
 import { getConfig } from './config.js';
 import { getDisplay, setDisplay } from './display.js';
 import { urlCache } from './url-cache.js';
+import { saveDocument } from './sharepoint.js';
 
 /**
  * Updates the auth token via external messaging API (admin only).
@@ -301,8 +302,7 @@ async function login({
  */
 async function addRemoveProject(tab) {
   const matches = await getProjectMatches(await getProjects(), tab);
-  const config = matches.length === 1 && !matches[0].transient
-    ? matches[0] : await getProjectFromUrl(tab);
+  const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(tab);
 
   await showSidekickIfHidden();
   if (isValidProject(config)) {
@@ -381,6 +381,18 @@ async function importProjects(tab) {
       message: chrome.i18n.getMessage(i18nKey, `${imported}`),
       headline: chrome.i18n.getMessage('config_project_import_headline'),
     });
+}
+
+/**
+ * Opens the project admin tab.
+ * @param {chrome.tabs.Tab} tab The tab
+ */
+async function manageProjects(tab) {
+  await chrome.tabs.create({
+    url: 'https://labs.aem.live/tools/project-admin/index.html',
+    openerTabId: tab.id,
+    windowId: tab.windowId,
+  });
 }
 
 /**
@@ -520,11 +532,13 @@ async function updateProject(_, { config }) {
 export const internalActions = {
   addRemoveProject,
   enableDisableProject,
+  manageProjects,
   openViewDocSource,
   importProjects,
   getProfilePicture,
   guessAEMSite,
   updateProject,
+  saveDocument,
 };
 
 /**

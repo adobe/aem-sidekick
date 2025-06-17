@@ -194,6 +194,9 @@
     "config_project_import_sidekick_not_found": {
       "message": "Legacy sidekick not found. If the extension is installed but currently disabled, please enable it and try again."
     },
+    "config_project_manage": {
+      "message": "Manage projects"
+    },
     "config_project_pick": {
       "message": "Pick a project"
     },
@@ -251,7 +254,7 @@
       "message": "Copy to clipboard failed. Please make sure the window remains focused."
     },
     "dark_mode": {
-      "message": "Dark Mode"
+      "message": "Dark theme"
     },
     "delete": {
       "message": "Delete"
@@ -417,12 +420,6 @@
     "preview_date": {
       "message": "Previewed: "
     },
-    "preview_onedrive": {
-      "message": "Pro tip: Press Ctrl + S before generating previewing to see the latest changes immediately..."
-    },
-    "preview_onedrive_mac": {
-      "message": "Pro tip: Press ⌘ + S before generating previewing to see the latest changes immediately..."
-    },
     "production": {
       "message": "Production"
     },
@@ -576,6 +573,23 @@
     "json_results_stat": {
       "message": "Showing $1 of $2 results"
     },
+    "show_diff": {
+      "message": "Show changes",
+      "description": "See what's changed between preview and live"
+    },
+    "show_all": {
+      "message": "Show all rows",
+      "description": "Show all rows including unchanged ones"
+    },
+    "loading_diff": {
+      "message": "Loading changes..."
+    },
+    "no_diffs": {
+      "message": "No changes found"
+    },
+    "no_diffs_subheading": {
+      "message": "Previewed and published content are identical"
+    },
     "search": {
       "message": "Search"
     },
@@ -640,10 +654,10 @@
       "message": "Deleting..."
     },
     "help_documentation": {
-      "message": "Help & Documentation"
+      "message": "Help & documentation"
     },
     "whats_new": {
-      "message": "What's New",
+      "message": "What's new",
       "description": "Onboarding menu title"
     },
     "join_discord": {
