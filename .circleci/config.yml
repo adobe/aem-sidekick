@@ -34,7 +34,7 @@ jobs:
           command: |
             npm run test
       - codecov/upload:
-          file: ./coverage-wtr/lcov.info
+          files: ./coverage-wtr/lcov.info
       - store_test_results:
           path: junit
       - store_artifacts:
