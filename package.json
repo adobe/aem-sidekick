@@ -108,7 +108,7 @@
     "semantic-release": "24.2.5",
     "semantic-release-react-native": "1.12.2",
     "shelljs": "0.10.0",
-    "sinon": "20.0.0"
+    "sinon": "21.0.0"
   },
   "lint-staged": {
     "*.js": "eslint"
