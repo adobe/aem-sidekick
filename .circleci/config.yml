@@ -34,6 +34,7 @@ jobs:
           command: |
             npm run test
       - codecov/upload
+          token: $CODECOV_TOKEN
       - store_test_results:
           path: junit
       - store_artifacts:
