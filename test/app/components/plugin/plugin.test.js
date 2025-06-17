@@ -54,7 +54,7 @@ const TEST_POPOVER_CONFIG = {
   title: 'Test Popover',
   isPopover: true,
   popoverRect: 'width: 100px; height: 100px;',
-  url: 'https://labs.aem.live/tools/snapshot-admin/palette.html?foo=bar',
+  url: 'https://labs.aem.live/tools/snapshot-admin/palette.html?foo=bar&theme=dark',
   passConfig: false,
   passReferrer: false,
   button: {
@@ -128,6 +128,20 @@ describe('Plugin', () => {
     expect(renderedPlugin).to.contain('sp-badge');
   });
 
+  it('renders plugin as badge with default variant', async () => {
+    const plugin = new Plugin({ ...TEST_BADGE_CONFIG, badgeVariant: undefined }, appStore);
+    const badge = plugin.isBadge();
+    expect(badge).to.be.true;
+
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+
+    // Wait for next time to let lit process the update
+    await Promise.resolve();
+
+    expect(container.querySelector('sp-badge')?.getAttribute('variant')).to.equal('default');
+  });
+
   it('renders container plugin as picker', async () => {
     const parent = new Plugin({
 
@@ -163,24 +177,12 @@ describe('Plugin', () => {
     const iframe = container.querySelector('iframe');
     expect(iframe).to.exist;
     expect(iframe.getAttribute('title')).to.equal(TEST_POPOVER_CONFIG.title);
-    expect(iframe.getAttribute('src')).to.include(TEST_POPOVER_CONFIG.url);
-    expect(iframe.getAttribute('src')).to.include('?foo=bar&theme=dark');
+    expect(iframe.getAttribute('src')).to.be.null;
   });
 
-  it('config and referrer is passed to a popover plugin', async () => {
-    appStore.location = new URL('https://www.example.com');
+  it('sets popover iframe url on click', async () => {
     appStore.theme = 'dark';
-    appStore.siteStore.ref = 'main';
-    appStore.siteStore.repo = 'test-repo';
-    appStore.siteStore.owner = 'test-owner';
-    appStore.siteStore.host = 'example.com';
-    appStore.siteStore.project = 'test-project';
-    appStore.siteStore.reviewHost = 'review.example.com';
-    const config = { ...TEST_POPOVER_CONFIG };
-    config.passConfig = true;
-    config.passReferrer = true;
-
-    const plugin = new Plugin({ ...config }, appStore);
+    const plugin = new Plugin({ ...TEST_POPOVER_CONFIG }, appStore);
 
     const container = document.createElement('div');
     render(plugin.render(), container);
@@ -190,27 +192,70 @@ describe('Plugin', () => {
 
     const overlayTrigger = container.querySelector('overlay-trigger');
     expect(overlayTrigger).to.exist;
-    expect(overlayTrigger.getAttribute('offset')).to.equal('-3');
 
-    const popover = container.querySelector('sp-popover');
-    expect(popover).to.exist;
-    expect(popover.getAttribute('placement')).to.equal('top');
+    // simulate click on plugin
+    // @ts-ignore
+    overlayTrigger.firstElementChild.click();
 
-    const popoverStyle = popover.getAttribute('style');
-    expect(popoverStyle).to.include('width: 100px; height: 100px;');
     const iframe = container.querySelector('iframe');
+    expect(iframe.getAttribute('src')).to.equal(TEST_POPOVER_CONFIG.url);
 
+    // test else path
+    // @ts-ignore
+    overlayTrigger.firstElementChild.click();
+  });
+
+  it('popover plugin renders as menu item', async () => {
+    appStore.location = new URL('https://www.example.com');
+    appStore.theme = 'dark';
+    appStore.siteStore.ref = 'main';
+    appStore.siteStore.repo = 'test-repo';
+    appStore.siteStore.owner = 'test-owner';
+    appStore.siteStore.host = 'example.com';
+    appStore.siteStore.project = 'test-project';
+    appStore.siteStore.reviewHost = 'review.example.com';
+    const config = { ...TEST_POPOVER_CONFIG, pinned: false };
+
+    const plugin = new Plugin({ ...config }, appStore);
+
+    const container = document.createElement('div');
+    render(plugin.renderMenuItem(), container);
+
+    // Wait for next time to let lit process the update
+    await Promise.resolve();
+
+    const menuItem = container.querySelector('sk-menu-item');
+    expect(menuItem).to.exist;
+    const iframe = container.querySelector('iframe');
     expect(iframe).to.exist;
-    expect(iframe.getAttribute('title')).to.equal(TEST_POPOVER_CONFIG.title);
-    expect(iframe.getAttribute('src')).to.include(TEST_POPOVER_CONFIG.url);
-    expect(iframe.getAttribute('src')).to.include('?foo=bar&theme=dark');
-    expect(iframe.getAttribute('src')).to.include('ref=main');
-    expect(iframe.getAttribute('src')).to.include('repo=test-repo');
-    expect(iframe.getAttribute('src')).to.include('owner=test-owner');
-    expect(iframe.getAttribute('src')).to.include('referrer=https%3A%2F%2Fwww.example.com%2F');
-    expect(iframe.getAttribute('src')).to.include('host=example.com');
-    expect(iframe.getAttribute('src')).to.include('reviewHost=review.example.com');
-    expect(iframe.getAttribute('src')).to.include('project=test-project');
+
+    // @ts-ignore
+    menuItem.click();
+
+    expect(iframe.getAttribute('src')).to.equal(TEST_POPOVER_CONFIG.url);
+  });
+
+  it('default title is used for popover plugin', async () => {
+    appStore.location = new URL('https://www.example.com');
+    appStore.theme = 'dark';
+    appStore.siteStore.ref = 'main';
+    appStore.siteStore.repo = 'test-repo';
+    appStore.siteStore.owner = 'test-owner';
+    appStore.siteStore.host = 'example.com';
+    appStore.siteStore.project = 'test-project';
+    appStore.siteStore.reviewHost = 'review.example.com';
+    const config = { ...TEST_POPOVER_CONFIG };
+    config.title = undefined;
+
+    const plugin = new Plugin({ ...config }, appStore);
+
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+
+    // Wait for next time to let lit process the update
+    await Promise.resolve();
+
+    expect(container.querySelector('iframe')?.getAttribute('title')).to.equal('Popover content');
   });
 
   it('renders a popover plugin with filtered popoverRect', async () => {

@@ -445,6 +445,7 @@ describe('Test actions', () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const remove = sandbox.spy(chrome.storage.sync, 'remove');
     const i18nSpy = sandbox.spy(chrome.i18n, 'getMessage');
+
     // add project
     await internalActions.addRemoveProject(mockTab('https://main--bar--foo.hlx.page/', {
       id: 1,
@@ -462,6 +463,7 @@ describe('Test actions', () => {
       },
     })).to.be.true;
     expect(i18nSpy.calledWith('config_project_added', 'foo/bar')).to.be.true;
+
     // remove project
     await internalActions.addRemoveProject({
       id: 2,
@@ -473,6 +475,33 @@ describe('Test actions', () => {
     // @ts-ignore
     expect(remove.calledWith('foo/bar')).to.be.true;
     expect(i18nSpy.calledWith('config_project_removed', 'foo/bar')).to.be.true;
+
+    // testing transient project
+    sandbox.stub(urlCache, 'get').resolves([{
+      owner: 'foo',
+      repo: 'bar',
+      originalSite: false,
+    }]);
+    await internalActions.addRemoveProject({
+      id: 1,
+      url: 'https://main--bar--foo.hlx.page/',
+    });
+    expect(set.calledWith({
+      'foo/bar': {
+        id: 'foo/bar',
+        giturl: 'https://github.com/foo/bar/tree/main',
+        owner: 'foo',
+        repo: 'bar',
+        ref: 'main',
+      },
+    })).to.be.true;
+
+    // remove again
+    await internalActions.addRemoveProject({
+      id: 1,
+      url: 'https://main--bar--foo.hlx.page/',
+    });
+
     // testing noop
     set.resetHistory();
     await internalActions.addRemoveProject({
@@ -998,6 +1027,12 @@ describe('Test actions', () => {
       await internalActions.updateProject({}, { config: project });
 
       expect(updateProjectStub.called).to.be.false;
+    });
+
+    it('saves document in sharepoint', async () => {
+      const saveDocumentStub = sandbox.stub(chrome.tabs, 'sendMessage');
+      await internalActions.saveDocument({ id: 1, url: 'https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=bla.docx&action=default&mobileredirect=true' });
+      expect(saveDocumentStub.calledWithMatch(1, { action: 'saveDocument' })).to.be.true;
     });
   });
 });

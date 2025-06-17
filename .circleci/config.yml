@@ -1,66 +1,16 @@
 version: 2.1
-executors:
-  node:
-    docker:
-      - image: cimg/node:current
-
-orbs:
-  browser-tools: circleci/browser-tools@1.5.3
-  codecov: codecov/codecov@5.4.0
-
-commands:
-  setup:
-    steps:
-      - checkout
-      - run:
-          name: Installing Dependencies
-          command: npm ci
-      - run:
-          name: prepare test git user
-          command: git config --global user.email "circleci@example.com" && git config --global user.name "CircleCi Build"
 
 jobs:
-  build:
-    executor: node
+  noop:
+    docker:
+      - image: cimg/base:stable
     steps:
-      - setup
-      - run: mkdir junit
       - run:
-          name: Lint
-          command: npm run lint
-      - browser-tools/install-chrome
-      - run:
-          name: Test
-          command: |
-            npm run test
-      - codecov/upload
-      - store_test_results:
-          path: junit
-      - store_artifacts:
-          path: junit
-  semantic-release:
-    executor: node
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "89:43:ce:9f:4a:d4:ad:32:47:ef:46:db:03:cd:e4:31"
-      - setup
-      - run:
-          name: revert changes to package-lock.json
-          command: git checkout -- package-lock.json
-      - run:
-          name: Semantic Release
-          command: npm run semantic-release
+          name: No-op (migrated to GitHub Actions)
+          command: echo "This project has been migrated to GitHub Actions. See .github/workflows/ for the new CI/CD pipeline."
 
 workflows:
   version: 2
-  build:
+  noop:
     jobs:
-      - build
-      - semantic-release:
-          context: Project Helix
-          requires:
-            - build
-          filters:
-            branches:
-              only: main
+      - noop

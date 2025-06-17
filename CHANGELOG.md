@@ -1,3 +1,66 @@
+## [7.13.3](https://github.com/adobe/aem-sidekick/compare/v7.13.2...v7.13.3) (2025-06-17)
+
+
+### Bug Fixes
+
+* add project failing with site that is not originalSite ([#601](https://github.com/adobe/aem-sidekick/issues/601)) ([e9f7d3d](https://github.com/adobe/aem-sidekick/commit/e9f7d3d0263787f812f8c453479595371a268d8f)), closes [#600](https://github.com/adobe/aem-sidekick/issues/600)
+
+## [7.13.2](https://github.com/adobe/aem-sidekick/compare/v7.13.1...v7.13.2) (2025-06-16)
+
+
+### Bug Fixes
+
+* abort auto-save after 2s ([#602](https://github.com/adobe/aem-sidekick/issues/602)) ([836719e](https://github.com/adobe/aem-sidekick/commit/836719e8a7f41f25fe990294a4457b563aa71435))
+
+## [7.13.1](https://github.com/adobe/aem-sidekick/compare/v7.13.0...v7.13.1) (2025-06-13)
+
+
+### Bug Fixes
+
+* also inject site token in sub frames ([#598](https://github.com/adobe/aem-sidekick/issues/598)) ([f6b672d](https://github.com/adobe/aem-sidekick/commit/f6b672dcea66a9bd26a0d4e3b2e058cf7d23db5b))
+
+# [7.13.0](https://github.com/adobe/aem-sidekick/compare/v7.12.0...v7.13.0) (2025-06-11)
+
+
+### Features
+
+* force word to save on preview ([#588](https://github.com/adobe/aem-sidekick/issues/588)) ([e182fc4](https://github.com/adobe/aem-sidekick/commit/e182fc441d3318aa958445c5d78ae87f67a11121)), closes [#596](https://github.com/adobe/aem-sidekick/issues/596)
+
+# [7.12.0](https://github.com/adobe/aem-sidekick/compare/v7.11.4...v7.12.0) (2025-06-10)
+
+
+### Features
+
+* project management and json diff ([9c5602a](https://github.com/adobe/aem-sidekick/commit/9c5602aa09d01d88c86df82cd97331c27f74146b))
+
+## [7.11.4](https://github.com/adobe/aem-sidekick/compare/v7.11.3...v7.11.4) (2025-06-06)
+
+
+### Bug Fixes
+
+* **bulk:** google drive selection no longer recognized ([#592](https://github.com/adobe/aem-sidekick/issues/592)) ([0948c70](https://github.com/adobe/aem-sidekick/commit/0948c7084a8c498f1f4772b2aa19dcf0b9588f0d))
+
+## [7.11.3](https://github.com/adobe/aem-sidekick/compare/v7.11.2...v7.11.3) (2025-05-26)
+
+
+### Bug Fixes
+
+* popover plugin pre-loading iframe and not working in menu ([#540](https://github.com/adobe/aem-sidekick/issues/540), [#579](https://github.com/adobe/aem-sidekick/issues/579)) ([30a5377](https://github.com/adobe/aem-sidekick/commit/30a53774bdf431e97513f0a9c751267082185d7b))
+
+## [7.11.2](https://github.com/adobe/aem-sidekick/compare/v7.11.1...v7.11.2) (2025-05-20)
+
+
+### Bug Fixes
+
+* broken bulk selection when gemini is enabled in gdrive ([#578](https://github.com/adobe/aem-sidekick/issues/578)) ([8cf29c3](https://github.com/adobe/aem-sidekick/commit/8cf29c3f8b2556da3d2a6f6cadf4f9faaa0b9e49))
+
+## [7.11.1](https://github.com/adobe/aem-sidekick/compare/v7.11.0...v7.11.1) (2025-05-20)
+
+
+### Bug Fixes
+
+* **bulk:** selection no longer detected in sharepoint ([#575](https://github.com/adobe/aem-sidekick/issues/575)) ([4b9c56e](https://github.com/adobe/aem-sidekick/commit/4b9c56e80d90bc6e648caf99d0298981f2a90585))
+
 # [7.11.0](https://github.com/adobe/aem-sidekick/compare/v7.10.1...v7.11.0) (2025-05-16)
 
 

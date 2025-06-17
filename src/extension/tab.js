@@ -16,9 +16,10 @@ import {
   getProjectMatches,
   getProjectFromUrl,
 } from './project.js';
-import { urlCache } from './url-cache.js';
+import { isSharePointHost, urlCache } from './url-cache.js';
 import { updateUI } from './ui.js';
 import { getConfig } from './config.js';
+import { injectWordHelper } from './sharepoint.js';
 
 /**
  * Loads the content script in the tab.
@@ -70,6 +71,10 @@ export async function checkTab(id) {
     updateUI({
       id, url, config, matches, numProjects: projects.length,
     });
+
+    if (isSharePointHost(tab.url, projects) && new URL(tab.url).pathname.startsWith('/:w:/')) {
+      injectWordHelper(id, tab.url);
+    }
   } catch (e) {
     log.warn(`checkTab: error checking tab ${id}`, e);
   }
