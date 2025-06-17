@@ -1,3 +1,10 @@
+## [7.13.3](https://github.com/adobe/aem-sidekick/compare/v7.13.2...v7.13.3) (2025-06-17)
+
+
+### Bug Fixes
+
+* add project failing with site that is not originalSite ([#601](https://github.com/adobe/aem-sidekick/issues/601)) ([e9f7d3d](https://github.com/adobe/aem-sidekick/commit/e9f7d3d0263787f812f8c453479595371a268d8f)), closes [#600](https://github.com/adobe/aem-sidekick/issues/600)
+
 ## [7.13.2](https://github.com/adobe/aem-sidekick/compare/v7.13.1...v7.13.2) (2025-06-16)
 
 
