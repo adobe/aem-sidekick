@@ -4,6 +4,7 @@
   ],
   "ignoreDeps": [
     "fetch-mock",
+    "@open-wc/eslint-config",
     "@spectrum-web-components/action-button",
     "@spectrum-web-components/action-group",
     "@spectrum-web-components/action-menu",
