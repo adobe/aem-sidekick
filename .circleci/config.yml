@@ -33,9 +33,7 @@ jobs:
           name: Test
           command: |
             npm run test
-      - codecov/upload:
-          files: ./coverage-wtr/lcov.info
-          token: CODECOV_TOKEN
+      - codecov/upload
       - store_test_results:
           path: junit
       - store_artifacts:
