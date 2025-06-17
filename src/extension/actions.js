@@ -302,8 +302,7 @@ async function login({
  */
 async function addRemoveProject(tab) {
   const matches = await getProjectMatches(await getProjects(), tab);
-  const config = matches.length === 1 && !matches[0].transient
-    ? matches[0] : await getProjectFromUrl(tab);
+  const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(tab);
 
   await showSidekickIfHidden();
   if (isValidProject(config)) {
