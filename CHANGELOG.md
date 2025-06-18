@@ -1,3 +1,10 @@
+## [7.13.4](https://github.com/adobe/aem-sidekick/compare/v7.13.3...v7.13.4) (2025-06-18)
+
+
+### Bug Fixes
+
+* clean up dynamic rule before adding new one ([#608](https://github.com/adobe/aem-sidekick/issues/608)) ([8ed7b63](https://github.com/adobe/aem-sidekick/commit/8ed7b6329d6983231382f51c0fc72c7730a6f773))
+
 ## [7.13.3](https://github.com/adobe/aem-sidekick/compare/v7.13.2...v7.13.3) (2025-06-17)
 
 
