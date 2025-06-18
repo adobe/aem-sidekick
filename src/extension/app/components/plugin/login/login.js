@@ -176,8 +176,6 @@ export class LoginButton extends ConnectedElement {
     const { profile } = this.appStore.status;
     const authenticated = this.appStore.isAuthenticated();
 
-    console.log('renderLogin', authenticated, this.appStore.status?.status);
-
     if ((!this.appStore.status.webPath && this.appStore.status?.status !== 401)
       || this.appStore.state === STATE.LOGGING_IN
       || this.appStore.state === STATE.LOGGING_OUT) {
