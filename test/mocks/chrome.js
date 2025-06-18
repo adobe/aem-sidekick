@@ -67,6 +67,7 @@ export default {
   },
   declarativeNetRequest: {
     getSessionRules: async () => ([]),
+    getDynamicRules: async () => ([]),
     updateDynamicRules: async () => undefined,
     updateSessionRules: async () => undefined,
   },
