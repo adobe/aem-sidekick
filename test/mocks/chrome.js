@@ -66,8 +66,8 @@ export default {
     session: new StorageMock(),
   },
   declarativeNetRequest: {
+    getDynamicRules: async () => ([{ id: 1 }, { id: 2 }]),
     getSessionRules: async () => ([]),
-    getDynamicRules: async () => ([]),
     updateDynamicRules: async () => undefined,
     updateSessionRules: async () => undefined,
   },
