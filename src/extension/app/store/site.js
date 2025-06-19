@@ -159,6 +159,12 @@ export class SiteStore {
   authorized = false;
 
   /**
+   * The status code of the config response.
+   * @type {number}
+   */
+  status;
+
+  /**
    * Is this site in transient mode?
    * @type {boolean}
    */
@@ -213,9 +219,9 @@ export class SiteStore {
           'sidekick',
           '/config.json',
         );
-        this.authorized = res.status === 200;
-        if (res.status === 200) {
-          this.authorized = true;
+        this.status = res.status;
+        this.authorized = this.status === 200;
+        if (this.authorized) {
           config = {
             ...config,
             ...await res.json(),
@@ -226,8 +232,6 @@ export class SiteStore {
             mountpoints,
             adminVersion,
           };
-        } else if (res.status !== 404) {
-          this.authorized = false;
         }
       } catch (e) {
         /* istanbul ignore next */

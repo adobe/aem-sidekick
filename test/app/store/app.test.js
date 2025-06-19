@@ -70,7 +70,7 @@ describe('Test App Store', () => {
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
     sidekickTest
       .mockFetchStatusSuccess()
-      .mockFetchSidekickConfigNotFound();
+      .mockFetchSidekickConfigEmpty();
 
     // @ts-ignore
     sidekickElement = document.createElement('div');
@@ -1873,6 +1873,70 @@ describe('Test App Store', () => {
       instance.fireEvent('foo', { foo: 'bar' });
 
       expect(listenerStub.calledWithMatch({ detail: { foo: 'bar' } })).to.be.true;
+    });
+  });
+
+  describe('state tests', async () => {
+    let sandbox;
+    let instance;
+    let showToastStub;
+
+    beforeEach(async () => {
+      sandbox = sinon.createSandbox();
+      instance = appStore;
+      showToastStub = sandbox.stub(instance, 'showToast');
+    });
+
+    it('sets state to ready', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess()
+        .mockFetchStatusSuccess();
+
+      sidekickTest.createSidekick();
+      await sidekickTest.awaitStatusFetched();
+
+      await waitUntil(() => appStore.state === STATE.READY);
+    });
+
+    it('sets state to login required', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigUnauthorized();
+
+      sidekickTest.createSidekick();
+
+      await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
+    });
+
+    it('sets state to unauthorized', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigForbidden();
+
+      sidekickTest.createSidekick();
+
+      await waitUntil(() => appStore.state === STATE.UNAUTHORIZED);
+    });
+
+    it('handles error', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigNotFound();
+
+      sidekickTest.createSidekick();
+
+      await waitUntil(() => appStore.state === STATE.ERROR);
+    });
+
+    it('handles fatal error', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigError();
+
+      sidekickTest.createSidekick();
+
+      await waitUntil(() => appStore.state === STATE.ERROR);
+
+      expect(showToastStub.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
     });
   });
 });

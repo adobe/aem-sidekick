@@ -234,18 +234,26 @@ export class AppStore {
       return;
     }
 
-    const { profile } = this.status;
-    const { authorized } = this.siteStore;
+    const { status: configStatus } = this.siteStore;
     const code = this.status?.code?.status === 200;
     const media = this.status?.webPath?.match(/\/media[_-]+\d+/)
       && this.status?.preview?.status === 404
       && this.status?.live?.status === 404
       && this.status?.code?.status === 404;
 
-    if (!profile && !authorized) {
+    if (configStatus === 401) {
       this.state = STATE.LOGIN_REQUIRED;
-    } else if (!authorized) {
+    } else if (configStatus === 403) {
       this.state = STATE.UNAUTHORIZED;
+    } else if (configStatus >= 404 && configStatus < 500) {
+      this.state = STATE.ERROR;
+    } else if (configStatus >= 500) {
+      this.showToast({
+        message: this.i18n('error_fatal'),
+        variant: 'negative',
+        timeout: 0,
+      });
+      this.state = STATE.ERROR;
     } else if (media) {
       this.state = STATE.MEDIA;
     } else if (code) {
@@ -894,8 +902,15 @@ export class AppStore {
       this.location = getLocation();
     }
 
-    const { owner, repo, ref } = this.siteStore;
+    const {
+      owner, repo, ref, authorized, status: configStatus,
+    } = this.siteStore;
     if (!owner || !repo || !ref) {
+      return status;
+    }
+    if (authorized !== undefined && !authorized) {
+      this.updateStatus({ status: configStatus });
+      this.setState();
       return status;
     }
 

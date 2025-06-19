@@ -182,7 +182,7 @@ describe('Test Site Store', () => {
 
     it('auth enabled and not logged in (401 on config.json)', async () => {
       sidekickTest
-        .mockFetchSidekickConfigUnAuthorized();
+        .mockFetchSidekickConfigUnauthorized();
 
       await appStore.loadContext(sidekickElement, defaultConfig);
       expect(appStore.siteStore.authorized).to.equal(false);

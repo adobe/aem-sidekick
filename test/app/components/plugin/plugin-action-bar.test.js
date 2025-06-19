@@ -744,7 +744,7 @@ describe('Plugin action bar', () => {
   describe('login states', () => {
     it('not logged in, site has authentication enabled', async () => {
       sidekickTest
-        .mockFetchSidekickConfigUnAuthorized()
+        .mockFetchSidekickConfigUnauthorized()
         .mockFetchStatusUnauthorized()
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
