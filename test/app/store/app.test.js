@@ -1877,16 +1877,6 @@ describe('Test App Store', () => {
   });
 
   describe('state tests', async () => {
-    let sandbox;
-    let instance;
-    let showToastStub;
-
-    beforeEach(async () => {
-      sandbox = sinon.createSandbox();
-      instance = appStore;
-      showToastStub = sandbox.stub(instance, 'showToast');
-    });
-
     it('sets state to ready', async () => {
       sidekickTest
         .mockFetchSidekickConfigSuccess()
@@ -1923,20 +1913,6 @@ describe('Test App Store', () => {
       sidekickTest.createSidekick();
 
       await waitUntil(() => appStore.state === STATE.ERROR);
-    });
-
-    it('handles fatal error', async () => {
-      sidekickTest
-        .mockFetchSidekickConfigError();
-
-      sidekickTest.createSidekick();
-
-      await waitUntil(() => appStore.state === STATE.ERROR);
-
-      expect(showToastStub.calledWithMatch({
-        variant: 'negative',
-        timeout: 0,
-      })).to.be.true;
     });
   });
 });

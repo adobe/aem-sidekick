@@ -233,7 +233,11 @@ export class SiteStore {
             adminVersion,
           };
         }
+        if (res.status >= 500) {
+          throw new Error(res.headers.get('x-error'));
+        }
       } catch (e) {
+        this.appStore.api.handleFatalError('sidekick');
         /* istanbul ignore next */
         log.debug('error retrieving custom sidekick config', e);
       }

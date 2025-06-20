@@ -202,7 +202,7 @@ export class AdminClient {
    * Shows a toast if the request failed or did not contain valid JSON.
    * @param {string} action The action
    */
-  #handleFatalError(action) {
+  handleFatalError(action) {
     // use standard error key fallbacks
     const msg = this.#appStore.i18n(`error_${action}_fatal`)
         || this.#appStore.i18n('error_fatal');
@@ -254,7 +254,7 @@ export class AdminClient {
         return { status: resp.status };
       }
     } catch (e) {
-      this.#handleFatalError(this.#getAction('status'));
+      this.handleFatalError(this.#getAction('status'));
     }
     return null;
   }
@@ -302,7 +302,7 @@ export class AdminClient {
         this.#handleServerError(this.#getAction(api, del), path, resp);
       }
     } catch (e) {
-      this.#handleFatalError(this.#getAction(api, del));
+      this.handleFatalError(this.#getAction(api, del));
     }
     return null;
   }
@@ -330,7 +330,7 @@ export class AdminClient {
         this.#handleServerError(this.#getAction(api, del), path, resp);
       }
     } catch (e) {
-      this.#handleFatalError(this.#getAction(api, del));
+      this.handleFatalError(this.#getAction(api, del));
     }
     return null;
   }
@@ -365,7 +365,7 @@ export class AdminClient {
         this.#handleServerError(this.#getAction(api, del), path, resp);
       }
     } catch (e) {
-      this.#handleFatalError(this.#getAction(api, del));
+      this.handleFatalError(this.#getAction(api, del));
     }
     return null;
   }
@@ -393,7 +393,7 @@ export class AdminClient {
         this.#handleServerError(this.#getAction(api), path, resp);
       }
     } catch (e) {
-      this.#handleFatalError(this.#getAction(api));
+      this.handleFatalError(this.#getAction(api));
     }
     return null;
   }
