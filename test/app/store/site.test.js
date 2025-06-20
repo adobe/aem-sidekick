@@ -182,10 +182,31 @@ describe('Test Site Store', () => {
 
     it('auth enabled and not logged in (401 on config.json)', async () => {
       sidekickTest
-        .mockFetchSidekickConfigUnAuthorized();
+        .mockFetchSidekickConfigUnauthorized();
 
       await appStore.loadContext(sidekickElement, defaultConfig);
       expect(appStore.siteStore.authorized).to.equal(false);
+    });
+
+    it('handles 404', async () => {
+      const showToastStub = sandbox.stub(appStore, 'showToast');
+      sidekickTest
+        .mockFetchSidekickConfigNotFound();
+
+      await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(showToastStub.called).to.be.false;
+    });
+
+    it('shows error toast on 5xx', async () => {
+      const showToastStub = sandbox.stub(appStore, 'showToast');
+      sidekickTest
+        .mockFetchSidekickConfigError();
+
+      await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(showToastStub.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
     });
 
     it('with window.hlx.sidekickConfig', async () => {
@@ -198,6 +219,19 @@ describe('Test Site Store', () => {
       await appStore.loadContext(sidekickElement, undefined);
       expect(appStore.siteStore.owner).to.equal('adobe');
       expect(appStore.siteStore.repo).to.equal('aem-boilerplate');
+    });
+
+    it('with custom sourceEditUrl', async () => {
+      /**
+       * @type {SidekickOptionsConfig | ClientConfig}
+       */
+      const config = {
+        ...defaultConfig,
+        editUrlLabel: 'Universal Editor',
+        editUrlPattern: '{{contentSourceUrl}}{{pathname}}?cmd=open',
+      };
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.contentSourceEditLabel).to.equal('Universal Editor');
     });
 
     it('with custom sourceEditUrl', async () => {
