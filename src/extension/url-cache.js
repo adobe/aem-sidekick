@@ -43,6 +43,7 @@ export function isPersonalOneDriveFolder(url) {
   const { pathname } = new URL(url);
   return pathname.toLowerCase().endsWith('/onedrive.aspx')
     || [
+      '/my',
       '/personal/',
       '/:f:/r/personal/',
       '/:f:/p/',
