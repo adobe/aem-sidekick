@@ -1,3 +1,10 @@
+## [7.13.5](https://github.com/adobe/aem-sidekick/compare/v7.13.4...v7.13.5) (2025-06-24)
+
+
+### Bug Fixes
+
+* bulk preview for adobe events ([#614](https://github.com/adobe/aem-sidekick/issues/614)) ([f9a9e70](https://github.com/adobe/aem-sidekick/commit/f9a9e70e941fb1e0fefe3e6ecd725a6776ecb1e1))
+
 ## [7.13.4](https://github.com/adobe/aem-sidekick/compare/v7.13.3...v7.13.4) (2025-06-18)
 
 
