@@ -171,7 +171,7 @@ export class BulkStore {
         // istanbul ignore next 13
         if (!file) {
           // fallback to previous SP DOM version and retrieve type and file from info string
-          const info = row.getAttribute('aria-label') || row.querySelector('span')?.textContent || '';
+          const info = row.getAttribute('aria-label') || row.querySelector('span')?.textContent || row.querySelector('cf-column span')?.textContent || '';
 
           // info format: bla.docx, docx File, Private, Modified 8/28/2023, edited by Jane, 1 KB
           type = info.match(/, ([\p{L}\p{N}]+) [\p{L}\p{N}]+,/u)?.[1];

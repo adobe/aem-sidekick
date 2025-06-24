@@ -351,7 +351,7 @@
     "message": "开发"
   },
   "docs": {
-    "message": "https://www.hlx.live/docs/sidekick"
+    "message": "https://www.aem.live/docs/sidekick"
   },
   "edit": {
     "message": "编辑"
@@ -438,7 +438,7 @@
     "message": "帮助和文档"
   },
   "homepage": {
-    "message": "https://www.hlx.live/tools/sidekick/"
+    "message": "https://www.aem.live/tools/sidekick/"
   },
   "import": {
     "message": "导入"
@@ -565,12 +565,6 @@
   },
   "preview_never_updated": {
     "message": "从未预览过"
-  },
-  "preview_onedrive": {
-    "message": "专业提示：在生成预览前按 Ctrl + S 可立即查看最新更改..."
-  },
-  "preview_onedrive_mac": {
-    "message": "专业提示：在生成预览前按 ⌘ + S 可立即查看最新更改..."
   },
   "preview_success": {
     "message": "预览已成功更新，正在打开预览……"

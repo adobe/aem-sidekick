@@ -351,7 +351,7 @@
     "message": "개발"
   },
   "docs": {
-    "message": "https://www.hlx.live/docs/sidekick"
+    "message": "https://www.aem.live/docs/sidekick"
   },
   "edit": {
     "message": "편집"
@@ -438,7 +438,7 @@
     "message": "도움말 및 설명서"
   },
   "homepage": {
-    "message": "https://www.hlx.live/tools/sidekick/"
+    "message": "https://www.aem.live/tools/sidekick/"
   },
   "import": {
     "message": "가져오기"
@@ -565,12 +565,6 @@
   },
   "preview_never_updated": {
     "message": "미리보기된 적 없음"
-  },
-  "preview_onedrive": {
-    "message": "프로 팁: 최근 변경 내용을 즉시 보려면 미리보기를 생성하기 전에 Ctrl+S를 누르십시오."
-  },
-  "preview_onedrive_mac": {
-    "message": "프로 팁: 최근 변경 내용을 즉시 보려면 미리보기를 생성하기 전에 ⌘ + S를 누르십시오."
   },
   "preview_success": {
     "message": "미리보기가 정상적으로 업데이트됨. 미리보기 여는 중..."
