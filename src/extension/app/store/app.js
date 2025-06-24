@@ -203,17 +203,17 @@ export class AppStore {
     this.sidekick = sidekick;
     this.location = getLocation();
 
-    await this.siteStore.initStore(inputConfig);
-
-    if (this.isAdmin()) {
-      this.bulkStore.initStore(this.location);
-    }
-
     // load dictionary based on user language
     this.languageDict = await fetchLanguageDict(this.siteStore);
     if (!this.languageDict.title) {
       // unsupported language, default to english
       this.languageDict = await fetchLanguageDict(this.siteStore, 'en');
+    }
+
+    await this.siteStore.initStore(inputConfig);
+
+    if (this.isAdmin()) {
+      this.bulkStore.initStore(this.location);
     }
 
     this.setupPlugins();
