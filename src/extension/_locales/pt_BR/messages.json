@@ -351,7 +351,7 @@
     "message": "Desenvolvimento"
   },
   "docs": {
-    "message": "https://www.hlx.live/docs/sidekick"
+    "message": "https://www.aem.live/docs/sidekick"
   },
   "edit": {
     "message": "Editar"
@@ -438,7 +438,7 @@
     "message": "Ajuda e documentação"
   },
   "homepage": {
-    "message": "https://www.hlx.live/tools/sidekick/"
+    "message": "https://www.aem.live/tools/sidekick/"
   },
   "import": {
     "message": "Importar"
@@ -565,12 +565,6 @@
   },
   "preview_never_updated": {
     "message": "Nunca visualizado"
-  },
-  "preview_onedrive": {
-    "message": "Dica profissional: pressione Ctrl + S antes de gerar a pré-visualização para ver as alterações mais recentes imediatamente..."
-  },
-  "preview_onedrive_mac": {
-    "message": "Dica profissional: pressione ⌘ + S antes de gerar a pré-visualização para ver as alterações mais recentes imediatamente..."
   },
   "preview_success": {
     "message": "Visualização atualizada com sucesso. Abrindo a visualização..."

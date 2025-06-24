@@ -351,7 +351,7 @@
     "message": "開發"
   },
   "docs": {
-    "message": "https://www.hlx.live/docs/sidekick"
+    "message": "https://www.aem.live/docs/sidekick"
   },
   "edit": {
     "message": "編輯"
@@ -438,7 +438,7 @@
     "message": "說明與文件"
   },
   "homepage": {
-    "message": "https://www.hlx.live/tools/sidekick/"
+    "message": "https://www.aem.live/tools/sidekick/"
   },
   "import": {
     "message": "匯入"
@@ -565,12 +565,6 @@
   },
   "preview_never_updated": {
     "message": "從未預覽過"
-  },
-  "preview_onedrive": {
-    "message": "專業祕訣：在產生預覽前按 Ctrl+S 可立即查看最新變更…"
-  },
-  "preview_onedrive_mac": {
-    "message": "專業祕訣：在產生預覽前按 ⌘+S 可立即查看最新變更…"
   },
   "preview_success": {
     "message": "預覽已成功更新，正在開啟預覽…"
