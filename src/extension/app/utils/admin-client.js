@@ -247,7 +247,9 @@ export class AdminClient {
       if (resp.ok) {
         return resp.json();
       } else {
-        if (resp.status !== 401) {
+        if (resp.status >= 500) {
+          throw new Error(resp.headers.get('x-error'));
+        } else if (resp.status !== 401) {
           // special handling for 401
           this.#handleServerError(this.#getAction('status'), path, resp);
         }
