@@ -245,8 +245,6 @@ export class AppStore {
       this.state = STATE.LOGIN_REQUIRED;
     } else if (configStatus === 403) {
       this.state = STATE.UNAUTHORIZED;
-    } else if (configStatus >= 404 || this.status?.status >= 404) {
-      this.state = STATE.ERROR;
     } else if (media) {
       this.state = STATE.MEDIA;
     } else if (code) {

@@ -116,7 +116,6 @@ export const STATE = {
   CODE: 'code_state',
   MEDIA: 'media_state',
   READY: 'ready_state',
-  ERROR: 'error_state',
 };
 
 /**

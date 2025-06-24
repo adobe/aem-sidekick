@@ -1905,14 +1905,5 @@ describe('Test App Store', () => {
 
       await waitUntil(() => appStore.state === STATE.UNAUTHORIZED);
     });
-
-    it('handles error', async () => {
-      sidekickTest
-        .mockFetchSidekickConfigNotFound();
-
-      sidekickTest.createSidekick();
-
-      await waitUntil(() => appStore.state === STATE.ERROR);
-    });
   });
 });
