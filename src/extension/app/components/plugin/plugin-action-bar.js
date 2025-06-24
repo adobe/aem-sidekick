@@ -532,7 +532,10 @@ export class PluginActionBar extends ConnectedElement {
   }
 
   render() {
-    return this.appStore.state !== STATE.INITIALIZING ? html`
+    return ![
+      STATE.INITIALIZING,
+      STATE.ERROR,
+    ].includes(this.appStore.state) ? html`
       <action-bar>
         ${this.renderLogo()}
         ${this.renderPlugins()}

@@ -1139,4 +1139,20 @@ describe('Plugin action bar', () => {
       ]);
     });
   });
+
+  describe('error state handling', () => {
+    it('toast only if error state', async () => {
+      const showToastSpy = sidekickTest.sandbox.stub(sidekickTest.appStore, 'showToast').returns(null);
+
+      sidekickTest
+        .mockFetchStatusNotFound()
+        .mockFetchSidekickConfigSuccess(true, true);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await waitUntil(() => showToastSpy.calledOnce);
+
+      expect(recursiveQuery(sidekick, 'action-bar')).to.not.exist;
+    });
+  });
 });
