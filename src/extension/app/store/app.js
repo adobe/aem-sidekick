@@ -1394,9 +1394,8 @@ export class AppStore {
       if (logoutWindow.closed) {
         attempts += 1;
         // try 5 times after login window has been closed
-        this.status.profile = await this.getProfile();
-        if (!this.status.profile) {
-          delete this.status.profile;
+        const profile = await this.getProfile();
+        if (!profile) {
           this.fireEvent(EXTERNAL_EVENTS.LOGGED_OUT, this.status.profile);
           this.reloadPage();
           return;
