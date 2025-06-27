@@ -198,7 +198,7 @@ export class SidekickTest {
   async awaitLoggedOut() {
     const logoutSpy = this.sandbox.spy();
     this.sidekick.addEventListener('logged-out', logoutSpy);
-    await waitUntil(() => logoutSpy.calledOnce, 'Logout not compelte', { timeout: 2000 });
+    await waitUntil(() => logoutSpy.calledOnce, 'Logout not complete', { timeout: 2000 });
   }
 
   /**
