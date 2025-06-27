@@ -210,7 +210,7 @@ export class AdminClient {
         this.#appStore.showModal({
           type: MODALS.ERROR,
           data: {
-            message: error,
+            message: error.replace('[admin] ', ''),
           },
         });
       };
