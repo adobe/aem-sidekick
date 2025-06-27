@@ -76,7 +76,7 @@ describe('Test Site Store', () => {
 
     sidekickTest
       .mockFetchStatusSuccess()
-      .mockFetchSidekickConfigNotFound();
+      .mockFetchSidekickConfigEmpty(); // we expect an empty config by default
 
     // @ts-ignore
     sidekickElement = document.createElement('helix-sidekick');
@@ -85,7 +85,6 @@ describe('Test Site Store', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(sidekickElement);
     sandbox.restore();
     sidekickTest.destroy();
   });

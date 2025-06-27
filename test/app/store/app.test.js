@@ -365,6 +365,7 @@ describe('Test App Store', () => {
 
     it('server error', async () => {
       sidekickTest
+        .mockFetchSidekickConfigEmpty()
         .mockFetchStatusError();
       await instance.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
@@ -508,6 +509,8 @@ describe('Test App Store', () => {
           path: '**.json',
           viewer: '/test/fixtures/views/json/json.html',
         }],
+        authorized: true,
+        status: 200,
       };
 
       // Mock other functions
