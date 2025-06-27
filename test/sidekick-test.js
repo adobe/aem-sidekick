@@ -464,6 +464,9 @@ export class SidekickTest {
   mockFetchStatusError(statusUrl = defaultStatusUrl) {
     fetchMock.get(statusUrl, {
       status: 500,
+      headers: {
+        'x-error': '[admin] first byte timeout',
+      },
     }, { overwriteRoutes: true });
     return this;
   }

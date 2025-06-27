@@ -1140,9 +1140,9 @@ describe('Plugin action bar', () => {
     });
   });
 
-  describe('error state handling', () => {
-    it('toast only if error state', async () => {
-      const showToastSpy = sidekickTest.sandbox.stub(sidekickTest.appStore, 'showToast').returns(null);
+  describe('error toast handling', () => {
+    it('4xx: shows warning toast', async () => {
+      const showToastSpy = sidekickTest.sandbox.spy(sidekickTest.appStore, 'showToast');
 
       sidekickTest
         .mockFetchStatusNotFound()
@@ -1152,7 +1152,66 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => showToastSpy.calledOnce);
 
-      expect(recursiveQuery(sidekick, 'action-bar')).to.not.exist;
+      expect(showToastSpy.calledWithMatch({
+        variant: 'warning',
+        timeout: 0,
+      })).to.be.true;
+    });
+
+    it('5xx: shows negative toast with details action button', async () => {
+      const showToastSpy = sidekickTest.sandbox.spy(sidekickTest.appStore, 'showToast');
+      const showModalStub = sidekickTest.sandbox.spy(sidekickTest.appStore, 'showModal');
+      const errorMessage = 'first byte timeout';
+
+      sidekickTest
+        .mockFetchStatusError()
+        .mockFetchSidekickConfigSuccess(true, true);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await waitUntil(() => showToastSpy.calledOnce);
+
+      expect(showToastSpy.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
+
+      const actionButton = recursiveQuery(sidekick, 'sp-action-button.action');
+      expect(actionButton).to.exist;
+      expect(actionButton.textContent.trim()).to.equal('Details');
+      actionButton.click();
+
+      await waitUntil(() => showModalStub.calledOnce);
+
+      expect(showModalStub.calledWith({
+        type: 'error',
+        data: {
+          message: errorMessage,
+        },
+      })).to.be.true;
+    });
+
+    it('5xx status error: shows negative toast and removes sidekick on close', async () => {
+      const showToastSpy = sidekickTest.sandbox.spy(sidekickTest.appStore, 'showToast');
+
+      sidekickTest
+        .mockFetchStatusError()
+        .mockFetchSidekickConfigSuccess(true, true);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await waitUntil(() => showToastSpy.calledOnce);
+
+      expect(showToastSpy.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
+
+      const closeButton = recursiveQuery(sidekick, 'sp-action-button.close');
+      expect(closeButton).to.exist;
+      closeButton.click();
+
+      await waitUntil(() => !recursiveQuery(document.body, 'aem-sidekick'));
     });
   });
 });
