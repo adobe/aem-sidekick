@@ -234,10 +234,10 @@ export class SiteStore {
           };
         }
         if (res.status >= 500) {
-          throw new Error(res.headers.get('x-error'));
+          this.appStore.api.handleFatalError('sidekick', res.headers.get('x-error'));
         }
       } catch (e) {
-        this.appStore.api.handleFatalError('sidekick');
+        this.appStore.api.handleFatalError('sidekick', e.message);
         /* istanbul ignore next */
         log.debug('error retrieving custom sidekick config', e);
       }
