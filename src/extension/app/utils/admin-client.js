@@ -11,7 +11,7 @@
  */
 
 import { callAdmin, createAdminUrl } from '../../utils/admin.js';
-import { ERRORS } from '../constants.js';
+import { ERRORS, MODALS } from '../constants.js';
 
 /**
  * @typedef {import('../store/app.js').AppStore} AppStore
@@ -115,19 +115,6 @@ export class AdminClient {
   }
 
   /**
-   * Shows the error toast.
-   * @param {string} message The error message
-   * @param {string} variant The toast variant (positive, warning, negative)
-   */
-  #showErrorToast(message, variant) {
-    this.#appStore.showToast({
-      message,
-      variant,
-      timeout: 0, // keep open
-    });
-  }
-
-  /**
    * Returns a localized error message based on action, status code and error message.
    * @param {string} action The action
    * @param {number} status The status code
@@ -183,33 +170,57 @@ export class AdminClient {
     // handle rate limiting
     const limiter = this.#getRateLimiter(resp);
     if (limiter) {
-      this.#showErrorToast(
-        `(429) ${this.#appStore.i18n('error_429').replace('$1', limiter)}`,
-        'warning',
-      );
-      return;
+      this.#appStore.showToast({
+        message: `(429) ${this.#appStore.i18n('error_429').replace('$1', limiter)}`,
+        variant: 'warning',
+        timeout: 0, // keep open
+      });
     }
 
     const [error, errorCode] = this.#getServerError(resp);
     const message = this.getLocalizedError(action, path, resp.status, error, errorCode);
-    this.#showErrorToast(
-      message.replace('$1', error), // in case of generic error
-      resp.status < 500 ? 'warning' : 'negative',
-    );
+    const toast = {
+      message: message.replace('$1', error), // in case of generic error
+      variant: resp.status < 500 ? 'warning' : 'negative',
+      timeout: 0, // keep open
+    };
+
+    this.#appStore.showToast(toast);
   }
 
   /**
    * Shows a toast if the request failed or did not contain valid JSON.
    * @param {string} action The action
+   * @param {string} [error] The error message
    */
-  handleFatalError(action) {
+  handleFatalError(action, error) {
     // use standard error key fallbacks
-    const msg = this.#appStore.i18n(`error_${action}_fatal`)
-        || this.#appStore.i18n('error_fatal');
-    this.#showErrorToast(
-      msg.replace('$1', 'https://status.adobe.com/'),
-      'negative',
-    );
+    const toast = {
+      message: this.#appStore.i18n(`error_${action}_fatal`)
+        || this.#appStore.i18n('error_fatal'),
+      variant: 'negative',
+      timeout: 0, // keep open
+    };
+
+    // add error details
+    if (error) {
+      toast.actionLabel = this.#appStore.i18n('error_fatal_details');
+      toast.actionCallback = () => {
+        this.#appStore.showModal({
+          type: MODALS.ERROR,
+          data: {
+            message: error,
+          },
+        });
+      };
+    }
+
+    // remove sidekick when this toast is closed
+    toast.closeCallback = () => {
+      this.#appStore.sidekick.remove();
+    };
+
+    this.#appStore.showToast(toast);
   }
 
   /**
@@ -256,7 +267,7 @@ export class AdminClient {
         return { status: resp.status };
       }
     } catch (e) {
-      this.handleFatalError(this.#getAction('status'));
+      this.handleFatalError(this.#getAction('status'), e.message);
     }
     return null;
   }
@@ -304,7 +315,7 @@ export class AdminClient {
         this.#handleServerError(this.#getAction(api, del), path, resp);
       }
     } catch (e) {
-      this.handleFatalError(this.#getAction(api, del));
+      this.handleFatalError(this.#getAction(api, del), e.message);
     }
     return null;
   }
@@ -332,7 +343,7 @@ export class AdminClient {
         this.#handleServerError(this.#getAction(api, del), path, resp);
       }
     } catch (e) {
-      this.handleFatalError(this.#getAction(api, del));
+      this.handleFatalError(this.#getAction(api, del), e.message);
     }
     return null;
   }
@@ -367,7 +378,7 @@ export class AdminClient {
         this.#handleServerError(this.#getAction(api, del), path, resp);
       }
     } catch (e) {
-      this.handleFatalError(this.#getAction(api, del));
+      this.handleFatalError(this.#getAction(api, del), e.message);
     }
     return null;
   }
