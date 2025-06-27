@@ -150,9 +150,10 @@ describe('Publish plugin', () => {
 
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
       expect(switchEnvStub.calledWith('prod', false, false)).to.be.true;
-      expect(mockFetch._calls[3].identifier).to.eq('https://main--aem-boilerplate--adobe.hlx.live/');
-      expect(mockFetch._calls[3].options.cache).to.eq('reload');
-      expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
+      console.log('mockFetch', mockFetch._calls);
+      expect(mockFetch._calls[4].identifier).to.eq('https://main--aem-boilerplate--adobe.hlx.live/');
+      expect(mockFetch._calls[4].options.cache).to.eq('reload');
+      expect(mockFetch._calls[4].options.mode).to.eq('no-cors');
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'published',
@@ -185,9 +186,9 @@ describe('Publish plugin', () => {
 
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
       expect(switchEnvStub.calledWith('prod', false, false)).to.be.true;
-      expect(mockFetch._calls[3].identifier).to.eq('https://www.aemboilerplate.com/');
-      expect(mockFetch._calls[3].options.cache).to.eq('reload');
-      expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
+      expect(mockFetch._calls[4].identifier).to.eq('https://www.aemboilerplate.com/');
+      expect(mockFetch._calls[4].options.cache).to.eq('reload');
+      expect(mockFetch._calls[4].options.mode).to.eq('no-cors');
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'published',

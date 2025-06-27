@@ -70,7 +70,7 @@ describe('Test App Store', () => {
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
     sidekickTest
       .mockFetchStatusSuccess()
-      .mockFetchSidekickConfigNotFound();
+      .mockFetchSidekickConfigEmpty();
 
     // @ts-ignore
     sidekickElement = document.createElement('div');
@@ -365,6 +365,7 @@ describe('Test App Store', () => {
 
     it('server error', async () => {
       sidekickTest
+        .mockFetchSidekickConfigEmpty()
         .mockFetchStatusError();
       await instance.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
@@ -508,6 +509,8 @@ describe('Test App Store', () => {
           path: '**.json',
           viewer: '/test/fixtures/views/json/json.html',
         }],
+        authorized: true,
+        status: 200,
       };
 
       // Mock other functions
@@ -1873,6 +1876,37 @@ describe('Test App Store', () => {
       instance.fireEvent('foo', { foo: 'bar' });
 
       expect(listenerStub.calledWithMatch({ detail: { foo: 'bar' } })).to.be.true;
+    });
+  });
+
+  describe('state tests', async () => {
+    it('sets state to ready', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess()
+        .mockFetchStatusSuccess();
+
+      sidekickTest.createSidekick();
+      await sidekickTest.awaitStatusFetched();
+
+      await waitUntil(() => appStore.state === STATE.READY);
+    });
+
+    it('sets state to login required', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigUnauthorized();
+
+      sidekickTest.createSidekick();
+
+      await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
+    });
+
+    it('sets state to unauthorized', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigForbidden();
+
+      sidekickTest.createSidekick();
+
+      await waitUntil(() => appStore.state === STATE.UNAUTHORIZED);
     });
   });
 });

@@ -141,6 +141,8 @@ export class PluginActionBar extends ConnectedElement {
     reaction(
       () => this.appStore.state,
       async () => {
+        this.setupPlugins();
+
         const actionBar = await this.actionBar;
         if (actionBar) {
           if (this.appStore.state === STATE.TOAST) {
@@ -152,8 +154,6 @@ export class PluginActionBar extends ConnectedElement {
             actionBar.className = '';
           }
         }
-
-        this.setupPlugins();
       },
     );
 

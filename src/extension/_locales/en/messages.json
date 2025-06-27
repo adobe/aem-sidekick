@@ -316,6 +316,9 @@
     "error_fatal": {
       "message": "Apologies, we seem to be having problems at the moment. Please try again later."
     },
+    "error_fatal_details": {
+      "message": "Details"
+    },
     "error_generic": {
       "message": "An error occurred: $1"
     },
