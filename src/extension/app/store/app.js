@@ -235,15 +235,16 @@ export class AppStore {
     }
 
     const { status: configStatus } = this.siteStore;
+    const { status } = this.status || {};
     const code = this.status?.code?.status === 200;
     const media = this.status?.webPath?.match(/\/media[_-]+\d+/)
       && this.status?.preview?.status === 404
       && this.status?.live?.status === 404
       && this.status?.code?.status === 404;
 
-    if (configStatus === 401) {
+    if (configStatus === 401 || status === 401) {
       this.state = STATE.LOGIN_REQUIRED;
-    } else if (configStatus === 403) {
+    } else if (configStatus === 403 || status === 403) {
       this.state = STATE.UNAUTHORIZED;
     } else if (media) {
       this.state = STATE.MEDIA;
@@ -894,14 +895,20 @@ export class AppStore {
     }
 
     const {
-      owner, repo, ref, authorized, status: configStatus,
+      owner, repo, ref, authorized = false, status: configStatus,
     } = this.siteStore;
     if (!owner || !repo || !ref) {
       return status;
     }
-    if (authorized !== undefined && !authorized) {
-      this.updateStatus({ status: configStatus });
-      this.setState();
+    if (!authorized) {
+      if (configStatus === 404) {
+        // project doesn't exist, remove sidekick
+        this.sidekick.remove();
+      } else {
+        status = { status: configStatus };
+        this.updateStatus(status);
+        this.setState();
+      }
       return status;
     }
 
