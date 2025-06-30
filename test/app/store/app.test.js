@@ -509,7 +509,6 @@ describe('Test App Store', () => {
           path: '**.json',
           viewer: '/test/fixtures/views/json/json.html',
         }],
-        authorized: true,
         status: 200,
       };
 

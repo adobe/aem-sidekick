@@ -284,7 +284,7 @@ export class AppStore {
   setupCorePlugins() {
     this.corePlugins = {};
 
-    if (this.siteStore.ready && this.siteStore.authorized) {
+    if (this.siteStore.ready && this.siteStore.status === 200) {
       const envPlugin = createEnvPlugin(this);
       const editPlugin = createEditPlugin(this);
       const previewPlugin = createPreviewPlugin(this);
@@ -322,7 +322,7 @@ export class AppStore {
   setupCustomPlugins() {
     this.customPlugins = {};
 
-    if (this.siteStore.authorized) {
+    if (this.siteStore.status === 200) {
       const {
         location,
         siteStore: {
@@ -895,12 +895,12 @@ export class AppStore {
     }
 
     const {
-      owner, repo, ref, authorized = false, status: configStatus,
+      owner, repo, ref, status: configStatus,
     } = this.siteStore;
     if (!owner || !repo || !ref) {
       return status;
     }
-    if (!authorized) {
+    if (configStatus !== 200) {
       if (configStatus === 404) {
         // project doesn't exist, remove sidekick
         this.sidekick.remove();

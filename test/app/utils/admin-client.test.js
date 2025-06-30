@@ -342,7 +342,6 @@ describe('Test Admin Client', () => {
         status: 429,
       });
       await adminClient.updatePreview('/');
-      console.log('showToastStub', showToastStub.args);
       expect(showToastStub.calledOnce).to.be.true;
       expect(toast.message).to.match(/429/);
       expect(toast.message).to.match(/by AEM/);

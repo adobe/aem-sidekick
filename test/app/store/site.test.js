@@ -184,7 +184,7 @@ describe('Test Site Store', () => {
         .mockFetchSidekickConfigUnauthorized();
 
       await appStore.loadContext(sidekickElement, defaultConfig);
-      expect(appStore.siteStore.authorized).to.equal(false);
+      expect(appStore.siteStore.status).to.equal(401);
     });
 
     it('handles 404', async () => {

@@ -151,14 +151,6 @@ export class SiteStore {
   plugins;
 
   /**
-   * Are we currently authorized for the site?
-   * Since the config fetch is the first request, we need to track it's
-   * response status early so the UI can render appropriately.
-   * @type {boolean}
-   */
-  authorized = false;
-
-  /**
    * The status code of the config response.
    * @type {number}
    */
@@ -220,8 +212,7 @@ export class SiteStore {
           '/config.json',
         );
         this.status = res.status;
-        this.authorized = this.status === 200;
-        if (this.authorized) {
+        if (this.status === 200) {
           config = {
             ...config,
             ...await res.json(),

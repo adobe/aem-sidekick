@@ -150,7 +150,6 @@ describe('Publish plugin', () => {
 
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
       expect(switchEnvStub.calledWith('prod', false, false)).to.be.true;
-      console.log('mockFetch', mockFetch._calls);
       expect(mockFetch._calls[4].identifier).to.eq('https://main--aem-boilerplate--adobe.hlx.live/');
       expect(mockFetch._calls[4].options.cache).to.eq('reload');
       expect(mockFetch._calls[4].options.mode).to.eq('no-cors');

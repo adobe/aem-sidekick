@@ -520,7 +520,7 @@ export class PluginActionBar extends ConnectedElement {
       </sp-action-menu>`;
     systemPlugins.push(properties);
 
-    const buttonType = siteStore.authorized ? '' : 'not-authorized';
+    const buttonType = [401, 403].includes(siteStore.status) ? 'not-authorized' : '';
     systemPlugins.push(html`
       <login-button id="user" class=${buttonType}></login-button>
     `);
