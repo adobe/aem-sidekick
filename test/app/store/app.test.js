@@ -383,6 +383,7 @@ describe('Test App Store', () => {
     });
 
     it('server error', async () => {
+      const showToastStub = sidekickTest.sandbox.stub(instance, 'showToast');
       sidekickTest
         .mockFetchSidekickConfigEmpty()
         .mockFetchStatusError();
@@ -392,6 +393,10 @@ describe('Test App Store', () => {
         'Status never loaded',
       );
       expect(instance.status.status).to.equal(500);
+      expect(showToastStub.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
     });
 
     it('status returns 429', async () => {

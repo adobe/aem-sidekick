@@ -11,10 +11,12 @@
  */
 /* eslint-disable no-unused-expressions, no-import-assign, import/no-extraneous-dependencies */
 
+// @ts-ignore
+import fetchMock from 'fetch-mock/esm/client.js';
 import { expect } from '@open-wc/testing';
 import { AppStore } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
-import { SidekickTest } from '../../sidekick-test.js';
+import { defaultConfigJSONUrl, SidekickTest } from '../../sidekick-test.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 
 // @ts-ignore
@@ -188,24 +190,19 @@ describe('Test Site Store', () => {
     });
 
     it('handles 404', async () => {
-      const showToastStub = sandbox.stub(appStore, 'showToast');
       sidekickTest
         .mockFetchSidekickConfigNotFound();
 
       await appStore.loadContext(sidekickElement, defaultConfig);
-      expect(showToastStub.called).to.be.false;
+      expect(appStore.siteStore.status).to.equal(404);
     });
 
-    it('shows error toast on 5xx', async () => {
-      const showToastStub = sandbox.stub(appStore, 'showToast');
-      sidekickTest
-        .mockFetchSidekickConfigError();
+    it('handles network error', async () => {
+      fetchMock.get(defaultConfigJSONUrl, { throws: new Error('Network error') }, { overwriteRoutes: true });
 
       await appStore.loadContext(sidekickElement, defaultConfig);
-      expect(showToastStub.calledWithMatch({
-        variant: 'negative',
-        timeout: 0,
-      })).to.be.true;
+      expect(appStore.siteStore.status).to.be.undefined;
+      expect(appStore.siteStore.error).to.equal('Network error');
     });
 
     it('with window.hlx.sidekickConfig', async () => {
