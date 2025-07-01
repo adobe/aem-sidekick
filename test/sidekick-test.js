@@ -247,10 +247,22 @@ export class SidekickTest {
       body: enMessages,
     }, { overwriteRoutes: true });
 
-    // other languages should return 404
-    fetchMock.get(`glob:${englishMessagesUrl.replace('/en/', '/*/')}`, {
-      status: 404,
-      body: '',
+    return this;
+  }
+
+  /**
+   * Mocks fetch of non-english i18n messages
+   * @param {string} lang The language to mock
+   * @param {Object} messages The messages to mock
+   * @returns {SidekickTest}
+   */
+  mockFetchNonEnglishMessages(lang, messages = {}) {
+    fetchMock.get(englishMessagesUrl.replace('/en/', `/${lang}/`), {
+      status: 200,
+      body: {
+        ...enMessages,
+        ...messages,
+      },
     }, { overwriteRoutes: true });
 
     return this;

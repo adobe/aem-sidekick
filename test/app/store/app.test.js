@@ -111,6 +111,25 @@ describe('Test App Store', () => {
     expect(appStore.siteStore.project).to.eq('AEM Boilerplate');
   });
 
+  it('loadContext - loads german dictionary', async () => {
+    sidekickTest
+      .mockFetchSidekickConfigSuccess(true, true)
+      .mockFetchNonEnglishMessages('de', {
+        activate: {
+          message: 'Aktivieren',
+        },
+      });
+
+    const config = {
+      ...defaultSidekickConfig,
+      lang: 'de',
+    };
+
+    await appStore.loadContext(sidekickElement, config);
+
+    expect(appStore.languageDict.activate).to.eq('Aktivieren');
+  });
+
   it('loadContext - unsupported lang, default to en', async () => {
     sidekickTest
       .mockFetchSidekickConfigSuccess(true, true);
