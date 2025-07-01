@@ -203,17 +203,17 @@ export class AppStore {
     this.sidekick = sidekick;
     this.location = getLocation();
 
+    await this.siteStore.initStore(inputConfig);
+
+    if (this.isAdmin()) {
+      this.bulkStore.initStore(this.location);
+    }
+
     // load dictionary based on user language
     this.languageDict = await fetchLanguageDict(this.siteStore);
     if (!this.languageDict.title) {
       // unsupported language, default to english
       this.languageDict = await fetchLanguageDict(this.siteStore, 'en');
-    }
-
-    await this.siteStore.initStore(inputConfig);
-
-    if (this.isAdmin()) {
-      this.bulkStore.initStore(this.location);
     }
 
     this.setupPlugins();
@@ -895,13 +895,16 @@ export class AppStore {
     }
 
     const {
-      owner, repo, ref, status: configStatus,
+      owner, repo, ref, status: configStatus, error: configError,
     } = this.siteStore;
     if (!owner || !repo || !ref) {
       return status;
     }
     if (configStatus !== 200) {
-      if (configStatus === 404) {
+      if (configStatus >= 500) {
+        // fetching config failed, show fatal error
+        this.api.handleFatalError('sidekick', configError);
+      } else if (configStatus === 404) {
         // project doesn't exist, remove sidekick
         this.sidekick.remove();
       } else {
