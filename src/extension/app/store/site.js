@@ -230,7 +230,7 @@ export class SiteStore {
             adminVersion,
           };
         } else {
-          this.error = res.headers?.get('x-error');
+          this.error = res.headers.get('x-error');
         }
       } catch (e) {
         this.error = e.message;

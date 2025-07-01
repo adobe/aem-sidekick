@@ -901,17 +901,17 @@ export class AppStore {
       return status;
     }
     if (configStatus !== 200) {
-      if (configStatus >= 500) {
+      if (configStatus >= 500 || (!configStatus && configError)) {
         // fetching config failed, show fatal error
         this.api.handleFatalError('sidekick', configError);
       } else if (configStatus === 404) {
         // project doesn't exist, remove sidekick
         this.sidekick.remove();
-      } else {
-        status = { status: configStatus };
-        this.updateStatus(status);
-        this.setState();
       }
+
+      status = { status: configStatus };
+      this.updateStatus(status);
+      this.setState();
       return status;
     }
 
