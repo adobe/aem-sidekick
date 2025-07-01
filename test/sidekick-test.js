@@ -653,6 +653,9 @@ export class SidekickTest {
   mockFetchSidekickConfigError(configUrl = defaultConfigJSONUrl) {
     fetchMock.get(configUrl, {
       status: 500,
+      headers: {
+        'x-error': 'just a test',
+      },
     }, { overwriteRoutes: true });
     return this;
   }

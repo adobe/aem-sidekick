@@ -18,6 +18,7 @@ import { AppStore } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
 import { defaultConfigJSONUrl, SidekickTest } from '../../sidekick-test.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
+import { error } from '../../test-utils.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -197,12 +198,21 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.status).to.equal(404);
     });
 
+    it('handles server error', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigError();
+
+      await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(appStore.siteStore.status).to.equal(500);
+      expect(appStore.siteStore.error).to.equal('just a test');
+    });
+
     it('handles network error', async () => {
-      fetchMock.get(defaultConfigJSONUrl, { throws: new Error('Network error') }, { overwriteRoutes: true });
+      fetchMock.get(defaultConfigJSONUrl, { throws: error }, { overwriteRoutes: true });
 
       await appStore.loadContext(sidekickElement, defaultConfig);
       expect(appStore.siteStore.status).to.be.undefined;
-      expect(appStore.siteStore.error).to.equal('Network error');
+      expect(appStore.siteStore.error).to.equal(error.message);
     });
 
     it('with window.hlx.sidekickConfig', async () => {

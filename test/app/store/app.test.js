@@ -32,7 +32,7 @@ import { createAdminUrl } from '../../../src/extension/utils/admin.js';
 import { recursiveQuery, error } from '../../test-utils.js';
 import { AEMSidekick } from '../../../src/extension/index.js';
 import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
-import { SidekickTest } from '../../sidekick-test.js';
+import { defaultConfigJSONUrl, SidekickTest } from '../../sidekick-test.js';
 import { fetchLanguageDict } from '../../../src/extension/app/utils/i18n.js';
 
 // @ts-ignore
@@ -336,9 +336,11 @@ describe('Test App Store', () => {
 
   describe('fetchStatus()', async () => {
     let instance;
+    let showToastStub;
 
     beforeEach(() => {
       instance = appStore;
+      showToastStub = sidekickTest.sandbox.stub(instance, 'showToast');
     });
 
     afterEach(() => {
@@ -383,16 +385,48 @@ describe('Test App Store', () => {
     });
 
     it('server error', async () => {
-      const showToastStub = sidekickTest.sandbox.stub(instance, 'showToast');
       sidekickTest
         .mockFetchSidekickConfigEmpty()
         .mockFetchStatusError();
+
       await instance.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => instance.status.status,
         'Status never loaded',
       );
+
       expect(instance.status.status).to.equal(500);
+      expect(showToastStub.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
+    });
+
+    it('server error from site store', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigError();
+
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
+      await waitUntil(
+        () => instance.status.status,
+        'Status never loaded',
+      );
+
+      expect(instance.status.status).to.equal(500);
+      expect(showToastStub.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
+    });
+
+    it('network error from site store', async () => {
+      fetchMock.get(defaultConfigJSONUrl, { throws: error }, { overwriteRoutes: true });
+
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
+      await waitUntil(() => showToastStub.called, 'showToast not called');
+
+      expect(instance.siteStore.error).to.equal(error.message);
+      expect(instance.status.status).to.be.undefined;
       expect(showToastStub.calledWithMatch({
         variant: 'negative',
         timeout: 0,
