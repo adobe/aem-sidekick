@@ -157,6 +157,12 @@ export class SiteStore {
   status;
 
   /**
+   * The error message of the config response.
+   * @type {string}
+   */
+  error;
+
+  /**
    * Is this site in transient mode?
    * @type {boolean}
    */
@@ -223,12 +229,11 @@ export class SiteStore {
             mountpoints,
             adminVersion,
           };
-        }
-        if (res.status >= 500) {
-          this.appStore.api.handleFatalError('sidekick', res.headers.get('x-error'));
+        } else {
+          this.error = res.headers?.get('x-error');
         }
       } catch (e) {
-        this.appStore.api.handleFatalError('sidekick', e.message);
+        this.error = e.message;
         /* istanbul ignore next */
         log.debug('error retrieving custom sidekick config', e);
       }
