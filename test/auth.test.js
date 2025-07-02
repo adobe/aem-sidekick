@@ -437,6 +437,7 @@ describe('Test auth', () => {
   it('updateUserAgent', async () => {
     const updateDynamicRules = sandbox.spy(chrome.declarativeNetRequest, 'updateDynamicRules');
     await updateUserAgent();
+    expect(updateDynamicRules.callCount).to.equal(2); // remove all and add new
     expect(updateDynamicRules.calledWith({
       addRules: [{
         id: sinon.match.number,

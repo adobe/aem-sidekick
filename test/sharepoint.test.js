@@ -40,7 +40,7 @@ describe('sharepoint helper', () => {
     mockWindow = {
       // @ts-ignore
       location: {
-        origin: 'https://word-edit.officeapps.live.com',
+        hostname: 'https://word-edit.officeapps.live.com',
       },
     };
     addListenerStub = sandbox.stub(chrome.runtime.onMessage, 'addListener');

@@ -43,7 +43,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-
   release:
     name: Release
     runs-on: ubuntu-latest
@@ -72,6 +71,9 @@ jobs:
           parse-json-secrets: true
           secret-ids: |
             ,/helix/github-action-secrets
+
+      - name: Revert package-lock.json
+        run: git checkout -- package-lock.json
 
       - name: Semantic Release
         run: npm run semantic-release
