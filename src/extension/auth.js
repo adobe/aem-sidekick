@@ -30,7 +30,7 @@ function getRandomId() {
  */
 export async function configureAuthAndCorsHeaders() {
   try {
-    // remove all rules first
+    // remove session rules first
     await chrome.declarativeNetRequest.updateSessionRules({
       removeRuleIds: (await chrome.declarativeNetRequest.getSessionRules())
         .map((rule) => rule.id),
@@ -218,6 +218,12 @@ export async function setAuthToken(
  * @returns {Promise<void>}
  */
 export async function updateUserAgent() {
+  // remove dynamic rules first
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: (await chrome.declarativeNetRequest.getDynamicRules())
+      .map((rule) => rule.id),
+  });
+
   const userAgent = `${navigator.userAgent} AEMSidekick/${chrome.runtime.getManifest().version}`;
   const addRules = [{
     id: getRandomId(),

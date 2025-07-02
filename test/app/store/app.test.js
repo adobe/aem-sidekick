@@ -1690,6 +1690,7 @@ describe('Test App Store', () => {
     let getProfileStub;
     let sandbox;
     let toastSpy;
+    let reloadPageStub;
 
     beforeEach(async () => {
       instance = appStore;
@@ -1707,6 +1708,7 @@ describe('Test App Store', () => {
       // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       toastSpy = sandbox.spy(appStore, 'showToast');
+      reloadPageStub = sandbox.stub(appStore, 'reloadPage');
     });
 
     afterEach(() => {
@@ -1731,7 +1733,8 @@ describe('Test App Store', () => {
     }).timeout(20000);
 
     it('handles successful logout correctly', async () => {
-      sidekickTest.mockFetchStatusSuccess();
+      sidekickTest.mockFetchStatusSuccess(true);
+
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
 
       instance.sidekick = document.createElement('div');
@@ -1740,14 +1743,13 @@ describe('Test App Store', () => {
       getProfileStub.onCall(4).resolves(false); // Simulate success on the 5th attempt
 
       const rumStub = sinon.stub(instance, 'sampleRUM');
-      const loginEventSpy = sinon.spy();
-      instance.sidekick.addEventListener('logged-out', loginEventSpy);
+      const logoutEventSpy = sinon.spy();
+      instance.sidekick.addEventListener('logged-out', logoutEventSpy);
+
+      sidekickTest.mockFetchProfileUnauthorized();
 
       const statusEventSpy = sinon.spy();
       instance.sidekick.addEventListener('status-fetched', statusEventSpy);
-
-      // Mock other methods called upon successful login
-      const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
 
       instance.logout();
 
@@ -1757,11 +1759,9 @@ describe('Test App Store', () => {
         await clock.tickAsync(1000);
       }
 
-      expect(setupCorePluginsStub.calledOnce).to.be.true;
-      expect(loginEventSpy.calledOnce).to.be.true;
-
-      await waitUntil(() => statusEventSpy.calledTwice, 'Status should fire twice');
-      expect(statusEventSpy.calledTwice).to.be.true;
+      expect(reloadPageStub.calledOnce).to.be.true;
+      expect(logoutEventSpy.calledOnce).to.be.true;
+      expect(statusEventSpy.calledOnce, 'Status should fire only once').to.be.true;
 
       expect(rumStub.calledWith('click', {
         source: 'sidekick',
