@@ -234,7 +234,6 @@ export class AppStore {
       return;
     }
 
-    const { status: configStatus } = this.siteStore;
     const { status } = this.status || {};
     const code = this.status?.code?.status === 200;
     const media = this.status?.webPath?.match(/\/media[_-]+\d+/)
@@ -242,9 +241,9 @@ export class AppStore {
       && this.status?.live?.status === 404
       && this.status?.code?.status === 404;
 
-    if (configStatus === 401 || status === 401) {
+    if (status === 401) {
       this.state = STATE.LOGIN_REQUIRED;
-    } else if (configStatus === 403 || status === 403) {
+    } else if (status === 403) {
       this.state = STATE.UNAUTHORIZED;
     } else if (media) {
       this.state = STATE.MEDIA;
@@ -901,17 +900,21 @@ export class AppStore {
       return status;
     }
     if (configStatus !== 200) {
+      // inherit status code from config
+      status = { status: configStatus };
+      this.updateStatus(status);
+
       if (configStatus >= 500 || (!configStatus && configError)) {
         // fetching config failed, show fatal error
         this.api.handleFatalError('sidekick', configError);
       } else if (configStatus === 404) {
         // project doesn't exist, remove sidekick
         this.sidekick.remove();
+      } else {
+        // set appropriate state
+        this.setState();
       }
 
-      status = { status: configStatus };
-      this.updateStatus(status);
-      this.setState();
       return status;
     }
 
