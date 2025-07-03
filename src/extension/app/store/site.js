@@ -151,12 +151,16 @@ export class SiteStore {
   plugins;
 
   /**
-   * Are we currently authorized for the site?
-   * Since the config fetch is the first request, we need to track it's
-   * response status early so the UI can render appropriately.
-   * @type {boolean}
+   * The status code of the config response.
+   * @type {number}
    */
-  authorized = false;
+  status;
+
+  /**
+   * The error message of the config response.
+   * @type {string}
+   */
+  error;
 
   /**
    * Is this site in transient mode?
@@ -213,9 +217,8 @@ export class SiteStore {
           'sidekick',
           '/config.json',
         );
-        this.authorized = res.status === 200;
-        if (res.status === 200) {
-          this.authorized = true;
+        this.status = res.status;
+        if (this.status === 200) {
           config = {
             ...config,
             ...await res.json(),
@@ -226,10 +229,11 @@ export class SiteStore {
             mountpoints,
             adminVersion,
           };
-        } else if (res.status !== 404) {
-          this.authorized = false;
+        } else {
+          this.error = res.headers.get('x-error');
         }
       } catch (e) {
+        this.error = e.message;
         /* istanbul ignore next */
         log.debug('error retrieving custom sidekick config', e);
       }

@@ -32,7 +32,7 @@ import { createAdminUrl } from '../../../src/extension/utils/admin.js';
 import { recursiveQuery, error } from '../../test-utils.js';
 import { AEMSidekick } from '../../../src/extension/index.js';
 import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
-import { SidekickTest } from '../../sidekick-test.js';
+import { defaultConfigJSONUrl, SidekickTest } from '../../sidekick-test.js';
 import { fetchLanguageDict } from '../../../src/extension/app/utils/i18n.js';
 
 // @ts-ignore
@@ -70,7 +70,7 @@ describe('Test App Store', () => {
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
     sidekickTest
       .mockFetchStatusSuccess()
-      .mockFetchSidekickConfigNotFound();
+      .mockFetchSidekickConfigEmpty();
 
     // @ts-ignore
     sidekickElement = document.createElement('div');
@@ -109,6 +109,25 @@ describe('Test App Store', () => {
     expect(appStore.siteStore.innerHost).to.eq('custom-preview-host.com');
     expect(appStore.siteStore.liveHost).to.eq('custom-live-host.com');
     expect(appStore.siteStore.project).to.eq('AEM Boilerplate');
+  });
+
+  it('loadContext - loads german dictionary', async () => {
+    sidekickTest
+      .mockFetchSidekickConfigSuccess(true, true)
+      .mockFetchNonEnglishMessages('de', {
+        activate: {
+          message: 'Aktivieren',
+        },
+      });
+
+    const config = {
+      ...defaultSidekickConfig,
+      lang: 'de',
+    };
+
+    await appStore.loadContext(sidekickElement, config);
+
+    expect(appStore.languageDict.activate).to.eq('Aktivieren');
   });
 
   it('loadContext - unsupported lang, default to en', async () => {
@@ -317,9 +336,11 @@ describe('Test App Store', () => {
 
   describe('fetchStatus()', async () => {
     let instance;
+    let showToastStub;
 
     beforeEach(() => {
       instance = appStore;
+      showToastStub = sidekickTest.sandbox.stub(instance, 'showToast');
     });
 
     afterEach(() => {
@@ -365,13 +386,51 @@ describe('Test App Store', () => {
 
     it('server error', async () => {
       sidekickTest
+        .mockFetchSidekickConfigEmpty()
         .mockFetchStatusError();
+
       await instance.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => instance.status.status,
         'Status never loaded',
       );
+
       expect(instance.status.status).to.equal(500);
+      expect(showToastStub.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
+    });
+
+    it('server error from site store', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigError();
+
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
+      await waitUntil(
+        () => instance.status.status,
+        'Status never loaded',
+      );
+
+      expect(instance.status.status).to.equal(500);
+      expect(showToastStub.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
+    });
+
+    it('network error from site store', async () => {
+      fetchMock.get(defaultConfigJSONUrl, { throws: error }, { overwriteRoutes: true });
+
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
+      await waitUntil(() => showToastStub.called, 'showToast not called');
+
+      expect(instance.siteStore.error).to.equal(error.message);
+      expect(instance.status.status).to.be.undefined;
+      expect(showToastStub.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
     });
 
     it('status returns 429', async () => {
@@ -508,6 +567,7 @@ describe('Test App Store', () => {
           path: '**.json',
           viewer: '/test/fixtures/views/json/json.html',
         }],
+        status: 200,
       };
 
       // Mock other functions
@@ -1873,6 +1933,37 @@ describe('Test App Store', () => {
       instance.fireEvent('foo', { foo: 'bar' });
 
       expect(listenerStub.calledWithMatch({ detail: { foo: 'bar' } })).to.be.true;
+    });
+  });
+
+  describe('state tests', async () => {
+    it('sets state to ready', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess()
+        .mockFetchStatusSuccess();
+
+      sidekickTest.createSidekick();
+      await sidekickTest.awaitStatusFetched();
+
+      await waitUntil(() => appStore.state === STATE.READY);
+    });
+
+    it('sets state to login required', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigUnauthorized();
+
+      sidekickTest.createSidekick();
+
+      await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
+    });
+
+    it('sets state to unauthorized', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigForbidden();
+
+      sidekickTest.createSidekick();
+
+      await waitUntil(() => appStore.state === STATE.UNAUTHORIZED);
     });
   });
 });

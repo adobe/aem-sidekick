@@ -94,10 +94,10 @@ describe('Login', () => {
       sidekickTest
         .mockFetchStatusUnauthorized()
         .mockFetchProfilePictureSuccess()
-        .mockFetchSidekickConfigNotFound();
+        .mockFetchSidekickConfigUnauthorized();
 
       sidekick = sidekickTest.createSidekick();
-      await sidekickTest.awaitStatusFetched();
+      await sidekickTest.awaitActionBar();
 
       await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
 
@@ -116,7 +116,7 @@ describe('Login', () => {
 
       sidekickTest
         .mockFetchStatusUnauthorized()
-        .mockFetchSidekickConfigForbidden()
+        .mockFetchSidekickConfigUnauthorized()
         .mockFetchProfilePictureSuccess()
         .mockFetchProfileUnauthorized();
 
@@ -206,10 +206,9 @@ describe('Login', () => {
       sidekickTest
         .mockFetchStatusUnauthorized()
         .mockFetchProfilePictureSuccess()
-        .mockFetchSidekickConfigNotFound();
+        .mockFetchSidekickConfigUnauthorized();
 
       sidekick = sidekickTest.createSidekick();
-      await sidekickTest.awaitStatusFetched();
 
       await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
 
@@ -230,13 +229,12 @@ describe('Login', () => {
     it('Unauthorized after login ', async () => {
       sidekickTest
         .mockFetchStatusUnauthorized()
-        .mockFetchSidekickConfigNotFound();
+        .mockFetchSidekickConfigUnauthorized();
 
       // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       sidekick = sidekickTest.createSidekick();
-      await sidekickTest.awaitStatusFetched();
 
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
       const loginButton = recursiveQuery(sidekick, 'login-button');

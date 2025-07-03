@@ -198,7 +198,7 @@ export class SidekickTest {
   async awaitLoggedOut() {
     const logoutSpy = this.sandbox.spy();
     this.sidekick.addEventListener('logged-out', logoutSpy);
-    await waitUntil(() => logoutSpy.calledOnce, 'Logout not compelte', { timeout: 2000 });
+    await waitUntil(() => logoutSpy.calledOnce, 'Logout not complete', { timeout: 2000 });
   }
 
   /**
@@ -247,10 +247,22 @@ export class SidekickTest {
       body: enMessages,
     }, { overwriteRoutes: true });
 
-    // other languages should return 404
-    fetchMock.get(`glob:${englishMessagesUrl.replace('/en/', '/*/')}`, {
-      status: 404,
-      body: '',
+    return this;
+  }
+
+  /**
+   * Mocks fetch of non-english i18n messages
+   * @param {string} lang The language to mock
+   * @param {Object} messages The messages to mock
+   * @returns {SidekickTest}
+   */
+  mockFetchNonEnglishMessages(lang, messages = {}) {
+    fetchMock.get(englishMessagesUrl.replace('/en/', `/${lang}/`), {
+      status: 200,
+      body: {
+        ...enMessages,
+        ...messages,
+      },
     }, { overwriteRoutes: true });
 
     return this;
@@ -464,6 +476,9 @@ export class SidekickTest {
   mockFetchStatusError(statusUrl = defaultStatusUrl) {
     fetchMock.get(statusUrl, {
       status: 500,
+      headers: {
+        'x-error': '[admin] first byte timeout',
+      },
     }, { overwriteRoutes: true });
     return this;
   }
@@ -582,6 +597,19 @@ export class SidekickTest {
   }
 
   /**
+   * Mocks an empty response from the config endpoint
+   * @param {string} configUrl The config URL
+   * @returns {SidekickTest}
+   */
+  mockFetchSidekickConfigEmpty(configUrl = defaultConfigJSONUrl) {
+    fetchMock.get(configUrl, {
+      status: 200,
+      body: {},
+    }, { overwriteRoutes: true });
+    return this;
+  }
+
+  /**
    * Mocks a 404 response from the config endpoint
    * @param {string} configUrl The config URL
    * @returns {SidekickTest}
@@ -598,7 +626,7 @@ export class SidekickTest {
    * @param {string} configUrl The config URL
    * @returns {SidekickTest}
    */
-  mockFetchSidekickConfigUnAuthorized(configUrl = defaultConfigJSONUrl) {
+  mockFetchSidekickConfigUnauthorized(configUrl = defaultConfigJSONUrl) {
     fetchMock.get(configUrl, {
       status: 401,
     }, { overwriteRoutes: true });
@@ -613,6 +641,21 @@ export class SidekickTest {
   mockFetchSidekickConfigForbidden(configUrl = defaultConfigJSONUrl) {
     fetchMock.get(configUrl, {
       status: 403,
+    }, { overwriteRoutes: true });
+    return this;
+  }
+
+  /**
+   * Mocks a 500 response from the config endpoint
+   * @param {string} configUrl The config URL
+   * @returns {SidekickTest}
+   */
+  mockFetchSidekickConfigError(configUrl = defaultConfigJSONUrl) {
+    fetchMock.get(configUrl, {
+      status: 500,
+      headers: {
+        'x-error': 'just a test',
+      },
     }, { overwriteRoutes: true });
     return this;
   }

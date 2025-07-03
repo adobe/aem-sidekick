@@ -11,11 +11,14 @@
  */
 /* eslint-disable no-unused-expressions, no-import-assign, import/no-extraneous-dependencies */
 
+// @ts-ignore
+import fetchMock from 'fetch-mock/esm/client.js';
 import { expect } from '@open-wc/testing';
 import { AppStore } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
-import { SidekickTest } from '../../sidekick-test.js';
+import { defaultConfigJSONUrl, SidekickTest } from '../../sidekick-test.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
+import { error } from '../../test-utils.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -76,7 +79,7 @@ describe('Test Site Store', () => {
 
     sidekickTest
       .mockFetchStatusSuccess()
-      .mockFetchSidekickConfigNotFound();
+      .mockFetchSidekickConfigEmpty(); // we expect an empty config by default
 
     // @ts-ignore
     sidekickElement = document.createElement('helix-sidekick');
@@ -85,7 +88,6 @@ describe('Test Site Store', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(sidekickElement);
     sandbox.restore();
     sidekickTest.destroy();
   });
@@ -182,10 +184,35 @@ describe('Test Site Store', () => {
 
     it('auth enabled and not logged in (401 on config.json)', async () => {
       sidekickTest
-        .mockFetchSidekickConfigUnAuthorized();
+        .mockFetchSidekickConfigUnauthorized();
 
       await appStore.loadContext(sidekickElement, defaultConfig);
-      expect(appStore.siteStore.authorized).to.equal(false);
+      expect(appStore.siteStore.status).to.equal(401);
+    });
+
+    it('handles 404', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigNotFound();
+
+      await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(appStore.siteStore.status).to.equal(404);
+    });
+
+    it('handles server error', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigError();
+
+      await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(appStore.siteStore.status).to.equal(500);
+      expect(appStore.siteStore.error).to.equal('just a test');
+    });
+
+    it('handles network error', async () => {
+      fetchMock.get(defaultConfigJSONUrl, { throws: error }, { overwriteRoutes: true });
+
+      await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(appStore.siteStore.status).to.be.undefined;
+      expect(appStore.siteStore.error).to.equal(error.message);
     });
 
     it('with window.hlx.sidekickConfig', async () => {
@@ -198,6 +225,19 @@ describe('Test Site Store', () => {
       await appStore.loadContext(sidekickElement, undefined);
       expect(appStore.siteStore.owner).to.equal('adobe');
       expect(appStore.siteStore.repo).to.equal('aem-boilerplate');
+    });
+
+    it('with custom sourceEditUrl', async () => {
+      /**
+       * @type {SidekickOptionsConfig | ClientConfig}
+       */
+      const config = {
+        ...defaultConfig,
+        editUrlLabel: 'Universal Editor',
+        editUrlPattern: '{{contentSourceUrl}}{{pathname}}?cmd=open',
+      };
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.contentSourceEditLabel).to.equal('Universal Editor');
     });
 
     it('with custom sourceEditUrl', async () => {
