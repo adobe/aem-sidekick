@@ -1,3 +1,10 @@
+## [7.13.6](https://github.com/adobe/aem-sidekick/compare/v7.13.5...v7.13.6) (2025-07-06)
+
+
+### Bug Fixes
+
+* passConfig does not pass all custom hosts ([#623](https://github.com/adobe/aem-sidekick/issues/623)) ([1128e4b](https://github.com/adobe/aem-sidekick/commit/1128e4bae17f036aed691928dfe93f608fd4b656))
+
 ## [7.13.5](https://github.com/adobe/aem-sidekick/compare/v7.13.4...v7.13.5) (2025-06-24)
 
 
