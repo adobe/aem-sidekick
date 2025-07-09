@@ -243,7 +243,6 @@ describe('Plugin', () => {
     appStore.siteStore.owner = 'test-owner';
     appStore.siteStore.host = 'example.com';
     appStore.siteStore.project = 'test-project';
-    appStore.siteStore.reviewHost = 'review.example.com';
     const config = { ...TEST_POPOVER_CONFIG };
     config.title = undefined;
 
@@ -288,6 +287,45 @@ describe('Plugin', () => {
     const popover = container.querySelector('sp-popover');
     const popoverStyle = popover.getAttribute('style');
     expect(popoverStyle).to.be.null;
+  });
+
+  it('config and referrer are passed to url plugin', async () => {
+    appStore.location = new URL('https://www.example.com/');
+    appStore.theme = 'dark';
+    appStore.siteStore.authorized = true;
+    appStore.siteStore.owner = 'test-owner';
+    appStore.siteStore.repo = 'test-repo';
+    appStore.siteStore.ref = 'main';
+    appStore.siteStore.project = 'test-project';
+    appStore.siteStore.previewHost = 'preview.example.com';
+    appStore.siteStore.reviewHost = 'review.example.com';
+    appStore.siteStore.liveHost = 'live.example.com';
+    appStore.siteStore.host = 'example.com';
+    appStore.siteStore.plugins = [{
+      ...TEST_POPOVER_CONFIG,
+      passConfig: true,
+      passReferrer: true,
+    }];
+
+    appStore.setupCustomPlugins();
+
+    const { test: plugin } = appStore.customPlugins;
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+
+    const button = container.querySelector('sp-action-button');
+    button.click();
+
+    const iframeUrl = new URL(container.querySelector('iframe').getAttribute('src'));
+    expect(iframeUrl.searchParams.get('ref')).to.equal('main');
+    expect(iframeUrl.searchParams.get('repo')).to.equal('test-repo');
+    expect(iframeUrl.searchParams.get('owner')).to.equal('test-owner');
+    expect(iframeUrl.searchParams.get('project')).to.equal('test-project');
+    expect(iframeUrl.searchParams.get('previewHost')).to.equal('preview.example.com');
+    expect(iframeUrl.searchParams.get('reviewHost')).to.equal('review.example.com');
+    expect(iframeUrl.searchParams.get('liveHost')).to.equal('live.example.com');
+    expect(iframeUrl.searchParams.get('host')).to.equal('example.com');
+    expect(iframeUrl.searchParams.get('referrer')).to.equal('https://www.example.com/');
   });
 
   it('does not render if not pinned', async () => {
