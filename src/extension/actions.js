@@ -248,7 +248,7 @@ async function launch({
  * @returns {Promise<boolean>} True if login flow started, else false
  */
 async function login({
-  owner, repo, org, site, idp, selectAccount = false,
+  owner, repo, org, site, idp, selectAccount = false, tenant,
 }, { tab }) {
   owner = org || owner;
   repo = site || repo;
@@ -267,6 +267,9 @@ async function login({
     params.set('extensionId', chrome.runtime.id);
     if (idp) {
       params.set('idp', idp);
+    }
+    if (tenant) {
+      params.set('tenant', tenant);
     }
     if (selectAccount) {
       params.set('selectAccount', 'true');
