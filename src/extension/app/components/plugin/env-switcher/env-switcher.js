@@ -205,7 +205,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       // eslint-disable-next-line no-nested-ternary
       docIcon.innerHTML = status.resourcePath?.endsWith('.json')
         ? ICONS.SHEET_ICON.strings.join('')
-        : status.resourcePath.endsWith('.pdf')
+        : status.resourcePath?.endsWith('.pdf')
           ? ICONS.PDF_ICON.strings.join('')
           : ICONS.DOC_ICON.strings.join('');
 
