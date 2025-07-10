@@ -400,6 +400,23 @@ describe('Test actions', () => {
       windowId: 0,
     })).to.be.true;
 
+    // trusted actor with idp and tenant parameter
+    resp = await externalActions.login(
+      {
+        org: 'foo',
+        site: 'bar',
+        idp: 'microsoft',
+        tenant: 'common',
+      },
+      { tab: mockTab('https://tools.aem.live/tools/foo.html') },
+    );
+    expect(resp).to.be.true;
+    expect(createTabStub.calledWith({
+      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&idp=microsoft&tenantId=common',
+      openerTabId: 0,
+      windowId: 0,
+    })).to.be.true;
+
     // trusted actor with unsupported idp
     resp = await externalActions.login(
       { org: 'foo', site: 'bar', idp: 'foo' },

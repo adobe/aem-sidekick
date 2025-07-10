@@ -234,17 +234,16 @@ export class AppStore {
       return;
     }
 
-    const { profile } = this.status;
-    const { authorized } = this.siteStore;
+    const { status } = this.status || {};
     const code = this.status?.code?.status === 200;
     const media = this.status?.webPath?.match(/\/media[_-]+\d+/)
       && this.status?.preview?.status === 404
       && this.status?.live?.status === 404
       && this.status?.code?.status === 404;
 
-    if (!profile && !authorized) {
+    if (status === 401) {
       this.state = STATE.LOGIN_REQUIRED;
-    } else if (!authorized) {
+    } else if (status === 403) {
       this.state = STATE.UNAUTHORIZED;
     } else if (media) {
       this.state = STATE.MEDIA;
@@ -284,7 +283,7 @@ export class AppStore {
   setupCorePlugins() {
     this.corePlugins = {};
 
-    if (this.siteStore.ready && this.siteStore.authorized) {
+    if (this.siteStore.ready && this.siteStore.status === 200) {
       const envPlugin = createEnvPlugin(this);
       const editPlugin = createEditPlugin(this);
       const previewPlugin = createPreviewPlugin(this);
@@ -322,7 +321,7 @@ export class AppStore {
   setupCustomPlugins() {
     this.customPlugins = {};
 
-    if (this.siteStore.authorized) {
+    if (this.siteStore.status === 200) {
       const {
         location,
         siteStore: {
@@ -896,8 +895,28 @@ export class AppStore {
       this.location = getLocation();
     }
 
-    const { owner, repo, ref } = this.siteStore;
+    const {
+      owner, repo, ref, status: configStatus, error: configError,
+    } = this.siteStore;
     if (!owner || !repo || !ref) {
+      return status;
+    }
+    if (configStatus !== 200) {
+      // inherit status code from config
+      status = { status: configStatus };
+      this.updateStatus(status);
+
+      if (configStatus >= 500 || (!configStatus && configError)) {
+        // fetching config failed, show fatal error
+        this.api.handleFatalError('sidekick', configError);
+      } else if (configStatus === 404) {
+        // project doesn't exist, remove sidekick
+        this.sidekick.remove();
+      } else {
+        // set appropriate state
+        this.setState();
+      }
+
       return status;
     }
 
