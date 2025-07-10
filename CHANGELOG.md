@@ -1,3 +1,10 @@
+# [7.14.0](https://github.com/adobe/aem-sidekick/compare/v7.13.6...v7.14.0) (2025-07-10)
+
+
+### Features
+
+* only fetch status when needed ([#610](https://github.com/adobe/aem-sidekick/issues/610)) ([7d1c0f7](https://github.com/adobe/aem-sidekick/commit/7d1c0f73a75072a86105206916c0ea0a5fe666e0))
+
 ## [7.13.6](https://github.com/adobe/aem-sidekick/compare/v7.13.5...v7.13.6) (2025-07-06)
 
 
