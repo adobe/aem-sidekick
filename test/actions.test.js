@@ -412,7 +412,7 @@ describe('Test actions', () => {
     );
     expect(resp).to.be.true;
     expect(createTabStub.calledWith({
-      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&idp=microsoft&tenant=common',
+      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&idp=microsoft&tenantId=common',
       openerTabId: 0,
       windowId: 0,
     })).to.be.true;

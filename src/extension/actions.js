@@ -269,7 +269,7 @@ async function login({
       params.set('idp', idp);
     }
     if (tenant) {
-      params.set('tenant', tenant);
+      params.set('tenantId', tenant);
     }
     if (selectAccount) {
       params.set('selectAccount', 'true');
