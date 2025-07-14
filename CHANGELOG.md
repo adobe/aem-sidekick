@@ -1,3 +1,10 @@
+## [7.14.2](https://github.com/adobe/aem-sidekick/compare/v7.14.1...v7.14.2) (2025-07-14)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([#634](https://github.com/adobe/aem-sidekick/issues/634)) ([e861fdb](https://github.com/adobe/aem-sidekick/commit/e861fdb8fc4e7172cd26dd08840e0aa90442e455))
+
 ## [7.14.1](https://github.com/adobe/aem-sidekick/compare/v7.14.0...v7.14.1) (2025-07-14)
 
 
