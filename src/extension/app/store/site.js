@@ -306,7 +306,7 @@ export class SiteStore {
     this.setReady();
 
     // send config to service worker to update sync storage
-    if (!this.transient && this.owner && this.repo) {
+    if (!this.transient && this.status === 200 && this.owner && this.repo) {
       chrome.runtime.sendMessage({
         action: 'updateProject',
         config: {

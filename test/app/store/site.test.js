@@ -255,23 +255,24 @@ describe('Test Site Store', () => {
   });
 
   describe('update project config', () => {
-    it('sends current config to service worker', async () => {
-      const config = {
-        id: 'business-website',
-        owner: 'adobe',
-        repo: 'business-website',
-        ref: 'main',
-        previewHost: 'old-preview.example.com',
-        liveHost: 'old-live.example.com',
-        reviewHost: 'old-review.example.com',
-        project: 'business-website',
-        host: 'business-website.example.com',
-        contentSourceUrl: 'https://adobe.sharepoint.com/sites/business-website',
-        contentSourceType: 'sharepoint',
-      };
+    const config = {
+      id: 'business-website',
+      owner: 'adobe',
+      repo: 'business-website',
+      ref: 'main',
+      previewHost: 'old-preview.example.com',
+      liveHost: 'old-live.example.com',
+      reviewHost: 'old-review.example.com',
+      project: 'business-website',
+      host: 'business-website.example.com',
+      contentSourceUrl: 'https://adobe.sharepoint.com/sites/business-website',
+      contentSourceType: 'sharepoint',
+    };
 
+    it('sends current config to service worker', async () => {
       const sendMessageStub = sandbox.stub(chrome.runtime, 'sendMessage');
 
+      appStore.siteStore.status = 200;
       await appStore.loadContext(sidekickElement, config);
 
       expect(sendMessageStub.calledOnce).to.be.true;
@@ -291,23 +292,24 @@ describe('Test Site Store', () => {
       });
     });
 
-    it('does not send config for transient projects', async () => {
-      const config = {
-        id: 'business-website',
-        owner: 'adobe',
-        repo: 'business-website',
-        ref: 'main',
-        transient: true,
-        previewHost: 'old-preview.example.com',
-        project: 'business-website',
-        host: 'business-website.example.com',
-        contentSourceUrl: 'https://adobe.sharepoint.com/sites/business-website',
-        contentSourceType: 'onedrive',
-      };
-
+    it('does not send config if status not 200', async () => {
       const sendMessageStub = sandbox.stub(chrome.runtime, 'sendMessage');
 
+      appStore.siteStore.status = 401;
       await appStore.loadContext(sidekickElement, config);
+
+      expect(sendMessageStub.called).to.be.false;
+    });
+
+    it('does not send config for transient projects', async () => {
+      const sendMessageStub = sandbox.stub(chrome.runtime, 'sendMessage');
+
+      appStore.siteStore.status = 200;
+      await appStore.loadContext(sidekickElement, {
+        ...config,
+        // @ts-ignore
+        transient: true,
+      });
 
       expect(sendMessageStub.called).to.be.false;
     });
