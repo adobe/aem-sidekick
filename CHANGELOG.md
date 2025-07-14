@@ -1,3 +1,10 @@
+## [7.14.1](https://github.com/adobe/aem-sidekick/compare/v7.14.0...v7.14.1) (2025-07-14)
+
+
+### Bug Fixes
+
+* only update existing project if status 200 ([#633](https://github.com/adobe/aem-sidekick/issues/633)) ([55b8342](https://github.com/adobe/aem-sidekick/commit/55b8342efeb0306147863cb9deec60a4869c9eaa))
+
 # [7.14.0](https://github.com/adobe/aem-sidekick/compare/v7.13.6...v7.14.0) (2025-07-10)
 
 
