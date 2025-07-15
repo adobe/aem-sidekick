@@ -43,7 +43,7 @@ export default {
     setIcon: () => {},
   },
   i18n: {
-    getMessage: () => {},
+    getMessage: (key, ...vars) => `i18n?${key}${vars[0] ? `|${vars.join(':')}` : ''}`,
   },
   runtime: {
     id: ID,
