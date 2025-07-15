@@ -304,7 +304,6 @@ describe('Test actions', () => {
     resp = await externalActions.removeSite({
       config,
     }, { tab: mockTab('https://tools.aem.live/foo') });
-    console.log('removeSite', removeStub.args, resp); // eslint-disable-line no-console
     expect(removeStub.called).to.be.true;
     expect(setStub.calledWith({ projects: [] })).to.be.true;
     expect(resp).to.be.true;
@@ -567,6 +566,25 @@ describe('Test actions', () => {
       url: 'https://www.example.com/',
     }));
     expect(set.notCalled).to.be.true;
+  });
+
+  it('internal: enableDisableProject shows correct project name in notification', async () => {
+    const sendMessageStub = sandbox.spy(chrome.tabs, 'sendMessage');
+    const i18nSpy = sandbox.spy(chrome.i18n, 'getMessage');
+
+    // disable project - should show notification with project name
+    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.hlx.page/', {
+      id: 1,
+    }));
+
+    expect(sendMessageStub.calledWithMatch(1, {
+      action: 'show_notification',
+      headline: 'i18n?config_project_disabled_headline',
+      message: 'i18n?config_project_disabled|foo/bar',
+    })).to.be.true;
+
+    // verify the project name (foo/bar) is used in the message
+    expect(i18nSpy.calledWith('config_project_disabled', 'foo/bar')).to.be.true;
   });
 
   describe('internal: importProjects', () => {
