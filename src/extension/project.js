@@ -61,9 +61,9 @@ export async function getProjects() {
 export async function updateProject(project) {
   const { owner, repo } = project;
   if (owner && repo) {
-    // sanitize input
+    // sanitize input - only remove undefined or null values, not false or 0
     Object.keys(project).forEach((key) => {
-      if (!project[key]) {
+      if (project[key] === undefined || project[key] === null) {
         delete project[key];
       }
     });
