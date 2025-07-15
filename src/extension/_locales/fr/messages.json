@@ -383,6 +383,9 @@
   "error_fatal": {
     "message": "Nous vous prions de nous excuser pour les problèmes rencontrés actuellement. Veuillez réessayer ultérieurement."
   },
+  "error_fatal_details": {
+    "message": "Détails"
+  },
   "error_generic": {
     "message": "Une erreur s’est produite : $1"
   },
