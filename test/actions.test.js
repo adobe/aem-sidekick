@@ -1064,6 +1064,60 @@ describe('Test actions', () => {
       expect(updateProjectStub.called).to.be.false;
     });
 
+    it('preserves existing project properties when updating', async () => {
+      const existingProject = {
+        id: 'adobe/business-website',
+        owner: 'adobe',
+        repo: 'business-website',
+        ref: 'main',
+        project: 'Business Website',
+        giturl: 'https://github.com/adobe/business-website/tree/main',
+        host: 'business-website.example.com',
+        previewHost: 'preview.business-website.example.com',
+        liveHost: 'live.business-website.example.com',
+        mountpoints: ['/content/business-website'],
+        disabled: false,
+      };
+
+      const updateConfig = {
+        owner: 'adobe',
+        repo: 'business-website',
+        ref: 'main',
+        previewHost: 'new-preview.business-website.example.com', // only this property changes
+      };
+
+      // mock getProject to return existing project
+      const getStub = sandbox.stub(chrome.storage.sync, 'get');
+      getStub.withArgs('projects').resolves({ projects: ['adobe/business-website'] });
+      getStub.withArgs('adobe/business-website').resolves({ 'adobe/business-website': existingProject });
+
+      // mock updateProject to verify it's called with preserved properties
+      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set')
+        .resolves();
+
+      await internalActions.updateProject({}, { config: updateConfig });
+
+      expect(updateProjectStub.calledOnce).to.be.true;
+
+      // Verify that the updated project preserves all existing properties
+      const updatedProject = updateProjectStub.firstCall.args[0]['adobe/business-website'];
+
+      // Essential properties should be preserved
+      expect(updatedProject.id).to.equal('adobe/business-website');
+      expect(updatedProject.owner).to.equal('adobe');
+      expect(updatedProject.repo).to.equal('business-website');
+      expect(updatedProject.ref).to.equal('main');
+      expect(updatedProject.project).to.equal('Business Website');
+      expect(updatedProject.giturl).to.equal('https://github.com/adobe/business-website/tree/main');
+      expect(updatedProject.host).to.equal('business-website.example.com');
+      expect(updatedProject.liveHost).to.equal('live.business-website.example.com');
+      expect(updatedProject.mountpoints).to.deep.equal(['/content/business-website']);
+      expect(updatedProject.disabled).to.equal(false);
+
+      // The updated property should be changed
+      expect(updatedProject.previewHost).to.equal('new-preview.business-website.example.com');
+    });
+
     it('saves document in sharepoint', async () => {
       const saveDocumentStub = sandbox.stub(chrome.tabs, 'sendMessage');
       await internalActions.saveDocument({ id: 1, url: 'https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=bla.docx&action=default&mobileredirect=true' });
