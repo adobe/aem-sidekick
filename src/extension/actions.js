@@ -523,7 +523,10 @@ async function updateProject(_, { config }) {
       });
 
     if (hasChanges) {
-      await updateProjectConfig(config);
+      await updateProjectConfig({
+        ...existingProject,
+        ...config,
+      });
     }
   }
 }
