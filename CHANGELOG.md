@@ -1,3 +1,11 @@
+## [7.14.3](https://github.com/adobe/aem-sidekick/compare/v7.14.2...v7.14.3) (2025-07-17)
+
+
+### Bug Fixes
+
+* Translations Update, please integrate ([#635](https://github.com/adobe/aem-sidekick/issues/635)) ([9651104](https://github.com/adobe/aem-sidekick/commit/9651104e9bb1edfca929817e52b14b2114faee03))
+* update project loses id ([#637](https://github.com/adobe/aem-sidekick/issues/637)) ([ba0a748](https://github.com/adobe/aem-sidekick/commit/ba0a74816835af21c17b6f0e8b1b244bab3e257a))
+
 ## [7.14.2](https://github.com/adobe/aem-sidekick/compare/v7.14.1...v7.14.2) (2025-07-14)
 
 
