@@ -2,6 +2,13 @@
 
 > Browser extension for authoring AEM sites
 
+## Status
+[![codecov](https://img.shields.io/codecov/c/github/adobe/aem-sidekick.svg)](https://codecov.io/gh/adobe/aem-sidekick)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/adobe/aem-sidekick/main.yaml)
+[![GitHub license](https://img.shields.io/github/license/adobe/aem-sidekick.svg)](https://github.com/adobe/aem-sidekick/blob/master/LICENSE.txt)
+[![GitHub issues](https://img.shields.io/github/issues/adobe/aem-sidekick.svg)](https://github.com/adobe/aem-sidekick/issues)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+
 ## Installation
 
 1. Go to the [Chrome Web Store](https://chromewebstore.google.com/detail/aem-sidekick/igkmdomcgoebiipaifhmpfjhbjccggml)
