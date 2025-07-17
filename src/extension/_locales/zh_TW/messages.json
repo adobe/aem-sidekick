@@ -383,6 +383,9 @@
   "error_fatal": {
     "message": "抱歉，我們目前似乎遇到問題。請稍後再試。"
   },
+  "error_fatal_details": {
+    "message": "詳細資料"
+  },
   "error_generic": {
     "message": "發生錯誤：$1"
   },

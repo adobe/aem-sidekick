@@ -383,6 +383,9 @@
   "error_fatal": {
     "message": "Le pedimos disculpas, parece que tenemos problemas en este momento. Inténtelo de nuevo más tarde."
   },
+  "error_fatal_details": {
+    "message": "Detalles"
+  },
   "error_generic": {
     "message": "Se ha producido un error: $1"
   },
