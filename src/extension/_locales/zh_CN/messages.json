@@ -383,6 +383,9 @@
   "error_fatal": {
     "message": "抱歉，我们目前似乎遇到了问题。请稍后重试。"
   },
+  "error_fatal_details": {
+    "message": "详细信息"
+  },
   "error_generic": {
     "message": "出现错误：$1"
   },
@@ -468,7 +471,7 @@
     "message": "从未发布"
   },
   "loading_diff": {
-    "message": "正在加载更改……"
+    "message": "正在加载更改…"
   },
   "logging_in_state": {
     "message": "正在登录……"

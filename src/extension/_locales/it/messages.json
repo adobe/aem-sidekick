@@ -383,6 +383,9 @@
   "error_fatal": {
     "message": "Al momento stiamo riscontrando dei problemi. Riprova più tardi."
   },
+  "error_fatal_details": {
+    "message": "Dettagli"
+  },
   "error_generic": {
     "message": "Si è verificato un errore: $1"
   },

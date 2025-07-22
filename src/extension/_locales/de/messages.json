@@ -383,6 +383,9 @@
   "error_fatal": {
     "message": "Leider scheinen wir im Moment Probleme zu haben. Bitte versuchen Sie es später erneut."
   },
+  "error_fatal_details": {
+    "message": "Details"
+  },
   "error_generic": {
     "message": "Es ist ein Fehler aufgetreten: $1"
   },
