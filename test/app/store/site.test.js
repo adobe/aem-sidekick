@@ -252,6 +252,25 @@ describe('Test Site Store', () => {
       await appStore.loadContext(sidekickElement, config);
       expect(appStore.siteStore.contentSourceEditLabel).to.equal('Universal Editor');
     });
+
+    it('with custom wordSaveDelay', async () => {
+      /**
+       * @type {SidekickOptionsConfig | ClientConfig}
+       */
+      const config = {
+        ...defaultConfig,
+        wordSaveDelay: 3000,
+      };
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.wordSaveDelay).to.equal(3000);
+      expect(appStore.siteStore.toJSON().wordSaveDelay).to.equal(3000);
+
+      // reject non-integer value
+      // @ts-ignore
+      config.wordSaveDelay = '3000';
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.wordSaveDelay).to.equal(1500); // default
+    });
   });
 
   describe('update project config', () => {
