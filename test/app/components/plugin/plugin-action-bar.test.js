@@ -387,6 +387,32 @@ describe('Plugin action bar', () => {
       ]);
     });
 
+    it('isAdmin - w/custom plugins', async () => {
+      sidekick = sidekickTest
+        .mockFetchDirectoryStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, true)
+        .mockAdminDOM(
+          undefined,
+          undefined,
+          undefined,
+          'https://foo.sharepoint.com/sites/bar/drafts/Forms/AllItems.aspx',
+        )
+        .toggleAdminItems(['document'])
+        .createSidekick();
+
+      await aTimeout(100);
+
+      sidekick.click();
+
+      await waitUntil(() => appStore.bulkStore.selection.length === 1, `timeout waiting for selection  to be 1, instead got ${appStore.bulkStore.selection.length}`);
+
+      expectInActionBar([
+        'bulk-info',
+        'bulk-preview',
+        'bulk-copy-urls',
+      ]);
+    });
+
     it('custom container plugin', async () => {
       const { sandbox } = sidekickTest;
 

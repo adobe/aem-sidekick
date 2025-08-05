@@ -339,6 +339,7 @@ export class SidekickTest {
     contentSource,
     viewType = 'list',
     resources = [],
+    location = undefined,
   ) {
     if (!contentSource) {
       contentSource = HelixMockContentSources.SHAREPOINT;
@@ -353,6 +354,7 @@ export class SidekickTest {
       EditorMockEnvironments.ADMIN,
       HelixMockContentType.ADMIN,
       contentSource,
+      location,
     );
 
     let root;
