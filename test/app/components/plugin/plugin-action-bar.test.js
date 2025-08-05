@@ -404,7 +404,7 @@ describe('Plugin action bar', () => {
 
       sidekick.click();
 
-      await waitUntil(() => appStore.bulkStore.selection.length === 1, `timeout waiting for selection  to be 1, instead got ${appStore.bulkStore.selection.length}`);
+      await waitUntil(() => appStore.bulkStore.selection.length === 1);
 
       expectInActionBar([
         'bulk-info',
