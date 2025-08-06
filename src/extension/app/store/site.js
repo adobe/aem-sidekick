@@ -252,6 +252,7 @@ export class SiteStore {
       host,
       project = '',
       specialViews,
+      wordSaveDelay,
       transient = false,
       scriptUrl = 'https://www.hlx.live/tools/sidekick/index.js',
     } = config;
@@ -302,6 +303,8 @@ export class SiteStore {
     this.project = project;
     this.devUrl = devUrl;
     this.lang = lang || getLanguage();
+    this.wordSaveDelay = Number.isInteger(wordSaveDelay) && wordSaveDelay > 0
+      ? wordSaveDelay : 1500;
     this.transient = transient;
     this.setReady();
 
@@ -352,6 +355,7 @@ export class SiteStore {
       adminVersion: this.adminVersion,
       lang: this.lang,
       views: this.views,
+      wordSaveDelay: this.wordSaveDelay,
     };
   }
 }

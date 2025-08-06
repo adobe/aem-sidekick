@@ -444,12 +444,18 @@ export class AppStore {
           };
 
           // check if this overlaps with a core plugin, if so override the condition only
-          const corePlugin = this.corePlugins[plugin.id];
-          if (corePlugin) {
-            // extend default condition
-            const { condition: defaultCondition } = corePlugin.config;
-            corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
-            corePlugin.config.confirm = confirm;
+          const corePlugins = Object.keys(this.corePlugins)
+            .filter((key) => key === plugin.id || key === `bulk-${plugin.id}`)
+            .map((key) => this.corePlugins[key]);
+          if (corePlugins.length > 0) {
+            corePlugins.forEach((corePlugin) => {
+              // extend default condition
+              const { condition: defaultCondition } = corePlugin.config;
+              corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
+              if (confirm) {
+                corePlugin.config.confirm = confirm;
+              }
+            });
           } else {
             // add custom plugin
             const customPlugin = new Plugin(plugin, this);

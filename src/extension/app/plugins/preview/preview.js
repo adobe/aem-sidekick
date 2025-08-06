@@ -93,18 +93,19 @@ export function createPreviewPlugin(appStore) {
           return;
         }
         if (location.pathname.startsWith('/:w:/')) {
+          const { wordSaveDelay } = appStore.siteStore;
           // tell word to save document before previewing
           await new Promise((resolve) => {
             chrome.runtime.sendMessage({
               action: 'saveDocument',
               url: location.href,
             }).then(() => {
-              setTimeout(resolve, 1500);
+              setTimeout(resolve, wordSaveDelay);
             }).catch(() => {
               resolve();
             });
-            // don't wait longer than 2s
-            setTimeout(resolve, 2000);
+            // don't wait longer than 0.5s longer than word save delay
+            setTimeout(resolve, wordSaveDelay + 500);
           });
         }
         appStore.updatePreview();
