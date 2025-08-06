@@ -48,6 +48,7 @@
  * @prop {string} [editUrlLabel] The custom label of the edit content source
  * @prop {string} [editUrlPattern] The pattern of the edit content source
  * @prop {string} [adminVersion] The specific version of admin service to use
+ * @prop {number} [wordSaveDelay] The delay to wait for Word to save the document before previewing
  * @prop {boolean} [disabled] Is the project disabled?
  * @description Represents the sidekick configuration from the user via the options view
  */
