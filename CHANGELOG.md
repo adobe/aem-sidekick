@@ -1,3 +1,15 @@
+# [7.15.0](https://github.com/adobe/aem-sidekick/compare/v7.14.3...v7.15.0) (2025-08-06)
+
+
+### Bug Fixes
+
+* **bulk:** custom plugin override not respected ([#643](https://github.com/adobe/aem-sidekick/issues/643)) ([805a889](https://github.com/adobe/aem-sidekick/commit/805a889bfb488d0b2beaae089b268c0054105c81))
+
+
+### Features
+
+* **preview:** configurable word save delay ([#645](https://github.com/adobe/aem-sidekick/issues/645)) ([16c1369](https://github.com/adobe/aem-sidekick/commit/16c1369338385aae50a085eb8d0cabc9b9241793))
+
 ## [7.14.3](https://github.com/adobe/aem-sidekick/compare/v7.14.2...v7.14.3) (2025-07-17)
 
 
