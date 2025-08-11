@@ -433,18 +433,30 @@ export class JSONView extends LitElement {
         // Text
         valueContainer.textContent = value;
       }
-    } else if (Array.isArray(value) || (typeof value === 'string' && value.startsWith('[') && value.endsWith(']'))) {
-      // assume array
+    } else if (!Array.isArray(value) && value.startsWith('[') && value.endsWith(']')) {
       valueContainer.classList.add('list');
       const list = valueContainer.appendChild(document.createElement('ul'));
       JSON.parse(value).forEach((v) => {
         const item = list.appendChild(document.createElement('li'));
         item.textContent = v;
       });
+    } else if (Array.isArray(value)) {
+      // assume array
+      valueContainer.classList.add('list');
+      const list = valueContainer.appendChild(document.createElement('ul'));
+      value.forEach((v) => {
+        const values = v.split(',');
+        values.forEach((val) => {
+          const item = list.appendChild(document.createElement('li'));
+          const valueItem = item.appendChild(document.createElement('div'));
+          valueItem.textContent = val.trim();
+        });
+      });
     } else {
       // text
       valueContainer.textContent = value;
     }
+
     // check if the value contains any rtl characters
     if (/[\u0590-\u06FF]/.test(valueContainer.textContent)) {
       dir = 'rtl';
