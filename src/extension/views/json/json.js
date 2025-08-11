@@ -404,7 +404,7 @@ export class JSONView extends LitElement {
         valueContainer.classList.add('number');
         valueContainer.textContent = value;
       }
-    } else if (/^\/[a-z0-9]+/i.test(value) || value.startsWith('http')) {
+    } else if (!Array.isArray(value) && (/^\/[a-z0-9]+/i.test(value) || value.startsWith('http'))) {
       // check if the value contains a glob pattern
       if (!value.includes('*')) {
         // assume link
@@ -433,7 +433,7 @@ export class JSONView extends LitElement {
         // Text
         valueContainer.textContent = value;
       }
-    } else if (value.startsWith('[') && value.endsWith(']')) {
+    } else if (Array.isArray(value) || (typeof value === 'string' && value.startsWith('[') && value.endsWith(']'))) {
       // assume array
       valueContainer.classList.add('list');
       const list = valueContainer.appendChild(document.createElement('ul'));
