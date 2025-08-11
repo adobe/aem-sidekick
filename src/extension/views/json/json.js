@@ -287,13 +287,15 @@ export class JSONView extends LitElement {
             <sp-action-button value=${index.toString()} .selected=${index === this.selectedTabIndex}>${name}</sp-action-button>
           `)}
         </sp-action-group>
-        <div class="stats">
+        ${total > 0 ? html`
+          <div class="stats">
           ${this.diffMode ? html`
             <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', diffFilteredCount).replace('$2', total)}</p>
           ` : html`
             <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
           `}
         </div>
+        ` : ''}
         <sp-action-group>
           ${this.url.includes('.page') ? html`
             ${this.diffMode ? html`
