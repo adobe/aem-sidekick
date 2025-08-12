@@ -1,3 +1,11 @@
+## [7.15.1](https://github.com/adobe/aem-sidekick/compare/v7.15.0...v7.15.1) (2025-08-12)
+
+
+### Bug Fixes
+
+* issue 520 - hide results count if not present in data ([d35fa62](https://github.com/adobe/aem-sidekick/commit/d35fa621450d50f9d91a735d308435002d8a6bf5))
+* toggle view on multi sheets where excel hasn't been published live yet ([af826fe](https://github.com/adobe/aem-sidekick/commit/af826fecbb4490ea10fe20dcf802006a0fcc937f))
+
 # [7.15.0](https://github.com/adobe/aem-sidekick/compare/v7.14.3...v7.15.0) (2025-08-06)
 
 
