@@ -763,7 +763,24 @@ export class JSONView extends LitElement {
           this.originalDiffData = this.diffData;
         } else if (liveRes.status === 404) {
           // If live version doesn't exist yet, treat it as empty
-          this.liveData = { data: [], columns: this.originalData.columns };
+          // Create a proper fallback structure that matches the original data
+          if (this.originalData[':type'] === 'multi-sheet' && this.originalData[':names']) {
+            // Handle multi-sheet case
+            this.liveData = { ...this.originalData };
+            this.liveData[':names'].forEach((name) => {
+              if (this.liveData[name]) {
+                this.liveData[name] = { ...this.liveData[name] };
+                this.liveData[name].data = [];
+              }
+            });
+          } else {
+            // Handle single sheet case
+            this.liveData = {
+              data: [],
+              columns: this.originalData.columns || [],
+              total: 0,
+            };
+          }
           if (previewTotal > DEFAULT_BATCH_SIZE) {
             this.originalData = await this.fetchAllItems(this.url, previewTotal);
           }
