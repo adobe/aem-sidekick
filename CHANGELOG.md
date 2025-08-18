@@ -1,3 +1,10 @@
+# [7.16.0](https://github.com/adobe/aem-sidekick/compare/v7.15.1...v7.16.0) (2025-08-18)
+
+
+### Features
+
+* add site api ([#655](https://github.com/adobe/aem-sidekick/issues/655)) ([ae5f1c4](https://github.com/adobe/aem-sidekick/commit/ae5f1c4729689a0c672b888fa9518c3775841137))
+
 ## [7.15.1](https://github.com/adobe/aem-sidekick/compare/v7.15.0...v7.15.1) (2025-08-12)
 
 
