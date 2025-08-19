@@ -240,7 +240,10 @@ async function removeSite({ config }, { tab }) {
   const owner = config.owner || config.org;
   const repo = config.repo || config.site;
   if (owner && repo) {
-    return deleteProject(config);
+    return deleteProject({
+      owner,
+      repo,
+    });
   } else {
     log.warn('removeSite: missing required parameters org (or owner) and site (or repo)');
     return false;
