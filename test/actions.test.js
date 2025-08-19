@@ -281,7 +281,7 @@ describe('Test actions', () => {
     resp = await externalActions.addSite({
       config: { org: addConfig.owner, site: addConfig.repo },
     }, { tab: mockTab('https://tools.aem.live/foo') });
-    expect(setStub.called).to.be.true;
+    expect(setStub.calledWith({ projects: ['foo/bar'] })).to.be.true;
     expect(resp).to.be.true;
 
     setStub.resetHistory();
@@ -348,23 +348,35 @@ describe('Test actions', () => {
   });
 
   it('external: removeSite', async () => {
-    const config = { owner: 'foo', repo: 'bar', project: 'Foo Bar' };
+    const config1 = { owner: 'foo', repo: 'bar', project: 'Foo Bar' };
+    const config2 = { org: 'foo', site: 'baz' };
 
     const getStub = sandbox.stub(chrome.storage.sync, 'get');
     const removeStub = sandbox.stub(chrome.storage.sync, 'remove');
     const setStub = sandbox.stub(chrome.storage.sync, 'set');
     getStub.withArgs('projects').resolves({
-      projects: ['foo/bar'],
+      projects: ['foo/bar', 'foo/baz'],
     });
     getStub.withArgs('foo/bar').resolves({
-      'foo/bar': config,
+      'foo/bar': config1,
+    });
+    getStub.withArgs('foo/baz').resolves({
+      'foo/baz': config2,
     });
 
     let resp;
 
     // trusted actor
     resp = await externalActions.removeSite({
-      config,
+      config: config1,
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    expect(removeStub.called).to.be.true;
+    expect(setStub.calledWith({ projects: ['foo/baz'] })).to.be.true;
+    expect(resp).to.be.true;
+
+    // trusted actor with org and site
+    resp = await externalActions.removeSite({
+      config: config2,
     }, { tab: mockTab('https://tools.aem.live/foo') });
     expect(removeStub.called).to.be.true;
     expect(setStub.calledWith({ projects: [] })).to.be.true;
@@ -383,7 +395,7 @@ describe('Test actions', () => {
 
     // untrusted actor
     resp = await externalActions.removeSite({
-      config,
+      config: config1,
     }, { tab: mockTab('https://evil.live') });
     expect(removeStub.called).to.be.false;
     expect(setStub.called).to.be.false;
