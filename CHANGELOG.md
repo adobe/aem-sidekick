@@ -1,3 +1,10 @@
+## [7.16.1](https://github.com/adobe/aem-sidekick/compare/v7.16.0...v7.16.1) (2025-08-19)
+
+
+### Bug Fixes
+
+* remove site api to support org/site ([#657](https://github.com/adobe/aem-sidekick/issues/657)) ([55b696b](https://github.com/adobe/aem-sidekick/commit/55b696beb93400ef4fdd5d19b14c4fd311e3cefd))
+
 # [7.16.0](https://github.com/adobe/aem-sidekick/compare/v7.15.1...v7.16.0) (2025-08-18)
 
 
