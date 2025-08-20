@@ -1,3 +1,10 @@
+## [7.16.2](https://github.com/adobe/aem-sidekick/compare/v7.16.1...v7.16.2) (2025-08-20)
+
+
+### Bug Fixes
+
+* broken bulk selection when gemini is enabled in gdrive ([#658](https://github.com/adobe/aem-sidekick/issues/658)) ([9c0b671](https://github.com/adobe/aem-sidekick/commit/9c0b6718c4474e597a2f5bf626b8377eda9ac56f))
+
 ## [7.16.1](https://github.com/adobe/aem-sidekick/compare/v7.16.0...v7.16.1) (2025-08-19)
 
 
