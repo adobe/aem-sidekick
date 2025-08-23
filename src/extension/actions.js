@@ -178,7 +178,7 @@ async function getSites(_, { tab }) {
  * Adds a configured site.
  * @returns {Promise<boolean>} True if the site was added, else false
  */
-async function addSite({ config }, { tab }) {
+async function addSite({ config, idp, tenant }, { tab }) {
   const { origin } = new URL(tab.url);
 
   if (!isTrustedOrigin(origin)) {
@@ -188,10 +188,16 @@ async function addSite({ config }, { tab }) {
   const owner = config.owner || config.org;
   const repo = config.repo || config.site;
   if (owner && repo) {
+    // pass through login hint
+    const loginHint = {
+      idp,
+      tenant,
+    };
+
     return addProject({
       owner,
       repo,
-    });
+    }, false, loginHint);
   } else {
     log.warn('addSite: missing required parameters org (or owner) and site (or repo)');
     return false;
