@@ -1,3 +1,10 @@
+# [7.17.0](https://github.com/adobe/aem-sidekick/compare/v7.16.2...v7.17.0) (2025-08-23)
+
+
+### Features
+
+* add site with login hint ([#661](https://github.com/adobe/aem-sidekick/issues/661)) ([f7eba07](https://github.com/adobe/aem-sidekick/commit/f7eba07fc51949dc0b7fcbab2cf14a3314546ded))
+
 ## [7.16.2](https://github.com/adobe/aem-sidekick/compare/v7.16.1...v7.16.2) (2025-08-20)
 
 
