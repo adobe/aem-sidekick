@@ -257,7 +257,7 @@ describe('Test actions', () => {
     getStub.withArgs('projects').resolves({
       projects: [],
     });
-    fetchMock.get('https://admin.hlx.page/sidekick/foo/bar/main/config.json', {
+    fetchMock.get('glob:https://admin.hlx.page/sidekick/**/main/config.json', {
       status: 200,
       body: resultingConfig,
     });
@@ -282,6 +282,15 @@ describe('Test actions', () => {
       config: { org: addConfig.owner, site: addConfig.repo },
     }, { tab: mockTab('https://tools.aem.live/foo') });
     expect(setStub.calledWith({ projects: ['foo/bar'] })).to.be.true;
+    expect(resp).to.be.true;
+
+    // trusted actor with idp and tenant
+    resp = await externalActions.addSite({
+      config: { org: 'foo', site: 'baz' },
+      idp: 'microsoft',
+      tenant: 'common',
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    expect(setStub.calledWith({ projects: ['foo/bar', 'foo/baz'] })).to.be.true;
     expect(resp).to.be.true;
 
     setStub.resetHistory();
