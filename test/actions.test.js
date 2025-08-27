@@ -136,13 +136,13 @@ describe('Test actions', () => {
         owner: 'foo',
         repo: 'bar',
         authToken: '1234567890',
-        authTokenExpiry: Date.now() / 1000 + 60,
+        authTokenExpiry: Date.now() + 60000,
       }, {
         // expired auth token, exclude
         owner: 'foo2',
         repo: 'baz',
         authToken: '1234567890',
-        authTokenExpiry: Date.now() / 1000 - 60,
+        authTokenExpiry: Date.now() - 60000,
       }, {
         // no auth token, exclude
         owner: 'foo1',

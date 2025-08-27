@@ -61,7 +61,7 @@ describe('Test auth', () => {
     const owner = 'test';
     const repo = 'site';
     const authToken = '1234567890';
-    const authTokenExpiry = Date.now() / 1000 + 60;
+    const authTokenExpiry = Date.now() + 60000;
 
     // set auth token
     await setAuthToken(owner, repo, authToken, authTokenExpiry);
@@ -320,7 +320,7 @@ describe('Test auth', () => {
     const repo = 'site';
     const authToken = '1234567890';
     const siteToken = '0987654321';
-    let expiry = Date.now() / 1000 + 60;
+    let expiry = Date.now() + 60000;
 
     await setAuthToken(owner, repo, authToken, expiry, siteToken, expiry);
     expect(setConfig.callCount).to.equal(1);
@@ -421,7 +421,7 @@ describe('Test auth', () => {
     )).to.be.true;
 
     // update existing auth and site tokens
-    expiry = Date.now() / 1000 + 120;
+    expiry = Date.now() + 120000;
     await setAuthToken(owner, repo, authToken, expiry, siteToken, expiry);
     expect(setConfig.callCount).to.equal(2);
     expect(getConfig.callCount).to.equal(4);
