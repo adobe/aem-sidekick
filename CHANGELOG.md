@@ -1,3 +1,10 @@
+## [7.17.1](https://github.com/adobe/aem-sidekick/compare/v7.17.0...v7.17.1) (2025-08-27)
+
+
+### Bug Fixes
+
+* token expiry calculation ([#663](https://github.com/adobe/aem-sidekick/issues/663)) ([4f67928](https://github.com/adobe/aem-sidekick/commit/4f679282bc2886b2d2f52d91cf1e398d85b96ac4))
+
 # [7.17.0](https://github.com/adobe/aem-sidekick/compare/v7.16.2...v7.17.0) (2025-08-23)
 
 
