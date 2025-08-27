@@ -148,7 +148,7 @@ async function getAuthInfo(_, { tab }) {
 
   const projects = await getConfig('session', 'projects') || [];
   return projects
-    .filter(({ authToken, authTokenExpiry }) => !!authToken && authTokenExpiry > Date.now() / 1000)
+    .filter(({ authToken, authTokenExpiry }) => !!authToken && authTokenExpiry > Date.now())
     .map(({ owner }) => owner);
 }
 
