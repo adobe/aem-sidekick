@@ -381,7 +381,7 @@ describe('Test Admin Client', () => {
         path: '/foo',
         status: 404,
         headers: {
-          'x-error': '[admin] File not found: /foo',
+          'x-error': '[admin] Unable to preview \'/foo\': File not found',
           'x-error-code': 'AEM_BACKEND_NOT_FOUND',
         },
       });
@@ -497,7 +497,7 @@ describe('Test Admin Client', () => {
         'status',
         path,
         404,
-        `[admin] File not found: ${path}`,
+        `[admin] Unable to preview '${path}': File not found`,
         'AEM_BACKEND_NOT_FOUND',
       );
       expect(res).to.equal('(404) File not found. Source document either missing or not shared with AEM.');
@@ -508,7 +508,7 @@ describe('Test Admin Client', () => {
         'preview',
         path,
         400,
-        `[admin] Unable to preview '${path}': unable to parse SVG XML`,
+        `[admin] Unable to preview '${path}': Unable to parse SVG XML`,
         'AEM_BACKEND_SVG_PARSING_FAILED',
       );
       expect(res1).to.match(/invalid XML/);
@@ -517,7 +517,7 @@ describe('Test Admin Client', () => {
         'preview',
         path,
         400,
-        `[admin] Unable to preview '${path}': script or event handler detected in SVG at: /svg`,
+        `[admin] Unable to preview '${path}': Script or event handler detected in SVG at: /svg`,
         'AEM_BACKEND_SVG_SCRIPTING_DETECTED',
       );
       expect(res2).to.match(/illegal scripting detected/);
@@ -526,7 +526,7 @@ describe('Test Admin Client', () => {
         'preview',
         path,
         400,
-        `[admin] Unable to preview '${path}': expected XML content with an SVG root item`,
+        `[admin] Unable to preview '${path}': Expected XML content with an SVG root item`,
         'AEM_BACKEND_SVG_ROOT_ITEM_MISSING',
       );
       expect(res3).to.match(/root item missing/);
@@ -538,7 +538,7 @@ describe('Test Admin Client', () => {
         'preview',
         path,
         400,
-        '[admin] Content type header is missing',
+        '[admin] Unable to preview \'$1\': Content type header is missing',
         'AEM_BACKEND_NO_CONTENT_TYPE',
       );
       expect(res).to.equal('(400) Content type header is missing');
