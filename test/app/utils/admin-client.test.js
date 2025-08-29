@@ -14,14 +14,14 @@
 
 // @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
-import { expect } from '@open-wc/testing';
+import { expect, waitUntil } from '@open-wc/testing';
 import sinon from 'sinon';
 import { AppStore } from '../../../src/extension/app/store/app.js';
 import { AdminClient } from '../../../src/extension/app/utils/admin-client.js';
 import { SidekickTest } from '../../sidekick-test.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 import chromeMock from '../../mocks/chrome.js';
-import { error } from '../../test-utils.js';
+import { error, recursiveQuery } from '../../test-utils.js';
 import {
   defaultJobDetailsResponse,
   defaultJobStatusResponse,
@@ -374,9 +374,13 @@ describe('Test Admin Client', () => {
       showToastStub.callsFake((t) => {
         toast = t;
       });
+      sidekickTest.createSidekick();
     });
 
     it('should handle 4xx status error', async () => {
+      showToastStub.restore();
+      const showToastSpy = sandbox.spy(appStore, 'showToast');
+      const showModalStub = sandbox.spy(appStore, 'showModal');
       mockFetchError({
         path: '/foo',
         status: 404,
@@ -386,11 +390,26 @@ describe('Test Admin Client', () => {
         },
       });
       await adminClient.getStatus('/foo');
-      expect(showToastStub.calledOnce).to.be.true;
+      expect(showToastSpy.calledOnce).to.be.true;
+      [toast] = showToastSpy.getCall(0).args;
       expect(toast.message).to.equal('(404) File not found. Source document either missing or not shared with AEM.');
       expect(toast.variant).to.equal('warning');
 
-      appStore.closeToast();
+      await waitUntil(() => recursiveQuery(sidekickTest.sidekick, '.toast-container'));
+      const detailsButton = recursiveQuery(sidekickTest.sidekick, '.toast-container sp-action-button');
+      expect(detailsButton).to.exist;
+      expect(detailsButton.textContent.trim()).to.equal('Details');
+      detailsButton.click();
+
+      await waitUntil(() => showModalStub.calledOnce);
+      expect(showModalStub.calledWith({
+        type: 'error',
+        data: {
+          headline: 'Error details',
+          message: 'File not found',
+        },
+      })).to.be.true;
+
       expect(closeToastStub.calledOnce).to.be.true;
     });
 
