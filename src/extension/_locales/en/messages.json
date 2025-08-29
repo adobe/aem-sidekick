@@ -691,7 +691,7 @@
       "message": "Unable to preview $1: $2"
     },
     "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-      "message": "Unable to preview $2: file type not supported"
+      "message": "Unable to preview $1: file type not supported"
     },
     "AEM_BACKEND_NO_CONTENT_TYPE": {
       "message": "Content type header is missing"
