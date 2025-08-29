@@ -383,7 +383,7 @@
   "error_fatal": {
     "message": "申し訳ありませんが、現在問題が発生しているようです。後でもう一度試してください。"
   },
-  "error_fatal_details": {
+  "details": {
     "message": "詳細"
   },
   "error_generic": {

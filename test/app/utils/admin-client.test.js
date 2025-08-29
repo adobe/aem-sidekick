@@ -493,7 +493,7 @@ describe('Test Admin Client', () => {
 
     it('should return localized error for status 404', () => {
       sandbox.stub(appStore, 'isEditor').returns(true);
-      const res = adminClient.getLocalizedError(
+      const [res] = adminClient.getLocalizedError(
         'status',
         path,
         404,
@@ -504,7 +504,7 @@ describe('Test Admin Client', () => {
     });
 
     it('should return localized errors for status 400', () => {
-      const res1 = adminClient.getLocalizedError(
+      const [res1] = adminClient.getLocalizedError(
         'preview',
         path,
         400,
@@ -513,7 +513,7 @@ describe('Test Admin Client', () => {
       );
       expect(res1).to.match(/invalid XML/);
 
-      const res2 = adminClient.getLocalizedError(
+      const [res2] = adminClient.getLocalizedError(
         'preview',
         path,
         400,
@@ -522,7 +522,7 @@ describe('Test Admin Client', () => {
       );
       expect(res2).to.match(/illegal scripting detected/);
 
-      const res3 = adminClient.getLocalizedError(
+      const [res3] = adminClient.getLocalizedError(
         'preview',
         path,
         400,
@@ -534,7 +534,7 @@ describe('Test Admin Client', () => {
 
     it('should return localized error without details', () => {
       path = '/foo';
-      const res = adminClient.getLocalizedError(
+      const [res] = adminClient.getLocalizedError(
         'preview',
         path,
         400,
@@ -546,7 +546,7 @@ describe('Test Admin Client', () => {
 
     it('should return localized error for failed config updates', () => {
       path = '/.helix/config.json';
-      const res = adminClient.getLocalizedError(
+      const [res] = adminClient.getLocalizedError(
         'preview',
         path,
         500,
@@ -556,22 +556,35 @@ describe('Test Admin Client', () => {
       expect(res).to.equal('(500) Failed to activate configuration: Unable to fetch /.helix/config.json from onedrive.');
     });
 
+    it('should return localized error with details', () => {
+      path = '/foo.mp4';
+      const [res, details] = adminClient.getLocalizedError(
+        'preview',
+        path,
+        409,
+        `[admin] Unable to preview '${path}': MP4 is longer than 2 minutes: 2m 20s`,
+        'AEM_BACKEND_MP4_TOO_LONG',
+      );
+      expect(res).to.equal('(409) Unable to preview /foo.mp4: MP4 is longer than 2 minutes');
+      expect(details).to.equal('MP4 is longer than 2 minutes: 2m 20s');
+    });
+
     it('should return localized error for 401 on bulk operation', () => {
       path = '/*';
-      const res = adminClient.getLocalizedError('publish', path, 401);
+      const [res] = adminClient.getLocalizedError('publish', path, 401);
       expect(res).to.equal('You need to sign in to publish more than 100 files.');
     });
 
     it('should return localized error fallbacks', () => {
-      const res1 = adminClient.getLocalizedError('publish', path, 404);
+      const [res1] = adminClient.getLocalizedError('publish', path, 404);
       expect(res1).to.match(/generate preview first/);
 
-      const res2 = adminClient.getLocalizedError('publish', path, 500);
+      const [res2] = adminClient.getLocalizedError('publish', path, 500);
       expect(res2).to.match(/Publication failed/);
     });
 
     it('should return generic localized error with x-error details', async () => {
-      const res1 = await adminClient.getLocalizedError(
+      const [res1] = await adminClient.getLocalizedError(
         'foo',
         path,
         503,
@@ -580,7 +593,7 @@ describe('Test Admin Client', () => {
       expect(res1).to.equal('(503) An error occurred: foo went wrong');
 
       // unknown error code
-      const res2 = adminClient.getLocalizedError(
+      const [res2] = adminClient.getLocalizedError(
         'foo',
         path,
         415,
@@ -590,7 +603,7 @@ describe('Test Admin Client', () => {
       expect(res2).to.equal('(415) An error occurred: foo went wrong');
 
       // error code but template differs from x-error header
-      const res3 = adminClient.getLocalizedError(
+      const [res3] = adminClient.getLocalizedError(
         'foo',
         path,
         400,
