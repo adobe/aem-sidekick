@@ -36,33 +36,57 @@ export class BulkResult extends ConnectedElement {
             ${this.appStore.i18n('bulk_result_path')}
           </div>
         </div>
-        ${summary.resources.map(({
-          status, path, error, errorCode,
-        }) => html`
-          <div class="row">
-            <div class="status ${status < 400 ? 'success' : 'error'}">
-              ${status < 400 ? ICONS.CHECKMARK : ICONS.ALERT_TRIANGLE}
-            </div>
-            <div>
-              <div class="path">
-                ${status < 400
-                  ? html`<a href="https://${summary.host}${path}" target="_blank">${path}</a>`
-                  : path}
+        ${summary.resources
+          .map((resource) => {
+            const {
+              status, path, error, errorCode,
+            } = resource;
+            let errorMessage;
+            let errorDetails;
+            if (error || status >= 400) {
+              [errorMessage, errorDetails] = this.appStore.api.getLocalizedError(
+                summary.operation, path, status, error, errorCode,
+              );
+            }
+            return {
+              status,
+              path,
+              errorMessage,
+              errorDetails,
+            };
+          })
+          .map(({
+            status,
+            path,
+            errorMessage,
+            errorDetails,
+          }, index) => html`
+            <div class="row">
+              <div class="status ${status < 400 ? 'success' : 'error'}">
+                <span id="icon-${index}">${status < 400 ? ICONS.CHECKMARK : ICONS.ALERT_TRIANGLE}</span>
+                ${errorDetails ? html`
+                <sp-overlay trigger="icon-${index}@hover" placement="right">
+                  <sp-popover class="error-details" tip>
+                    <div class="content">
+                      ${errorDetails}
+                    </div>
+                  </sp-popover>
+                </sp-overlay>` : ''}
               </div>
-              ${error || status >= 400 ? html`
-                <div class="error">
-                  <span>
-                    ${[this.appStore.api.getLocalizedError(
-                      summary.operation, path, status, error, errorCode,
-                    )]}
-                  </span>
+              <div>
+                <div class="path">
+                  ${status < 400
+                    ? html`<a href="https://${summary.host}${path}" target="_blank">${path}</a>`
+                    : path}
                 </div>
-                `
-                : ''}
+                ${errorMessage ? html`
+                  <div class="error"><span>${errorMessage}</span></div>
+                  `
+                  : ''}
+                </div>
               </div>
             </div>
-          </div>
-        `)}
+          `)}
       </div>
     ` : '';
   }
