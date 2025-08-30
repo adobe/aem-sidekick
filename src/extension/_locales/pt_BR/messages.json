@@ -383,7 +383,7 @@
   "error_fatal": {
     "message": "Desculpe, estamos com problemas no momento. Tente novamente mais tarde."
   },
-  "error_fatal_details": {
+  "details": {
     "message": "Detalhes"
   },
   "error_generic": {

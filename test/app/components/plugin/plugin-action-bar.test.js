@@ -1212,6 +1212,7 @@ describe('Plugin action bar', () => {
       expect(showModalStub.calledWith({
         type: 'error',
         data: {
+          headline: 'Error details',
           message: errorMessage,
         },
       })).to.be.true;

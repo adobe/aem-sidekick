@@ -61,6 +61,7 @@ export const style = css`
   }
   .container .row .status.error {
     color: var(--spectrum2-foreground-color-negative);
+    cursor: pointer;
   }
 
   .container .row .path {
@@ -95,5 +96,10 @@ export const style = css`
 
   .container sp-menu-divider:last-child {
     display: none;
+  }
+
+  .container sp-popover.error-details .content {
+    padding: 16px;
+    color: var(--spectrum2-foreground-color-negative);
   }
 `;

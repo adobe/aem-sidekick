@@ -106,7 +106,7 @@ export class AdminClient {
    * @returns {RegExp} The regular expression
    */
   #createTemplateRegExp(template) {
-    const reSource = `[admin] ${template}`
+    const reSource = template
       .replace('$1', '(?<first>.*?)')
       .replace('$2', '(?<second>.*?)')
       .replace('$3', '(?<third>.*?)')
@@ -120,13 +120,15 @@ export class AdminClient {
    * @param {number} status The status code
    * @param {string} [error] The error message
    * @param {string} [errorCode] The error code
-   * @returns {string} The localized error message
+   * @returns {string[]} The localized error message and details (if available)
    */
-  getLocalizedError(action, path, status, error, errorCode) {
+  getLocalizedError(action, path, status, error = '', errorCode = '') {
     let message = '';
+    let details = '';
+    error = error.replace('[admin] ', '');
     if (status === 401 && path === '/*') {
       // bulk operation of 100+ files requires login
-      return this.#appStore.i18n(`bulk_error_${action}_login_required`);
+      return [this.#appStore.i18n(`bulk_error_${action}_login_required`)];
     }
     if (error && errorCode) {
       // build error message from template
@@ -144,21 +146,25 @@ export class AdminClient {
       }
     } else if (error && action === 'preview' && status === 400) {
       // use raw error message
-      message = error.replace('[admin] ', '');
+      message = error;
     }
     if (!message) {
       // generic fallbacks based on status and action
       message = this.#appStore.i18n(`error_${action}_${status}`)
         || this.#appStore.i18n(`error_${action}`)
         || (error && this.#appStore.i18n('error_generic')
-          .replace('$1', error.replace('[admin] ', '')));
+          .replace('$1', error));
     }
     if (path.startsWith('/.helix/')) {
       // special error message for config files
       message = this.#appStore.i18n('error_preview_config')
         .replace('$1', message);
     }
-    return `(${status}) ${message}`;
+    if (error) {
+      // extract details from the end of the error message
+      details = error.split(': ').slice(1).join(': ');
+    }
+    return [`(${status}) ${message}`, details];
   }
 
   /**
@@ -179,12 +185,26 @@ export class AdminClient {
     }
 
     const [error, errorCode] = this.#getServerError(resp);
-    const message = this.getLocalizedError(action, path, resp.status, error, errorCode);
+    const [message, details] = this.getLocalizedError(action, path, resp.status, error, errorCode);
     const toast = {
-      message: message.replace('$1', error), // in case of generic error
+      message,
       variant: resp.status < 500 ? 'warning' : 'negative',
       timeout: 0, // keep open
     };
+
+    if (details) {
+      toast.actionLabel = this.#appStore.i18n('details');
+      toast.actionCallback = () => {
+        this.#appStore.showModal({
+          type: MODALS.ERROR,
+          data: {
+            headline: this.#appStore.i18n('error_details'),
+            message: details,
+          },
+        });
+        this.#appStore.closeToast();
+      };
+    }
 
     this.#appStore.showToast(toast);
   }
@@ -205,14 +225,16 @@ export class AdminClient {
 
     // add error details
     if (error) {
-      toast.actionLabel = this.#appStore.i18n('error_fatal_details');
+      toast.actionLabel = this.#appStore.i18n('details');
       toast.actionCallback = () => {
         this.#appStore.showModal({
           type: MODALS.ERROR,
           data: {
+            headline: this.#appStore.i18n('error_details'),
             message: error.replace('[admin] ', ''),
           },
         });
+        this.#appStore.closeToast();
       };
     }
 

@@ -383,7 +383,7 @@
   "error_fatal": {
     "message": "Nous vous prions de nous excuser pour les problèmes rencontrés actuellement. Veuillez réessayer ultérieurement."
   },
-  "error_fatal_details": {
+  "details": {
     "message": "Détails"
   },
   "error_generic": {

@@ -383,7 +383,7 @@
   "error_fatal": {
     "message": "抱歉，我们目前似乎遇到了问题。请稍后重试。"
   },
-  "error_fatal_details": {
+  "details": {
     "message": "详细信息"
   },
   "error_generic": {
