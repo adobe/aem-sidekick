@@ -1,3 +1,46 @@
+## [7.17.1](https://github.com/adobe/aem-sidekick/compare/v7.17.0...v7.17.1) (2025-08-27)
+
+
+### Bug Fixes
+
+* token expiry calculation ([#663](https://github.com/adobe/aem-sidekick/issues/663)) ([4f67928](https://github.com/adobe/aem-sidekick/commit/4f679282bc2886b2d2f52d91cf1e398d85b96ac4))
+
+# [7.17.0](https://github.com/adobe/aem-sidekick/compare/v7.16.2...v7.17.0) (2025-08-23)
+
+
+### Features
+
+* add site with login hint ([#661](https://github.com/adobe/aem-sidekick/issues/661)) ([f7eba07](https://github.com/adobe/aem-sidekick/commit/f7eba07fc51949dc0b7fcbab2cf14a3314546ded))
+
+## [7.16.2](https://github.com/adobe/aem-sidekick/compare/v7.16.1...v7.16.2) (2025-08-20)
+
+
+### Bug Fixes
+
+* broken bulk selection when gemini is enabled in gdrive ([#658](https://github.com/adobe/aem-sidekick/issues/658)) ([9c0b671](https://github.com/adobe/aem-sidekick/commit/9c0b6718c4474e597a2f5bf626b8377eda9ac56f))
+
+## [7.16.1](https://github.com/adobe/aem-sidekick/compare/v7.16.0...v7.16.1) (2025-08-19)
+
+
+### Bug Fixes
+
+* remove site api to support org/site ([#657](https://github.com/adobe/aem-sidekick/issues/657)) ([55b696b](https://github.com/adobe/aem-sidekick/commit/55b696beb93400ef4fdd5d19b14c4fd311e3cefd))
+
+# [7.16.0](https://github.com/adobe/aem-sidekick/compare/v7.15.1...v7.16.0) (2025-08-18)
+
+
+### Features
+
+* add site api ([#655](https://github.com/adobe/aem-sidekick/issues/655)) ([ae5f1c4](https://github.com/adobe/aem-sidekick/commit/ae5f1c4729689a0c672b888fa9518c3775841137))
+
+## [7.15.1](https://github.com/adobe/aem-sidekick/compare/v7.15.0...v7.15.1) (2025-08-12)
+
+
+### Bug Fixes
+
+* issue 520 - hide results count if not present in data ([d35fa62](https://github.com/adobe/aem-sidekick/commit/d35fa621450d50f9d91a735d308435002d8a6bf5))
+* toggle view on multi sheets where excel hasn't been published live yet ([af826fe](https://github.com/adobe/aem-sidekick/commit/af826fecbb4490ea10fe20dcf802006a0fcc937f))
+
 # [7.15.0](https://github.com/adobe/aem-sidekick/compare/v7.14.3...v7.15.0) (2025-08-06)
 
 

@@ -287,13 +287,15 @@ export class JSONView extends LitElement {
             <sp-action-button value=${index.toString()} .selected=${index === this.selectedTabIndex}>${name}</sp-action-button>
           `)}
         </sp-action-group>
-        <div class="stats">
+        ${total > 0 ? html`
+          <div class="stats">
           ${this.diffMode ? html`
             <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', diffFilteredCount).replace('$2', total)}</p>
           ` : html`
             <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
           `}
         </div>
+        ` : ''}
         <sp-action-group>
           ${this.url.includes('.page') ? html`
             ${this.diffMode ? html`
@@ -404,7 +406,7 @@ export class JSONView extends LitElement {
         valueContainer.classList.add('number');
         valueContainer.textContent = value;
       }
-    } else if (/^\/[a-z0-9]+/i.test(value) || value.startsWith('http')) {
+    } else if (!Array.isArray(value) && (/^\/[a-z0-9]+/i.test(value) || value.startsWith('http'))) {
       // check if the value contains a glob pattern
       if (!value.includes('*')) {
         // assume link
@@ -433,18 +435,30 @@ export class JSONView extends LitElement {
         // Text
         valueContainer.textContent = value;
       }
-    } else if (value.startsWith('[') && value.endsWith(']')) {
-      // assume array
+    } else if (!Array.isArray(value) && value.startsWith('[') && value.endsWith(']')) {
       valueContainer.classList.add('list');
       const list = valueContainer.appendChild(document.createElement('ul'));
       JSON.parse(value).forEach((v) => {
         const item = list.appendChild(document.createElement('li'));
         item.textContent = v;
       });
+    } else if (Array.isArray(value)) {
+      // assume array
+      valueContainer.classList.add('list');
+      const list = valueContainer.appendChild(document.createElement('ul'));
+      value.forEach((v) => {
+        const values = v.split(',');
+        values.forEach((val) => {
+          const item = list.appendChild(document.createElement('li'));
+          const valueItem = item.appendChild(document.createElement('div'));
+          valueItem.textContent = val.trim();
+        });
+      });
     } else {
       // text
       valueContainer.textContent = value;
     }
+
     // check if the value contains any rtl characters
     if (/[\u0590-\u06FF]/.test(valueContainer.textContent)) {
       dir = 'rtl';
@@ -749,7 +763,24 @@ export class JSONView extends LitElement {
           this.originalDiffData = this.diffData;
         } else if (liveRes.status === 404) {
           // If live version doesn't exist yet, treat it as empty
-          this.liveData = { data: [], columns: this.originalData.columns };
+          // Create a proper fallback structure that matches the original data
+          if (this.originalData[':type'] === 'multi-sheet' && this.originalData[':names']) {
+            // Handle multi-sheet case
+            this.liveData = { ...this.originalData };
+            this.liveData[':names'].forEach((name) => {
+              if (this.liveData[name]) {
+                this.liveData[name] = { ...this.liveData[name] };
+                this.liveData[name].data = [];
+              }
+            });
+          } else {
+            // Handle single sheet case
+            this.liveData = {
+              data: [],
+              columns: this.originalData.columns || [],
+              total: 0,
+            };
+          }
           if (previewTotal > DEFAULT_BATCH_SIZE) {
             this.originalData = await this.fetchAllItems(this.url, previewTotal);
           }

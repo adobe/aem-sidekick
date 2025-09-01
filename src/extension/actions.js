@@ -148,7 +148,7 @@ async function getAuthInfo(_, { tab }) {
 
   const projects = await getConfig('session', 'projects') || [];
   return projects
-    .filter(({ authToken, authTokenExpiry }) => !!authToken && authTokenExpiry > Date.now() / 1000)
+    .filter(({ authToken, authTokenExpiry }) => !!authToken && authTokenExpiry > Date.now())
     .map(({ owner }) => owner);
 }
 
@@ -172,6 +172,36 @@ async function getSites(_, { tab }) {
       };
     }));
   return projects;
+}
+
+/**
+ * Adds a configured site.
+ * @returns {Promise<boolean>} True if the site was added, else false
+ */
+async function addSite({ config, idp, tenant }, { tab }) {
+  const { origin } = new URL(tab.url);
+
+  if (!isTrustedOrigin(origin)) {
+    return false; // don't add anything
+  }
+
+  const owner = config.owner || config.org;
+  const repo = config.repo || config.site;
+  if (owner && repo) {
+    // pass through login hint
+    const loginHint = {
+      idp,
+      tenant,
+    };
+
+    return addProject({
+      owner,
+      repo,
+    }, false, loginHint);
+  } else {
+    log.warn('addSite: missing required parameters org (or owner) and site (or repo)');
+    return false;
+  }
 }
 
 /**
@@ -216,7 +246,10 @@ async function removeSite({ config }, { tab }) {
   const owner = config.owner || config.org;
   const repo = config.repo || config.site;
   if (owner && repo) {
-    return deleteProject(config);
+    return deleteProject({
+      owner,
+      repo,
+    });
   } else {
     log.warn('removeSite: missing required parameters org (or owner) and site (or repo)');
     return false;
@@ -556,6 +589,7 @@ export const externalActions = {
   getSites,
   launch,
   login,
+  addSite,
   updateSite,
   removeSite,
   updateAuthToken,

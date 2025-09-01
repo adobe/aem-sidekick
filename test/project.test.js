@@ -291,6 +291,50 @@ describe('Test project', () => {
     expect(addedExisting).to.be.false;
   });
 
+  it('addProject loginHint parameter handling', async () => {
+    const spy = sandbox.spy(chrome.storage.sync, 'set');
+
+    sandbox.stub(chrome.tabs, 'query').resolves([{ id: 1 }]);
+    sandbox.stub(chrome.tabs, 'create').resolves({ id: 2 });
+    sandbox.stub(chrome.tabs, 'remove').resolves();
+    sandbox.stub(chrome.tabs, 'update').resolves();
+    sandbox.stub(chrome.runtime.onMessageExternal, 'removeListener');
+    sandbox.stub(chrome.storage.sync, 'get')
+      .withArgs('projects')
+      .resolves({ projects: [] })
+      .withArgs('test/login-project')
+      .resolves({ 'test/login-project': undefined });
+
+    const addListenerStub = sandbox.stub(chrome.runtime.onMessageExternal, 'addListener');
+    addListenerStub.callsFake(async (func, _) => {
+      // simulate successful login response from admin
+      await func({ owner: 'test', repo: 'login-project', authToken: 'token123' });
+    });
+
+    sandbox.stub(window, 'fetch')
+      .onCall(0)
+      // return 401 from admin to trigger login flow
+      .resolves(new Response('', { status: 401 }))
+      .onCall(1)
+      // return 200 from admin to add project after login
+      .resolves(new Response(JSON.stringify({
+        host: 'test.com',
+        previewHost: 'preview.test.com',
+        liveHost: 'live.test.com',
+        project: 'Test Project',
+      }), { status: 200 }));
+
+    const result = await addProject({
+      giturl: 'https://github.com/test/login-project',
+    }, false, { idp: 'microsoft', tenant: 'common' });
+
+    expect(addListenerStub.called).to.be.true;
+    expect(result).to.be.true;
+    expect(spy.calledWith({
+      projects: ['test/login-project'],
+    })).to.be.true;
+  });
+
   it('updateProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const project = {
@@ -567,6 +611,7 @@ describe('Test project', () => {
       const stub = sandbox.stub(chrome.runtime, 'sendMessage');
       stub.callsFake(async (msgId, { action }, callback) => {
         if (lastError) {
+          // @ts-ignore
           chrome.runtime.lastError = lastError;
         }
         switch (action) {
