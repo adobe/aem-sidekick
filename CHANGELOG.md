@@ -1,3 +1,10 @@
+# [7.18.0](https://github.com/adobe/aem-sidekick/compare/v7.17.1...v7.18.0) (2025-09-02)
+
+
+### Features
+
+* always provide error details in toast ([#667](https://github.com/adobe/aem-sidekick/issues/667)) ([d77516a](https://github.com/adobe/aem-sidekick/commit/d77516a76990c879b55ea8cea816c1c92d0057b9))
+
 ## [7.17.1](https://github.com/adobe/aem-sidekick/compare/v7.17.0...v7.17.1) (2025-08-27)
 
 
