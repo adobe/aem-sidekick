@@ -176,7 +176,8 @@ export class LoginButton extends ConnectedElement {
     const { profile } = this.appStore.status;
     const authenticated = this.appStore.isAuthenticated();
 
-    if ((!this.appStore.status.webPath && this.appStore.status?.status !== 401)
+    if ((!this.appStore.status.webPath
+      && this.appStore.status?.status !== 401 && this.appStore.status?.status !== 403)
       || this.appStore.state === STATE.LOGGING_IN
       || this.appStore.state === STATE.LOGGING_OUT) {
       return html`
@@ -186,8 +187,25 @@ export class LoginButton extends ConnectedElement {
       `;
     }
 
-    if (!authenticated) {
+    if (!authenticated && this.appStore.status?.status !== 403) {
       return html`<sp-action-button quiet class="login" @click=${this.login}>${this.appStore.i18n('user_login')}</sp-action-button>`;
+    } else if (!authenticated && this.appStore.status?.status === 403) {
+      return html`
+      <sp-action-menu
+        placement="top"
+        quiet
+      >
+        <sp-icon slot="icon" size="l">
+          ${ICONS.USER_ICON}
+        </sp-icon>
+        <sk-menu-item class="logout" value="logout" @click=${this.logout} tabindex="0">
+          <sp-icon slot="icon" size="xl">
+            ${ICONS.SIGN_OUT}
+          </sp-icon>
+          ${this.appStore.i18n('user_logout')}
+        </sk-menu-item>
+      </sp-action-menu>
+    `;
     } else {
       return html`
         <sp-action-menu
