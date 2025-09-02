@@ -410,6 +410,8 @@ describe('Test Admin Client', () => {
         },
       })).to.be.true;
 
+      appStore.closeToast();
+
       expect(closeToastStub.calledOnce).to.be.true;
     });
 

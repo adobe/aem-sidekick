@@ -202,7 +202,6 @@ export class AdminClient {
             message: details,
           },
         });
-        this.#appStore.closeToast();
       };
     }
 
@@ -234,7 +233,6 @@ export class AdminClient {
             message: error.replace('[admin] ', ''),
           },
         });
-        this.#appStore.closeToast();
       };
     }
 
