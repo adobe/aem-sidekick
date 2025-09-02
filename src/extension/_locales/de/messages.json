@@ -1,4 +1,7 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "Vorschau von $1 nicht möglich: enthaltenes Bild größer als 10 MB"
+  },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "$1 konnte nicht von $2 abgerufen werden."
   },
@@ -11,11 +14,17 @@
   "AEM_BACKEND_ICO_TOO_BIG": {
     "message": "Vorschau von $1 nicht möglich: ICO ist größer als 16 KB"
   },
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "Vorschau von $1 nicht möglich: Bild ist größer als 10 MB"
+  },
   "AEM_BACKEND_JSON_INVALD": {
     "message": "Vorschau von $2 nicht möglich: ungültiges JSON"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
     "message": "Vorschau von $1 nicht möglich: MP4-Bitrate ist höher als 300 KB/s"
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "Vorschau von $1 nicht möglich: ungültiges MP4"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "Vorschau von $1 nicht möglich: MP4 ist länger als 2 Minuten"
@@ -32,6 +41,9 @@
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Vorschau von $1 nicht möglich: kein Handler gefunden"
   },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "Vorschau von $1 nicht möglich: PDF ist größer als 10 MB"
+  },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Vorschau von $1 nicht möglich: SVG enthält ungültige XML"
   },
@@ -41,11 +53,14 @@
   "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
     "message": "Vorschau von $1 kann nicht angezeigt werden: unzulässiges Skripting in SVG erkannt"
   },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "Vorschau von $1 kann nicht angezeigt werden: SVG ist größer als 20 KB"
+  },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Vorschau von $1 nicht möglich: Dateityp nicht unterstützt"
   },
   "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-    "message": "Vorschau von $2 nicht möglich: Dateityp wird nicht unterstützt"
+    "message": "Vorschau von $1 nicht möglich: Dateityp nicht unterstützt"
   },
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Vorschau von $1 nicht möglich: $2"
@@ -347,6 +362,9 @@
   "destructive_confirmation_prompt": {
     "message": "Geben Sie zur Bestätigung $1 ein"
   },
+  "details": {
+    "message": "Details"
+  },
   "development": {
     "message": "Entwicklung"
   },
@@ -380,11 +398,11 @@
   "error_delete": {
     "message": "Das Löschen ist fehlgeschlagen. Bitte versuchen Sie es später erneut."
   },
+  "error_details": {
+    "message": "Fehlerdetails"
+  },
   "error_fatal": {
     "message": "Leider scheinen wir im Moment Probleme zu haben. Bitte versuchen Sie es später erneut."
-  },
-  "details": {
-    "message": "Details"
   },
   "error_generic": {
     "message": "Es ist ein Fehler aufgetreten: $1"
@@ -606,7 +624,7 @@
     "message": "Veröffentlichung erfolgt …"
   },
   "review": {
-    "message": "Überprüfen"
+    "message": "Überprüfung"
   },
   "review_last_updated": {
     "message": "Zuletzt aktualisiert: $1"
