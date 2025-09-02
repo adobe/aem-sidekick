@@ -1,4 +1,7 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : image contenue de plus de 10 Mo"
+  },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Impossible de récupérer $1 depuis $2."
   },
@@ -11,11 +14,17 @@
   "AEM_BACKEND_ICO_TOO_BIG": {
     "message": "Impossible de prévisualiser $1 : l’ICO est supérieure à 16 Ko."
   },
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : la taille de l'image est supérieure à 10 Mo"
+  },
   "AEM_BACKEND_JSON_INVALD": {
     "message": "Impossible de prévisualiser $2 : JSON non valide"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
     "message": "Impossible de prévisualiser $1 : le débit MP4 est supérieur à 300 Ko/s."
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "Impossible de prévisualiser $1 : MP4 non valide"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "Impossible de prévisualiser $1 : le fichier MP4 dépasse 2 minutes."
@@ -32,6 +41,9 @@
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Impossible de prévisualiser $1 : aucun gestionnaire trouvé"
   },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : la taille de PDF est supérieure à 10 Mo"
+  },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Impossible de prévisualiser $1 : le SVG contient un XML non valide"
   },
@@ -41,11 +53,14 @@
   "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
     "message": "Impossible de prévisualiser $1 : un script illégal a été détecté dans le SVG."
   },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : la taille de SVG est supérieure à 20 Ko"
+  },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Impossible de prévisualiser $1 : type de fichier non pris en charge"
   },
   "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-    "message": "Impossible de prévisualiser $2 : type de fichier non pris en charge"
+    "message": "Impossible de prévisualiser $1 : type de fichier non pris en charge"
   },
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Impossible de prévisualiser $1 : $2"
@@ -347,6 +362,9 @@
   "destructive_confirmation_prompt": {
     "message": "Tapez $1 pour confirmer."
   },
+  "details": {
+    "message": "Détails"
+  },
   "development": {
     "message": "Développement"
   },
@@ -380,11 +398,11 @@
   "error_delete": {
     "message": "Échec de la suppression. Réessayez plus tard."
   },
+  "error_details": {
+    "message": "Détails des erreurs"
+  },
   "error_fatal": {
     "message": "Nous vous prions de nous excuser pour les problèmes rencontrés actuellement. Veuillez réessayer ultérieurement."
-  },
-  "details": {
-    "message": "Détails"
   },
   "error_generic": {
     "message": "Une erreur s’est produite : $1"
