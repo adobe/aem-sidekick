@@ -1,4 +1,7 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "Impossibile visualizzare l'anteprima $1: immagine contenuta maggiore di 10 MB"
+  },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Impossibile recuperare $1 da $2."
   },
@@ -11,11 +14,17 @@
   "AEM_BACKEND_ICO_TOO_BIG": {
     "message": "Impossibile visualizzare in anteprima $1: ICO è superiore a 16 KB"
   },
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "Impossibile visualizzare l'anteprima $1: l'immagine ha una dimensione maggiore di 10 MB"
+  },
   "AEM_BACKEND_JSON_INVALD": {
     "message": "Impossibile visualizzare in anteprima $2: JSON non valido"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
     "message": "Impossibile visualizzare in anteprima $1: il bit rate MP4 è superiore a 300 KB/s"
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "Impossibile visualizzare l'anteprima $1: MP4 non valida"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "Impossibile visualizzare in anteprima $1: MP4 è più lungo di 2 minuti"
@@ -32,6 +41,9 @@
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Impossibile visualizzare in anteprima $1: nessun handler trovato"
   },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "Impossibile visualizzare l'anteprima $1: PDF ha una dimensione maggiore di 10 MB"
+  },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Impossibile visualizzare in anteprima $1: SVG contiene XML non valido"
   },
@@ -41,11 +53,14 @@
   "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
     "message": "Impossibile visualizzare in anteprima $1: scripting non valido rilevato in SVG"
   },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "Impossibile visualizzare l'anteprima $1: SVG ha una dimensione maggiore di 20 KB"
+  },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Impossibile visualizzare in anteprima $1: tipo di file non supportato"
   },
   "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-    "message": "Impossibile visualizzare in anteprima $2: tipo di file non supportato"
+    "message": "Impossibile visualizzare in anteprima $1: tipo di file non supportato"
   },
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Impossibile visualizzare in anteprima $1: $2"
@@ -347,6 +362,9 @@
   "destructive_confirmation_prompt": {
     "message": "Digita $1 per confermare"
   },
+  "details": {
+    "message": "Dettagli"
+  },
   "development": {
     "message": "Sviluppo"
   },
@@ -380,11 +398,11 @@
   "error_delete": {
     "message": "Eliminazione non riuscita. Riprova più tardi."
   },
+  "error_details": {
+    "message": "Dettagli errore"
+  },
   "error_fatal": {
     "message": "Al momento stiamo riscontrando dei problemi. Riprova più tardi."
-  },
-  "error_fatal_details": {
-    "message": "Dettagli"
   },
   "error_generic": {
     "message": "Si è verificato un errore: $1"

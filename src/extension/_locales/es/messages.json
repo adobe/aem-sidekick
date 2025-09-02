@@ -1,4 +1,7 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "No se puede obtener una vista previa de $1: Imagen contenida superior a 10 MB"
+  },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "No se puede recuperar $1 de $2."
   },
@@ -11,11 +14,17 @@
   "AEM_BACKEND_ICO_TOO_BIG": {
     "message": "No se puede previsualizar $1: ICO supera los 16 KB"
   },
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "No se puede obtener una vista previa de $1: La imagen supera los 10 MB"
+  },
   "AEM_BACKEND_JSON_INVALD": {
     "message": "No se puede previsualizar $2: JSON no válido"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
     "message": "No se puede previsualizar $1: la velocidad de bits de MP4 es superior a 300 KB/s"
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "No se puede obtener una vista previa de $1: MP4 no válido"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "No se puede previsualizar $1: MP4 dura más de 2 minutos"
@@ -32,6 +41,9 @@
   "AEM_BACKEND_NO_HANDLER": {
     "message": "No se puede previsualizar $1: no se ha encontrado ningún controlador"
   },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "No se puede obtener una vista previa de $1: PDF tiene más de 10 MB"
+  },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "No se puede previsualizar $1: el SVG contiene un XML no válido"
   },
@@ -41,11 +53,14 @@
   "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
     "message": "No se puede previsualizar $1: se han detectado scripts no válidos en SVG"
   },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "No se puede obtener una vista previa de $1: SVG supera los 20 KB"
+  },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "No se puede previsualizar $1: tipo de archivo no admitido"
   },
   "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-    "message": "No se puede previsualizar $2: tipo de archivo no admitido"
+    "message": "No se puede previsualizar $1: tipo de archivo no admitido"
   },
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "No se puede previsualizar $1: $2"
@@ -347,6 +362,9 @@
   "destructive_confirmation_prompt": {
     "message": "Escriba $1 para confirmar"
   },
+  "details": {
+    "message": "Detalles"
+  },
   "development": {
     "message": "Desarrollo"
   },
@@ -380,11 +398,11 @@
   "error_delete": {
     "message": "No se pudo eliminar. Inténtelo de nuevo más tarde."
   },
+  "error_details": {
+    "message": "Detalles del error"
+  },
   "error_fatal": {
     "message": "Le pedimos disculpas, parece que tenemos problemas en este momento. Inténtelo de nuevo más tarde."
-  },
-  "error_fatal_details": {
-    "message": "Detalles"
   },
   "error_generic": {
     "message": "Se ha producido un error: $1"

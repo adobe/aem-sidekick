@@ -313,10 +313,13 @@
     "error_delete": {
       "message": "Deletion failed. Please try again later."
     },
+    "error_details": {
+      "message": "Error details"
+    },
     "error_fatal": {
       "message": "Apologies, we seem to be having problems at the moment. Please try again later."
     },
-    "error_fatal_details": {
+    "details": {
       "message": "Details"
     },
     "error_generic": {
@@ -688,7 +691,7 @@
       "message": "Unable to preview $1: $2"
     },
     "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-      "message": "Unable to preview $2: file type not supported"
+      "message": "Unable to preview $1: file type not supported"
     },
     "AEM_BACKEND_NO_CONTENT_TYPE": {
       "message": "Content type header is missing"
@@ -708,6 +711,9 @@
     "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
       "message": "Unable to preview $1: MP4 bit rate is higher than 300KB/s"
     },
+    "AEM_BACKEND_MP4_PARSING_FAILED": {
+      "message": "Unable to preview $1: invalid MP4"
+    },
     "AEM_BACKEND_ICO_TOO_BIG": {
       "message": "Unable to preview $1: ICO is larger than 16KB"
     },
@@ -719,5 +725,17 @@
     },
     "AEM_BACKEND_SVG_PARSING_FAILED": {
       "message": "Unable to preview $1: SVG contains invalid XML"
+    },
+    "AEM_BACKEND_PDF_TOO_BIG": {
+      "message": "Unable to preview $1: PDF is larger than 10MB"
+    },
+    "AEM_BACKEND_SVG_TOO_BIG": {
+      "message": "Unable to preview $1: SVG is larger than 20KB"
+    },
+    "AEM_BACKEND_IMAGE_TOO_BIG": {
+      "message": "Unable to preview $1: Image is larger than 10MB"
+    },
+    "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+      "message": "Unable to preview $1: Contained image larger than 10MB"
     }
 }

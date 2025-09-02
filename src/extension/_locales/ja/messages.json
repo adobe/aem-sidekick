@@ -1,4 +1,7 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "$1 をプレビューできません：10 MB を超える画像が含まれています"
+  },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "$2 から$1 を取得できません。"
   },
@@ -11,11 +14,17 @@
   "AEM_BACKEND_ICO_TOO_BIG": {
     "message": "$1 をプレビューできません : ICO が 16KB を超えています"
   },
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "$1 をプレビューできません：画像が 10 MB を超えています"
+  },
   "AEM_BACKEND_JSON_INVALD": {
     "message": "$2 をプレビューできません : 無効な JSON"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
     "message": "$1 をプレビューできません : MP4 ビットレートが 300 KB/秒を超えています"
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "$1 をプレビューできません： MP4 が無効です"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "$1 をプレビューできません : MP4 が 2 分を超えています"
@@ -32,6 +41,9 @@
   "AEM_BACKEND_NO_HANDLER": {
     "message": "$1 をプレビューできません : ハンドラーが見つかりません"
   },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "$1 をプレビューできません：PDFが 10MB を超えています"
+  },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "$1 をプレビューできません : SVG に無効な XML が含まれています"
   },
@@ -41,11 +53,14 @@
   "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
     "message": "$1 をプレビューできません : SVG で不正なスクリプトが検出されました"
   },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "$1 をプレビューできません：SVGが 20 KB を超えています"
+  },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "$1 をプレビューできません : ファイルタイプがサポートされていません"
   },
   "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-    "message": "$2 をプレビューできません : ファイルタイプがサポートされていません"
+    "message": "$1 をプレビューできません : ファイルタイプがサポートされていません"
   },
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "$1 をプレビューできません : $2"
@@ -347,6 +362,9 @@
   "destructive_confirmation_prompt": {
     "message": "「$1」と入力して確認"
   },
+  "details": {
+    "message": "詳細"
+  },
   "development": {
     "message": "開発"
   },
@@ -380,11 +398,11 @@
   "error_delete": {
     "message": "削除に失敗しました。後でもう一度試してください。"
   },
+  "error_details": {
+    "message": "エラーの詳細"
+  },
   "error_fatal": {
     "message": "申し訳ありませんが、現在問題が発生しているようです。後でもう一度試してください。"
-  },
-  "error_fatal_details": {
-    "message": "詳細"
   },
   "error_generic": {
     "message": "エラーが発生しました : $1"
