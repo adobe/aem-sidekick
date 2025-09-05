@@ -1,3 +1,10 @@
+## [7.18.1](https://github.com/adobe/aem-sidekick/compare/v7.18.0...v7.18.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* add project hints for gdrive lookup ([8a8ba09](https://github.com/adobe/aem-sidekick/commit/8a8ba09218187b0c5bcaaffa7c3cb78b567139ea))
+
 # [7.18.0](https://github.com/adobe/aem-sidekick/compare/v7.17.1...v7.18.0) (2025-09-02)
 
 
