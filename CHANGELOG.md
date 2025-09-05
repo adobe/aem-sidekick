@@ -1,3 +1,10 @@
+## [7.18.2](https://github.com/adobe/aem-sidekick/compare/v7.18.1...v7.18.2) (2025-09-05)
+
+
+### Bug Fixes
+
+* error code typos ([#673](https://github.com/adobe/aem-sidekick/issues/673)) ([fe4dfda](https://github.com/adobe/aem-sidekick/commit/fe4dfdaa9f7707d66a00b3b161451897ee5881b3))
+
 ## [7.18.1](https://github.com/adobe/aem-sidekick/compare/v7.18.0...v7.18.1) (2025-09-05)
 
 
