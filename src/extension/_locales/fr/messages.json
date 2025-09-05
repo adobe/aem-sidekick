@@ -17,7 +17,7 @@
   "AEM_BACKEND_IMAGE_TOO_BIG": {
     "message": "Impossible de prévisualiser $1 : la taille de l'image est supérieure à 10 Mo"
   },
-  "AEM_BACKEND_JSON_INVALD": {
+  "AEM_BACKEND_JSON_INVALID": {
     "message": "Impossible de prévisualiser $2 : JSON non valide"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {

@@ -17,7 +17,7 @@
   "AEM_BACKEND_IMAGE_TOO_BIG": {
     "message": "No se puede obtener una vista previa de $1: La imagen supera los 10 MB"
   },
-  "AEM_BACKEND_JSON_INVALD": {
+  "AEM_BACKEND_JSON_INVALID": {
     "message": "No se puede previsualizar $2: JSON no válido"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {

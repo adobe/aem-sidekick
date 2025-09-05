@@ -696,7 +696,7 @@
     "AEM_BACKEND_NO_CONTENT_TYPE": {
       "message": "Content type header is missing"
     },
-    "AEM_BACKEND_JSON_INVALD": {
+    "AEM_BACKEND_JSON_INVALID": {
       "message": "Unable to preview $2: invalid JSON"
     },
     "AEM_BACKEND_FILE_EMPTY": {
