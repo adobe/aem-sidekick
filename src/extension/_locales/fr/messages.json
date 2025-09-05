@@ -36,7 +36,7 @@
     "message": "Fichier introuvable. Document source manquant ou non partagé avec AEM."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "En-tête du type de contenu manquant"
+    "message": "Impossible de prévisualiser $1: en-tête du type de contenu manquant"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Impossible de prévisualiser $1 : aucun gestionnaire trouvé"

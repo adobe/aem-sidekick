@@ -36,7 +36,7 @@
     "message": "Archivo no encontrado. Falta el documento de origen o no se ha compartido con AEM."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Falta el encabezado de tipo de contenido"
+    "message": "No se puede previsualizar $1: falta el encabezado de tipo de contenido"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "No se puede previsualizar $1: no se ha encontrado ningún controlador"

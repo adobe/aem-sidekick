@@ -36,7 +36,7 @@
     "message": "找不到檔案。來源文件遺失或未與 AEM 共用。"
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "內容類型標頭遺失"
+    "message": "無法預覽 $1：內容類型標頭遺失"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "無法預覽 $1：找不到處理常式"

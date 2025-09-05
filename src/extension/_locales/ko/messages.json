@@ -36,7 +36,7 @@
     "message": "파일을 찾을 수 없습니다. 소스 문서가 누락되었거나 AEM과 공유되지 않았습니다."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "콘텐츠 유형 헤더가 누락되었습니다."
+    "message": "$1 미리보기 불가: 콘텐츠 유형 헤더가 누락되었습니다."
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "$1 미리보기 불가: 핸들러를 찾을 수 없습니다."

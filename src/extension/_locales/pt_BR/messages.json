@@ -36,7 +36,7 @@
     "message": "Arquivo não encontrado. Documento de origem ausente ou não compartilhado com o AEM."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Cabeçalho de tipo de conteúdo ausente"
+    "message": "Não é possível visualizar $1: cabeçalho de tipo de conteúdo ausente"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Não é possível visualizar $1: nenhum manipulador encontrado"
