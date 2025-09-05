@@ -382,7 +382,7 @@ export const ERRORS = [
     template: 'Unable to preview \'$1\': Content type header is missing',
   },
   {
-    code: 'AEM_BACKEND_JSON_INVALD',
+    code: 'AEM_BACKEND_JSON_INVALID',
     template: 'Unable to preview \'$1\': JSON fetched from markup is invalid: $2',
   },
   {
@@ -451,7 +451,7 @@ export const ERRORS = [
   },
   {
     code: 'AEM_BACKEND_CONFIG_TYPE_INVALID',
-    template: 'Bad \'$\' config: $2',
+    template: 'Bad \'$1\' config: $2',
   },
   {
     code: 'AEM_BACKEND_CONFIG_MISSING',

@@ -17,7 +17,7 @@
   "AEM_BACKEND_IMAGE_TOO_BIG": {
     "message": "无法预览 $1：图像大于 10MB"
   },
-  "AEM_BACKEND_JSON_INVALD": {
+  "AEM_BACKEND_JSON_INVALID": {
     "message": "无法预览 $2：无效的 JSON"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
@@ -36,7 +36,7 @@
     "message": "未找到文件。源文档缺失或未与 AEM 共享。"
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "内容类型标头缺失"
+    "message": "无法预览 $1：内容类型标头缺失"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "无法预览 $1：未找到处理程序"

@@ -17,7 +17,7 @@
   "AEM_BACKEND_IMAGE_TOO_BIG": {
     "message": "Impossible de prévisualiser $1 : la taille de l'image est supérieure à 10 Mo"
   },
-  "AEM_BACKEND_JSON_INVALD": {
+  "AEM_BACKEND_JSON_INVALID": {
     "message": "Impossible de prévisualiser $2 : JSON non valide"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
@@ -36,7 +36,7 @@
     "message": "Fichier introuvable. Document source manquant ou non partagé avec AEM."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "En-tête du type de contenu manquant"
+    "message": "Impossible de prévisualiser $1: en-tête du type de contenu manquant"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Impossible de prévisualiser $1 : aucun gestionnaire trouvé"

@@ -17,7 +17,7 @@
   "AEM_BACKEND_IMAGE_TOO_BIG": {
     "message": "Não é possível visualizar $1: a imagem tem mais de 10 MB"
   },
-  "AEM_BACKEND_JSON_INVALD": {
+  "AEM_BACKEND_JSON_INVALID": {
     "message": "Não é possível visualizar $2: JSON inválido"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
@@ -36,7 +36,7 @@
     "message": "Arquivo não encontrado. Documento de origem ausente ou não compartilhado com o AEM."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Cabeçalho de tipo de conteúdo ausente"
+    "message": "Não é possível visualizar $1: cabeçalho de tipo de conteúdo ausente"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Não é possível visualizar $1: nenhum manipulador encontrado"

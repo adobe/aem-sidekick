@@ -559,10 +559,10 @@ describe('Test Admin Client', () => {
         'preview',
         path,
         400,
-        '[admin] Unable to preview \'$1\': Content type header is missing',
+        `[admin] Unable to preview '${path}': Content type header is missing`,
         'AEM_BACKEND_NO_CONTENT_TYPE',
       );
-      expect(res).to.equal('(400) Content type header is missing');
+      expect(res).to.equal('(400) Unable to preview /foo: content type header is missing');
     });
 
     it('should return localized error for failed config updates', () => {

@@ -17,7 +17,7 @@
   "AEM_BACKEND_IMAGE_TOO_BIG": {
     "message": "$1 をプレビューできません：画像が 10 MB を超えています"
   },
-  "AEM_BACKEND_JSON_INVALD": {
+  "AEM_BACKEND_JSON_INVALID": {
     "message": "$2 をプレビューできません : 無効な JSON"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
@@ -36,7 +36,7 @@
     "message": "ファイルが見つかりません。ソースドキュメントがないか、AEM で共有されていません。"
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "コンテンツタイプヘッダーがありません"
+    "message": "$1 をプレビューできません : コンテンツタイプヘッダーがありません"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "$1 をプレビューできません : ハンドラーが見つかりません"

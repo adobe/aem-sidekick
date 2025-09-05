@@ -17,7 +17,7 @@
   "AEM_BACKEND_IMAGE_TOO_BIG": {
     "message": "Vorschau von $1 nicht möglich: Bild ist größer als 10 MB"
   },
-  "AEM_BACKEND_JSON_INVALD": {
+  "AEM_BACKEND_JSON_INVALID": {
     "message": "Vorschau von $2 nicht möglich: ungültiges JSON"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
@@ -36,7 +36,7 @@
     "message": "Datei nicht gefunden. Quelldokument fehlt oder ist nicht für AEM freigegeben."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Kopfzeile für Inhaltstyp fehlt"
+    "message": "Vorschau von $1 nicht möglich: Kopfzeile für Inhaltstyp fehlt"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Vorschau von $1 nicht möglich: kein Handler gefunden"
