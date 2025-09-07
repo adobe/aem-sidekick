@@ -1266,7 +1266,13 @@ export class AppStore {
         this.setState();
       }
 
-      const editUrl = updatedStatus.edit?.url || this.status.edit?.url || this.getBYOMSourceUrl();
+      let editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
+
+      if (isReview && !editUrl) {
+        // no snapshot source, fall back to original edit URL
+        editUrl = this.status.edit?.url;
+      }
+
       if (editUrl) {
         return new URL(editUrl);
       }
