@@ -1249,7 +1249,8 @@ export class AppStore {
     };
 
     const getEditUrl = async () => {
-      if (this.isReview()) {
+      const isReview = this.isReview();
+      if (isReview) {
         // prefix pathname with snapshot
         const snapshot = this.location.hostname.endsWith(this.siteStore.stdReviewHost)
           ? this.location.hostname.split('--')[0]
@@ -1257,9 +1258,9 @@ export class AppStore {
         this.location.pathname = `/.snapshots/${snapshot}${this.location.pathname}`;
       }
 
-      const updatedStatus = await this.fetchStatus(false, true, this.isReview());
+      const updatedStatus = await this.fetchStatus(false, true, isReview);
 
-      if (this.isReview()) {
+      if (isReview) {
         // restore original pathname and state
         this.location = getLocation();
         this.setState();
