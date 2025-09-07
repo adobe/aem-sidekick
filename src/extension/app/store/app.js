@@ -999,7 +999,7 @@ export class AppStore {
     if (!res && !ranBefore) {
       // assume document has been renamed, re-fetch status and try again
       this.sidekick.addEventListener(EXTERNAL_EVENTS.STATUS_FETCHED, async () => {
-        // this.updatePreview(true);
+        this.updatePreview(true);
       }, { once: true });
       this.fetchStatus();
       return;
