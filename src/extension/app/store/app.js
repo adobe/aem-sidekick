@@ -999,7 +999,7 @@ export class AppStore {
     if (!res && !ranBefore) {
       // assume document has been renamed, re-fetch status and try again
       this.sidekick.addEventListener(EXTERNAL_EVENTS.STATUS_FETCHED, async () => {
-        this.updatePreview(true);
+        // this.updatePreview(true);
       }, { once: true });
       this.fetchStatus();
       return;
@@ -1012,6 +1012,13 @@ export class AppStore {
           message: this.i18n('activate_success'),
           variant: 'positive',
         });
+      } else if (this.status.webPath.startsWith('/.snapshots/')) {
+        // special handling of snapshot updates
+        this.showToast({
+          message: this.i18n('snapshot_update_success'),
+          variant: 'positive',
+        });
+        this.switchEnv('review', false, true);
       } else {
         this.showToast({
           message: this.i18n('preview_success'),
@@ -1242,8 +1249,23 @@ export class AppStore {
     };
 
     const getEditUrl = async () => {
-      const updatedStatus = await this.fetchStatus(false, true);
-      const editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
+      if (this.isReview()) {
+        // prefix pathname with snapshot
+        const snapshot = this.location.hostname.endsWith(this.siteStore.stdReviewHost)
+          ? this.location.hostname.split('--')[0]
+          : 'default'; // custom review host
+        this.location.pathname = `/.snapshots/${snapshot}${this.location.pathname}`;
+      }
+
+      const updatedStatus = await this.fetchStatus(false, true, this.isReview());
+
+      if (this.isReview()) {
+        // restore original pathname and state
+        this.location = getLocation();
+        this.setState();
+      }
+
+      const editUrl = updatedStatus.edit?.url || this.status.edit?.url || this.getBYOMSourceUrl();
       if (editUrl) {
         return new URL(editUrl);
       }
@@ -1299,6 +1321,15 @@ export class AppStore {
       }
     } else {
       envUrl = getEnvUrl(envHost, status.webPath, location, siteStore.devUrl);
+    }
+
+    if (targetEnv === 'review') {
+      // construct review URL from snapshot webPath
+      const [, snapshotRoot, snapshot, ...rest] = status.webPath.split('/');
+      if (snapshotRoot === '.snapshots') {
+        envUrl.host = `${snapshot}--${envUrl.host}`;
+        envUrl.pathname = `/${rest.join('/')}`;
+      }
     }
 
     if (targetEnv === 'prod' && siteStore[hostType] && prodCheck) {

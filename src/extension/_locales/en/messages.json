@@ -672,6 +672,9 @@
     "import": {
       "message": "Import"
     },
+    "snapshot_update_success": {
+      "message": "Snapshot successfully updated, opening Review..."
+    },
     "AEM_BACKEND_FETCH_FAILED": {
       "message": "Unable to fetch $1 from $2."
     },
