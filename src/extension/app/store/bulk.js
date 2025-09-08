@@ -204,7 +204,7 @@ export class BulkStore {
       // extract file name and type
       .map((row) => {
         const file = (row.querySelector(':scope td div[data-id] > span > strong') // list layout
-          || row.querySelector(':scope div > div:nth-child(2) > div:nth-child(2) > div') // grid layout
+          || row.querySelector(':scope div > div:nth-child(2) > div:nth-child(2) > div:not([role="button"])') // grid layout
           // istanbul ignore next 2
           || row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(2) div[jsname]') // legacy grid layout
           || row.querySelector(':scope div[role="gridcell"] > div:nth-of-type(2) > div:not([role="button"])')) // legacy list layout

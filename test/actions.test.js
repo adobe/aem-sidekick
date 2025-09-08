@@ -136,13 +136,13 @@ describe('Test actions', () => {
         owner: 'foo',
         repo: 'bar',
         authToken: '1234567890',
-        authTokenExpiry: Date.now() / 1000 + 60,
+        authTokenExpiry: Date.now() + 60000,
       }, {
         // expired auth token, exclude
         owner: 'foo2',
         repo: 'baz',
         authToken: '1234567890',
-        authTokenExpiry: Date.now() / 1000 - 60,
+        authTokenExpiry: Date.now() - 60000,
       }, {
         // no auth token, exclude
         owner: 'foo1',
@@ -239,6 +239,77 @@ describe('Test actions', () => {
     expect(resp).to.deep.equal([]);
   });
 
+  it('external: addSite', async () => {
+    const addConfig = { owner: 'foo', repo: 'bar' };
+
+    const resultingConfig = {
+      ...addConfig,
+      contentSourceUrl: 'https://foo.bar/content/source',
+      previewHost: 'https://preview.foo.bar',
+      liveHost: 'https://live.foo.bar',
+      reviewHost: 'https://review.foo.bar',
+      host: 'https://foo.bar',
+      project: 'Foo Bar',
+    };
+
+    const getStub = sandbox.stub(chrome.storage.sync, 'get');
+    const setStub = sandbox.stub(chrome.storage.sync, 'set');
+    getStub.withArgs('projects').resolves({
+      projects: [],
+    });
+    fetchMock.get('glob:https://admin.hlx.page/sidekick/**/main/config.json', {
+      status: 200,
+      body: resultingConfig,
+    });
+
+    let resp;
+
+    // trusted actor
+    resp = await externalActions.addSite({
+      config: addConfig,
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    expect(setStub.called).to.be.true;
+    expect(setStub.calledWith({ projects: ['foo/bar'] })).to.be.true;
+    expect(setStub.calledWithMatch({
+      'foo/bar': {
+        previewHost: 'https://preview.foo.bar',
+      },
+    })).to.be.true;
+    expect(resp).to.be.true;
+
+    // trusted actor with org and site
+    resp = await externalActions.addSite({
+      config: { org: addConfig.owner, site: addConfig.repo },
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    expect(setStub.calledWith({ projects: ['foo/bar'] })).to.be.true;
+    expect(resp).to.be.true;
+
+    // trusted actor with idp and tenant
+    resp = await externalActions.addSite({
+      config: { org: 'foo', site: 'baz' },
+      idp: 'microsoft',
+      tenant: 'common',
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    expect(setStub.calledWith({ projects: ['foo/bar', 'foo/baz'] })).to.be.true;
+    expect(resp).to.be.true;
+
+    setStub.resetHistory();
+
+    // trusted actor with missing owner and repo
+    resp = await externalActions.addSite({
+      config: { project: 'Foo Baz' },
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    expect(setStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    // untrusted actor
+    resp = await externalActions.addSite({
+      config: addConfig,
+    }, { tab: mockTab('https://evil.live') });
+    expect(setStub.called).to.be.false;
+    expect(resp).to.be.false;
+  });
+
   it('external: updateSite', async () => {
     const oldConfig = { owner: 'foo', repo: 'bar', project: 'Foo Bar' };
     const newConfig = { owner: 'foo', repo: 'bar', project: 'New Foo Bar' };
@@ -286,23 +357,35 @@ describe('Test actions', () => {
   });
 
   it('external: removeSite', async () => {
-    const config = { owner: 'foo', repo: 'bar', project: 'Foo Bar' };
+    const config1 = { owner: 'foo', repo: 'bar', project: 'Foo Bar' };
+    const config2 = { org: 'foo', site: 'baz' };
 
     const getStub = sandbox.stub(chrome.storage.sync, 'get');
     const removeStub = sandbox.stub(chrome.storage.sync, 'remove');
     const setStub = sandbox.stub(chrome.storage.sync, 'set');
     getStub.withArgs('projects').resolves({
-      projects: ['foo/bar'],
+      projects: ['foo/bar', 'foo/baz'],
     });
     getStub.withArgs('foo/bar').resolves({
-      'foo/bar': config,
+      'foo/bar': config1,
+    });
+    getStub.withArgs('foo/baz').resolves({
+      'foo/baz': config2,
     });
 
     let resp;
 
     // trusted actor
     resp = await externalActions.removeSite({
-      config,
+      config: config1,
+    }, { tab: mockTab('https://tools.aem.live/foo') });
+    expect(removeStub.called).to.be.true;
+    expect(setStub.calledWith({ projects: ['foo/baz'] })).to.be.true;
+    expect(resp).to.be.true;
+
+    // trusted actor with org and site
+    resp = await externalActions.removeSite({
+      config: config2,
     }, { tab: mockTab('https://tools.aem.live/foo') });
     expect(removeStub.called).to.be.true;
     expect(setStub.calledWith({ projects: [] })).to.be.true;
@@ -321,7 +404,7 @@ describe('Test actions', () => {
 
     // untrusted actor
     resp = await externalActions.removeSite({
-      config,
+      config: config1,
     }, { tab: mockTab('https://evil.live') });
     expect(removeStub.called).to.be.false;
     expect(setStub.called).to.be.false;

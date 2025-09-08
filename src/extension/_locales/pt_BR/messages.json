@@ -1,4 +1,7 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "Não é possível visualizar $1: imagem contida com mais de 10MB"
+  },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Não é possível obter $1 de $2."
   },
@@ -11,11 +14,17 @@
   "AEM_BACKEND_ICO_TOO_BIG": {
     "message": "Não é possível visualizar $1: o ICO é maior que 16 KB"
   },
-  "AEM_BACKEND_JSON_INVALD": {
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "Não é possível visualizar $1: a imagem tem mais de 10 MB"
+  },
+  "AEM_BACKEND_JSON_INVALID": {
     "message": "Não é possível visualizar $2: JSON inválido"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
     "message": "Não é possível visualizar $1: a taxa de bits do MP4 é maior que 300 KB/s"
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "Não é possível visualizar $1: MP4 inválido"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "Não é possível visualizar $1: o MP4 tem mais de 2 minutos"
@@ -27,10 +36,13 @@
     "message": "Arquivo não encontrado. Documento de origem ausente ou não compartilhado com o AEM."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Cabeçalho de tipo de conteúdo ausente"
+    "message": "Não é possível visualizar $1: cabeçalho de tipo de conteúdo ausente"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Não é possível visualizar $1: nenhum manipulador encontrado"
+  },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "Não é possível visualizar $1: o PDF tem mais de 10 MB"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Não é possível visualizar $1: o SVG contém um XML inválido"
@@ -41,11 +53,14 @@
   "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
     "message": "Não é possível visualizar $1: script ilegal detectado no SVG"
   },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "Não é possível visualizar $1: o SVG tem mais de 20KB"
+  },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Não é possível visualizar $1: tipo de arquivo não compatível"
   },
   "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-    "message": "Não é possível visualizar $2: tipo de arquivo não compatível"
+    "message": "Não é possível visualizar $1: tipo de arquivo não compatível"
   },
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Não é possível visualizar $1: $2"
@@ -347,6 +362,9 @@
   "destructive_confirmation_prompt": {
     "message": "Digite $1 para confirmar"
   },
+  "details": {
+    "message": "Detalhes"
+  },
   "development": {
     "message": "Desenvolvimento"
   },
@@ -380,11 +398,11 @@
   "error_delete": {
     "message": "A exclusão falhou. Tente novamente mais tarde."
   },
+  "error_details": {
+    "message": "Detalhes do erro"
+  },
   "error_fatal": {
     "message": "Desculpe, estamos com problemas no momento. Tente novamente mais tarde."
-  },
-  "error_fatal_details": {
-    "message": "Detalhes"
   },
   "error_generic": {
     "message": "Ocorreu um erro: $1"

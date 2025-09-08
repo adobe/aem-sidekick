@@ -281,10 +281,13 @@ export async function getProjectEnv({
 /**
  * Adds a project configuration.
  * @param {Object} input The project settings
- * @param {boolean} [loggedIn] True if user is logged in, else false or empty (default)
+ * @param {boolean} [loggedIn] True if user is logged in, else false (default)
+ * @param {Object} [loginHint] The optional login hint
+ * @param {string} [loginHint.idp] The IDP to use for login
+ * @param {string} [loginHint.tenant] The tenant ID to use for login
  * @returns {Promise<Object>} The added project
  */
-export async function addProject(input, loggedIn) {
+export async function addProject(input, loggedIn = false, { idp, tenant } = {}) {
   const config = assembleProject(input);
   const { owner, repo } = config;
   const env = await getProjectEnv(config);
@@ -292,6 +295,12 @@ export async function addProject(input, loggedIn) {
     // defer adding project and have user sign in
     const loginUrl = createAdminUrl(config, 'login');
     loginUrl.searchParams.set('extensionId', chrome.runtime.id);
+    if (idp) {
+      loginUrl.searchParams.set('idp', idp);
+    }
+    if (tenant) {
+      loginUrl.searchParams.set('tenantId', tenant);
+    }
     const [currentTab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     const { id: loginTabId } = await chrome.tabs.create({
       url: loginUrl.toString(),
@@ -548,6 +557,7 @@ export async function detectLegacySidekick() {
     extensionIds.map(
       async (id) => new Promise((resolve) => {
         try {
+          // @ts-ignore
           chrome.runtime.lastError = null;
           chrome.runtime.sendMessage(
             id,

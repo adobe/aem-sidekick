@@ -1,3 +1,59 @@
+## [7.18.2](https://github.com/adobe/aem-sidekick/compare/v7.18.1...v7.18.2) (2025-09-05)
+
+
+### Bug Fixes
+
+* error code typos ([#673](https://github.com/adobe/aem-sidekick/issues/673)) ([fe4dfda](https://github.com/adobe/aem-sidekick/commit/fe4dfdaa9f7707d66a00b3b161451897ee5881b3))
+
+## [7.18.1](https://github.com/adobe/aem-sidekick/compare/v7.18.0...v7.18.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* add project hints for gdrive lookup ([8a8ba09](https://github.com/adobe/aem-sidekick/commit/8a8ba09218187b0c5bcaaffa7c3cb78b567139ea))
+
+# [7.18.0](https://github.com/adobe/aem-sidekick/compare/v7.17.1...v7.18.0) (2025-09-02)
+
+
+### Features
+
+* always provide error details in toast ([#667](https://github.com/adobe/aem-sidekick/issues/667)) ([d77516a](https://github.com/adobe/aem-sidekick/commit/d77516a76990c879b55ea8cea816c1c92d0057b9))
+
+## [7.17.1](https://github.com/adobe/aem-sidekick/compare/v7.17.0...v7.17.1) (2025-08-27)
+
+
+### Bug Fixes
+
+* token expiry calculation ([#663](https://github.com/adobe/aem-sidekick/issues/663)) ([4f67928](https://github.com/adobe/aem-sidekick/commit/4f679282bc2886b2d2f52d91cf1e398d85b96ac4))
+
+# [7.17.0](https://github.com/adobe/aem-sidekick/compare/v7.16.2...v7.17.0) (2025-08-23)
+
+
+### Features
+
+* add site with login hint ([#661](https://github.com/adobe/aem-sidekick/issues/661)) ([f7eba07](https://github.com/adobe/aem-sidekick/commit/f7eba07fc51949dc0b7fcbab2cf14a3314546ded))
+
+## [7.16.2](https://github.com/adobe/aem-sidekick/compare/v7.16.1...v7.16.2) (2025-08-20)
+
+
+### Bug Fixes
+
+* broken bulk selection when gemini is enabled in gdrive ([#658](https://github.com/adobe/aem-sidekick/issues/658)) ([9c0b671](https://github.com/adobe/aem-sidekick/commit/9c0b6718c4474e597a2f5bf626b8377eda9ac56f))
+
+## [7.16.1](https://github.com/adobe/aem-sidekick/compare/v7.16.0...v7.16.1) (2025-08-19)
+
+
+### Bug Fixes
+
+* remove site api to support org/site ([#657](https://github.com/adobe/aem-sidekick/issues/657)) ([55b696b](https://github.com/adobe/aem-sidekick/commit/55b696beb93400ef4fdd5d19b14c4fd311e3cefd))
+
+# [7.16.0](https://github.com/adobe/aem-sidekick/compare/v7.15.1...v7.16.0) (2025-08-18)
+
+
+### Features
+
+* add site api ([#655](https://github.com/adobe/aem-sidekick/issues/655)) ([ae5f1c4](https://github.com/adobe/aem-sidekick/commit/ae5f1c4729689a0c672b888fa9518c3775841137))
+
 ## [7.15.1](https://github.com/adobe/aem-sidekick/compare/v7.15.0...v7.15.1) (2025-08-12)
 
 
