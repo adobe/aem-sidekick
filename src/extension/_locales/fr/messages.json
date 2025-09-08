@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : image contenue de plus de 10 Mo"
+    "message": "Impossible de prévisualiser $1 : l’image contenue dépasse 10 Mo."
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Impossible de récupérer $1 depuis $2."
@@ -15,7 +15,7 @@
     "message": "Impossible de prévisualiser $1 : l’ICO est supérieure à 16 Ko."
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : la taille de l'image est supérieure à 10 Mo"
+    "message": "Impossible de prévisualiser $1 : l’image dépasse 10 Mo."
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Impossible de prévisualiser $2 : JSON non valide"
@@ -24,7 +24,7 @@
     "message": "Impossible de prévisualiser $1 : le débit MP4 est supérieur à 300 Ko/s."
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
-    "message": "Impossible de prévisualiser $1 : MP4 non valide"
+    "message": "Impossible de prévisualiser $1 : fichier MP4 non valide."
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "Impossible de prévisualiser $1 : le fichier MP4 dépasse 2 minutes."
@@ -36,13 +36,13 @@
     "message": "Fichier introuvable. Document source manquant ou non partagé avec AEM."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Impossible de prévisualiser $1: en-tête du type de contenu manquant"
+    "message": "Impossible de prévisualiser $1 : l'en-tête de type de contenu est manquant"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Impossible de prévisualiser $1 : aucun gestionnaire trouvé"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : la taille de PDF est supérieure à 10 Mo"
+    "message": "Impossible de prévisualiser $1 : le fichier PDF dépasse 10 Mo."
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Impossible de prévisualiser $1 : le SVG contient un XML non valide"
@@ -54,7 +54,7 @@
     "message": "Impossible de prévisualiser $1 : un script illégal a été détecté dans le SVG."
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : la taille de SVG est supérieure à 20 Ko"
+    "message": "Impossible de prévisualiser $1 : le fichier SVG dépasse 20 Ko."
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Impossible de prévisualiser $1 : type de fichier non pris en charge"
@@ -399,7 +399,7 @@
     "message": "Échec de la suppression. Réessayez plus tard."
   },
   "error_details": {
-    "message": "Détails des erreurs"
+    "message": "Détails sur l’erreur"
   },
   "error_fatal": {
     "message": "Nous vous prions de nous excuser pour les problèmes rencontrés actuellement. Veuillez réessayer ultérieurement."
