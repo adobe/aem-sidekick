@@ -189,23 +189,6 @@ export class LoginButton extends ConnectedElement {
 
     if (!authenticated && this.appStore.status?.status !== 403) {
       return html`<sp-action-button quiet class="login" @click=${this.login}>${this.appStore.i18n('user_login')}</sp-action-button>`;
-    } else if (!authenticated && this.appStore.status?.status === 403) {
-      return html`
-      <sp-action-menu
-        placement="top"
-        quiet
-      >
-        <sp-icon slot="icon" size="l">
-          ${ICONS.USER_ICON}
-        </sp-icon>
-        <sk-menu-item class="logout" value="logout" @click=${this.logout} tabindex="0">
-          <sp-icon slot="icon" size="xl">
-            ${ICONS.SIGN_OUT}
-          </sp-icon>
-          ${this.appStore.i18n('user_logout')}
-        </sk-menu-item>
-      </sp-action-menu>
-    `;
     } else {
       return html`
         <sp-action-menu
@@ -215,12 +198,14 @@ export class LoginButton extends ConnectedElement {
           <sp-icon slot="icon" size="l" class=${ifDefined(this.profilePicture ? 'picture' : undefined)}>
             ${this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
+          ${profile && profile.name && profile.email ? html`
           <sk-menu-item class="user" value="user" tabindex="-1" disabled>
             ${this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
             ${profile.name}
             <span slot="description">${profile.email}</span>
           </sk-menu-item>
           <sp-divider size="s"></sp-divider>
+          ` : ''}
           <sk-menu-item class="logout" value="logout" @click=${this.logout} tabindex="0">
             <sp-icon slot="icon" size="xl">
               ${ICONS.SIGN_OUT}
