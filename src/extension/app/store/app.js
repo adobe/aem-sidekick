@@ -1263,7 +1263,6 @@ export class AppStore {
       }
 
       let updatedStatus = await this.fetchStatus(false, true, isReview);
-
       let editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl(updatedStatus);
 
       if (isReview) {
