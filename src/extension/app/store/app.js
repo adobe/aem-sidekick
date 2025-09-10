@@ -1204,7 +1204,7 @@ export class AppStore {
     }
   }
 
-  getBYOMSourceUrl() {
+  getBYOMSourceUrl(status) {
     const {
       owner,
       repo,
@@ -1213,7 +1213,11 @@ export class AppStore {
     } = this.siteStore;
     if (!contentSourceEditPattern || typeof contentSourceEditPattern !== 'string') return undefined;
 
-    let { pathname } = this.location;
+    let { webPath: pathname } = status || this.status;
+    if (!pathname) {
+      return undefined;
+    }
+
     if (pathname.endsWith('/')) pathname += 'index';
 
     const url = contentSourceEditPattern
@@ -1260,21 +1264,17 @@ export class AppStore {
 
       let updatedStatus = await this.fetchStatus(false, true, isReview);
 
+      let editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl(updatedStatus);
+
       if (isReview) {
         // restore original pathname and state
         this.location = getLocation();
         this.setState();
-        if (!updatedStatus.edit?.url) {
+        if (!editUrl) {
           // no snapshot source, fall back to original edit URL
           updatedStatus = await this.fetchStatus(false, true);
+          editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl(updatedStatus);
         }
-      }
-
-      let editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
-
-      if (isReview && !editUrl) {
-        // no snapshot source, fall back to original edit URL
-        editUrl = this.status.edit?.url;
       }
 
       if (editUrl) {
