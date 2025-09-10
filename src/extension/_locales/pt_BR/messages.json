@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Não é possível visualizar $1: imagem contida com mais de 10MB"
+    "message": "Não é possível visualizar $1: a imagem contida tem mais de 10 MB"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Não é possível obter $1 de $2."
@@ -36,7 +36,7 @@
     "message": "Arquivo não encontrado. Documento de origem ausente ou não compartilhado com o AEM."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Não é possível visualizar $1: cabeçalho de tipo de conteúdo ausente"
+    "message": "Não é possível visualizar $1: o cabeçalho de tipo de conteúdo está ausente"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Não é possível visualizar $1: nenhum manipulador encontrado"
@@ -54,13 +54,13 @@
     "message": "Não é possível visualizar $1: script ilegal detectado no SVG"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "Não é possível visualizar $1: o SVG tem mais de 20KB"
+    "message": "Não é possível visualizar $1: o SVG tem mais de 20 KB"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Não é possível visualizar $1: tipo de arquivo não compatível"
   },
   "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-    "message": "Não é possível visualizar $1: tipo de arquivo não compatível"
+    "message": "Não é possível visualizar $1: tipo de arquivo incompatível"
   },
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Não é possível visualizar $1: $2"
