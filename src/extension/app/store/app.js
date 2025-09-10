@@ -1258,12 +1258,16 @@ export class AppStore {
         this.location.pathname = `/.snapshots/${snapshot}${this.location.pathname}`;
       }
 
-      const updatedStatus = await this.fetchStatus(false, true, isReview);
+      let updatedStatus = await this.fetchStatus(false, true, isReview);
 
       if (isReview) {
         // restore original pathname and state
         this.location = getLocation();
         this.setState();
+        if (!updatedStatus.edit?.url) {
+          // no snapshot source, fall back to original edit URL
+          updatedStatus = await this.fetchStatus(false, true);
+        }
       }
 
       let editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
