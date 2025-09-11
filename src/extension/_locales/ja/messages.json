@@ -15,7 +15,7 @@
     "message": "$1 をプレビューできません : ICO が 16KB を超えています"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "$1 をプレビューできません : 画像 が 10MB を超えています"
+    "message": "$1 をプレビューできません : 画像 が 20MB を超えています"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "$2 をプレビューできません : 無効な JSON"

@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : l'image contenue dépasse 10 Mo."
+    "message": "Impossible de prévisualiser $1 : l'image contenue dépasse 20 Mo."
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Impossible de récupérer $1 depuis $2."
@@ -15,7 +15,7 @@
     "message": "Impossible de prévisualiser $1 : l’ICO est supérieure à 16 Ko."
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : l'image dépasse 10 Mo."
+    "message": "Impossible de prévisualiser $1 : l'image dépasse 20 Mo."
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Impossible de prévisualiser $2 : JSON non valide"

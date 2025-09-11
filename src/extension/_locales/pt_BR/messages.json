@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Não é possível visualizar $1: a imagem contida tem mais de 10 MB"
+    "message": "Não é possível visualizar $1: a imagem contida tem mais de 20 MB"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Não é possível obter $1 de $2."
