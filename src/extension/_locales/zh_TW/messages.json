@@ -566,12 +566,6 @@
   "preview_never_updated": {
     "message": "從未預覽過"
   },
-  "preview_onedrive": {
-    "message": "專業祕訣：在產生預覽前按 Ctrl+S 可立即查看最新變更…"
-  },
-  "preview_onedrive_mac": {
-    "message": "專業祕訣：在產生預覽前按 ⌘+S 可立即查看最新變更…"
-  },
   "preview_success": {
     "message": "預覽已成功更新，正在開啟預覽…"
   },

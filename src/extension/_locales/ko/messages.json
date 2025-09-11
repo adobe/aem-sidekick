@@ -504,7 +504,7 @@
     "message": "변경 사항 없음"
   },
   "no_diffs_subheading": {
-    "message": "미리보기한 콘텐츠와 게시된 콘텐츠가 동일함"
+    "message": "미리보기된 콘텐츠와 게시된 콘텐츠는 동일합니다."
   },
   "no_results": {
     "message": "검색 결과 없음"
@@ -565,12 +565,6 @@
   },
   "preview_never_updated": {
     "message": "미리보기된 적 없음"
-  },
-  "preview_onedrive": {
-    "message": "프로 팁: 최근 변경 내용을 즉시 보려면 미리보기를 생성하기 전에 Ctrl+S를 누르십시오."
-  },
-  "preview_onedrive_mac": {
-    "message": "프로 팁: 최근 변경 내용을 즉시 보려면 미리보기를 생성하기 전에 ⌘ + S를 누르십시오."
   },
   "preview_success": {
     "message": "미리보기가 정상적으로 업데이트됨. 미리보기 여는 중..."

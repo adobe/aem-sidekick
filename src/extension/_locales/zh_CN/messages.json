@@ -468,7 +468,7 @@
     "message": "从未发布"
   },
   "loading_diff": {
-    "message": "正在加载更改……"
+    "message": "正在加载更改…"
   },
   "logging_in_state": {
     "message": "正在登录……"
@@ -565,12 +565,6 @@
   },
   "preview_never_updated": {
     "message": "从未预览过"
-  },
-  "preview_onedrive": {
-    "message": "专业提示：在生成预览前按 Ctrl + S 可立即查看最新更改..."
-  },
-  "preview_onedrive_mac": {
-    "message": "专业提示：在生成预览前按 ⌘ + S 可立即查看最新更改..."
   },
   "preview_success": {
     "message": "预览已成功更新，正在打开预览……"
