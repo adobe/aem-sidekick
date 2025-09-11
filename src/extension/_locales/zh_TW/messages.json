@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "無法預覽 $1：包含的影像大於 10MB"
+    "message": "無法預覽 $1：包含的影像大於 20MB"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "無法從 $2 中擷取 $1。"
@@ -15,7 +15,7 @@
     "message": "無法預覽 $1：ICO 大於 16KB"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "無法預覽 $1：影像大於 10MB"
+    "message": "無法預覽 $1：影像大於 20MB"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "無法預覽 $2：無效的 JSON"

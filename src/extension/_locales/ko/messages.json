@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "$1 미리보기 불가: 10MB를 초과하는 이미지가 포함되어 있습니다."
+    "message": "$1 미리보기 불가: 20MB를 초과하는 이미지가 포함되어 있습니다."
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "$2에서 $1을(를) 가져올 수 없습니다."
@@ -15,7 +15,7 @@
     "message": "$1 미리보기 불가: ICO가 16KB보다 큽니다."
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "$1 미리보기 불가: 이미지 크기가 10MB를 초과합니다."
+    "message": "$1 미리보기 불가: 이미지 크기가 20MB를 초과합니다."
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "$2 미리보기 불가: 잘못된 JSON입니다."

@@ -733,9 +733,9 @@
       "message": "Unable to preview $1: SVG is larger than 20KB"
     },
     "AEM_BACKEND_IMAGE_TOO_BIG": {
-      "message": "Unable to preview $1: image is larger than 10MB"
+      "message": "Unable to preview $1: image is larger than 20MB"
     },
     "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-      "message": "Unable to preview $1: contained image larger than 10MB"
+      "message": "Unable to preview $1: contained image larger than 20MB"
     }
 }

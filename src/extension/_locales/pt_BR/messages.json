@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Não é possível visualizar $1: imagem contida com mais de 10MB"
+    "message": "Não é possível visualizar $1: imagem contida com mais de 20 MB"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Não é possível obter $1 de $2."
@@ -15,7 +15,7 @@
     "message": "Não é possível visualizar $1: o ICO é maior que 16 KB"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Não é possível visualizar $1: a imagem tem mais de 10 MB"
+    "message": "Não é possível visualizar $1: a imagem tem mais de 20 MB"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Não é possível visualizar $2: JSON inválido"

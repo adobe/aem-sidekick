@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: enthaltenes Bild größer als 10 MB"
+    "message": "Vorschau von $1 nicht möglich: enthaltenes Bild größer als 20 MB"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "$1 konnte nicht von $2 abgerufen werden."
@@ -15,7 +15,7 @@
     "message": "Vorschau von $1 nicht möglich: ICO ist größer als 16 KB"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: Bild ist größer als 10 MB"
+    "message": "Vorschau von $1 nicht möglich: Bild ist größer als 20 MB"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Vorschau von $2 nicht möglich: ungültiges JSON"

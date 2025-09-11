@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: immagine contenuta maggiore di 10 MB"
+    "message": "Impossibile visualizzare l'anteprima $1: immagine contenuta maggiore di 20 MB"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Impossibile recuperare $1 da $2."
@@ -15,7 +15,7 @@
     "message": "Impossibile visualizzare in anteprima $1: ICO è superiore a 16 KB"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: l'immagine ha una dimensione maggiore di 10 MB"
+    "message": "Impossibile visualizzare l'anteprima $1: l'immagine ha una dimensione maggiore di 20 MB"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Impossibile visualizzare in anteprima $2: JSON non valido"
