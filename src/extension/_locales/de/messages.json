@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: enthaltenes Bild größer als 20 MB"
+    "message": "Vorschau von $1 nicht möglich: enthaltene Grafik größer als 10 MB"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "$1 konnte nicht von $2 abgerufen werden."
@@ -15,7 +15,7 @@
     "message": "Vorschau von $1 nicht möglich: ICO ist größer als 16 KB"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: Bild ist größer als 20 MB"
+    "message": "Vorschau von $1 nicht möglich: Grafik ist größer als 10 MB"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Vorschau von $2 nicht möglich: ungültiges JSON"
@@ -24,7 +24,7 @@
     "message": "Vorschau von $1 nicht möglich: MP4-Bitrate ist höher als 300 KB/s"
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
-    "message": "Vorschau von $1 nicht möglich: ungültiges MP4"
+    "message": "Vorschau von $1 nicht möglich: ungültige MP4-Datei"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "Vorschau von $1 nicht möglich: MP4 ist länger als 2 Minuten"
@@ -36,13 +36,13 @@
     "message": "Datei nicht gefunden. Quelldokument fehlt oder ist nicht für AEM freigegeben."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Vorschau von $1 nicht möglich: Kopfzeile für Inhaltstyp fehlt"
+    "message": "Vorschau von $1 kann nicht angezeigt werden: Inhaltstyp-Kopfzeile fehlt"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Vorschau von $1 nicht möglich: kein Handler gefunden"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: PDF ist größer als 10 MB"
+    "message": "Vorschau von $1 nicht möglich: PDF ist größer als 10 MB"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Vorschau von $1 nicht möglich: SVG enthält ungültige XML"
@@ -54,7 +54,7 @@
     "message": "Vorschau von $1 kann nicht angezeigt werden: unzulässiges Skripting in SVG erkannt"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "Vorschau von $1 kann nicht angezeigt werden: SVG ist größer als 20 KB"
+    "message": "Vorschau von $1 nicht möglich: SVG ist größer als 20 KB"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Vorschau von $1 nicht möglich: Dateityp nicht unterstützt"

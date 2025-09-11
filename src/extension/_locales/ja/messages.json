@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "$1 をプレビューできません：20 MB を超える画像が含まれています"
+    "message": "$1 をプレビューできません : 10MB を超える画像が含まれています"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "$2 から$1 を取得できません。"
@@ -15,7 +15,7 @@
     "message": "$1 をプレビューできません : ICO が 16KB を超えています"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "$1 をプレビューできません：画像が 20 MB を超えています"
+    "message": "$1 をプレビューできません : 画像 が 10MB を超えています"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "$2 をプレビューできません : 無効な JSON"
@@ -24,7 +24,7 @@
     "message": "$1 をプレビューできません : MP4 ビットレートが 300 KB/秒を超えています"
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
-    "message": "$1 をプレビューできません： MP4 が無効です"
+    "message": "$1 をプレビューできません : 無効な MP4"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "$1 をプレビューできません : MP4 が 2 分を超えています"
@@ -36,13 +36,13 @@
     "message": "ファイルが見つかりません。ソースドキュメントがないか、AEM で共有されていません。"
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "$1 をプレビューできません : コンテンツタイプヘッダーがありません"
+    "message": "$1 をプレビューできません：コンテンツタイプヘッダーがありません"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "$1 をプレビューできません : ハンドラーが見つかりません"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "$1 をプレビューできません：PDFが 10MB を超えています"
+    "message": "$1 をプレビューできません : PDF が 10MB を超えています"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "$1 をプレビューできません : SVG に無効な XML が含まれています"
@@ -54,7 +54,7 @@
     "message": "$1 をプレビューできません : SVG で不正なスクリプトが検出されました"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "$1 をプレビューできません：SVGが 20 KB を超えています"
+    "message": "$1 をプレビューできません : SVG が 20KB を超えています"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "$1 をプレビューできません : ファイルタイプがサポートされていません"

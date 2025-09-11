@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "无法预览$1：包含大于 20MB 的图像"
+    "message": "无法预览 $1：包含的图像大于 10MB"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "无法从 $2 中获取 $1。"
