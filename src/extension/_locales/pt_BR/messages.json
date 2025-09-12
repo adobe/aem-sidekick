@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Não é possível visualizar $1: a imagem contida tem mais de 20 MB"
+    "message": "Não é possível visualizar $1: imagem contida maior que 20MB"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Não é possível obter $1 de $2."
@@ -15,7 +15,7 @@
     "message": "Não é possível visualizar $1: o ICO é maior que 16 KB"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Não é possível visualizar $1: a imagem tem mais de 20 MB"
+    "message": "Não é possível visualizar $1: a imagem tem mais de 20MB"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Não é possível visualizar $2: JSON inválido"
@@ -36,7 +36,7 @@
     "message": "Arquivo não encontrado. Documento de origem ausente ou não compartilhado com o AEM."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Não é possível visualizar $1: o cabeçalho de tipo de conteúdo está ausente"
+    "message": "Não é possível visualizar $1: o cabeçalho do tipo de conteúdo está ausente"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Não é possível visualizar $1: nenhum manipulador encontrado"
@@ -658,6 +658,9 @@
   },
   "site_relogin_required": {
     "message": "Acesso expirado. Faça logon novamente para continuar."
+  },
+  "snapshot_update_success": {
+    "message": "Snapshot atualizado com êxito, abrindo Revisar..."
   },
   "source": {
     "message": "Origem"
