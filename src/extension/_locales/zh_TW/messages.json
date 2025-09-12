@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "無法預覽 $1：包含的影像大於 20MB"
+    "message": "無法預覽$1：包含的影像大於20MB"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "無法從 $2 中擷取 $1。"
@@ -15,7 +15,7 @@
     "message": "無法預覽 $1：ICO 大於 16KB"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "無法預覽 $1：影像大於 20MB"
+    "message": "無法預覽$1：影像大於20MB"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "無法預覽 $2：無效的 JSON"
@@ -658,6 +658,9 @@
   },
   "site_relogin_required": {
     "message": "存取已到期。請重新登入以繼續。"
+  },
+  "snapshot_update_success": {
+    "message": "已成功更新快照，正在開啟檢閱……"
   },
   "source": {
     "message": "來源"

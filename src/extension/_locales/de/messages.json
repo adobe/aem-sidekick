@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: enthaltene Grafik größer als 20 MB"
+    "message": "Vorschau von $1 nicht möglich: enthaltenes Bild ist größer als 20 MB."
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "$1 konnte nicht von $2 abgerufen werden."
@@ -15,7 +15,7 @@
     "message": "Vorschau von $1 nicht möglich: ICO ist größer als 16 KB"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: Grafik ist größer als 20 MB"
+    "message": "Vorschau von $1 nicht möglich: Bild ist größer als 20 MB"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Vorschau von $2 nicht möglich: ungültiges JSON"
@@ -36,7 +36,7 @@
     "message": "Datei nicht gefunden. Quelldokument fehlt oder ist nicht für AEM freigegeben."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Vorschau von $1 kann nicht angezeigt werden: Inhaltstyp-Kopfzeile fehlt"
+    "message": "Vorschau von $1 nicht möglich: Content-Typ-Header fehlt"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Vorschau von $1 nicht möglich: kein Handler gefunden"
@@ -658,6 +658,9 @@
   },
   "site_relogin_required": {
     "message": "Zugriff abgelaufen. Melden Sie sich erneut an, um fortzufahren."
+  },
+  "snapshot_update_success": {
+    "message": "Snapshot erfolgreich aktualisiert, Überprüfung wird geöffnet..."
   },
   "source": {
     "message": "Quelle"
