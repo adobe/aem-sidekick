@@ -1,3 +1,24 @@
+## [7.18.2](https://github.com/adobe/aem-sidekick/compare/v7.18.1...v7.18.2) (2025-09-05)
+
+
+### Bug Fixes
+
+* error code typos ([#673](https://github.com/adobe/aem-sidekick/issues/673)) ([fe4dfda](https://github.com/adobe/aem-sidekick/commit/fe4dfdaa9f7707d66a00b3b161451897ee5881b3))
+
+## [7.18.1](https://github.com/adobe/aem-sidekick/compare/v7.18.0...v7.18.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* add project hints for gdrive lookup ([8a8ba09](https://github.com/adobe/aem-sidekick/commit/8a8ba09218187b0c5bcaaffa7c3cb78b567139ea))
+
+# [7.18.0](https://github.com/adobe/aem-sidekick/compare/v7.17.1...v7.18.0) (2025-09-02)
+
+
+### Features
+
+* always provide error details in toast ([#667](https://github.com/adobe/aem-sidekick/issues/667)) ([d77516a](https://github.com/adobe/aem-sidekick/commit/d77516a76990c879b55ea8cea816c1c92d0057b9))
+
 ## [7.17.1](https://github.com/adobe/aem-sidekick/compare/v7.17.0...v7.17.1) (2025-08-27)
 
 

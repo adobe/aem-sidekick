@@ -351,43 +351,53 @@ export const ERRORS = [
   },
   {
     code: 'AEM_BACKEND_NOT_FOUND',
-    template: 'File not found: $1',
+    template: 'Unable to preview \'$1\': File not found',
   },
   {
     code: 'AEM_BACKEND_TYPE_UNSUPPORTED',
-    template: 'File type not supported: $1',
+    template: 'Unable to preview \'$1\': File type not supported: $2',
   },
   {
     code: 'AEM_BACKEND_NO_HANDLER',
-    template: 'No handler found for document: $1',
+    template: 'Unable to preview \'$1\': No handler found for document: $2',
   },
   {
     code: 'AEM_BACKEND_NON_MATCHING_MEDIA',
-    template: 'Unable to preview \'$1\', content is not a \'$2\' but: $3',
+    template: 'Unable to preview \'$1\': content is not a \'$2\' but: $3',
   },
   {
     code: 'AEM_BACKEND_VALIDATION_FAILED',
-    template: 'Unable to preview \'$1\', validation failed: $2',
+    template: 'Unable to preview \'$1\': validation failed: $2',
+  },
+  {
+    code: 'AEM_BACKEND_DOC_IMAGE_TOO_BIG',
+    template: 'Unable to preview \'$1\': source contains large image: $2',
   },
   {
     code: 'AEM_BACKEND_UNSUPPORTED_MEDIA',
-    template: '\'$1\' backend does not support file type: $2',
+    template: 'Unable to preview \'$1\': \'$2\' backend does not support file type.',
   },
   {
     code: 'AEM_BACKEND_NO_CONTENT_TYPE',
-    template: 'Content type header is missing',
+    template: 'Unable to preview \'$1\': Content type header is missing',
   },
   {
-    code: 'AEM_BACKEND_JSON_INVALD',
-    template: 'JSON fetched from markup \'$1\' is invalid: $2',
+    code: 'AEM_BACKEND_JSON_INVALID',
+    template: 'Unable to preview \'$1\': JSON fetched from markup is invalid: $2',
   },
   {
     code: 'AEM_BACKEND_FILE_EMPTY',
-    template: 'File is empty, no markdown version available: $1',
+    template: 'Unable to preview \'$1\': File is empty, no markdown version available',
   },
   {
     code: 'AEM_BACKEND_FILE_TOO_BIG',
-    template: 'Documents larger than 100mb not supported: $1',
+    template: 'Unable to preview \'$1\': Documents larger than 100mb not supported: $2',
+  },
+
+  // mp4 media upload
+  {
+    code: 'AEM_BACKEND_MP4_PARSING_FAILED',
+    template: 'Unable to preview \'$1\': Unable to parse MP4',
   },
   {
     code: 'AEM_BACKEND_MP4_TOO_LONG',
@@ -397,20 +407,70 @@ export const ERRORS = [
     code: 'AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH',
     template: 'Unable to preview \'$1\': MP4 has a higher bitrate than 300 KB/s: $2',
   },
+  // ico
   {
     code: 'AEM_BACKEND_ICO_TOO_BIG',
-    template: 'ICO is larger than 16KB: $1',
+    template: 'Unable to preview \'$1\': ICO is larger than 16KB: $2',
   },
+  // pdf
+  {
+    code: 'AEM_BACKEND_PDF_TOO_BIG',
+    template: 'Unable to preview \'$1\': PDF is larger than 10MB: $2',
+  },
+  // svg validation
   {
     code: 'AEM_BACKEND_SVG_SCRIPTING_DETECTED',
-    template: 'Unable to preview \'$1\': script or event handler detected in SVG at: $2',
+    template: 'Unable to preview \'$1\': Script or event handler detected in SVG at: $2',
   },
   {
     code: 'AEM_BACKEND_SVG_ROOT_ITEM_MISSING',
-    template: 'Unable to preview \'$1\': expected XML content with an SVG root item',
+    template: 'Unable to preview \'$1\': Expected XML content with an SVG root item',
   },
   {
     code: 'AEM_BACKEND_SVG_PARSING_FAILED',
-    template: 'Unable to preview \'$1\': unable to parse SVG XML',
+    template: 'Unable to preview \'$1\': Unable to parse SVG XML',
+  },
+  {
+    code: 'AEM_BACKEND_SVG_TOO_BIG',
+    template: 'Unable to preview \'$1\': SVG is larger than 20KB: $2',
+  },
+  // img validation
+  {
+    code: 'AEM_BACKEND_IMAGE_TOO_BIG',
+    template: 'Unable to preview \'$1\': Image is larger than $2: $3',
+  },
+
+  // config errors
+  {
+    code: 'AEM_BACKEND_CONFIG_EXISTS',
+    template: 'Config already exists',
+  },
+  {
+    code: 'AEM_BACKEND_CONFIG_TYPE_MISSING',
+    template: 'No \'$1\' config in body or bad content type',
+  },
+  {
+    code: 'AEM_BACKEND_CONFIG_TYPE_INVALID',
+    template: 'Bad \'$1\' config: $2',
+  },
+  {
+    code: 'AEM_BACKEND_CONFIG_MISSING',
+    template: 'Config not found',
+  },
+  {
+    code: 'AEM_BACKEND_CONFIG_READ',
+    template: 'Error reading config: $1',
+  },
+  {
+    code: 'AEM_BACKEND_CONFIG_CREATE',
+    template: 'Error creating config: $1',
+  },
+  {
+    code: 'AEM_BACKEND_CONFIG_UPDATE',
+    template: 'Error updating config: $1',
+  },
+  {
+    code: 'AEM_BACKEND_CONFIG_DELETE',
+    template: 'Error removing config: $1',
   },
 ];

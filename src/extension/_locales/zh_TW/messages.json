@@ -1,4 +1,7 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "無法預覽 $1：包含的影像大於 10MB"
+  },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "無法從 $2 中擷取 $1。"
   },
@@ -11,11 +14,17 @@
   "AEM_BACKEND_ICO_TOO_BIG": {
     "message": "無法預覽 $1：ICO 大於 16KB"
   },
-  "AEM_BACKEND_JSON_INVALD": {
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "無法預覽 $1：影像大於 10MB"
+  },
+  "AEM_BACKEND_JSON_INVALID": {
     "message": "無法預覽 $2：無效的 JSON"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
     "message": "無法預覽 $1：MP4 位元率高於 300KB/秒"
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "無法預覽 $1：無效的 MP4"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "無法預覽 $1：MP4 長度超過 2 分鐘"
@@ -27,10 +36,13 @@
     "message": "找不到檔案。來源文件遺失或未與 AEM 共用。"
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "內容類型標頭遺失"
+    "message": "無法預覽 $1：內容類型標頭遺失"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "無法預覽 $1：找不到處理常式"
+  },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "無法預覽 $1：PDF 大於 10MB"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "無法預覽 $1：SVG 包含無效的 XML"
@@ -41,11 +53,14 @@
   "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
     "message": "無法預覽 $1：在 SVG 中偵測到非法指令碼"
   },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "無法預覽 $1：SVG 大於 20KB"
+  },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "無法預覽 $1：檔案類型不受支援"
   },
   "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-    "message": "無法預覽 $2：檔案類型不受支援"
+    "message": "無法預覽 $1：檔案類型不受支援"
   },
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "無法預覽 $1：$2"
@@ -347,6 +362,9 @@
   "destructive_confirmation_prompt": {
     "message": "請輸入「$1」以確認"
   },
+  "details": {
+    "message": "詳細資料"
+  },
   "development": {
     "message": "開發"
   },
@@ -380,11 +398,11 @@
   "error_delete": {
     "message": "刪除失敗。請稍後再試。"
   },
+  "error_details": {
+    "message": "錯誤詳細資料"
+  },
   "error_fatal": {
     "message": "抱歉，我們目前似乎遇到問題。請稍後再試。"
-  },
-  "error_fatal_details": {
-    "message": "詳細資料"
   },
   "error_generic": {
     "message": "發生錯誤：$1"

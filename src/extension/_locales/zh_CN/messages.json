@@ -1,4 +1,7 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "无法预览$1：包含大于 10MB 的图像"
+  },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "无法从 $2 中获取 $1。"
   },
@@ -11,11 +14,17 @@
   "AEM_BACKEND_ICO_TOO_BIG": {
     "message": "无法预览 $1：ICO 大于 16KB"
   },
-  "AEM_BACKEND_JSON_INVALD": {
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "无法预览 $1：图像大于 10MB"
+  },
+  "AEM_BACKEND_JSON_INVALID": {
     "message": "无法预览 $2：无效的 JSON"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
     "message": "无法预览 $1：MP4 比特率高于 300KB/s"
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "无法预览 $1：无效的 MP4"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "无法预览 $1：MP4 长度超过 2 分钟"
@@ -27,10 +36,13 @@
     "message": "未找到文件。源文档缺失或未与 AEM 共享。"
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "内容类型标头缺失"
+    "message": "无法预览 $1：内容类型标头缺失"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "无法预览 $1：未找到处理程序"
+  },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "无法预览 $1：PDF 大于 10MB"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "无法预览 $1：SVG 包含无效的 XML"
@@ -41,11 +53,14 @@
   "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
     "message": "无法预览 $1：SVG 中检测到非法脚本"
   },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "无法预览 $1：SVG 大于 20KB"
+  },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "无法预览 $1：文件类型不受支持"
   },
   "AEM_BACKEND_UNSUPPORTED_MEDIA": {
-    "message": "无法预览 $2：文件类型不受支持"
+    "message": "无法预览 $1：文件类型不受支持"
   },
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "无法预览 $1：$2"
@@ -347,6 +362,9 @@
   "destructive_confirmation_prompt": {
     "message": "输入 $1 来确认"
   },
+  "details": {
+    "message": "详细信息"
+  },
   "development": {
     "message": "开发"
   },
@@ -380,11 +398,11 @@
   "error_delete": {
     "message": "删除失败。请稍后再试。"
   },
+  "error_details": {
+    "message": "错误详细信息"
+  },
   "error_fatal": {
     "message": "抱歉，我们目前似乎遇到了问题。请稍后重试。"
-  },
-  "error_fatal_details": {
-    "message": "详细信息"
   },
   "error_generic": {
     "message": "出现错误：$1"

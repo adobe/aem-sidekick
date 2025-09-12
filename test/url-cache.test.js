@@ -127,6 +127,27 @@ describe('Test url-cache', () => {
       expect(sessionSet.callCount).to.equal(1);
     });
 
+    it('include config hints for gdrive url', async () => {
+      const configs = [
+        { owner: 'foo', repo: 'random', mountpoints: ['https://drive.google.com/drive/folders/1234567890'] },
+        { owner: 'bar', repo: 'random', mountpoints: ['https://drive.google.com/drive/folders/0987654321'] },
+      ];
+
+      // gdrive url
+      await urlCache.set(
+        mockTab('https://docs.google.com/document/d/2468101214/edit'),
+        configs,
+      );
+      expect(new URL(fetchMock.calls().pop()[0]).searchParams.getAll('hint')).to.deep.equal(['foo/random', 'bar/random']);
+
+      // non-gdrive url
+      await urlCache.set(
+        mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C896%7D&file=not-gdrive.docx&action=default&mobileredirect=true'),
+        configs,
+      );
+      expect(new URL(fetchMock.calls().pop()[0]).searchParams.getAll('hint')).to.deep.equal([]);
+    });
+
     it('sharepoint url with root folder', async () => {
       await urlCache.set(mockTab('https://foo.sharepoint.com/sites/foo/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2Ffoo%2FShared%20Documents%2Ffoo&viewid=77cb4d37%2D30e2%2D4762%2D87ef%2D5ad0e1059258&RootFolder=1234'));
       expect(fetchMock.calls().length).to.equal(3);
