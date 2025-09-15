@@ -257,5 +257,40 @@ describe('Login', () => {
       expect(openStub.calledOnce).to.be.true;
       await waitUntil(() => appStore.state === STATE.UNAUTHORIZED, '', { timeout: 10000 });
     }).timeout(20000);
+
+    it('Allows user to logout when forbidden', async () => {
+      sidekickTest
+        .mockFetchStatusUnauthorized()
+        .mockFetchSidekickConfigForbidden()
+        .mockFetchProfileUnauthorized();
+
+      // @ts-ignore
+      const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitActionBar();
+
+      // Wait for the component to process the forbidden state
+      await waitUntil(() => appStore.state === STATE.UNAUTHORIZED);
+
+      const accountElement = recursiveQuery(sidekick, 'login-button');
+      // With 403 status and !authenticated, we should get sp-action-menu directly
+      const accountMenu = recursiveQuery(accountElement, 'sp-action-menu');
+      expect(accountMenu).to.exist;
+
+      // Click the action menu itself to open it
+      accountMenu.click();
+
+      await waitUntil(() => accountMenu.getAttribute('open') !== null);
+
+      const logoutButton = recursiveQuery(accountMenu, 'sk-menu-item.logout');
+      expect(logoutButton).to.exist;
+      logoutButton.click();
+
+      await waitUntil(() => appStore.state === STATE.LOGGING_OUT);
+      expect(openStub.calledOnce).to.be.true;
+      await sidekickTest.awaitLoggedOut();
+      await waitUntil(() => reloadPageStub.calledOnce);
+    }).timeout(20000);
   });
 });

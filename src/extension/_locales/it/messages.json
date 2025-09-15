@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: immagine contenuta maggiore di 10 MB"
+    "message": "Impossibile visualizzare l'anteprima $1: immagine contenuta di dimensioni superiori a 20 MB"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Impossibile recuperare $1 da $2."
@@ -15,7 +15,7 @@
     "message": "Impossibile visualizzare in anteprima $1: ICO è superiore a 16 KB"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: l'immagine ha una dimensione maggiore di 10 MB"
+    "message": "Impossibile visualizzare l'anteprima $1: l'immagine supera i 20 MB"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Impossibile visualizzare in anteprima $2: JSON non valido"
@@ -24,7 +24,7 @@
     "message": "Impossibile visualizzare in anteprima $1: il bit rate MP4 è superiore a 300 KB/s"
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
-    "message": "Impossibile visualizzare l'anteprima $1: MP4 non valida"
+    "message": "Impossibile visualizzare in anteprima $1: MP4 non valido"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "Impossibile visualizzare in anteprima $1: MP4 è più lungo di 2 minuti"
@@ -42,7 +42,7 @@
     "message": "Impossibile visualizzare in anteprima $1: nessun handler trovato"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: PDF ha una dimensione maggiore di 10 MB"
+    "message": "Impossibile visualizzare in anteprima $1: PDF di oltre 10 MB"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Impossibile visualizzare in anteprima $1: SVG contiene XML non valido"
@@ -54,7 +54,7 @@
     "message": "Impossibile visualizzare in anteprima $1: scripting non valido rilevato in SVG"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: SVG ha una dimensione maggiore di 20 KB"
+    "message": "Impossibile visualizzare in anteprima $1: SVG di oltre 20 KB"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Impossibile visualizzare in anteprima $1: tipo di file non supportato"
@@ -658,6 +658,9 @@
   },
   "site_relogin_required": {
     "message": "Accesso scaduto. Accedi di nuovo per continuare."
+  },
+  "snapshot_update_success": {
+    "message": "Snapshot aggiornato correttamente, apertura revisione..."
   },
   "source": {
     "message": "Origine"

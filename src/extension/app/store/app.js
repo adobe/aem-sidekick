@@ -1012,6 +1012,13 @@ export class AppStore {
           message: this.i18n('activate_success'),
           variant: 'positive',
         });
+      } else if (this.status.webPath.startsWith('/.snapshots/')) {
+        // special handling of snapshot updates
+        this.showToast({
+          message: this.i18n('snapshot_update_success'),
+          variant: 'positive',
+        });
+        this.switchEnv('review', false, true);
       } else {
         this.showToast({
           message: this.i18n('preview_success'),
@@ -1197,7 +1204,7 @@ export class AppStore {
     }
   }
 
-  getBYOMSourceUrl() {
+  getBYOMSourceUrl(status) {
     const {
       owner,
       repo,
@@ -1206,7 +1213,11 @@ export class AppStore {
     } = this.siteStore;
     if (!contentSourceEditPattern || typeof contentSourceEditPattern !== 'string') return undefined;
 
-    let { pathname } = this.location;
+    let { webPath: pathname } = status || this.status;
+    if (!pathname) {
+      return undefined;
+    }
+
     if (pathname.endsWith('/')) pathname += 'index';
 
     const url = contentSourceEditPattern
@@ -1242,8 +1253,29 @@ export class AppStore {
     };
 
     const getEditUrl = async () => {
-      const updatedStatus = await this.fetchStatus(false, true);
-      const editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
+      const isReview = this.isReview();
+      if (isReview) {
+        // prefix pathname with snapshot
+        const snapshot = this.location.hostname.endsWith(this.siteStore.stdReviewHost)
+          ? this.location.hostname.split('--')[0]
+          : 'default'; // custom review host
+        this.location.pathname = `/.snapshots/${snapshot}${this.location.pathname}`;
+      }
+
+      let updatedStatus = await this.fetchStatus(false, true, isReview);
+      let editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl(updatedStatus);
+
+      if (isReview) {
+        // restore original pathname and state
+        this.location = getLocation();
+        this.setState();
+        if (!editUrl) {
+          // no snapshot source, fall back to original edit URL
+          updatedStatus = await this.fetchStatus(false, true);
+          editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl(updatedStatus);
+        }
+      }
+
       if (editUrl) {
         return new URL(editUrl);
       }
@@ -1299,6 +1331,15 @@ export class AppStore {
       }
     } else {
       envUrl = getEnvUrl(envHost, status.webPath, location, siteStore.devUrl);
+    }
+
+    if (targetEnv === 'review') {
+      // construct review URL from snapshot webPath
+      const [, snapshotRoot, snapshot, ...rest] = status.webPath.split('/');
+      if (snapshotRoot === '.snapshots') {
+        envUrl.host = `${snapshot}--${envUrl.host}`;
+        envUrl.pathname = `/${rest.join('/')}`;
+      }
     }
 
     if (targetEnv === 'prod' && siteStore[hostType] && prodCheck) {
