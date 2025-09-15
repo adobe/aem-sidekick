@@ -1,3 +1,10 @@
+## [7.19.1](https://github.com/adobe/aem-sidekick/compare/v7.19.0...v7.19.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* **env-switcher:** define source label first based on sourceLocation,… ([#683](https://github.com/adobe/aem-sidekick/issues/683)) ([81bf03e](https://github.com/adobe/aem-sidekick/commit/81bf03e38a4a12549d86f5dc1067a340d08289ae))
+
 # [7.19.0](https://github.com/adobe/aem-sidekick/compare/v7.18.2...v7.19.0) (2025-09-15)
 
 
