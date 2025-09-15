@@ -1966,23 +1966,49 @@ describe('Test App Store', () => {
     });
 
     it('should return "SharePoint" if sourceLocation includes "onedrive:"', () => {
+      instance.status = {
+        preview: {
+          sourceLocation: 'onedrive:foo',
+        },
+      };
+      expect(instance.getContentSourceLabel()).to.equal('SharePoint');
+    });
+
+    it('should return "SharePoint" if no sourceLocation but contentSourceType is "onedrive"', () => {
       instance.siteStore.contentSourceType = 'onedrive';
       expect(instance.getContentSourceLabel()).to.equal('SharePoint');
     });
 
     it('should return "Google Drive" if sourceLocation includes "gdrive:"', () => {
+      instance.status = {
+        preview: {
+          sourceLocation: 'gdrive:foo',
+        },
+      };
+      expect(instance.getContentSourceLabel()).to.equal('Google Drive');
+    });
+
+    it('should return "Google Drive" if no sourceLocation but contentSourceType is "google"', () => {
       instance.siteStore.contentSourceType = 'google';
       expect(instance.getContentSourceLabel()).to.equal('Google Drive');
     });
 
     it('should return "Document Authoring" if a label is provided', () => {
-      instance.siteStore.contentSourceType = 'markup';
+      instance.status = {
+        preview: {
+          sourceLocation: 'markup:foo',
+        },
+      };
       instance.siteStore.contentSourceEditLabel = 'Document Authoring';
       expect(instance.getContentSourceLabel()).to.equal('Document Authoring');
     });
 
     it('should return "BYOM" for everything else', () => {
-      instance.siteStore.contentSourceType = 'markup';
+      instance.status = {
+        preview: {
+          sourceLocation: 'markup:foo',
+        },
+      };
       expect(instance.getContentSourceLabel()).to.equal('BYOM');
     });
   });
