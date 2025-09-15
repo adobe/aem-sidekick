@@ -661,10 +661,11 @@ export class AppStore {
    */
   getContentSourceLabel() {
     const { contentSourceType, contentSourceEditLabel } = this.siteStore;
+    const { preview: { sourceLocation } = {} } = this.status;
 
-    if (contentSourceType === 'onedrive') {
+    if (sourceLocation?.startsWith('onedrive:') || contentSourceType === 'onedrive') {
       return 'SharePoint';
-    } else if (contentSourceType === 'google') {
+    } else if (sourceLocation?.startsWith('gdrive:') || contentSourceType === 'google') {
       return 'Google Drive';
     } else if (contentSourceEditLabel) {
       return contentSourceEditLabel;
