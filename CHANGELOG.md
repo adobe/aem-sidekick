@@ -1,3 +1,10 @@
+# [7.19.0](https://github.com/adobe/aem-sidekick/compare/v7.18.2...v7.19.0) (2025-09-15)
+
+
+### Features
+
+* RC 20250910 ([fd23442](https://github.com/adobe/aem-sidekick/commit/fd23442ba7c2d74b7789a5f0b96a1e2da9d3c9d0))
+
 ## [7.18.2](https://github.com/adobe/aem-sidekick/compare/v7.18.1...v7.18.2) (2025-09-05)
 
 
