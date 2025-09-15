@@ -326,6 +326,7 @@ describe('Environment Switcher', () => {
           },
         })
         .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceType: 'markup',
           editUrlLabel: 'Foo',
         })
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
