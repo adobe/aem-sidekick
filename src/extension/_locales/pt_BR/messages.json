@@ -566,12 +566,6 @@
   "preview_never_updated": {
     "message": "Nunca visualizado"
   },
-  "preview_onedrive": {
-    "message": "Dica profissional: pressione Ctrl + S antes de gerar a pré-visualização para ver as alterações mais recentes imediatamente..."
-  },
-  "preview_onedrive_mac": {
-    "message": "Dica profissional: pressione ⌘ + S antes de gerar a pré-visualização para ver as alterações mais recentes imediatamente..."
-  },
   "preview_success": {
     "message": "Visualização atualizada com sucesso. Abrindo a visualização..."
   },

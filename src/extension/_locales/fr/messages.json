@@ -566,12 +566,6 @@
   "preview_never_updated": {
     "message": "Jamais prévisualisé"
   },
-  "preview_onedrive": {
-    "message": "Conseil de pro : appuyez sur Ctrl+S avant de générer la prévisualisation pour voir immédiatement les dernières modifications…"
-  },
-  "preview_onedrive_mac": {
-    "message": "Conseil de pro : appuyez sur ⌘+S avant de générer la prévisualisation pour voir immédiatement les dernières modifications…"
-  },
   "preview_success": {
     "message": "Aperçu mis à jour. Ouverture de l’aperçu..."
   },

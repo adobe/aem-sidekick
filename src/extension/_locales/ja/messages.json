@@ -566,12 +566,6 @@
   "preview_never_updated": {
     "message": "未プレビュー"
   },
-  "preview_onedrive": {
-    "message": "プロのヒント : 最新の変更をすぐに確認するには、プレビューを生成する前に Ctrl+S キーを押します..."
-  },
-  "preview_onedrive_mac": {
-    "message": "プロのヒント : 最新の変更をすぐに確認するには、プレビューを生成する前に ⌘+S キーを押します..."
-  },
   "preview_success": {
     "message": "プレビューが正常に更新されました。プレビューを開いています..."
   },
