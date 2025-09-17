@@ -2003,12 +2003,20 @@ describe('Test App Store', () => {
       expect(instance.getContentSourceLabel()).to.equal('Document Authoring');
     });
 
-    it('should return "BYOM" for everything else', () => {
+    it('should return "BYOM" if no label is provided', () => {
       instance.status = {
         preview: {
           sourceLocation: 'markup:foo',
         },
       };
+      expect(instance.getContentSourceLabel()).to.equal('BYOM');
+    });
+
+    it('should return "BYOM" for everything else', () => {
+      instance.status = {
+        preview: { status: 404 },
+      };
+      instance.siteStore.contentSourceType = 'unknown';
       expect(instance.getContentSourceLabel()).to.equal('BYOM');
     });
   });
