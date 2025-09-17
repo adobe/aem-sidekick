@@ -1,6 +1,6 @@
 {
   "name": "@adobe/aem-sidekick",
-  "version": "7.19.1",
+  "version": "7.19.2",
   "description": "AEM Sidekick Extension",
   "type": "module",
   "scripts": {

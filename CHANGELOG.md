@@ -1,3 +1,10 @@
+## [7.19.2](https://github.com/adobe/aem-sidekick/compare/v7.19.1...v7.19.2) (2025-09-17)
+
+
+### Bug Fixes
+
+* columns key is no longer supported in the OOTB json ([dae88e7](https://github.com/adobe/aem-sidekick/commit/dae88e7113995ffd1481670cb8ce19f06e5fd4c2))
+
 ## [7.19.1](https://github.com/adobe/aem-sidekick/compare/v7.19.0...v7.19.1) (2025-09-15)
 
 
