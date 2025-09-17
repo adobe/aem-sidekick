@@ -566,12 +566,6 @@
   "preview_never_updated": {
     "message": "Anteprima mai eseguita"
   },
-  "preview_onedrive": {
-    "message": "Suggerimento: premi Ctrl + S prima di generare l’anteprima per vedere subito le ultime modifiche..."
-  },
-  "preview_onedrive_mac": {
-    "message": "Suggerimento: premi ⌘ + S prima di generare l’anteprima per vedere subito le ultime modifiche..."
-  },
   "preview_success": {
     "message": "Anteprima aggiornata correttamente, apertura anteprima in corso..."
   },

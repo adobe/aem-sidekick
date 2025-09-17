@@ -566,12 +566,6 @@
   "preview_never_updated": {
     "message": "Nie als Vorschau angesehen"
   },
-  "preview_onedrive": {
-    "message": "Profi-Tipp: Drücken Sie vor dem Generieren der Vorschau Strg+S, um die neuesten Änderungen sofort zu sehen …"
-  },
-  "preview_onedrive_mac": {
-    "message": "Profi-Tipp: Drücken Sie vor dem Generieren der Vorschau ⌘+S, um die neuesten Änderungen sofort zu sehen …"
-  },
   "preview_success": {
     "message": "Vorschau erfolgreich aktualisiert, wird geöffnet …"
   },
@@ -609,7 +603,7 @@
     "message": "Veröffentlichung erfolgt …"
   },
   "review": {
-    "message": "Überprüfen"
+    "message": "Überprüfung"
   },
   "review_last_updated": {
     "message": "Zuletzt aktualisiert: $1"
