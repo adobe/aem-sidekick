@@ -226,14 +226,14 @@ export class JSONView extends LitElement {
     const multiSheet = json[':type'] === 'multi-sheet' && json[':names'];
     if (multiSheet) {
       json[':names'].forEach((name) => {
-        const { data, columns } = json[name];
-        if (data && columns) {
+        const { data } = json[name];
+        if (data) {
           sheets[name] = json[name];
         }
       });
     } else {
-      const { data, columns } = json;
-      if (data && columns) {
+      const { data } = json;
+      if (data) {
         sheets['shared-default'] = json;
       }
     }
@@ -318,8 +318,8 @@ export class JSONView extends LitElement {
     if (names.length > 0) {
       const name = names[this.selectedTabIndex];
       const sheet = sheets[name];
-      const { data, columns } = sheet;
-      elements.push(this.renderTable(data, columns, url));
+      const { data } = sheet;
+      elements.push(this.renderTable(data, url));
     }
     return elements;
   }
@@ -511,11 +511,11 @@ export class JSONView extends LitElement {
   /**
    * Render the table
    * @param {Object[]} rows The rows to render
-   * @param {string[]} headers The header names
    * @param {string} url The url of the json file
    * @returns {TemplateResult} The rendered table
    */
-  renderTable(rows, headers, url) {
+  renderTable(rows, url) {
+    const headers = rows.length > 0 ? Object.keys(rows[0]) : [];
     if (rows.length === 0) {
       if (this.filterText) {
         return this.renderEmptyState('no_results');

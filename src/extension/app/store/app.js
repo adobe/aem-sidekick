@@ -663,14 +663,18 @@ export class AppStore {
     const { contentSourceType, contentSourceEditLabel } = this.siteStore;
     const { preview: { sourceLocation } = {} } = this.status;
 
-    if (sourceLocation?.startsWith('onedrive:') || contentSourceType === 'onedrive') {
+    if (sourceLocation?.startsWith('onedrive:')) {
       return 'SharePoint';
-    } else if (sourceLocation?.startsWith('gdrive:') || contentSourceType === 'google') {
+    } else if (sourceLocation?.startsWith('gdrive:')) {
       return 'Google Drive';
-    } else if (contentSourceEditLabel) {
-      return contentSourceEditLabel;
+    } else if (sourceLocation?.startsWith('markup:')) {
+      return contentSourceEditLabel || 'BYOM';
+    } else if (contentSourceType === 'onedrive') {
+      return 'SharePoint';
+    } else if (contentSourceType === 'google') {
+      return 'Google Drive';
     } else {
-      return 'BYOM';
+      return contentSourceEditLabel || 'BYOM';
     }
   }
 
