@@ -4,6 +4,7 @@
   ],
   "ignoreDeps": [
     "fetch-mock",
+    "@open-wc/eslint-config",
     "@spectrum-web-components/action-button",
     "@spectrum-web-components/action-group",
     "@spectrum-web-components/action-menu",
@@ -19,6 +20,7 @@
     "@spectrum-web-components/menu",
     "@spectrum-web-components/overlay",
     "@spectrum-web-components/picker",
+    "@spectrum-web-components/popover",
     "@spectrum-web-components/progress-circle",
     "@spectrum-web-components/search",
     "@spectrum-web-components/status-light",
@@ -28,5 +30,19 @@
     "@spectrum-web-components/textfield",
     "@spectrum-web-components/theme",
     "@spectrum-web-components/toast"
+  ],
+  "packageRules": [
+    {
+      "automerge": false,
+      "matchPackageNames": [
+        "*"
+      ]
+    },
+    {
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "automerge": true
+    }
   ]
 }

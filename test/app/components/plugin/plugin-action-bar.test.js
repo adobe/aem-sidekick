@@ -92,7 +92,7 @@ describe('Plugin action bar', () => {
 
   function expectInActionBar(pluginIds) {
     const actionGroup = recursiveQuery(sidekickTest.sidekick, '.action-group');
-    const plugins = recursiveQueryAll(actionGroup, 'sk-action-button, env-switcher, bulk-info, action-bar-picker');
+    const plugins = recursiveQueryAll(actionGroup, 'sp-action-button, env-switcher, bulk-info, action-bar-picker');
     expect(
       [...plugins].map((plugin) => plugin.className.replace('plugin-container ', '')
         || plugin.tagName.toLowerCase()),
@@ -277,7 +277,7 @@ describe('Plugin action bar', () => {
 
     it('Preview - should display "open in" description for Source', async () => {
       sidekickTest
-        .mockFetchStatusSuccess()
+        .mockFetchStatusSuccess(false, null, HelixMockContentSources.GDRIVE)
         .mockFetchSidekickConfigSuccess(false)
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
@@ -383,6 +383,32 @@ describe('Plugin action bar', () => {
         'bulk-info',
         'bulk-preview',
         'bulk-publish',
+        'bulk-copy-urls',
+      ]);
+    });
+
+    it('isAdmin - w/custom plugins', async () => {
+      sidekick = sidekickTest
+        .mockFetchDirectoryStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, true)
+        .mockAdminDOM(
+          undefined,
+          undefined,
+          undefined,
+          'https://foo.sharepoint.com/sites/bar/drafts/Forms/AllItems.aspx',
+        )
+        .toggleAdminItems(['document'])
+        .createSidekick();
+
+      await aTimeout(100);
+
+      sidekick.click();
+
+      await waitUntil(() => appStore.bulkStore.selection.length === 1);
+
+      expectInActionBar([
+        'bulk-info',
+        'bulk-preview',
         'bulk-copy-urls',
       ]);
     });
@@ -744,7 +770,7 @@ describe('Plugin action bar', () => {
   describe('login states', () => {
     it('not logged in, site has authentication enabled', async () => {
       sidekickTest
-        .mockFetchSidekickConfigUnAuthorized()
+        .mockFetchSidekickConfigUnauthorized()
         .mockFetchStatusUnauthorized()
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 
@@ -922,7 +948,7 @@ describe('Plugin action bar', () => {
 
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
 
-      expect(messageSpy.calledTwice).to.be.true;
+      expect(messageSpy.callCount).to.equal(3);
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'project-removed',
@@ -947,6 +973,43 @@ describe('Plugin action bar', () => {
       await waitUntil(() => closeSpy.called, 'sidekick did not close', { timeout: 3000 });
 
       expect(closeSpy.calledOnce).to.be.true;
+    }).timeout(10000);
+
+    it('open project admin', async () => {
+      sidekickTest.sandbox.stub(chrome.storage.sync, 'get').resolves({
+        projects: ['foo/bar'],
+      });
+
+      const { sandbox } = sidekickTest;
+      sidekick = sidekickTest.createSidekick({
+        ...defaultSidekickConfig,
+        transient: false,
+      });
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const sidekickMenuButton = recursiveQuery(sidekick, '#sidekick-menu');
+      expect(sidekickMenuButton).to.exist;
+
+      sidekickMenuButton.click();
+
+      await waitUntil(() => sidekickMenuButton.hasAttribute('open'));
+
+      const sendMessageStub = sandbox.stub(window.chrome.runtime, 'sendMessage').returns(null);
+      const projectAdminButton = recursiveQuery(sidekickMenuButton, 'sk-menu-item[value="project-admin-opened"]');
+      expect(projectAdminButton).to.exist;
+      projectAdminButton.click();
+
+      await aTimeout(200);
+      await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
+      expect(sendMessageStub.calledWith({
+        // @ts-ignore
+        action: 'manageProjects',
+      })).to.be.true;
+      expect(sidekickTest.rumStub.calledWith('click', {
+        source: 'sidekick',
+        target: 'project-admin-opened',
+      })).to.be.true;
     }).timeout(10000);
 
     it('open documentation', async () => {
@@ -1061,7 +1124,7 @@ describe('Plugin action bar', () => {
       const sidekickMenuFocusSpy = createFocusSpy(sidekickMenu);
 
       const loginButton = recursiveQuery(actionBar, 'login-button');
-      const loginActionButton = recursiveQuery(loginButton, 'sk-action-button.login');
+      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button.login');
       const loginButtonFocusSpy = createFocusSpy(loginActionButton);
 
       // Tab into location input
@@ -1100,6 +1163,82 @@ describe('Plugin action bar', () => {
       expectInBadgeContainer([
         'badge',
       ]);
+    });
+  });
+
+  describe('error toast handling', () => {
+    it('4xx: shows warning toast', async () => {
+      const showToastSpy = sidekickTest.sandbox.spy(sidekickTest.appStore, 'showToast');
+
+      sidekickTest
+        .mockFetchStatusNotFound()
+        .mockFetchSidekickConfigSuccess(true, true);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await waitUntil(() => showToastSpy.calledOnce);
+
+      expect(showToastSpy.calledWithMatch({
+        variant: 'warning',
+        timeout: 0,
+      })).to.be.true;
+    });
+
+    it('5xx: shows negative toast with details action button', async () => {
+      const showToastSpy = sidekickTest.sandbox.spy(sidekickTest.appStore, 'showToast');
+      const showModalStub = sidekickTest.sandbox.spy(sidekickTest.appStore, 'showModal');
+      const errorMessage = 'first byte timeout';
+
+      sidekickTest
+        .mockFetchStatusError()
+        .mockFetchSidekickConfigSuccess(true, true);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await waitUntil(() => showToastSpy.calledOnce);
+
+      expect(showToastSpy.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
+
+      const actionButton = recursiveQuery(sidekick, 'sp-action-button.action');
+      expect(actionButton).to.exist;
+      expect(actionButton.textContent.trim()).to.equal('Details');
+      actionButton.click();
+
+      await waitUntil(() => showModalStub.calledOnce);
+
+      expect(showModalStub.calledWith({
+        type: 'error',
+        data: {
+          headline: 'Error details',
+          message: errorMessage,
+        },
+      })).to.be.true;
+    });
+
+    it('5xx status error: shows negative toast and removes sidekick on close', async () => {
+      const showToastSpy = sidekickTest.sandbox.spy(sidekickTest.appStore, 'showToast');
+
+      sidekickTest
+        .mockFetchStatusError()
+        .mockFetchSidekickConfigSuccess(true, true);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await waitUntil(() => showToastSpy.calledOnce);
+
+      expect(showToastSpy.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
+
+      const closeButton = recursiveQuery(sidekick, 'sp-action-button.close');
+      expect(closeButton).to.exist;
+      closeButton.click();
+
+      await waitUntil(() => !recursiveQuery(document.body, 'aem-sidekick'));
     });
   });
 });

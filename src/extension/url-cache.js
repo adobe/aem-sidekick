@@ -154,6 +154,7 @@ async function fetchGoogleDriveEditInfo({ url }) {
  * @typedef {Object} SidekickConfig
  * @prop {string} [owner] The owner
  * @prop {string} [repo] The repository
+ * @prop {string[]} [mountpoints] The mountpoints
  * @description The configuration object
  */
 
@@ -232,9 +233,19 @@ class UrlCache {
 
         let results = [];
         // discover project details from edit url
+        const searchParams = new URLSearchParams();
+        searchParams.append('url', info?.url || url);
+        if (isGoogleDriveHost(url) && Array.isArray(config)) {
+          // add known gdrive projects as hints to improve lookup efficiency
+          config
+            .filter(({ mountpoints }) => mountpoints?.[0]?.startsWith('https://drive.google.com'))
+            .forEach(({ owner: org, repo: site }) => {
+              searchParams.append('hint', `${org}/${site}`);
+            });
+        }
         const resp = await callAdmin(
           // @ts-ignore
-          {}, 'discover', '/', { searchParams: new URLSearchParams(`url=${info?.url || url}`) },
+          {}, 'discover', '/', { searchParams },
         );
         if (resp.ok) {
           results = await resp.json();

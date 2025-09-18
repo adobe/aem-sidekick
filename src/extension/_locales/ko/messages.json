@@ -1,7 +1,78 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "$1을(를) 미리 볼 수 없음: 20MB보다 큰 이미지가 포함됨"
+  },
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "$2에서 $1을(를) 가져올 수 없습니다."
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "$1 미리보기 불가: 빈 파일"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "$1 미리보기 불가: 파일이 100MB보다 큽니다."
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "$1 미리보기 불가: ICO가 16KB보다 큽니다."
+  },
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "$1을(를) 미리 볼 수 없음: 이미지가 20MB보다 큽니다."
+  },
+  "AEM_BACKEND_JSON_INVALID": {
+    "message": "$2 미리보기 불가: 잘못된 JSON입니다."
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "$1 미리보기 불가: MP4 비트 전송률이 300KB/s보다 높습니다."
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "$1 미리보기 불가: 유효하지 않은 MP4입니다."
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "$1 미리보기 불가: MP4 재생 시간이 2분을 초과합니다."
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "$1 미리보기 불가: $2을(를) 예상했지만 $3이(가) 발견되었습니다."
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "파일을 찾을 수 없습니다. 소스 문서가 누락되었거나 AEM과 공유되지 않았습니다."
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "$1 미리보기 불가: 콘텐츠 유형 헤더가 누락되었습니다."
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "$1 미리보기 불가: 핸들러를 찾을 수 없습니다."
+  },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "$1 미리보기 불가: PDF 크기가 10MB를 초과합니다."
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "$1 미리보기 불가: SVG에 잘못된 XML이 포함되어 있습니다."
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "$1 미리보기 불가: SVG 루트 항목이 누락되었습니다."
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "$1 미리보기 불가: SVG에서 잘못된 스크립팅이 감지되었습니다."
+  },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "$1 미리보기 불가: SVG 크기가 20KB를 초과합니다."
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "$1 미리보기 불가: 파일 유형이 지원되지 않습니다."
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "$1 미리보기 불가: 파일 유형이 지원되지 않습니다."
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "$1 미리보기 불가: $2"
+  },
   "activate": {
-    "description": "구성 활성화",
     "message": "활성화"
+  },
+  "activate_bulk_not_supported": {
+    "message": "여러 구성을 활성화하는 것은 지원되지 않습니다."
+  },
+  "activate_success": {
+    "message": "구성이 정상적으로 활성화되었습니다."
   },
   "add": {
     "message": "추가"
@@ -13,11 +84,13 @@
     "message": "관리 버전: x.y.z"
   },
   "advanced": {
-    "description": "고급 구성 모드",
     "message": "고급"
   },
   "anonymous": {
     "message": "익명"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "이 구성을 활성화하시겠습니까?"
   },
   "bulk_confirm_empty": {
     "message": "선택한 파일 없음"
@@ -137,14 +210,12 @@
     "message": "이 프로젝트 추가"
   },
   "config_project_added": {
-    "description": "프로젝트 추가됨",
     "message": "$1이(가) 정상적으로 추가됨"
   },
   "config_project_disable": {
     "message": "이 프로젝트 비활성화"
   },
   "config_project_disabled": {
-    "description": "프로젝트 비활성화됨",
     "message": "$1 비활성화됨"
   },
   "config_project_disabled_headline": {
@@ -154,7 +225,6 @@
     "message": "이 프로젝트 활성화"
   },
   "config_project_enabled": {
-    "description": "프로젝트 활성화됨",
     "message": "$1 활성화됨"
   },
   "config_project_enabled_headline": {
@@ -181,6 +251,9 @@
   "config_project_imported_single": {
     "message": "AEM Sidekick v6에서 1개 프로젝트를 정상적으로 가져왔습니다."
   },
+  "config_project_manage": {
+    "message": "프로젝트 관리"
+  },
   "config_project_pick": {
     "message": "프로젝트 선택"
   },
@@ -188,17 +261,15 @@
     "message": "이 프로젝트 제거"
   },
   "config_project_removed": {
-    "description": "프로젝트 제거됨",
     "message": "$1이(가) 정상적으로 제거됨"
   },
   "config_remove_project_headline": {
     "message": "제거된 프로젝트"
   },
-  "config_success": {
-    "message": "구성이 정상적으로 활성화되었습니다."
+  "config_state": {
+    "message": "구성 활성화 중..."
   },
   "confirm": {
-    "description": "확인 모달 제목",
     "message": "확인해 주십시오."
   },
   "copied": {
@@ -244,7 +315,7 @@
     "message": "클립보드에 복사하지 못했습니다. 창에 초점을 맞추고 있는지 확인해 주십시오."
   },
   "dark_mode": {
-    "message": "다크 모드"
+    "message": "어두운 테마"
   },
   "delete": {
     "message": "삭제"
@@ -291,11 +362,14 @@
   "destructive_confirmation_prompt": {
     "message": "$1을(를) 입력하여 확인"
   },
+  "details": {
+    "message": "세부 정보"
+  },
   "development": {
     "message": "개발"
   },
   "docs": {
-    "message": "https://www.hlx.live/docs/sidekick"
+    "message": "https://www.aem.live/docs/sidekick"
   },
   "edit": {
     "message": "편집"
@@ -310,7 +384,7 @@
     "message": "저장된 적 없음"
   },
   "edit_no_source": {
-    "message": "소스 문서를 찾을 수 없음"
+    "message": "소스 문서를 찾을 수 없습니다."
   },
   "environments": {
     "message": "환경"
@@ -319,10 +393,13 @@
     "message": "오류"
   },
   "error_429": {
-    "message": "429 요청이 너무 많음: 프로젝트가 $1에 의해 제한되고 있습니다. 잠시 기다린 후 다시 시도해 주십시오."
+    "message": "요청이 너무 많음: 프로젝트가 $1에 의해 제한되고 있습니다. 잠시 기다린 후 다시 시도해 주십시오."
   },
   "error_delete": {
     "message": "삭제하지 못했습니다. 나중에 다시 시도해 주십시오."
+  },
+  "error_details": {
+    "message": "오류 정보"
   },
   "error_fatal": {
     "message": "죄송합니다. 현재 문제가 발생했습니다. 나중에 다시 시도해 주십시오."
@@ -331,7 +408,7 @@
     "message": "오류 발생: $1"
   },
   "error_job_404": {
-    "message": "404 찾을 수 없음: 해당 작업이 없습니다."
+    "message": "작업을 찾을 수 없습니다."
   },
   "error_login_aborted": {
     "message": "로그인이 중단되었습니다."
@@ -345,15 +422,6 @@
   "error_preview": {
     "message": "미리보기 생성에 실패했습니다. 나중에 다시 시도해 주십시오."
   },
-  "error_preview_400": {
-    "message": "미리보기를 생성하지 못했습니다. 파일 포맷, 이름 또는 경로를 확인하십시오."
-  },
-  "error_preview_404": {
-    "message": "소스 문서가 존재하지 않아 미리보기를 생성하지 못했습니다."
-  },
-  "error_preview_415": {
-    "message": "파일 유형이 지원되지 않습니다. 지원되는 파일 유형에 대해서는 설명서를 참조하십시오."
-  },
   "error_preview_config": {
     "message": "구성 활성화 실패: $1"
   },
@@ -366,38 +434,17 @@
   "error_preview_not_gdoc_generic": {
     "message": "미리보기 생성에 실패했습니다. Google 문서 또는 스프레드시트여야 합니다."
   },
-  "error_preview_svg_invalid": {
-    "message": "SVG가 잘못되었습니다. 유효한 XML이고 스크립트가 포함되어 있지 않은지 확인하십시오."
-  },
-  "error_preview_too_large": {
-    "message": "파일이 너무 큽니다. 파일 크기 제한에 대해서는 설명서를 참조하십시오."
-  },
   "error_publish": {
     "message": "게시하지 못했습니다. 나중에 다시 시도해 주십시오."
   },
   "error_publish_404": {
     "message": "게시하지 못했습니다. 우선 미리보기를 생성하십시오."
   },
-  "error_status_400": {
-    "message": "400 잘못된 요청: URL이 잘못되었습니다."
+  "error_status": {
+    "message": "페이지 상태를 가져오지 못했습니다. 나중에 다시 시도해 주십시오."
   },
-  "error_status_404_content": {
-    "message": "404 찾을 수 없음: Sidekick 구성 또는 URL을 확인하십시오."
-  },
-  "error_status_404_document": {
-    "message": "404 찾을 수 없음: Sidekick 구성을 확인하고 이 문서에 대한 액세스 권한이 부여되었는지 확인하십시오."
-  },
-  "error_status_500": {
-    "message": "500 내부 서버 오류: 페이지 상태를 가져오지 못했습니다. 나중에 다시 시도해 주십시오."
-  },
-  "error_status_502": {
-    "message": "502 잘못된 게이트웨이: 페이지 상태를 가져오지 못했습니다. 나중에 다시 시도해 주십시오."
-  },
-  "error_status_504": {
-    "message": "504 게이트웨이 시간 초과: 페이지 상태를 가져오지 못했습니다. 나중에 다시 시도해 주십시오."
-  },
-  "error_status_invalid": {
-    "message": "잘못된 서버 응답입니다. Sidekick 구성 또는 URL을 확인하십시오."
+  "error_status_404": {
+    "message": "페이지 상태를 가져오지 못했습니다. 이 문서가 AEM과 공유되고 있는지 확인하십시오."
   },
   "error_unpublish": {
     "message": "게시를 취소하지 못했습니다. 나중에 다시 시도해 주십시오."
@@ -412,7 +459,7 @@
     "message": "도움말 및 설명서"
   },
   "homepage": {
-    "message": "https://www.hlx.live/tools/sidekick/"
+    "message": "https://www.aem.live/tools/sidekick/"
   },
   "import": {
     "message": "가져오기"
@@ -421,7 +468,7 @@
     "message": "정보"
   },
   "join_discord": {
-    "message": "Discord에 가입하기"
+    "message": "Discord에서 참여하기"
   },
   "json_results_stat": {
     "message": "$2개 중 $1개 결과 표시 중"
@@ -435,8 +482,14 @@
   "live_last_updated": {
     "message": "마지막으로 게시됨: $1"
   },
+  "live_last_updated_by": {
+    "message": "$1에 $2님이 마지막으로 게시함"
+  },
   "live_never_updated": {
     "message": "게시된 적 없음"
+  },
+  "loading_diff": {
+    "message": "변경 사항 로드 중..."
   },
   "logging_in_state": {
     "message": "로그인 중..."
@@ -460,8 +513,19 @@
     "message": "사용 안 함"
   },
   "next": {
-    "description": "다음 온보딩 슬라이드",
     "message": "다음"
+  },
+  "no_data": {
+    "message": "데이터 없음"
+  },
+  "no_data_subheading": {
+    "message": "이 시트는 비어 있습니다."
+  },
+  "no_diffs": {
+    "message": "변경 사항 없음"
+  },
+  "no_diffs_subheading": {
+    "message": "미리보기된 콘텐츠와 게시된 콘텐츠는 동일합니다."
   },
   "no_results": {
     "message": "검색 결과 없음"
@@ -488,7 +552,6 @@
     "message": "$1에서 열기"
   },
   "open_preview": {
-    "description": "지정된 GitHub 분기의 미리보기 URL을 엽니다.",
     "message": "미리보기 URL 열기"
   },
   "open_url": {
@@ -518,14 +581,11 @@
   "preview_last_updated": {
     "message": "마지막 업데이트: $1"
   },
+  "preview_last_updated_by": {
+    "message": "$1에 $2님이 마지막으로 업데이트함"
+  },
   "preview_never_updated": {
     "message": "미리보기된 적 없음"
-  },
-  "preview_onedrive": {
-    "message": "프로 팁: 최근 변경 내용을 즉시 보려면 미리보기를 생성하기 전에 Ctrl+S를 누르십시오."
-  },
-  "preview_onedrive_mac": {
-    "message": "프로 팁: 최근 변경 내용을 즉시 보려면 미리보기를 생성하기 전에 ⌘ + S를 누르십시오."
   },
   "preview_success": {
     "message": "미리보기가 정상적으로 업데이트됨. 미리보기 여는 중..."
@@ -535,6 +595,9 @@
   },
   "prod_last_updated": {
     "message": "마지막으로 게시됨: $1"
+  },
+  "prod_last_updated_by": {
+    "message": "$2에 의해 마지막으로 게시된 $1"
   },
   "prod_never_updated": {
     "message": "게시된 적 없음"
@@ -560,6 +623,12 @@
   "publishing_state": {
     "message": "게시 중..."
   },
+  "review": {
+    "message": "검토"
+  },
+  "review_last_updated": {
+    "message": "마지막으로 업데이트된 $1"
+  },
   "save": {
     "message": "저장"
   },
@@ -572,15 +641,38 @@
   "share_description": {
     "message": "Sidekick 공유"
   },
+  "show_all": {
+    "message": "모든 행 표시"
+  },
+  "show_diff": {
+    "message": "변경 사항 표시"
+  },
+  "site_forbidden": {
+    "message": "액세스가 거부되었습니다. 다른 사용자로 로그인을 시도하거나 관리자에게 권한을 요청하시기 바랍니다."
+  },
+  "site_login_required": {
+    "message": "계속하려면 로그인하십시오."
+  },
+  "site_protected": {
+    "message": "이 사이트는 보호됩니다."
+  },
+  "site_relogin_required": {
+    "message": "액세스가 만료되었습니다. 계속하려면 다시 로그인하십시오."
+  },
+  "snapshot_update_success": {
+    "message": "스냅숏이 업데이트되었습니다. 리뷰를 여는 중..."
+  },
   "source": {
     "message": "소스"
   },
   "standard": {
-    "description": "표준 구성 모드",
     "message": "표준"
   },
   "switch_view": {
     "message": "보기"
+  },
+  "system": {
+    "message": "AEM 시스템 사용자"
   },
   "title": {
     "message": "AEM Sidekick"
@@ -610,7 +702,6 @@
     "message": "게시 취소 중..."
   },
   "update": {
-    "description": "페이지 미리보기 업데이트",
     "message": "업데이트"
   },
   "update_success": {
@@ -629,7 +720,6 @@
     "message": "사용자 전환"
   },
   "whats_new": {
-    "description": "온보딩 메뉴 제목",
     "message": "새로운 기능"
   },
   "yesterday_at": {

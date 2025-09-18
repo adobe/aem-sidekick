@@ -29,6 +29,7 @@
  * @prop {string} contentSourceType The content source type ("onedrive", "google" or "markup")
  * @prop {string[]} [mountpoints] The content source URL (deprecated)
  * @prop {string} [previewHost] The host name of a custom preview CDN
+ * @prop {string} [reviewHost] The host name of a custom review CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
  * @description The derived sidekick configuration from the server-side configuration
@@ -47,6 +48,7 @@
  * @prop {string} [editUrlLabel] The custom label of the edit content source
  * @prop {string} [editUrlPattern] The pattern of the edit content source
  * @prop {string} [adminVersion] The specific version of admin service to use
+ * @prop {number} [wordSaveDelay] The delay to wait for Word to save the document before previewing
  * @prop {boolean} [disabled] Is the project disabled?
  * @description Represents the sidekick configuration from the user via the options view
  */
@@ -73,7 +75,7 @@
  * @prop {string} [previewHost] The host name of a custom preview CDN
  * @prop {string} [liveHost] The host name of a custom live CDN
  * @prop {string} [host] The production host name to publish content to
- * @prop {Plugin[]} [plugins] An array of {@link Plugin|plugin configurations}
+ * @prop {SitePlugin[]} [plugins] An array of {@link SitePlugin|plugin configurations}
  * @prop {ViewConfig[]} [specialViews] An array of custom {@link ViewConfig|view configurations}
  * @description The configuration file from the project's respository (`config.json`).
  * @link https://github.com/adobe/helix-sidekick-extension/blob/main/docs/config.schema.json
@@ -109,6 +111,8 @@
  * @prop {boolean} [isContainer] Determines whether to turn this plugin into a dropdown
  * @prop {boolean} [isPalette] Determines whether a URL is opened in a palette instead of a new tab
  * @prop {string} [paletteRect] The dimensions and position of a palette (optional)
+ * @prop {boolean} [isPopover] Determines whether a URL is opened in a popover instead of a new tab
+ * @prop {string} [popoverRect] The dimensions of a popover (optional)
  * @prop {boolean} [isBadge] Determines whether the plugin is a badge (optional)
  * @prop {string} [badgeVariant] The color variant of the badge (optional)
  * @prop {string[]} [environments] Specifies when to show this plugin (admin, edit, dev, preview, live, prod)
@@ -219,6 +223,7 @@
  * @property {string} path The resource path
  * @property {number} status The status code
  * @property {string} [error] The error message
+ * @property {string} [errorCode] The error code
  */
 
 /**

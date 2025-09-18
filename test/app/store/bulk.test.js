@@ -102,6 +102,32 @@ describe('Test Bulk Store', () => {
         });
       });
 
+      const testFn = adminEnv === HelixMockContentSources.SHAREPOINT ? describe : describe.skip;
+      testFn(`selection in ${adminEnv} (newer sharepoint admin view)`, () => {
+        beforeEach(async () => {
+          sidekickTest.mockAdminDOM(adminEnv, 'new-sharepoint-list');
+        });
+
+        it('has empty selection when initialized', async () => {
+          bulkStore.initStore(appStore.location);
+          expect(bulkStore.selection.length).to.equal(0);
+        });
+
+        it('uses existing selection when initialized', async () => {
+          sidekickTest.toggleAdminItems(['document']);
+          bulkStore.initStore(appStore.location);
+          await waitUntil(() => bulkStore.selection.length === 1);
+        });
+
+        it('updates initial selection when user toggles files', async () => {
+          bulkStore.initStore(appStore.location);
+          expect(bulkStore.selection.length).to.equal(0);
+
+          sidekickTest.toggleAdminItems(['document']);
+          await waitUntil(() => bulkStore.selection.length === 1);
+        });
+      });
+
       describe(`selection in ${adminEnv} (grid)`, () => {
         beforeEach(async () => {
           sidekickTest.mockAdminDOM(adminEnv, 'grid');
@@ -337,7 +363,7 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => startJobStub.calledWith('preview', [
           '/foo/document',
           '/foo/spreadsheet.json',
-          '/foo/other',
+          '/foo/other.unknown',
         ]));
         await waitUntil(() => getJobStub.calledWith('preview', '123'), null, { timeout: 2000 });
         expect(bulkStore.progress.processed).to.equal(1);
@@ -372,9 +398,9 @@ describe('Test Bulk Store', () => {
 
         // test toast actions
         const activityAction = recursiveQuery(sidekickTest.sidekick, 'activity-action');
-        const copyUrlsButton = recursiveQuery(activityAction, 'sk-action-button:nth-of-type(1)');
+        const copyUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(1)');
         expect(copyUrlsButton.textContent.trim()).to.equal('Copy 3 URLs');
-        const openUrlsButton = recursiveQuery(activityAction, 'sk-action-button:nth-of-type(2)');
+        const openUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(2)');
         expect(openUrlsButton.textContent.trim()).to.equal('Open 3 URLs');
         copyUrlsButton.click();
         openUrlsButton.click();
@@ -382,7 +408,47 @@ describe('Test Bulk Store', () => {
         await waitUntil(() => openUrlsSpy.calledWithMatch(appStore.siteStore.innerHost));
       }).timeout(10000);
 
-      it('bulk activated config files', async () => {
+      it('bulk activates config file', async () => {
+        updateStub.resolves(true);
+        sidekickTest.mockFetchDirectoryStatusSuccess(HelixMockContentSources.SHAREPOINT, {
+          webPath: '/.helix',
+        });
+        await appStore.loadContext(sidekickTest.sidekick, sidekickTest.config);
+        sidekickTest.bulkRoot.querySelector('#appRoot .file')
+          .insertAdjacentHTML('beforebegin', mockSharePointFile({
+            path: 'config',
+            file: 'config.xslx',
+            type: 'xlsx',
+          }));
+        sidekickTest.toggleAdminItems([
+          'config',
+        ]);
+        await waitUntil(() => bulkStore.selection.length === 1);
+        await bulkStore.preview();
+
+        // confirm dialog says activate instead of preview
+        await waitUntil(() => recursiveQuery(sidekickTest.sidekick, 'sp-dialog-wrapper'));
+        const dialogWrapper = recursiveQuery(sidekickTest.sidekick, 'sp-dialog-wrapper');
+        expect(recursiveQuery(dialogWrapper, 'h2').textContent.trim()).to.equal('Activate');
+        expect(recursiveQuery(dialogWrapper, 'sp-button[variant="accent"]').textContent.trim()).to.equal('Activate');
+
+        dialogWrapper.dispatchEvent(new CustomEvent(MODAL_EVENTS.CONFIRM));
+        await waitUntil(() => updateStub.called);
+
+        expect(showToastSpy.calledWith({
+          message: 'Configuration successfully activated.',
+          variant: 'positive',
+        })).to.be.true;
+        expect(fireEventStub.calledWithMatch('previewed')).to.be.true;
+
+        // no toast actions
+        await waitUntil(() => recursiveQuery(sidekickTest.sidekick, 'activity-action'));
+        const toast = recursiveQuery(sidekickTest.sidekick, 'activity-action');
+        const buttons = [...recursiveQueryAll(toast, 'sp-action-button:not(.close)')];
+        expect(buttons.length).to.equal(0);
+      }).timeout(10000);
+
+      it('refuses to bulk activate multiple config files', async () => {
         sidekickTest.mockFetchDirectoryStatusSuccess(HelixMockContentSources.SHAREPOINT, {
           webPath: '/.helix',
         });
@@ -405,45 +471,13 @@ describe('Test Bulk Store', () => {
         ]);
         await waitUntil(() => bulkStore.selection.length === 2);
         await bulkStore.preview();
-        await confirmDialog(sidekickTest.sidekick);
-
-        await waitUntil(() => startJobStub.calledWithMatch('preview', [
-          '/.helix/headers.json',
-          '/.helix/config.json',
-        ]));
-        await waitUntil(() => getJobStub.calledWith('preview', '123'), null, { timeout: 2000 });
-        expect(bulkStore.progress.processed).to.equal(1);
-
-        // now getJob() returns stopped job and includes details if requested
-        getJobStub.callsFake(async (topic, name, details) => ({
-          topic,
-          name,
-          state: 'stopped',
-          progress: {
-            total: 3,
-            processed: 3,
-            failed: 0,
-          },
-          data: details ? {
-            resources: [
-              { path: '/.helix/headers.json', status: 304 },
-              { path: '/.helix/config.json', status: 200 },
-            ],
-          } : undefined,
-        }));
-        await waitUntil(() => getJobStub.calledWith('preview', '123'));
-        await waitUntil(() => getJobStub.calledWith('preview', '123', true), null, { timeout: 2000 });
 
         await waitUntil(() => showToastSpy.called);
         expect(showToastSpy.calledWith({
-          message: 'Configuration successfully activated.',
-          variant: 'positive',
+          message: 'Activation of multiple configurations not supported.',
+          variant: 'warning',
+          timeout: 0,
         })).to.be.true;
-        expect(fireEventStub.calledWithMatch('previewed')).to.be.true;
-
-        // no toast actions
-        const buttons = [...recursiveQueryAll(sidekickTest.sidekick, 'sp-action-button:not(.close)')];
-        expect(buttons.length).to.equal(0);
       }).timeout(10000);
 
       it('bulk previews selection and displays partial success toast', async () => {
@@ -523,7 +557,7 @@ describe('Test Bulk Store', () => {
 
         // test toast action
         const activityAction = recursiveQuery(sidekickTest.sidekick, 'activity-action');
-        const detailsButton = recursiveQuery(activityAction, 'sk-action-button');
+        const detailsButton = recursiveQuery(activityAction, 'sp-action-button');
         expect(detailsButton.textContent.trim()).to.equal('Details');
         detailsButton.click();
         await waitUntil(() => showModalSpy.calledWithMatch({
@@ -736,9 +770,9 @@ describe('Test Bulk Store', () => {
 
         // test toast actions
         const activityAction = recursiveQuery(sidekickTest.sidekick, 'activity-action');
-        const copyUrlsButton = recursiveQuery(activityAction, 'sk-action-button:nth-of-type(1)');
+        const copyUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(1)');
         expect(copyUrlsButton.textContent.trim()).to.equal('Copy 2 URLs');
-        const openUrlsButton = recursiveQuery(activityAction, 'sk-action-button:nth-of-type(2)');
+        const openUrlsButton = recursiveQuery(activityAction, 'sp-action-button:nth-of-type(2)');
         expect(openUrlsButton.textContent.trim()).to.equal('Open 2 URLs');
         copyUrlsButton.click();
         openUrlsButton.click();
@@ -1116,7 +1150,7 @@ describe('Test Bulk Store', () => {
 
       // delete file icon to simulate unknown file type
       sidekickTest.toggleAdminItems(['document']);
-      sidekickTest.bulkRoot.querySelector('div.file[aria-selected="true"] svg').remove();
+      sidekickTest.bulkRoot.querySelector('.file[aria-selected="true"] svg').remove();
       bulkStore.initStore(appStore.location);
       await waitUntil(() => bulkStore.selection.length === 1);
 
@@ -1135,7 +1169,7 @@ describe('Test Bulk Store', () => {
 
       // add .docx extension to file name
       sidekickTest.bulkRoot
-        .querySelector('div#file-gdoc div[data-tooltip]')
+        .querySelector('#file-gdoc strong')
         .textContent = 'document.docx';
       sidekickTest.toggleAdminItems(['document']);
 
@@ -1161,7 +1195,7 @@ describe('Test Bulk Store', () => {
 
       // add .xlsx extension to file name
       sidekickTest.bulkRoot
-        .querySelector('div#file-gsheet div[data-tooltip]')
+        .querySelector('#file-gsheet strong')
         .textContent = 'spreadsheet.xlsx';
       sidekickTest.toggleAdminItems(['spreadsheet']);
 
@@ -1173,6 +1207,25 @@ describe('Test Bulk Store', () => {
 
       await waitUntil(() => updateStub.called);
       expect(updateStub.calledWith('/spreadsheet.xlsx')).to.be.true;
+    });
+
+    it('missing file name in sharepoint', async () => {
+      // mock sharepoint
+      sidekickTest
+        .mockLocation(getAdminLocation(HelixMockContentSources.SHAREPOINT))
+        .mockAdminDOM(HelixMockContentSources.SHAREPOINT);
+      await appStore.loadContext(sidekickTest.createSidekick(), sidekickTest.config);
+      await aTimeout(500);
+
+      // remove file name from first file
+      sidekickTest.bulkRoot.querySelector('[data-id="heroField"]').remove();
+      // select first file
+      sidekickTest.bulkRoot.querySelector('.file').setAttribute('aria-selected', 'true');
+
+      bulkStore.initStore(appStore.location);
+      await aTimeout(500);
+
+      expect(bulkStore.selection.length).to.equal(0);
     });
 
     it('rejects illegal folder path', async () => {

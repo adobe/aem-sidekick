@@ -31,6 +31,7 @@ import {
  * @prop {string} [url] The tab URL
  * @prop {Object} [config] The project config
  * @prop {OptionsDerivedConfig[]} [matches] The config matches
+ * @prop {number} [numProjects] The total number of project configs
  * @description The context object
  */
 
@@ -95,7 +96,9 @@ async function guessAEMSite(id) {
       chrome.scripting.executeScript({
         target: { tabId: id },
         func: () => {
-          const isAEM = document.body.querySelector(':scope > main > div') !== null;
+          const isAEM = document.body.querySelector(':scope > main > div') !== null
+            && document.body.querySelector(':scope > header') != null
+            && document.body.querySelector(':scope > footer') != null;
           chrome.runtime.sendMessage({ isAEM });
         },
       });
@@ -117,7 +120,7 @@ async function guessAEMSite(id) {
  * @param {Context} context The context object
  */
 export async function updateContextMenu({
-  id, url, config,
+  id, url, config, numProjects = 0,
 }) {
   if (id === undefined || !url) {
     return;
@@ -153,6 +156,16 @@ export async function updateContextMenu({
           ],
         });
       }
+    }
+    // manage projects
+    if (numProjects > 0) {
+      await chrome.contextMenus.create({
+        id: 'manageProjects',
+        title: chrome.i18n.getMessage('config_project_manage'),
+        contexts: [
+          'action',
+        ],
+      });
     }
     // open view doc source
     if (await guessAEMSite(id)) {

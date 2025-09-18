@@ -13,6 +13,7 @@ import { html, LitElement } from 'lit';
 import {
   customElement, property, queryAsync,
 } from 'lit/decorators.js';
+import '@spectrum-web-components/theme/sp-theme.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-light-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-dark-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/scale-medium-core-tokens.js';
@@ -27,7 +28,8 @@ import '@spectrum-web-components/table/sp-table-row.js';
 import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-close.js';
-import '../../app/components/spectrum/theme/theme.js';
+import '@spectrum-web-components/switch/sp-switch.js';
+import '@spectrum-web-components/progress-circle/sp-progress-circle.js';
 import '../../app/components/theme/theme.js';
 import '../../app/components/search/search.js';
 import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';
@@ -43,6 +45,9 @@ import { getConfig } from '../../config.js';
 
 const nearFuture = new Date().setUTCFullYear(new Date().getUTCFullYear() + 20);
 const recentPast = new Date().setUTCFullYear(new Date().getUTCFullYear() - 20);
+const LOW_BATCH_SIZE = 5000;
+const HIGH_BATCH_SIZE = 10000;
+const DEFAULT_BATCH_SIZE = 1000;
 
 @customElement('json-view')
 export class JSONView extends LitElement {
@@ -72,6 +77,20 @@ export class JSONView extends LitElement {
   accessor filteredData;
 
   /**
+   * The original diff json data
+   * @type {Object}
+  */
+  @property({ type: Object })
+  accessor originalDiffData;
+
+  /**
+   * The diff json data
+   * @type {Object}
+   */
+  @property({ type: Object })
+  accessor diffData;
+
+  /**
    * The filtered json data
    * @type {string}
    */
@@ -86,6 +105,41 @@ export class JSONView extends LitElement {
   accessor url;
 
   /**
+   * The live version of the JSON data
+   * @type {Object}
+   */
+  @property({ type: Object, state: false })
+  accessor liveData;
+
+  /**
+   * The diff view mode
+   * @type {boolean}
+   */
+  @property({ type: Boolean })
+  accessor diffMode = false;
+
+  /**
+   * The flag for live data loaded
+   * @type {boolean}
+   */
+  @property({ type: Boolean })
+  accessor liveDataLoaded = false;
+
+  /**
+   * Show all rows in diff view
+   * @type {boolean}
+   */
+  @property({ type: Boolean })
+  accessor showAll = false;
+
+  /**
+   * The selected theme from sidekick
+   * @type {string}
+   */
+  @property({ type: String })
+  accessor theme;
+
+  /**
    * The selected tab index
    * @type {number}
    */
@@ -98,17 +152,26 @@ export class JSONView extends LitElement {
   @queryAsync('sp-table')
   accessor table;
 
+  @property({ type: Boolean })
+  accessor isLoading = false;
+
   async connectedCallback() {
     super.connectedCallback();
 
-    this.theme = await getConfig('local', 'theme') || 'light';
+    this.theme = await getConfig('local', 'theme') || 'dark';
     document.body.setAttribute('color', this.theme);
-
+    chrome.storage.onChanged.addListener(async (changes, area) => {
+      if (area === 'local' && changes.theme?.newValue) {
+        this.theme = await getConfig('local', 'theme');
+        document.body.setAttribute('color', this.theme);
+      }
+    });
     const lang = getLanguage();
     this.languageDict = await fetchLanguageDict(undefined, lang);
-
+    this.isLoading = true;
     try {
       const url = new URL(window.location.href).searchParams.get('url');
+      const isLive = url.includes('.live');
       if (url) {
         const res = await fetch(url, { cache: 'no-store' });
         if (res.ok) {
@@ -121,15 +184,22 @@ export class JSONView extends LitElement {
           this.url = url;
           this.originalData = json;
           this.filteredData = json;
+          const subUrl = new URL(url);
+          if (subUrl.searchParams.get('diff') === 'only' && !isLive) {
+            this.toggleDiffView();
+            this.showAll = false;
+          } else if (subUrl.searchParams.get('diff') === 'all' && !isLive) {
+            this.toggleDiffView();
+            this.showAll = true;
+          }
         } else {
           throw new Error(`failed to load ${url}: ${res.status}`);
         }
       }
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('error rendering view', e);
+      this.isLoading = false;
+      this.onCloseView(false);
     }
-
     // Wait for 3 seconds after last search input to track RUM
     this.debouncedFilterRUM = this.debounceFilterRUM(this.trackFilterRUM.bind(this), 3000);
   }
@@ -138,14 +208,17 @@ export class JSONView extends LitElement {
    * Render the json data
    */
   renderData() {
-    const { filteredData: json, url } = this;
+    const json = this.diffMode && this.diffData ? this.diffData : this.filteredData;
+    const { url } = this;
     if (!json || !url) {
+      this.isLoading = false;
       return '';
     }
 
     if (!json[':type']) {
       // Not a sheet backed json file, close view
       this.onCloseView(false);
+      this.isLoading = false;
       return [];
     }
 
@@ -155,14 +228,21 @@ export class JSONView extends LitElement {
       json[':names'].forEach((name) => {
         const { data } = json[name];
         if (data) {
-          sheets[name] = data;
+          sheets[name] = json[name];
         }
       });
     } else {
       const { data } = json;
       if (data) {
-        sheets['shared-default'] = data;
+        sheets['shared-default'] = json;
       }
+    }
+
+    if (Object.keys(sheets).length === 0) {
+      // No valid sheets found, close view
+      this.onCloseView(false);
+      this.isLoading = false;
+      return '';
     }
 
     const elements = [];
@@ -192,6 +272,10 @@ export class JSONView extends LitElement {
       ?? Object.values(this.filteredData || {})[this.selectedTabIndex]?.data.length
       ?? 0;
 
+    const diffFilteredCount = this.diffData?.data?.length
+      ?? Object.values(this.diffData || {})[this.selectedTabIndex]?.data.length
+      ?? 0;
+
     const total = this.originalData?.total
       ?? Object.values(this.originalData || {})[this.selectedTabIndex]?.total
       ?? 0;
@@ -203,9 +287,30 @@ export class JSONView extends LitElement {
             <sp-action-button value=${index.toString()} .selected=${index === this.selectedTabIndex}>${name}</sp-action-button>
           `)}
         </sp-action-group>
-        <div class="stats">
-          <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
+        ${total > 0 ? html`
+          <div class="stats">
+          ${this.diffMode ? html`
+            <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', diffFilteredCount).replace('$2', total)}</p>
+          ` : html`
+            <p>${i18n(this.languageDict, 'json_results_stat').replace('$1', filteredCount).replace('$2', total)}</p>
+          `}
         </div>
+        ` : ''}
+        <sp-action-group>
+          ${this.url.includes('.page') ? html`
+            ${this.diffMode ? html`
+              <label class="checkbox-label">
+                <input type="checkbox" 
+                  ?checked=${this.showAll} 
+                  @change=${this.toggleShowAll}>
+                ${i18n(this.languageDict, 'show_all')}
+              </label>
+            ` : ''}
+            <sp-switch @change=${this.toggleDiffView} ?checked=${this.diffMode}>
+                ${i18n(this.languageDict, 'show_diff')}
+            </sp-switch>
+          ` : ''}
+        </sp-action-group>
       </div>
     `;
     elements.push(actions);
@@ -213,81 +318,80 @@ export class JSONView extends LitElement {
     if (names.length > 0) {
       const name = names[this.selectedTabIndex];
       const sheet = sheets[name];
-
-      elements.push(this.renderTable(sheet, url));
+      const { data } = sheet;
+      elements.push(this.renderTable(data, url));
     }
-
     return elements;
   }
 
   /**
-   * Render the table
-   * @param {Object[]} rows The rows to render
-   * @param {string} url The url of the json file
-   * @returns {HTMLDivElement} The rendered table
+   * Handle the table sorted event
    */
-  renderTable(rows, url) {
-    const tableContainer = document.createElement('div');
-    tableContainer.classList.add('tableContainer');
-
-    const table = document.createElement('sp-table');
-    table.style.height = '100%';
-    table.setAttribute('scroller', 'true');
-
-    if (rows.length > 0) {
-      const headers = rows[0];
-      const headHTML = Object.keys(headers).reduce((acc, key) => `${acc}<sp-table-head-cell sortable sort-direction="desc" sort-key=${key}>${key.charAt(0).toUpperCase() + key.slice(1)}</sp-table-head-cell>`, '');
-      const head = document.createElement('sp-table-head');
-      head.insertAdjacentHTML('beforeend', headHTML);
-      table.appendChild(head);
-
-      table.items = rows;
-      // @ts-ignore
-      table.renderItem = (item) => html`${Object.values(item).map((value) => this.renderValue(value, url))}`;
-
-      table.addEventListener('sorted', (event) => {
-        // @ts-ignore
-        const { sortDirection, sortKey } = event.detail;
-        rows = rows.sort((a, b) => {
-          const first = String(a[sortKey]);
-          const second = String(b[sortKey]);
-          return sortDirection === 'asc'
-            ? first.localeCompare(second)
-            : second.localeCompare(first);
-        });
-        table.items = [...rows];
-      });
-
-      tableContainer.appendChild(table);
+  async onTableSorted(event) {
+    const { sortDirection, sortKey } = event.detail;
+    const data = this.diffMode
+      ? this.diffData?.data || []
+      : this.filteredData?.data || [];
+    const columns = this.diffMode
+      ? this.diffData?.columns || []
+      : this.filteredData?.columns || [];
+    const sortedData = [...data].sort((a, b) => {
+      const first = sortKey === 'line' ? a[sortKey] : String(a[sortKey]);
+      const second = sortKey === 'line' ? b[sortKey] : String(b[sortKey]);
+      if (sortKey === 'line') {
+        return sortDirection === 'asc'
+          ? first - second
+          : second - first;
+      }
+      return sortDirection === 'asc'
+        ? first.localeCompare(second)
+        : second.localeCompare(first);
+    });
+    if (this.diffMode) {
+      this.diffData = { ...this.diffData, data: sortedData, columns };
     } else {
-      const noResults = `
-        <sp-illustrated-message
-            heading="${i18n(this.languageDict, 'no_results')}"
-            description="${i18n(this.languageDict, 'no_results_subheading')}"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="99.039" height="94.342">
-            <g fill="none" strokeLinecap="round" strokeLinejoin="round" >
-              <path d="M93.113 88.415a5.38 5.38 0 0 1-7.61 0L58.862 61.773a1.018 1.018 0 0 1 0-1.44l6.17-6.169a1.018 1.018 0 0 1 1.439 0l26.643 26.643a5.38 5.38 0 0 1 0 7.608z" strokeWidth="2.99955"/>
-              <path strokeWidth="2" d="M59.969 59.838l-3.246-3.246M61.381 51.934l3.246 3.246M64.609 61.619l13.327 13.327" />
-              <path strokeWidth="3" d="M13.311 47.447A28.87 28.87 0 1 0 36.589 1.5c-10.318 0-20.141 5.083-24.7 13.46M2.121 38.734l15.536-15.536M17.657 38.734L2.121 23.198" />
-            </g>
-          </svg>
-        </sp-illustrated-message>
-      `;
-      tableContainer.innerHTML = noResults;
+      this.filteredData = { ...this.filteredData, data: sortedData, columns };
     }
+    const table = await this.table;
+    table.items = this.sortColumns(sortedData, columns);
 
-    return tableContainer;
+    // Update the sort direction on the header cell
+    const headerCell = table.querySelector(`sp-table-head-cell[sort-key="${sortKey}"]`);
+    if (headerCell) {
+      headerCell.setAttribute('sort-direction', sortDirection);
+    }
   }
 
   /**
-   * Render the value as a cell in the table
-   * @param {string} value The value to render
-   * @param {string} url The url of the json file
-   * @returns {TemplateResult} The rendered value
+   * Align the order of columns within rows to the headers
+   * @param {Object[]} rows The rows
+   * @param {string[]} headers The header names
+   * @returns {Object[]} The sorted rows
    */
-  renderValue(value, url) {
+  sortColumns(rows, headers) {
+    return rows.map((row) => {
+      const newRow = {};
+      // Preserve diff and line information
+      if (row.diff) newRow.diff = row.diff;
+      if (row.line) newRow.line = row.line;
+      // Sort other columns according to headers
+      headers.forEach((key) => {
+        newRow[key] = row[key] || '';
+      });
+      return newRow;
+    });
+  }
+
+  /**
+   * Format the value for the table
+   * @param {string} value The value to format
+   * @param {string} url The url of the json file
+   * @returns {TemplateResult} The formatted value
+  */
+  formatValue(value, url) {
     const valueContainer = document.createElement('div');
+    let dir = 'ltr';
+    // Handle regular values
     if (value && !Number.isNaN(+value)) {
       // check for date
       const date = +value > 99999
@@ -296,13 +400,13 @@ export class JSONView extends LitElement {
       if (date.toString() !== 'Invalid Date'
         && nearFuture > date.valueOf() && recentPast < date.valueOf()) {
         valueContainer.classList.add('date');
-        valueContainer.textContent = date.toLocaleString();
+        valueContainer.textContent = date.toUTCString();
       } else {
         // number
         valueContainer.classList.add('number');
         valueContainer.textContent = value;
       }
-    } else if (value.startsWith('/') || value.startsWith('http')) {
+    } else if (!Array.isArray(value) && (/^\/[a-z0-9]+/i.test(value) || value.startsWith('http'))) {
       // check if the value contains a glob pattern
       if (!value.includes('*')) {
         // assume link
@@ -331,19 +435,149 @@ export class JSONView extends LitElement {
         // Text
         valueContainer.textContent = value;
       }
-    } else if (value.startsWith('[') && value.endsWith(']')) {
-      // assume array
+    } else if (!Array.isArray(value) && value.startsWith('[') && value.endsWith(']')) {
       valueContainer.classList.add('list');
       const list = valueContainer.appendChild(document.createElement('ul'));
       JSON.parse(value).forEach((v) => {
         const item = list.appendChild(document.createElement('li'));
         item.textContent = v;
       });
+    } else if (Array.isArray(value)) {
+      // assume array
+      valueContainer.classList.add('list');
+      const list = valueContainer.appendChild(document.createElement('ul'));
+      value.forEach((v) => {
+        const values = v.split(',');
+        values.forEach((val) => {
+          const item = list.appendChild(document.createElement('li'));
+          const valueItem = item.appendChild(document.createElement('div'));
+          valueItem.textContent = val.trim();
+        });
+      });
     } else {
       // text
       valueContainer.textContent = value;
     }
-    return html`<sp-table-cell>${valueContainer}</sp-table-cell>`;
+
+    // check if the value contains any rtl characters
+    if (/[\u0590-\u06FF]/.test(valueContainer.textContent)) {
+      dir = 'rtl';
+    }
+    return html`<div dir=${dir}>${valueContainer}</div>`;
+  }
+
+  renderEmptyState(type) {
+    let heading = '';
+    let description = '';
+    let svg = html`<svg xmlns="http://www.w3.org/2000/svg" width="100.25" height="87.2">
+                <path d="M94.55,87.2H5.85c-3.1,0-5.7-2.5-5.7-5.7V5.7C.15,2.6,2.65,0,5.85,0h88.7c3.1,0,5.7,2.5,5.7,5.7v75.8c0,3.1-2.5,5.7-5.7,5.7ZM5.85.5C2.95.5.65,2.8.65,5.7v75.8c0,2.9,2.3,5.2,5.2,5.2h88.7c2.9,0,5.2-2.3,5.2-5.2V5.7c0-2.9-2.3-5.2-5.2-5.2H5.85Z"/>
+                <rect x=".45" y="15.5" width="99.5" height=".5"/>
+                <rect x=".45" y="33.1" width="99.5" height=".5"/>
+                <rect x=".45" y="51.2" width="99.5" height=".5"/>
+                <rect x=".45" y="69.4" width="99.5" height=".5"/>
+                <rect x="33.33" y="15.1" width=".5" height="71.8"/>
+                <rect x="66.67" y="15.1" width=".5" height="71.8"/>
+              </svg>`;
+
+    if (type === 'no_results') {
+      heading = i18n(this.languageDict, 'no_results');
+      description = i18n(this.languageDict, 'no_results_subheading');
+      svg = html`<svg xmlns="http://www.w3.org/2000/svg" width="99.039" height="94.342">
+                <g fill="none" strokeLinecap="round" strokeLinejoin="round" >
+                  <path d="M93.113 88.415a5.38 5.38 0 0 1-7.61 0L58.862 61.773a1.018 1.018 0 0 1 0-1.44l6.17-6.169a1.018 1.018 0 0 1 1.439 0l26.643 26.643a5.38 5.38 0 0 1 0 7.608z" strokeWidth="2.99955"/>
+                  <path strokeWidth="2" d="M59.969 59.838l-3.246-3.246M61.381 51.934l3.246 3.246M64.609 61.619l13.327 13.327" />
+                  <path strokeWidth="3" d="M13.311 47.447A28.87 28.87 0 1 0 36.589 1.5c-10.318 0-20.141 5.083-24.7 13.46M2.121 38.734l15.536-15.536M17.657 38.734L2.121 23.198" />
+                </g>
+              </svg>`;
+    } else if (type === 'no_diffs') {
+      heading = i18n(this.languageDict, 'no_diffs');
+      description = i18n(this.languageDict, 'no_diffs_subheading');
+    } else if (type === 'no_data') {
+      heading = i18n(this.languageDict, 'no_data');
+      description = i18n(this.languageDict, 'no_data_subheading');
+    }
+    return html`
+          <div class="tableContainer">
+            <sp-illustrated-message
+              heading="${heading}"
+              description="${description}"
+            >
+              ${svg}
+            </sp-illustrated-message>
+          </div>
+    `;
+  }
+
+  /**
+   * Render the table
+   * @param {Object[]} rows The rows to render
+   * @param {string} url The url of the json file
+   * @returns {TemplateResult} The rendered table
+   */
+  renderTable(rows, url) {
+    const headers = rows.length > 0 ? Object.keys(rows[0]) : [];
+    if (rows.length === 0) {
+      if (this.filterText) {
+        return this.renderEmptyState('no_results');
+      } else if (this.diffMode) {
+        return this.renderEmptyState('no_diffs');
+      } else {
+        return this.renderEmptyState('no_data');
+      }
+    }
+
+    const tableContainer = document.createElement('div');
+    tableContainer.classList.add('tableContainer');
+    tableContainer.classList.add(this.isLoading ? 'loading' : 'loaded');
+    const table = document.createElement('sp-table');
+    table.setAttribute('scroller', 'true');
+    table.style.height = '100%';
+    const headHTML = `
+    <sp-table-head>
+      ${rows.some((r) => r.line) ? '<sp-table-head-cell sortable sort-key="line" class="line">#</sp-table-head-cell>' : ''}
+      ${headers.map((header) => `<sp-table-head-cell sortable sort-key="${header}">${header.charAt(0).toUpperCase() + header.slice(1)}</sp-table-head-cell>`).join('')}
+    </sp-table-head>`;
+    table.insertAdjacentHTML('beforeend', headHTML);
+    table.items = this.sortColumns(rows, headers);
+    table.renderItem = (item) => html`
+          ${item.line ? html`<sp-table-cell class="line" data-diff=${item.diff || ''}>${item.line}</sp-table-cell>` : ''}
+          ${Object.entries(item)
+            .filter(([key]) => key !== 'diff' && key !== 'line')
+            // @ts-ignore
+            .map(([_, value]) => this.renderValue(value, url))}
+    `;
+    tableContainer.appendChild(table);
+    table.addEventListener('sorted', this.onTableSorted.bind(this));
+    return html`${tableContainer}`;
+  }
+
+  /**
+   * Render the value as a cell in the table
+   * @param {string} value The value to render
+   * @param {string} url The url of the json file
+   * @returns {TemplateResult} The rendered value
+   */
+  renderValue(value, url) {
+    if (!value) {
+      return html`<sp-table-cell></sp-table-cell>`;
+    }
+    const typedValue = /** @type {any} */ (value);
+    // Handle diff values
+    if (this.diffMode && typedValue !== null && typeof typedValue === 'object' && 'diff' in typedValue) {
+      return html`
+        <sp-table-cell>
+          <div class="diff-value ${typedValue.diff}">
+            ${typedValue.preview !== undefined && typedValue.live !== undefined ? html`
+              <div class="preview">${this.formatValue(typedValue.preview, url)}</div>
+              <div class="live">${this.formatValue(typedValue.live, url)}</div>
+            ` : JSON.stringify(typedValue)}
+          </div>
+        </sp-table-cell>
+      `;
+    }
+
+    // Handle regular values
+    return html`<sp-table-cell>${this.formatValue(value, url)}</sp-table-cell>`;
   }
 
   /**
@@ -358,7 +592,6 @@ export class JSONView extends LitElement {
       tableHead.addEventListener('scroll', () => {
         tableBody.scrollLeft = tableHead.scrollLeft;
       });
-
       tableBody.addEventListener('scroll', () => {
         tableHead.scrollLeft = tableBody.scrollLeft;
       });
@@ -399,33 +632,37 @@ export class JSONView extends LitElement {
   onSearch(event) {
     this.filterText = event.target.value;
     if (!this.filterText) {
-      this.filteredData = this.originalData;
+      this.diffData = this.originalDiffData;
+      this.filteredData = this.diffMode ? { ...this.diffData } : { ...this.originalData };
     } else {
-      const filteredData = { ...this.originalData };
+      const filteredData = this.diffMode ? { ...this.diffData } : { ...this.originalData };
       const lowerCaseSearchString = this.filterText.toLowerCase();
 
-      if (this.originalData[':type'] === 'multi-sheet') {
-        Object.keys(this.originalData).forEach((sheetName) => {
+      if (filteredData[':type'] === 'multi-sheet') {
+        Object.keys(filteredData).forEach((sheetName) => {
           // Filter the data array in the current sheet
-          if (this.originalData[sheetName] && this.originalData[sheetName].data) {
-            const filteredSheetData = this.originalData[sheetName].data.filter((item) => Object
+          if (filteredData[sheetName] && filteredData[sheetName].data) {
+            const filteredSheetData = filteredData[sheetName].data.filter((item) => Object
               .values(item).some((value) => value.toString().toLowerCase()
                 .includes(lowerCaseSearchString),
               ));
-
-            filteredData[sheetName] = { data: filteredSheetData ?? [] };
+            const { columns } = filteredData[sheetName];
+            filteredData[sheetName] = { data: filteredSheetData ?? [], columns };
           }
         });
       } else {
-        const filteredSheetData = this.originalData.data.filter((item) => Object
+        const filteredSheetData = filteredData.data.filter((item) => Object
           .values(item).some((value) => value.toString().toLowerCase()
             .includes(lowerCaseSearchString),
           ));
 
         filteredData.data = filteredSheetData;
       }
-
-      this.filteredData = filteredData;
+      if (this.diffMode) {
+        this.diffData = filteredData;
+      } else {
+        this.filteredData = filteredData;
+      }
     }
     this.debouncedFilterRUM();
   }
@@ -456,10 +693,284 @@ export class JSONView extends LitElement {
     }
   }
 
+  /**
+   * Fetch all items from the JSON endpoint
+   * @param {string} url The base URL
+   * @param {number} total Total number of items
+   * @returns {Promise<Object>} The complete JSON data
+   */
+  async fetchAllItems(url, total, isLive = false) {
+    try {
+      if (total <= DEFAULT_BATCH_SIZE) {
+        return isLive ? this.liveData : this.originalData;
+      }
+      const batchSize = total > HIGH_BATCH_SIZE ? HIGH_BATCH_SIZE : LOW_BATCH_SIZE;
+      const allData = isLive ? { ...this.liveData } : { ...this.originalData };
+      const batches = Math.ceil((total - DEFAULT_BATCH_SIZE) / batchSize);
+
+      const batchRequests = Array.from({ length: batches }, (_, i) => {
+        const offset = DEFAULT_BATCH_SIZE + (i * batchSize);
+        const limit = Math.min(batchSize, total - offset);
+        const batchUrl = new URL(url);
+        batchUrl.searchParams.set('offset', offset.toString());
+        batchUrl.searchParams.set('limit', limit.toString());
+        return fetch(batchUrl.toString());
+      });
+
+      const responses = await Promise.all(batchRequests);
+      const batchDataPromises = responses.map(async (res, i) => {
+        if (!res.ok) {
+          const offset = DEFAULT_BATCH_SIZE + (i * batchSize);
+          throw new Error(`Failed to fetch batch at offset ${offset}: ${res.status}`);
+        }
+        return res.json();
+      });
+
+      const batchDataResults = await Promise.all(batchDataPromises);
+      batchDataResults.forEach((batchData) => {
+        if (batchData.data) {
+          allData.data = [...allData.data, ...batchData.data];
+        }
+      });
+
+      return allData;
+    } finally {
+      if (this.isLoading) this.isLoading = false;
+    }
+  }
+
+  /**
+   * Toggle diff view mode
+   */
+  async toggleDiffView() {
+    this.isLoading = true;
+    this.diffMode = !this.diffMode;
+    if (this.diffMode && !this.liveDataLoaded && !this.liveData && !this.originalDiffData) {
+      try {
+        // Fetch live version
+        const liveUrl = this.url.replace('.page', '.live');
+        const liveRes = await fetch(liveUrl, { cache: 'no-store' });
+        const previewTotal = this.originalData.total || 0;
+        if (liveRes.ok) {
+          this.liveData = await liveRes.json();
+          // Fetch all items if needed
+          const liveTotal = this.liveData.total || 0;
+          if (previewTotal > DEFAULT_BATCH_SIZE || liveTotal > DEFAULT_BATCH_SIZE) {
+            this.originalData = await this.fetchAllItems(this.url, previewTotal);
+            this.liveData = await this.fetchAllItems(liveUrl, liveTotal, true);
+          }
+          this.diffData = this.computeDiff(this.originalData, this.liveData);
+          this.originalDiffData = this.diffData;
+        } else if (liveRes.status === 404) {
+          // If live version doesn't exist yet, treat it as empty
+          // Create a proper fallback structure that matches the original data
+          if (this.originalData[':type'] === 'multi-sheet' && this.originalData[':names']) {
+            // Handle multi-sheet case
+            this.liveData = { ...this.originalData };
+            this.liveData[':names'].forEach((name) => {
+              if (this.liveData[name]) {
+                this.liveData[name] = { ...this.liveData[name] };
+                this.liveData[name].data = [];
+              }
+            });
+          } else {
+            // Handle single sheet case
+            this.liveData = {
+              data: [],
+              columns: this.originalData.columns || [],
+              total: 0,
+            };
+          }
+          if (previewTotal > DEFAULT_BATCH_SIZE) {
+            this.originalData = await this.fetchAllItems(this.url, previewTotal);
+          }
+          this.diffData = this.computeDiff(this.originalData, this.liveData);
+          this.originalDiffData = this.diffData;
+        }
+        this.liveDataLoaded = true;
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn(`Could not load live version: ${e}`);
+      }
+    } else if (this.diffMode && this.liveData && !this.originalDiffData) {
+      this.diffData = this.computeDiff(this.originalData, this.liveData);
+      this.originalDiffData = this.diffData;
+    } else {
+      this.filteredData = this.originalData;
+    }
+    this.isLoading = false;
+  }
+
+  /**
+   * Toggle show all rows
+   * @param {Event} event The change event
+   */
+  toggleShowAll(event) {
+    this.isLoading = true;
+    const checkbox = /** @type {HTMLInputElement} */ (event.target);
+    this.showAll = checkbox.checked;
+    if (this.diffMode && this.liveData) {
+      this.diffData = this.computeDiff(this.originalData, this.liveData);
+      this.originalDiffData = this.diffData;
+      if (this.filterText) {
+        this.onSearch({ target: { value: this.filterText } });
+      }
+    }
+    this.isLoading = false;
+  }
+
+  /**
+   * Helper to create a unique key for a row
+   * @param {Object} row The row
+   * @returns {string} The unique key
+   */
+  getRowKey(row) {
+    const rowKey = Object.entries(row)
+      .filter(([key]) => !key.startsWith(':') && key !== 'diff' && key !== 'line') // Exclude metadata fields
+      .map(([key, value]) => `${key}:${value}`)
+      .join('|');
+    return rowKey;
+  }
+
+  /**
+   * Compare rows between preview and live versions
+   * @param {Object} preview The preview version
+   * @param {Object} live The live version
+   * @param {Object} diff The diff object
+   */
+  compareRows(preview, live, diff) {
+    if (preview && live) {
+      const { data: previewData, columns } = preview;
+      const { data: liveData } = live;
+
+      if (previewData && liveData) {
+        const previewMap = new Map();
+        const liveMap = new Map();
+        previewData.forEach((row, index) => {
+          const key = this.getRowKey(row);
+          if (!previewMap.has(key)) {
+            previewMap.set(key, []);
+          }
+          previewMap.get(key).push({ row, index });
+        });
+        liveData.forEach((row, index) => {
+          const key = this.getRowKey(row);
+          if (!liveMap.has(key)) {
+            liveMap.set(key, []);
+          }
+          liveMap.get(key).push({ row, index });
+        });
+
+        const allKeys = new Set([...previewMap.keys(), ...liveMap.keys()]);
+        // build diff data
+        const diffData = [];
+        [...allKeys].sort().forEach((key) => {
+          const previewItems = previewMap.get(key);
+          const liveItems = liveMap.get(key);
+
+          if (!previewItems) {
+            // Only in live
+            liveItems.forEach((item) => {
+              diffData.push({ ...item.row, diff: 'removed', line: item.index + 1 });
+            });
+          } else if (!liveItems) {
+            // Only in preview
+            previewItems.forEach((item) => {
+              diffData.push({ ...item.row, diff: 'added', line: item.index + 1 });
+            });
+          } else if (previewItems.length === liveItems.length) {
+            // Same number of entries with same content (since keys match)
+            previewItems.forEach((item) => {
+              diffData.push({ ...item.row, line: item.index + 1 });
+            });
+          } else {
+            // Different number of entries - mark all as added/removed
+            // not worth the complexity to tell which one was added/removed
+            previewItems.forEach((item) => {
+              diffData.push({ ...item.row, diff: 'added', line: item.index + 1 });
+            });
+            liveItems.forEach((item) => {
+              diffData.push({ ...item.row, diff: 'removed', line: item.index + 1 });
+            });
+          }
+        });
+        diffData.sort((a, b) => {
+          if (a.line - b.line === 0) {
+            if (a.diff && b.diff) {
+              return a.diff.localeCompare(b.diff);
+            } else if (a.diff) {
+              return 1;
+            } else if (b.diff) {
+              return -1;
+            }
+            return 0;
+          }
+          return a.line - b.line;
+        });
+        diff = { data: diffData, columns };
+      }
+    }
+    return diff;
+  }
+
+  /**
+   * Compute diff between preview and live versions
+   * @param {Object} preview The preview version
+   * @param {Object} live The live version
+   * @returns {Object} The diff result
+   */
+  computeDiff(preview, live) {
+    if (!preview || !live) {
+      // eslint-disable-next-line no-console
+      console.warn('Missing preview or live data:', { preview: !!preview, live: !!live });
+      return preview;
+    }
+
+    const diff = { ...preview };
+    if (preview[':type'] === 'multi-sheet' && preview[':names']) {
+      preview[':names'].forEach((name) => {
+        const differences = this.compareRows(
+          preview[name],
+          live[name],
+          diff,
+        );
+        diff[name] = differences;
+      });
+    } else {
+      const differences = this.compareRows(
+        preview,
+        live,
+        diff,
+      );
+      diff.data = differences.data;
+      diff.columns = differences.columns;
+    }
+
+    // Filter to show only changed rows if showAll is false
+    if (!this.showAll) {
+      if (diff[':type'] === 'multi-sheet' && diff[':names']) {
+        diff[':names'].forEach((name) => {
+          if (diff[name] && diff[name].data) {
+            diff[name].data = diff[name].data.filter((row) => row.diff);
+          }
+        });
+      } else if (diff.data) {
+        diff.data = diff.data.filter((row) => row.diff);
+      }
+    }
+    return diff;
+  }
+
   render() {
     return html`
       <theme-wrapper theme=${this.theme}>
         <div class="container">
+          ${this.isLoading ? html`
+            <div class="loading-overlay">
+              <sp-progress-circle indeterminate></sp-progress-circle>
+              <p>${i18n(this.languageDict, 'loading_diff')}</p>
+            </div>
+          ` : ''}
           ${this.renderData()}
         </div>
       </theme-wrapper>

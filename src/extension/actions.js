@@ -23,10 +23,13 @@ import {
   getProjectMatches,
   importLegacyProjects,
   detectLegacySidekick,
+  updateProject as updateProjectConfig,
 } from './project.js';
-import { ADMIN_ORIGIN } from './utils/admin.js';
+import { ADMIN_ORIGIN, createAdminUrl } from './utils/admin.js';
 import { getConfig } from './config.js';
 import { getDisplay, setDisplay } from './display.js';
+import { urlCache } from './url-cache.js';
+import { saveDocument } from './sharepoint.js';
 
 /**
  * Updates the auth token via external messaging API (admin only).
@@ -49,11 +52,10 @@ async function updateAuthToken({
   siteToken,
   siteTokenExpiry,
   picture,
-}, sender) {
-  const { url } = sender;
+}, { tab }) {
   if (owner) {
     try {
-      if (new URL(url).origin === ADMIN_ORIGIN
+      if (new URL(tab.url).origin === ADMIN_ORIGIN
         && authToken !== undefined) {
         await setAuthToken(
           owner,
@@ -110,7 +112,7 @@ export async function showSidekickNotification(tabId, data, callback) {
  * @param {string} origin
  * @returns {boolean} true - trusted / false - untrusted
  */
-function isGetAuthInfoTrustedOrigin(origin) {
+function isTrustedOrigin(origin) {
   const TRUSTED_ORIGINS = [
     ADMIN_ORIGIN,
     'https://labs.aem.live',
@@ -138,17 +140,196 @@ function isGetAuthInfoTrustedOrigin(origin) {
  * Returns the organizations the user is currently authenticated for.
  * @returns {Promise<string[]>} The organizations
  */
-async function getAuthInfo(message, sender) {
-  const { origin } = new URL(sender.url);
-
-  if (!isGetAuthInfoTrustedOrigin(origin)) {
+async function getAuthInfo(_, { tab }) {
+  const { origin } = new URL(tab.url);
+  if (!isTrustedOrigin(origin)) {
     return []; // don't give out any information
   }
 
   const projects = await getConfig('session', 'projects') || [];
   return projects
-    .filter(({ authToken, authTokenExpiry }) => !!authToken && authTokenExpiry > Date.now() / 1000)
+    .filter(({ authToken, authTokenExpiry }) => !!authToken && authTokenExpiry > Date.now())
     .map(({ owner }) => owner);
+}
+
+/**
+ * Returns the configured sites.
+ * @returns {Promise<Object[]>} The sites
+ */
+async function getSites(_, { tab }) {
+  const { origin } = new URL(tab.url);
+
+  if (!isTrustedOrigin(origin)) {
+    return []; // don't give out any information
+  }
+  const projects = await Promise.all((await getConfig('sync', 'projects') || [])
+    .map(async (handle) => {
+      const project = (await getConfig('sync', handle));
+      return {
+        ...project,
+        org: project.org || project.owner,
+        site: project.site || project.repo,
+      };
+    }));
+  return projects;
+}
+
+/**
+ * Adds a configured site.
+ * @returns {Promise<boolean>} True if the site was added, else false
+ */
+async function addSite({ config, idp, tenant }, { tab }) {
+  const { origin } = new URL(tab.url);
+
+  if (!isTrustedOrigin(origin)) {
+    return false; // don't add anything
+  }
+
+  const owner = config.owner || config.org;
+  const repo = config.repo || config.site;
+  if (owner && repo) {
+    // pass through login hint
+    const loginHint = {
+      idp,
+      tenant,
+    };
+
+    return addProject({
+      owner,
+      repo,
+    }, false, loginHint);
+  } else {
+    log.warn('addSite: missing required parameters org (or owner) and site (or repo)');
+    return false;
+  }
+}
+
+/**
+ * Updates a configured site.
+ * @returns {Promise<boolean>} True if the site was updated, else false
+ */
+async function updateSite({ config }, { tab }) {
+  const { origin } = new URL(tab.url);
+
+  if (!isTrustedOrigin(origin)) {
+    return false; // don't update anything
+  }
+
+  const owner = config.owner || config.org;
+  const repo = config.repo || config.site;
+  if (owner && repo) {
+    const project = await getConfig('sync', `${owner}/${repo}`);
+    if (!project) {
+      log.warn(`updateSite: project ${owner}/${repo} not found`);
+      return false;
+    }
+    return !!(await updateProjectConfig({
+      ...project,
+      ...config,
+    }));
+  } else {
+    log.warn('updateSite: missing required parameters org (or owner) and site (or repo)');
+    return false;
+  }
+}
+
+/**
+ * Removes a configured site.
+ * @returns {Promise<boolean>} True if the site was removed, else false
+ */
+async function removeSite({ config }, { tab }) {
+  const { origin } = new URL(tab.url);
+
+  if (!isTrustedOrigin(origin)) {
+    return false; // don't update anything
+  }
+  const owner = config.owner || config.org;
+  const repo = config.repo || config.site;
+  if (owner && repo) {
+    return deleteProject({
+      owner,
+      repo,
+    });
+  } else {
+    log.warn('removeSite: missing required parameters org (or owner) and site (or repo)');
+    return false;
+  }
+}
+
+/**
+ * Launches the sidekick in the sender's tab.
+ * @returns {Promise<boolean>} True if sidekick launched, else false
+ */
+async function launch({
+  owner, repo, org, site,
+}, { tab }) {
+  owner = org || owner;
+  repo = site || repo;
+  if (owner && repo) {
+    // launch sidekick with owner and repo on this url
+    await urlCache.set(tab, { owner, repo });
+    await setDisplay(true);
+    return true;
+  } else {
+    log.warn('launch: missing required parameters org and site or owner and repo');
+    return false;
+  }
+}
+
+/**
+ * Starts the login flow for a given org.
+ * @returns {Promise<boolean>} True if login flow started, else false
+ */
+async function login({
+  owner, repo, org, site, idp, selectAccount = false, tenant,
+}, { tab }) {
+  owner = org || owner;
+  repo = site || repo;
+  const { origin } = new URL(tab.url);
+  if (!isTrustedOrigin(origin)) {
+    log.warn(`login: untrusted origin '${origin}'`);
+    return false;
+  }
+  if (idp && !['google', 'microsoft', 'adobe'].includes(idp)) {
+    log.warn(`login: unsupported idp '${idp}'`);
+    return false;
+  }
+  if (owner && repo) {
+    // start login flow for this org
+    const params = new URLSearchParams();
+    params.set('extensionId', chrome.runtime.id);
+    if (idp) {
+      params.set('idp', idp);
+    }
+    if (tenant) {
+      params.set('tenantId', tenant);
+    }
+    if (selectAccount) {
+      params.set('selectAccount', 'true');
+    }
+    const loginUrl = createAdminUrl({ owner, repo }, 'login', '', params);
+    const loginTab = await chrome.tabs.create({
+      url: loginUrl.toString(),
+      openerTabId: tab.id,
+      windowId: tab.windowId,
+    });
+    return new Promise((resolve) => {
+      // close login tab on admin response
+      const adminResponseListener = async (message, sender) => {
+        if (sender.tab.id === loginTab.id && message.action === 'updateAuthToken') {
+          await chrome.tabs.remove(loginTab.id);
+          chrome.runtime.onMessageExternal.removeListener(adminResponseListener);
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      };
+      chrome.runtime.onMessageExternal.addListener(adminResponseListener);
+    });
+  } else {
+    log.warn('launch: missing required parameters org (or owner) and site (or repo)');
+    return false;
+  }
 }
 
 /**
@@ -157,8 +338,7 @@ async function getAuthInfo(message, sender) {
  */
 async function addRemoveProject(tab) {
   const matches = await getProjectMatches(await getProjects(), tab);
-  const config = matches.length === 1 && !matches[0].transient
-    ? matches[0] : await getProjectFromUrl(tab);
+  const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(tab);
 
   await showSidekickIfHidden();
   if (isValidProject(config)) {
@@ -240,6 +420,18 @@ async function importProjects(tab) {
 }
 
 /**
+ * Opens the project admin tab.
+ * @param {chrome.tabs.Tab} tab The tab
+ */
+async function manageProjects(tab) {
+  await chrome.tabs.create({
+    url: 'https://labs.aem.live/tools/project-admin/index.html',
+    openerTabId: tab.id,
+    windowId: tab.windowId,
+  });
+}
+
+/**
  * Opens the view document source popup.
  * @param {chrome.tabs.Tab} tab The tab
  */
@@ -288,15 +480,104 @@ export async function getProfilePicture(_, { owner }) {
 }
 
 /**
+ * Tries to guess if a URL is an AEM site.
+ * @param {chrome.tabs.Tab} _ The tab
+ * @param {Object} message The message object
+ * @param {string} message.url The URL to check
+ * @returns {Promise<boolean>} True if the provided URL is an AEM site
+ */
+export async function guessAEMSite(_, { url }) {
+  try {
+    const resp = await fetch(url, { redirect: 'manual' }); // don't allow redirects
+    if (resp.ok) {
+      const mimeType = resp.headers.get('content-type');
+      if (mimeType.startsWith('text/html')) {
+        // payload must match pipeline output
+        const payload = await resp.text();
+        const [type, html, head, titl, link, meta] = payload.substring(0, 400).split('\n');
+        return type === '<!DOCTYPE html>'
+          && html.startsWith('<html')
+          && head === '  <head>'
+          && titl.startsWith('    <title>')
+          && link.startsWith('    <link rel="canonical"')
+          && meta.startsWith('    <meta');
+      } else if (mimeType.startsWith('application/json')) {
+        // payload must match pipeline output
+        try {
+          const payload = await resp.json();
+          return !!payload[':type'];
+        } catch (e) {
+          // invalid json
+          return false;
+        }
+      } else {
+        // unable to guess. assume AEM
+        return true;
+      }
+    } else {
+      if (resp.status === 0 || resp.status === 404 || resp.status >= 500) {
+        // unexpected redirect, not found or server error, assume incorrect prod setup
+        return false;
+      }
+      // otherwise assume AEM (e.g. protected)
+      return true;
+    }
+  } catch (e) {
+    // unable to connect, assume AEM (e.g. firewalled)
+    return true;
+  }
+}
+
+/**
+ * Updates a project based on the given message and sender.
+ * @param {chrome.tabs.Tab} _ The tab
+ * @param {Object} message The message object
+ */
+async function updateProject(_, { config }) {
+  if (!config?.owner || !config?.repo) {
+    return;
+  }
+
+  // only update if project exists and has different properties
+  const existingProject = await getProject(config);
+  if (existingProject) {
+    const hasChanges = Object.keys(config)
+      .filter((key) => key !== 'owner' && key !== 'repo')
+      .filter((key) => config[key])
+      .some((key) => {
+        if (key === 'mountpoints') {
+          return config[key][0] !== existingProject[key][0];
+        } else if (key === 'project') {
+          // don't override existing project name
+          return !existingProject.project;
+        } else {
+          return config[key] !== existingProject[key];
+        }
+      });
+
+    if (hasChanges) {
+      await updateProjectConfig({
+        ...existingProject,
+        ...config,
+      });
+    }
+  }
+}
+
+/**
  * Actions which can be executed via internal messaging API.
  * @type {Object} The internal actions
  */
 export const internalActions = {
   addRemoveProject,
   enableDisableProject,
+  manageProjects,
   openViewDocSource,
   importProjects,
   getProfilePicture,
+  guessAEMSite,
+  updateProject,
+  saveDocument,
 };
 
 /**
@@ -304,6 +585,12 @@ export const internalActions = {
  * @type {Object} The external actions
  */
 export const externalActions = {
-  updateAuthToken,
   getAuthInfo,
+  getSites,
+  launch,
+  login,
+  addSite,
+  updateSite,
+  removeSite,
+  updateAuthToken,
 };

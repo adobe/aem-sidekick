@@ -17,6 +17,7 @@ export const style = css`
     color: var(--spectrum-gray-800);
     --mod-modal-background-color: transparent;
     --mod-tabs-start-to-edge: 20px;
+    white-space:initial;
   }
 
   sp-dialog-base {

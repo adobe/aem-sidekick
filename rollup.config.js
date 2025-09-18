@@ -63,6 +63,7 @@ function extensionPlugins(browser) {
       targets: [
         { src: 'src/extension/*', ignore: ['src/extension/app', 'src/extension/views', 'src/extension/types'], dest: `./dist/${browser}` },
         { src: 'src/extension/views/json/json.html', dest: `./dist/${browser}/views/json` },
+        { src: 'src/extension/views/login/login.html', dest: `./dist/${browser}/views/login` },
         { src: 'src/extension/views/doc-source', dest: `./dist/${browser}/views/` },
       ],
     }),
@@ -70,17 +71,42 @@ function extensionPlugins(browser) {
   ];
 }
 
+function rewriteSPTagNames() {
+  return {
+    name: 'rename-sp-custom-elements',
+    generateBundle(_, bundle) {
+      for (const [_, file] of Object.entries(bundle)) {
+        if (file.type === 'chunk') {
+          file.code = file.code.replaceAll('sp-theme', 'sk-theme');
+          file.code = file.code.replaceAll('sp-overlay', 'sk-overlay');
+          file.code = file.code.replaceAll('sp-button', 'sk-button');
+          file.code = file.code.replaceAll('sp-action-menu', 'sk-action-menu');
+          file.code = file.code.replaceAll('sp-action-button', 'sk-action-button');
+          file.code = file.code.replaceAll('sp-progress-circle', 'sk-progress-circle');
+        }
+      }
+    },
+  };
+}
+
 function extensionBuild(browser) {
   return {
     ...shared(browser),
-    plugins: [...commonPlugins(), ...extensionPlugins(browser)],
+    plugins: [
+      ...commonPlugins(),
+      ...extensionPlugins(browser),
+      rewriteSPTagNames(),
+    ],
   };
 }
 
 export function viewBuild(browser, path) {
   return {
     ...shared(browser, path),
-    plugins: [...commonPlugins()],
+    plugins: [
+      ...commonPlugins(),
+      rewriteSPTagNames(),
+    ],
   };
 }
 
@@ -97,6 +123,10 @@ export default [
   {
     input: 'src/extension/views/json/json.js',
     ...viewBuild('chrome', '/views/json'),
+  },
+  {
+    input: 'src/extension/views/login/login.js',
+    ...viewBuild('chrome', '/views/login'),
   },
   ...createExtension('chrome'),
 ];

@@ -1,7 +1,78 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : image contenue de plus de 20 Mo"
+  },
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "Impossible de récupérer $1 depuis $2."
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "Impossible de prévisualiser $1 : fichier vide"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : fichier de plus de 100 Mo"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : l’ICO est supérieure à 16 Ko."
+  },
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : la taille de l'image est supérieure à 20 Mo"
+  },
+  "AEM_BACKEND_JSON_INVALID": {
+    "message": "Impossible de prévisualiser $2 : JSON non valide"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "Impossible de prévisualiser $1 : le débit MP4 est supérieur à 300 Ko/s."
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "Impossible de prévisualiser $1 : fichier MP4 non valide."
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "Impossible de prévisualiser $1 : le fichier MP4 dépasse 2 minutes."
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "Impossible de prévisualiser $1 : $2 attendu, mais $3 trouvé"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "Fichier introuvable. Document source manquant ou non partagé avec AEM."
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "Impossible de prévisualiser $1 : l’en-tête de type de contenu est manquant."
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "Impossible de prévisualiser $1 : aucun gestionnaire trouvé"
+  },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : le fichier PDF dépasse 10 Mo."
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "Impossible de prévisualiser $1 : le SVG contient un XML non valide"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "Impossible de prévisualiser $1 : élément racine du SVG manquant"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "Impossible de prévisualiser $1 : un script illégal a été détecté dans le SVG."
+  },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : le fichier SVG dépasse 20 Ko."
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "Impossible de prévisualiser $1 : type de fichier non pris en charge"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "Impossible de prévisualiser $1 : type de fichier non pris en charge"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "Impossible de prévisualiser $1 : $2"
+  },
   "activate": {
-    "description": "Activer la configuration",
     "message": "Activer"
+  },
+  "activate_bulk_not_supported": {
+    "message": "Activation de plusieurs configurations non prise en charge."
+  },
+  "activate_success": {
+    "message": "La configuration a été activée."
   },
   "add": {
     "message": "Ajouter"
@@ -13,11 +84,13 @@
     "message": "Version d'Admin : xyz"
   },
   "advanced": {
-    "description": "Mode de configuration avancé",
     "message": "Avancé"
   },
   "anonymous": {
     "message": "Anonyme"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "Voulez-vous vraiment activer cette configuration ?"
   },
   "bulk_confirm_empty": {
     "message": "Aucun fichier sélectionné"
@@ -122,7 +195,7 @@
     "message": "Fermer"
   },
   "close_sidekick": {
-    "message": "Fermer le Sidekick"
+    "message": "Fermer Sidekick"
   },
   "code_state": {
     "message": "Aucune action disponible pour les fichiers de code"
@@ -137,14 +210,12 @@
     "message": "Ajouter ce projet"
   },
   "config_project_added": {
-    "description": "Projet ajouté",
     "message": "$1 ajouté(s)"
   },
   "config_project_disable": {
     "message": "Désactiver ce projet"
   },
   "config_project_disabled": {
-    "description": "Projet désactivé",
     "message": "$1 désactivé"
   },
   "config_project_disabled_headline": {
@@ -154,7 +225,6 @@
     "message": "Activer ce projet"
   },
   "config_project_enabled": {
-    "description": "Projet activé",
     "message": "$1 activé"
   },
   "config_project_enabled_headline": {
@@ -181,6 +251,9 @@
   "config_project_imported_single": {
     "message": "Un projet importé depuis AEM Sidekick v6."
   },
+  "config_project_manage": {
+    "message": "Gérer les projets"
+  },
   "config_project_pick": {
     "message": "Choisissez un projet"
   },
@@ -188,17 +261,15 @@
     "message": "Supprimer ce projet"
   },
   "config_project_removed": {
-    "description": "Projet supprimé",
     "message": "$1 supprimé(s)"
   },
   "config_remove_project_headline": {
     "message": "Projet supprimé"
   },
-  "config_success": {
-    "message": "La configuration a été activée."
+  "config_state": {
+    "message": "Activation de la configuration..."
   },
   "confirm": {
-    "description": "Titre modal de confirmation",
     "message": "Veuillez confirmer."
   },
   "copied": {
@@ -244,7 +315,7 @@
     "message": "La copie dans le presse-papiers a échoué. Veuillez vous assurer que la fenêtre reste au premier plan."
   },
   "dark_mode": {
-    "message": "Mode Sombre"
+    "message": "Thème sombre"
   },
   "delete": {
     "message": "Supprimer"
@@ -291,11 +362,14 @@
   "destructive_confirmation_prompt": {
     "message": "Tapez $1 pour confirmer."
   },
+  "details": {
+    "message": "Détails"
+  },
   "development": {
     "message": "Développement"
   },
   "docs": {
-    "message": "https://www.hlx.live/docs/sidekick"
+    "message": "https://www.aem.live/docs/sidekick"
   },
   "edit": {
     "message": "Modifier"
@@ -319,10 +393,13 @@
     "message": "Erreur"
   },
   "error_429": {
-    "message": "429 : trop de requêtes. Votre projet est bloqué par $1. Patientez et réessayez plus tard."
+    "message": "Trop de requêtes. Votre projet est bloqué par $1. Patientez et réessayez plus tard."
   },
   "error_delete": {
     "message": "Échec de la suppression. Réessayez plus tard."
+  },
+  "error_details": {
+    "message": "Détails sur l’erreur"
   },
   "error_fatal": {
     "message": "Nous vous prions de nous excuser pour les problèmes rencontrés actuellement. Veuillez réessayer ultérieurement."
@@ -331,7 +408,7 @@
     "message": "Une erreur s’est produite : $1"
   },
   "error_job_404": {
-    "message": "404 : introuvable. Aucun traitement de ce type."
+    "message": "Fonction introuvable."
   },
   "error_login_aborted": {
     "message": "Connexion abandonnée."
@@ -345,15 +422,6 @@
   "error_preview": {
     "message": "La génération de la prévisualisation a échoué. Veuillez réessayer ultérieurement."
   },
-  "error_preview_400": {
-    "message": "La génération de l’aperçu a échoué. Vérifiez le format, le nom ou le chemin du fichier."
-  },
-  "error_preview_404": {
-    "message": "Le document source n’existe pas, la génération de l’aperçu a échoué."
-  },
-  "error_preview_415": {
-    "message": "Type de fichier non pris en charge. Reportez-vous à la documentation pour connaître les types de fichiers pris en charge."
-  },
   "error_preview_config": {
     "message": "Échec de l’activation de la configuration : $1"
   },
@@ -361,16 +429,10 @@
     "message": "Il s’agit d’un document Microsoft Word. Convertissez-le d’abord au format Google Docs."
   },
   "error_preview_no_xlsx": {
-    "message": "Il s’agit d’un document Microsoft Excel. Convertissez-le d’abord au format Google Sheets."
+    "message": "Il s’agit d’un document Microsoft Excel. Convertissez-le d’abord au format Google Sheets."
   },
   "error_preview_not_gdoc_generic": {
     "message": "Échec de la génération de la prévisualisation. Il doit s’agir d’un document ou d’une feuille de calcul Google."
-  },
-  "error_preview_svg_invalid": {
-    "message": "SVG non valide. Assurez-vous qu’il s’agit d’un XML valide ne contenant aucun script."
-  },
-  "error_preview_too_large": {
-    "message": "Fichier trop volumineux. Reportez-vous à la documentation pour connaître les limites de taille de fichier."
   },
   "error_publish": {
     "message": "Échec de la publication. Réessayez plus tard."
@@ -378,26 +440,11 @@
   "error_publish_404": {
     "message": "La publication a échoué. Veuillez d’abord ajouter un aperçu."
   },
-  "error_status_400": {
-    "message": "400 : requête incorrecte. URL non valide."
+  "error_status": {
+    "message": "Échec de la récupération du statut de la page. Réessayez plus tard."
   },
-  "error_status_404_content": {
-    "message": "404 Introuvable : vérifiez la configuration ou l'URL de Sidekick."
-  },
-  "error_status_404_document": {
-    "message": "404 Introuvable : vérifiez votre configuration de Sidekick et assurez-vous que l'accès au document est autorisé."
-  },
-  "error_status_500": {
-    "message": "500 Erreur interne du serveur : échec de la récupération du statut de la page. Réessayez plus tard."
-  },
-  "error_status_502": {
-    "message": "502 Passerelle incorrecte : échec de la récupération du statut de la page. Réessayez plus tard."
-  },
-  "error_status_504": {
-    "message": "504 Délai d'expiration de la passerelle : échec de la récupération du statut de la page. Réessayez plus tard."
-  },
-  "error_status_invalid": {
-    "message": "Réponse du serveur non valide. Vérifiez la configuration ou l'URL de Sidekick."
+  "error_status_404": {
+    "message": "Échec de récupération du statut de la page. Vérifiez que ce document est partagé avec AEM."
   },
   "error_unpublish": {
     "message": "Échec de la dépublication. Réessayez plus tard."
@@ -412,7 +459,7 @@
     "message": "Aide et documentation"
   },
   "homepage": {
-    "message": "https://www.hlx.live/tools/sidekick/"
+    "message": "https://www.aem.live/tools/sidekick/"
   },
   "import": {
     "message": "Importer"
@@ -435,8 +482,14 @@
   "live_last_updated": {
     "message": "Dernière publication : $1"
   },
+  "live_last_updated_by": {
+    "message": "Dernière publication : $1 par $2"
+  },
   "live_never_updated": {
     "message": "Jamais publié"
+  },
+  "loading_diff": {
+    "message": "Chargement des modifications..."
   },
   "logging_in_state": {
     "message": "Connexion..."
@@ -460,8 +513,19 @@
     "message": "Jamais"
   },
   "next": {
-    "description": "Diapositive d’intégration suivante",
     "message": "Suivant"
+  },
+  "no_data": {
+    "message": "Aucune donnée"
+  },
+  "no_data_subheading": {
+    "message": "Cette feuille est vide."
+  },
+  "no_diffs": {
+    "message": "Aucune modification trouvée"
+  },
+  "no_diffs_subheading": {
+    "message": "Le contenu prévisualisé et le contenu publié sont identiques."
   },
   "no_results": {
     "message": "Aucun résultat trouvé"
@@ -488,7 +552,6 @@
     "message": "Ouvrir dans $1"
   },
   "open_preview": {
-    "description": "Permet d'ouvrir l'URL d'aperçu d'une branche GitHub donnée.",
     "message": "Ouvrir l'URL d'aperçu"
   },
   "open_url": {
@@ -518,14 +581,11 @@
   "preview_last_updated": {
     "message": "Dernière mise à jour : $1"
   },
+  "preview_last_updated_by": {
+    "message": "Dernière mise à jour : $1 par $2"
+  },
   "preview_never_updated": {
     "message": "Jamais prévisualisé"
-  },
-  "preview_onedrive": {
-    "message": "Conseil de pro : appuyez sur Ctrl+S avant de générer la prévisualisation pour voir immédiatement les dernières modifications…"
-  },
-  "preview_onedrive_mac": {
-    "message": "Conseil de pro : appuyez sur ⌘+S avant de générer la prévisualisation pour voir immédiatement les dernières modifications…"
   },
   "preview_success": {
     "message": "Aperçu mis à jour. Ouverture de l’aperçu..."
@@ -535,6 +595,9 @@
   },
   "prod_last_updated": {
     "message": "Dernière publication : $1"
+  },
+  "prod_last_updated_by": {
+    "message": "Dernière publication : $1 par $2"
   },
   "prod_never_updated": {
     "message": "Jamais publié"
@@ -560,6 +623,12 @@
   "publishing_state": {
     "message": "Publication..."
   },
+  "review": {
+    "message": "Révision"
+  },
+  "review_last_updated": {
+    "message": "Dernière mise à jour : $1"
+  },
   "save": {
     "message": "Enregistrer"
   },
@@ -572,15 +641,38 @@
   "share_description": {
     "message": "Partager votre Sidekick"
   },
+  "show_all": {
+    "message": "Afficher toutes les lignes"
+  },
+  "show_diff": {
+    "message": "Afficher les modifications"
+  },
+  "site_forbidden": {
+    "message": "Accès refusé. Essayez de vous connecter avec un autre compte ou demandez à votre équipe d’administration des autorisations suffisantes."
+  },
+  "site_login_required": {
+    "message": "Connectez-vous pour continuer."
+  },
+  "site_protected": {
+    "message": "Site protégé"
+  },
+  "site_relogin_required": {
+    "message": "Accès arrivé à expiration. Reconnectez-vous pour continuer."
+  },
+  "snapshot_update_success": {
+    "message": "Instantané mis à jour, ouverture de la révision..."
+  },
   "source": {
     "message": "Source"
   },
   "standard": {
-    "description": "Mode de configuration standard",
     "message": "Standard"
   },
   "switch_view": {
     "message": "Afficher"
+  },
+  "system": {
+    "message": "Utilisateur ou utilisatrice du système AEM"
   },
   "title": {
     "message": "AEM Sidekick"
@@ -610,7 +702,6 @@
     "message": "Dépublication..."
   },
   "update": {
-    "description": "Mettre à jour l’aperçu d’une page",
     "message": "Mettre à jour"
   },
   "update_success": {
@@ -629,8 +720,7 @@
     "message": "Changer d'utilisateur"
   },
   "whats_new": {
-    "description": "Titre du menu Intégration",
-    "message": "Quoi de neuf ?"
+    "message": "Nouveautés"
   },
   "yesterday_at": {
     "message": "Hier à $1"

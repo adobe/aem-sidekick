@@ -84,6 +84,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       dev: this.appStore.i18n('development'),
       edit: this.appStore.i18n('source'),
       preview: this.appStore.i18n('preview'),
+      review: this.appStore.i18n('review'),
       live: this.appStore.i18n('live'),
       prod: this.appStore.i18n('production'),
     };
@@ -95,6 +96,8 @@ export class EnvironmentSwitcher extends ConnectedElement {
       this.currentEnv = 'dev';
     } else if (this.appStore.isPreview()) {
       this.currentEnv = 'preview';
+    } else if (this.appStore.isReview()) {
+      this.currentEnv = 'review';
     } else if (this.appStore.isLive()) {
       this.currentEnv = 'live';
     } else if (this.appStore.isProd()) {
@@ -111,12 +114,19 @@ export class EnvironmentSwitcher extends ConnectedElement {
    * Returns the last modified label for the specified environment
    * @param {string} id - The id of the plugin
    * @param {string} lastModified - The last modified date
+   * @param {string} [lastModifiedBy] - The ID of the user who last modified the resource
    * @returns {string} - The last modified label
    */
-  getLastModifiedLabel(id, lastModified) {
-    const envId = id === 'dev' ? 'preview' : id;
+  getLastModifiedLabel(id, lastModified, lastModifiedBy) {
+    const envId = ['review', 'dev'].includes(id) ? 'preview' : id;
+    const i18nKey = `${envId}_last_updated${lastModifiedBy ? '_by' : ''}`;
+    if (['anonymous', 'system'].includes(lastModifiedBy)) {
+      lastModifiedBy = this.appStore.i18n(lastModifiedBy);
+    }
     return lastModified
-      ? this.appStore.i18n(`${envId}_last_updated`).replace('$1', getTimeAgo(this.appStore.languageDict, lastModified))
+      ? this.appStore.i18n(i18nKey)
+        .replace('$1', getTimeAgo(this.appStore.languageDict, lastModified))
+        .replace('$2', lastModifiedBy)
       : this.appStore.i18n(`${envId}_never_updated`);
   }
 
@@ -125,10 +135,12 @@ export class EnvironmentSwitcher extends ConnectedElement {
    *
    * @param {string} id - The id of the plugin
    * @param {Object} attrs - Additional HTML attributes to be applied to the menu item
-   * @param {string} [lastModified] - The last mod date of the env. If undefined, item is disabled.
+   * @param {Object} status - The status of the environment
+   * @param {string} [status.lastModified] - The last mod date. If undefined, item is disabled.
+   * @param {string} [status.lastModifiedBy] - The ID of the user who last modified the resource
    * @returns {HTMLElement} - The created menu item
    */
-  createMenuItem(id, attrs, lastModified) {
+  createMenuItem(id, attrs, { lastModified, lastModifiedBy }) {
     if (this.currentEnv === id) {
       attrs.disabled = '';
     }
@@ -159,7 +171,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
 
       const description = createTag({
         tag: 'span',
-        text: this.getLastModifiedLabel(id, lastModified),
+        text: this.getLastModifiedLabel(id, lastModified, lastModifiedBy),
         attrs: {
           slot: 'description',
         },
@@ -175,7 +187,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       });
 
       const descriptionText = this.currentEnv === 'edit'
-        ? this.getLastModifiedLabel(id, lastModified)
+        ? this.getLastModifiedLabel(id, lastModified, lastModifiedBy)
         : this.appStore.i18n('open_in').replace('$1', contentSourceLabel);
 
       const description = createTag({
@@ -193,7 +205,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       // eslint-disable-next-line no-nested-ternary
       docIcon.innerHTML = status.resourcePath?.endsWith('.json')
         ? ICONS.SHEET_ICON.strings.join('')
-        : status.resourcePath.endsWith('.pdf')
+        : status.resourcePath?.endsWith('.pdf')
           ? ICONS.PDF_ICON.strings.join('')
           : ICONS.DOC_ICON.strings.join('');
 
@@ -231,16 +243,17 @@ export class EnvironmentSwitcher extends ConnectedElement {
     picker.innerHTML = '';
 
     // Pull mod dates from status
-    const editLastMod = status.edit?.lastModified;
-    const previewLastMod = status.preview?.lastModified;
-    const liveLastMod = status.live?.lastModified;
+    const editStatus = status.edit || {};
+    const previewStatus = status.preview || {};
+    const liveStatus = status.live || {};
 
     const environmentsHeader = this.createHeader('environments');
-    const devMenuItem = this.createMenuItem('dev', {}, previewLastMod);
-    const editMenuItem = this.createMenuItem('edit', {}, editLastMod);
-    const previewMenuItem = this.createMenuItem('preview', {}, previewLastMod);
-    const liveMenuItem = this.createMenuItem('live', {}, liveLastMod);
-    const prodMenuItem = this.createMenuItem('prod', {}, liveLastMod);
+    const devMenuItem = this.createMenuItem('dev', {}, previewStatus);
+    const editMenuItem = this.createMenuItem('edit', {}, editStatus);
+    const previewMenuItem = this.createMenuItem('preview', {}, previewStatus);
+    const reviewMenuItem = this.createMenuItem('review', {}, previewStatus);
+    const liveMenuItem = this.createMenuItem('live', {}, liveStatus);
+    const prodMenuItem = this.createMenuItem('prod', {}, liveStatus);
 
     let showProd = false;
     if (this.appStore.siteStore.host
@@ -258,6 +271,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
           editMenuItem,
           devMenuItem,
           previewMenuItem,
+          reviewMenuItem,
           liveMenuItem,
         );
         break;
@@ -267,6 +281,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
           environmentsHeader,
           editMenuItem,
           previewMenuItem,
+          reviewMenuItem,
           liveMenuItem,
         );
         break;
@@ -276,6 +291,17 @@ export class EnvironmentSwitcher extends ConnectedElement {
           environmentsHeader,
           editMenuItem,
           previewMenuItem,
+          reviewMenuItem,
+          liveMenuItem,
+        );
+        break;
+      case 'review':
+        reviewMenuItem.classList.add('current-env');
+        picker.append(
+          environmentsHeader,
+          editMenuItem,
+          previewMenuItem,
+          reviewMenuItem,
           liveMenuItem,
         );
         break;
@@ -285,6 +311,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
           environmentsHeader,
           editMenuItem,
           previewMenuItem,
+          reviewMenuItem,
           liveMenuItem,
         );
         break;
@@ -294,6 +321,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
           environmentsHeader,
           editMenuItem,
           previewMenuItem,
+          reviewMenuItem,
           liveMenuItem,
           prodMenuItem,
         );
@@ -309,6 +337,11 @@ export class EnvironmentSwitcher extends ConnectedElement {
     if (this.currentEnv !== 'live' && (showProd || this.currentEnv === 'prod')) {
       // TODO: show/hide live based on alt/option key
       liveMenuItem.remove();
+    }
+
+    if (this.currentEnv !== 'review'
+      && this.appStore.siteStore.reviewHost === this.appStore.siteStore.stdReviewHost) {
+      reviewMenuItem.remove();
     }
 
     if (this.appStore.status?.webPath && !this.appStore.status?.webPath.startsWith('/.helix')) {

@@ -15,7 +15,7 @@
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import {
-  aTimeout, expect, waitUntil,
+  expect, waitUntil,
 } from '@open-wc/testing';
 import { AppStore, VIEWS } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
@@ -32,7 +32,7 @@ import { createAdminUrl } from '../../../src/extension/utils/admin.js';
 import { recursiveQuery, error } from '../../test-utils.js';
 import { AEMSidekick } from '../../../src/extension/index.js';
 import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
-import { SidekickTest } from '../../sidekick-test.js';
+import { defaultConfigJSONUrl, SidekickTest } from '../../sidekick-test.js';
 import { fetchLanguageDict } from '../../../src/extension/app/utils/i18n.js';
 
 // @ts-ignore
@@ -65,11 +65,12 @@ describe('Test App Store', () => {
   let appStore;
 
   beforeEach(() => {
+    document.body.innerHTML = '';
     appStore = new AppStore();
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
     sidekickTest
       .mockFetchStatusSuccess()
-      .mockFetchSidekickConfigNotFound();
+      .mockFetchSidekickConfigEmpty();
 
     // @ts-ignore
     sidekickElement = document.createElement('div');
@@ -110,6 +111,25 @@ describe('Test App Store', () => {
     expect(appStore.siteStore.project).to.eq('AEM Boilerplate');
   });
 
+  it('loadContext - loads german dictionary', async () => {
+    sidekickTest
+      .mockFetchSidekickConfigSuccess(true, true)
+      .mockFetchNonEnglishMessages('de', {
+        activate: {
+          message: 'Aktivieren',
+        },
+      });
+
+    const config = {
+      ...defaultSidekickConfig,
+      lang: 'de',
+    };
+
+    await appStore.loadContext(sidekickElement, config);
+
+    expect(appStore.languageDict.activate).to.eq('Aktivieren');
+  });
+
   it('loadContext - unsupported lang, default to en', async () => {
     sidekickTest
       .mockFetchSidekickConfigSuccess(true, true);
@@ -143,6 +163,23 @@ describe('Test App Store', () => {
 
     appStore.location.host = 'foobar.com';
     expect(appStore.isPreview()).to.be.false;
+  });
+
+  it('isReview()', async () => {
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+    appStore.location.port = '';
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.reviews';
+    expect(appStore.isReview()).to.be.true;
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.page';
+    expect(appStore.isReview()).to.be.false;
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.live';
+    expect(appStore.isReview()).to.be.false;
+
+    appStore.location.host = 'foobar.com';
+    expect(appStore.isReview()).to.be.false;
   });
 
   it('isProd()', async () => {
@@ -298,17 +335,12 @@ describe('Test App Store', () => {
   });
 
   describe('fetchStatus()', async () => {
-    let showToastStub;
     let instance;
-    let toast;
+    let showToastStub;
 
     beforeEach(() => {
       instance = appStore;
-      showToastStub = sidekickTest.sandbox
-        .stub(instance, 'showToast')
-        .callsFake((t) => {
-          toast = t;
-        });
+      showToastStub = sidekickTest.sandbox.stub(instance, 'showToast');
     });
 
     afterEach(() => {
@@ -352,45 +384,53 @@ describe('Test App Store', () => {
       expect(instance.status.status).to.equal(401);
     });
 
-    it('not found', async () => {
-      sidekickTest
-        .mockFetchStatusNotFound();
-      await instance.loadContext(sidekickElement, defaultSidekickConfig);
-      await waitUntil(
-        () => instance.status.status,
-        'Status never loaded',
-      );
-      expect(instance.status.status).to.equal(404);
-      expect(showToastStub.calledOnce).to.be.true;
-      expect(toast.message).to.match(/404 Not found/);
-    });
-
-    it('not found - editor', async () => {
-      sidekickTest
-        // .mockEditorAdminEnvironment()
-        .mockFetchStatusNotFound();
-      await instance.loadContext(sidekickElement, defaultSidekickConfig);
-
-      instance.location.href = 'https://adobe-my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx';
-      await waitUntil(
-        () => instance.status.status,
-        'Status never loaded',
-      );
-      expect(instance.status.status).to.equal(404);
-      expect(showToastStub.calledOnce).to.be.true;
-      expect(toast.message).to.match(/404 Not found/);
-      expect(toast.message).to.match(/access to this document is granted/);
-    });
-
     it('server error', async () => {
       sidekickTest
+        .mockFetchSidekickConfigEmpty()
         .mockFetchStatusError();
+
       await instance.loadContext(sidekickElement, defaultSidekickConfig);
       await waitUntil(
         () => instance.status.status,
         'Status never loaded',
       );
+
       expect(instance.status.status).to.equal(500);
+      expect(showToastStub.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
+    });
+
+    it('server error from site store', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigError();
+
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
+      await waitUntil(
+        () => instance.status.status,
+        'Status never loaded',
+      );
+
+      expect(instance.status.status).to.equal(500);
+      expect(showToastStub.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
+    });
+
+    it('network error from site store', async () => {
+      fetchMock.get(defaultConfigJSONUrl, { throws: error }, { overwriteRoutes: true });
+
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
+      await waitUntil(() => showToastStub.called, 'showToast not called');
+
+      expect(instance.siteStore.error).to.equal(error.message);
+      expect(instance.status.status).to.be.undefined;
+      expect(showToastStub.calledWithMatch({
+        variant: 'negative',
+        timeout: 0,
+      })).to.be.true;
     });
 
     it('status returns 429', async () => {
@@ -527,6 +567,7 @@ describe('Test App Store', () => {
           path: '**.json',
           viewer: '/test/fixtures/views/json/json.html',
         }],
+        status: 200,
       };
 
       // Mock other functions
@@ -597,18 +638,92 @@ describe('Test App Store', () => {
       expect(openPageArgs[0]).to.include('foo=bar');
     });
 
+    it('prodCheck: switches to production if AEM', async () => {
+      sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').resolves(true);
+
+      const prodHost = 'not-aem.com';
+      const liveHost = 'main--aem-boilerplate--adobe.hlx.live';
+      instance.siteStore.host = prodHost;
+      instance.siteStore.liveHost = liveHost;
+
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('prod', true, true, true);
+      const openPageArgs = openPage.args[0];
+      expect(openPageArgs[0]).to.include(prodHost);
+    });
+
+    it('prodCheck: switches to live instead of production if not AEM', async () => {
+      sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').resolves(false);
+
+      const prodHost = 'not-aem.com';
+      const liveHost = 'main--aem-boilerplate--adobe.hlx.live';
+      instance.siteStore.host = prodHost;
+      instance.siteStore.liveHost = liveHost;
+
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('prod', true, true, true);
+      const openPageArgs = openPage.args[0];
+      expect(openPageArgs[0]).to.include(liveHost);
+    });
+
     it('switches from preview to BYOM editor', async () => {
       instance.siteStore.contentSourceUrl = 'https://aemcloud.com';
       instance.siteStore.contentSourceEditLabel = 'Universal Editor';
       instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}{{pathname}}?cmd=open';
 
       const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
-      fetchStatusStub.resolves({});
+      fetchStatusStub.resolves({ webPath: '/' });
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
       await instance.switchEnv('edit');
       expect(loadPage.calledWith('https://aemcloud.com/index?cmd=open')).to.be.true;
+    });
+
+    it('switches from review to edit with snapshot path', async () => {
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      const isReviewStub = sidekickTest.sandbox.stub(instance, 'isReview');
+
+      isReviewStub.returns(true);
+      instance.siteStore.stdReviewHost = 'aem.reviews';
+      instance.location = new URL('https://test-snapshot--aem-boilerplate--adobe.aem.reviews/path');
+      instance.status = { webPath: '/.snapshots/test-snapshot/path' };
+
+      // Mock the first fetchStatus call with snapshot path
+      fetchStatusStub.onCall(0).resolves({
+        edit: { url: 'https://edit.example.com/snapshot-path' },
+      });
+
+      await instance.switchEnv('edit');
+
+      expect(fetchStatusStub.calledWith(false, true, true)).to.be.true;
+      expect(loadPage.calledWith('https://edit.example.com/snapshot-path')).to.be.true;
+    });
+
+    it('switches from review to edit with fallback to original edit URL', async () => {
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      const isReviewStub = sidekickTest.sandbox.stub(instance, 'isReview');
+
+      isReviewStub.returns(true);
+      instance.siteStore.stdReviewHost = 'aem.reviews';
+      instance.location = new URL('https://test-snapshot--aem-boilerplate--adobe.aem.reviews/path');
+      instance.status = { webPath: '/.snapshots/test-snapshot/path' };
+
+      // Mock the first fetchStatus call with no edit URL
+      fetchStatusStub.onCall(0).resolves({});
+      // Mock the second fetchStatus call with original edit URL
+      fetchStatusStub.onCall(1).resolves({
+        edit: { url: 'https://edit.example.com/original-path' },
+      });
+
+      await instance.switchEnv('edit');
+
+      expect(fetchStatusStub.calledTwice).to.be.true;
+      expect(fetchStatusStub.firstCall.calledWith(false, true, true)).to.be.true;
+      expect(fetchStatusStub.secondCall.calledWith(false, true)).to.be.true;
+      expect(loadPage.calledWith('https://edit.example.com/original-path')).to.be.true;
     });
 
     it('switches from live to preview', async () => {
@@ -623,6 +738,32 @@ describe('Test App Store', () => {
       instance.status = mockStatus;
       await instance.switchEnv('live', true);
       expect(openPage.calledWith(mockStatus.live.url)).to.be.true;
+    });
+
+    it('switches to review environment with snapshot URL construction', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = { webPath: '/.snapshots/test-snapshot/path/to/content' };
+      instance.siteStore.reviewHost = 'aem.reviews';
+
+      await instance.switchEnv('review');
+
+      expect(loadPage.calledOnce).to.be.true;
+      const loadPageArgs = loadPage.args[0];
+      expect(loadPageArgs[0]).to.include('test-snapshot--aem.reviews');
+      expect(loadPageArgs[0]).to.include('/path/to/content');
+    });
+
+    it('switches to review environment without snapshot in webPath', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = { webPath: '/regular/path' };
+      instance.siteStore.reviewHost = 'aem.reviews';
+
+      await instance.switchEnv('review');
+
+      expect(loadPage.calledOnce).to.be.true;
+      const loadPageArgs = loadPage.args[0];
+      expect(loadPageArgs[0]).to.include('aem.reviews');
+      expect(loadPageArgs[0]).to.include('/regular/path');
     });
 
     it('switches from preview to live w/cache busting', async () => {
@@ -898,6 +1039,23 @@ describe('Test App Store', () => {
         message: 'Configuration successfully activated.',
         variant: 'positive',
       })).is.true;
+    });
+
+    // Test when resp is ok and status.webPath starts with /.snapshots/
+    it('should handle snapshot update success', async () => {
+      updateStub.resolves(true);
+      instance.status = { webPath: '/.snapshots/test-snapshot/foo' };
+
+      const switchEnvSpy = sandbox.spy(instance, 'switchEnv');
+
+      await instance.updatePreview(false);
+
+      expect(showToastStub.calledOnce).is.true;
+      expect(showToastStub.calledWith({
+        message: 'Snapshot successfully updated, opening Review...',
+        variant: 'positive',
+      })).is.true;
+      expect(switchEnvSpy.calledWith('review', false, true)).is.true;
     });
   });
 
@@ -1283,7 +1441,7 @@ describe('Test App Store', () => {
       expect(iframe.getAttribute('allow')).to.equal('clipboard-write *');
     });
 
-    it('removes the view and resets siblings display on receiving a valid hlx-close-view message', async () => {
+    it('removes the view on receiving a valid hlx-close-view message', async () => {
       sidekickTest
         .mockFetchSidekickConfigSuccess(true, false);
 
@@ -1292,14 +1450,16 @@ describe('Test App Store', () => {
       const sidekick = new AEMSidekick(defaultSidekickConfig);
       document.body.appendChild(sidekick);
 
+      const pre = document.createElement('pre');
+      pre.textContent = 'test';
+      document.body.appendChild(pre);
+
       await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
 
       appStore.sidekick = sidekick;
       appStore.getViewOverlay(true); // Create a new view
 
-      const sibling = document.createElement('div');
-      sibling.style.display = 'none';
-      instance.sidekick.parentElement.appendChild(sibling);
+      expect(pre.style.display).to.equal('none');
 
       // Simulate receiving a valid message
       const messageEvent = new MessageEvent('message', {
@@ -1312,9 +1472,37 @@ describe('Test App Store', () => {
       // @ts-ignore
       eventListenerCallback(messageEvent);
 
-      await aTimeout(1000);
+      await waitUntil(() => pre.style.display === 'block');
       expect(instance.sidekick.shadowRoot.querySelector('.aem-sk-special-view')).to.be.null;
-      expect(sibling.style.display).to.equal('initial');
+    }).timeout(5000);
+
+    it('calls login on receiving a valid hlx-login message', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess(true, false);
+
+      const addEventListenerStub = sandbox.stub(window, 'addEventListener');
+      const loginStub = sandbox.stub(instance, 'login');
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      document.body.appendChild(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+      appStore.sidekick = sidekick;
+      appStore.getViewOverlay(true); // Create a new view
+
+      // Simulate receiving a valid message
+      const messageEvent = new MessageEvent('message', {
+        data: { detail: { event: 'hlx-login' } },
+        origin: `chrome-extension://${chrome.runtime.id}`,
+      });
+
+      // Trigger the event listener manually
+      const eventListenerCallback = addEventListenerStub.getCalls().find((call) => call.calledWith('message')).args[1];
+      // @ts-ignore
+      eventListenerCallback(messageEvent);
+
+      expect(loginStub.calledOnce).to.be.true;
     }).timeout(5000);
   });
 
@@ -1392,6 +1580,20 @@ describe('Test App Store', () => {
       fetchMock.restore();
     });
 
+    const getViewOverlayFrame = (sidekick) => {
+      const overlayContainer = document.createElement('div');
+      overlayContainer.className = 'aem-sk-special-view';
+
+      const frame = document.createElement('iframe');
+      frame.className = 'container';
+      overlayContainer.appendChild(frame);
+
+      getViewOverlayStub.onCall(1).returns(overlayContainer);
+      sidekick.shadowRoot.appendChild(overlayContainer);
+
+      return frame;
+    };
+
     it('does nothing if isProject returns false', async () => {
       isProjectStub.returns(false);
       findViewsSpy = sinon.spy(instance, 'findViews');
@@ -1435,21 +1637,60 @@ describe('Test App Store', () => {
 
       await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
 
-      const overlayContainer = document.createElement('div');
-      overlayContainer.className = 'aem-sk-special-view';
-
-      const frame = document.createElement('iframe');
-      frame.className = 'container';
-      overlayContainer.appendChild(frame);
-
-      getViewOverlayStub.onCall(1).returns(overlayContainer);
-      sidekick.shadowRoot.appendChild(overlayContainer);
+      const frame = getViewOverlayFrame(sidekick);
 
       await instance.showView();
 
       expect(frame.src).to.equal('http://viewer.com/?url=https%3A%2F%2Fmain--aem-boilerplate--adobe.hlx.page%2Fplaceholders.json&title=Test+Title');
       expect(findViewsStub.calledWith(VIEWS.DEFAULT)).to.be.true;
       expect(getViewOverlayStub.calledTwice).to.be.true;
+    });
+
+    it('loads login view on 401 site response', async () => {
+      sidekickTest.mockFetchSidekickConfigSuccess(true, false);
+      isProjectStub.returns(true);
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/protected');
+      getViewOverlayStub.onCall(0).returns(undefined);
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      instance.sidekick = sidekick;
+      document.body.innerHTML = '<pre>401 Unauthorized</pre>';
+      document.body.prepend(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
+
+      const frame = getViewOverlayFrame(sidekick);
+
+      await instance.showView();
+
+      const frameUrl = new URL(frame.src);
+      expect(frameUrl.pathname.endsWith('/views/login/login.html')).to.be.true;
+      expect(frameUrl.searchParams.get('url')).to.equal('https://main--aem-boilerplate--adobe.aem.page/protected');
+      expect(frameUrl.searchParams.get('status')).to.equal('401');
+    });
+
+    it('loads login view on 403 site response', async () => {
+      sidekickTest.mockFetchSidekickConfigSuccess(true, false);
+      isProjectStub.returns(true);
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/protected');
+      getViewOverlayStub.onCall(0).returns(undefined);
+
+      const sidekick = new AEMSidekick(defaultSidekickConfig);
+      instance.sidekick = sidekick;
+
+      document.body.innerHTML = '<pre>403 Forbidden</pre>';
+      document.body.prepend(sidekick);
+
+      await waitUntil(() => recursiveQuery(sidekick, 'plugin-action-bar'));
+
+      const frame = getViewOverlayFrame(sidekick);
+
+      await instance.showView();
+
+      const frameUrl = new URL(frame.src);
+      expect(frameUrl.pathname.endsWith('/views/login/login.html')).to.be.true;
+      expect(frameUrl.searchParams.get('url')).to.equal('https://main--aem-boilerplate--adobe.aem.page/protected');
+      expect(frameUrl.searchParams.get('status')).to.equal('403');
     });
   });
 
@@ -1596,6 +1837,7 @@ describe('Test App Store', () => {
     let getProfileStub;
     let sandbox;
     let toastSpy;
+    let reloadPageStub;
 
     beforeEach(async () => {
       instance = appStore;
@@ -1613,6 +1855,7 @@ describe('Test App Store', () => {
       // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       toastSpy = sandbox.spy(appStore, 'showToast');
+      reloadPageStub = sandbox.stub(appStore, 'reloadPage');
     });
 
     afterEach(() => {
@@ -1637,7 +1880,8 @@ describe('Test App Store', () => {
     }).timeout(20000);
 
     it('handles successful logout correctly', async () => {
-      sidekickTest.mockFetchStatusSuccess();
+      sidekickTest.mockFetchStatusSuccess(true);
+
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
 
       instance.sidekick = document.createElement('div');
@@ -1646,14 +1890,13 @@ describe('Test App Store', () => {
       getProfileStub.onCall(4).resolves(false); // Simulate success on the 5th attempt
 
       const rumStub = sinon.stub(instance, 'sampleRUM');
-      const loginEventSpy = sinon.spy();
-      instance.sidekick.addEventListener('logged-out', loginEventSpy);
+      const logoutEventSpy = sinon.spy();
+      instance.sidekick.addEventListener('logged-out', logoutEventSpy);
+
+      sidekickTest.mockFetchProfileUnauthorized();
 
       const statusEventSpy = sinon.spy();
       instance.sidekick.addEventListener('status-fetched', statusEventSpy);
-
-      // Mock other methods called upon successful login
-      const setupCorePluginsStub = sandbox.stub(instance, 'setupCorePlugins');
 
       instance.logout();
 
@@ -1663,11 +1906,9 @@ describe('Test App Store', () => {
         await clock.tickAsync(1000);
       }
 
-      expect(setupCorePluginsStub.calledOnce).to.be.true;
-      expect(loginEventSpy.calledOnce).to.be.true;
-
-      await waitUntil(() => statusEventSpy.calledTwice, 'Status should fire twice');
-      expect(statusEventSpy.calledTwice).to.be.true;
+      expect(reloadPageStub.calledOnce).to.be.true;
+      expect(logoutEventSpy.calledOnce).to.be.true;
+      expect(statusEventSpy.calledOnce, 'Status should fire only once').to.be.true;
 
       expect(rumStub.calledWith('click', {
         source: 'sidekick',
@@ -1725,24 +1966,187 @@ describe('Test App Store', () => {
     });
 
     it('should return "SharePoint" if sourceLocation includes "onedrive:"', () => {
+      instance.status = {
+        preview: {
+          sourceLocation: 'onedrive:foo',
+        },
+      };
+      expect(instance.getContentSourceLabel()).to.equal('SharePoint');
+    });
+
+    it('should return "SharePoint" if no sourceLocation but contentSourceType is "onedrive"', () => {
       instance.siteStore.contentSourceType = 'onedrive';
       expect(instance.getContentSourceLabel()).to.equal('SharePoint');
     });
 
     it('should return "Google Drive" if sourceLocation includes "gdrive:"', () => {
+      instance.status = {
+        preview: {
+          sourceLocation: 'gdrive:foo',
+        },
+      };
+      expect(instance.getContentSourceLabel()).to.equal('Google Drive');
+    });
+
+    it('should return "Google Drive" if no sourceLocation but contentSourceType is "google"', () => {
       instance.siteStore.contentSourceType = 'google';
       expect(instance.getContentSourceLabel()).to.equal('Google Drive');
     });
 
     it('should return "Document Authoring" if a label is provided', () => {
-      instance.siteStore.contentSourceType = 'markup';
+      instance.status = {
+        preview: {
+          sourceLocation: 'markup:foo',
+        },
+      };
       instance.siteStore.contentSourceEditLabel = 'Document Authoring';
       expect(instance.getContentSourceLabel()).to.equal('Document Authoring');
     });
 
-    it('should return "BYOM" for everything else', () => {
-      instance.siteStore.contentSourceType = 'markup';
+    it('should return "BYOM" if no label is provided', () => {
+      instance.status = {
+        preview: {
+          sourceLocation: 'markup:foo',
+        },
+      };
       expect(instance.getContentSourceLabel()).to.equal('BYOM');
+    });
+
+    it('should return "BYOM" for everything else', () => {
+      instance.status = {
+        preview: { status: 404 },
+      };
+      instance.siteStore.contentSourceType = 'unknown';
+      expect(instance.getContentSourceLabel()).to.equal('BYOM');
+    });
+  });
+
+  describe('getBYOMSourceUrl', () => {
+    let instance;
+
+    beforeEach(() => {
+      instance = new AppStore();
+      // @ts-ignore
+      instance.siteStore = {
+        owner: 'adobe',
+        repo: 'aem-boilerplate',
+        contentSourceUrl: 'https://aemcloud.com',
+        contentSourceEditPattern: '{{contentSourceUrl}}{{pathname}}?cmd=open',
+      };
+    });
+
+    it('should return undefined if contentSourceEditPattern is not a string', () => {
+      instance.siteStore.contentSourceEditPattern = null;
+      expect(instance.getBYOMSourceUrl()).to.be.undefined;
+    });
+
+    it('should return undefined if contentSourceEditPattern is not defined', () => {
+      instance.siteStore.contentSourceEditPattern = undefined;
+      expect(instance.getBYOMSourceUrl()).to.be.undefined;
+    });
+
+    it('should use webPath from status when provided', () => {
+      const status = { webPath: '/custom/path' };
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.equal('https://aemcloud.com/custom/path?cmd=open');
+    });
+
+    it('should use webPath from existing status when no status provided', () => {
+      instance.status = { webPath: '/instance/path' };
+      const result = instance.getBYOMSourceUrl();
+      expect(result).to.equal('https://aemcloud.com/instance/path?cmd=open');
+    });
+
+    it('should return undefined if no webPath in provided status', () => {
+      const status = {};
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.be.undefined;
+    });
+
+    it('should return undefined if no webPath in existing status', () => {
+      instance.status = {};
+      const result = instance.getBYOMSourceUrl();
+      expect(result).to.be.undefined;
+    });
+
+    it('should add index to path ending with slash', () => {
+      const status = { webPath: '/path/' };
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.equal('https://aemcloud.com/path/index?cmd=open');
+    });
+
+    it('should replace all placeholders in contentSourceEditPattern', () => {
+      instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}/{{org}}/{{site}}{{pathname}}';
+      const status = { webPath: '/test/path' };
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.equal('https://aemcloud.com/adobe/aem-boilerplate/test/path');
+    });
+  });
+
+  describe('fireEvent', async () => {
+    let sandbox;
+    let instance;
+    let listenerStub;
+
+    beforeEach(async () => {
+      sandbox = sinon.createSandbox();
+      instance = appStore;
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
+      await waitUntil(() => instance.status.webPath);
+      listenerStub = sandbox.stub();
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('dispatches event on sidekick element with default detail', async () => {
+      sidekickElement.addEventListener('custom:foo', listenerStub);
+      instance.fireEvent('custom:foo');
+
+      expect(listenerStub.calledOnce).to.be.true;
+      const { detail } = listenerStub.args[0][0];
+      expect(detail.config.devUrl).to.equal('http://localhost:3000/');
+      expect(detail.location.host).to.equal('localhost:2000');
+      expect(detail.status.webPath).to.equal('/');
+    });
+
+    it('dispatches event on sidekick element with custom detail', async () => {
+      sidekickElement.addEventListener('foo', listenerStub);
+      instance.fireEvent('foo', { foo: 'bar' });
+
+      expect(listenerStub.calledWithMatch({ detail: { foo: 'bar' } })).to.be.true;
+    });
+  });
+
+  describe('state tests', async () => {
+    it('sets state to ready', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigSuccess()
+        .mockFetchStatusSuccess();
+
+      sidekickTest.createSidekick();
+      await sidekickTest.awaitStatusFetched();
+
+      await waitUntil(() => appStore.state === STATE.READY);
+    });
+
+    it('sets state to login required', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigUnauthorized();
+
+      sidekickTest.createSidekick();
+
+      await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
+    });
+
+    it('sets state to unauthorized', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigForbidden();
+
+      sidekickTest.createSidekick();
+
+      await waitUntil(() => appStore.state === STATE.UNAUTHORIZED);
     });
   });
 });

@@ -30,7 +30,7 @@ function getRandomId() {
  */
 export async function configureAuthAndCorsHeaders() {
   try {
-    // remove all rules first
+    // remove session rules first
     await chrome.declarativeNetRequest.updateSessionRules({
       removeRuleIds: (await chrome.declarativeNetRequest.getSessionRules())
         .map((rule) => rule.id),
@@ -54,14 +54,15 @@ export async function configureAuthAndCorsHeaders() {
             }],
           },
           condition: {
-            regexFilter: `^https://${adminHost}/(config/${owner}.json|[a-z]+/${owner}/.*)`,
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: `^https://${adminHost}/(config/${owner}\\.json|[a-z]+/${owner}/.*)`,
             requestDomains: [adminHost],
             requestMethods: ['get', 'post', 'delete'],
             resourceTypes: ['xmlhttprequest'],
           },
         });
 
-        const corsFilters = [`^https://[0-9a-z-]+--[0-9a-z-]+--${owner}.aem.(live|page)/.*`];
+        const corsFilters = [`^https://[0-9a-z-]+--[0-9a-z-]+--${owner}\\.aem\\.(page|live|reviews)/.*`];
         const project = await getConfig('sync', `${owner}/${repo}`);
         if (project) {
           const { host, previewHost, liveHost } = project;
@@ -108,16 +109,18 @@ export async function configureAuthAndCorsHeaders() {
             }],
           },
           condition: {
-            regexFilter: `^https://[a-z0-9-]+--${repo}--${owner}.aem.(page|live)/.*`,
+            regexFilter: `^https://[a-z0-9-]+--${repo}--${owner}\\.aem\\.(page|live|reviews)/.*`,
             requestMethods: ['get', 'post'],
             resourceTypes: [
               'main_frame',
+              'sub_frame',
               'script',
               'stylesheet',
               'image',
               'xmlhttprequest',
               'media',
               'font',
+              'other',
             ],
           },
         });
@@ -165,7 +168,6 @@ export async function setAuthToken(
     const siteHandle = `${owner}/${repo}`;
     const siteExists = projects.find(({ id }) => id === siteHandle);
     if (authToken) {
-      authTokenExpiry *= 1000; // store in milliseconds
       if (!orgExists) {
         projects.push({
           id: orgHandle,
@@ -193,7 +195,7 @@ export async function setAuthToken(
           owner,
           repo,
           siteToken,
-          siteTokenExpiry: siteTokenExpiry * 1000, // store in milliseconds
+          siteTokenExpiry,
         });
       } else {
         const siteIndex = projects.findIndex(({ id }) => id === siteHandle);
@@ -208,4 +210,40 @@ export async function setAuthToken(
     await setConfig('session', { projects });
     await configureAuthAndCorsHeaders();
   }
+}
+
+/**
+ * Adds the sidekick version to the user agent for requests to the Admin API.
+ * @returns {Promise<void>}
+ */
+export async function updateUserAgent() {
+  // remove dynamic rules first
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: (await chrome.declarativeNetRequest.getDynamicRules())
+      .map((rule) => rule.id),
+  });
+
+  const userAgent = `${navigator.userAgent} AEMSidekick/${chrome.runtime.getManifest().version}`;
+  const addRules = [{
+    id: getRandomId(),
+    priority: 1,
+    action: {
+      type: 'modifyHeaders',
+      requestHeaders: [{
+        header: 'User-Agent',
+        operation: 'set',
+        value: userAgent,
+      }],
+    },
+    condition: {
+      regexFilter: `^https://${adminHost}/.*`,
+      requestDomains: [adminHost],
+      requestMethods: ['get', 'post', 'delete'],
+      resourceTypes: ['xmlhttprequest'],
+    },
+  }];
+
+  // @ts-ignore
+  await chrome.declarativeNetRequest.updateDynamicRules({ addRules });
+  log.debug(`updateUserAgent: ${userAgent}`);
 }

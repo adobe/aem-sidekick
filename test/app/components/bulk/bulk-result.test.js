@@ -56,7 +56,12 @@ describe('Test Bulk Result', () => {
       host: 'custom-preview-host.com',
       resources: [
         { path: '/file1', status: 200 },
-        { path: '/file2', status: 415, error: 'unsupported media type' },
+        {
+          path: '/file2',
+          status: 415,
+          error: 'Unable to preview \'/file2\': \'onedrive\' backend does not support file type.',
+          errorCode: 'AEM_BACKEND_UNSUPPORTED_MEDIA',
+        },
         { path: '/file3', status: 200 },
       ],
     };
@@ -71,9 +76,13 @@ describe('Test Bulk Result', () => {
     expect(rows.length).to.equal(4);
     expect(rows[0].classList.contains('header')).to.be.true;
     expect(rows[1].querySelector('.status.success')).to.exist;
+    expect(rows[1].querySelector('.status.success sp-overlay')).to.not.exist;
     expect(rows[1].querySelector('.path a').href).to.equal(`https://${appStore.siteStore.innerHost}/file1`);
     expect(rows[2].querySelector('.status.error')).to.exist;
     expect(rows[2].querySelector('.path + .error')).to.exist;
+    expect(rows[2].querySelector('.path + .error').textContent.trim()).to.equal('(415) Unable to preview /file2: file type not supported');
+    expect(rows[2].querySelector('.status.error sp-overlay')).to.exist;
+    expect(rows[2].querySelector('.status.error sp-overlay').textContent.trim()).to.equal('\'onedrive\' backend does not support file type.');
     expect(rows[3].querySelector('.status.success')).to.exist;
     expect(rows[3].querySelector('.path a').href).to.equal(`https://${appStore.siteStore.innerHost}/file3`);
   }).timeout(5000);

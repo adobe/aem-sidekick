@@ -9,6 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+import '@spectrum-web-components/theme/sp-theme.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-light-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-dark-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/scale-medium-core-tokens.js';
@@ -18,7 +19,10 @@ import '@spectrum-web-components/divider/sp-divider.js';
 import '@spectrum-web-components/dialog/sp-dialog-base.js';
 import '@spectrum-web-components/menu/sp-menu-divider.js';
 import '@spectrum-web-components/overlay/sp-overlay.js';
+import '@spectrum-web-components/overlay/overlay-trigger.js';
+import '@spectrum-web-components/popover/sp-popover.js';
 import '@spectrum-web-components/picker/sp-picker.js';
+import '@spectrum-web-components/progress-circle/sp-progress-circle.js';
 import '@spectrum-web-components/status-light/sp-status-light.js';
 import '@spectrum-web-components/switch/sp-switch.js';
 import '@spectrum-web-components/tabs/sp-tabs.js';
@@ -38,9 +42,6 @@ import './app/components/plugin/login/login.js';
 import './app/components/dialog-wrapper/dialog-wrapper.js';
 import './app/components/spectrum/action-menu/action-menu.js';
 import './app/components/spectrum/menu-group/menu-group.js';
-import './app/components/spectrum/action-button/action-button.js';
-import './app/components/spectrum/progress-circle/progress-circle.js';
-import './app/components/spectrum/theme/theme.js';
 import './app/components/bulk/bulk-result/bulk-result.js';
 import './app/components/onboarding/onboarding-dialog.js';
 

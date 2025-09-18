@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_title__",
-  "version": "7.1.4",
+  "version": "7.19.3",
   "author": "Adobe",
   "homepage_url": "https://www.aem.live/docs/sidekick",
   "default_locale": "en",
@@ -51,7 +51,8 @@
         "utis/admin.js",
         "utils/rum.js",
         "url-cache.js",
-        "views/json/*"
+        "views/json/*",
+        "views/login/*"
       ],
       "matches": [
         "<all_urls>"

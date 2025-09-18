@@ -1,7 +1,78 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "无法预览$1：包含的图像大于20MB"
+  },
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "无法从 $2 中获取 $1。"
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "无法预览 $1：空文件"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "无法预览 $1：文件大于 100MB"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "无法预览 $1：ICO 大于 16KB"
+  },
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "无法预览$1：图像大于20MB"
+  },
+  "AEM_BACKEND_JSON_INVALID": {
+    "message": "无法预览 $2：无效的 JSON"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "无法预览 $1：MP4 比特率高于 300KB/s"
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "无法预览 $1：无效的 MP4"
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "无法预览 $1：MP4 长度超过 2 分钟"
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "无法预览 $1：预期为 $2，但实际为 $3"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "未找到文件。源文档缺失或未与 AEM 共享。"
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "无法预览 $1：内容类型标头缺失"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "无法预览 $1：未找到处理程序"
+  },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "无法预览 $1：PDF 大于 10MB"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "无法预览 $1：SVG 包含无效的 XML"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "无法预览 $1：SVG 根项缺失"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "无法预览 $1：SVG 中检测到非法脚本"
+  },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "无法预览 $1：SVG 大于 20KB"
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "无法预览 $1：文件类型不受支持"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "无法预览 $1：文件类型不受支持"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "无法预览 $1：$2"
+  },
   "activate": {
-    "description": "激活配置",
     "message": "激活"
+  },
+  "activate_bulk_not_supported": {
+    "message": "不支持激活多个配置。"
+  },
+  "activate_success": {
+    "message": "配置已成功激活。"
   },
   "add": {
     "message": "添加"
@@ -13,11 +84,13 @@
     "message": "管理员版本：x.y.z"
   },
   "advanced": {
-    "description": "高级配置模式",
     "message": "高级"
   },
   "anonymous": {
     "message": "匿名"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "是否确实要激活此配置？"
   },
   "bulk_confirm_empty": {
     "message": "未选中任何文件"
@@ -122,7 +195,7 @@
     "message": "关闭"
   },
   "close_sidekick": {
-    "message": "关闭Sidekick"
+    "message": "关闭 Sidekick"
   },
   "code_state": {
     "message": "代码文件无可用操作"
@@ -137,14 +210,12 @@
     "message": "添加该项目"
   },
   "config_project_added": {
-    "description": "项目已添加",
     "message": "$1 已成功添加 "
   },
   "config_project_disable": {
     "message": "禁用该项目"
   },
   "config_project_disabled": {
-    "description": "项目已禁用",
     "message": "已禁用 $1"
   },
   "config_project_disabled_headline": {
@@ -154,7 +225,6 @@
     "message": "启用该项目"
   },
   "config_project_enabled": {
-    "description": "项目已启用",
     "message": "已启用 $1"
   },
   "config_project_enabled_headline": {
@@ -181,6 +251,9 @@
   "config_project_imported_single": {
     "message": "已成功从 AEM Sidekick v6 导入 1 个项目。"
   },
+  "config_project_manage": {
+    "message": "管理项目"
+  },
   "config_project_pick": {
     "message": "选择一个项目"
   },
@@ -188,17 +261,15 @@
     "message": "删除该项目"
   },
   "config_project_removed": {
-    "description": "项目已移除",
-    "message": "$1 个已成功删除 "
+    "message": "$1 已成功移除"
   },
   "config_remove_project_headline": {
     "message": "已移除项目"
   },
-  "config_success": {
-    "message": "配置已成功激活。"
+  "config_state": {
+    "message": "正在激活配置······"
   },
   "confirm": {
-    "description": "确认模式标题",
     "message": "请确认"
   },
   "copied": {
@@ -244,7 +315,7 @@
     "message": "无法复制到剪贴板。请确保窗口保持聚焦状态。"
   },
   "dark_mode": {
-    "message": "深色模式"
+    "message": "深色主题"
   },
   "delete": {
     "message": "删除"
@@ -271,7 +342,7 @@
     "message": "该页面仍有源文档，因此无法删除。"
   },
   "delete_page_success": {
-    "message": "页面已成功删除、重新加载……"
+    "message": "页面已成功删除，正在重新加载……"
   },
   "deleting_state": {
     "message": "删除中……"
@@ -291,11 +362,14 @@
   "destructive_confirmation_prompt": {
     "message": "输入 $1 来确认"
   },
+  "details": {
+    "message": "详细信息"
+  },
   "development": {
     "message": "开发"
   },
   "docs": {
-    "message": "https://www.hlx.live/docs/sidekick"
+    "message": "https://www.aem.live/docs/sidekick"
   },
   "edit": {
     "message": "编辑"
@@ -304,7 +378,7 @@
     "message": "已编辑: "
   },
   "edit_last_updated": {
-    "message": "上次编辑 $1 个"
+    "message": "上次编辑：$1"
   },
   "edit_never_updated": {
     "message": "从未保存"
@@ -319,10 +393,13 @@
     "message": "错误"
   },
   "error_429": {
-    "message": "429 请求过多：您的项目正受到 $1 的限制。请稍候再试。"
+    "message": "请求过多：您的项目正受到 $1 的限制。请稍候再试。"
   },
   "error_delete": {
     "message": "删除失败。请稍后再试。"
+  },
+  "error_details": {
+    "message": "错误详细信息"
   },
   "error_fatal": {
     "message": "抱歉，我们目前似乎遇到了问题。请稍后重试。"
@@ -331,7 +408,7 @@
     "message": "出现错误：$1"
   },
   "error_job_404": {
-    "message": "404 未找到：没有此类作业。"
+    "message": "找不到作业。"
   },
   "error_login_aborted": {
     "message": "登录已中止。"
@@ -345,15 +422,6 @@
   "error_preview": {
     "message": "预览生成失败。请稍后重试。"
   },
-  "error_preview_400": {
-    "message": "预览生成失败。请检查文件格式、名称或路径。"
-  },
-  "error_preview_404": {
-    "message": "源文档不存在，预览生成失败。"
-  },
-  "error_preview_415": {
-    "message": "不支持的文件类型。请参阅文档以了解支持的文件类型。"
-  },
   "error_preview_config": {
     "message": "无法激活配置：$1"
   },
@@ -366,38 +434,17 @@
   "error_preview_not_gdoc_generic": {
     "message": "预览生成失败。必须是 Google 文档或电子表格。"
   },
-  "error_preview_svg_invalid": {
-    "message": "SVG 无效。请确保它是有效的 XML 并且不包含脚本。"
-  },
-  "error_preview_too_large": {
-    "message": "文件太大。请参阅文档以了解文件大小限制。"
-  },
   "error_publish": {
     "message": "发布失败。请稍后再试。"
   },
   "error_publish_404": {
     "message": "发布失败，请先生成预览。"
   },
-  "error_status_400": {
-    "message": "400 错误请求：无效 URL。"
+  "error_status": {
+    "message": "获取页面状态失败。请稍后再试。"
   },
-  "error_status_404_content": {
-    "message": "404 未找到：请检查您的 Sidekick 配置或 URL。"
-  },
-  "error_status_404_document": {
-    "message": "404 未找到：检查您的 Sidekick 配置并确保已授予对该文档的访问权限。"
-  },
-  "error_status_500": {
-    "message": "500 内部服务器错误：获取页面状态失败。请稍后再试。"
-  },
-  "error_status_502": {
-    "message": "502 错误的网关：获取页面状态失败。请稍后再试。"
-  },
-  "error_status_504": {
-    "message": "504 网关超时：获取页面状态失败。请稍后再试。"
-  },
-  "error_status_invalid": {
-    "message": "服务器响应无效。检查您的 Sidekick 配置或 URL。"
+  "error_status_404": {
+    "message": "无法获取页面状态。请确保此文档已与 AEM 共享。"
   },
   "error_unpublish": {
     "message": "取消发布失败。请稍后再试。"
@@ -412,7 +459,7 @@
     "message": "帮助和文档"
   },
   "homepage": {
-    "message": "https://www.hlx.live/tools/sidekick/"
+    "message": "https://www.aem.live/tools/sidekick/"
   },
   "import": {
     "message": "导入"
@@ -421,7 +468,7 @@
     "message": "信息"
   },
   "join_discord": {
-    "message": "不和时加入我们"
+    "message": "加入我们的 Discord"
   },
   "json_results_stat": {
     "message": "显示 $2 个结果中的 $1 个"
@@ -433,10 +480,16 @@
     "message": "实时"
   },
   "live_last_updated": {
-    "message": "上次发布 $1 个"
+    "message": "上次发布：$1"
+  },
+  "live_last_updated_by": {
+    "message": "上次发布 $1 个，发布者 $2"
   },
   "live_never_updated": {
     "message": "从未发布"
+  },
+  "loading_diff": {
+    "message": "正在加载更改…"
   },
   "logging_in_state": {
     "message": "正在登录……"
@@ -460,14 +513,25 @@
     "message": "无"
   },
   "next": {
-    "description": "下一张入门幻灯片",
     "message": "下一页"
+  },
+  "no_data": {
+    "message": "无数据"
+  },
+  "no_data_subheading": {
+    "message": "此表为空"
+  },
+  "no_diffs": {
+    "message": "未发现任何更改"
+  },
+  "no_diffs_subheading": {
+    "message": "预览和发布的内容相同"
   },
   "no_results": {
     "message": "未找到结果"
   },
   "no_results_subheading": {
-    "message": "尝试细化您的搜索词"
+    "message": "请尝试改进您的搜索词"
   },
   "not_authorized": {
     "message": "未授权"
@@ -488,7 +552,6 @@
     "message": "在 $1 中打开"
   },
   "open_preview": {
-    "description": "打开给定 GitHub 分支的预览 URL",
     "message": "打开预览 URL"
   },
   "open_url": {
@@ -516,16 +579,13 @@
     "message": "已预览："
   },
   "preview_last_updated": {
-    "message": "上次更新 $1 个"
+    "message": "上次更新：$1 "
+  },
+  "preview_last_updated_by": {
+    "message": "上次更新 $1 个，更新者 $2"
   },
   "preview_never_updated": {
     "message": "从未预览过"
-  },
-  "preview_onedrive": {
-    "message": "专业提示：在生成预览前按 Ctrl + S 可立即查看最新更改..."
-  },
-  "preview_onedrive_mac": {
-    "message": "专业提示：在生成预览前按 ⌘ + S 可立即查看最新更改..."
   },
   "preview_success": {
     "message": "预览已成功更新，正在打开预览……"
@@ -534,7 +594,10 @@
     "message": "正在更新预览……"
   },
   "prod_last_updated": {
-    "message": "上次发布 $1 个"
+    "message": "上次发布：$1"
+  },
+  "prod_last_updated_by": {
+    "message": "上次发布 $1 个，发布者 $2"
   },
   "prod_never_updated": {
     "message": "从未发布"
@@ -555,10 +618,16 @@
     "message": "预览已更新"
   },
   "publish_success": {
-    "message": "发布成功，打开 $1 个……"
+    "message": "发布成功，正在打开$1……"
   },
   "publishing_state": {
     "message": "正在发布..."
+  },
+  "review": {
+    "message": "审查"
+  },
+  "review_last_updated": {
+    "message": "上次更新 $1 个"
   },
   "save": {
     "message": "保存"
@@ -572,15 +641,38 @@
   "share_description": {
     "message": "共享您的 Sidekick"
   },
+  "show_all": {
+    "message": "显示所有行"
+  },
+  "show_diff": {
+    "message": "显示更改"
+  },
+  "site_forbidden": {
+    "message": "访问被拒。请尝试以其他用户身份登录或向管理员申请足够的权限。"
+  },
+  "site_login_required": {
+    "message": "请登录以继续。"
+  },
+  "site_protected": {
+    "message": "此网站受保护"
+  },
+  "site_relogin_required": {
+    "message": "访问过期。请重新登录以继续。"
+  },
+  "snapshot_update_success": {
+    "message": "已成功更新快照，正在打开审阅……"
+  },
   "source": {
     "message": "源"
   },
   "standard": {
-    "description": "标准配置模式",
     "message": "标准"
   },
   "switch_view": {
     "message": "查看"
+  },
+  "system": {
+    "message": "AEM 系统用户"
   },
   "title": {
     "message": "AEM Sidekick"
@@ -604,13 +696,12 @@
     "message": "该页面仍有源文档，因此无法取消发布。"
   },
   "unpublish_page_success": {
-    "message": "页面已成功取消发布、重新加载……"
+    "message": "页面已成功取消发布，正在重新加载…"
   },
   "unpublishing_state": {
     "message": "正在取消发布……"
   },
   "update": {
-    "description": "更新页面预览",
     "message": "更新"
   },
   "update_success": {
@@ -629,7 +720,6 @@
     "message": "切换用户"
   },
   "whats_new": {
-    "description": "入门菜单标题",
     "message": "新增功能"
   },
   "yesterday_at": {

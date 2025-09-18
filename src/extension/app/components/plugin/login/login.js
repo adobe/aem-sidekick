@@ -89,7 +89,7 @@ export class LoginButton extends ConnectedElement {
       border-radius: 50%;
     }
     
-    sk-progress-circle[size="s"] {
+    sp-progress-circle[size="s"] {
       margin: 0 8px;
     }
 
@@ -123,7 +123,7 @@ export class LoginButton extends ConnectedElement {
       display: none;
     }
 
-    :host(.not-authorized) sk-action-button.login {
+    :host(.not-authorized) sp-action-button.login {
       background-color: var(--spectrum2-sidekick-cta-background-color);
       color: #fff;
     }
@@ -176,7 +176,8 @@ export class LoginButton extends ConnectedElement {
     const { profile } = this.appStore.status;
     const authenticated = this.appStore.isAuthenticated();
 
-    if ((!this.appStore.status.webPath && this.appStore.status?.status !== 401)
+    if ((!this.appStore.status.webPath
+      && this.appStore.status?.status !== 401 && this.appStore.status?.status !== 403)
       || this.appStore.state === STATE.LOGGING_IN
       || this.appStore.state === STATE.LOGGING_OUT) {
       return html`
@@ -186,8 +187,8 @@ export class LoginButton extends ConnectedElement {
       `;
     }
 
-    if (!authenticated) {
-      return html`<sk-action-button quiet class="login" @click=${this.login}>${this.appStore.i18n('user_login')}</sk-action-button>`;
+    if (!authenticated && this.appStore.status?.status !== 403) {
+      return html`<sp-action-button quiet class="login" @click=${this.login}>${this.appStore.i18n('user_login')}</sp-action-button>`;
     } else {
       return html`
         <sp-action-menu
@@ -197,12 +198,14 @@ export class LoginButton extends ConnectedElement {
           <sp-icon slot="icon" size="l" class=${ifDefined(this.profilePicture ? 'picture' : undefined)}>
             ${this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile.name} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
+          ${profile && profile.name && profile.email ? html`
           <sk-menu-item class="user" value="user" tabindex="-1" disabled>
             ${this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile.name} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
             ${profile.name}
             <span slot="description">${profile.email}</span>
           </sk-menu-item>
           <sp-divider size="s"></sp-divider>
+          ` : ''}
           <sk-menu-item class="logout" value="logout" @click=${this.logout} tabindex="0">
             <sp-icon slot="icon" size="xl">
               ${ICONS.SIGN_OUT}

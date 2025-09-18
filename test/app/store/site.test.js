@@ -11,11 +11,14 @@
  */
 /* eslint-disable no-unused-expressions, no-import-assign, import/no-extraneous-dependencies */
 
+// @ts-ignore
+import fetchMock from 'fetch-mock/esm/client.js';
 import { expect } from '@open-wc/testing';
 import { AppStore } from '../../../src/extension/app/store/app.js';
 import chromeMock from '../../mocks/chrome.js';
-import { SidekickTest } from '../../sidekick-test.js';
+import { defaultConfigJSONUrl, SidekickTest } from '../../sidekick-test.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
+import { error } from '../../test-utils.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -53,38 +56,43 @@ describe('Test Site Store', () => {
     mountpoints: ['https://drive.google.com/drive/folders/folder-id'],
   };
 
-  describe('loadContext', () => {
+  let sandbox;
+
   /**
    * @type {SidekickTest}
    */
-    let sidekickTest;
+  let sidekickTest;
 
-    /**
+  /**
    * @type {AEMSidekick}
    */
-    let sidekickElement;
+  let sidekickElement;
 
-    /**
+  /**
    * @type {AppStore}
    */
-    let appStore;
+  let appStore;
 
-    beforeEach(() => {
-      appStore = new AppStore();
-      sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
+  beforeEach(() => {
+    appStore = new AppStore();
+    sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
 
-      sidekickTest
-        .mockFetchStatusSuccess()
-        .mockFetchSidekickConfigNotFound();
+    sidekickTest
+      .mockFetchStatusSuccess()
+      .mockFetchSidekickConfigEmpty(); // we expect an empty config by default
 
-      // @ts-ignore
-      sidekickElement = document.createElement('div');
-    });
+    // @ts-ignore
+    sidekickElement = document.createElement('helix-sidekick');
+    document.body.appendChild(sidekickElement);
+    sandbox = sidekickTest.sandbox;
+  });
 
-    afterEach(() => {
-      sidekickTest.destroy();
-    });
+  afterEach(() => {
+    sandbox.restore();
+    sidekickTest.destroy();
+  });
 
+  describe('loadContext', () => {
     it('minimum config', async () => {
       await appStore.loadContext(sidekickElement, defaultConfig);
 
@@ -118,6 +126,7 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.stdInnerHost).to.equal('main--aem-boilerplate--adobe.aem.page');
       expect(appStore.siteStore.stdOuterHost).to.equal('main--aem-boilerplate--adobe.aem.live');
       expect(appStore.siteStore.outerHost).to.equal('main--aem-boilerplate--adobe.aem.live');
+      expect(appStore.siteStore.reviewHost).to.equal('main--aem-boilerplate--adobe.aem.reviews');
     });
 
     it('special views ', async () => {
@@ -175,10 +184,35 @@ describe('Test Site Store', () => {
 
     it('auth enabled and not logged in (401 on config.json)', async () => {
       sidekickTest
-        .mockFetchSidekickConfigUnAuthorized();
+        .mockFetchSidekickConfigUnauthorized();
 
       await appStore.loadContext(sidekickElement, defaultConfig);
-      expect(appStore.siteStore.authorized).to.equal(false);
+      expect(appStore.siteStore.status).to.equal(401);
+    });
+
+    it('handles 404', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigNotFound();
+
+      await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(appStore.siteStore.status).to.equal(404);
+    });
+
+    it('handles server error', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigError();
+
+      await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(appStore.siteStore.status).to.equal(500);
+      expect(appStore.siteStore.error).to.equal('just a test');
+    });
+
+    it('handles network error', async () => {
+      fetchMock.get(defaultConfigJSONUrl, { throws: error }, { overwriteRoutes: true });
+
+      await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(appStore.siteStore.status).to.be.undefined;
+      expect(appStore.siteStore.error).to.equal(error.message);
     });
 
     it('with window.hlx.sidekickConfig', async () => {
@@ -204,6 +238,99 @@ describe('Test Site Store', () => {
       };
       await appStore.loadContext(sidekickElement, config);
       expect(appStore.siteStore.contentSourceEditLabel).to.equal('Universal Editor');
+    });
+
+    it('with custom sourceEditUrl', async () => {
+      /**
+       * @type {SidekickOptionsConfig | ClientConfig}
+       */
+      const config = {
+        ...defaultConfig,
+        editUrlLabel: 'Universal Editor',
+        editUrlPattern: '{{contentSourceUrl}}{{pathname}}?cmd=open',
+      };
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.contentSourceEditLabel).to.equal('Universal Editor');
+    });
+
+    it('with custom wordSaveDelay', async () => {
+      /**
+       * @type {SidekickOptionsConfig | ClientConfig}
+       */
+      const config = {
+        ...defaultConfig,
+        wordSaveDelay: 3000,
+      };
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.wordSaveDelay).to.equal(3000);
+      expect(appStore.siteStore.toJSON().wordSaveDelay).to.equal(3000);
+
+      // reject non-integer value
+      // @ts-ignore
+      config.wordSaveDelay = '3000';
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.wordSaveDelay).to.equal(1500); // default
+    });
+  });
+
+  describe('update project config', () => {
+    const config = {
+      id: 'business-website',
+      owner: 'adobe',
+      repo: 'business-website',
+      ref: 'main',
+      previewHost: 'old-preview.example.com',
+      liveHost: 'old-live.example.com',
+      reviewHost: 'old-review.example.com',
+      project: 'business-website',
+      host: 'business-website.example.com',
+      contentSourceUrl: 'https://adobe.sharepoint.com/sites/business-website',
+      contentSourceType: 'sharepoint',
+    };
+
+    it('sends current config to service worker', async () => {
+      const sendMessageStub = sandbox.stub(chrome.runtime, 'sendMessage');
+
+      appStore.siteStore.status = 200;
+      await appStore.loadContext(sidekickElement, config);
+
+      expect(sendMessageStub.calledOnce).to.be.true;
+      expect(sendMessageStub.firstCall.args[0]).to.deep.equal({
+        action: 'updateProject',
+        config: {
+          owner: 'adobe',
+          repo: 'business-website',
+          ref: 'main',
+          previewHost: 'old-preview.example.com',
+          liveHost: 'old-live.example.com',
+          reviewHost: 'old-review.example.com',
+          project: 'business-website',
+          mountpoints: ['https://adobe.sharepoint.com/sites/business-website'],
+          host: 'business-website.example.com',
+        },
+      });
+    });
+
+    it('does not send config if status not 200', async () => {
+      const sendMessageStub = sandbox.stub(chrome.runtime, 'sendMessage');
+
+      appStore.siteStore.status = 401;
+      await appStore.loadContext(sidekickElement, config);
+
+      expect(sendMessageStub.called).to.be.false;
+    });
+
+    it('does not send config for transient projects', async () => {
+      const sendMessageStub = sandbox.stub(chrome.runtime, 'sendMessage');
+
+      appStore.siteStore.status = 200;
+      await appStore.loadContext(sidekickElement, {
+        ...config,
+        // @ts-ignore
+        transient: true,
+      });
+
+      expect(sendMessageStub.called).to.be.false;
     });
   });
 });

@@ -20,8 +20,11 @@ import { AdminClient } from '../utils/admin-client.js';
 import sampleRUM from '../../utils/rum.js';
 import { fetchLanguageDict, i18n } from '../utils/i18n.js';
 import {
-  getLocation, matchProjectHost, isSupportedFileExtension, globToRegExp,
-  is401Page,
+  getLocation,
+  matchProjectHost,
+  isSupportedFileExtension,
+  globToRegExp,
+  isErrorPage,
 } from '../utils/browser.js';
 import { EventBus } from '../utils/event-bus.js';
 import {
@@ -231,17 +234,16 @@ export class AppStore {
       return;
     }
 
-    const { profile } = this.status;
-    const { authorized } = this.siteStore;
+    const { status } = this.status || {};
     const code = this.status?.code?.status === 200;
     const media = this.status?.webPath?.match(/\/media[_-]+\d+/)
       && this.status?.preview?.status === 404
       && this.status?.live?.status === 404
       && this.status?.code?.status === 404;
 
-    if (!profile && !authorized) {
+    if (status === 401) {
       this.state = STATE.LOGIN_REQUIRED;
-    } else if (!authorized) {
+    } else if (status === 403) {
       this.state = STATE.UNAUTHORIZED;
     } else if (media) {
       this.state = STATE.MEDIA;
@@ -281,7 +283,7 @@ export class AppStore {
   setupCorePlugins() {
     this.corePlugins = {};
 
-    if (this.siteStore.ready && this.siteStore.authorized) {
+    if (this.siteStore.ready && this.siteStore.status === 200) {
       const envPlugin = createEnvPlugin(this);
       const editPlugin = createEditPlugin(this);
       const previewPlugin = createPreviewPlugin(this);
@@ -319,7 +321,7 @@ export class AppStore {
   setupCustomPlugins() {
     this.customPlugins = {};
 
-    if (this.siteStore.authorized) {
+    if (this.siteStore.status === 200) {
       const {
         location,
         siteStore: {
@@ -337,6 +339,8 @@ export class AppStore {
             passConfig,
             passReferrer,
             isPalette,
+            isPopover,
+            popoverRect,
             event: eventName,
             environments,
             excludePaths,
@@ -347,6 +351,27 @@ export class AppStore {
             badgeVariant,
             confirm,
           } = cfg;
+
+          let processedUrl;
+          if (url) {
+            const target = new URL(url, `https://${innerHost}/`);
+            target.searchParams.set('theme', this.theme);
+            if (passConfig) {
+              target.searchParams.append('ref', this.siteStore.ref);
+              target.searchParams.append('repo', this.siteStore.repo);
+              target.searchParams.append('owner', this.siteStore.owner);
+              if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
+              if (this.siteStore.previewHost) target.searchParams.append('previewHost', this.siteStore.previewHost);
+              if (this.siteStore.liveHost) target.searchParams.append('liveHost', this.siteStore.liveHost);
+              if (this.siteStore.reviewHost) target.searchParams.append('reviewHost', this.siteStore.reviewHost);
+              if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+            }
+            if (passReferrer) {
+              target.searchParams.append('referrer', location.href);
+            }
+            processedUrl = target.toString();
+          }
+
           const condition = (appStore) => {
             let excluded = false;
             const pathSearchHash = appStore.location.href.replace(appStore.location.origin, '');
@@ -370,6 +395,7 @@ export class AppStore {
               edit: appStore.isEditor,
               preview: appStore.isPreview,
               live: appStore.isLive,
+              review: appStore.isReview,
               prod: appStore.isProd,
             };
             return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
@@ -378,34 +404,25 @@ export class AppStore {
           const plugin = {
             custom: true,
             id,
+            title,
+            titleI18n,
             condition,
             button: {
               text: (titleI18n && titleI18n[lang]) || title,
               action: () => {
-                if (url) {
-                  const target = new URL(url, `https://${innerHost}/`);
-                  if (passConfig) {
-                    target.searchParams.append('ref', this.siteStore.ref);
-                    target.searchParams.append('repo', this.siteStore.repo);
-                    target.searchParams.append('owner', this.siteStore.owner);
-                    if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
-                    if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
-                  }
-                  if (passReferrer) {
-                    target.searchParams.append('referrer', location.href);
-                  }
+                if (processedUrl) {
                   if (isPalette) {
                     EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.OPEN_PALETTE, {
                       detail: {
                         plugin: {
                           ...cfg,
-                          url: target.toString(),
+                          url: processedUrl,
                         },
                       },
                     }));
                   } else {
                     // open url in new window
-                    this.openPage(target.toString(), `aem-sk-${id}`);
+                    this.openPage(processedUrl, `aem-sk-${id}`);
                   }
                 } else if (eventName) {
                   // fire custom event
@@ -417,17 +434,28 @@ export class AppStore {
             pinned,
             confirm,
             container: containerId,
+            url: processedUrl,
             isBadge,
+            isPopover,
+            passConfig,
+            passReferrer,
+            popoverRect,
             badgeVariant,
           };
 
           // check if this overlaps with a core plugin, if so override the condition only
-          const corePlugin = this.corePlugins[plugin.id];
-          if (corePlugin) {
-            // extend default condition
-            const { condition: defaultCondition } = corePlugin.config;
-            corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
-            corePlugin.config.confirm = confirm;
+          const corePlugins = Object.keys(this.corePlugins)
+            .filter((key) => key === plugin.id || key === `bulk-${plugin.id}`)
+            .map((key) => this.corePlugins[key]);
+          if (corePlugins.length > 0) {
+            corePlugins.forEach((corePlugin) => {
+              // extend default condition
+              const { condition: defaultCondition } = corePlugin.config;
+              corePlugin.config.condition = (s) => defaultCondition(s) && condition(s);
+              if (confirm) {
+                corePlugin.config.confirm = confirm;
+              }
+            });
           } else {
             // add custom plugin
             const customPlugin = new Plugin(plugin, this);
@@ -451,8 +479,8 @@ export class AppStore {
   }
 
   /**
-   * Checks if the current location is an inner CDN URL.
-   * @returns {boolean} <code>true</code> if inner CDN URL, else <code>false</code>
+   * Checks if the current location is a preview URL.
+   * @returns {boolean} <code>true</code> if preview URL, else <code>false</code>
    */
   isPreview() {
     const { siteStore, location } = this;
@@ -461,8 +489,18 @@ export class AppStore {
   }
 
   /**
-   * Checks if the current location is an outer CDN URL.
-   * @returns {boolean} <code>true</code> if outer CDN URL, else <code>false</code>
+   * Checks if the current location is a review URL.
+   * @returns {boolean} <code>true</code> if review URL, else <code>false</code>
+   */
+  isReview() {
+    const { siteStore, location } = this;
+    return matchProjectHost(siteStore.reviewHost, location.host)
+      || matchProjectHost(siteStore.stdReviewHost, location.host);
+  }
+
+  /**
+   * Checks if the current location is a live URL.
+   * @returns {boolean} <code>true</code> if live URL, else <code>false</code>
    */
   isLive() {
     const { siteStore, location } = this;
@@ -495,7 +533,7 @@ export class AppStore {
   isProject() {
     const { siteStore } = this;
     return siteStore.owner && siteStore.repo
-        && (this.isDev() || this.isPreview() || this.isLive() || this.isProd());
+      && (this.isDev() || this.isPreview() || this.isReview() || this.isLive() || this.isProd());
   }
 
   /**
@@ -623,15 +661,20 @@ export class AppStore {
    */
   getContentSourceLabel() {
     const { contentSourceType, contentSourceEditLabel } = this.siteStore;
+    const { preview: { sourceLocation } = {} } = this.status;
 
-    if (contentSourceType === 'onedrive') {
+    if (sourceLocation?.startsWith('onedrive:')) {
+      return 'SharePoint';
+    } else if (sourceLocation?.startsWith('gdrive:')) {
+      return 'Google Drive';
+    } else if (sourceLocation?.startsWith('markup:')) {
+      return contentSourceEditLabel || 'BYOM';
+    } else if (contentSourceType === 'onedrive') {
       return 'SharePoint';
     } else if (contentSourceType === 'google') {
       return 'Google Drive';
-    } else if (contentSourceEditLabel) {
-      return contentSourceEditLabel;
     } else {
-      return 'BYOM';
+      return contentSourceEditLabel || 'BYOM';
     }
   }
 
@@ -719,9 +762,10 @@ export class AppStore {
         },
         status,
       };
-      sidekick.dispatchEvent(new CustomEvent(name, {
-        detail: data,
-      }));
+      const event = new CustomEvent(name, {
+        detail: JSON.parse(JSON.stringify(data)),
+      });
+      sidekick.dispatchEvent(event);
       const userEvents = [
         'updated',
         'previewed',
@@ -862,8 +906,28 @@ export class AppStore {
       this.location = getLocation();
     }
 
-    const { owner, repo, ref } = this.siteStore;
+    const {
+      owner, repo, ref, status: configStatus, error: configError,
+    } = this.siteStore;
     if (!owner || !repo || !ref) {
+      return status;
+    }
+    if (configStatus !== 200) {
+      // inherit status code from config
+      status = { status: configStatus };
+      this.updateStatus(status);
+
+      if (configStatus >= 500 || (!configStatus && configError)) {
+        // fetching config failed, show fatal error
+        this.api.handleFatalError('sidekick', configError);
+      } else if (configStatus === 404) {
+        // project doesn't exist, remove sidekick
+        this.sidekick.remove();
+      } else {
+        // set appropriate state
+        this.setState();
+      }
+
       return status;
     }
 
@@ -950,9 +1014,16 @@ export class AppStore {
       // special handling of config files
       if (this.status.webPath.startsWith('/.helix/')) {
         this.showToast({
-          message: this.i18n('config_success'),
+          message: this.i18n('activate_success'),
           variant: 'positive',
         });
+      } else if (this.status.webPath.startsWith('/.snapshots/')) {
+        // special handling of snapshot updates
+        this.showToast({
+          message: this.i18n('snapshot_update_success'),
+          variant: 'positive',
+        });
+        this.switchEnv('review', false, true);
       } else {
         this.showToast({
           message: this.i18n('preview_success'),
@@ -1052,23 +1123,26 @@ export class AppStore {
       iframe.setAttribute('allow', 'clipboard-write *');
       view.appendChild(iframe);
 
+      // hide the pre element if it exists (JSON view)
+      const pre = document.querySelector('pre');
+      if (pre) {
+        pre.style.display = 'none';
+      }
+
       // listen for messages from the view
       window.addEventListener('message', (event) => {
         // only accept messages from the extension
         if (event.origin === `chrome-extension://${chrome.runtime.id}`) {
           const { data } = event;
           if (data.detail.event === 'hlx-close-view') {
+            // restore the pre element if it exists (JSON view)
+            if (pre) {
+              pre.style.display = 'block';
+            }
             view.remove();
-            [...this.sidekick.parentElement.children].forEach((el) => {
-              if (el !== this.sidekick) {
-                try {
-                  // @ts-ignore
-                  el.style.display = 'initial';
-                } catch (e) {
-                  // ignore
-                }
-              }
-            });
+          }
+          if (data.detail.event === 'hlx-login') {
+            this.login(!!data.detail.selectAccount);
           }
         }
       });
@@ -1091,36 +1165,51 @@ export class AppStore {
         search,
       },
     } = this;
+    let view;
+    if (isErrorPage(location, document)) {
+      // assert viewport meta tag
+      if (!document.head.querySelector('meta[name="viewport"]')) {
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1';
+        document.head.appendChild(meta);
+      }
+      const auth = this.isAuthenticated();
+      // 401
+      if (document.querySelector('body > pre').textContent.trim() === '401 Unauthorized') {
+        view = {
+          viewer: chrome.runtime.getURL(`views/login/login.html?status=401&auth=${auth}`),
+        };
+      }
+      // 403
+      if (document.querySelector('body > pre').textContent.trim() === '403 Forbidden') {
+        view = {
+          viewer: chrome.runtime.getURL('views/login/login.html?status=403'),
+        };
+      }
+    }
+
     const searchParams = new URLSearchParams(search);
     if (searchParams.get('path')) {
       // custom view
       return;
     }
-    const [view] = this.findViews(VIEWS.DEFAULT);
+    if (!view) {
+      [view] = this.findViews(VIEWS.DEFAULT);
+    }
     if (view && !this.getViewOverlay()) {
-      const { viewer, title } = view;
+      const { viewer, title = () => '' } = view;
       if (viewer) {
         const viewUrl = new URL(viewer, origin);
         viewUrl.searchParams.set('url', href);
         viewUrl.searchParams.set('title', title(this.sidekick));
         const viewOverlay = this.getViewOverlay(true);
         viewOverlay.querySelector('.container').setAttribute('src', viewUrl.toString());
-        // hide original content
-        [...this.sidekick.parentElement.children].forEach((el) => {
-          if (el !== this.sidekick) {
-            try {
-              // @ts-ignore
-              el.style.display = 'none';
-            } catch (e) {
-              // ignore
-            }
-          }
-        });
       }
     }
   }
 
-  getBYOMSourceUrl() {
+  getBYOMSourceUrl(status) {
     const {
       owner,
       repo,
@@ -1129,7 +1218,11 @@ export class AppStore {
     } = this.siteStore;
     if (!contentSourceEditPattern || typeof contentSourceEditPattern !== 'string') return undefined;
 
-    let { pathname } = this.location;
+    let { webPath: pathname } = status || this.status;
+    if (!pathname) {
+      return undefined;
+    }
+
     if (pathname.endsWith('/')) pathname += 'index';
 
     const url = contentSourceEditPattern
@@ -1146,9 +1239,63 @@ export class AppStore {
    * @param {string} targetEnv One of the following environments:
    *        edit, dev, preview, live or prod
    * @param {boolean} [open] true if environment should be opened in new tab
+   * @param {boolean} [cacheBust] true if cache busting should be applied
+   * @param {boolean} [prodCheck] true if the prod site should be checked
    * @fires Sidekick#envswitched
    */
-  async switchEnv(targetEnv, open = false, cacheBust = false) {
+  async switchEnv(targetEnv, open = false, cacheBust = false, prodCheck = false) {
+    const getCacheBuster = (url) => {
+      // Check if cache busting should be applied based on the environment and conditions.
+      // The logic prevents cache busting if:
+      // The target environment is 'prod' && the envUrl does not include any of the live
+      // domains & the sidekick is running in transient mode.
+      const liveDomains = ['aem.live', 'hlx.live'];
+      if (cacheBust
+        && !(targetEnv === 'prod' && !liveDomains.some((domain) => url.includes(domain)) && this.siteStore.transient)) {
+        return `?nocache=${Date.now()}`;
+      }
+      return '';
+    };
+
+    const getEditUrl = async () => {
+      const isReview = this.isReview();
+      if (isReview) {
+        // prefix pathname with snapshot
+        const snapshot = this.location.hostname.endsWith(this.siteStore.stdReviewHost)
+          ? this.location.hostname.split('--')[0]
+          : 'default'; // custom review host
+        this.location.pathname = `/.snapshots/${snapshot}${this.location.pathname}`;
+      }
+
+      let updatedStatus = await this.fetchStatus(false, true, isReview);
+      let editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl(updatedStatus);
+
+      if (isReview) {
+        // restore original pathname and state
+        this.location = getLocation();
+        this.setState();
+        if (!editUrl) {
+          // no snapshot source, fall back to original edit URL
+          updatedStatus = await this.fetchStatus(false, true);
+          editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl(updatedStatus);
+        }
+      }
+
+      if (editUrl) {
+        return new URL(editUrl);
+      }
+      return null;
+    };
+
+    const getEnvUrl = (envHost, webPath, location, devUrl = {}) => {
+      const envOrigin = targetEnv === 'dev' ? devUrl.origin : `https://${envHost}`;
+      let envUrl = `${envOrigin}${webPath}`;
+      if (!this.isEditor()) {
+        envUrl += `${location.search}${location.hash}`;
+      }
+      return new URL(`${envUrl}${getCacheBuster(envUrl)}`);
+    };
+
     const hostType = ENVS[targetEnv];
     if (!hostType) {
       // eslint-disable-next-line no-console
@@ -1158,12 +1305,9 @@ export class AppStore {
     if (this.status.error) {
       return;
     }
-    const { siteStore, location: { href, search, hash }, status } = this;
-    let envHost = siteStore[hostType];
-    if (targetEnv === 'prod' && !envHost) {
-      // no production host defined yet, use live instead
-      envHost = siteStore.outerHost;
-    }
+
+    const { siteStore, location, status } = this;
+
     if (!status.webPath) {
       // eslint-disable-next-line no-console
       console.log('not ready yet, trying again in a second ...');
@@ -1173,15 +1317,16 @@ export class AppStore {
       );
       return;
     }
-    const envOrigin = targetEnv === 'dev' ? siteStore.devUrl.origin : `https://${envHost}`;
-    let envUrl = `${envOrigin}${status.webPath}`;
-    if (!this.isEditor()) {
-      envUrl += `${search}${hash}`;
+
+    let envHost = siteStore[hostType];
+    if (!envHost && hostType === ENVS.prod) {
+      // no production host defined yet, use live instead
+      envHost = siteStore[ENVS.live];
     }
 
+    let envUrl;
     if (targetEnv === 'edit') {
-      const updatedStatus = await this.fetchStatus(false, true);
-      envUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
+      envUrl = await getEditUrl();
       if (!envUrl) {
         this.showToast({
           message: this.i18n('edit_no_source'),
@@ -1189,36 +1334,48 @@ export class AppStore {
         });
         return;
       }
+    } else {
+      envUrl = getEnvUrl(envHost, status.webPath, location, siteStore.devUrl);
+    }
+
+    if (targetEnv === 'review') {
+      // construct review URL from snapshot webPath
+      const [, snapshotRoot, snapshot, ...rest] = status.webPath.split('/');
+      if (snapshotRoot === '.snapshots') {
+        envUrl.host = `${snapshot}--${envUrl.host}`;
+        envUrl.pathname = `/${rest.join('/')}`;
+      }
+    }
+
+    if (targetEnv === 'prod' && siteStore[hostType] && prodCheck) {
+      // only switch to production host if AEM site
+      const isAEM = await chrome.runtime.sendMessage({
+        action: 'guessAEMSite',
+        url: envUrl,
+      });
+      if (!isAEM) {
+        // fall back to live host
+        envUrl.host = siteStore[ENVS.live];
+      }
     }
 
     const [customView] = this.findViews(VIEWS.CUSTOM);
     if (customView) {
       const customViewUrl = new URL(customView.viewer, envUrl);
       customViewUrl.searchParams.set('path', status.webPath);
-      envUrl = customViewUrl.href;
-    }
-
-    // Check if cache busting should be applied based on the environment and conditions.
-    // The logic prevents cache busting if:
-    // The target environment is 'prod' && the envUrl does not include any of the live
-    // domains & the sidekick is running in transient mode.
-    const liveDomains = ['aem.live', 'hlx.live'];
-    if (cacheBust
-      && !(targetEnv === 'prod' && !liveDomains.some((domain) => envUrl.includes(domain)) && this.siteStore.transient)) {
-      const separator = envUrl.includes('?') ? '&' : '?';
-      envUrl = `${envUrl}${separator}nocache=${Date.now()}`;
+      envUrl = customViewUrl;
     }
 
     // switch or open env
     if (open || this.isEditor()) {
-      this.openPage(envUrl, open
+      this.openPage(envUrl.href, open
         ? '' : `aem-sk-env--${siteStore.owner}/${siteStore.repo}/${siteStore.ref}${status.webPath}`);
     } else {
-      this.loadPage(envUrl);
+      this.loadPage(envUrl.href);
     }
     this.fireEvent(EXTERNAL_EVENTS.EVIRONMENT_SWITCHED, {
-      sourceUrl: href,
-      targetUrl: envUrl,
+      sourceUrl: location.href,
+      targetUrl: envUrl.href,
     });
   }
 
@@ -1272,7 +1429,7 @@ export class AppStore {
           this.setupPlugins();
           this.fireEvent(EXTERNAL_EVENTS.LOGGED_IN, this.status.profile);
           // refresh page with site token in case of 401
-          if (is401Page(this.location, window.document)) {
+          if (isErrorPage(this.location, window.document)) {
             this.reloadPage();
           } else {
             this.fetchStatus();
@@ -1308,16 +1465,12 @@ export class AppStore {
     async function checkLoggedOut() {
       // istanbul ignore else
       if (logoutWindow.closed) {
-        const { siteStore } = this;
         attempts += 1;
         // try 5 times after login window has been closed
-        this.status.profile = await this.getProfile();
-        if (!this.status.profile) {
-          delete this.status.profile;
-          await this.siteStore.initStore(siteStore);
-          this.setupPlugins();
-          this.fetchStatus();
+        const profile = await this.getProfile();
+        if (!profile) {
           this.fireEvent(EXTERNAL_EVENTS.LOGGED_OUT, this.status.profile);
+          this.reloadPage();
           return;
         }
         if (attempts >= 5) {

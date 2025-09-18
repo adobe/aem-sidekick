@@ -44,7 +44,6 @@ function removeCacheParam(href = window.location.href) {
 
   const { getDisplay, toggleDisplay } = await import('./display.js');
   const display = await getDisplay();
-
   /**
    * Load the sidekick custom element and add it to the DOM
    * @param {OptionsConfig} config The config to load the sidekick with
@@ -75,7 +74,6 @@ function removeCacheParam(href = window.location.href) {
     sidekick.setAttribute('open', `${display}`);
     document.body.prepend(sidekick);
     window.hlx.sidekick = sidekick;
-
     // Listen for display toggle events from application
     sidekick.addEventListener('hidden', () => {
       toggleDisplay();
@@ -131,6 +129,14 @@ function removeCacheParam(href = window.location.href) {
       if (sidekick) {
         // Toggle sidekick display
         sidekick.setAttribute('open', `${display}`);
+
+        // Are we on a JSON page?
+        const pre = document.querySelector('pre');
+        if (pre && window.location.pathname.endsWith('.json')) {
+          // If the sidekick is open and the JSON view is open, hide the pre tag, else show it
+          const jsonViewOpen = sidekick.shadowRoot.querySelector('.aem-sk-special-view');
+          pre.style.display = display && jsonViewOpen ? 'none' : 'block';
+        }
       } else if (display) {
         // Load custom element polyfill
         await import('./lib/polyfills.min.js');
@@ -155,6 +161,12 @@ function removeCacheParam(href = window.location.href) {
       sidekick.replaceWith(''); // remove() doesn't work for custom element
       delete window.hlx.sidekick;
     }
+
+    const configPicker = document.querySelector('aem-config-picker');
+    if (configPicker) {
+      configPicker.setAttribute('open', `${display}`);
+    }
+
     chrome.runtime.onMessage.removeListener(onMessageListener);
   }
 

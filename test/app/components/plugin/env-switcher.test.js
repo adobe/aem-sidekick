@@ -11,7 +11,7 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-import { expect, waitUntil } from '@open-wc/testing';
+import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { sendKeys } from '@web/test-runner-commands';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
@@ -25,6 +25,7 @@ import {
   HelixMockEnvironments,
 } from '../../../mocks/environment.js';
 import { SidekickTest } from '../../../sidekick-test.js';
+import { defaultSharepointStatusResponse } from '../../../fixtures/helix-admin.js';
 
 /**
  * The AEMSidekick object type
@@ -160,7 +161,7 @@ describe('Environment Switcher', () => {
       })).to.be.true;
     });
 
-    it('change environment - preview -> live (with meta key)', async () => {
+    it('preview -> live (with meta key)', async () => {
       sidekickTest
         .mockFetchStatusSuccess()
         .mockFetchSidekickConfigSuccess(false)
@@ -206,5 +207,231 @@ describe('Environment Switcher', () => {
         target: 'env-switched:live',
       })).to.be.true;
     }).timeout(20000);
+
+    it('preview -> edit', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+      const button = recursiveQuery(picker, '#button');
+      await waitUntil(() => button.getAttribute('disabled') === null);
+
+      button.click();
+
+      await waitUntil(() => recursiveQuery(picker, 'sp-popover'), null, { timeout: 10000 });
+
+      const switchEnvStub = sidekickTest.sandbox.stub(appStore, 'switchEnv').resolves();
+      const editButton = recursiveQuery(picker, 'sk-menu-item.env-edit');
+      editButton.click();
+
+      picker.value = 'edit';
+      picker.dispatchEvent(new Event('change'));
+
+      expect(switchEnvStub.called).to.be.true;
+      expect(switchEnvStub.calledWith('edit', true)).to.be.true;
+    }).timeout(20000);
+
+    it('shows review menu item in review env', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.REVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+      const reviewItem = recursiveQuery(picker, '.env-review');
+
+      expect(reviewItem).to.exist;
+    });
+
+    it('shows review menu item if custom review host defined', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false, false, {
+          reviewHost: 'custom-review-host.com',
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+      const reviewItem = recursiveQuery(picker, '.env-review');
+
+      expect(reviewItem).to.exist;
+    });
+  });
+
+  describe('edit item variants', () => {
+    const getPicker = () => {
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      return recursiveQuery(envPlugin, 'action-bar-picker');
+    };
+
+    const getEditLabel = () => recursiveQuery(getPicker(), '.env-edit span')?.textContent;
+
+    it('sharepoint', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceType: 'onedrive',
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getEditLabel()).to.equal('Open in SharePoint');
+    });
+
+    it('markup content source without edit config', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          preview: {
+            sourceLocation: 'markup:foo',
+          },
+        })
+        .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceType: 'markup',
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getEditLabel()).to.be.undefined;
+    });
+
+    it('markup content source with edit config', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          preview: {
+            sourceLocation: 'markup:foo',
+          },
+        })
+        .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceType: 'markup',
+          editUrlLabel: 'Foo',
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getEditLabel()).to.equal('Open in Foo');
+    });
+
+    it('pdf icon', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          resourcePath: '/foo.pdf',
+        })
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+      const icon = recursiveQuery(getPicker(), '.env-edit sp-icon svg');
+      expect(icon.getElementById('clip0_632_13678')).to.exist;
+    });
+  });
+
+  describe('preview and live item variants', () => {
+    const getPicker = () => {
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      return recursiveQuery(envPlugin, 'action-bar-picker');
+    };
+
+    const getCurrentEnvLabel = () => recursiveQuery(getPicker(), '.current-env span')?.textContent || '';
+
+    it('last modified user: show if present in status', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(true)
+        .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceType: 'onedrive',
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getCurrentEnvLabel()).to.include('by jdoe@example.com');
+    });
+
+    it('last modified user: anonymous', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(true, {
+          preview: {
+            ...defaultSharepointStatusResponse.preview,
+            lastModifiedBy: 'anonymous',
+          },
+        })
+        .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceType: 'onedrive',
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getCurrentEnvLabel()).to.include('by Anonymous');
+    });
+
+    it('last modified user: system', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(true, {
+          preview: {
+            ...defaultSharepointStatusResponse.preview,
+            lastModifiedBy: 'system',
+          },
+        })
+        .mockFetchSidekickConfigSuccess(false, false, {
+          contentSourceType: 'onedrive',
+        })
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getCurrentEnvLabel()).to.include('by AEM');
+    });
+  });
+
+  describe('special cases', () => {
+    it('no env switcher if config file', async () => {
+      sidekickTest
+        .mockEditorAdminEnvironment()
+        .mockFetchEditorStatusSuccess(
+          HelixMockContentSources.SHAREPOINT,
+          HelixMockContentType.SHEET,
+          {
+            webPath: '/.helix/config.json',
+          },
+        );
+      sidekick = sidekickTest.createSidekick();
+
+      await aTimeout(500);
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+      const button = recursiveQuery(picker, '#button');
+
+      expect(button.hasAttribute('disabled')).to.be.true;
+    });
   });
 });

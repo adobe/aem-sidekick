@@ -3,6 +3,12 @@
       "message": "Activate",
       "description": "Activate the configuration"
     },
+    "activate_success": {
+      "message": "Configuration successfully activated."
+    },
+    "activate_bulk_not_supported": {
+      "message": "Activation of multiple configurations not supported."
+    },
     "add": {
       "message": "Add"
     },
@@ -17,10 +23,14 @@
       "description": "Advanced config mode"
     },
     "anonymous": {
-      "message": "Anonymous"
+      "message": "Anonymous",
+      "description": "Anonymous user"
     },
     "bulk_confirm_empty": {
       "message": "No file selected"
+    },
+    "bulk_confirm_activate_single": {
+      "message": "Are you sure you want to activate this configuration?"
     },
     "bulk_confirm_preview_multiple": {
       "message": "Are you sure you want to generate the preview of $1 files?"
@@ -184,6 +194,9 @@
     "config_project_import_sidekick_not_found": {
       "message": "Legacy sidekick not found. If the extension is installed but currently disabled, please enable it and try again."
     },
+    "config_project_manage": {
+      "message": "Manage projects"
+    },
     "config_project_pick": {
       "message": "Pick a project"
     },
@@ -193,9 +206,6 @@
     "config_project_removed": {
       "message": "$1 successfully removed",
       "description": "Project removed"
-    },
-    "config_success": {
-      "message": "Configuration successfully activated."
     },
     "confirm": {
       "message": "Please confirm",
@@ -244,7 +254,7 @@
       "message": "Copy to clipboard failed. Please make sure the window remains focused."
     },
     "dark_mode": {
-      "message": "Dark Mode"
+      "message": "Dark theme"
     },
     "delete": {
       "message": "Delete"
@@ -283,7 +293,7 @@
       "message": "Development"
     },
     "docs": {
-      "message": "https://www.hlx.live/docs/sidekick"
+      "message": "https://www.aem.live/docs/sidekick"
     },
     "source": {
       "message": "Source"
@@ -295,7 +305,7 @@
       "message": "Edited: "
     },
     "error_429": {
-      "message": "429 Too many requests: Your project is being throttled by $1. Please wait and try again later."
+      "message": "Too many requests: Your project is being throttled by $1. Please wait and try again later."
     },
     "error_preview_config": {
       "message": "Failed to activate configuration: $1"
@@ -303,14 +313,20 @@
     "error_delete": {
       "message": "Deletion failed. Please try again later."
     },
+    "error_details": {
+      "message": "Error details"
+    },
     "error_fatal": {
       "message": "Apologies, we seem to be having problems at the moment. Please try again later."
+    },
+    "details": {
+      "message": "Details"
     },
     "error_generic": {
       "message": "An error occurred: $1"
     },
     "error_job_404": {
-      "message": "404 Not found: No such job."
+      "message": "Job not found."
     },
     "error_login_aborted": {
       "message": "Sign in aborted."
@@ -324,15 +340,6 @@
     "error_preview": {
       "message": "Preview generation failed. Please try again later."
     },
-    "error_preview_400": {
-      "message": "Preview generation failed. Check the file format, name or path."
-    },
-    "error_preview_404": {
-      "message": "Source document does not exist, preview generation failed."
-    },
-    "error_preview_415": {
-      "message": "File type not supported. Refer to the documentation for supported file types."
-    },
     "error_preview_not_gdoc_generic": {
       "message": "Preview generation failed. Must be Google document or spreadsheet."
     },
@@ -342,38 +349,17 @@
     "error_preview_no_xlsx": {
       "message": "This is a Microsoft Excel document, please convert it to Google Sheets first."
     },
-    "error_preview_too_large": {
-      "message": "File too large. Refer to the documentation for file size limits."
-    },
-    "error_preview_svg_invalid": {
-      "message": "SVG invalid. Make sure it is valid XML and contains no scripts."
-    },
     "error_publish": {
       "message": "Publication failed. Please try again later."
     },
     "error_publish_404": {
       "message": "Publication failed, generate preview first."
     },
-    "error_status_400": {
-      "message": "400 Bad Request: Invalid URL."
+    "error_status": {
+      "message": "Failed to fetch the page status. Please try again later."
     },
-    "error_status_404_content": {
-      "message": "404 Not found: Check your Sidekick configuration or URL."
-    },
-    "error_status_404_document": {
-      "message": "404 Not found: Check your Sidekick configuration and make sure access to this document is granted."
-    },
-    "error_status_500": {
-      "message": "500 Internal server error: Failed to fetch the page status. Please try again later."
-    },
-    "error_status_502": {
-      "message": "502 Bad gateway: Failed to fetch the page status. Please try again later."
-    },
-    "error_status_504": {
-      "message": "504 Gateway timeout: Failed to fetch the page status. Please try again later."
-    },
-    "error_status_invalid": {
-      "message": "Invalid server response. Check your Sidekick configuration or URL."
+    "error_status_404": {
+      "message": "Failed to fetch the page status. Make sure this document is being shared with AEM."
     },
     "error_unpublish": {
       "message": "Unpublication failed. Please try again later."
@@ -386,7 +372,7 @@
       "description": "Next onboarding slide"
     },
     "homepage": {
-      "message": "https://www.hlx.live/tools/sidekick/"
+      "message": "https://www.aem.live/tools/sidekick/"
     },
     "info": {
       "message": "Information"
@@ -440,12 +426,6 @@
     "preview_date": {
       "message": "Previewed: "
     },
-    "preview_onedrive": {
-      "message": "Pro tip: Press Ctrl + S before generating previewing to see the latest changes immediately..."
-    },
-    "preview_onedrive_mac": {
-      "message": "Pro tip: Press ⌘ + S before generating previewing to see the latest changes immediately..."
-    },
     "production": {
       "message": "Production"
     },
@@ -457,6 +437,9 @@
     },
     "publish_date": {
       "message": "Published: "
+    },
+    "review": {
+      "message": "Review"
     },
     "update": {
       "message": "Update",
@@ -471,12 +454,28 @@
     "share_description": {
       "message": "Share your Sidekick"
     },
+    "site_login_required": {
+      "message": "Please sign in to continue."
+    },
+    "site_relogin_required": {
+      "message": "Access expired. Please sign in again to continue."
+    },
+    "site_forbidden": {
+      "message": "Access denied. Try signing in with a different user or ask your administrator for sufficient permissions."
+    },
+    "site_protected": {
+      "message": "This site is protected"
+    },
     "standard": {
       "message": "Standard",
       "description": "Standard config mode"
     },
     "switch_view": {
       "message": "View"
+    },
+    "system": {
+      "message": "AEM System User",
+      "description": "System user"
     },
     "title": {
       "message": "AEM Sidekick"
@@ -526,6 +525,12 @@
     "preview_last_updated": {
       "message": "Last updated $1"
     },
+    "preview_last_updated_by": {
+      "message": "Last updated $1 by $2"
+    },
+    "review_last_updated": {
+      "message": "Last updated $1"
+    },
     "edit": {
       "message": "Edit"
     },
@@ -535,8 +540,14 @@
     "live_last_updated": {
       "message": "Last published $1"
     },
+    "live_last_updated_by": {
+      "message": "Last published $1 by $2"
+    },
     "prod_last_updated": {
       "message": "Last published $1"
+    },
+    "prod_last_updated_by": {
+      "message": "Last published $1 by $2"
     },
     "edit_never_updated": {
       "message": "Never saved"
@@ -568,8 +579,31 @@
     "json_results_stat": {
       "message": "Showing $1 of $2 results"
     },
+    "show_diff": {
+      "message": "Show changes",
+      "description": "See what's changed between preview and live"
+    },
+    "show_all": {
+      "message": "Show all rows",
+      "description": "Show all rows including unchanged ones"
+    },
+    "loading_diff": {
+      "message": "Loading changes..."
+    },
+    "no_diffs": {
+      "message": "No changes found"
+    },
+    "no_diffs_subheading": {
+      "message": "Previewed and published content are identical"
+    },
     "search": {
       "message": "Search"
+    },
+    "no_data": {
+      "message": "No Data"
+    },
+    "no_data_subheading": {
+      "message": "This sheet is empty"
     },
     "no_results": {
       "message": "No Results Found"
@@ -626,10 +660,10 @@
       "message": "Deleting..."
     },
     "help_documentation": {
-      "message": "Help & Documentation"
+      "message": "Help & documentation"
     },
     "whats_new": {
-      "message": "What's New",
+      "message": "What's new",
       "description": "Onboarding menu title"
     },
     "join_discord": {
@@ -637,5 +671,74 @@
     },
     "import": {
       "message": "Import"
+    },
+    "snapshot_update_success": {
+      "message": "Snapshot successfully updated, opening Review..."
+    },
+    "AEM_BACKEND_FETCH_FAILED": {
+      "message": "Unable to fetch $1 from $2."
+    },
+    "AEM_BACKEND_NOT_FOUND": {
+      "message": "File not found. Source document either missing or not shared with AEM."
+    },
+    "AEM_BACKEND_TYPE_UNSUPPORTED": {
+      "message": "Unable to preview $1: file type not supported"
+    },
+    "AEM_BACKEND_NO_HANDLER": {
+      "message": "Unable to preview $1: no handler found"
+    },
+    "AEM_BACKEND_NON_MATCHING_MEDIA": {
+      "message": "Unable to preview $1: expected $2 but found $3"
+    },
+    "AEM_BACKEND_VALIDATION_FAILED": {
+      "message": "Unable to preview $1: $2"
+    },
+    "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+      "message": "Unable to preview $1: file type not supported"
+    },
+    "AEM_BACKEND_NO_CONTENT_TYPE": {
+      "message": "Unable to preview $1: content type header is missing"
+    },
+    "AEM_BACKEND_JSON_INVALID": {
+      "message": "Unable to preview $2: invalid JSON"
+    },
+    "AEM_BACKEND_FILE_EMPTY": {
+      "message": "Unable to preview $1: empty file"
+    },
+    "AEM_BACKEND_FILE_TOO_BIG": {
+      "message": "Unable to preview $1: file larger than 100MB"
+    },
+    "AEM_BACKEND_MP4_TOO_LONG": {
+      "message": "Unable to preview $1: MP4 is longer than 2 minutes"
+    },
+    "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+      "message": "Unable to preview $1: MP4 bit rate is higher than 300KB/s"
+    },
+    "AEM_BACKEND_MP4_PARSING_FAILED": {
+      "message": "Unable to preview $1: invalid MP4"
+    },
+    "AEM_BACKEND_ICO_TOO_BIG": {
+      "message": "Unable to preview $1: ICO is larger than 16KB"
+    },
+    "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+      "message": "Unable to preview $1: illegal scripting detected in SVG"
+    },
+    "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+      "message": "Unable to preview $1: SVG root item missing"
+    },
+    "AEM_BACKEND_SVG_PARSING_FAILED": {
+      "message": "Unable to preview $1: SVG contains invalid XML"
+    },
+    "AEM_BACKEND_PDF_TOO_BIG": {
+      "message": "Unable to preview $1: PDF is larger than 10MB"
+    },
+    "AEM_BACKEND_SVG_TOO_BIG": {
+      "message": "Unable to preview $1: SVG is larger than 20KB"
+    },
+    "AEM_BACKEND_IMAGE_TOO_BIG": {
+      "message": "Unable to preview $1: image is larger than 20MB"
+    },
+    "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+      "message": "Unable to preview $1: contained image larger than 20MB"
     }
 }

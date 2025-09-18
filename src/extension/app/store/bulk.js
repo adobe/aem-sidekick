@@ -156,17 +156,33 @@ export class BulkStore {
    * @returns {BulkSelection} The selection
    */
   #getSharepointBulkSelection(document) {
-    return [...document.querySelectorAll('#appRoot [role="presentation"] div[aria-selected="true"]')]
+    return [...document.querySelectorAll('#appRoot [aria-selected="true"]:not([aria-checked="true"]')]
       // exclude folders
       .filter((row) => !row.querySelector('img')?.getAttribute('src').includes('/foldericons/')
         && !row.querySelector('img')?.getAttribute('src').endsWith('folder.svg')
         && !row.querySelector('svg')?.parentElement.className.toLowerCase().includes('folder'))
       // extract file name and type
       .map((row) => {
-        const info = row.getAttribute('aria-label') || row.querySelector('span')?.textContent;
-        // info format: bla.docx, docx File, Private, Modified 8/28/2023, edited by Jane, 1 KB
-        const type = info.match(/, ([\p{L}\p{N}]+) [\p{L}\p{N}]+,/u)?.[1];
-        const file = type && info.split(`, ${type}`)[0];
+        let file = row
+          .querySelector('[data-id="heroField"], [data-automationid="name"]') // list, grid
+          ?.textContent.trim();
+        let type = (file || '').split('.').pop();
+
+        // istanbul ignore next 13
+        if (!file) {
+          // fallback to previous SP DOM version and retrieve type and file from info string
+          const info = row.getAttribute('aria-label') || row.querySelector('span')?.textContent || row.querySelector('cf-column span')?.textContent || '';
+
+          // info format: bla.docx, docx File, Private, Modified 8/28/2023, edited by Jane, 1 KB
+          type = info.match(/, ([\p{L}\p{N}]+) [\p{L}\p{N}]+,/u)?.[1];
+          file = type && info.split(`, ${type}`)[0];
+
+          if (!type) {
+            type = info.split('.').pop();
+            file = info;
+          }
+        }
+
         return {
           file,
           type,
@@ -184,15 +200,21 @@ export class BulkStore {
    * @returns {BulkSelection} The selection
    */
   #getGoogleDriveBulkSelection(document) {
-    return [...document.querySelectorAll('#drive_main_page [role="row"][aria-selected="true"]')]
+    return [...document.querySelectorAll('#drive_main_page [aria-selected="true"]')]
       // extract file name and type
       .map((row) => {
-        const file = (row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(2) div[jsname]') // grid layout
-          || row.querySelector(':scope div[role="gridcell"] > div:nth-of-type(2)')) // list layout
+        const file = (row.querySelector(':scope td div[data-id] > span > strong') // list layout
+          || row.querySelector(':scope div > div:nth-child(2) > div:nth-child(2) > div:not([role="button"])') // grid layout
+          // istanbul ignore next 2
+          || row.querySelector(':scope div[role="gridcell"] > div > div:nth-child(2) div[jsname]') // legacy grid layout
+          || row.querySelector(':scope div[role="gridcell"] > div:nth-of-type(2) > div:not([role="button"])')) // legacy list layout
           ?.textContent.trim();
 
         // use path in icon svg to determine type
-        const typeHint = row.querySelector(':scope div[role="gridcell"] > div path') // list & grid layout
+        const typeHint = (row.querySelector(':scope td div > svg > path') // list layout
+          || row.querySelector(':scope div > div:nth-child(2) > div:nth-child(1) div > svg > path')
+          // istanbul ignore next
+          || row.querySelector(':scope div[role="gridcell"] > div path')) // legacy list & grid layout
           ?.getAttribute('d').slice(-4);
         let type = 'unknown';
         if (typeHint) {
@@ -328,7 +350,7 @@ export class BulkStore {
 
   /**
    * Returns the bulk confirmation text for a given action.
-   * @param {string} operation The bulk operation
+   * @param {string} operation The bulk operation ("preview", "activate" or "publish")
    * @param {number} total The total number of files
    * @returns {string} The bulk confirmation text
    */
@@ -340,7 +362,7 @@ export class BulkStore {
 
   /**
    * Returns the summary text for a bulk operation.
-   * @param {string} operation The bulk operation
+   * @param {string} operation The bulk operation ("preview", "activate" or "publish")
    * @param {number} total The total number of files
    * @param {number} [failed] The number of failed files
    * @returns {string} The summary text
@@ -383,7 +405,7 @@ export class BulkStore {
 
   /**
    * Displays a toast with the bulk operation summary.
-   * @param {string} operation The bulk operation ("preview" or "publish")
+   * @param {string} operation The bulk operation ("preview", "activate" or "publish")
    * @param {AdminJobResource[]} resources The resources
    * @param {string} host The host name to use for URLs
    */
@@ -398,10 +420,10 @@ export class BulkStore {
     const succeeded = resources.filter(({ status }) => status < 400);
     const paths = succeeded.map(({ path }) => path);
 
-    if (paths.find((path) => path.startsWith('/.helix/'))) {
+    if (operation === 'activate' && failed.length === 0) {
       // special handling for config files
       this.appStore.showToast({
-        message: this.appStore.i18n('config_success'),
+        message: this.appStore.i18n('activate_success'),
         variant: 'positive',
       });
     } else {
@@ -447,7 +469,7 @@ export class BulkStore {
 
   /**
    * Validates the selection before performing a bulk operation.
-   * @param {string} operation The bulk operation ("preview" or "publish")
+   * @param {string} operation The bulk operation ("preview", "activate" or "publish")
    * @returns {boolean} True if selection is valid, else false
    */
   #validateSelection(operation) {
@@ -462,6 +484,8 @@ export class BulkStore {
       invalidMessage = this.appStore
         .i18n('bulk_error_illegal_folder_name')
         .replace('$1', illegalPath);
+    } else if (operation === 'activate' && this.selection.length > 1) {
+      invalidMessage = this.appStore.i18n('activate_bulk_not_supported');
     } else {
       // check selected files
       const illegalFileNames = this.selection
@@ -488,16 +512,17 @@ export class BulkStore {
    * Runs a bulk preview operation on the bulk selection.
    */
   async preview() {
-    if (!this.#validateSelection('preview')) {
+    const operation = this.appStore.status.webPath === '/.helix' ? 'activate' : 'preview';
+    if (!this.#validateSelection(operation)) {
       return;
     }
 
     const modal = this.appStore.showModal({
       type: 'confirm',
       data: {
-        headline: this.appStore.i18n('preview'),
-        message: this.#getConfirmText('preview', this.selection.length),
-        confirmLabel: this.appStore.i18n('preview'),
+        headline: this.appStore.i18n(operation),
+        message: this.#getConfirmText(operation, this.selection.length),
+        confirmLabel: this.appStore.i18n(operation),
       },
     });
 
@@ -529,7 +554,7 @@ export class BulkStore {
         }
       }
       if (resources) {
-        this.#showSummary('preview', resources, host);
+        this.#showSummary(operation, resources, host);
         this.appStore.fireEvent(
           EXTERNAL_EVENTS.RESOURCE_PREVIEWED,
           resources.map(({ path }) => path),

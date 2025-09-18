@@ -1,7 +1,78 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "無法預覽$1：包含的影像大於20MB"
+  },
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "無法從 $2 中擷取 $1。"
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "無法預覽 $1：空的檔案"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "無法預覽 $1：檔案大於 100MB"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "無法預覽 $1：ICO 大於 16KB"
+  },
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "無法預覽$1：影像大於20MB"
+  },
+  "AEM_BACKEND_JSON_INVALID": {
+    "message": "無法預覽 $2：無效的 JSON"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "無法預覽 $1：MP4 位元率高於 300KB/秒"
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "無法預覽 $1：無效的 MP4"
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "無法預覽 $1：MP4 長度超過 2 分鐘"
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "無法預覽 $1：預期為 $2，但找到 $3"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "找不到檔案。來源文件遺失或未與 AEM 共用。"
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "無法預覽 $1：內容類型標頭遺失"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "無法預覽 $1：找不到處理常式"
+  },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "無法預覽 $1：PDF 大於 10MB"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "無法預覽 $1：SVG 包含無效的 XML"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "無法預覽 $1：SVG 根項目遺失"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "無法預覽 $1：在 SVG 中偵測到非法指令碼"
+  },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "無法預覽 $1：SVG 大於 20KB"
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "無法預覽 $1：檔案類型不受支援"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "無法預覽 $1：檔案類型不受支援"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "無法預覽 $1：$2"
+  },
   "activate": {
-    "description": "啟動此設定",
     "message": "啟動"
+  },
+  "activate_bulk_not_supported": {
+    "message": "不支援啟用多個設定。"
+  },
+  "activate_success": {
+    "message": "設定已成功啟用。"
   },
   "add": {
     "message": "新增"
@@ -13,11 +84,13 @@
     "message": "管理員版本：x.y.z"
   },
   "advanced": {
-    "description": "進階設定模式",
     "message": "進階"
   },
   "anonymous": {
     "message": "匿名"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "您確定要啟用此設定嗎?"
   },
   "bulk_confirm_empty": {
     "message": "未選取任何檔案"
@@ -38,13 +111,13 @@
     "message": "大量作業失敗。請稍後再試。"
   },
   "bulk_error_illegal_file_name": {
-    "message": "檔案只能包含正規化的小寫拉丁字母、數字和連字號。此檔案包含非法字元：$1"
+    "message": "檔案只能包含正規化的小寫拉丁字母、數字和連字號。此檔案包含違規字元：$1"
   },
   "bulk_error_illegal_file_names": {
-    "message": "檔案只能包含正規化的小寫拉丁字母、數字和連字號。下列檔案包含非法字元：$1"
+    "message": "檔案只能包含正規化的小寫拉丁字母、數字和連字號。下列檔案包含違規字元：$1"
   },
   "bulk_error_illegal_folder_name": {
-    "message": "資料夾只能包含正規化的小寫拉丁字母、數字和連字號。此資料夾包含非法字元：$1"
+    "message": "資料夾只能包含正規化的小寫拉丁字母、數字和連字號。此資料夾包含違規字元：$1"
   },
   "bulk_error_preview_login_required": {
     "message": "您必須登入才能產生超過 100 個檔案的預覽。"
@@ -122,7 +195,7 @@
     "message": "關閉"
   },
   "close_sidekick": {
-    "message": "關閉Sidekick"
+    "message": "關閉 Sidekick"
   },
   "code_state": {
     "message": "沒有可用於程式碼檔案的動作"
@@ -137,14 +210,12 @@
     "message": "新增此專案"
   },
   "config_project_added": {
-    "description": "專案已新增",
     "message": "$1 已成功新增"
   },
   "config_project_disable": {
     "message": "停用此專案"
   },
   "config_project_disabled": {
-    "description": "專案已停用",
     "message": "$1 已停用"
   },
   "config_project_disabled_headline": {
@@ -154,7 +225,6 @@
     "message": "啟用此專案"
   },
   "config_project_enabled": {
-    "description": "專案已啟用",
     "message": "$1 已啟用"
   },
   "config_project_enabled_headline": {
@@ -181,6 +251,9 @@
   "config_project_imported_single": {
     "message": "已成功從 AEM Sidekick v6 中匯入 1 個專案。"
   },
+  "config_project_manage": {
+    "message": "管理專案"
+  },
   "config_project_pick": {
     "message": "選取一個專案"
   },
@@ -188,17 +261,15 @@
     "message": "移除此專案"
   },
   "config_project_removed": {
-    "description": "專案已移除",
     "message": "$1 已成功移除"
   },
   "config_remove_project_headline": {
     "message": "已移除專案"
   },
-  "config_success": {
-    "message": "設定已成功啟用。"
+  "config_state": {
+    "message": "正在啟用設定…"
   },
   "confirm": {
-    "description": "確認強制回應標題",
     "message": "請確認"
   },
   "copied": {
@@ -235,16 +306,16 @@
     "message": "複製 URL"
   },
   "copy_urls": {
-    "message": "複製 $1 URL"
+    "message": "複製 $1 個 URL"
   },
   "copy_urls_error": {
     "message": "複製到剪貼簿失敗。請再試一次。"
   },
   "copy_urls_error_focus": {
-    "message": "複製到剪貼簿失敗。請確定焦點仍在視窗中。"
+    "message": "複製到剪貼簿失敗。請確定該視窗仍是焦點視窗。"
   },
   "dark_mode": {
-    "message": "深色模式"
+    "message": "深色主題"
   },
   "delete": {
     "message": "刪除"
@@ -289,13 +360,16 @@
     "message": "抱歉，請確切輸入顯示的文字以進行確認。"
   },
   "destructive_confirmation_prompt": {
-    "message": "輸入 $1 以確認"
+    "message": "請輸入「$1」以確認"
+  },
+  "details": {
+    "message": "詳細資料"
   },
   "development": {
     "message": "開發"
   },
   "docs": {
-    "message": "https://www.hlx.live/docs/sidekick"
+    "message": "https://www.aem.live/docs/sidekick"
   },
   "edit": {
     "message": "編輯"
@@ -310,7 +384,7 @@
     "message": "從未儲存過"
   },
   "edit_no_source": {
-    "message": "找不到來原始檔"
+    "message": "找不到來源文件"
   },
   "environments": {
     "message": "環境"
@@ -319,10 +393,13 @@
     "message": "錯誤"
   },
   "error_429": {
-    "message": "429 請求過多：您的專案正受到 $1 的限制。請稍後再試。"
+    "message": "請求過多：您的專案正受到 $1 的限制。請稍後再試。"
   },
   "error_delete": {
     "message": "刪除失敗。請稍後再試。"
+  },
+  "error_details": {
+    "message": "錯誤詳細資料"
   },
   "error_fatal": {
     "message": "抱歉，我們目前似乎遇到問題。請稍後再試。"
@@ -331,7 +408,7 @@
     "message": "發生錯誤：$1"
   },
   "error_job_404": {
-    "message": "404 找不到：沒有此類工作。"
+    "message": "找不到工作。"
   },
   "error_login_aborted": {
     "message": "登入已中止。"
@@ -345,15 +422,6 @@
   "error_preview": {
     "message": "預覽產生失敗。請稍後再試。"
   },
-  "error_preview_400": {
-    "message": "預覽產生失敗。請檢查檔案格式、名稱或路徑。"
-  },
-  "error_preview_404": {
-    "message": "來源文件不存在，預覽產生失敗。"
-  },
-  "error_preview_415": {
-    "message": "檔案類型不受支援。請參閱文件以了解受支援的檔案類型。"
-  },
   "error_preview_config": {
     "message": "啟動設定失敗：$1"
   },
@@ -366,38 +434,17 @@
   "error_preview_not_gdoc_generic": {
     "message": "預覽產生失敗。必須是 Google 文件或試算表。"
   },
-  "error_preview_svg_invalid": {
-    "message": "SVG 無效。請確定它是有效的 XML 且不包含指令碼。"
-  },
-  "error_preview_too_large": {
-    "message": "檔案過大。請參閱文件以了解檔案大小限制。"
-  },
   "error_publish": {
     "message": "發佈失敗。請稍後再試。"
   },
   "error_publish_404": {
     "message": "發佈失敗，請先產生預覽。"
   },
-  "error_status_400": {
-    "message": "400 錯誤的請求：無效的 URL。"
+  "error_status": {
+    "message": "擷取頁面狀態失敗。請稍後再試。"
   },
-  "error_status_404_content": {
-    "message": "404 找不到：請檢查您的 Sidekick 設定或 URL。"
-  },
-  "error_status_404_document": {
-    "message": "404 找不到：請檢查您的 Sidekick 設定，並確保已授予對此文件的存取權。"
-  },
-  "error_status_500": {
-    "message": "500 內部伺服器錯誤：擷取頁面狀態失敗。請稍後再試。"
-  },
-  "error_status_502": {
-    "message": "502 錯誤的閘道：擷取頁面狀態失敗。請稍後再試。"
-  },
-  "error_status_504": {
-    "message": "504 閘道逾時：擷取頁面狀態失敗。請稍後再試。"
-  },
-  "error_status_invalid": {
-    "message": "伺服器回應無效。請檢查您的 Sidekick 設定或 URL。"
+  "error_status_404": {
+    "message": "擷取頁面狀態失敗。請確定此文件正與 AEM 共用。"
   },
   "error_unpublish": {
     "message": "取消發佈失敗。請稍後再試。"
@@ -412,7 +459,7 @@
     "message": "說明與文件"
   },
   "homepage": {
-    "message": "https://www.hlx.live/tools/sidekick/"
+    "message": "https://www.aem.live/tools/sidekick/"
   },
   "import": {
     "message": "匯入"
@@ -421,7 +468,7 @@
     "message": "資訊"
   },
   "join_discord": {
-    "message": "不和諧時加入我們"
+    "message": "在 Discord 加入我們"
   },
   "json_results_stat": {
     "message": "正在顯示 $1 個結果 (共 $2 個)"
@@ -435,8 +482,14 @@
   "live_last_updated": {
     "message": "上次發佈時間：$1"
   },
+  "live_last_updated_by": {
+    "message": "上次是由 $2 發佈於 $1"
+  },
   "live_never_updated": {
     "message": "從未發佈過"
+  },
+  "loading_diff": {
+    "message": "正在載入變更…"
   },
   "logging_in_state": {
     "message": "正在登入…"
@@ -460,8 +513,19 @@
     "message": "從未"
   },
   "next": {
-    "description": "下一張入門投影片",
     "message": "下一步"
+  },
+  "no_data": {
+    "message": "無資料"
+  },
+  "no_data_subheading": {
+    "message": "此工作表是空的"
+  },
+  "no_diffs": {
+    "message": "找不到任何變更"
+  },
+  "no_diffs_subheading": {
+    "message": "預覽和發佈的內容完全相同"
   },
   "no_results": {
     "message": "找不到任何結果"
@@ -488,14 +552,13 @@
     "message": "在 $1 中開啟"
   },
   "open_preview": {
-    "description": "開啟給定 GitHub 分支的預覽 URL",
     "message": "開啟預覽 URL"
   },
   "open_url": {
     "message": "開啟 URL"
   },
   "open_urls": {
-    "message": "開啟 $1 URL"
+    "message": "開啟 $1 個 URL"
   },
   "open_urls_confirm": {
     "message": "您確定要開啟 $1 個 URL 嗎?"
@@ -518,14 +581,11 @@
   "preview_last_updated": {
     "message": "上次更新時間：$1"
   },
+  "preview_last_updated_by": {
+    "message": "上次是由 $2 更新於 $1"
+  },
   "preview_never_updated": {
     "message": "從未預覽過"
-  },
-  "preview_onedrive": {
-    "message": "專業祕訣：在產生預覽前按 Ctrl+S 可立即查看最新變更…"
-  },
-  "preview_onedrive_mac": {
-    "message": "專業祕訣：在產生預覽前按 ⌘+S 可立即查看最新變更…"
   },
   "preview_success": {
     "message": "預覽已成功更新，正在開啟預覽…"
@@ -535,6 +595,9 @@
   },
   "prod_last_updated": {
     "message": "上次發佈時間：$1"
+  },
+  "prod_last_updated_by": {
+    "message": "上次是由 $2 發佈於 $1"
   },
   "prod_never_updated": {
     "message": "從未發佈過"
@@ -555,10 +618,16 @@
     "message": "預覽已更新"
   },
   "publish_success": {
-    "message": "發佈成功，正在開啟 $1…"
+    "message": "發佈成功，正在開啟$1…"
   },
   "publishing_state": {
     "message": "正在發佈…"
+  },
+  "review": {
+    "message": "檢閱"
+  },
+  "review_last_updated": {
+    "message": "上次更新於 $1"
   },
   "save": {
     "message": "儲存"
@@ -572,15 +641,38 @@
   "share_description": {
     "message": "共用您的 Sidekick"
   },
+  "show_all": {
+    "message": "顯示所有列"
+  },
+  "show_diff": {
+    "message": "顯示變更"
+  },
+  "site_forbidden": {
+    "message": "存取已遭拒。請嘗試使用不同的使用者登入，或向管理員要求足夠的權限。"
+  },
+  "site_login_required": {
+    "message": "請登入以繼續。"
+  },
+  "site_protected": {
+    "message": "此網站已受保護"
+  },
+  "site_relogin_required": {
+    "message": "存取已到期。請重新登入以繼續。"
+  },
+  "snapshot_update_success": {
+    "message": "已成功更新快照，正在開啟檢閱……"
+  },
   "source": {
     "message": "來源"
   },
   "standard": {
-    "description": "標準設定模式",
     "message": "標準"
   },
   "switch_view": {
     "message": "檢視"
+  },
+  "system": {
+    "message": "AEM 系統使用者"
   },
   "title": {
     "message": "AEM Sidekick"
@@ -610,7 +702,6 @@
     "message": "正在取消發佈…"
   },
   "update": {
-    "description": "更新頁面的預覽",
     "message": "更新"
   },
   "update_success": {
@@ -629,8 +720,7 @@
     "message": "切換使用者"
   },
   "whats_new": {
-    "description": "入門功能表標題",
-    "message": "新功能"
+    "message": "新增功能"
   },
   "yesterday_at": {
     "message": "昨天 $1"

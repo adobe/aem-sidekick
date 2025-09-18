@@ -1,7 +1,78 @@
 {
+  "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
+    "message": "$1 をプレビューできません：20 MB を超える画像が含まれています"
+  },
+  "AEM_BACKEND_FETCH_FAILED": {
+    "message": "$2 から$1 を取得できません。"
+  },
+  "AEM_BACKEND_FILE_EMPTY": {
+    "message": "$1 をプレビューできません : 空のファイル"
+  },
+  "AEM_BACKEND_FILE_TOO_BIG": {
+    "message": "$1 をプレビューできません : ファイルが 100 MB を超えています"
+  },
+  "AEM_BACKEND_ICO_TOO_BIG": {
+    "message": "$1 をプレビューできません : ICO が 16KB を超えています"
+  },
+  "AEM_BACKEND_IMAGE_TOO_BIG": {
+    "message": "$1 をプレビューできません：画像が 20 MB を超えています"
+  },
+  "AEM_BACKEND_JSON_INVALID": {
+    "message": "$2 をプレビューできません : 無効な JSON"
+  },
+  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
+    "message": "$1 をプレビューできません : MP4 ビットレートが 300 KB/秒を超えています"
+  },
+  "AEM_BACKEND_MP4_PARSING_FAILED": {
+    "message": "$1 をプレビューできません : 無効な MP4"
+  },
+  "AEM_BACKEND_MP4_TOO_LONG": {
+    "message": "$1 をプレビューできません : MP4 が 2 分を超えています"
+  },
+  "AEM_BACKEND_NON_MATCHING_MEDIA": {
+    "message": "$1 をプレビューできません : $2 が期待されましたが、$3 が見つかりました"
+  },
+  "AEM_BACKEND_NOT_FOUND": {
+    "message": "ファイルが見つかりません。ソースドキュメントがないか、AEM で共有されていません。"
+  },
+  "AEM_BACKEND_NO_CONTENT_TYPE": {
+    "message": "$1 をプレビューできません : コンテンツタイプヘッダーがありません"
+  },
+  "AEM_BACKEND_NO_HANDLER": {
+    "message": "$1 をプレビューできません : ハンドラーが見つかりません"
+  },
+  "AEM_BACKEND_PDF_TOO_BIG": {
+    "message": "$1 をプレビューできません : PDF が 10MB を超えています"
+  },
+  "AEM_BACKEND_SVG_PARSING_FAILED": {
+    "message": "$1 をプレビューできません : SVG に無効な XML が含まれています"
+  },
+  "AEM_BACKEND_SVG_ROOT_ITEM_MISSING": {
+    "message": "$1 をプレビューできません : SVG ルート項目がありません"
+  },
+  "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
+    "message": "$1 をプレビューできません : SVG で不正なスクリプトが検出されました"
+  },
+  "AEM_BACKEND_SVG_TOO_BIG": {
+    "message": "$1 をプレビューできません : SVG が 20KB を超えています"
+  },
+  "AEM_BACKEND_TYPE_UNSUPPORTED": {
+    "message": "$1 をプレビューできません : ファイルタイプがサポートされていません"
+  },
+  "AEM_BACKEND_UNSUPPORTED_MEDIA": {
+    "message": "$1 をプレビューできません : ファイルタイプがサポートされていません"
+  },
+  "AEM_BACKEND_VALIDATION_FAILED": {
+    "message": "$1 をプレビューできません : $2"
+  },
   "activate": {
-    "description": "設定をアクティベート",
     "message": "アクティベート"
+  },
+  "activate_bulk_not_supported": {
+    "message": "複数の設定のアクティベーションはサポートされていません。"
+  },
+  "activate_success": {
+    "message": "設定が正常にアクティブ化されました。"
   },
   "add": {
     "message": "追加"
@@ -13,11 +84,13 @@
     "message": "管理バージョン : x.y.z"
   },
   "advanced": {
-    "description": "詳細設定モード",
     "message": "詳細"
   },
   "anonymous": {
     "message": "匿名"
+  },
+  "bulk_confirm_activate_single": {
+    "message": "この設定をアクティベートしてもよろしいですか？"
   },
   "bulk_confirm_empty": {
     "message": "ファイルが選択されていません"
@@ -122,7 +195,7 @@
     "message": "閉じる"
   },
   "close_sidekick": {
-    "message": "閉じるSidekick"
+    "message": "Sidekick を閉じる"
   },
   "code_state": {
     "message": "コードファイルに使用できるアクションはありません"
@@ -137,14 +210,12 @@
     "message": "このプロジェクトを追加"
   },
   "config_project_added": {
-    "description": "プロジェクトが追加されました",
     "message": "$1 が正常に追加されました"
   },
   "config_project_disable": {
     "message": "このプロジェクトを無効にする"
   },
   "config_project_disabled": {
-    "description": "プロジェクトが無効になりました",
     "message": "$1 個が無効になりました"
   },
   "config_project_disabled_headline": {
@@ -154,7 +225,6 @@
     "message": "このプロジェクトを有効にする"
   },
   "config_project_enabled": {
-    "description": "プロジェクトが有効になりました",
     "message": "$1 個が有効になりました"
   },
   "config_project_enabled_headline": {
@@ -181,6 +251,9 @@
   "config_project_imported_single": {
     "message": "AEM Sidekick v6 から 1 個のプロジェクトを正常に読み込みました。"
   },
+  "config_project_manage": {
+    "message": "プロジェクトを管理"
+  },
   "config_project_pick": {
     "message": "プロジェクトを選択"
   },
@@ -188,17 +261,15 @@
     "message": "このプロジェクトを削除"
   },
   "config_project_removed": {
-    "description": "プロジェクトが削除されました",
     "message": "$1 個が正常に削除されました"
   },
   "config_remove_project_headline": {
     "message": "プロジェクトを削除しました"
   },
-  "config_success": {
-    "message": "設定が正常にアクティブ化されました。"
+  "config_state": {
+    "message": "設定をアクティベート中..."
   },
   "confirm": {
-    "description": "確認モーダルの見出し",
     "message": "確認してください"
   },
   "copied": {
@@ -244,7 +315,7 @@
     "message": "クリップボードへのコピーに失敗しました。ウィンドウに焦点が当てられたままになっていることを確認してください。"
   },
   "dark_mode": {
-    "message": "ダークモード"
+    "message": "ダークテーマ"
   },
   "delete": {
     "message": "削除"
@@ -291,11 +362,14 @@
   "destructive_confirmation_prompt": {
     "message": "「$1」と入力して確認"
   },
+  "details": {
+    "message": "詳細"
+  },
   "development": {
     "message": "開発"
   },
   "docs": {
-    "message": "https://www.hlx.live/docs/sidekick"
+    "message": "https://www.aem.live/docs/sidekick"
   },
   "edit": {
     "message": "編集"
@@ -319,10 +393,13 @@
     "message": "エラー"
   },
   "error_429": {
-    "message": "429 リクエストが多すぎます : プロジェクトは $1 によって調整されています。しばらく待ってから、もう一度試してください。"
+    "message": "リクエストが多すぎます : プロジェクトは $1 によって調整されています。しばらく待ってから、もう一度試してください。"
   },
   "error_delete": {
     "message": "削除に失敗しました。後でもう一度試してください。"
+  },
+  "error_details": {
+    "message": "エラーの詳細"
   },
   "error_fatal": {
     "message": "申し訳ありませんが、現在問題が発生しているようです。後でもう一度試してください。"
@@ -331,7 +408,7 @@
     "message": "エラーが発生しました : $1"
   },
   "error_job_404": {
-    "message": "404 見つかりません : そのようなジョブはありません。"
+    "message": "ジョブが見つかりません。"
   },
   "error_login_aborted": {
     "message": "ログインが中止されました。"
@@ -345,15 +422,6 @@
   "error_preview": {
     "message": "プレビューの生成に失敗しました。後で再試行してください。"
   },
-  "error_preview_400": {
-    "message": "プレビューの生成に失敗しました。ファイルの形式、名前またはパスを確認してください。"
-  },
-  "error_preview_404": {
-    "message": "ソースドキュメントが存在しないので、プレビューの生成に失敗しました。"
-  },
-  "error_preview_415": {
-    "message": "ファイルタイプがサポートされていません。サポートされているファイルタイプについては、ドキュメントを参照してください。"
-  },
   "error_preview_config": {
     "message": "設定をアクティブ化できませんでした : $1"
   },
@@ -366,38 +434,17 @@
   "error_preview_not_gdoc_generic": {
     "message": "プレビューの生成に失敗しました。Google ドキュメントまたはスプレッドシートにする必要があります。"
   },
-  "error_preview_svg_invalid": {
-    "message": "SVG が無効です。XML が有効であり、スクリプトが含まれていないことを確認してください。"
-  },
-  "error_preview_too_large": {
-    "message": "ファイルが大きすぎます。ファイルサイズの制限については、ドキュメントを参照してください。"
-  },
   "error_publish": {
     "message": "公開に失敗しました。後でもう一度試してください。"
   },
   "error_publish_404": {
     "message": "公開に失敗しました。まずプレビューを生成してください。"
   },
-  "error_status_400": {
-    "message": "400 無効なリクエスト : 無効な URL。"
+  "error_status": {
+    "message": "ページのステータスを取得できませんでした。後でもう一度試してください。"
   },
-  "error_status_404_content": {
-    "message": "404 見つかりません : Sidekick の設定または URL を確認してください。"
-  },
-  "error_status_404_document": {
-    "message": "404 見つかりません : Sidekick の設定を確認し、このドキュメントへのアクセス権が付与されていることを確認してください。"
-  },
-  "error_status_500": {
-    "message": "500 内部サーバーエラー : ページのステータスを取得できませんでした。後でもう一度試してください。"
-  },
-  "error_status_502": {
-    "message": "502 無効なゲートウェイです : ページのステータスを取得できませんでした。後でもう一度試してください。"
-  },
-  "error_status_504": {
-    "message": "504 ゲートウェイタイムアウト : ページのステータスを取得できませんでした。後でもう一度試してください。"
-  },
-  "error_status_invalid": {
-    "message": "無効なサーバー応答です。Sidekick の設定または URL を確認してください。"
+  "error_status_404": {
+    "message": "ページのステータスを取得できませんでした。このドキュメントが AEM で共有されていることを確認してください。"
   },
   "error_unpublish": {
     "message": "非公開に失敗しました。後でもう一度試してください。"
@@ -412,16 +459,16 @@
     "message": "ヘルプとドキュメント"
   },
   "homepage": {
-    "message": "https://www.hlx.live/tools/sidekick/"
+    "message": "https://www.aem.live/tools/sidekick/"
   },
   "import": {
-    "message": "インポート"
+    "message": "読み込み"
   },
   "info": {
     "message": "情報"
   },
   "join_discord": {
-    "message": "Discord に参加"
+    "message": "ディスコードに参加"
   },
   "json_results_stat": {
     "message": "結果 $2 個中 $1 個を表示中"
@@ -435,8 +482,14 @@
   "live_last_updated": {
     "message": "最終公開日 : $1"
   },
+  "live_last_updated_by": {
+    "message": "$2 が $1 に最終公開"
+  },
   "live_never_updated": {
     "message": "未公開"
+  },
+  "loading_diff": {
+    "message": "変更を読み込み中..."
   },
   "logging_in_state": {
     "message": "ログイン中..."
@@ -460,8 +513,19 @@
     "message": "なし"
   },
   "next": {
-    "description": "次のオンボーディングスライド",
     "message": "次へ"
+  },
+  "no_data": {
+    "message": "データなし"
+  },
+  "no_data_subheading": {
+    "message": "このシートは空です"
+  },
+  "no_diffs": {
+    "message": "変更が見つかりません"
+  },
+  "no_diffs_subheading": {
+    "message": "プレビュー済みコンテンツと公開済みコンテンツが同じ"
   },
   "no_results": {
     "message": "結果が見つかりません"
@@ -488,7 +552,6 @@
     "message": "$1 で開く"
   },
   "open_preview": {
-    "description": "特定の GitHub ブランチのプレビュー URL を開く",
     "message": "プレビュー URL を開く"
   },
   "open_url": {
@@ -518,14 +581,11 @@
   "preview_last_updated": {
     "message": "最終更新 $1"
   },
+  "preview_last_updated_by": {
+    "message": "$2 が $1 に最終更新"
+  },
   "preview_never_updated": {
     "message": "未プレビュー"
-  },
-  "preview_onedrive": {
-    "message": "プロのヒント : 最新の変更をすぐに確認するには、プレビューを生成する前に Ctrl+S キーを押します..."
-  },
-  "preview_onedrive_mac": {
-    "message": "プロのヒント : 最新の変更をすぐに確認するには、プレビューを生成する前に ⌘+S キーを押します..."
   },
   "preview_success": {
     "message": "プレビューが正常に更新されました。プレビューを開いています..."
@@ -535,6 +595,9 @@
   },
   "prod_last_updated": {
     "message": "最終公開日 : $1"
+  },
+  "prod_last_updated_by": {
+    "message": "$2 が $1 に最終公開"
   },
   "prod_never_updated": {
     "message": "未公開"
@@ -560,6 +623,12 @@
   "publishing_state": {
     "message": "公開中..."
   },
+  "review": {
+    "message": "レビュー"
+  },
+  "review_last_updated": {
+    "message": "最終更新 $1"
+  },
   "save": {
     "message": "保存"
   },
@@ -572,15 +641,38 @@
   "share_description": {
     "message": "Sidekick を共有"
   },
+  "show_all": {
+    "message": "すべての行を表示"
+  },
+  "show_diff": {
+    "message": "変更を表示"
+  },
+  "site_forbidden": {
+    "message": "アクセスが拒否されました。別のユーザーでログインするか、管理者に十分な権限を求めてください。"
+  },
+  "site_login_required": {
+    "message": "続行するには、ログインしてください。"
+  },
+  "site_protected": {
+    "message": "このサイトは保護されています"
+  },
+  "site_relogin_required": {
+    "message": "アクセスの有効期限が切れています。続行するには、もう一度ログインしてください。"
+  },
+  "snapshot_update_success": {
+    "message": "スナップショットが正常に更新されました。レビューを開いています…"
+  },
   "source": {
     "message": "ソース"
   },
   "standard": {
-    "description": "標準設定モード",
     "message": "標準"
   },
   "switch_view": {
     "message": "表示"
+  },
+  "system": {
+    "message": "AEM システムユーザー"
   },
   "title": {
     "message": "AEM Sidekick"
@@ -610,7 +702,6 @@
     "message": "非公開にしています..."
   },
   "update": {
-    "description": "ページのプレビューを更新",
     "message": "更新"
   },
   "update_success": {
@@ -629,8 +720,7 @@
     "message": "ユーザーを切り替え"
   },
   "whats_new": {
-    "description": "オンボーディングメニュータイトル",
-    "message": "最新情報"
+    "message": "新機能"
   },
   "yesterday_at": {
     "message": "昨日の $1"

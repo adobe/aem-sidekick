@@ -151,12 +151,16 @@ export class SiteStore {
   plugins;
 
   /**
-   * Are we currently authorized for the site?
-   * Since the config fetch is the first request, we need to track it's
-   * response status early so the UI can render appropriately.
-   * @type {boolean}
+   * The status code of the config response.
+   * @type {number}
    */
-  authorized = false;
+  status;
+
+  /**
+   * The error message of the config response.
+   * @type {string}
+   */
+  error;
 
   /**
    * Is this site in transient mode?
@@ -206,10 +210,15 @@ export class SiteStore {
     if (owner && repo) {
       // look for custom config in project
       try {
-        const res = await callAdmin({ owner, repo, ref }, 'sidekick', '/config.json');
-        this.authorized = res.status === 200;
-        if (res.status === 200) {
-          this.authorized = true;
+        const res = await callAdmin(
+          {
+            owner, repo, ref, adminVersion,
+          },
+          'sidekick',
+          '/config.json',
+        );
+        this.status = res.status;
+        if (this.status === 200) {
           config = {
             ...config,
             ...await res.json(),
@@ -220,10 +229,11 @@ export class SiteStore {
             mountpoints,
             adminVersion,
           };
-        } else if (res.status !== 404) {
-          this.authorized = false;
+        } else {
+          this.error = res.headers.get('x-error');
         }
       } catch (e) {
+        this.error = e.message;
         /* istanbul ignore next */
         log.debug('error retrieving custom sidekick config', e);
       }
@@ -238,9 +248,11 @@ export class SiteStore {
       previewHost,
       liveHost,
       outerHost: legacyLiveHost,
+      reviewHost,
       host,
       project = '',
       specialViews,
+      wordSaveDelay,
       transient = false,
       scriptUrl = 'https://www.hlx.live/tools/sidekick/index.js',
     } = config;
@@ -249,6 +261,7 @@ export class SiteStore {
     const domain = previewHost?.endsWith('.aem.page') ? 'aem' : 'hlx';
     const stdInnerHost = hostPrefix ? `${hostPrefix}.${domain}.page` : null;
     const stdOuterHost = hostPrefix ? `${hostPrefix}.${domain}.live` : null;
+    const stdReviewHost = hostPrefix ? `${hostPrefix}.aem.reviews` : null;
     const devUrl = new URL(devOrigin);
 
     // default views
@@ -282,14 +295,36 @@ export class SiteStore {
 
     this.innerHost = previewHost || stdInnerHost;
     this.outerHost = liveHost || legacyLiveHost || stdOuterHost;
+    this.reviewHost = reviewHost || stdReviewHost;
     this.stdInnerHost = stdInnerHost;
     this.stdOuterHost = stdOuterHost;
+    this.stdReviewHost = stdReviewHost;
     this.host = publicHost;
     this.project = project;
     this.devUrl = devUrl;
     this.lang = lang || getLanguage();
+    this.wordSaveDelay = Number.isInteger(wordSaveDelay) && wordSaveDelay > 0
+      ? wordSaveDelay : 1500;
     this.transient = transient;
     this.setReady();
+
+    // send config to service worker to update sync storage
+    if (!this.transient && this.status === 200 && this.owner && this.repo) {
+      chrome.runtime.sendMessage({
+        action: 'updateProject',
+        config: {
+          owner: this.owner,
+          repo: this.repo,
+          ref: this.ref,
+          project: this.project,
+          previewHost: this.previewHost,
+          reviewHost: this.reviewHost,
+          liveHost: this.liveHost,
+          host: this.host,
+          mountpoints: this.mountpoints,
+        },
+      });
+    }
   }
 
   /**
@@ -314,10 +349,13 @@ export class SiteStore {
       liveHost: this.liveHost,
       outerHost: this.outerHost,
       stdOuterHost: this.stdOuterHost,
+      reviewHost: this.reviewHost,
+      stdReviewHost: this.stdReviewHost,
       devOrigin: this.devOrigin,
       adminVersion: this.adminVersion,
       lang: this.lang,
       views: this.views,
+      wordSaveDelay: this.wordSaveDelay,
     };
   }
 }

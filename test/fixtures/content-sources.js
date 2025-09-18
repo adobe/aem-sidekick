@@ -12,30 +12,6 @@
 
 import { gdriveFileTypes as gdriveIcons } from '../../src/extension/app/store/bulk.js';
 
-const gdriveDescriptors = {
-  folder: 'Google Drive Folder',
-  gdoc: 'Google Docs',
-  gsheet: 'Google Sheets',
-  unknown: 'unknown',
-  pdf: 'PDF File',
-  image: 'JPG Image File',
-  video: 'MP4 Video File',
-  docx: 'Microsoft Word Document',
-  xlsx: 'Microsoft Excel Document',
-  svg: 'SVG File',
-};
-
-const spDescriptors = {
-  folder: 'SharePoint Folder',
-  docx: 'docx',
-  xlsx: 'xlsx',
-  unknown: 'unknown',
-  pdf: 'pdf',
-  image: 'jpg',
-  video: 'mp4',
-  svg: 'svg',
-};
-
 export const DEFAULT_GDRIVE_BULK_SELECTION = [
   { path: '/foo/bar', file: 'bar', type: 'folder' },
   { path: '/foo/index', file: 'index', type: 'gdoc' },
@@ -57,7 +33,7 @@ export const DEFAULT_SHAREPOINT_BULK_SELECTION = [
   { path: '/foo/image.jpg', file: 'image.jpg', type: 'image' },
   { path: '/foo/video.mp4', file: 'video.mp4', type: 'video' },
   { path: '/foo/icon.svg', file: 'icon.svg', type: 'svg' },
-  { path: '/foo/other', file: 'other', type: 'unknown' },
+  { path: '/foo/other.unknown', file: 'other.unknown', type: 'unknown' },
 ];
 
 /*
@@ -82,43 +58,60 @@ export function mockGdriveRoot() {
  */
 export function mockGdriveFolder(name, viewType = 'list') {
   const icon = gdriveIcons.folder;
-  const descriptor = gdriveDescriptors.folder;
   return viewType === 'list' ? `
-    <div class="folder" id="folder-${name}" role="row" aria-selected="true">
-      <div role="gridcell">
+    <tr class="folder" id="folder-${name}" role="row" aria-selected="true">
+      <td>
         <div>
-          <svg>
-            <path d="M16 0 0 0 0000.${icon}"></path>
-          </svg>
-        </div>
-        <div>
-          <div data-tooltip="${descriptor}: ${name}" aria-label="${name} Shared ${descriptor}">${name}</div>
-        </div>
-      </div>
-    </div>` : `
-    <div class="folder" id="folder-${name}" role="row" aria-selected="true">
-      <div role="gridcell" aria-label="${name} ${descriptor}">
-        <i></i>
-        <i></i>
-        <div>
-          <div></div>
           <div>
             <div>
-              <svg>
-                <g>
-                  <path d="M16 0 0 0 0000.${icon}"></path>
-                </g>
-              </svg>
+              <div>
+                <div>
+                  <div>
+                    <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div>
+                <div data-id>
+                  <span>
+                    <strong>${name}</strong>
+                  </span>
+                </div>
+                <div role="button" tabindex="-1" data-tooltip-delay="0" data-tooltip="Catch me up" aria-label="Catch me up">
+                  <span class="cS0c5e">Catch me up</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div></div>
+        </div>
+      </td>
+    </tr>
+    ` : `
+    <div class="folder" id="file-${name}" role="gridcell" aria-selected="true">
+      <div>
+        <div></div>
+        <div>
+          <div>
+            <div>
+              <div>
+                <div>
+                  <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
+                </div>
+              </div>
+            </div>
+          </div>
           <div>
             <div>${name}</div>
+            <div role="button" tabindex="-1" data-tooltip-delay="0" data-tooltip="Catch me up" aria-label="Catch me up">
+              <span class="cS0c5e">Catch me up</span>
+            </div>
           </div>
-          <div></div>
         </div>
       </div>
-    </div>`;
+    </div>
+    `;
 }
 
 /**
@@ -132,32 +125,57 @@ export function mockGdriveFile({ path, type }, viewType = 'list') {
     return mockGdriveFolder(path.split('/').pop(), viewType);
   }
   const icon = gdriveIcons[type] || '0000';
-  const descriptor = gdriveDescriptors[type];
   const filename = path.split('/').pop();
-
   return viewType === 'list' ? `
-    <div class="file" id="file-${type}" role="row" aria-selected="false">
-      <div role="gridcell">
+    <tr class="file" id="file-${type}" role="row" aria-selected="false">
+      <td>
         <div>
-          <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
-        </div>
-        <div>
-          <div data-tooltip="${descriptor}: ${filename}" aria-label="${filename} Shared ${descriptor}">${filename}</div>
-        </div>
-      </div>
-    </div>` : `
-    <div class="file" id="file-${type}" role="row" aria-selected="false">
-      <div role="gridcell" aria-label="${filename} ${descriptor} More info (Option + →)">
-        <div>
-          <div></div>
           <div>
             <div>
-              <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
+              <div>
+                <div>
+                  <div>
+                    <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div></div>
             <div>
-              <div jsname="wuLfrd">${filename}</div>
+              <div>
+                <div data-id>
+                  <span>
+                    <strong>${filename}</strong>
+                  </span>
+                </div>
+                <div role="button" tabindex="-1" data-tooltip-delay="0" data-tooltip="Catch me up" aria-label="Catch me up">
+                  <span class="cS0c5e">Catch me up</span>
+                </div>
+              </div>
             </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+    ` : `
+    <div class="file" id="file-${type}" role="gridcell" aria-selected="false">
+      <div>
+        <div></div>
+        <div>
+          <div>
+            <div>
+              <div>
+                <div>
+                  <svg><path d="M16 0 0 0 0000.${icon}"></path></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div>${filename}</div>
+            <div role="button" tabindex="-1" data-tooltip-delay="0" data-tooltip="Catch me up" aria-label="Catch me up">
+              <span class="cS0c5e">Catch me up</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -209,28 +227,17 @@ export function mockSharePointFolder(name, viewType = 'list') {
  * @param {string} viewType The view type: "list" (default) or "grid"
  * @returns {string} The markup for the resource
  */
-export function mockSharePointFile({ path, type }, viewType = 'list', nonLatin = false) {
+export function mockSharePointFile({ path, type }, viewType = 'list') {
   if (type === 'folder') {
     return mockSharePointFolder(path.split('/').pop(), viewType);
   }
-  const descriptor = spDescriptors[type];
   const filename = path.split('/').pop();
 
-  const fileInfo = nonLatin
-    ? `${filename}, ${descriptor} 文件, 专用, 已于 2/6/2023 修改, 编辑者: John Doe, 365 KB`
-    : `${filename}, ${descriptor} File, Private, Modified 4/9/2023, edited by John Doe, 356 KB`;
-
   const result = viewType === 'list' ? `
-    <div class="file" id="file-${type}" role="row" aria-selected="false"
-      aria-label="${fileInfo}">
-      <img src="./icons/${type}.svg">
-      <button>${filename}</button>
+    <div class="file" id="file-${type}" role="row" aria-selected="false">
+      <span role="button" data-id="heroField">${filename}</span>
     </div>` : `
     <div class="file" id="file-${type}" role="row" aria-selected="false">
-      <span>${fileInfo}</span>
-      <i data-icon-name="svg/${type}_16x1.svg" aria-label="${type}">
-        <img src="./icons/${type}.svg">
-      </i>
       <div data-automationid="name">${filename}</div>
     </div>`;
   return result;

@@ -46,13 +46,14 @@ describe('Login', () => {
   let appStore;
 
   let setStateSpy;
+  let reloadPageStub;
 
   beforeEach(async () => {
     appStore = new AppStore();
     sidekickTest = new SidekickTest(defaultSidekickConfig, appStore);
 
     setStateSpy = sidekickTest.sandbox.spy(appStore, 'setState');
-    sidekickTest.sandbox.stub(appStore, 'reloadPage');
+    reloadPageStub = sidekickTest.sandbox.stub(appStore, 'reloadPage');
 
     sidekickTest
       .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
@@ -70,7 +71,7 @@ describe('Login', () => {
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
       const loginButton = recursiveQuery(sidekick, 'login-button');
 
-      const loginActionButton = recursiveQuery(loginButton, 'sk-action-button');
+      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button');
       await waitUntil(() => loginActionButton.getAttribute('disabled') === null);
 
       sidekickTest
@@ -93,10 +94,10 @@ describe('Login', () => {
       sidekickTest
         .mockFetchStatusUnauthorized()
         .mockFetchProfilePictureSuccess()
-        .mockFetchSidekickConfigNotFound();
+        .mockFetchSidekickConfigUnauthorized();
 
       sidekick = sidekickTest.createSidekick();
-      await sidekickTest.awaitStatusFetched();
+      await sidekickTest.awaitActionBar();
 
       await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
 
@@ -115,7 +116,7 @@ describe('Login', () => {
 
       sidekickTest
         .mockFetchStatusUnauthorized()
-        .mockFetchSidekickConfigForbidden()
+        .mockFetchSidekickConfigUnauthorized()
         .mockFetchProfilePictureSuccess()
         .mockFetchProfileUnauthorized();
 
@@ -124,7 +125,7 @@ describe('Login', () => {
 
       await waitUntil(() => appStore.state === STATE.LOGGING_OUT);
       await sidekickTest.awaitLoggedOut();
-      await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
+      await waitUntil(() => reloadPageStub.calledOnce);
     }).timeout(20000);
 
     it('Successful login and logout without authentication enabled ', async () => {
@@ -159,7 +160,7 @@ describe('Login', () => {
 
       await waitUntil(() => appStore.state === STATE.LOGGING_OUT);
       await sidekickTest.awaitLoggedOut();
-      await waitUntil(() => appStore.state === STATE.READY);
+      await waitUntil(() => reloadPageStub.calledOnce);
     }).timeout(20000);
 
     it('Successful login and logout with authentication enabled ', async () => {
@@ -194,7 +195,7 @@ describe('Login', () => {
 
       await waitUntil(() => appStore.state === STATE.LOGGING_OUT);
       await sidekickTest.awaitLoggedOut();
-      await waitUntil(() => appStore.state === STATE.READY);
+      await waitUntil(() => reloadPageStub.calledOnce);
     }).timeout(20000);
 
     it('Displays profile picture after login', async () => {
@@ -205,10 +206,9 @@ describe('Login', () => {
       sidekickTest
         .mockFetchStatusUnauthorized()
         .mockFetchProfilePictureSuccess()
-        .mockFetchSidekickConfigNotFound();
+        .mockFetchSidekickConfigUnauthorized();
 
       sidekick = sidekickTest.createSidekick();
-      await sidekickTest.awaitStatusFetched();
 
       await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
 
@@ -229,18 +229,17 @@ describe('Login', () => {
     it('Unauthorized after login ', async () => {
       sidekickTest
         .mockFetchStatusUnauthorized()
-        .mockFetchSidekickConfigNotFound();
+        .mockFetchSidekickConfigUnauthorized();
 
       // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       sidekick = sidekickTest.createSidekick();
-      await sidekickTest.awaitStatusFetched();
 
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
       const loginButton = recursiveQuery(sidekick, 'login-button');
 
-      const loginActionButton = recursiveQuery(loginButton, 'sk-action-button');
+      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button');
       await waitUntil(() => loginActionButton.getAttribute('disabled') === null);
 
       expect(loginActionButton).to.exist;
@@ -257,6 +256,41 @@ describe('Login', () => {
 
       expect(openStub.calledOnce).to.be.true;
       await waitUntil(() => appStore.state === STATE.UNAUTHORIZED, '', { timeout: 10000 });
+    }).timeout(20000);
+
+    it('Allows user to logout when forbidden', async () => {
+      sidekickTest
+        .mockFetchStatusUnauthorized()
+        .mockFetchSidekickConfigForbidden()
+        .mockFetchProfileUnauthorized();
+
+      // @ts-ignore
+      const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitActionBar();
+
+      // Wait for the component to process the forbidden state
+      await waitUntil(() => appStore.state === STATE.UNAUTHORIZED);
+
+      const accountElement = recursiveQuery(sidekick, 'login-button');
+      // With 403 status and !authenticated, we should get sp-action-menu directly
+      const accountMenu = recursiveQuery(accountElement, 'sp-action-menu');
+      expect(accountMenu).to.exist;
+
+      // Click the action menu itself to open it
+      accountMenu.click();
+
+      await waitUntil(() => accountMenu.getAttribute('open') !== null);
+
+      const logoutButton = recursiveQuery(accountMenu, 'sk-menu-item.logout');
+      expect(logoutButton).to.exist;
+      logoutButton.click();
+
+      await waitUntil(() => appStore.state === STATE.LOGGING_OUT);
+      expect(openStub.calledOnce).to.be.true;
+      await sidekickTest.awaitLoggedOut();
+      await waitUntil(() => reloadPageStub.calledOnce);
     }).timeout(20000);
   });
 });

@@ -17,7 +17,11 @@ import { expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
-import { configureAuthAndCorsHeaders, setAuthToken } from '../src/extension/auth.js';
+import {
+  configureAuthAndCorsHeaders,
+  setAuthToken,
+  updateUserAgent,
+} from '../src/extension/auth.js';
 import chromeMock from './mocks/chrome.js';
 import { error } from './test-utils.js';
 
@@ -57,7 +61,7 @@ describe('Test auth', () => {
     const owner = 'test';
     const repo = 'site';
     const authToken = '1234567890';
-    const authTokenExpiry = Date.now() / 1000 + 60;
+    const authTokenExpiry = Date.now() + 60000;
 
     // set auth token
     await setAuthToken(owner, repo, authToken, authTokenExpiry);
@@ -97,7 +101,8 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://admin.hlx.page/(config/test.json|[a-z]+/test/.*)',
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: '^https://admin.hlx.page/(config/test\\.json|[a-z]+/test/.*)',
             requestDomains: [
               'admin.hlx.page',
             ],
@@ -125,7 +130,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(live|page)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
               'labs.aem.live',
@@ -179,7 +184,8 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://admin.hlx.page/(config/test.json|[a-z]+/test/.*)',
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: '^https://admin.hlx.page/(config/test\\.json|[a-z]+/test/.*)',
             requestDomains: [
               'admin.hlx.page',
             ],
@@ -207,7 +213,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(live|page)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
               'labs.aem.live',
@@ -314,7 +320,7 @@ describe('Test auth', () => {
     const repo = 'site';
     const authToken = '1234567890';
     const siteToken = '0987654321';
-    let expiry = Date.now() / 1000 + 60;
+    let expiry = Date.now() + 60000;
 
     await setAuthToken(owner, repo, authToken, expiry, siteToken, expiry);
     expect(setConfig.callCount).to.equal(1);
@@ -336,7 +342,8 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://admin.hlx.page/(config/test.json|[a-z]+/test/.*)',
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: '^https://admin.hlx.page/(config/test\\.json|[a-z]+/test/.*)',
             requestDomains: [
               'admin.hlx.page',
             ],
@@ -364,7 +371,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test.aem.(live|page)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
               'labs.aem.live',
@@ -391,19 +398,21 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[a-z0-9-]+--site--test.aem.(page|live)/.*',
+            regexFilter: '^https://[a-z0-9-]+--site--test\\.aem\\.(page|live|reviews)/.*',
             requestMethods: [
               'get',
               'post',
             ],
             resourceTypes: [
               'main_frame',
+              'sub_frame',
               'script',
               'stylesheet',
               'image',
               'xmlhttprequest',
               'media',
               'font',
+              'other',
             ],
           },
         },
@@ -412,7 +421,7 @@ describe('Test auth', () => {
     )).to.be.true;
 
     // update existing auth and site tokens
-    expiry = Date.now() / 1000 + 120;
+    expiry = Date.now() + 120000;
     await setAuthToken(owner, repo, authToken, expiry, siteToken, expiry);
     expect(setConfig.callCount).to.equal(2);
     expect(getConfig.callCount).to.equal(4);
@@ -423,5 +432,31 @@ describe('Test auth', () => {
     expect(setConfig.callCount).to.equal(3);
     expect(getConfig.callCount).to.equal(6);
     expect(updateSessionRules.callCount).to.equal(5);
+  });
+
+  it('updateUserAgent', async () => {
+    const updateDynamicRules = sandbox.spy(chrome.declarativeNetRequest, 'updateDynamicRules');
+    await updateUserAgent();
+    expect(updateDynamicRules.callCount).to.equal(2); // remove all and add new
+    expect(updateDynamicRules.calledWith({
+      addRules: [{
+        id: sinon.match.number,
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          requestHeaders: [{
+            header: 'User-Agent',
+            operation: 'set',
+            value: 'HeadlessChrome AEMSidekick/0.0.0',
+          }],
+        },
+        condition: {
+          regexFilter: '^https://admin.hlx.page/.*',
+          requestDomains: ['admin.hlx.page'],
+          requestMethods: ['get', 'post', 'delete'],
+          resourceTypes: ['xmlhttprequest'],
+        },
+      }],
+    })).to.be.true;
   });
 });

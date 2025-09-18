@@ -61,9 +61,9 @@ export async function getProjects() {
 export async function updateProject(project) {
   const { owner, repo } = project;
   if (owner && repo) {
-    // sanitize input
+    // sanitize input - only remove undefined or null values, not false or 0
     Object.keys(project).forEach((key) => {
-      if (!project[key]) {
+      if (project[key] === undefined || project[key] === null) {
         delete project[key];
       }
     });
@@ -164,10 +164,10 @@ export async function getProjectFromUrl(tab) {
       return ghSettings;
     }
     try {
-      // check if hlx.page, hlx.live, aem.page or aem.live url
+      // check if hlx.page, hlx.live, aem.page, aem.live or aem.reviews url
       const { host } = new URL(url);
-      const res = /(.*)--(.*)--(.*)\.(aem|hlx)\.(page|live)/.exec(host);
-      const [, urlRef, urlRepo, urlOwner] = res || [];
+      const res = /(.*--)?(.*)--(.*)--(.*)\.(aem|hlx)\.(page|live|reviews)/.exec(host);
+      const [,, urlRef, urlRepo, urlOwner] = res || [];
       if (urlOwner && urlRepo && urlRef) {
         return {
           owner: urlOwner,
@@ -176,8 +176,9 @@ export async function getProjectFromUrl(tab) {
         };
       } else {
         // check if url is known in url cache
-        const { org, site } = (await urlCache.get(tab))
-          .find((r) => r.originalSite) || {};
+        const cachedResults = await urlCache.get(tab);
+        const { org, site } = cachedResults.length === 1
+          ? cachedResults[0] : cachedResults.find((r) => r.originalSite) || {};
         if (org && site) {
           return {
             owner: org,
@@ -203,6 +204,7 @@ export function assembleProject({
   owner,
   repo,
   ref = 'main',
+  transient: _, // omit transient flag
   ...opts
 }) {
   if (giturl && !owner && !repo) {
@@ -247,12 +249,16 @@ export async function getProjectEnv({
     const {
       previewHost,
       liveHost,
+      reviewHost,
       host,
       project,
       contentSourceUrl,
     } = await res.json();
     if (previewHost) {
       env.previewHost = previewHost;
+    }
+    if (reviewHost) {
+      env.reviewHost = reviewHost;
     }
     if (liveHost) {
       env.liveHost = liveHost;
@@ -275,10 +281,13 @@ export async function getProjectEnv({
 /**
  * Adds a project configuration.
  * @param {Object} input The project settings
- * @param {boolean} [loggedIn] True if user is logged in, else false or empty (default)
+ * @param {boolean} [loggedIn] True if user is logged in, else false (default)
+ * @param {Object} [loginHint] The optional login hint
+ * @param {string} [loginHint.idp] The IDP to use for login
+ * @param {string} [loginHint.tenant] The tenant ID to use for login
  * @returns {Promise<Object>} The added project
  */
-export async function addProject(input, loggedIn) {
+export async function addProject(input, loggedIn = false, { idp, tenant } = {}) {
   const config = assembleProject(input);
   const { owner, repo } = config;
   const env = await getProjectEnv(config);
@@ -286,6 +295,12 @@ export async function addProject(input, loggedIn) {
     // defer adding project and have user sign in
     const loginUrl = createAdminUrl(config, 'login');
     loginUrl.searchParams.set('extensionId', chrome.runtime.id);
+    if (idp) {
+      loginUrl.searchParams.set('idp', idp);
+    }
+    if (tenant) {
+      loginUrl.searchParams.set('tenantId', tenant);
+    }
     const [currentTab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     const { id: loginTabId } = await chrome.tabs.create({
       url: loginUrl.toString(),
@@ -386,7 +401,7 @@ export function isValidHost(host, owner, repo) {
   const [third, second, first] = host.split('.');
   const any = '([0-9a-z-]+)';
   return host.endsWith(first)
-    && ['page', 'live'].includes(first)
+    && ['page', 'reviews', 'live'].includes(first)
     && ['aem', 'hlx'].includes(second)
     && new RegExp(`--${repo || any}--${owner || any}$`, 'i').test(third);
 }
@@ -399,7 +414,11 @@ export function isValidHost(host, owner, repo) {
  */
 function getConfigDetails(host) {
   if (isValidHost(host)) {
-    return host.split('.')[0].split('--');
+    const details = host.split('.')[0].split('--');
+    const owner = details.pop();
+    const repo = details.pop();
+    const ref = details.pop();
+    return [ref, repo, owner];
   }
   return [];
 }
@@ -471,11 +490,13 @@ export async function getProjectMatches(configs, tab) {
         repo,
         host: prodHost,
         previewHost,
+        reviewHost,
         liveHost,
       } = cfg;
       return checkHost === prodHost // production host
-        || checkHost === previewHost // custom inner
-        || checkHost === liveHost // custom outer
+        || checkHost === previewHost // custom preview host
+        || checkHost === reviewHost // custom review host
+        || checkHost === liveHost // custom live host
         || isValidHost(checkHost, owner, repo); // inner or outer
     });
   // check url cache if no matches
@@ -519,6 +540,8 @@ export async function getProjectMatches(configs, tab) {
     }
   }
   return matches
+    // ensure each match has an id
+    .map((cfg) => (cfg.id ? cfg : { ...cfg, id: `${cfg.owner}/${cfg.repo}` }))
     // exclude disabled configs
     .filter(({ owner, repo }) => !configs
       .find((cfg) => cfg.owner === owner && cfg.repo === repo && cfg.disabled));
@@ -534,6 +557,7 @@ export async function detectLegacySidekick() {
     extensionIds.map(
       async (id) => new Promise((resolve) => {
         try {
+          // @ts-ignore
           chrome.runtime.lastError = null;
           chrome.runtime.sendMessage(
             id,
