@@ -207,7 +207,9 @@ export class SiteStore {
     if (!devOrigin) {
       devOrigin = 'http://localhost:3000';
     }
-    if (owner && repo) {
+    if (`${owner}/${repo}` === 'adobe/aem-sidekick') {
+      this.thirdParty = true;
+    } else if (owner && repo) {
       // look for custom config in project
       try {
         const res = await callAdmin(

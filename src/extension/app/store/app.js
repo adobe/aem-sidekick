@@ -907,9 +907,10 @@ export class AppStore {
     }
 
     const {
-      owner, repo, ref, status: configStatus, error: configError,
+      status: configStatus, error: configError, thirdParty,
     } = this.siteStore;
-    if (!owner || !repo || !ref) {
+    if (thirdParty) {
+      this.setState(STATE.THIRD_PARTY);
       return status;
     }
     if (configStatus !== 200) {

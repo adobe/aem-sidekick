@@ -466,6 +466,10 @@ export class PluginActionBar extends ConnectedElement {
       return html``;
     }
 
+    if (siteStore.thirdParty) {
+      return html``;
+    }
+
     const properties = html`
       <sp-action-menu id="sidekick-menu" placement="top" quiet tabindex="0">
         <sp-icon slot="icon" size="l">
@@ -487,7 +491,7 @@ export class PluginActionBar extends ConnectedElement {
               ${this.appStore.i18n('config_project_remove')}
             </sk-menu-item>
           `
-      }
+        }
         ${this.projects.length > 0
         ? html`
           <sk-menu-item class="icon-item" value="project-admin-opened" @click=${this.handleItemSelection}>

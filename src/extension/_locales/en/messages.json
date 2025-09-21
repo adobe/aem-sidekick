@@ -386,6 +386,9 @@
     "media_state": {
       "message": "No actions available for media files"
     },
+    "third_party_state": {
+      "message": "Learn what AEM can do for you:"
+    },
     "minutes_ago": {
       "message": "$1 minutes ago"
     },

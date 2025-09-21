@@ -128,6 +128,16 @@ export class ActivityAction extends ConnectedElement {
             </div>
           </div>
         `;
+      case STATE.THIRD_PARTY:
+        return html`
+          <span>${this.appStore.i18n(this.appStore.state)}</span>
+          <sp-action-button class="quiet">
+            Analyze this site
+          </sp-action-button>
+          <sp-action-button class="quiet">
+            Import this site
+          </sp-action-button>
+        `;
       default:
         return html``;
     }

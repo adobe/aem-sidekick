@@ -156,8 +156,16 @@ function removeCacheParam(href = window.location.href) {
           loadConfigPicker(configMatches);
         }
       }
-    } else if (sidekick) {
-      // Remove sidekick
+    } else if (!sidekick) {
+      // Load custom element polyfill
+      await import('./lib/polyfills.min.js');
+      loadSidekick({
+        owner: 'adobe',
+        repo: 'aem-sidekick',
+        transient: true,
+      }, adminVersion);
+    } else if (sidekick && !display) {
+      // // Remove sidekick
       sidekick.replaceWith(''); // remove() doesn't work for custom element
       delete window.hlx.sidekick;
     }

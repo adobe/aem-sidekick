@@ -65,9 +65,9 @@ function getPaths(type) {
  * Updates the extension icon.
  * @param {Context} context The context object
  */
-export async function updateIcon({ matches = [] }) {
+export async function updateIcon({ matches = [], url = '' }) {
   let iconType = 'disabled';
-  if (matches.length > 0 && isValidProject(matches[0])) {
+  if ((matches.length > 0 && isValidProject(matches[0])) || url.startsWith('https://')) {
     if (await getDisplay()) {
       iconType = 'default';
     } else {
