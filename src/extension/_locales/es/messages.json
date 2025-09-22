@@ -9,7 +9,7 @@
     "message": "No se puede previsualizar $1: archivo vacío"
   },
   "AEM_BACKEND_FILE_TOO_BIG": {
-    "message": "No se puede previsualizar $1: archivo de más de $2"
+    "message": "No se puede previsualizar $1: archivo de más de 100 MB"
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
     "message": "No se puede previsualizar $1: ICO supera los $2"
