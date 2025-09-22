@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: enthaltenes Bild ist größer als 20 MB."
+    "message": "Vorschau von $1 nicht möglich: enthaltenes Bild ist größer als $2."
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "$1 konnte nicht von $2 abgerufen werden."
@@ -12,10 +12,10 @@
     "message": "Vorschau von $1 nicht möglich: Datei größer als 100 MB"
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: ICO ist größer als 16 KB"
+    "message": "Vorschau von $1 nicht möglich: ICO ist größer als $2"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: Bild ist größer als 20 MB"
+    "message": "Vorschau von $1 nicht möglich: Bild ist größer als $2"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Vorschau von $2 nicht möglich: ungültiges JSON"
@@ -42,7 +42,7 @@
     "message": "Vorschau von $1 nicht möglich: kein Handler gefunden"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: PDF ist größer als 10 MB"
+    "message": "Vorschau von $1 nicht möglich: PDF ist größer als $2"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Vorschau von $1 nicht möglich: SVG enthält ungültige XML"
@@ -54,7 +54,7 @@
     "message": "Vorschau von $1 kann nicht angezeigt werden: unzulässiges Skripting in SVG erkannt"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: SVG ist größer als 20 KB"
+    "message": "Vorschau von $1 nicht möglich: SVG ist größer als $2"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Vorschau von $1 nicht möglich: Dateityp nicht unterstützt"
