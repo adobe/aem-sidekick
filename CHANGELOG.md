@@ -1,3 +1,45 @@
+## [7.19.5](https://github.com/adobe/aem-sidekick/compare/v7.19.4...v7.19.5) (2025-09-23)
+
+
+### Bug Fixes
+
+* **bulk:** permanent spinner after preview & navigation ([#692](https://github.com/adobe/aem-sidekick/issues/692)) ([c1241f6](https://github.com/adobe/aem-sidekick/commit/c1241f69402b209f4f1f0a1cb2a044af3fd6c969))
+
+## [7.19.4](https://github.com/adobe/aem-sidekick/compare/v7.19.3...v7.19.4) (2025-09-23)
+
+
+### Bug Fixes
+
+* support dynamic file size limits ([7b2aab3](https://github.com/adobe/aem-sidekick/commit/7b2aab30de6a4a8c32a2db4142c463c040927406))
+
+## [7.19.3](https://github.com/adobe/aem-sidekick/compare/v7.19.2...v7.19.3) (2025-09-17)
+
+
+### Bug Fixes
+
+* **env-switcher:** source label always falls back on contentSourceType ([#689](https://github.com/adobe/aem-sidekick/issues/689)) ([f91beb8](https://github.com/adobe/aem-sidekick/commit/f91beb865dd7ed370ad1fc07eb75c0473078466a))
+
+## [7.19.2](https://github.com/adobe/aem-sidekick/compare/v7.19.1...v7.19.2) (2025-09-17)
+
+
+### Bug Fixes
+
+* columns key is no longer supported in the OOTB json ([dae88e7](https://github.com/adobe/aem-sidekick/commit/dae88e7113995ffd1481670cb8ce19f06e5fd4c2))
+
+## [7.19.1](https://github.com/adobe/aem-sidekick/compare/v7.19.0...v7.19.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* **env-switcher:** define source label first based on sourceLocation,… ([#683](https://github.com/adobe/aem-sidekick/issues/683)) ([81bf03e](https://github.com/adobe/aem-sidekick/commit/81bf03e38a4a12549d86f5dc1067a340d08289ae))
+
+# [7.19.0](https://github.com/adobe/aem-sidekick/compare/v7.18.2...v7.19.0) (2025-09-15)
+
+
+### Features
+
+* RC 20250910 ([fd23442](https://github.com/adobe/aem-sidekick/commit/fd23442ba7c2d74b7789a5f0b96a1e2da9d3c9d0))
+
 ## [7.18.2](https://github.com/adobe/aem-sidekick/compare/v7.18.1...v7.18.2) (2025-09-05)
 
 

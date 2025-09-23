@@ -704,6 +704,7 @@ export class BulkStore {
         if (this.appStore.state !== STATE.FETCHING_STATUS
           && this.appStore.location.href !== getLocation().href) {
           this.selection = [];
+          this.appStore.toast = null;
           this.appStore.fetchStatus(true, true);
         }
       } else {

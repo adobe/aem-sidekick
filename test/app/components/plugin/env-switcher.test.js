@@ -302,7 +302,11 @@ describe('Environment Switcher', () => {
 
     it('markup content source without edit config', async () => {
       sidekickTest
-        .mockFetchStatusSuccess()
+        .mockFetchStatusSuccess(false, {
+          preview: {
+            sourceLocation: 'markup:foo',
+          },
+        })
         .mockFetchSidekickConfigSuccess(false, false, {
           contentSourceType: 'markup',
         })
@@ -316,7 +320,11 @@ describe('Environment Switcher', () => {
 
     it('markup content source with edit config', async () => {
       sidekickTest
-        .mockFetchStatusSuccess()
+        .mockFetchStatusSuccess(false, {
+          preview: {
+            sourceLocation: 'markup:foo',
+          },
+        })
         .mockFetchSidekickConfigSuccess(false, false, {
           contentSourceType: 'markup',
           editUrlLabel: 'Foo',

@@ -277,7 +277,7 @@ describe('Plugin action bar', () => {
 
     it('Preview - should display "open in" description for Source', async () => {
       sidekickTest
-        .mockFetchStatusSuccess()
+        .mockFetchStatusSuccess(false, null, HelixMockContentSources.GDRIVE)
         .mockFetchSidekickConfigSuccess(false)
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
 

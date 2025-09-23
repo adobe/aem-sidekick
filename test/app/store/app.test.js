@@ -674,12 +674,56 @@ describe('Test App Store', () => {
       instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}{{pathname}}?cmd=open';
 
       const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
-      fetchStatusStub.resolves({});
+      fetchStatusStub.resolves({ webPath: '/' });
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
       await instance.switchEnv('edit');
       expect(loadPage.calledWith('https://aemcloud.com/index?cmd=open')).to.be.true;
+    });
+
+    it('switches from review to edit with snapshot path', async () => {
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      const isReviewStub = sidekickTest.sandbox.stub(instance, 'isReview');
+
+      isReviewStub.returns(true);
+      instance.siteStore.stdReviewHost = 'aem.reviews';
+      instance.location = new URL('https://test-snapshot--aem-boilerplate--adobe.aem.reviews/path');
+      instance.status = { webPath: '/.snapshots/test-snapshot/path' };
+
+      // Mock the first fetchStatus call with snapshot path
+      fetchStatusStub.onCall(0).resolves({
+        edit: { url: 'https://edit.example.com/snapshot-path' },
+      });
+
+      await instance.switchEnv('edit');
+
+      expect(fetchStatusStub.calledWith(false, true, true)).to.be.true;
+      expect(loadPage.calledWith('https://edit.example.com/snapshot-path')).to.be.true;
+    });
+
+    it('switches from review to edit with fallback to original edit URL', async () => {
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      const isReviewStub = sidekickTest.sandbox.stub(instance, 'isReview');
+
+      isReviewStub.returns(true);
+      instance.siteStore.stdReviewHost = 'aem.reviews';
+      instance.location = new URL('https://test-snapshot--aem-boilerplate--adobe.aem.reviews/path');
+      instance.status = { webPath: '/.snapshots/test-snapshot/path' };
+
+      // Mock the first fetchStatus call with no edit URL
+      fetchStatusStub.onCall(0).resolves({});
+      // Mock the second fetchStatus call with original edit URL
+      fetchStatusStub.onCall(1).resolves({
+        edit: { url: 'https://edit.example.com/original-path' },
+      });
+
+      await instance.switchEnv('edit');
+
+      expect(fetchStatusStub.calledTwice).to.be.true;
+      expect(fetchStatusStub.firstCall.calledWith(false, true, true)).to.be.true;
+      expect(fetchStatusStub.secondCall.calledWith(false, true)).to.be.true;
+      expect(loadPage.calledWith('https://edit.example.com/original-path')).to.be.true;
     });
 
     it('switches from live to preview', async () => {
@@ -694,6 +738,32 @@ describe('Test App Store', () => {
       instance.status = mockStatus;
       await instance.switchEnv('live', true);
       expect(openPage.calledWith(mockStatus.live.url)).to.be.true;
+    });
+
+    it('switches to review environment with snapshot URL construction', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = { webPath: '/.snapshots/test-snapshot/path/to/content' };
+      instance.siteStore.reviewHost = 'aem.reviews';
+
+      await instance.switchEnv('review');
+
+      expect(loadPage.calledOnce).to.be.true;
+      const loadPageArgs = loadPage.args[0];
+      expect(loadPageArgs[0]).to.include('test-snapshot--aem.reviews');
+      expect(loadPageArgs[0]).to.include('/path/to/content');
+    });
+
+    it('switches to review environment without snapshot in webPath', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = { webPath: '/regular/path' };
+      instance.siteStore.reviewHost = 'aem.reviews';
+
+      await instance.switchEnv('review');
+
+      expect(loadPage.calledOnce).to.be.true;
+      const loadPageArgs = loadPage.args[0];
+      expect(loadPageArgs[0]).to.include('aem.reviews');
+      expect(loadPageArgs[0]).to.include('/regular/path');
     });
 
     it('switches from preview to live w/cache busting', async () => {
@@ -969,6 +1039,23 @@ describe('Test App Store', () => {
         message: 'Configuration successfully activated.',
         variant: 'positive',
       })).is.true;
+    });
+
+    // Test when resp is ok and status.webPath starts with /.snapshots/
+    it('should handle snapshot update success', async () => {
+      updateStub.resolves(true);
+      instance.status = { webPath: '/.snapshots/test-snapshot/foo' };
+
+      const switchEnvSpy = sandbox.spy(instance, 'switchEnv');
+
+      await instance.updatePreview(false);
+
+      expect(showToastStub.calledOnce).is.true;
+      expect(showToastStub.calledWith({
+        message: 'Snapshot successfully updated, opening Review...',
+        variant: 'positive',
+      })).is.true;
+      expect(switchEnvSpy.calledWith('review', false, true)).is.true;
     });
   });
 
@@ -1879,24 +1966,120 @@ describe('Test App Store', () => {
     });
 
     it('should return "SharePoint" if sourceLocation includes "onedrive:"', () => {
+      instance.status = {
+        preview: {
+          sourceLocation: 'onedrive:foo',
+        },
+      };
+      expect(instance.getContentSourceLabel()).to.equal('SharePoint');
+    });
+
+    it('should return "SharePoint" if no sourceLocation but contentSourceType is "onedrive"', () => {
       instance.siteStore.contentSourceType = 'onedrive';
       expect(instance.getContentSourceLabel()).to.equal('SharePoint');
     });
 
     it('should return "Google Drive" if sourceLocation includes "gdrive:"', () => {
+      instance.status = {
+        preview: {
+          sourceLocation: 'gdrive:foo',
+        },
+      };
+      expect(instance.getContentSourceLabel()).to.equal('Google Drive');
+    });
+
+    it('should return "Google Drive" if no sourceLocation but contentSourceType is "google"', () => {
       instance.siteStore.contentSourceType = 'google';
       expect(instance.getContentSourceLabel()).to.equal('Google Drive');
     });
 
     it('should return "Document Authoring" if a label is provided', () => {
-      instance.siteStore.contentSourceType = 'markup';
+      instance.status = {
+        preview: {
+          sourceLocation: 'markup:foo',
+        },
+      };
       instance.siteStore.contentSourceEditLabel = 'Document Authoring';
       expect(instance.getContentSourceLabel()).to.equal('Document Authoring');
     });
 
-    it('should return "BYOM" for everything else', () => {
-      instance.siteStore.contentSourceType = 'markup';
+    it('should return "BYOM" if no label is provided', () => {
+      instance.status = {
+        preview: {
+          sourceLocation: 'markup:foo',
+        },
+      };
       expect(instance.getContentSourceLabel()).to.equal('BYOM');
+    });
+
+    it('should return "BYOM" for everything else', () => {
+      instance.status = {
+        preview: { status: 404 },
+      };
+      instance.siteStore.contentSourceType = 'unknown';
+      expect(instance.getContentSourceLabel()).to.equal('BYOM');
+    });
+  });
+
+  describe('getBYOMSourceUrl', () => {
+    let instance;
+
+    beforeEach(() => {
+      instance = new AppStore();
+      // @ts-ignore
+      instance.siteStore = {
+        owner: 'adobe',
+        repo: 'aem-boilerplate',
+        contentSourceUrl: 'https://aemcloud.com',
+        contentSourceEditPattern: '{{contentSourceUrl}}{{pathname}}?cmd=open',
+      };
+    });
+
+    it('should return undefined if contentSourceEditPattern is not a string', () => {
+      instance.siteStore.contentSourceEditPattern = null;
+      expect(instance.getBYOMSourceUrl()).to.be.undefined;
+    });
+
+    it('should return undefined if contentSourceEditPattern is not defined', () => {
+      instance.siteStore.contentSourceEditPattern = undefined;
+      expect(instance.getBYOMSourceUrl()).to.be.undefined;
+    });
+
+    it('should use webPath from status when provided', () => {
+      const status = { webPath: '/custom/path' };
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.equal('https://aemcloud.com/custom/path?cmd=open');
+    });
+
+    it('should use webPath from existing status when no status provided', () => {
+      instance.status = { webPath: '/instance/path' };
+      const result = instance.getBYOMSourceUrl();
+      expect(result).to.equal('https://aemcloud.com/instance/path?cmd=open');
+    });
+
+    it('should return undefined if no webPath in provided status', () => {
+      const status = {};
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.be.undefined;
+    });
+
+    it('should return undefined if no webPath in existing status', () => {
+      instance.status = {};
+      const result = instance.getBYOMSourceUrl();
+      expect(result).to.be.undefined;
+    });
+
+    it('should add index to path ending with slash', () => {
+      const status = { webPath: '/path/' };
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.equal('https://aemcloud.com/path/index?cmd=open');
+    });
+
+    it('should replace all placeholders in contentSourceEditPattern', () => {
+      instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}/{{org}}/{{site}}{{pathname}}';
+      const status = { webPath: '/test/path' };
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.equal('https://aemcloud.com/adobe/aem-boilerplate/test/path');
     });
   });
 
