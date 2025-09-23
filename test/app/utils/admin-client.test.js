@@ -633,5 +633,16 @@ describe('Test Admin Client', () => {
       );
       expect(res3).to.equal('(400) An error occurred: foo went wrong');
     });
+
+    it('should return dynamic file size limit', async () => {
+      const [res] = await adminClient.getLocalizedError(
+        'foo',
+        path,
+        409,
+        '[admin] Unable to preview \'/foo.pdf\': PDF is larger than 30MB: 31MB',
+        'AEM_BACKEND_PDF_TOO_BIG',
+      );
+      expect(res).to.equal('(409) Unable to preview /foo.pdf: PDF is larger than 30MB');
+    });
   });
 });

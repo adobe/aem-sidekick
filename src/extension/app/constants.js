@@ -410,12 +410,12 @@ export const ERRORS = [
   // ico
   {
     code: 'AEM_BACKEND_ICO_TOO_BIG',
-    template: 'Unable to preview \'$1\': ICO is larger than 16KB: $2',
+    template: 'Unable to preview \'$1\': ICO is larger than $2: $3',
   },
   // pdf
   {
     code: 'AEM_BACKEND_PDF_TOO_BIG',
-    template: 'Unable to preview \'$1\': PDF is larger than 10MB: $2',
+    template: 'Unable to preview \'$1\': PDF is larger than $2: $3',
   },
   // svg validation
   {
@@ -432,7 +432,7 @@ export const ERRORS = [
   },
   {
     code: 'AEM_BACKEND_SVG_TOO_BIG',
-    template: 'Unable to preview \'$1\': SVG is larger than 20KB: $2',
+    template: 'Unable to preview \'$1\': SVG is larger than $2: $3',
   },
   // img validation
   {

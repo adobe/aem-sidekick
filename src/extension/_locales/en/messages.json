@@ -718,7 +718,7 @@
       "message": "Unable to preview $1: invalid MP4"
     },
     "AEM_BACKEND_ICO_TOO_BIG": {
-      "message": "Unable to preview $1: ICO is larger than 16KB"
+      "message": "Unable to preview $1: ICO is larger than $2"
     },
     "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
       "message": "Unable to preview $1: illegal scripting detected in SVG"
@@ -730,15 +730,15 @@
       "message": "Unable to preview $1: SVG contains invalid XML"
     },
     "AEM_BACKEND_PDF_TOO_BIG": {
-      "message": "Unable to preview $1: PDF is larger than 10MB"
+      "message": "Unable to preview $1: PDF is larger than $2"
     },
     "AEM_BACKEND_SVG_TOO_BIG": {
-      "message": "Unable to preview $1: SVG is larger than 20KB"
+      "message": "Unable to preview $1: SVG is larger than $2"
     },
     "AEM_BACKEND_IMAGE_TOO_BIG": {
-      "message": "Unable to preview $1: image is larger than 20MB"
+      "message": "Unable to preview $1: image is larger than $2"
     },
     "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-      "message": "Unable to preview $1: contained image larger than 20MB"
+      "message": "Unable to preview $1: contained image larger than $2"
     }
 }
