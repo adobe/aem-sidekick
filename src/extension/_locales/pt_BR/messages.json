@@ -660,7 +660,7 @@
     "message": "Acesso expirado. Faça logon novamente para continuar."
   },
   "snapshot_update_success": {
-    "message": "Snapshot atualizado com êxito, abrindo Revisar..."
+    "message": "Instantâneo atualizado com sucesso, abrindo a revisão..."
   },
   "source": {
     "message": "Origem"

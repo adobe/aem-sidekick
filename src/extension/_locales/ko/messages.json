@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "$1을(를) 미리 볼 수 없음: 20MB보다 큰 이미지가 포함됨"
+    "message": "$1을(를) 미리 볼 수 없음: $2보다 큰 이미지가 포함됨"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "$2에서 $1을(를) 가져올 수 없습니다."
@@ -12,10 +12,10 @@
     "message": "$1 미리보기 불가: 파일이 100MB보다 큽니다."
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
-    "message": "$1 미리보기 불가: ICO가 16KB보다 큽니다."
+    "message": "$1을(를) 미리 볼 수 없음: ICO가 $2보다 큼"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "$1을(를) 미리 볼 수 없음: 이미지가 20MB보다 큽니다."
+    "message": "$1을(를) 미리 볼 수 없음: 이미지가 $2보다 큼"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "$2 미리보기 불가: 잘못된 JSON입니다."
@@ -42,7 +42,7 @@
     "message": "$1 미리보기 불가: 핸들러를 찾을 수 없습니다."
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "$1 미리보기 불가: PDF 크기가 10MB를 초과합니다."
+    "message": "$1을(를) 미리 볼 수 없음: PDF이 $2보다 큼"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "$1 미리보기 불가: SVG에 잘못된 XML이 포함되어 있습니다."
@@ -54,7 +54,7 @@
     "message": "$1 미리보기 불가: SVG에서 잘못된 스크립팅이 감지되었습니다."
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "$1 미리보기 불가: SVG 크기가 20KB를 초과합니다."
+    "message": "$1을(를) 미리 볼 수 없음: SVG이 $2보다 큼"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "$1 미리보기 불가: 파일 유형이 지원되지 않습니다."
@@ -660,7 +660,7 @@
     "message": "액세스가 만료되었습니다. 계속하려면 다시 로그인하십시오."
   },
   "snapshot_update_success": {
-    "message": "스냅숏이 업데이트되었습니다. 리뷰를 여는 중..."
+    "message": "스냅샷이 정상적으로 업데이트됨. 미리보기 여는 중..."
   },
   "source": {
     "message": "소스"
