@@ -1,3 +1,10 @@
+## [7.19.4](https://github.com/adobe/aem-sidekick/compare/v7.19.3...v7.19.4) (2025-09-23)
+
+
+### Bug Fixes
+
+* support dynamic file size limits ([7b2aab3](https://github.com/adobe/aem-sidekick/commit/7b2aab30de6a4a8c32a2db4142c463c040927406))
+
 ## [7.19.3](https://github.com/adobe/aem-sidekick/compare/v7.19.2...v7.19.3) (2025-09-17)
 
 
