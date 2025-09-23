@@ -1,3 +1,10 @@
+## [7.19.5](https://github.com/adobe/aem-sidekick/compare/v7.19.4...v7.19.5) (2025-09-23)
+
+
+### Bug Fixes
+
+* **bulk:** permanent spinner after preview & navigation ([#692](https://github.com/adobe/aem-sidekick/issues/692)) ([c1241f6](https://github.com/adobe/aem-sidekick/commit/c1241f69402b209f4f1f0a1cb2a044af3fd6c969))
+
 ## [7.19.4](https://github.com/adobe/aem-sidekick/compare/v7.19.3...v7.19.4) (2025-09-23)
 
 
