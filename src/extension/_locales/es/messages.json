@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "No se puede obtener una vista previa de $1: imagen contenida superior a 20 MB"
+    "message": "No se puede obtener una vista previa de $1: imagen contenida superior a $2"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "No se puede recuperar $1 de $2."
@@ -12,10 +12,10 @@
     "message": "No se puede previsualizar $1: archivo de más de 100 MB"
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
-    "message": "No se puede previsualizar $1: ICO supera los 16 KB"
+    "message": "No se puede previsualizar $1: ICO supera los $2"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "No se puede obtener una vista previa de $1: la imagen supera los 20 MB"
+    "message": "No se puede obtener una vista previa de $1: la imagen supera los $2"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "No se puede previsualizar $2: JSON no válido"
@@ -42,7 +42,7 @@
     "message": "No se puede previsualizar $1: no se ha encontrado ningún controlador"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "No se puede previsualizar $1: el PDF supera los 10 MB"
+    "message": "No se puede previsualizar $1: el PDF supera los $2"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "No se puede previsualizar $1: el SVG contiene un XML no válido"
@@ -54,7 +54,7 @@
     "message": "No se puede previsualizar $1: se han detectado scripts no válidos en SVG"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "No se puede previsualizar $1: SVG supera los 20 KB"
+    "message": "No se puede previsualizar $1: SVG supera los $2"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "No se puede previsualizar $1: tipo de archivo no admitido"
