@@ -1,3 +1,10 @@
+## [7.19.6](https://github.com/adobe/aem-sidekick/compare/v7.19.5...v7.19.6) (2025-09-30)
+
+
+### Bug Fixes
+
+* updated translations ([#693](https://github.com/adobe/aem-sidekick/issues/693)) ([240a1fb](https://github.com/adobe/aem-sidekick/commit/240a1fbab24db11471b17920601f28193d981345))
+
 ## [7.19.5](https://github.com/adobe/aem-sidekick/compare/v7.19.4...v7.19.5) (2025-09-23)
 
 
