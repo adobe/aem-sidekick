@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "$1 をプレビューできません：$2 を超える画像が含まれています"
+    "message": "$1 をプレビューできません： $2 より大きい画像が含まれています"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "$2 から$1 を取得できません。"
@@ -12,10 +12,10 @@
     "message": "$1 をプレビューできません : ファイルが 100 MB を超えています"
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
-    "message": "$1 をプレビューできません : ICO が $2 を超えています"
+    "message": "$1 をプレビューできません： ICO が$2 を超えています"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "$1 をプレビューできません：画像が $2 を超えています"
+    "message": "$1 をプレビューできません：画像が$2 を超えています"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "$2 をプレビューできません : 無効な JSON"
@@ -42,7 +42,7 @@
     "message": "$1 をプレビューできません : ハンドラーが見つかりません"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "$1 をプレビューできません : PDF が $2 を超えています"
+    "message": "$1 をプレビューできません：PDFが$2 を超えています"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "$1 をプレビューできません : SVG に無効な XML が含まれています"
@@ -54,7 +54,7 @@
     "message": "$1 をプレビューできません : SVG で不正なスクリプトが検出されました"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "$1 をプレビューできません : SVG が $2 を超えています"
+    "message": "$1 をプレビューできません：SVGが$2 を超えています"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "$1 をプレビューできません : ファイルタイプがサポートされていません"
@@ -660,7 +660,7 @@
     "message": "アクセスの有効期限が切れています。続行するには、もう一度ログインしてください。"
   },
   "snapshot_update_success": {
-    "message": "スナップショットが正常に更新されました。レビューを開いています…"
+    "message": "スナップショットが正常に更新されました。レビューを開いています..."
   },
   "source": {
     "message": "ソース"
