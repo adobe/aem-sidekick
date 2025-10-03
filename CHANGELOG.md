@@ -1,3 +1,10 @@
+# [7.20.0](https://github.com/adobe/aem-sidekick/compare/v7.19.7...v7.20.0) (2025-10-03)
+
+
+### Features
+
+* optimize sharepoint lookups ([#696](https://github.com/adobe/aem-sidekick/issues/696)) ([2a9748e](https://github.com/adobe/aem-sidekick/commit/2a9748e407463c04d6002b735ee6eaa0c0df7e3f))
+
 ## [7.19.7](https://github.com/adobe/aem-sidekick/compare/v7.19.6...v7.19.7) (2025-10-03)
 
 
