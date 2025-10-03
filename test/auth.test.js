@@ -108,6 +108,7 @@ describe('Test auth', () => {
             ],
             requestMethods: [
               'get',
+              'put',
               'post',
               'delete',
             ],
@@ -191,6 +192,7 @@ describe('Test auth', () => {
             ],
             requestMethods: [
               'get',
+              'put',
               'post',
               'delete',
             ],
@@ -349,6 +351,7 @@ describe('Test auth', () => {
             ],
             requestMethods: [
               'get',
+              'put',
               'post',
               'delete',
             ],
@@ -453,7 +456,7 @@ describe('Test auth', () => {
         condition: {
           regexFilter: '^https://admin.hlx.page/.*',
           requestDomains: ['admin.hlx.page'],
-          requestMethods: ['get', 'post', 'delete'],
+          requestMethods: ['get', 'put', 'post', 'delete'],
           resourceTypes: ['xmlhttprequest'],
         },
       }],
