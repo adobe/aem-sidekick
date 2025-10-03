@@ -1,3 +1,10 @@
+## [7.19.7](https://github.com/adobe/aem-sidekick/compare/v7.19.6...v7.19.7) (2025-10-03)
+
+
+### Bug Fixes
+
+* add auth token for put requests ([#698](https://github.com/adobe/aem-sidekick/issues/698)) ([12f6387](https://github.com/adobe/aem-sidekick/commit/12f63879cded07f3d4466582dc7782403f8ecd41))
+
 ## [7.19.6](https://github.com/adobe/aem-sidekick/compare/v7.19.5...v7.19.6) (2025-09-30)
 
 
