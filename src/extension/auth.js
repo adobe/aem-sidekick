@@ -57,7 +57,7 @@ export async function configureAuthAndCorsHeaders() {
             excludedInitiatorDomains: ['da.live'],
             regexFilter: `^https://${adminHost}/(config/${owner}\\.json|[a-z]+/${owner}/.*)`,
             requestDomains: [adminHost],
-            requestMethods: ['get', 'post', 'delete'],
+            requestMethods: ['get', 'put', 'post', 'delete'],
             resourceTypes: ['xmlhttprequest'],
           },
         });
@@ -238,7 +238,7 @@ export async function updateUserAgent() {
     condition: {
       regexFilter: `^https://${adminHost}/.*`,
       requestDomains: [adminHost],
-      requestMethods: ['get', 'post', 'delete'],
+      requestMethods: ['get', 'put', 'post', 'delete'],
       resourceTypes: ['xmlhttprequest'],
     },
   }];
