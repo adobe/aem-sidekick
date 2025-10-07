@@ -209,6 +209,21 @@ export class SiteStore {
     }
     if (`${owner}/${repo}` === 'adobe/aem-sidekick') {
       this.thirdParty = true;
+      const res = await fetch('https://tools.aem.live/sidekick/3rd-party.json');
+      if (res.ok) {
+        config = {
+          ...config,
+          ...await res.json(),
+          // no overriding below
+          owner,
+          repo,
+          ref,
+          mountpoints,
+          adminVersion,
+        };
+      } else {
+        this.error = res.headers.get('x-error');
+      }
     } else if (owner && repo) {
       // look for custom config in project
       try {
