@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : image contenue plus grande que $2"
+    "message": "Impossible de prévisualiser $1 : l’image contenue dépasse $2."
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Impossible de récupérer $1 depuis $2."
@@ -12,10 +12,10 @@
     "message": "Impossible de prévisualiser $1 : fichier de plus de 100 Mo"
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : l'ICO est supérieur à $2"
+    "message": "Impossible de prévisualiser $1 : l’ICO dépasse $2."
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : la taille de l'image est supérieure à $2"
+    "message": "Impossible de prévisualiser $1 : l’image dépasse $2."
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Impossible de prévisualiser $2 : JSON non valide"
@@ -42,7 +42,7 @@
     "message": "Impossible de prévisualiser $1 : aucun gestionnaire trouvé"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : la PDF est supérieure à $2"
+    "message": "Impossible de prévisualiser $1 : le fichier PDF dépasse $2."
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Impossible de prévisualiser $1 : le SVG contient un XML non valide"
@@ -54,7 +54,7 @@
     "message": "Impossible de prévisualiser $1 : un script illégal a été détecté dans le SVG."
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : la SVG est supérieure à $2"
+    "message": "Impossible de prévisualiser $1 : le fichier SVG dépasse $2."
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Impossible de prévisualiser $1 : type de fichier non pris en charge"
