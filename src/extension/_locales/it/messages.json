@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: immagine contenuta maggiore di $2"
+    "message": "Impossibile visualizzare in anteprima $1: immagine contenuta superiore a $2"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Impossibile recuperare $1 da $2."
@@ -15,7 +15,7 @@
     "message": "Impossibile visualizzare in anteprima $1: ICO è superiore a $2"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: l'immagine è superiore a $2"
+    "message": "Impossibile visualizzare in anteprima $1: immagine superiore a $2"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Impossibile visualizzare in anteprima $2: JSON non valido"
@@ -42,7 +42,7 @@
     "message": "Impossibile visualizzare in anteprima $1: nessun handler trovato"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: PDF ha una dimensione maggiore di $2"
+    "message": "Impossibile visualizzare in anteprima $1: PDF è superiore a $2"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Impossibile visualizzare in anteprima $1: SVG contiene XML non valido"
@@ -54,7 +54,7 @@
     "message": "Impossibile visualizzare in anteprima $1: scripting non valido rilevato in SVG"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: SVG ha una dimensione maggiore di $2"
+    "message": "Impossibile visualizzare in anteprima $1: SVG superiore a $2"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Impossibile visualizzare in anteprima $1: tipo di file non supportato"

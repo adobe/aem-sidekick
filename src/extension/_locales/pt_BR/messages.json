@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Não é possível visualizar $1: imagem contida maior que $2"
+    "message": "Não é possível pré-visualizar $1: a imagem contida tem mais de $2"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Não é possível obter $1 de $2."
@@ -12,10 +12,10 @@
     "message": "Não é possível visualizar $1: arquivo maior que 100 MB"
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
-    "message": "Não é possível visualizar $1: o ICO é maior que $2"
+    "message": "Não é possível pré-visualizar $1: o arquivo ICO tem mais de $2"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Não é possível visualizar $1: a imagem tem mais de $2"
+    "message": "Não é possível pré-visualizar $1: a imagem tem mais de $2"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Não é possível visualizar $2: JSON inválido"
@@ -42,7 +42,7 @@
     "message": "Não é possível visualizar $1: nenhum manipulador encontrado"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "Não é possível visualizar $1: o PDF tem mais de $2"
+    "message": "Não é possível pré-visualizar $1: o arquivo PDF tem mais de $2"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Não é possível visualizar $1: o SVG contém um XML inválido"
@@ -54,7 +54,7 @@
     "message": "Não é possível visualizar $1: script ilegal detectado no SVG"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "Não é possível visualizar $1: o SVG tem mais de $2"
+    "message": "Não é possível pré-visualizar $1: o arquivo SVG tem mais de $2"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Não é possível visualizar $1: tipo de arquivo não compatível"
