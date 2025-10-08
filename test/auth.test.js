@@ -401,7 +401,29 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^(https://[a-z0-9-]+--site--test\\.aem\\.(page|live|reviews)/.*|http://localhost:[0-9]+/.*)',
+            regexFilter: sinon.match((value) => {
+              const regex = new RegExp(value);
+              // Should match aem.page, aem.live, and aem.reviews URLs
+              const shouldMatch = [
+                'https://main--site--test.aem.page/index.html',
+                'https://preview--site--test.aem.live/document.html',
+                'https://feature-branch--site--test.aem.reviews/test.html',
+                // Should match localhost with various ports
+                'http://localhost:3000/',
+                'http://localhost:3000/index.html',
+                'http://localhost:8080/path/to/file.html',
+                'http://localhost:65535/test',
+              ];
+              const shouldNotMatch = [
+                'https://example.com/',
+                'http://localhost/', // no port
+                'https://localhost:3000/', // https instead of http
+                'http://127.0.0.1:3000/', // IP instead of localhost
+                'http://localhost:3000', // no trailing slash
+              ];
+              return shouldMatch.every((url) => regex.test(url))
+                && shouldNotMatch.every((url) => !regex.test(url));
+            }),
             requestMethods: [
               'get',
               'post',
