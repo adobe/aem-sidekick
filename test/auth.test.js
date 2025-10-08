@@ -401,7 +401,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[a-z0-9-]+--site--test\\.aem\\.(page|live|reviews)/.*',
+            regexFilter: '^(https://[a-z0-9-]+--site--test\\.aem\\.(page|live|reviews)/.*|http://localhost:[0-9]+/.*)',
             requestMethods: [
               'get',
               'post',
