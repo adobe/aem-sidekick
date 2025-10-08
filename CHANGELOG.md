@@ -1,3 +1,12 @@
+## [7.20.1](https://github.com/adobe/aem-sidekick/compare/v7.20.0...v7.20.1) (2025-10-08)
+
+
+### Bug Fixes
+
+* **auth:** allow localhost during auth CORS header config ([4834f85](https://github.com/adobe/aem-sidekick/commit/4834f85569f4b3c1a9049c211aed38bb6af1bad3))
+* **auth:** simplify localhost regex to port 3000 only ([4cedfee](https://github.com/adobe/aem-sidekick/commit/4cedfee84ab1a10e9a93253d0543a4ff9ea846e3))
+* **auth:** update test to match localhost regex pattern ([36fd793](https://github.com/adobe/aem-sidekick/commit/36fd7934828a8250db5f351656609724b1d0cd15))
+
 # [7.20.0](https://github.com/adobe/aem-sidekick/compare/v7.19.7...v7.20.0) (2025-10-03)
 
 
