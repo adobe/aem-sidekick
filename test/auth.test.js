@@ -405,18 +405,18 @@ describe('Test auth', () => {
               const regex = new RegExp(value);
               // Should match aem.page, aem.live, and aem.reviews URLs
               const shouldMatch = [
-                'https://main--site--test.aem.page/index.html',
-                'https://preview--site--test.aem.live/document.html',
-                'https://feature-branch--site--test.aem.reviews/test.html',
-                // Should match localhost with various ports
+                'https://main--site--test.aem.page/',
+                'https://main--site--test.aem.page/index',
+                'https://preview--site--test.aem.live/document',
+                'https://feature-branch--site--test.aem.reviews/test',
+                // Should match localhost:3000
                 'http://localhost:3000/',
-                'http://localhost:3000/index.html',
-                'http://localhost:8080/path/to/file.html',
-                'http://localhost:65535/test',
+                'http://localhost:3000/index',
               ];
               const shouldNotMatch = [
                 'https://example.com/',
                 'http://localhost/', // no port
+                'http://localhost:8080/', // different port
                 'https://localhost:3000/', // https instead of http
                 'http://127.0.0.1:3000/', // IP instead of localhost
                 'http://localhost:3000', // no trailing slash
