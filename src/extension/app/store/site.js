@@ -127,9 +127,15 @@ export class SiteStore {
   devOrigin;
 
   /**
-   * The specific version of admin service to use (optional)
-   * @type {string}
+   * The specific version of admin API to use (optional)
+   * @type {number}
    */
+  apiVersion;
+
+  /**
+ * The specific version of admin service to use (optional)
+ * @type {string}
+ */
   adminVersion;
 
   /**
@@ -201,6 +207,7 @@ export class SiteStore {
       ref = 'main',
       giturl,
       mountpoints,
+      apiVersion,
       adminVersion,
     } = config;
     let { devOrigin } = config;
@@ -212,7 +219,7 @@ export class SiteStore {
       try {
         const res = await callAdmin(
           {
-            owner, repo, ref, adminVersion,
+            owner, repo, ref, adminVersion, apiVersion,
           },
           'sidekick',
           '/config.json',
@@ -287,6 +294,7 @@ export class SiteStore {
 
     this.mountpoints = contentSourceUrl ? [contentSourceUrl] : (mountpoints || []);
     [this.mountpoint] = this.mountpoints;
+    this.apiVersion = apiVersion;
     this.adminVersion = adminVersion;
 
     this.previewHost = previewHost;
@@ -352,6 +360,7 @@ export class SiteStore {
       reviewHost: this.reviewHost,
       stdReviewHost: this.stdReviewHost,
       devOrigin: this.devOrigin,
+      apiVersion: this.apiVersion,
       adminVersion: this.adminVersion,
       lang: this.lang,
       views: this.views,
