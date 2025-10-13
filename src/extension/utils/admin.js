@@ -47,7 +47,7 @@ export function createAdminUrl(
   path = '',
   searchParams = new URLSearchParams(),
 ) {
-  const adminUrl = new URL(`${apiVersion === 6 ? ADMIN_ORIGIN_V2 : ADMIN_ORIGIN}`);
+  const adminUrl = new URL(`${apiVersion === 2 ? ADMIN_ORIGIN_V2 : ADMIN_ORIGIN}`);
   if (api === 'discover') {
     adminUrl.pathname = `/${api}/`;
   } else if (org && site) {
