@@ -227,6 +227,13 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.repo).to.equal('aem-boilerplate');
     });
 
+    it('with window.hlx but without sidekickConfig', async () => {
+      window.hlx = {};
+      await appStore.loadContext(sidekickElement, undefined);
+      expect(appStore.siteStore.owner).to.be.undefined;
+      expect(appStore.siteStore.repo).to.be.undefined;
+    });
+
     it('with custom sourceEditUrl', async () => {
       /**
        * @type {SidekickOptionsConfig | ClientConfig}
@@ -270,6 +277,27 @@ describe('Test Site Store', () => {
       config.wordSaveDelay = '3000';
       await appStore.loadContext(sidekickElement, config);
       expect(appStore.siteStore.wordSaveDelay).to.equal(1500); // default
+    });
+
+    it('with custom devOrigin', async () => {
+      /**
+       * @type {SidekickOptionsConfig | ClientConfig}
+       */
+      const config = {
+        ...defaultConfig,
+        devOrigin: 'http://localhost:4000',
+      };
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.devUrl.origin).to.equal('http://localhost:4000');
+    });
+
+    it('with host starting with http', async () => {
+      const config = {
+        ...defaultConfig,
+        host: 'https://www.example.com',
+      };
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.host).to.equal('www.example.com');
     });
   });
 
