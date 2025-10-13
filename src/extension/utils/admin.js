@@ -20,16 +20,16 @@
  */
 
 /**
- * The origin of the legacy Admin API.
+ * The origin of the Admin API v1.
  * @type {string}
  */
 export const ADMIN_ORIGIN = 'https://admin.hlx.page';
 
 /**
- * The origin of the Admin API.
+ * The origin of the Admin API v2.
  * @type {string}
  */
-export const ADMIN_ORIGIN_V6 = 'https://api.aem.live';
+export const ADMIN_ORIGIN_V2 = 'https://api.aem.live';
 
 /**
  * Creates an Admin API URL for an API and path.
@@ -47,12 +47,12 @@ export function createAdminUrl(
   path = '',
   searchParams = new URLSearchParams(),
 ) {
-  const adminUrl = new URL(`${apiVersion === 6 ? ADMIN_ORIGIN_V6 : ADMIN_ORIGIN}`);
+  const adminUrl = new URL(`${apiVersion === 6 ? ADMIN_ORIGIN_V2 : ADMIN_ORIGIN}`);
   if (api === 'discover') {
-    adminUrl.pathname = `/${api}`;
+    adminUrl.pathname = `/${api}/`;
   } else if (org && site) {
-    if (apiVersion === 6) {
-      // use admin api v6
+    if (apiVersion === 2) {
+      // use admin api v2
       if (['login', 'logout', 'profile'].includes(api)) {
         adminUrl.pathname = `/${api}`;
         adminUrl.searchParams.append('org', org);
@@ -66,13 +66,13 @@ export function createAdminUrl(
     }
     adminUrl.pathname += path;
   }
-  searchParams.forEach((value, key) => {
-    adminUrl.searchParams.append(key, value);
-  });
   if (adminVersion) {
     // use a specific ci admin version
     searchParams.append('hlx-admin-version', adminVersion);
   }
+  searchParams.forEach((value, key) => {
+    adminUrl.searchParams.append(key, value);
+  });
   return adminUrl;
 }
 
