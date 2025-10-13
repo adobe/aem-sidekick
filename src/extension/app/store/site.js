@@ -207,7 +207,7 @@ export class SiteStore {
       ref = 'main',
       giturl,
       mountpoints,
-      apiVersion,
+      apiVersion = 1,
       adminVersion,
     } = config;
     let { devOrigin } = config;
