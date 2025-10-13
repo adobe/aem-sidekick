@@ -330,6 +330,7 @@ export class SiteStore {
           liveHost: this.liveHost,
           host: this.host,
           mountpoints: this.mountpoints,
+          apiVersion: this.apiVersion,
         },
       });
     }

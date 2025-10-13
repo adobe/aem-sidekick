@@ -335,6 +335,7 @@ describe('Test Site Store', () => {
           project: 'business-website',
           mountpoints: ['https://adobe.sharepoint.com/sites/business-website'],
           host: 'business-website.example.com',
+          apiVersion: 1,
         },
       });
     });
