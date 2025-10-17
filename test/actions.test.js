@@ -547,7 +547,7 @@ describe('Test actions', () => {
 
     // successful close with specific ID
     resp = await externalActions.closePalette({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
-    expect(sendMessageStub.calledWith(1, { action: 'closePalette', id: 'my-plugin' })).to.be.true;
+    expect(sendMessageStub.calledWith(1, { action: 'close_palette', id: 'my-plugin' })).to.be.true;
     expect(resp).to.be.true;
 
     sandbox.resetHistory();
@@ -579,7 +579,7 @@ describe('Test actions', () => {
 
     // successful close with specific ID
     resp = await externalActions.closePopover({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
-    expect(sendMessageStub.calledWith(1, { action: 'closePopover', id: 'my-plugin' })).to.be.true;
+    expect(sendMessageStub.calledWith(1, { action: 'close_popover', id: 'my-plugin' })).to.be.true;
     expect(resp).to.be.true;
 
     sandbox.resetHistory();

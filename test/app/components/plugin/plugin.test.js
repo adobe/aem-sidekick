@@ -376,33 +376,49 @@ describe('Plugin', () => {
     expect(plugin.popoverElement).to.be.undefined;
   });
 
-  it('closePopover closes popover when popoverElement is set', async () => {
+  it('closePopover dispatches close event when popover is open', async () => {
     const plugin = new Plugin(TEST_POPOVER_CONFIG, appStore);
 
-    // Mock a popover element
-    const mockPopover = { open: true };
+    // Mock a popover element with dispatchEvent method
+    let dispatchedEvent = new Event('dummy', { bubbles: false });
+    const mockPopover = {
+      open: true,
+      dispatchEvent: (event) => {
+        dispatchedEvent = event;
+        return true;
+      },
+    };
     // @ts-ignore
     plugin.popoverElement = mockPopover;
 
     // Call closePopover
     plugin.closePopover();
 
-    // Verify popover was closed
-    expect(mockPopover.open).to.be.false;
+    // Verify close event was dispatched
+    expect(dispatchedEvent).to.exist;
+    expect(dispatchedEvent.type).to.equal('close');
+    expect(dispatchedEvent.bubbles).to.be.true;
   });
 
   it('closePopover does nothing when popover is already closed', async () => {
     const plugin = new Plugin(TEST_POPOVER_CONFIG, appStore);
 
     // Mock a popover element that's already closed
-    const mockPopover = { open: false };
+    let eventDispatched = false;
+    const mockPopover = {
+      open: false,
+      dispatchEvent: () => {
+        eventDispatched = true;
+        return true;
+      },
+    };
     // @ts-ignore
     plugin.popoverElement = mockPopover;
 
     // Call closePopover
     plugin.closePopover();
 
-    // Verify popover remains closed
-    expect(mockPopover.open).to.be.false;
+    // Verify no event was dispatched
+    expect(eventDispatched).to.be.false;
   });
 });

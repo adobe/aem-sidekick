@@ -243,7 +243,7 @@ describe('AEM Sidekick', () => {
     const sendResponse = spy();
 
     const message = {
-      action: 'closePalette',
+      action: 'close_palette',
       id: 'test-palette',
     };
     const sender = {};
@@ -267,7 +267,7 @@ describe('AEM Sidekick', () => {
     const sendResponse = spy();
 
     const message = {
-      action: 'closePopover',
+      action: 'close_popover',
       id: 'test-popover',
     };
     const sender = {};
