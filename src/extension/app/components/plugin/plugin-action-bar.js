@@ -16,9 +16,12 @@ import { html } from 'lit';
 import { customElement, queryAll, queryAsync } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { reaction } from 'mobx';
-import { ICONS, STATE } from '../../constants.js';
+import {
+  EVENTS, ICONS, STATE,
+} from '../../constants.js';
 import { style } from './plugin-action-bar.css.js';
 import { ConnectedElement } from '../connected-element/connected-element.js';
+import { EventBus } from '../../utils/event-bus.js';
 import '../action-bar/activity-action/activity-action.js';
 import '../bulk/bulk-info/bulk-info.js';
 import { getConfig } from '../../../config.js';
@@ -173,12 +176,37 @@ export class PluginActionBar extends ConnectedElement {
 
     // trap clicks inside action bar
     this.addEventListener('click', this.onClick);
+
+    // Listen for close popover events
+    EventBus.instance.addEventListener(EVENTS.CLOSE_POPOVER, (e) => {
+      this.closePopover(e.detail?.id);
+    });
+
     this.requestUpdate();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener('click', this.onClick);
+    EventBus.instance.removeEventListener(EVENTS.CLOSE_POPOVER);
+  }
+
+  /**
+   * Closes a popover with the specified plugin ID.
+   * @param {string} id The plugin ID
+   */
+  closePopover(id) {
+    if (!id) {
+      return;
+    }
+
+    // Find the plugin instance and delegate to it
+    const plugin = [...this.barPlugins, ...this.menuPlugins]
+      .find((p) => p.getId() === id);
+
+    if (plugin) {
+      plugin.closePopover();
+    }
   }
 
   /**

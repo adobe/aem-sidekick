@@ -537,7 +537,7 @@ export async function guessAEMSite(_, { url }) {
  */
 async function closePalette({ id }, { tab }) {
   if (!id) {
-    log.warn('closePalette: no palette id');
+    log.info('closePalette: no palette id');
     return false;
   }
   if (!tab?.id) {
@@ -545,10 +545,35 @@ async function closePalette({ id }, { tab }) {
     return false;
   }
   try {
-    await chrome.tabs.sendMessage(tab.id, { action: 'close_palette', id });
+    await chrome.tabs.sendMessage(tab.id, { action: 'closePalette', id });
     return true;
   } catch (e) {
     log.warn('closePalette: failed to send message', e);
+    return false;
+  }
+}
+
+/**
+ * Closes the popover in the sender's tab.
+ * @param {Object} message The message object
+ * @param {string} message.id The popover ID to close
+ * @param {chrome.runtime.MessageSender} sender The sender
+ * @returns {Promise<boolean>} True if popover was closed, else false
+ */
+async function closePopover({ id }, { tab }) {
+  if (!id) {
+    log.info('closePopover: no popover id');
+    return false;
+  }
+  if (!tab?.id) {
+    log.warn('closePopover: no tab id');
+    return false;
+  }
+  try {
+    await chrome.tabs.sendMessage(tab.id, { action: 'closePopover', id });
+    return true;
+  } catch (e) {
+    log.warn('closePopover: failed to send message', e);
     return false;
   }
 }
@@ -619,4 +644,5 @@ export const externalActions = {
   removeSite,
   updateAuthToken,
   closePalette,
+  closePopover,
 };

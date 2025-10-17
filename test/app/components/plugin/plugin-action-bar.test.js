@@ -1241,4 +1241,118 @@ describe('Plugin action bar', () => {
       await waitUntil(() => !recursiveQuery(document.body, 'aem-sidekick'));
     });
   });
+
+  describe('closePopover', () => {
+    it('closePopover method closes matching popover', async () => {
+      sidekickTest.mockFetchEditorStatusSuccess();
+      sidekickTest.mockFetchSidekickConfigSuccess(true, false, {
+        plugins: [
+          {
+            id: 'test-popover',
+            title: 'Test Popover',
+            url: 'https://example.com/popover.html',
+            isPopover: true,
+            popoverRect: 'width: 200px; height: 200px;',
+            isPinned: false,
+          },
+        ],
+      });
+
+      sidekick = sidekickTest.createSidekick();
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const actionBar = recursiveQuery(sidekick, 'plugin-action-bar');
+      expect(actionBar).to.exist;
+
+      // Find the actual plugin instance in barPlugins or menuPlugins
+      const plugin = [...actionBar.barPlugins, ...actionBar.menuPlugins]
+        .find((p) => p.getId() === 'test-popover');
+      expect(plugin).to.exist;
+      expect(plugin.isPopover()).to.be.true;
+
+      // Mock the plugin's closePopover method
+      const closePopoverStub = sidekickTest.sandbox.stub(plugin, 'closePopover');
+
+      // Call closePopover on action bar
+      actionBar.closePopover('test-popover');
+
+      // Verify the plugin's closePopover was called
+      expect(closePopoverStub.calledOnce).to.be.true;
+    });
+
+    it('closePopover method does NOT close non-matching popover', async () => {
+      sidekickTest.mockFetchEditorStatusSuccess();
+      sidekickTest.mockFetchSidekickConfigSuccess(true, false, {
+        plugins: [
+          {
+            id: 'test-popover',
+            title: 'Test Popover',
+            url: 'https://example.com/popover.html',
+            isPopover: true,
+            popoverRect: 'width: 200px; height: 200px;',
+            isPinned: false,
+          },
+        ],
+      });
+
+      sidekick = sidekickTest.createSidekick();
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const actionBar = recursiveQuery(sidekick, 'plugin-action-bar');
+      expect(actionBar).to.exist;
+
+      // Find the actual plugin instance in barPlugins or menuPlugins
+      const plugin = [...actionBar.barPlugins, ...actionBar.menuPlugins]
+        .find((p) => p.getId() === 'test-popover');
+      expect(plugin).to.exist;
+
+      // Mock the plugin's closePopover method
+      const closePopoverStub = sidekickTest.sandbox.stub(plugin, 'closePopover');
+
+      // Call closePopover with different ID
+      actionBar.closePopover('different-popover');
+
+      // Verify the plugin's closePopover was NOT called
+      expect(closePopoverStub.called).to.be.false;
+    });
+
+    it('closePopover method does nothing when ID is not provided', async () => {
+      sidekickTest.mockFetchEditorStatusSuccess();
+      sidekickTest.mockFetchSidekickConfigSuccess(true, false, {
+        plugins: [
+          {
+            id: 'test-popover',
+            title: 'Test Popover',
+            url: 'https://example.com/popover.html',
+            isPopover: true,
+            popoverRect: 'width: 200px; height: 200px;',
+            isPinned: false,
+          },
+        ],
+      });
+
+      sidekick = sidekickTest.createSidekick();
+
+      await waitUntil(() => recursiveQuery(sidekick, 'action-bar'));
+
+      const actionBar = recursiveQuery(sidekick, 'plugin-action-bar');
+      expect(actionBar).to.exist;
+
+      // Find the actual plugin instance in barPlugins or menuPlugins
+      const plugin = [...actionBar.barPlugins, ...actionBar.menuPlugins]
+        .find((p) => p.getId() === 'test-popover');
+      expect(plugin).to.exist;
+
+      // Mock the plugin's closePopover method
+      const closePopoverStub = sidekickTest.sandbox.stub(plugin, 'closePopover');
+
+      // Call closePopover without ID
+      actionBar.closePopover();
+
+      // Verify the plugin's closePopover was NOT called
+      expect(closePopoverStub.called).to.be.false;
+    });
+  });
 });

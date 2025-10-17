@@ -354,4 +354,55 @@ describe('Plugin', () => {
     // @ts-ignore
     expect(renderedPlugin).to.equal('');
   });
+
+  it('closePopover does nothing when plugin is not a popover', async () => {
+    const plugin = new Plugin(TEST_CONFIG, appStore);
+
+    // Call closePopover
+    plugin.closePopover();
+
+    // Should not throw and not do anything
+    expect(plugin.isPopover()).to.be.undefined;
+  });
+
+  it('closePopover does nothing when no popoverElement reference', async () => {
+    const plugin = new Plugin(TEST_POPOVER_CONFIG, appStore);
+
+    // Call closePopover without initializing popover first
+    plugin.closePopover();
+
+    // Should not throw
+    expect(plugin.isPopover()).to.be.true;
+    expect(plugin.popoverElement).to.be.undefined;
+  });
+
+  it('closePopover closes popover when popoverElement is set', async () => {
+    const plugin = new Plugin(TEST_POPOVER_CONFIG, appStore);
+
+    // Mock a popover element
+    const mockPopover = { open: true };
+    // @ts-ignore
+    plugin.popoverElement = mockPopover;
+
+    // Call closePopover
+    plugin.closePopover();
+
+    // Verify popover was closed
+    expect(mockPopover.open).to.be.false;
+  });
+
+  it('closePopover does nothing when popover is already closed', async () => {
+    const plugin = new Plugin(TEST_POPOVER_CONFIG, appStore);
+
+    // Mock a popover element that's already closed
+    const mockPopover = { open: false };
+    // @ts-ignore
+    plugin.popoverElement = mockPopover;
+
+    // Call closePopover
+    plugin.closePopover();
+
+    // Verify popover remains closed
+    expect(mockPopover.open).to.be.false;
+  });
 });

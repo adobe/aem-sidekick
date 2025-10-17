@@ -17,6 +17,10 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { EXTERNAL_EVENTS } from '../../constants.js';
 
 /**
+ * @typedef {import('@spectrum-web-components/popover').Popover} Popover
+ */
+
+/**
  * @typedef {import('@AppStore').AppStore} AppStore
  */
 
@@ -63,6 +67,12 @@ export class Plugin {
    * @type {CustomPlugin}
    */
   config;
+
+  /**
+   * Reference to the popover element for closing
+   * @type {Popover}
+   */
+  popoverElement;
 
   constructor(plugin, appStore) {
     this.appStore = appStore;
@@ -219,6 +229,21 @@ export class Plugin {
     if (!iframe?.src) {
       // set iframe src to the popover url
       iframe.src = this.config.url;
+    }
+    // Store reference to the popover for later closing
+    this.popoverElement = target.parentElement.querySelector('sp-popover');
+  }
+
+  /**
+   * Closes this plugin's popover if it's open
+   */
+  closePopover() {
+    if (!this.isPopover() || !this.popoverElement) {
+      return;
+    }
+
+    if (this.popoverElement.open) {
+      this.popoverElement.open = false;
     }
   }
 
