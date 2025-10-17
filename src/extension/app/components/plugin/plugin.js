@@ -243,7 +243,7 @@ export class Plugin {
     }
 
     if (this.popoverElement.open) {
-      this.popoverElement.open = false;
+      this.popoverElement.dispatchEvent(new Event('close', { bubbles: true }));
     }
   }
 
