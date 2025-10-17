@@ -57,7 +57,7 @@ describe('Palette container', () => {
     sidekickTest.destroy();
   });
 
-  async function openPallete(plugin = 'tag-selector') {
+  async function openPalette(plugin = 'tag-selector') {
     sidekick = sidekickTest.createSidekick();
 
     await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
@@ -80,7 +80,7 @@ describe('Palette container', () => {
   }
 
   it('closes palette plugin via close button', async () => {
-    await openPallete();
+    await openPalette();
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
     await waitUntil(() => recursiveQuery(paletteContainer, 'sp-action-button'));
@@ -103,7 +103,7 @@ describe('Palette container', () => {
   }).timeout(20000);
 
   it('closes palette plugin via esc key', async () => {
-    await openPallete();
+    await openPalette();
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
 
@@ -122,12 +122,87 @@ describe('Palette container', () => {
   });
 
   it('palette renders titleI18n', async () => {
-    await openPallete('localize');
+    await openPalette('localize');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
     await waitUntil(() => recursiveQuery(paletteContainer, '.title'));
     const title = recursiveQuery(paletteContainer, '.title');
 
     expect(title.textContent.trim()).to.equal('Localize project');
+  });
+
+  it('does not close palette via CLOSE_PALETTE event without ID', async () => {
+    await openPalette();
+
+    const paletteContainer = recursiveQuery(sidekick, 'palette-container');
+    await waitUntil(() => recursiveQuery(paletteContainer, 'sp-action-button'));
+
+    // Dispatch CLOSE_PALETTE event without ID (should NOT close)
+    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
+    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_PALETTE));
+
+    // Wait a bit to ensure it doesn't close
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+
+    const container = recursiveQuery(paletteContainer, '.container');
+    expect(container.classList.contains('hidden')).to.be.false;
+  }).timeout(20000);
+
+  it('closes palette via CLOSE_PALETTE event with matching ID', async () => {
+    await openPalette('tag-selector');
+
+    const paletteContainer = recursiveQuery(sidekick, 'palette-container');
+    await waitUntil(() => recursiveQuery(paletteContainer, 'sp-action-button'));
+
+    // Dispatch CLOSE_PALETTE event with matching ID
+    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
+    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_PALETTE, {
+      detail: { id: 'tag-selector' },
+    }));
+
+    const container = recursiveQuery(paletteContainer, '.container');
+    await waitUntil(() => container.classList.contains('hidden'));
+    expect(container.classList.contains('hidden')).to.be.true;
+  }).timeout(20000);
+
+  it('does NOT close palette via CLOSE_PALETTE event with non-matching ID', async () => {
+    await openPalette('tag-selector');
+
+    const paletteContainer = recursiveQuery(sidekick, 'palette-container');
+    await waitUntil(() => recursiveQuery(paletteContainer, 'sp-action-button'));
+
+    // Dispatch CLOSE_PALETTE event with different ID
+    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
+    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_PALETTE, {
+      detail: { id: 'different-plugin' },
+    }));
+
+    // Wait a bit to ensure it doesn't close
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+
+    const container = recursiveQuery(paletteContainer, '.container');
+    expect(container.classList.contains('hidden')).to.be.false;
+  }).timeout(20000);
+
+  it('handles hideContainer when container is not ready', async () => {
+    sidekick = sidekickTest.createSidekick();
+    await waitUntil(() => recursiveQuery(sidekick, 'action-bar-picker'));
+
+    const paletteContainer = recursiveQuery(sidekick, 'palette-container');
+    expect(paletteContainer).to.exist;
+
+    // Try to hide container before it's been rendered (plugin is undefined)
+    const rumCallCount = sidekickTest.rumStub.callCount;
+    await paletteContainer.hideContainer();
+
+    // Should not call RUM since container doesn't exist
+    expect(sidekickTest.rumStub.callCount).to.equal(rumCallCount);
   });
 });

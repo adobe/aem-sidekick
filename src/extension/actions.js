@@ -529,6 +529,31 @@ export async function guessAEMSite(_, { url }) {
 }
 
 /**
+ * Closes the palette in the sender's tab.
+ * @param {Object} message The message object
+ * @param {string} message.id The palette ID to close
+ * @param {chrome.runtime.MessageSender} sender The sender
+ * @returns {Promise<boolean>} True if palette was closed, else false
+ */
+async function closePalette({ id }, { tab }) {
+  if (!id) {
+    log.warn('closePalette: no palette id');
+    return false;
+  }
+  if (!tab?.id) {
+    log.warn('closePalette: no tab id');
+    return false;
+  }
+  try {
+    await chrome.tabs.sendMessage(tab.id, { action: 'close_palette', id });
+    return true;
+  } catch (e) {
+    log.warn('closePalette: failed to send message', e);
+    return false;
+  }
+}
+
+/**
  * Updates a project based on the given message and sender.
  * @param {chrome.tabs.Tab} _ The tab
  * @param {Object} message The message object
@@ -593,4 +618,5 @@ export const externalActions = {
   updateSite,
   removeSite,
   updateAuthToken,
+  closePalette,
 };

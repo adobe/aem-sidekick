@@ -540,6 +540,42 @@ describe('Test actions', () => {
     expect(resp).to.be.false;
   });
 
+  it('external: closePalette', async () => {
+    const sendMessageStub = sandbox.stub(chrome.tabs, 'sendMessage');
+    const logWarnSpy = sandbox.spy(log, 'warn');
+    sendMessageStub.resolves();
+    let resp;
+
+    // successful close with specific ID
+    resp = await externalActions.closePalette({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.calledWith(1, { action: 'close_palette', id: 'my-plugin' })).to.be.true;
+    expect(resp).to.be.true;
+
+    sandbox.resetHistory();
+
+    // no palette ID
+    resp = await externalActions.closePalette({}, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.called).to.be.false;
+    expect(logWarnSpy.calledWith('closePalette: no palette id')).to.be.true;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // no tab id
+    resp = await externalActions.closePalette({ id: 'my-plugin' }, { tab: {} });
+    expect(sendMessageStub.called).to.be.false;
+    expect(logWarnSpy.calledWith('closePalette: no tab id')).to.be.true;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // error sending message
+    sendMessageStub.rejects(error);
+    resp = await externalActions.closePalette({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(logWarnSpy.calledWith('closePalette: failed to send message', error)).to.be.true;
+    expect(resp).to.be.false;
+  });
+
   it('internal: addRemoveProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const remove = sandbox.spy(chrome.storage.sync, 'remove');
