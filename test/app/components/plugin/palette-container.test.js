@@ -169,7 +169,7 @@ describe('Palette container', () => {
     expect(container.classList.contains('hidden')).to.be.true;
   }).timeout(20000);
 
-  it('does NOT close palette via CLOSE_PALETTE event with non-matching ID', async () => {
+  it('does not close palette via CLOSE_PALETTE event with non-matching ID', async () => {
     await openPalette('tag-selector');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');

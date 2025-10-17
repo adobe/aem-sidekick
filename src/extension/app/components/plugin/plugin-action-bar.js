@@ -179,7 +179,16 @@ export class PluginActionBar extends ConnectedElement {
 
     // Listen for close popover events
     EventBus.instance.addEventListener(EVENTS.CLOSE_POPOVER, (e) => {
-      this.closePopover(e.detail?.id);
+      const { id } = e.detail || {};
+      if (!id) {
+        return;
+      }
+
+      // Find the plugin and delegate to it
+      const plugin = this.visiblePlugins.find((p) => p.getId() === id);
+      if (plugin) {
+        plugin.closePopover();
+      }
     });
 
     this.requestUpdate();
@@ -189,24 +198,6 @@ export class PluginActionBar extends ConnectedElement {
     super.disconnectedCallback();
     this.removeEventListener('click', this.onClick);
     EventBus.instance.removeEventListener(EVENTS.CLOSE_POPOVER);
-  }
-
-  /**
-   * Closes a popover with the specified plugin ID.
-   * @param {string} id The plugin ID
-   */
-  closePopover(id) {
-    if (!id) {
-      return;
-    }
-
-    // Find the plugin instance and delegate to it
-    const plugin = [...this.barPlugins, ...this.menuPlugins]
-      .find((p) => p.getId() === id);
-
-    if (plugin) {
-      plugin.closePopover();
-    }
   }
 
   /**
