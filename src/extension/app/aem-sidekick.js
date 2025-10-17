@@ -81,12 +81,12 @@ export class AEMSidekick extends LitElement {
             confirmCallback: (response) => { sendResponse(response); },
           },
         });
-      } else if (msg.action === 'closePalette') {
+      } else if (msg.action === 'close_palette') {
         EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_PALETTE, {
           detail: { id: msg.id },
         }));
         sendResponse(true);
-      } else if (msg.action === 'closePopover') {
+      } else if (msg.action === 'close_popover') {
         EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER, {
           detail: { id: msg.id },
         }));

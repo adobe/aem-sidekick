@@ -545,7 +545,7 @@ async function closePalette({ id }, { tab }) {
     return false;
   }
   try {
-    await chrome.tabs.sendMessage(tab.id, { action: 'closePalette', id });
+    await chrome.tabs.sendMessage(tab.id, { action: 'close_palette', id });
     return true;
   } catch (e) {
     log.warn('closePalette: failed to send message', e);
@@ -570,7 +570,7 @@ async function closePopover({ id }, { tab }) {
     return false;
   }
   try {
-    await chrome.tabs.sendMessage(tab.id, { action: 'closePopover', id });
+    await chrome.tabs.sendMessage(tab.id, { action: 'close_popover', id });
     return true;
   } catch (e) {
     log.warn('closePopover: failed to send message', e);
