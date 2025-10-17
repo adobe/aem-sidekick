@@ -238,4 +238,52 @@ describe('AEM Sidekick', () => {
 
     expect(showOnboardingSpy.calledOnce).to.be.true;
   });
+
+  it('handles closePalette message', async () => {
+    const sendResponse = spy();
+
+    const message = {
+      action: 'close_palette',
+      id: 'test-palette',
+    };
+    const sender = {};
+
+    // stub message receiver and invoke callback
+    sidekickTest.sandbox.stub(chrome.runtime.onMessage, 'addListener')
+      .callsFake((func) => func(
+        message,
+        sender,
+        sendResponse,
+      ));
+
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    // Verify sendResponse was called with true
+    expect(sendResponse.calledWith(true)).to.be.true;
+  });
+
+  it('handles closePopover message', async () => {
+    const sendResponse = spy();
+
+    const message = {
+      action: 'close_popover',
+      id: 'test-popover',
+    };
+    const sender = {};
+
+    // stub message receiver and invoke callback
+    sidekickTest.sandbox.stub(chrome.runtime.onMessage, 'addListener')
+      .callsFake((func) => func(
+        message,
+        sender,
+        sendResponse,
+      ));
+
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    // Verify sendResponse was called with true
+    expect(sendResponse.calledWith(true)).to.be.true;
+  });
 });
