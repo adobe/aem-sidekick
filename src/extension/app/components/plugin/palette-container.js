@@ -114,6 +114,16 @@ export class PaletteContainer extends ConnectedElement {
       this.plugin = e.detail.plugin;
     });
 
+    EventBus.instance.addEventListener(EVENTS.RESIZE_PALETTE, async (e) => {
+      const { id, styles } = e.detail;
+      if (this.plugin?.id === id) {
+        const paletteContainer = await this.container;
+        if (paletteContainer && styles) {
+          paletteContainer.setAttribute('style', styles);
+        }
+      }
+    });
+
     this.addEventListener('keydown', this.onKeyDown);
   }
 

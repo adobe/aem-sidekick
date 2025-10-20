@@ -34,6 +34,8 @@ export const ENVS = {
 export const EVENTS = {
   OPEN_PALETTE: 'open-palette',
   CLOSE_PALETTE: 'close-palette',
+  RESIZE_PALETTE: 'resize-palette',
+  RESIZE_POPOVER: 'resize-popover',
 };
 
 /**
