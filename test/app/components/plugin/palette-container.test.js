@@ -130,4 +130,148 @@ describe('Palette container', () => {
 
     expect(title.textContent.trim()).to.equal('Localize project');
   });
+
+  it('resizes palette via message', async () => {
+    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
+    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
+
+    await openPallete('tag-selector');
+
+    const paletteContainer = recursiveQuery(sidekick, 'palette-container');
+    await waitUntil(() => recursiveQuery(paletteContainer, '.container'));
+    const container = recursiveQuery(paletteContainer, '.container');
+
+    // Dispatch resize event via EventBus
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_PALETTE, {
+      detail: {
+        id: 'tag-selector',
+        styles: 'width: 800px; height: 600px',
+      },
+    }));
+
+    await waitUntil(() => container.style.width === '800px');
+    expect(container.style.width).to.equal('800px');
+    expect(container.style.height).to.equal('600px');
+
+    // Resize with multiple properties
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_PALETTE, {
+      detail: {
+        id: 'tag-selector',
+        styles: 'width: 1000px; top: 10px',
+      },
+    }));
+
+    await waitUntil(() => container.style.width === '1000px');
+    expect(container.style.width).to.equal('1000px');
+    expect(container.style.top).to.equal('10px');
+
+    // Resize with height only
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_PALETTE, {
+      detail: {
+        id: 'tag-selector',
+        styles: 'height: 700px',
+      },
+    }));
+
+    await waitUntil(() => container.style.height === '700px');
+    expect(container.style.height).to.equal('700px');
+  });
+
+  it('does not resize palette if id does not match', async () => {
+    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
+    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
+
+    await openPallete('tag-selector');
+
+    const paletteContainer = recursiveQuery(sidekick, 'palette-container');
+    await waitUntil(() => recursiveQuery(paletteContainer, '.container'));
+    const container = recursiveQuery(paletteContainer, '.container');
+
+    const initialWidth = container.style.width;
+
+    // Dispatch resize event with different id
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_PALETTE, {
+      detail: {
+        id: 'different-plugin',
+        styles: 'width: 999px',
+      },
+    }));
+
+    // Wait a bit to ensure event is processed
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+
+    // Style should not have changed
+    expect(container.style.width).to.equal(initialWidth);
+  });
+
+  it('does not resize palette if styles is empty', async () => {
+    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
+    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
+
+    await openPallete('tag-selector');
+
+    const paletteContainer = recursiveQuery(sidekick, 'palette-container');
+    await waitUntil(() => recursiveQuery(paletteContainer, '.container'));
+    const container = recursiveQuery(paletteContainer, '.container');
+
+    const initialWidth = container.style.width;
+
+    // Dispatch resize event with empty styles
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_PALETTE, {
+      detail: {
+        id: 'tag-selector',
+        styles: '',
+      },
+    }));
+
+    // Wait a bit to ensure event is processed
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+
+    // Style should not have changed
+    expect(container.style.width).to.equal(initialWidth);
+  });
+
+  it('hides container when hideContainer is called', async () => {
+    await openPallete('tag-selector');
+
+    const paletteContainer = recursiveQuery(sidekick, 'palette-container');
+    await waitUntil(() => recursiveQuery(paletteContainer, '.container'));
+    const container = recursiveQuery(paletteContainer, '.container');
+
+    // Verify container is visible initially
+    expect(container.classList.contains('hidden')).to.be.false;
+
+    // Call hideContainer
+    await paletteContainer.hideContainer();
+
+    // Verify container is now hidden
+    expect(container.classList.contains('hidden')).to.be.true;
+  });
+
+  it('handles hideContainer when container does not exist', async () => {
+    await openPallete('tag-selector');
+
+    const paletteContainer = recursiveQuery(sidekick, 'palette-container');
+    await waitUntil(() => recursiveQuery(paletteContainer, '.container'));
+
+    // Mock the container getter to return null
+    const originalContainer = paletteContainer.container;
+    Object.defineProperty(paletteContainer, 'container', {
+      get: () => Promise.resolve(null),
+      configurable: true,
+    });
+
+    // Call hideContainer - should not throw error
+    await paletteContainer.hideContainer();
+
+    // Restore original container
+    Object.defineProperty(paletteContainer, 'container', {
+      get: () => originalContainer,
+      configurable: true,
+    });
+  });
 });

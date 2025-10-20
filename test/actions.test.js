@@ -1207,4 +1207,165 @@ describe('Test actions', () => {
       expect(saveDocumentStub.calledWithMatch(1, { action: 'saveDocument' })).to.be.true;
     });
   });
+
+  it('external: resizePalette', async () => {
+    const sendMessageStub = sandbox.stub(chrome.tabs, 'sendMessage');
+    sendMessageStub.resolves();
+    let resp;
+
+    // successful resize with complete rect
+    resp = await externalActions.resizePalette({
+      id: 'my-plugin',
+      rect: {
+        width: '600px',
+        height: '400px',
+        top: '10px',
+        left: '20px',
+      },
+    }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.calledWith(1, {
+      action: 'resize_palette',
+      id: 'my-plugin',
+      rect: {
+        width: '600px',
+        height: '400px',
+        top: '10px',
+        left: '20px',
+      },
+    })).to.be.true;
+    expect(resp).to.be.true;
+
+    sandbox.resetHistory();
+
+    // width only (missing height)
+    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: { width: '600px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // height only (missing width)
+    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: { height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // no palette ID
+    resp = await externalActions.resizePalette({ rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // no rect
+    resp = await externalActions.resizePalette({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // empty rect
+    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: {} }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // no tab id
+    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: { width: '600px', height: '400px' } }, { tab: {} });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // error sending message
+    sendMessageStub.rejects(error);
+    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(resp).to.be.false;
+  });
+
+  it('external: resizePopover', async () => {
+    const sendMessageStub = sandbox.stub(chrome.tabs, 'sendMessage');
+    sendMessageStub.resolves();
+    let resp;
+
+    // successful resize with complete rect
+    resp = await externalActions.resizePopover({
+      id: 'my-plugin',
+      rect: {
+        width: '600px',
+        height: '400px',
+        top: '10px',
+        left: '20px',
+      },
+    }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.calledWith(1, {
+      action: 'resize_popover',
+      id: 'my-plugin',
+      rect: {
+        width: '600px',
+        height: '400px',
+        top: '10px',
+        left: '20px',
+      },
+    })).to.be.true;
+    expect(resp).to.be.true;
+
+    sandbox.resetHistory();
+
+    // successful resize with width and height only
+    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.calledWith(1, { action: 'resize_popover', id: 'my-plugin', rect: { width: '600px', height: '400px' } })).to.be.true;
+    expect(resp).to.be.true;
+
+    sandbox.resetHistory();
+
+    // width only (missing height)
+    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { width: '600px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // height only (missing width)
+    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // no popover ID
+    resp = await externalActions.resizePopover({ rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // no rect
+    resp = await externalActions.resizePopover({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // empty rect
+    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: {} }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // no tab id
+    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { width: '600px', height: '400px' } }, { tab: {} });
+    expect(sendMessageStub.called).to.be.false;
+    expect(resp).to.be.false;
+
+    sandbox.resetHistory();
+
+    // error sending message
+    sendMessageStub.rejects(error);
+    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    expect(resp).to.be.false;
+  });
 });
