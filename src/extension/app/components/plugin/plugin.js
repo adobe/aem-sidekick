@@ -22,6 +22,10 @@ import { EventBus } from '../../utils/event-bus.js';
  */
 
 /**
+ * @typedef {import('@spectrum-web-components/popover').Popover} Popover
+ */
+
+/**
  * @typedef {import('@AppStore').AppStore} AppStore
  */
 
@@ -70,9 +74,9 @@ export class Plugin {
   config;
 
   /**
-  * Reference to the popover element for closing
-  * @type {Popover}
-  */
+   * Reference to the popover element for resizing and closing
+   * @type {Popover}
+   */
   popoverElement;
 
   constructor(plugin, appStore) {
@@ -261,6 +265,19 @@ export class Plugin {
     }
     // Store reference to the popover for later closing
     this.popoverElement = target.parentElement.querySelector('sp-popover');
+  }
+
+  /**
+   * Closes this plugin's popover if it's open
+   */
+  closePopover() {
+    if (!this.isPopover() || !this.popoverElement) {
+      return;
+    }
+
+    if (this.popoverElement.open) {
+      this.popoverElement.dispatchEvent(new Event('close', { bubbles: true }));
+    }
   }
 
   /**

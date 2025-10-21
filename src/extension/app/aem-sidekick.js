@@ -91,6 +91,14 @@ export class AEMSidekick extends LitElement {
         const { id, rect } = msg;
         EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_POPOVER, {
           detail: { id, styles: rectToStyles(rect) },
+      } else if (msg.action === 'close_palette') {
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_PALETTE, {
+          detail: { id: msg.id },
+        }));
+        sendResponse(true);
+      } else if (msg.action === 'close_popover') {
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER, {
+          detail: { id: msg.id },
         }));
         sendResponse(true);
       }
