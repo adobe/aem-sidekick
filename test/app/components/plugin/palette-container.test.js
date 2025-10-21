@@ -19,6 +19,8 @@ import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import '../../../../src/extension/index.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { SidekickTest } from '../../../sidekick-test.js';
+import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
+import { EVENTS } from '../../../../src/extension/app/constants.js';
 
 /**
  * The AEMSidekick object type
@@ -132,9 +134,6 @@ describe('Palette container', () => {
   });
 
   it('resizes palette via message', async () => {
-    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
-    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
-
     await openPalette('tag-selector');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
@@ -178,9 +177,6 @@ describe('Palette container', () => {
   });
 
   it('resizes palette via message', async () => {
-    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
-    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
-
     await openPalette('tag-selector');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
@@ -224,9 +220,6 @@ describe('Palette container', () => {
   });
 
   it('does not resize palette if id does not match', async () => {
-    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
-    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
-
     await openPalette('tag-selector');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
@@ -253,9 +246,6 @@ describe('Palette container', () => {
   });
 
   it('does not resize palette if styles is empty', async () => {
-    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
-    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
-
     await openPalette('tag-selector');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
@@ -328,8 +318,6 @@ describe('Palette container', () => {
     await waitUntil(() => recursiveQuery(paletteContainer, 'sp-action-button'));
 
     // Dispatch CLOSE_PALETTE event without ID (should NOT close)
-    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
-    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
     EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_PALETTE));
 
     // Wait a bit to ensure it doesn't close
@@ -348,8 +336,6 @@ describe('Palette container', () => {
     await waitUntil(() => recursiveQuery(paletteContainer, 'sp-action-button'));
 
     // Dispatch CLOSE_PALETTE event with matching ID
-    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
-    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
     EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_PALETTE, {
       detail: { id: 'tag-selector' },
     }));
@@ -366,8 +352,6 @@ describe('Palette container', () => {
     await waitUntil(() => recursiveQuery(paletteContainer, 'sp-action-button'));
 
     // Dispatch CLOSE_PALETTE event with different ID
-    const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
-    const { EVENTS } = await import('../../../../src/extension/app/constants.js');
     EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_PALETTE, {
       detail: { id: 'different-plugin' },
     }));
