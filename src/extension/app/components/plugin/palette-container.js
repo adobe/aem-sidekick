@@ -114,11 +114,21 @@ export class PaletteContainer extends ConnectedElement {
       this.plugin = e.detail.plugin;
     });
 
+    EventBus.instance.addEventListener(EVENTS.CLOSE_PALETTE, (e) => {
+      const { id } = e.detail || {};
+      // Only close palette if ID matches
+      if (id && this.plugin?.id === id) {
+        this.hideContainer();
+      }
+    });
+
     this.addEventListener('keydown', this.onKeyDown);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    EventBus.instance.removeEventListener(EVENTS.OPEN_PALETTE);
+    EventBus.instance.removeEventListener(EVENTS.CLOSE_PALETTE);
     this.removeEventListener('keydown', this.onKeyDown);
   }
 
