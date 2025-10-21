@@ -22,10 +22,6 @@ import { EventBus } from '../../utils/event-bus.js';
  */
 
 /**
- * @typedef {import('@spectrum-web-components/popover').Popover} Popover
- */
-
-/**
  * @typedef {import('@AppStore').AppStore} AppStore
  */
 

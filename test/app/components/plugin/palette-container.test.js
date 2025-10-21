@@ -135,7 +135,7 @@ describe('Palette container', () => {
     const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
     const { EVENTS } = await import('../../../../src/extension/app/constants.js');
 
-    await openPallete('tag-selector');
+    await openPalette('tag-selector');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
     await waitUntil(() => recursiveQuery(paletteContainer, '.container'));
@@ -177,12 +177,11 @@ describe('Palette container', () => {
     expect(container.style.height).to.equal('700px');
   });
 
-  
   it('resizes palette via message', async () => {
     const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
     const { EVENTS } = await import('../../../../src/extension/app/constants.js');
 
-    await openPallete('tag-selector');
+    await openPalette('tag-selector');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
     await waitUntil(() => recursiveQuery(paletteContainer, '.container'));
@@ -228,7 +227,7 @@ describe('Palette container', () => {
     const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
     const { EVENTS } = await import('../../../../src/extension/app/constants.js');
 
-    await openPallete('tag-selector');
+    await openPalette('tag-selector');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
     await waitUntil(() => recursiveQuery(paletteContainer, '.container'));
@@ -257,7 +256,7 @@ describe('Palette container', () => {
     const { EventBus } = await import('../../../../src/extension/app/utils/event-bus.js');
     const { EVENTS } = await import('../../../../src/extension/app/constants.js');
 
-    await openPallete('tag-selector');
+    await openPalette('tag-selector');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
     await waitUntil(() => recursiveQuery(paletteContainer, '.container'));
@@ -283,7 +282,7 @@ describe('Palette container', () => {
   });
 
   it('hides container when hideContainer is called', async () => {
-    await openPallete('tag-selector');
+    await openPalette('tag-selector');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
     await waitUntil(() => recursiveQuery(paletteContainer, '.container'));
@@ -300,7 +299,7 @@ describe('Palette container', () => {
   });
 
   it('handles hideContainer when container does not exist', async () => {
-    await openPallete('tag-selector');
+    await openPalette('tag-selector');
 
     const paletteContainer = recursiveQuery(sidekick, 'palette-container');
     await waitUntil(() => recursiveQuery(paletteContainer, '.container'));

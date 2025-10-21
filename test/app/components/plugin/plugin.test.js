@@ -357,7 +357,7 @@ describe('Plugin', () => {
     expect(renderedPlugin).to.equal('');
   });
 
-   it('resizes popover via resize event', async () => {
+  it('resizes popover via resize event', async () => {
     // Clear any existing listeners BEFORE creating the plugin
     EventBus.instance.listeners = [];
 
@@ -512,8 +512,8 @@ describe('Plugin', () => {
     // Popover style should not have changed
     expect(popover.getAttribute('style')).to.equal(initialStyle);
   });
-  
-   it('closePopover does nothing when plugin is not a popover', async () => {
+
+  it('closePopover does nothing when plugin is not a popover', async () => {
     const plugin = new Plugin(TEST_CONFIG, appStore);
 
     // Call closePopover
