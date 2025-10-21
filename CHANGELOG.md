@@ -1,3 +1,10 @@
+# [7.21.0](https://github.com/adobe/aem-sidekick/compare/v7.20.1...v7.21.0) (2025-10-21)
+
+
+### Features
+
+* add palette and popover close APIs ([#704](https://github.com/adobe/aem-sidekick/issues/704)) ([9ab6ed6](https://github.com/adobe/aem-sidekick/commit/9ab6ed64d17afd98a582d0c757c43ddeca9c9b48))
+
 ## [7.20.1](https://github.com/adobe/aem-sidekick/compare/v7.20.0...v7.20.1) (2025-10-08)
 
 
