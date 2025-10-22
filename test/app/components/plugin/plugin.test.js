@@ -16,6 +16,8 @@ import { render } from 'lit';
 import chromeMock from '../../../mocks/chrome.js';
 import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
+import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
+import { EVENTS } from '../../../../src/extension/app/constants.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -353,6 +355,162 @@ describe('Plugin', () => {
     const renderedPlugin = parent.render();
     // @ts-ignore
     expect(renderedPlugin).to.equal('');
+  });
+
+  it('resizes popover via resize event', async () => {
+    // Clear any existing listeners BEFORE creating the plugin
+    EventBus.instance.listeners = [];
+
+    const plugin = new Plugin({ ...TEST_POPOVER_CONFIG }, appStore);
+
+    // Verify the plugin is a popover
+    expect(plugin.isPopover()).to.be.true;
+
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+
+    // Wait for next time to let lit process the update
+    await Promise.resolve();
+
+    // Initial popover should have original rect
+    const popover = container.querySelector('sp-popover');
+    expect(popover.getAttribute('style')).to.include('width: 100px; height: 100px;');
+
+    // Click to open the popover and set the popoverElement reference
+    const button = container.querySelector('sp-action-button');
+
+    // Manually trigger initPopover with a mock event
+    plugin.initPopover({ target: button });
+    await Promise.resolve();
+
+    // Verify popoverElement is set
+    expect(plugin.popoverElement).to.exist;
+    expect(plugin.popoverElement).to.equal(popover);
+
+    // Verify plugin id
+    expect(plugin.id).to.equal('test');
+
+    // Mock the popover as open
+    plugin.popoverElement.open = true;
+
+    // Store original setAttribute
+    const originalSetAttribute = plugin.popoverElement.setAttribute.bind(plugin.popoverElement);
+    let setAttributeCalled = false;
+    let setAttributeArgs = [];
+    plugin.popoverElement.setAttribute = (...args) => {
+      setAttributeCalled = true;
+      setAttributeArgs = args;
+      return originalSetAttribute(...args);
+    };
+
+    // Dispatch resize event with new dimensions (styles string)
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_POPOVER, {
+      detail: {
+        id: 'test',
+        styles: 'width: 200px; height: 150px',
+      },
+    }));
+
+    await Promise.resolve();
+
+    // Verify setAttribute was called with the new styles
+    expect(setAttributeCalled).to.be.true;
+    expect(setAttributeArgs[0]).to.equal('style');
+    expect(setAttributeArgs[1]).to.equal('width: 200px; height: 150px;');
+
+    // Popover should have new dimensions
+    const style = plugin.popoverElement.getAttribute('style');
+    expect(style).to.equal('width: 200px; height: 150px;');
+  });
+
+  it('does not resize popover if id does not match', async () => {
+    const plugin = new Plugin({ ...TEST_POPOVER_CONFIG }, appStore);
+
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+    await Promise.resolve();
+
+    const popover = container.querySelector('sp-popover');
+    const initialStyle = popover.getAttribute('style');
+
+    // Click to open the popover and set the popoverElement reference
+    const button = container.querySelector('sp-action-button');
+    plugin.initPopover({ target: button });
+    await Promise.resolve();
+
+    // Mock the popover as open
+    popover.open = true;
+
+    // Dispatch resize event with different id
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_POPOVER, {
+      detail: {
+        id: 'different-plugin',
+        styles: 'width: 300px; height: 200px',
+      },
+    }));
+
+    await Promise.resolve();
+
+    // Popover style should not have changed
+    expect(popover.getAttribute('style')).to.equal(initialStyle);
+  });
+
+  it('does not resize popover if popover is not open', async () => {
+    const plugin = new Plugin({ ...TEST_POPOVER_CONFIG }, appStore);
+
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+    await Promise.resolve();
+
+    const popover = container.querySelector('sp-popover');
+    const initialStyle = popover.getAttribute('style');
+
+    // Click to open the popover and set the popoverElement reference
+    const button = container.querySelector('sp-action-button');
+    plugin.initPopover({ target: button });
+    await Promise.resolve();
+
+    // Keep popover closed (don't set open = true)
+    popover.open = false;
+
+    // Dispatch resize event
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_POPOVER, {
+      detail: {
+        id: 'test',
+        styles: 'width: 300px; height: 200px',
+      },
+    }));
+
+    await Promise.resolve();
+
+    // Popover style should not have changed
+    expect(popover.getAttribute('style')).to.equal(initialStyle);
+  });
+
+  it('does not resize popover if popoverElement is not set', async () => {
+    const plugin = new Plugin({ ...TEST_POPOVER_CONFIG }, appStore);
+
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+    await Promise.resolve();
+
+    const popover = container.querySelector('sp-popover');
+    const initialStyle = popover.getAttribute('style');
+
+    // Don't click to open - popoverElement won't be set
+
+    // Dispatch resize event
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_POPOVER, {
+      detail: {
+        id: 'test',
+        styles: 'width: 300px; height: 200px',
+      },
+    }));
+
+    await Promise.resolve();
+
+    // Popover style should not have changed
+    expect(popover.getAttribute('style')).to.equal(initialStyle);
   });
 
   it('closePopover does nothing when plugin is not a popover', async () => {

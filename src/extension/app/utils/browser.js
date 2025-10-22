@@ -247,3 +247,20 @@ export function isErrorPage(location, document) {
     && !document.querySelector('body > main > div')
     && document.querySelector('body > pre'));
 }
+
+/**
+ * Converts a rect object to a style string.
+ * Only width, height, top, left, right, and bottom properties are accepted.
+ * @param {Object} rect The rect object
+ * @returns {string} The style string
+ */
+export function rectToStyles(rect) {
+  if (!rect || typeof rect !== 'object' || Object.keys(rect).length === 0) {
+    return '';
+  }
+  return Object
+    .entries(rect)
+    .filter(([key]) => ['width', 'height', 'top', 'left', 'right', 'bottom'].includes(key))
+    .map(([key, value]) => `${key}: ${value}`)
+    .join('; ');
+}

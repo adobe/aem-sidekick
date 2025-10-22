@@ -14,7 +14,8 @@
 
 import { html } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import { EXTERNAL_EVENTS } from '../../constants.js';
+import { EVENTS, EXTERNAL_EVENTS } from '../../constants.js';
+import { EventBus } from '../../utils/event-bus.js';
 
 /**
  * @typedef {import('@spectrum-web-components/popover').Popover} Popover
@@ -69,7 +70,7 @@ export class Plugin {
   config;
 
   /**
-   * Reference to the popover element for closing
+   * Reference to the popover element for resizing and closing
    * @type {Popover}
    */
   popoverElement;
@@ -79,6 +80,34 @@ export class Plugin {
     this.disabled = false;
     this.config = plugin;
     this.id = plugin.id;
+
+    // Listen for popover resize events
+    if (this.isPopover()) {
+      EventBus.instance.addEventListener(EVENTS.RESIZE_POPOVER, (e) => {
+        if (!this.popoverElement || !this.popoverElement.open) {
+          return;
+        }
+        const { id, styles } = e.detail;
+        if (this.id === id && styles) {
+          this.popoverElement.setAttribute('style', this.#filterUserStyles(styles));
+          // Re-render
+          this.popoverElement.open = true;
+        }
+      });
+    }
+  }
+
+  /**
+   * Filters out unsupported user-provided styles.
+   * @param {string} styles The user-provided styles
+   * @return {string} The filtered styles
+   */
+  #filterUserStyles(styles = '') {
+    return `${styles
+      .split(';')
+      .map((s) => s.trim())
+      .filter((s) => s.startsWith('width:') || s.startsWith('height:'))
+      .join('; ')};`;
   }
 
   /**
@@ -260,13 +289,9 @@ export class Plugin {
 
     const popoverTitle = titleI18n?.[this.appStore.siteStore.lang] || title;
 
-    let filteredPopoverRect = popoverRect;
+    let filteredPopoverRect;
     if (popoverRect) {
-      filteredPopoverRect = `${popoverRect
-        .split(';')
-        .map((s) => s.trim())
-        .filter((s) => s.startsWith('width:') || s.startsWith('height:'))
-        .join('; ')};`;
+      filteredPopoverRect = this.#filterUserStyles(popoverRect);
     }
 
     return html`

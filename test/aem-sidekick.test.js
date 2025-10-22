@@ -239,6 +239,126 @@ describe('AEM Sidekick', () => {
     expect(showOnboardingSpy.calledOnce).to.be.true;
   });
 
+  it('handles resizePalette message', async () => {
+    const { EventBus } = await import('../src/extension/app/utils/event-bus.js');
+    const { EVENTS } = await import('../src/extension/app/constants.js');
+    const sendResponse = spy();
+
+    const message = {
+      action: 'resize_palette',
+      id: 'test-palette',
+      rect: {
+        width: '600px',
+        height: '400px',
+      },
+    };
+    const sender = {};
+
+    // Spy on EventBus.instance.dispatchEvent
+    const dispatchEventSpy = sidekickTest.sandbox.spy(EventBus.instance, 'dispatchEvent');
+
+    // stub message receiver and invoke callback
+    sidekickTest.sandbox.stub(chrome.runtime.onMessage, 'addListener')
+      .callsFake((func) => func(
+        message,
+        sender,
+        sendResponse,
+      ));
+
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    // Verify dispatchEvent was called with correct event
+    expect(dispatchEventSpy.calledOnce).to.be.true;
+    const event = dispatchEventSpy.firstCall.args[0];
+    expect(event.type).to.equal(EVENTS.RESIZE_PALETTE);
+    expect(event.detail.id).to.equal('test-palette');
+    expect(event.detail.styles).to.equal('width: 600px; height: 400px');
+
+    // Verify sendResponse was called with true
+    expect(sendResponse.calledWith(true)).to.be.true;
+  });
+
+  it('handles resizePalette message when container does not exist', async () => {
+    const { EventBus } = await import('../src/extension/app/utils/event-bus.js');
+    const { EVENTS } = await import('../src/extension/app/constants.js');
+    const sendResponse = spy();
+
+    const message = {
+      action: 'resize_palette',
+      id: 'non-existent-palette',
+      rect: {
+        width: '600px',
+        height: '400px',
+      },
+    };
+    const sender = {};
+
+    // Spy on EventBus.instance.dispatchEvent
+    const dispatchEventSpy = sidekickTest.sandbox.spy(EventBus.instance, 'dispatchEvent');
+
+    // stub message receiver and invoke callback
+    sidekickTest.sandbox.stub(chrome.runtime.onMessage, 'addListener')
+      .callsFake((func) => func(
+        message,
+        sender,
+        sendResponse,
+      ));
+
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    // Verify dispatchEvent was called (event is dispatched regardless of container existence)
+    expect(dispatchEventSpy.calledOnce).to.be.true;
+    const event = dispatchEventSpy.firstCall.args[0];
+    expect(event.type).to.equal(EVENTS.RESIZE_PALETTE);
+    expect(event.detail.id).to.equal('non-existent-palette');
+    expect(event.detail.styles).to.equal('width: 600px; height: 400px');
+
+    // Verify sendResponse was called with true
+    expect(sendResponse.calledWith(true)).to.be.true;
+  });
+
+  it('handles resizePopover message', async () => {
+    const { EventBus } = await import('../src/extension/app/utils/event-bus.js');
+    const { EVENTS } = await import('../src/extension/app/constants.js');
+    const sendResponse = spy();
+
+    const message = {
+      action: 'resize_popover',
+      id: 'test-popover',
+      rect: {
+        width: '600px',
+        height: '400px',
+      },
+    };
+    const sender = {};
+
+    // Spy on EventBus.instance.dispatchEvent
+    const dispatchEventSpy = sidekickTest.sandbox.spy(EventBus.instance, 'dispatchEvent');
+
+    // stub message receiver and invoke callback
+    sidekickTest.sandbox.stub(chrome.runtime.onMessage, 'addListener')
+      .callsFake((func) => func(
+        message,
+        sender,
+        sendResponse,
+      ));
+
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    // Verify dispatchEvent was called with correct event
+    expect(dispatchEventSpy.calledOnce).to.be.true;
+    const event = dispatchEventSpy.firstCall.args[0];
+    expect(event.type).to.equal(EVENTS.RESIZE_POPOVER);
+    expect(event.detail.id).to.equal('test-popover');
+    expect(event.detail.styles).to.equal('width: 600px; height: 400px');
+
+    // Verify sendResponse was called with true
+    expect(sendResponse.calledWith(true)).to.be.true;
+  });
+
   it('handles closePalette message', async () => {
     const sendResponse = spy();
 

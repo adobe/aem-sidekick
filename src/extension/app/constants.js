@@ -35,6 +35,8 @@ export const EVENTS = {
   OPEN_PALETTE: 'open-palette',
   CLOSE_PALETTE: 'close-palette',
   CLOSE_POPOVER: 'close-popover',
+  RESIZE_PALETTE: 'resize-palette',
+  RESIZE_POPOVER: 'resize-popover',
 };
 
 /**

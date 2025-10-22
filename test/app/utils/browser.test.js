@@ -24,6 +24,7 @@ import {
   extendTag,
   globToRegExp,
   detectBrowser,
+  rectToStyles,
 } from '../../../src/extension/app/utils/browser.js';
 
 describe('browser utils', () => {
@@ -318,6 +319,67 @@ describe('browser utils', () => {
     it('should detect Firefox browser', () => {
       const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0';
       expect(detectBrowser(userAgent)).to.equal('firefox');
+    });
+  });
+
+  describe('rectToStyles', () => {
+    it('should convert rect object to CSS style string', () => {
+      const rect = {
+        width: '600px',
+        height: '400px',
+      };
+      const result = rectToStyles(rect);
+      expect(result).to.equal('width: 600px; height: 400px');
+    });
+
+    it('should handle rect with all properties', () => {
+      const rect = {
+        width: '600px',
+        height: '400px',
+        top: '10px',
+        left: '20px',
+        right: '30px',
+        bottom: '40px',
+      };
+      const result = rectToStyles(rect);
+      expect(result).to.equal('width: 600px; height: 400px; top: 10px; left: 20px; right: 30px; bottom: 40px');
+    });
+
+    it('should filter out unsupported properties', () => {
+      const rect = {
+        width: '600px',
+        height: '400px',
+        backgroundColor: 'red',
+        color: 'blue',
+      };
+      const result = rectToStyles(rect);
+      expect(result).to.equal('width: 600px; height: 400px');
+    });
+
+    it('should return empty string for null rect', () => {
+      const result = rectToStyles(null);
+      expect(result).to.equal('');
+    });
+
+    it('should return empty string for undefined rect', () => {
+      const result = rectToStyles(undefined);
+      expect(result).to.equal('');
+    });
+
+    it('should return empty string for non-object rect', () => {
+      const result = rectToStyles('not an object');
+      expect(result).to.equal('');
+    });
+
+    it('should return empty string for empty rect object', () => {
+      const result = rectToStyles({});
+      expect(result).to.equal('');
+    });
+
+    it('should handle rect with only one property', () => {
+      const rect = { width: '500px' };
+      const result = rectToStyles(rect);
+      expect(result).to.equal('width: 500px');
     });
   });
 });
