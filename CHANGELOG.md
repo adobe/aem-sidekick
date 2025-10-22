@@ -1,3 +1,10 @@
+# [7.22.0](https://github.com/adobe/aem-sidekick/compare/v7.21.0...v7.22.0) (2025-10-22)
+
+
+### Features
+
+* add resize popover and palette APIs ([#705](https://github.com/adobe/aem-sidekick/issues/705)) ([573c464](https://github.com/adobe/aem-sidekick/commit/573c46490ffef34953e58764008d8caec7c0cb7d))
+
 # [7.21.0](https://github.com/adobe/aem-sidekick/compare/v7.20.1...v7.21.0) (2025-10-21)
 
 
