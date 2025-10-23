@@ -198,11 +198,11 @@ export class LoginButton extends ConnectedElement {
           <sp-icon slot="icon" size="l" class=${ifDefined(this.profilePicture ? 'picture' : undefined)}>
             ${this.profilePicture ? html`<img src=${this.profilePicture} alt=${profile?.name || profile?.email} />` : html`${ICONS.USER_ICON}`}
           </sp-icon>
-          ${profile && profile.email ? html`
+          ${profile?.email ? html`
           <sk-menu-item class="user" value="user" tabindex="-1" disabled>
-            ${this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile?.name || profile.email} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
-            ${profile.name || profile.email}
-            ${profile.name ? html`<span slot="description">${profile.email}</span>` : ''}
+            ${this.profilePicture ? html`<img src=${this.profilePicture} slot="icon" alt=${profile?.name || profile?.email} />` : html`<div class="no-picture" slot="icon">${ICONS.USER_ICON}</div>`}
+            ${profile?.name || profile?.email}
+            ${profile?.name ? html`<span slot="description">${profile?.email}</span>` : ''}
           </sk-menu-item>
           <sp-divider size="s"></sp-divider>
           ` : ''}
