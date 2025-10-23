@@ -637,7 +637,7 @@ export class AppStore {
   isSharePointEditor(url) {
     const { pathname, searchParams } = url;
     return this.isSharePoint(url)
-      && pathname.match(/\/_layouts\/15\/[\w]+.aspx/)
+      && pathname.match(/\/_layouts\/15\/[\w]+\.aspx/)
       && (searchParams.has('sourcedoc') || searchParams.has('id'));
   }
 
