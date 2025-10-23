@@ -292,5 +292,128 @@ describe('Login', () => {
       await sidekickTest.awaitLoggedOut();
       await waitUntil(() => reloadPageStub.calledOnce);
     }).timeout(20000);
+
+    it('Displays email only when profile has no name', async () => {
+      sidekickTest
+        .mockFetchStatusUnauthorized()
+        .mockFetchProfilePictureSuccess()
+        .mockFetchSidekickConfigUnauthorized();
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitActionBar();
+
+      await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
+
+      // @ts-ignore
+      const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
+
+      await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
+      const loginButton = recursiveQuery(sidekick, 'login-button');
+
+      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button');
+      await waitUntil(() => loginActionButton.getAttribute('disabled') === null);
+
+      // Mock profile response without name property
+      sidekickTest
+        .mockFetchStatusSuccess(true, {
+          profile: {
+            aud: 'aud-id',
+            iss: 'https://login.microsoftonline.com/fa7b1b5a-7b34-4387-94ae-d2c178decee1/v2.0',
+            iat: 1708104155,
+            nbf: 1708104155,
+            exp: 1708108055,
+            email: 'test@example.com',
+            // name intentionally omitted
+            oid: 'oid-id',
+            preferred_username: 'test@example.com',
+            rh: 'rh-id',
+            roles: ['admin'],
+            sub: 'sub-id',
+            tid: 'tid-id',
+            uti: 'uti-id',
+            ver: '2.0',
+            ttl: 3349,
+          },
+        })
+        .mockFetchSidekickConfigSuccess()
+        .mockFetchProfilePictureSuccess()
+        .mockFetchProfileSuccess();
+
+      loginActionButton.click();
+
+      await waitUntil(() => appStore.state === STATE.LOGGING_IN);
+      await waitUntil(() => appStore.status.profile !== undefined, 'Profile not loaded', { timeout: 10000 });
+      await waitUntil(() => appStore.state === STATE.READY);
+
+      expect(openStub.calledOnce).to.be.true;
+
+      const accountElement = recursiveQuery(sidekick, 'login-button');
+      const accountButton = recursiveQuery(accountElement, 'sp-action-button');
+      accountButton.click();
+
+      const accountMenu = recursiveQuery(accountElement, 'sp-action-menu');
+      await waitUntil(() => accountMenu.getAttribute('open') !== null);
+
+      const userMenuItem = recursiveQuery(accountMenu, 'sk-menu-item.user');
+      expect(userMenuItem).to.exist;
+      expect(userMenuItem.textContent.trim()).to.include('test@example.com');
+
+      // Verify no description slot is used (since name is missing)
+      const descriptionSlot = recursiveQuery(userMenuItem, '[slot="description"]');
+      expect(descriptionSlot).to.not.exist;
+    }).timeout(20000);
+
+    it('Displays name and email when both are present', async () => {
+      sidekickTest
+        .mockFetchStatusUnauthorized()
+        .mockFetchProfilePictureSuccess()
+        .mockFetchSidekickConfigUnauthorized();
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitActionBar();
+
+      await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
+
+      // @ts-ignore
+      const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
+
+      await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
+      const loginButton = recursiveQuery(sidekick, 'login-button');
+
+      const loginActionButton = recursiveQuery(loginButton, 'sp-action-button');
+      await waitUntil(() => loginActionButton.getAttribute('disabled') === null);
+
+      sidekickTest
+        .mockFetchStatusSuccess(true)
+        .mockFetchSidekickConfigSuccess()
+        .mockFetchProfilePictureSuccess()
+        .mockFetchProfileSuccess();
+
+      loginActionButton.click();
+
+      await waitUntil(() => appStore.state === STATE.LOGGING_IN);
+      await waitUntil(() => appStore.status.profile !== undefined, 'Profile not loaded', { timeout: 10000 });
+      await waitUntil(() => appStore.state === STATE.READY);
+
+      expect(openStub.calledOnce).to.be.true;
+
+      const accountElement = recursiveQuery(sidekick, 'login-button');
+      const accountButton = recursiveQuery(accountElement, 'sp-action-button');
+      accountButton.click();
+
+      const accountMenu = recursiveQuery(accountElement, 'sp-action-menu');
+      await waitUntil(() => accountMenu.getAttribute('open') !== null);
+
+      const userMenuItem = recursiveQuery(accountMenu, 'sk-menu-item.user');
+      expect(userMenuItem).to.exist;
+
+      // Verify name is shown in label
+      expect(userMenuItem.textContent).to.include('Peter Parker');
+
+      // Verify email is shown in description slot
+      const descriptionSlot = recursiveQuery(userMenuItem, '[slot="description"]');
+      expect(descriptionSlot).to.exist;
+      expect(descriptionSlot.textContent.trim()).to.equal('foo@example.com');
+    }).timeout(20000);
   });
 });
