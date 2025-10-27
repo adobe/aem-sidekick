@@ -317,6 +317,9 @@
   "dark_mode": {
     "message": "어두운 테마"
   },
+  "drag_to_reposition": {
+    "message": "재배치하려면 드래그"
+  },
   "delete": {
     "message": "삭제"
   },

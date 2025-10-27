@@ -317,6 +317,9 @@
   "dark_mode": {
     "message": "Dunkles Design"
   },
+  "drag_to_reposition": {
+    "message": "Zum Neupositionieren ziehen"
+  },
   "delete": {
     "message": "Löschen"
   },

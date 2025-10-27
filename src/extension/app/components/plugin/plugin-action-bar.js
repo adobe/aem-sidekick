@@ -112,6 +112,24 @@ export class PluginActionBar extends ConnectedElement {
   @queryAsync('.close-button')
   accessor closeButton;
 
+  @queryAsync('.drag-handle')
+  accessor dragHandle;
+
+  /**
+   * Drag state
+   */
+  isDragging = false;
+
+  dragStartX = 0;
+
+  dragStartY = 0;
+
+  initialLeft = 0;
+
+  initialBottom = 0;
+
+  dragHandlersSetup = false;
+
   /**
    * Set up the bar and menu plugins in this environment and updates the component.
    */
@@ -198,6 +216,219 @@ export class PluginActionBar extends ConnectedElement {
     super.disconnectedCallback();
     this.removeEventListener('click', this.onClick);
     EventBus.instance.removeEventListener(EVENTS.CLOSE_POPOVER);
+    this.removeDragHandlers();
+  }
+
+  /**
+   * Set up drag handlers for the action bar
+   */
+  async setupDragHandlers() {
+    if (this.dragHandlersSetup) {
+      return;
+    }
+
+    const dragHandle = await this.dragHandle;
+    if (dragHandle) {
+      dragHandle.addEventListener('mousedown', this.onDragStart, false);
+      window.addEventListener('resize', this.onWindowResize);
+      this.dragHandlersSetup = true;
+    }
+  }
+
+  /**
+   * Remove drag handlers
+   */
+  async removeDragHandlers() {
+    console.log('removeDragHandlers');
+    const dragHandle = await this.dragHandle;
+    if (dragHandle) {
+      dragHandle.removeEventListener('mousedown', this.onDragStart, false);
+    }
+    window.removeEventListener('mousemove', this.onDragMove, false);
+    window.removeEventListener('mouseup', this.onDragEnd, false);
+    window.removeEventListener('selectstart', this.preventSelection, true);
+    document.removeEventListener('mouseleave', this.onMouseLeaveViewport, false);
+    window.removeEventListener('resize', this.onWindowResize);
+  }
+
+  /**
+   * Handle drag start
+   * @param {MouseEvent} e The mouse event
+   */
+  onDragStart = (e) => {
+    console.log('onDragStart');
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.isDragging = true;
+
+    this.appStore.sampleRUM('click', { source: 'sidekick', target: 'sidekick-dragged' });
+
+    // Store initial mouse position
+    this.dragStartX = e.clientX;
+    this.dragStartY = e.clientY;
+
+    // Get current position
+    const computedStyle = window.getComputedStyle(this);
+    const { transform, bottom } = computedStyle;
+
+    // Parse current position from transform and bottom
+    if (transform && transform !== 'none') {
+      const matrix = new DOMMatrixReadOnly(transform);
+      this.initialLeft = matrix.m41; // translateX value
+    } else {
+      this.initialLeft = 0;
+    }
+
+    this.initialBottom = parseInt(bottom, 10) || 0;
+
+    // Add move and up listeners
+    window.addEventListener('mousemove', this.onDragMove, false);
+    window.addEventListener('mouseup', this.onDragEnd, false);
+    window.addEventListener('selectstart', this.preventSelection, true);
+    document.addEventListener('mouseleave', this.onMouseLeaveViewport, false);
+
+    // Set dragging attribute for CSS styling
+    this.setAttribute('dragging', 'true');
+  };
+
+  /**
+   * Prevent selection during drag
+   * @param {Event} e The event
+   */
+  preventSelection = (e) => {
+    console.log('preventSelection');
+    if (this.isDragging) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  /**
+   * Handle drag move
+   * @param {MouseEvent} e The mouse event
+   */
+  onDragMove = (e) => {
+    console.log('onDragMove');
+    if (!this.isDragging) return;
+
+    e.preventDefault();
+
+    // Calculate delta
+    const deltaX = e.clientX - this.dragStartX;
+    const deltaY = this.dragStartY - e.clientY; // Inverted because bottom increases upward
+
+    // Calculate new position
+    const newLeft = this.initialLeft + deltaX;
+    const newBottom = this.initialBottom + deltaY;
+
+    // Apply new position
+    this.style.left = '50%';
+    this.style.transform = `translate(${newLeft}px, 0px)`;
+    this.style.bottom = `${newBottom}px`;
+  };
+
+  /**
+   * Handle mouse leaving viewport during drag
+   */
+  onMouseLeaveViewport = () => {
+    console.log('onMouseLeaveViewport');
+    if (this.isDragging) {
+      this.onDragEnd();
+    }
+  };
+
+  /**
+   * Handle drag end
+   */
+  onDragEnd = (e) => {
+    console.log('onDragEnd');
+    if (!this.isDragging) return;
+
+    if (e) {
+      e.preventDefault();
+    }
+
+    this.isDragging = false;
+
+    // Reset drag start positions
+    this.dragStartX = 0;
+    this.dragStartY = 0;
+
+    // Remove event listeners
+    window.removeEventListener('mousemove', this.onDragMove, false);
+    window.removeEventListener('mouseup', this.onDragEnd, false);
+    window.removeEventListener('selectstart', this.preventSelection, true);
+    document.removeEventListener('mouseleave', this.onMouseLeaveViewport, false);
+
+    // Remove dragging attribute
+    this.removeAttribute('dragging');
+
+    // Constrain to viewport
+    this.constrainToViewport();
+  };
+
+  /**
+   * Handle window resize
+   */
+  onWindowResize = () => {
+    console.log('onWindowResize (drag only)');
+    // Below 800px, remove custom positioning
+    if (window.innerWidth < ACTION_BAR_MAX_WIDTH) {
+      this.removeAttribute('style');
+      return;
+    }
+
+    // Only constrain if element has been moved (has custom positioning)
+    if (this.style.transform && this.style.transform !== 'translate(-50%, 0px)') {
+      this.constrainToViewport();
+    }
+  };
+
+  /**
+   * Constrain the element to viewport bounds
+   */
+  constrainToViewport() {
+    const rect = this.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Get current values
+    const computedStyle = window.getComputedStyle(this);
+    const { transform, bottom } = computedStyle;
+
+    let translateX = 0;
+    if (transform && transform !== 'none') {
+      const matrix = new DOMMatrixReadOnly(transform);
+      translateX = matrix.m41;
+    }
+
+    const currentBottom = parseInt(this.style.bottom || bottom, 10) || 0;
+
+    // Check horizontal bounds
+    let newTranslateX = translateX;
+    if (rect.left < 0) {
+      // Too far left
+      newTranslateX = translateX - rect.left + 10;
+    } else if (rect.right > viewportWidth) {
+      // Too far right
+      newTranslateX = translateX - (rect.right - viewportWidth) - 10;
+    }
+
+    // Check vertical bounds
+    let newBottom = currentBottom;
+    if (rect.top < 0) {
+      // Too far up - decrease bottom to move element down
+      newBottom = Math.max(0, currentBottom + rect.top - 10);
+    } else if (rect.bottom > viewportHeight) {
+      // Too far down - increase bottom to move element up
+      newBottom = currentBottom + (rect.bottom - viewportHeight) + 10;
+    }
+
+    // Apply constrained position
+    this.style.left = '50%';
+    this.style.transform = `translate(${newTranslateX}px, 0px)`;
+    this.style.bottom = `${newBottom}px`;
   }
 
   /**
@@ -291,13 +522,22 @@ export class PluginActionBar extends ConnectedElement {
 
   firstUpdated() {
     window.addEventListener('resize', () => {
+      console.log('onResize');
       this.checkOverflow();
     });
+
+    // Set up drag handlers after first render when drag handle exists
+    this.setupDragHandlers();
   }
 
   async updated() {
     await this.updateComplete;
     this.checkOverflow();
+
+    // Retry drag handler setup if it failed during firstUpdated (e.g., drag handle not ready)
+    if (!this.dragHandlersSetup) {
+      this.setupDragHandlers();
+    }
   }
 
   // istanbul ignore next 7
@@ -342,6 +582,9 @@ export class PluginActionBar extends ConnectedElement {
 
     return html`
       <div class="logo">
+        <div class="drag-handle" title="${this.appStore.i18n('drag_to_reposition')}">
+          <div class="drag-bar"></div>
+        </div>
         ${ICONS.SIDEKICK_LOGO}
       </div>
       <sp-menu-divider size="s" vertical></sp-menu-divider>

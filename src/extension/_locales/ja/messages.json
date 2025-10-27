@@ -317,6 +317,9 @@
   "dark_mode": {
     "message": "ダークテーマ"
   },
+  "drag_to_reposition": {
+    "message": "ドラッグして位置を変更"
+  },
   "delete": {
     "message": "削除"
   },

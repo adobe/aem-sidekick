@@ -253,9 +253,12 @@
     "copy_urls_error_focus": {
       "message": "Copy to clipboard failed. Please make sure the window remains focused."
     },
-    "dark_mode": {
-      "message": "Dark theme"
-    },
+  "dark_mode": {
+    "message": "Dark theme"
+  },
+  "drag_to_reposition": {
+    "message": "Drag to reposition"
+  },
     "delete": {
       "message": "Delete"
     },

@@ -15,6 +15,10 @@
 import { css } from 'lit';
 
 export const style = css`
+  :host([dragging="true"]) {
+    user-select: none;
+  }
+
   action-bar > div.action-group {
     display: flex;
     padding: 12px;
@@ -55,16 +59,48 @@ export const style = css`
   }
 
   action-bar .logo {
-    padding: 12px;
-    width: 32px;
+    width: 42px;
     height: 32px;
+    padding: 12px 12px 12px 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 0;
   }
 
-  action-bar .logo > svg{
-    width: 56px;
+  action-bar .logo > svg {
+    width: 24px;
+  }
+
+  action-bar .logo .drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    cursor: grab;
+    flex-shrink: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    padding: 0 8px;
+  }
+
+  action-bar .logo .drag-handle .drag-bar {
+    width: 2px;
+    height: 16px;
+    background-color: var(--spectrum2-sidekick-color);
+    opacity: 0.2;
+    border-radius: 2px;
+    transition: opacity 0.2s;
+  }
+
+  action-bar .logo .drag-handle:hover .drag-bar {
+    opacity: 0.5;
+  }
+
+  action-bar .logo .drag-handle:active {
+    cursor: grabbing;
   }
 
   #plugin-menu {
