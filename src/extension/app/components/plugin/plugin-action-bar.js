@@ -124,6 +124,18 @@ export class PluginActionBar extends ConnectedElement {
    */
   initialBottom = 0;
 
+  /**
+   * Throttle timer for window resize handler
+   * @type {number|null}
+   */
+  resizeThrottleTimer = null;
+
+  /**
+   * Throttle timer for checkOverflow
+   * @type {number|null}
+   */
+  overflowThrottleTimer = null;
+
   @queryAsync('action-bar')
   accessor actionBar;
 
@@ -233,23 +245,45 @@ export class PluginActionBar extends ConnectedElement {
     window.removeEventListener('resize', this.onWindowResize);
     EventBus.instance.removeEventListener(EVENTS.CLOSE_POPOVER);
     this.removeDragHandler();
+
+    // Clear any pending throttled resize
+    if (this.resizeThrottleTimer) {
+      clearTimeout(this.resizeThrottleTimer);
+      this.resizeThrottleTimer = null;
+    }
+
+    // Clear any pending throttled overflow check
+    if (this.overflowThrottleTimer) {
+      clearTimeout(this.overflowThrottleTimer);
+      this.overflowThrottleTimer = null;
+    }
   }
 
   /**
    * Handle window resize
    */
   onWindowResize = () => {
-    if (this.hasAttribute('style')) {
-      // Below 800px, remove custom positioning
-      if (window.innerWidth < ACTION_BAR_MAX_WIDTH) {
-        this.removeAttribute('style');
-        return;
-      }
-      // Restrict custom positioning to viewport
-      this.constrainToViewport();
+    // Throttle resize handling to avoid performance issues
+    if (this.resizeThrottleTimer) {
+      return;
     }
-    // Check for plugin overflow
-    this.checkOverflow();
+
+    // @ts-ignore
+    this.resizeThrottleTimer = setTimeout(() => {
+      if (this.hasAttribute('style')) {
+        // Below 800px, remove custom positioning
+        if (window.innerWidth < ACTION_BAR_MAX_WIDTH) {
+          this.removeAttribute('style');
+        } else {
+          // Restrict custom positioning to viewport
+          this.constrainToViewport();
+        }
+      }
+      // Check for plugin overflow
+      this.checkOverflow();
+
+      this.resizeThrottleTimer = null;
+    }, 150);
   };
 
   /**
@@ -443,6 +477,17 @@ export class PluginActionBar extends ConnectedElement {
   };
 
   async checkOverflow() {
+    // Throttle overflow checking to avoid performance issues
+    if (this.overflowThrottleTimer) {
+      return;
+    }
+
+    // Set throttle timer to prevent rapid re-execution
+    // @ts-ignore
+    this.overflowThrottleTimer = setTimeout(() => {
+      this.overflowThrottleTimer = null;
+    }, 150);
+
     if (this.actionGroups.length < 3) {
       // wait for all action groups to be rendered
       return;
