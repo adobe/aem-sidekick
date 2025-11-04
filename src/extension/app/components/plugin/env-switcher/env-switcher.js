@@ -376,6 +376,6 @@ export class EnvironmentSwitcher extends ConnectedElement {
   }
 
   render() {
-    return html`<action-bar-picker class="env-switcher" icons="none" @change=${this.onChange} .disabled=${!this.ready} @keydown=${this.keydown}></action-bar-picker>`;
+    return html`<action-bar-picker class="env-switcher" icons="none" placement="top-start" @change=${this.onChange} .disabled=${!this.ready} @keydown=${this.keydown}></action-bar-picker>`;
   }
 }
