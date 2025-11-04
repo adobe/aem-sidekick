@@ -82,20 +82,6 @@ export class PluginActionBar extends ConnectedElement {
   badgePlugins = [];
 
   /**
-   * The plugins visible in the action bar.
-   * @type {Plugin[]}
-   */
-  @state()
-  accessor barPlugins = [];
-
-  /**
-   * The plugins temporarily folded into the action menu.
-   * @type {Plugin[]}
-   */
-  @state()
-  accessor transientPlugins = [];
-
-  /**
    * The current width of the action bar.
    * @type {number}
    */
@@ -161,6 +147,20 @@ export class PluginActionBar extends ConnectedElement {
    */
   resizeThrottle = null;
 
+  /**
+   * The plugins visible in the action bar.
+   * @type {Plugin[]}
+   */
+  @state()
+  accessor barPlugins = [];
+
+  /**
+   * The plugins temporarily folded into the action menu.
+   * @type {Plugin[]}
+   */
+  @state()
+  accessor transientPlugins = [];
+
   @queryAsync('action-bar')
   accessor actionBar;
 
@@ -181,29 +181,6 @@ export class PluginActionBar extends ConnectedElement {
 
   @queryAsync('.drag-handle')
   accessor dragHandle;
-
-  /**
-   * Set up the bar and menu plugins in this environment and updates the component.
-   */
-  setupPlugins() {
-    this.visiblePlugins = [
-      ...Object.values(this.appStore.corePlugins),
-      ...Object.values(this.appStore.customPlugins),
-    ].filter((plugin) => plugin.isVisible());
-
-    // Store all pinned plugins (before distribution)
-    this.pinnedPlugins = this.visiblePlugins
-      .filter((plugin) => plugin.isPinned() && !plugin.isBadge());
-
-    // Non-pinned plugins go directly to menu (not subject to distribution)
-    this.menuPlugins = this.visiblePlugins
-      .filter((plugin) => !plugin.isPinned() && !plugin.isBadge());
-
-    this.badgePlugins = this.visiblePlugins
-      .filter((plugin) => plugin.isBadge());
-
-    this.requestUpdate();
-  }
 
   async connectedCallback() {
     super.connectedCallback();
@@ -261,6 +238,8 @@ export class PluginActionBar extends ConnectedElement {
       }
     });
 
+    window.addEventListener('resize', this.onWindowResize);
+
     this.requestUpdate();
   }
 
@@ -275,6 +254,29 @@ export class PluginActionBar extends ConnectedElement {
       window.clearTimeout(this.resizeThrottle);
       this.resizeThrottle = null;
     }
+  }
+
+  /**
+   * Set up the bar and menu plugins in this environment and updates the component.
+   */
+  setupPlugins() {
+    this.visiblePlugins = [
+      ...Object.values(this.appStore.corePlugins),
+      ...Object.values(this.appStore.customPlugins),
+    ].filter((plugin) => plugin.isVisible());
+
+    // Store all pinned plugins (before distribution)
+    this.pinnedPlugins = this.visiblePlugins
+      .filter((plugin) => plugin.isPinned() && !plugin.isBadge());
+
+    // Non-pinned plugins go directly to menu (not subject to distribution)
+    this.menuPlugins = this.visiblePlugins
+      .filter((plugin) => !plugin.isPinned() && !plugin.isBadge());
+
+    this.badgePlugins = this.visiblePlugins
+      .filter((plugin) => plugin.isBadge());
+
+    this.requestUpdate();
   }
 
   /**
@@ -562,10 +564,6 @@ export class PluginActionBar extends ConnectedElement {
     } finally {
       this.isDistributing = false;
     }
-  }
-
-  firstUpdated() {
-    window.addEventListener('resize', this.onWindowResize);
   }
 
   async updated() {
