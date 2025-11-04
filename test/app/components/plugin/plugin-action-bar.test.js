@@ -1266,9 +1266,11 @@ describe('Plugin action bar', () => {
       const actionBar = recursiveQuery(sidekick, 'plugin-action-bar');
       expect(actionBar).to.exist;
 
-      // Find the actual plugin instance in barPlugins or menuPlugins
-      const plugin = [...actionBar.barPlugins, ...actionBar.menuPlugins]
-        .find((p) => p.getId() === 'test-popover');
+      // Wait for plugins to be distributed
+      await waitUntil(() => actionBar.visiblePlugins && actionBar.visiblePlugins.length > 0);
+
+      // Find the actual plugin instance in visiblePlugins (matches implementation)
+      const plugin = actionBar.visiblePlugins.find((p) => p.getId() === 'test-popover');
       expect(plugin).to.exist;
       expect(plugin.isPopover()).to.be.true;
 
@@ -1306,9 +1308,11 @@ describe('Plugin action bar', () => {
       const actionBar = recursiveQuery(sidekick, 'plugin-action-bar');
       expect(actionBar).to.exist;
 
-      // Find the actual plugin instance in barPlugins or menuPlugins
-      const plugin = [...actionBar.barPlugins, ...actionBar.menuPlugins]
-        .find((p) => p.getId() === 'test-popover');
+      // Wait for plugins to be distributed
+      await waitUntil(() => actionBar.visiblePlugins && actionBar.visiblePlugins.length > 0);
+
+      // Find the actual plugin instance in visiblePlugins (matches implementation)
+      const plugin = actionBar.visiblePlugins.find((p) => p.getId() === 'test-popover');
       expect(plugin).to.exist;
 
       // Mock the plugin's closePopover method
@@ -1345,9 +1349,11 @@ describe('Plugin action bar', () => {
       const actionBar = recursiveQuery(sidekick, 'plugin-action-bar');
       expect(actionBar).to.exist;
 
-      // Find the actual plugin instance in barPlugins or menuPlugins
-      const plugin = [...actionBar.barPlugins, ...actionBar.menuPlugins]
-        .find((p) => p.getId() === 'test-popover');
+      // Wait for plugins to be distributed
+      await waitUntil(() => actionBar.visiblePlugins && actionBar.visiblePlugins.length > 0);
+
+      // Find the actual plugin instance in visiblePlugins (matches implementation)
+      const plugin = actionBar.visiblePlugins.find((p) => p.getId() === 'test-popover');
       expect(plugin).to.exist;
 
       // Mock the plugin's closePopover method

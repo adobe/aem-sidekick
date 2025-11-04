@@ -105,8 +105,7 @@ describe('Bulk preview plugin', () => {
   });
 
   it('bulk copy prod urls calls bulkStore.copyUrls() with prod host', async () => {
-    // add prod host
-    appStore.loadContext(sidekickTest.sidekick, {
+    await appStore.loadContext(sidekickTest.sidekick, {
       ...defaultSidekickConfig,
       host: 'www.example.com',
     });
