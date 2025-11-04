@@ -215,7 +215,7 @@ export class Plugin {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     context.font = font;
-    let pluginWidth = context.measureText(this.getButtonText()).width + 24;
+    let pluginWidth = context.measureText(this.getButtonText()).width + 26;
     if (this.isContainer()) {
       pluginWidth += 14;
     }

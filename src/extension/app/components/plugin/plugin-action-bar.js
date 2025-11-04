@@ -13,7 +13,9 @@
 /* eslint-disable max-len */
 
 import { html } from 'lit';
-import { customElement, queryAll, queryAsync } from 'lit/decorators.js';
+import {
+  customElement, queryAll, queryAsync, state,
+} from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { reaction } from 'mobx';
 import {
@@ -36,19 +38,16 @@ import { getConfig } from '../../../config.js';
  */
 
 /**
- * The gap between plugins in the plugin group
- */
-const PLUGIN_GROUP_GAP = 8;
-
-/**
- * The maximum width of the action bar
+ * The maximum width of the action bar when window is wider than 800px
+ * @type {number}
  */
 const ACTION_BAR_MAX_WIDTH = 800;
 
 /**
- * The threshold for overflow
+ * The gap between plugins in the plugin group (from CSS)
+ * @type {number}
  */
-const OVERFLOW_THRESHOLD = -10;
+const PLUGIN_GAP = 8;
 
 @customElement('plugin-action-bar')
 export class PluginActionBar extends ConnectedElement {
@@ -65,10 +64,10 @@ export class PluginActionBar extends ConnectedElement {
   visiblePlugins = [];
 
   /**
-   * The plugins visible in the action bar.
+   * All pinned plugins (to be distributed to the action bar/menu)
    * @type {Plugin[]}
    */
-  barPlugins = [];
+  pinnedPlugins = [];
 
   /**
    * The plugins folded into the action menu.
@@ -77,16 +76,48 @@ export class PluginActionBar extends ConnectedElement {
   menuPlugins = [];
 
   /**
+   * The badge plugins.
+   * @type {Plugin[]}
+   */
+  badgePlugins = [];
+
+  /**
+   * The plugins visible in the action bar.
+   * @type {Plugin[]}
+   */
+  @state()
+  accessor barPlugins = [];
+
+  /**
    * The plugins temporarily folded into the action menu.
    * @type {Plugin[]}
    */
-  transientPlugins = [];
+  @state()
+  accessor transientPlugins = [];
 
   /**
    * The current width of the action bar.
    * @type {number}
    */
   actionBarWidth = 0;
+
+  /**
+   * The last window width we calculated for
+   * @type {number}
+   */
+  lastWindowWidth = 0;
+
+  /**
+   * Last plugin count (to detect plugin visibility changes)
+   * @type {number}
+   */
+  lastPluginCount = 0;
+
+  /**
+   * Whether distributePlugins is currently running
+   * @type {boolean}
+   */
+  isDistributing = false;
 
   /**
    * The configured projects
@@ -128,13 +159,7 @@ export class PluginActionBar extends ConnectedElement {
    * Throttle timer for window resize handler
    * @type {number|null}
    */
-  resizeThrottleTimer = null;
-
-  /**
-   * Throttle timer for checkOverflow
-   * @type {number|null}
-   */
-  overflowThrottleTimer = null;
+  resizeThrottle = null;
 
   @queryAsync('action-bar')
   accessor actionBar;
@@ -161,16 +186,16 @@ export class PluginActionBar extends ConnectedElement {
    * Set up the bar and menu plugins in this environment and updates the component.
    */
   setupPlugins() {
-    this.transientPlugins = [];
-
     this.visiblePlugins = [
       ...Object.values(this.appStore.corePlugins),
       ...Object.values(this.appStore.customPlugins),
     ].filter((plugin) => plugin.isVisible());
 
-    this.barPlugins = this.visiblePlugins
+    // Store all pinned plugins (before distribution)
+    this.pinnedPlugins = this.visiblePlugins
       .filter((plugin) => plugin.isPinned() && !plugin.isBadge());
 
+    // Non-pinned plugins go directly to menu (not subject to distribution)
     this.menuPlugins = this.visiblePlugins
       .filter((plugin) => !plugin.isPinned() && !plugin.isBadge());
 
@@ -244,18 +269,11 @@ export class PluginActionBar extends ConnectedElement {
     this.removeEventListener('click', this.onClick);
     window.removeEventListener('resize', this.onWindowResize);
     EventBus.instance.removeEventListener(EVENTS.CLOSE_POPOVER);
-    this.removeDragHandler();
 
     // Clear any pending throttled resize
-    if (this.resizeThrottleTimer) {
-      clearTimeout(this.resizeThrottleTimer);
-      this.resizeThrottleTimer = null;
-    }
-
-    // Clear any pending throttled overflow check
-    if (this.overflowThrottleTimer) {
-      clearTimeout(this.overflowThrottleTimer);
-      this.overflowThrottleTimer = null;
+    if (this.resizeThrottle) {
+      window.clearTimeout(this.resizeThrottle);
+      this.resizeThrottle = null;
     }
   }
 
@@ -264,47 +282,26 @@ export class PluginActionBar extends ConnectedElement {
    */
   onWindowResize = () => {
     // Throttle resize handling to avoid performance issues
-    if (this.resizeThrottleTimer) {
+    if (this.resizeThrottle) {
       return;
     }
 
-    // @ts-ignore
-    this.resizeThrottleTimer = setTimeout(() => {
+    this.resizeThrottle = window.setTimeout(() => {
       if (this.hasAttribute('style')) {
-        // Below 800px, remove custom positioning
-        if (window.innerWidth < ACTION_BAR_MAX_WIDTH) {
+        if (window.innerWidth <= ACTION_BAR_MAX_WIDTH) {
+          // Below 800px, remove custom positioning
           this.removeAttribute('style');
         } else {
           // Restrict custom positioning to viewport
           this.constrainToViewport();
         }
       }
-      // Check for plugin overflow
-      this.checkOverflow();
-
-      this.resizeThrottleTimer = null;
+      this.resizeThrottle = null;
     }, 150);
+
+    // Trigger re-render to recalculate plugin distribution
+    this.requestUpdate();
   };
-
-  /**
-   * Set up drag handlers for the action bar
-   */
-  async setupDragHandler() {
-    const dragHandle = await this.dragHandle;
-    if (dragHandle) {
-      dragHandle.addEventListener('mousedown', this.onDragStart, false);
-    }
-  }
-
-  /**
-   * Remove drag handlers
-   */
-  async removeDragHandler() {
-    const dragHandle = await this.dragHandle;
-    if (dragHandle) {
-      dragHandle.removeEventListener('mousedown', this.onDragStart, false);
-    }
-  }
 
   /**
    * Prevent selection during drag
@@ -442,20 +439,20 @@ export class PluginActionBar extends ConnectedElement {
     let newTranslateX = translateX;
     if (rect.left < 0) {
       // Too far left
-      newTranslateX = translateX - rect.left + 10;
+      newTranslateX = translateX - rect.left;
     } else if (rect.right > viewportWidth) {
       // Too far right
-      newTranslateX = translateX - (rect.right - viewportWidth) - 10;
+      newTranslateX = translateX - (rect.right - viewportWidth);
     }
 
     // Check vertical bounds
     let newBottom = currentBottom;
     if (rect.top < 0) {
       // Too far up - decrease bottom to move element down
-      newBottom = Math.max(0, currentBottom + rect.top - 10);
+      newBottom = Math.max(0, currentBottom + rect.top);
     } else if (rect.bottom > viewportHeight) {
       // Too far down - increase bottom to move element up
-      newBottom = currentBottom + (rect.bottom - viewportHeight) + 10;
+      newBottom = currentBottom + (rect.bottom - viewportHeight);
     }
 
     // Apply constrained position
@@ -476,102 +473,104 @@ export class PluginActionBar extends ConnectedElement {
     return width + padding * 2;
   };
 
-  async checkOverflow() {
-    // Throttle overflow checking to avoid performance issues
-    if (this.overflowThrottleTimer) {
+  /**
+   * Distribute plugins between bar and menu based on available space.
+   */
+  async distributePlugins() {
+    // Prevent parallel execution
+    if (this.isDistributing) {
       return;
     }
 
-    // Set throttle timer to prevent rapid re-execution
-    // @ts-ignore
-    this.overflowThrottleTimer = setTimeout(() => {
-      this.overflowThrottleTimer = null;
-    }, 150);
-
+    // Wait for DOM elements to be ready
     if (this.actionGroups.length < 3) {
-      // wait for all action groups to be rendered
       return;
     }
 
-    const [logoContainer, closeButton] = await Promise.all([this.logoContainer, this.closeButton]);
+    // Only recalculate if window width or plugin count changed
+    const currentWindowWidth = window.innerWidth;
+    const currentPluginCount = this.pinnedPlugins.length;
+    if (currentWindowWidth === this.lastWindowWidth
+      && currentPluginCount === this.lastPluginCount) {
+      return;
+    }
 
-    // Action bar styles
-    const barWidth = parseInt(window.getComputedStyle(this).width, 10);
-    const logoWidth = this.getTotalWidth(logoContainer);
-    const closeButtonWidth = parseInt(window.getComputedStyle(closeButton).width, 10);
+    this.isDistributing = true;
 
-    const [pluginGroup, pluginMenu, systemGroup] = this.actionGroups;
+    try {
+      this.lastWindowWidth = currentWindowWidth;
+      this.lastPluginCount = currentPluginCount;
 
-    // Left plugin container styles
-    const pluginGroupStyles = window.getComputedStyle(pluginGroup);
-    const pluginGroupPadding = parseInt(pluginGroupStyles.padding, 10);
-    const pluginGroupWidth = parseInt(pluginGroupStyles.width, 10);
-    const pluginGroupWidthIncludingPadding = pluginGroupWidth + (pluginGroupPadding * 2);
+      // Determine maximum bar width based on window size
+      const maxBarWidth = currentWindowWidth > ACTION_BAR_MAX_WIDTH
+        ? ACTION_BAR_MAX_WIDTH
+        : currentWindowWidth;
 
-    const pluginMenuWidth = this.getTotalWidth(pluginMenu);
-    const systemWidth = this.getTotalWidth(systemGroup);
+      // Get fixed width elements
+      const [logoContainer, closeButton] = await Promise.all([
+        this.logoContainer,
+        this.closeButton,
+      ]);
 
-    // Combined width of system plugins, plugin menu, and close button
-    const rightWidth = pluginMenuWidth + systemWidth + closeButtonWidth;
+      const logoWidth = this.getTotalWidth(logoContainer);
+      const closeButtonWidth = parseInt(window.getComputedStyle(closeButton).width, 10);
 
-    // Combined width of left logo and plugin group
-    const leftWidth = pluginGroupWidthIncludingPadding + logoWidth;
+      // Get system plugins width and plugin menu button width
+      const [pluginGroup, pluginMenu, systemGroup] = this.actionGroups;
+      const pluginGroupPadding = parseInt(window.getComputedStyle(pluginGroup).padding, 10) * 2;
+      const pluginMenuWidth = this.getTotalWidth(pluginMenu);
+      const systemWidth = this.getTotalWidth(systemGroup);
 
-    // Total free space in the bar, minus 3px to account for the dividers
-    const totalFreeSpace = barWidth - leftWidth - rightWidth - 3;
+      // Calculate fixed widths
+      const fixedWidth = logoWidth + pluginGroupPadding + 3 + systemWidth + pluginMenuWidth + closeButtonWidth;
 
-    // If there's not enough space for the plugins in the bar, move the last plugin to the menu
-    // We check against -10 to avoid endless loop caused after a plugin is added to back to the bar
-    if (totalFreeSpace <= OVERFLOW_THRESHOLD && this.barPlugins.length > 1) {
-      this.transientPlugins.unshift(this.barPlugins.pop());
-      this.requestUpdate();
-    // If we don't need to remove a plugin and if the action bar is less than 800px wide,
-    // the logic must adjust to check if there's space for the next plugin
-    } else if (window.innerWidth < ACTION_BAR_MAX_WIDTH) {
-      const nextPlugin = this.transientPlugins[0];
-      if (nextPlugin) {
-        const children = Array.from(this.actionGroups[0].children);
+      // Calculate available space for plugins
+      const availableWidth = maxBarWidth - fixedWidth;
 
-        let childrenWidth = children.reduce((acc, child) => acc + child.clientWidth, 0);
-        // Account for the gap between the plugins
-        childrenWidth += (children.length - 1) * PLUGIN_GROUP_GAP;
+      // Distribute plugins
+      const fittingPlugins = [];
+      const overflowPlugins = [];
+      let accumulatedWidth = 0;
+      let hasOverflowed = false; // Track if we've started overflowing
 
-        // Calculate the hypothetical new width of the plugins group if we added the next plugin
-        const nextPluginWidth = nextPlugin.getEstimatedWidth();
-        const newWidth = nextPluginWidth + childrenWidth + PLUGIN_GROUP_GAP;
+      // Iterate through plugins in original order to preserve sequence
+      for (const plugin of this.pinnedPlugins) {
+        const pluginWidth = plugin.getEstimatedWidth();
+        const gapWidth = fittingPlugins.length > 0 ? PLUGIN_GAP : 0;
+        const requiredWidth = accumulatedWidth + pluginWidth + gapWidth;
 
-        // If the new width is less than the plugin group width, add the plugin to the bar
-        if (newWidth < pluginGroupWidth) {
-          this.barPlugins.push(this.transientPlugins.shift());
-          this.requestUpdate();
-        }
-      }
-    } else {
-      // If the action bar is wider than 800px, and we don't need to remove a plugin, check if there's space for the next plugin
-      const extraSpace = ACTION_BAR_MAX_WIDTH - barWidth;
-      if (this.transientPlugins.length > 0) {
-        const nextPlugin = this.transientPlugins[0];
-        if (nextPlugin) {
-          const nextPluginWidth = nextPlugin.getEstimatedWidth();
-          if (nextPluginWidth < extraSpace) {
-            this.barPlugins.push(this.transientPlugins.shift());
-            this.requestUpdate();
+        // Always keep env-switcher in the bar, regardless of space
+        const isEnvSwitcher = plugin.id === 'env-switcher';
+        const fitsInBar = requiredWidth <= availableWidth;
+
+        // Add to bar if: it's env-switcher OR (it fits AND nothing has overflowed yet)
+        if (isEnvSwitcher || (fitsInBar && !hasOverflowed)) {
+          fittingPlugins.push(plugin);
+          accumulatedWidth = requiredWidth;
+        } else {
+          overflowPlugins.push(plugin);
+          // Mark that we've started overflowing (unless it's env-switcher)
+          if (!isEnvSwitcher) {
+            hasOverflowed = true;
           }
         }
       }
-    }
 
-    this.actionBarWidth = barWidth;
+      // Update reactive arrays with new distribution
+      this.barPlugins = [...fittingPlugins];
+      this.transientPlugins = [...overflowPlugins];
+    } finally {
+      this.isDistributing = false;
+    }
   }
 
   firstUpdated() {
     window.addEventListener('resize', this.onWindowResize);
-    setTimeout(this.setupDragHandler.bind(this), 1000);
   }
 
   async updated() {
     await this.updateComplete;
-    this.checkOverflow();
+    await this.distributePlugins();
   }
 
   // istanbul ignore next 7
@@ -616,7 +615,7 @@ export class PluginActionBar extends ConnectedElement {
 
     return html`
       <div class="logo">
-        <div class="drag-handle" title="${this.appStore.i18n('drag_to_reposition')}">
+        <div class="drag-handle" title="${this.appStore.i18n('drag_to_reposition')}" @mousedown="${this.onDragStart}">
           <div class="drag-bar"></div>
         </div>
         ${ICONS.SIDEKICK_LOGO}
@@ -664,8 +663,10 @@ export class PluginActionBar extends ConnectedElement {
       return html`<div class="action-group"></div>`;
     }
 
+    const isHidden = this.menuPlugins.length === 0 && this.transientPlugins.length === 0;
+
     return html`
-      <div class=${`action-group plugin-menu-container ${this.menuPlugins.length === 0 ? 'hidden' : ''}`}>
+      <div class=${`action-group plugin-menu-container ${isHidden ? 'hidden' : ''}`}>
         ${this.transientPlugins.length > 0 || this.menuPlugins.length > 0 ? html`
           <sp-action-menu
             id="plugin-menu"
