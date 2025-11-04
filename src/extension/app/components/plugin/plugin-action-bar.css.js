@@ -17,6 +17,7 @@ import { css } from 'lit';
 export const style = css`
   :host([dragging="true"]) {
     user-select: none;
+    opacity: 0.95;
   }
 
   action-bar > div.action-group {
@@ -41,8 +42,6 @@ export const style = css`
     width: 32px;
     flex-shrink: 0;
   }
-
-
 
   action-bar > div.badge-plugins-container {
     position: absolute;
@@ -162,8 +161,6 @@ export const style = css`
     width: 37px;
     flex-shrink: 0;
     cursor: pointer;
-    border-top-right-radius: var(--spectrum2-sidekick-border-radius);
-    border-bottom-right-radius: var(--spectrum2-sidekick-border-radius);
     background-color: var(--spectrum2-sidekick-background-close);
     backdrop-filter: var(--sidekick-backdrop-filter);
   }
@@ -197,16 +194,13 @@ export const style = css`
     color: var(--spectrum-global-color-gray-600);
   }
 
-  @media (max-width: 500px) {
-    #properties {
-      display: none;
-    }
-  }
-
   @media (max-width: 800px) {
-    action-bar .close-button {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
+    action-bar .logo {
+      padding-left: 12px;
+    }
+
+    action-bar .logo .drag-handle {
+      display: none;
     }
   }
 `;
