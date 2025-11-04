@@ -550,11 +550,9 @@ export class PluginActionBar extends ConnectedElement {
           fittingPlugins.push(plugin);
           accumulatedWidth = requiredWidth;
         } else {
+          // Plugin overflows - add to menu and mark that we've started overflowing
           overflowPlugins.push(plugin);
-          // Mark that we've started overflowing (unless it's env-switcher)
-          if (!isEnvSwitcher) {
-            hasOverflowed = true;
-          }
+          hasOverflowed = true;
         }
       }
 
