@@ -203,12 +203,15 @@ export const style = css`
     justify-content: space-between;
     gap: 8px;
     width: 100%;
+    min-width: 0;
   }
 
   .header-with-copy span {
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
   }
 
   .copy-column-btn {
@@ -221,7 +224,7 @@ export const style = css`
     justify-content: center;
     border-radius: 4px;
     flex-shrink: 0;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
     color: var(--spectrum2-sidekick-color);
   }
 
@@ -233,7 +236,16 @@ export const style = css`
     background-color: var(--spectrum2-sidekick-border-color);
   }
 
-  .copy-column-btn sp-icon-copy {
+  .copy-column-btn.success {
+    color: #2d9d78;
+  }
+
+  .copy-column-btn.success:hover {
+    background-color: transparent;
+  }
+
+  .copy-column-btn sp-icon-copy,
+  .copy-column-btn sp-icon-checkmark-circle {
     width: 16px;
     height: 16px;
   }
@@ -244,6 +256,14 @@ export const style = css`
 
   theme-wrapper[theme='light'] .copy-column-btn:active {
     background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  theme-wrapper[theme='light'] .copy-column-btn.success {
+    color: #268e6c;
+  }
+
+  theme-wrapper[theme='light'] .copy-column-btn.success:hover {
+    background-color: transparent;
   }
 
   sp-table-cell {

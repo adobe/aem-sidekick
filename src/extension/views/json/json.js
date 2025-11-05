@@ -29,6 +29,7 @@ import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-close.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-copy.js';
+import '@spectrum-web-components/icons-workflow/icons/sp-icon-checkmark-circle.js';
 import '@spectrum-web-components/switch/sp-switch.js';
 import '@spectrum-web-components/progress-circle/sp-progress-circle.js';
 import '../../app/components/theme/theme.js';
@@ -522,8 +523,9 @@ export class JSONView extends LitElement {
   /**
    * Copy all values from a specific column to clipboard
    * @param {string} columnName The column name to copy
+   * @param {HTMLElement} button The button element that triggered the copy
    */
-  async copyColumnValues(columnName) {
+  async copyColumnValues(columnName, button) {
     const data = this.diffMode ? this.diffData?.data : this.filteredData?.data;
     if (!data?.length) return;
 
@@ -552,6 +554,25 @@ export class JSONView extends LitElement {
 
     try {
       await navigator.clipboard.writeText(textToCopy);
+
+      // Show success feedback
+      if (button) {
+        button.classList.add('success');
+        const icon = button.querySelector('sp-icon-copy');
+        if (icon) {
+          icon.outerHTML = '<sp-icon-checkmark-circle></sp-icon-checkmark-circle>';
+        }
+
+        // Reset after 1.5 seconds
+        setTimeout(() => {
+          button.classList.remove('success');
+          const checkIcon = button.querySelector('sp-icon-checkmark-circle');
+          if (checkIcon) {
+            checkIcon.outerHTML = '<sp-icon-copy></sp-icon-copy>';
+          }
+        }, 1500);
+      }
+
       sampleRUM('click', {
         source: 'sidekick',
         target: `jsonview:copy-column:${columnName}`,
@@ -613,7 +634,7 @@ export class JSONView extends LitElement {
         btn.addEventListener('click', (e) => {
           e.stopPropagation(); // Prevent sorting when clicking copy button
           const columnName = btn.getAttribute('data-column');
-          this.copyColumnValues(columnName);
+          this.copyColumnValues(columnName, /** @type {HTMLElement} */ (btn));
         });
       });
     }, 0);
