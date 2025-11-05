@@ -197,6 +197,55 @@ export const style = css`
     text-overflow: ellipsis;
   }
 
+  .header-with-copy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .header-with-copy span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .copy-column-btn {
+    background: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+    color: var(--spectrum2-sidekick-color);
+  }
+
+  .copy-column-btn:hover {
+    background-color: var(--spectrum2-sidekick-layer-2);
+  }
+
+  .copy-column-btn:active {
+    background-color: var(--spectrum2-sidekick-border-color);
+  }
+
+  .copy-column-btn sp-icon-copy {
+    width: 16px;
+    height: 16px;
+  }
+
+  theme-wrapper[theme='light'] .copy-column-btn:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+
+  theme-wrapper[theme='light'] .copy-column-btn:active {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
   sp-table-cell {
     background-color: transparent;
     word-break: break-word;
