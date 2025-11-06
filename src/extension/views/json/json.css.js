@@ -197,6 +197,12 @@ export const style = css`
     text-overflow: ellipsis;
   }
 
+  sp-table-head-cell.column-with-copy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   .header-with-copy {
     display: flex;
     align-items: center;

@@ -596,7 +596,9 @@ export class JSONView extends LitElement {
    * @returns {TemplateResult} The rendered table
    */
   renderTable(rows, url) {
-    const headers = rows.length > 0 ? Object.keys(rows[0]) : [];
+    const headers = rows.length > 0
+      ? Object.keys(rows[0]).filter((key) => key !== 'diff' && key !== 'line')
+      : [];
     if (rows.length === 0) {
       if (this.filterText) {
         return this.renderEmptyState('no_results');
@@ -619,7 +621,7 @@ export class JSONView extends LitElement {
       ${headers.map((header) => {
         const displayName = header.charAt(0).toUpperCase() + header.slice(1);
         if (this.isUrlOrPathColumn(header)) {
-          return `<sp-table-head-cell sortable sort-key="${header}">
+          return `<sp-table-head-cell sortable sort-key="${header}" class="column-with-copy">
             <div class="header-with-copy">
               <span>${displayName}</span>
               <button class="copy-column-btn" data-column="${header}" title="Copy all ${displayName}s">
