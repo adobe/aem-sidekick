@@ -419,6 +419,9 @@
   "error_logout": {
     "message": "Échec de la déconnexion. Réessayez plus tard."
   },
+  "error_preview_4XX": {
+    "message": "La génération de la prévisualisation a échoué. Consultez les détails pour plus d'informations."
+  },
   "error_preview": {
     "message": "La génération de la prévisualisation a échoué. Veuillez réessayer ultérieurement."
   },

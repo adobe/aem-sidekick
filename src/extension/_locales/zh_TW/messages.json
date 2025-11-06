@@ -419,6 +419,9 @@
   "error_logout": {
     "message": "登出失敗。請稍後再試。"
   },
+  "error_preview_4XX": {
+    "message": "預覽產生失敗。請查看詳細資訊以取得詳細資訊。"
+  },
   "error_preview": {
     "message": "預覽產生失敗。請稍後再試。"
   },

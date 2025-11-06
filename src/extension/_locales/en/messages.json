@@ -337,6 +337,9 @@
     "error_logout": {
       "message": "Sign out failed. Please try again later."
     },
+    "error_preview_4XX": {
+      "message": "Preview generation failed. Check details for more information."
+    },
     "error_preview": {
       "message": "Preview generation failed. Please try again later."
     },

@@ -419,6 +419,9 @@
   "error_logout": {
     "message": "注销失败。请稍后再试。"
   },
+  "error_preview_4XX": {
+    "message": "预览生成失败。请查看详细信息以了解更多信息。"
+  },
   "error_preview": {
     "message": "预览生成失败。请稍后重试。"
   },

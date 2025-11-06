@@ -419,8 +419,11 @@
   "error_logout": {
     "message": "Disconnessione non riuscita. Riprova più tardi."
   },
+  "error_preview_4XX": {
+    "message": "Generazione dell'anteprima non riuscita. Controlla i dettagli per ulteriori informazioni."
+  },
   "error_preview": {
-    "message": "Generazione dell’anteprima non riuscita. Riprova più tardi"
+    "message": "Generazione dell'anteprima non riuscita. Riprova più tardi"
   },
   "error_preview_config": {
     "message": "Impossibile attivare la configurazione: $1"
