@@ -451,12 +451,14 @@ export class PluginActionBar extends ConnectedElement {
 
     // Check horizontal bounds
     let newTranslateX = translateX;
+    let newLeft = '50%'; // Default for too far left
     if (rect.left < 0) {
       // Too far left
       newTranslateX = translateX - rect.left;
     } else if (rect.right > viewportWidth) {
       // Too far right
       newTranslateX = translateX - (rect.right - viewportWidth);
+      newLeft = '49%'; // Account for scrollbar
     }
 
     // Check vertical bounds
@@ -470,7 +472,7 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     // Apply constrained position
-    this.style.left = '50%';
+    this.style.left = newLeft;
     this.style.transform = `translate(${newTranslateX}px, 0px)`;
     this.style.bottom = `${newBottom}px`;
   }
