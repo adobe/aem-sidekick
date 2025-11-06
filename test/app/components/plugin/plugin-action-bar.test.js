@@ -1600,6 +1600,51 @@ describe('Plugin action bar', () => {
       expect(requestUpdateSpy.called).to.be.false;
     });
 
+    it('clears resize distributing timeout on disconnect', async () => {
+      // Ensure the action bar is ready with plugins
+      await actionBar.updateComplete;
+      await waitUntil(() => actionBar.actionGroups.length >= 3, 'action groups ready');
+
+      // Change window size to trigger a recalculation
+      const originalWidth = window.innerWidth;
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 600,
+      });
+
+      // Trigger a resize to set the distributing timeout
+      actionBar.onWindowResize();
+
+      // Wait a bit to ensure distributePlugins was called and set the timeout
+      await aTimeout(10);
+
+      // Verify timeout was set
+      expect(actionBar.resizeDistributingTimeout).to.not.be.null;
+
+      // Disconnect the component
+      actionBar.disconnectedCallback();
+
+      // Verify timeout was cleared
+      expect(actionBar.resizeDistributingTimeout).to.be.null;
+
+      // Verify the timeout was actually cleared by checking it doesn't fire
+      const distributePluginsSpy = sidekickTest.sandbox.spy(actionBar, 'distributePlugins');
+
+      // Wait longer than the distributing delay (200ms)
+      await aTimeout(250);
+
+      // distributePlugins should not have been called again because the timeout was cleared
+      expect(distributePluginsSpy.called).to.be.false;
+
+      // Restore original window width
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: originalWidth,
+      });
+    });
+
     it('throttles resize events', () => {
       // First resize should set throttle
       actionBar.onWindowResize();
