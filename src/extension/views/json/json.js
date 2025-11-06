@@ -523,7 +523,7 @@ export class JSONView extends LitElement {
    */
   isUrlOrPathColumn(columnName) {
     const normalizedName = columnName.toLowerCase();
-    return normalizedName === 'url' || normalizedName === 'path';
+    return ['url', 'urls', 'path', 'paths', 'href', 'link', 'links'].includes(normalizedName);
   }
 
   /**
