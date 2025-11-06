@@ -1,3 +1,17 @@
+# [7.23.0](https://github.com/adobe/aem-sidekick/compare/v7.22.2...v7.23.0) (2025-11-06)
+
+
+### Bug Fixes
+
+* copy icon with sorting alignment and minor fixes ([a6be3fa](https://github.com/adobe/aem-sidekick/commit/a6be3fa721aaae7664edaa9e7c4499df14c268e5))
+* sorting when no columns obj available ([233ffa7](https://github.com/adobe/aem-sidekick/commit/233ffa70260348caedabcb77a258ca03a59d04ab))
+
+
+### Features
+
+* add copy button to url/path column ([5ba6c01](https://github.com/adobe/aem-sidekick/commit/5ba6c0168d3d3ece9ef7560ba19ee6c129160bd4))
+* add green check confirmation on copy ([81948d4](https://github.com/adobe/aem-sidekick/commit/81948d4bc4fa63ead774d183eea84c99ebcf1f47))
+
 ## [7.22.2](https://github.com/adobe/aem-sidekick/compare/v7.22.1...v7.22.2) (2025-10-23)
 
 
