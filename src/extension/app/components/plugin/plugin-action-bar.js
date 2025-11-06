@@ -100,10 +100,16 @@ export class PluginActionBar extends ConnectedElement {
   lastPluginCount = 0;
 
   /**
-   * Whether distributePlugins is currently running
+   * Whether plugin distribution is currently running
    * @type {boolean}
    */
   isDistributing = false;
+
+  /**
+   * Timeout ID for post-resize plugin distribution check
+   * @type {number|null}
+   */
+  resizeDistributingTimeout = null;
 
   /**
    * The configured projects
@@ -254,6 +260,12 @@ export class PluginActionBar extends ConnectedElement {
       window.clearTimeout(this.resizeThrottle);
       this.resizeThrottle = null;
     }
+
+    // Clear any pending post-resize check
+    if (this.resizeDistributingTimeout) {
+      window.clearTimeout(this.resizeDistributingTimeout);
+      this.resizeDistributingTimeout = null;
+    }
   }
 
   /**
@@ -301,8 +313,8 @@ export class PluginActionBar extends ConnectedElement {
       this.resizeThrottle = null;
     }, 150);
 
-    // Trigger re-render to recalculate plugin distribution
-    this.requestUpdate();
+    // Trigger plugin redistribution with resize flag
+    this.distributePlugins(true);
   };
 
   /**
@@ -477,8 +489,10 @@ export class PluginActionBar extends ConnectedElement {
 
   /**
    * Distribute plugins between bar and menu based on available space.
+   * @param {boolean} resizing - Whether this is called during a resize event
+   * @param {boolean} checkAfterResize - Whether this is a post-resize verification check
    */
-  async distributePlugins() {
+  async distributePlugins(resizing = false, checkAfterResize = false) {
     // Prevent parallel execution
     if (this.isDistributing) {
       return;
@@ -500,6 +514,19 @@ export class PluginActionBar extends ConnectedElement {
     this.isDistributing = true;
 
     try {
+      // Schedule a post-resize check if we're resizing but not already in a check
+      if (resizing && !checkAfterResize) {
+        // Clear any pending post-resize check
+        if (this.resizeDistributingTimeout) {
+          window.clearTimeout(this.resizeDistributingTimeout);
+        }
+        // Schedule a new check after UI has settled
+        this.resizeDistributingTimeout = window.setTimeout(() => {
+          this.resizeDistributingTimeout = null;
+          this.distributePlugins(true, true);
+        }, 200);
+      }
+
       this.lastWindowWidth = currentWindowWidth;
       this.lastPluginCount = currentPluginCount;
 

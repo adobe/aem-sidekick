@@ -67,7 +67,7 @@ export const style = css`
     plugin-action-bar {
       min-width: unset;
       width: 100%;
-      max-width: unset;
+      max-width: 100vw;
       bottom: 0;
     }
   }
