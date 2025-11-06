@@ -334,9 +334,15 @@ export class JSONView extends LitElement {
     const data = this.diffMode
       ? this.diffData?.data || []
       : this.filteredData?.data || [];
-    const columns = this.diffMode
+    let columns = this.diffMode
       ? this.diffData?.columns || []
       : this.filteredData?.columns || [];
+
+    // If columns is empty or not present, derive from the first row
+    if (columns.length === 0 && data.length > 0) {
+      columns = Object.keys(data[0]).filter((key) => key !== 'diff' && key !== 'line');
+    }
+
     const sortedData = [...data].sort((a, b) => {
       const first = sortKey === 'line' ? a[sortKey] : String(a[sortKey]);
       const second = sortKey === 'line' ? b[sortKey] : String(b[sortKey]);
