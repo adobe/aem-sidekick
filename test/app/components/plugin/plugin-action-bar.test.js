@@ -766,6 +766,58 @@ describe('Plugin action bar', () => {
         customPluginId,
       ]);
     }).timeout(100000);
+
+    it('clears existing resize distributing timeout on subsequent resize', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess()
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'plugin-action-bar');
+      expect(actionBar).to.exist;
+
+      // Set up a mock timeout to simulate a previous resize
+      const mockTimeout = window.setTimeout(() => {}, 200);
+      actionBar.resizeDistributingTimeout = mockTimeout;
+      expect(actionBar.resizeDistributingTimeout).to.equal(mockTimeout);
+
+      // Spy on clearTimeout to verify line 523 is executed
+      const clearTimeoutSpy = sidekickTest.sandbox.spy(window, 'clearTimeout');
+
+      // Change window width to trigger recalculation
+      const originalWidth = window.innerWidth;
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 700,
+      });
+      actionBar.lastWindowWidth = 600;
+
+      // Call distributePlugins with resizing=true
+      // This should execute line 523 which clears the existing timeout
+      await actionBar.distributePlugins(true, false);
+
+      // Verify clearTimeout was called with the mock timeout (line 523)
+      expect(clearTimeoutSpy.calledWith(mockTimeout)).to.be.true;
+
+      // Verify a new timeout was set (different from the mock)
+      expect(actionBar.resizeDistributingTimeout).to.not.be.null;
+      expect(actionBar.resizeDistributingTimeout).to.not.equal(mockTimeout);
+
+      // Cleanup
+      if (actionBar.resizeDistributingTimeout) {
+        clearTimeout(actionBar.resizeDistributingTimeout);
+        actionBar.resizeDistributingTimeout = null;
+      }
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: originalWidth,
+      });
+    });
   });
 
   describe('login states', () => {
