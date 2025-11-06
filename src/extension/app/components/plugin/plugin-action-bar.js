@@ -399,7 +399,7 @@ export class PluginActionBar extends ConnectedElement {
 
     this.isDragging = true;
 
-    // this.appStore.sampleRUM('click', { source: 'sidekick', target: 'sidekick-dragged' });
+    this.appStore.sampleRUM('click', { source: 'sidekick', target: 'sidekick-dragged' });
 
     // Store initial mouse position
     this.dragStartX = e.clientX;
