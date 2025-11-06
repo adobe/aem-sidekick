@@ -526,7 +526,7 @@ export class PluginActionBar extends ConnectedElement {
         this.resizeDistributingTimeout = window.setTimeout(() => {
           this.resizeDistributingTimeout = null;
           this.distributePlugins(true, true);
-        }, 200);
+        }, 150);
       }
 
       this.lastWindowWidth = currentWindowWidth;
