@@ -28,6 +28,8 @@ import '@spectrum-web-components/table/sp-table-row.js';
 import '@spectrum-web-components/action-button/sp-action-button.js';
 import '@spectrum-web-components/action-group/sp-action-group.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-close.js';
+import '@spectrum-web-components/icons-workflow/icons/sp-icon-copy.js';
+import '@spectrum-web-components/icons-workflow/icons/sp-icon-checkmark-circle.js';
 import '@spectrum-web-components/switch/sp-switch.js';
 import '@spectrum-web-components/progress-circle/sp-progress-circle.js';
 import '../../app/components/theme/theme.js';
@@ -332,9 +334,15 @@ export class JSONView extends LitElement {
     const data = this.diffMode
       ? this.diffData?.data || []
       : this.filteredData?.data || [];
-    const columns = this.diffMode
+    let columns = this.diffMode
       ? this.diffData?.columns || []
       : this.filteredData?.columns || [];
+
+    // If columns is empty or not present, derive from the first row
+    if (columns.length === 0 && data.length > 0) {
+      columns = Object.keys(data[0]).filter((key) => key !== 'diff' && key !== 'line');
+    }
+
     const sortedData = [...data].sort((a, b) => {
       const first = sortKey === 'line' ? a[sortKey] : String(a[sortKey]);
       const second = sortKey === 'line' ? b[sortKey] : String(b[sortKey]);
@@ -509,13 +517,88 @@ export class JSONView extends LitElement {
   }
 
   /**
+   * Check if a column name is URL or Path (case insensitive)
+   * @param {string} columnName The column name to check
+   * @returns {boolean} True if the column is URL or Path
+   */
+  isUrlOrPathColumn(columnName) {
+    const normalizedName = columnName.toLowerCase();
+    return ['url', 'urls', 'path', 'paths', 'href', 'link', 'links'].includes(normalizedName);
+  }
+
+  /**
+   * Copy all values from a specific column to clipboard
+   * @param {string} columnName The column name to copy
+   * @param {HTMLElement} button The button element that triggered the copy
+   */
+  async copyColumnValues(columnName, button) {
+    const data = this.diffMode ? this.diffData?.data : this.filteredData?.data;
+    if (!data?.length) return;
+
+    // Get hostname prefix from current URL
+    let hostnamePrefix = '';
+    try {
+      hostnamePrefix = this.url ? new URL(this.url).origin : '';
+    } catch (e) {
+      // If URL parsing fails, continue without prefix
+    }
+
+    // Extract and process values: add hostname prefix to relative paths
+    const textToCopy = data
+      .map((row) => {
+        const value = row[columnName];
+        if (!value) return null;
+        const valueStr = String(value);
+        return valueStr.startsWith('/') && !valueStr.startsWith('//') && hostnamePrefix
+          ? hostnamePrefix + valueStr
+          : valueStr;
+      })
+      .filter(Boolean)
+      .join('\n');
+
+    if (!textToCopy) return;
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+
+      // Show success feedback
+      if (button) {
+        button.classList.add('success');
+        const icon = button.querySelector('sp-icon-copy');
+        if (icon) {
+          icon.outerHTML = '<sp-icon-checkmark-circle></sp-icon-checkmark-circle>';
+        }
+
+        // Reset after 1.5 seconds
+        setTimeout(() => {
+          button.classList.remove('success');
+          const checkIcon = button.querySelector('sp-icon-checkmark-circle');
+          if (checkIcon) {
+            checkIcon.outerHTML = '<sp-icon-copy></sp-icon-copy>';
+          }
+        }, 1500);
+      }
+
+      sampleRUM('click', {
+        source: 'sidekick',
+        target: `jsonview:copy-column:${columnName}`,
+      });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to copy to clipboard:', err);
+    }
+  }
+
+  /**
    * Render the table
    * @param {Object[]} rows The rows to render
    * @param {string} url The url of the json file
    * @returns {TemplateResult} The rendered table
    */
   renderTable(rows, url) {
-    const headers = rows.length > 0 ? Object.keys(rows[0]) : [];
+    const headers = rows.length > 0
+      ? Object.keys(rows[0]).filter((key) => key !== 'diff' && key !== 'line')
+      : [];
     if (rows.length === 0) {
       if (this.filterText) {
         return this.renderEmptyState('no_results');
@@ -535,9 +618,35 @@ export class JSONView extends LitElement {
     const headHTML = `
     <sp-table-head>
       ${rows.some((r) => r.line) ? '<sp-table-head-cell sortable sort-key="line" class="line">#</sp-table-head-cell>' : ''}
-      ${headers.map((header) => `<sp-table-head-cell sortable sort-key="${header}">${header.charAt(0).toUpperCase() + header.slice(1)}</sp-table-head-cell>`).join('')}
+      ${headers.map((header) => {
+        const displayName = header.charAt(0).toUpperCase() + header.slice(1);
+        if (this.isUrlOrPathColumn(header)) {
+          return `<sp-table-head-cell sortable sort-key="${header}" class="column-with-copy">
+            <div class="header-with-copy">
+              <span>${displayName}</span>
+              <button class="copy-column-btn" data-column="${header}" title="Copy all ${displayName}s">
+                <sp-icon-copy></sp-icon-copy>
+              </button>
+            </div>
+          </sp-table-head-cell>`;
+        }
+        return `<sp-table-head-cell sortable sort-key="${header}">${displayName}</sp-table-head-cell>`;
+      }).join('')}
     </sp-table-head>`;
     table.insertAdjacentHTML('beforeend', headHTML);
+
+    // Add event listeners for copy buttons
+    setTimeout(() => {
+      const copyButtons = table.querySelectorAll('.copy-column-btn');
+      copyButtons.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent sorting when clicking copy button
+          const columnName = btn.getAttribute('data-column');
+          this.copyColumnValues(columnName, /** @type {HTMLElement} */ (btn));
+        });
+      });
+    }, 0);
+
     table.items = this.sortColumns(rows, headers);
     table.renderItem = (item) => html`
           ${item.line ? html`<sp-table-cell class="line" data-diff=${item.diff || ''}>${item.line}</sp-table-cell>` : ''}
