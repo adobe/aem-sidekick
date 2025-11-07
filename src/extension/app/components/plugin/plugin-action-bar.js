@@ -38,7 +38,7 @@ import { getConfig } from '../../../config.js';
  */
 
 /**
- * The maximum width of the action bar when window is wider than 800px
+ * The maximum width of the action bar (from CSS))
  * @type {number}
  */
 const ACTION_BAR_MAX_WIDTH = 800;
@@ -417,7 +417,7 @@ export class PluginActionBar extends ConnectedElement {
       this.initialLeft = 0;
     }
 
-    this.initialBottom = parseInt(bottom, 10) || 0;
+    this.initialBottom = parseInt(bottom, 10);
 
     // Add move and up listeners
     window.addEventListener('mousemove', this.onDragMove, false);
@@ -543,7 +543,8 @@ export class PluginActionBar extends ConnectedElement {
         this.closeButton,
       ]);
 
-      const logoWidth = this.getTotalWidth(logoContainer);
+      // Get actual rendered widths
+      const logoWidth = parseInt(window.getComputedStyle(logoContainer).width, 10);
       const closeButtonWidth = parseInt(window.getComputedStyle(closeButton).width, 10);
 
       // Get system plugins width and plugin menu button width
@@ -552,11 +553,13 @@ export class PluginActionBar extends ConnectedElement {
       const pluginMenuWidth = this.getTotalWidth(pluginMenu);
       const systemWidth = this.getTotalWidth(systemGroup);
 
-      // Calculate fixed widths
+      // Calculate fixed widths (always reserve space for plugin menu even when hidden)
       const fixedWidth = logoWidth + pluginGroupPadding + 3 + systemWidth + pluginMenuWidth + closeButtonWidth;
 
-      // Calculate available space for plugins
-      const availableWidth = maxBarWidth - fixedWidth;
+      // Calculate available space for plugins with safety margin
+      // Safety margin accounts for estimation errors (estimated vs actual rendered widths)
+      const safetyMargin = 16;
+      const availableWidth = maxBarWidth - fixedWidth - safetyMargin;
 
       // Distribute plugins
       const fittingPlugins = [];

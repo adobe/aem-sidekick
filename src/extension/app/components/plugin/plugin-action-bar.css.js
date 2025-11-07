@@ -43,6 +43,10 @@ export const style = css`
     flex-shrink: 0;
   }
 
+  action-bar > div.plugin-menu-container.hidden {
+    display: none;
+  }
+
   action-bar > div.badge-plugins-container {
     position: absolute;
     right: 8px;
@@ -196,6 +200,8 @@ export const style = css`
 
   @media (max-width: 800px) {
     action-bar .logo {
+      width: 32px;
+      min-width: 32px;
       padding-left: 12px;
     }
 

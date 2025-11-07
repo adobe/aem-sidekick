@@ -21,6 +21,33 @@ import { Plugin } from '../../components/plugin/plugin.js';
  */
 
 /**
+ * Returns the current environment (edit, dev, preview, review, live, prod).
+ * @param {AppStore} appStore The app store
+ * @returns {string|undefined} The current environment, or undefined if unknown
+ */
+function getCurrentEnv(appStore) {
+  if (appStore.isEditor()) {
+    return 'edit';
+  }
+  if (appStore.isDev()) {
+    return 'dev';
+  }
+  if (appStore.isPreview()) {
+    return 'preview';
+  }
+  if (appStore.isReview()) {
+    return 'review';
+  }
+  if (appStore.isLive()) {
+    return 'live';
+  }
+  if (appStore.isProd()) {
+    return 'prod';
+  }
+  return undefined;
+}
+
+/**
  * Creates the env plugin
  * @param {AppStore} appStore The app store
  * @returns {Plugin} The env plugin
@@ -28,6 +55,9 @@ import { Plugin } from '../../components/plugin/plugin.js';
 export function createEnvPlugin(appStore) {
   return new Plugin({
     id: 'env-switcher',
+    button: {
+      text: appStore.i18n(getCurrentEnv(appStore)),
+    },
     condition: (store) => !store.isAdmin(),
   },
   appStore);
