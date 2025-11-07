@@ -66,7 +66,7 @@ export const style = css`
   @media (max-width: 800px) {
     plugin-action-bar {
       min-width: unset;
-      width: 100%;
+      width: 100vw;
       max-width: 100vw;
       bottom: 0;
     }
