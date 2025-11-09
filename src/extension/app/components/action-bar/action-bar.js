@@ -60,6 +60,7 @@ export class ActionBar extends LitElement {
       .action-bar {
         border-radius: 0;
       }
+    }
   `;
 
   render() {
