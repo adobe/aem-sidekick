@@ -375,6 +375,9 @@ export class PluginActionBar extends ConnectedElement {
    * @param {Event} e The event
    */
   preventSelection = (e) => {
+    if (!this.isDragging) {
+      return;
+    }
     e.preventDefault();
   };
 
