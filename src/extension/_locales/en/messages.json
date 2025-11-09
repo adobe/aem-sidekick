@@ -256,6 +256,9 @@
     "dark_mode": {
       "message": "Dark theme"
     },
+    "drag_to_reposition": {
+      "message": "Drag to reposition"
+    },
     "delete": {
       "message": "Delete"
     },
