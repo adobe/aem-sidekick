@@ -419,6 +419,9 @@
   "error_logout": {
     "message": "Die Abmeldung ist fehlgeschlagen. Bitte versuchen Sie es später erneut."
   },
+  "error_preview_4XX": {
+    "message": "Das Generieren der Vorschau ist fehlgeschlagen. Überprüfen Sie die Details für weitere Informationen."
+  },
   "error_preview": {
     "message": "Das Generieren der Vorschau ist fehlgeschlagen. Bitte versuchen Sie es später erneut."
   },

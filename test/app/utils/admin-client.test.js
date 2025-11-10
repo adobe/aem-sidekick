@@ -604,6 +604,16 @@ describe('Test Admin Client', () => {
       expect(res2).to.match(/Publication failed/);
     });
 
+    it('should fallback to statusRange (4XX/5XX) when specific status not found', () => {
+      // 409 doesn't have error_preview_409, should fallback to error_preview_4XX
+      const [res2] = adminClient.getLocalizedError('preview', path, 409);
+      expect(res2).to.match(/Preview generation failed\. Check details for more information\./);
+
+      // 503 doesn't have error_publish_503 or error_publish_5XX, should fallback to error_publish
+      const [res4] = adminClient.getLocalizedError('publish', path, 503);
+      expect(res4).to.match(/Publication failed\. Please try again later\./);
+    });
+
     it('should return generic localized error with x-error details', async () => {
       const [res1] = await adminClient.getLocalizedError(
         'foo',

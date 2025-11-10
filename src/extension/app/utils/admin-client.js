@@ -125,6 +125,7 @@ export class AdminClient {
   getLocalizedError(action, path, status, error = '', errorCode = '') {
     let message = '';
     let details = '';
+    let templateMatched = false;
     error = error.replace('[admin] ', '');
     if (status === 401 && path === '/*') {
       // bulk operation of 100+ files requires login
@@ -137,6 +138,7 @@ export class AdminClient {
         const errorRegex = this.#createTemplateRegExp(errTemplate);
         const matches = error.match(errorRegex);
         if (matches) {
+          templateMatched = true;
           const { first, second, third } = matches.groups || {};
           message = this.#appStore.i18n(errorCode)
             .replace('$1', first)
@@ -150,7 +152,9 @@ export class AdminClient {
     }
     if (!message) {
       // generic fallbacks based on status and action
+      const statusRange = status >= 500 ? '5XX' : '4XX';
       message = this.#appStore.i18n(`error_${action}_${status}`)
+        || this.#appStore.i18n(`error_${action}_${statusRange}`)
         || this.#appStore.i18n(`error_${action}`)
         || (error && this.#appStore.i18n('error_generic')
           .replace('$1', error));
@@ -162,7 +166,10 @@ export class AdminClient {
     }
     if (error) {
       // extract details from the end of the error message
-      details = error.split(': ').slice(1).join(': ');
+      // or use the error message if no template was matched
+      details = templateMatched
+        ? error.split(': ').slice(1).join(': ')
+        : error;
     }
     return [`(${status}) ${message}`, details];
   }
