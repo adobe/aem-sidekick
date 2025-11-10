@@ -425,7 +425,6 @@ export class PluginActionBar extends ConnectedElement {
     window.removeEventListener('mousemove', this.onDragMove, false);
     window.removeEventListener('mouseup', this.onDragEnd, false);
     window.removeEventListener('selectstart', this.preventSelection, true);
-    // window.removeEventListener('mouseleave', this.onDragEnd, false);
     window.removeEventListener('blur', this.onDragEnd, false);
 
     // Remove dragging attribute
@@ -474,7 +473,6 @@ export class PluginActionBar extends ConnectedElement {
     window.addEventListener('mousemove', this.onDragMove, false);
     window.addEventListener('mouseup', this.onDragEnd, false);
     window.addEventListener('selectstart', this.preventSelection, true);
-    window.addEventListener('mouseleave', this.onDragEnd, false);
     window.addEventListener('blur', this.onDragEnd, false);
 
     // Set dragging attribute for CSS styling
