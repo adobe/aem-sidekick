@@ -1,3 +1,11 @@
+## [7.23.1](https://github.com/adobe/aem-sidekick/compare/v7.23.0...v7.23.1) (2025-11-10)
+
+
+### Bug Fixes
+
+* improve error messages ([#719](https://github.com/adobe/aem-sidekick/issues/719)) ([d1b0c12](https://github.com/adobe/aem-sidekick/commit/d1b0c12010c85aa0940669991e07a63cfbada1c4))
+* improve error messages ([#719](https://github.com/adobe/aem-sidekick/issues/719)) ([6cbe8bc](https://github.com/adobe/aem-sidekick/commit/6cbe8bcea0e14b11f0f5ff91857cb42eb1ec432f))
+
 # [7.23.0](https://github.com/adobe/aem-sidekick/compare/v7.22.2...v7.23.0) (2025-11-06)
 
 
