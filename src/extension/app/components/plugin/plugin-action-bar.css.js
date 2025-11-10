@@ -75,6 +75,10 @@ export const style = css`
     flex-shrink: 0;
   }
 
+  action-bar .logo:hover .drag-handle {
+    opacity: 0.6;
+  }
+
   :host([dragging]) {
     action-bar .logo {
       cursor: grabbing;
