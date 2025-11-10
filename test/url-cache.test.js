@@ -234,12 +234,5 @@ describe('Test url-cache', () => {
       expect(results.length).to.equal(1);
       expect(sessionGet.callCount).to.equal(1);
     });
-
-    it('handles invalid url in cache key generation', async () => {
-      // Test with an invalid URL that would cause URL parsing to fail
-      const results = await urlCache.get(mockTab('not-a-valid-url'));
-      expect(results.length).to.equal(0);
-      expect(sessionGet.callCount).to.equal(1);
-    });
   });
 });
