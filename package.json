@@ -105,7 +105,7 @@
     "rollup": "4.52.5",
     "rollup-plugin-copy": "3.5.0",
     "rollup-plugin-esbuild": "6.2.1",
-    "semantic-release": "24.2.9",
+    "semantic-release": "25.0.1",
     "semantic-release-react-native": "1.12.2",
     "shelljs": "0.10.0",
     "sinon": "21.0.0"
