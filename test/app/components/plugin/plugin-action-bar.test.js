@@ -1280,6 +1280,9 @@ describe('Plugin action bar', () => {
         detail: { id: 'test-popover' },
       }));
 
+      // Wait for event to propagate
+      await Promise.resolve();
+
       // Verify the plugin's closePopover was called
       expect(closePopoverStub.calledOnce).to.be.true;
     });
@@ -1323,7 +1326,7 @@ describe('Plugin action bar', () => {
       expect(closePopoverStub.called).to.be.false;
     });
 
-    it('does nothing when ID is not provided in CLOSE_POPOVER event', async () => {
+    it('closes all popovers when ID is not provided in CLOSE_POPOVER event', async () => {
       sidekickTest.mockFetchEditorStatusSuccess();
       sidekickTest.mockFetchSidekickConfigSuccess(true, false, {
         plugins: [
@@ -1353,13 +1356,16 @@ describe('Plugin action bar', () => {
       // Mock the plugin's closePopover method
       const closePopoverStub = sidekickTest.sandbox.stub(plugin, 'closePopover');
 
-      // Dispatch CLOSE_POPOVER event without ID
+      // Dispatch CLOSE_POPOVER event without ID (close all)
       EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER, {
         detail: {},
       }));
 
-      // Verify the plugin's closePopover was NOT called
-      expect(closePopoverStub.called).to.be.false;
+      // Wait for event to propagate
+      await Promise.resolve();
+
+      // Verify the plugin's closePopover WAS called (closes all)
+      expect(closePopoverStub.calledOnce).to.be.true;
     });
   });
 

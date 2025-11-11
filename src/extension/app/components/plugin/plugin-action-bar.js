@@ -217,6 +217,12 @@ export class PluginActionBar extends ConnectedElement {
     EventBus.instance.addEventListener(EVENTS.CLOSE_POPOVER, (e) => {
       const { id } = e.detail || {};
       if (!id) {
+        // Close all popovers when no ID is provided
+        this.visiblePlugins.forEach((plugin) => {
+          if (plugin.isPopover()) {
+            plugin.closePopover();
+          }
+        });
         return;
       }
 
@@ -448,6 +454,9 @@ export class PluginActionBar extends ConnectedElement {
     e.stopPropagation();
 
     this.isDragging = true;
+
+    // Close any open popovers when dragging starts
+    EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER));
 
     this.appStore.sampleRUM('click', { source: 'sidekick', target: 'sidekick-dragged' });
 

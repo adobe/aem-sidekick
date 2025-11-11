@@ -17,7 +17,8 @@ import { style } from './env-switcher.css.js';
 import { createTag, newTab } from '../../../utils/browser.js';
 import { getTimeAgo } from '../../../utils/i18n.js';
 import { ConnectedElement } from '../../connected-element/connected-element.js';
-import { ICONS } from '../../../constants.js';
+import { EVENTS, ICONS } from '../../../constants.js';
+import { EventBus } from '../../../utils/event-bus.js';
 
 /**
  * @typedef {import('../../action-bar/picker/picker.js').Picker} Picker
@@ -73,6 +74,13 @@ export class EnvironmentSwitcher extends ConnectedElement {
         this.renderMenu();
       },
     );
+
+    // Listen for close popover events to close the env switcher picker
+    EventBus.instance.addEventListener(EVENTS.CLOSE_POPOVER, () => {
+      if (this.picker) {
+        this.picker.close();
+      }
+    });
   }
 
   /**
