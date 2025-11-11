@@ -299,7 +299,7 @@ export class Plugin {
         ${template}
         <sp-popover slot="click-content" placement="${placement}" tip style=${ifDefined(filteredPopoverRect)}>
           <div class="content">
-            <iframe title=${popoverTitle || 'Popover content'}></iframe>
+            <iframe allow="clipboard-write *" title=${popoverTitle || 'Popover content'}></iframe>
           </div>
         </sp-popover>
       </overlay-trigger>
