@@ -214,21 +214,29 @@ export class PluginActionBar extends ConnectedElement {
     this.addEventListener('click', this.onClick);
 
     // Listen for close popover events
-    EventBus.instance.addEventListener(EVENTS.CLOSE_POPOVER, (e) => {
+    EventBus.instance.addEventListener(EVENTS.CLOSE_POPOVER, async (e) => {
       const { id } = e.detail || {};
       if (!id) {
-        // Close all popovers when no ID is provided
+        // Close all plugin-based popovers when no ID is provided
         this.visiblePlugins.forEach((plugin) => {
           if (plugin.isPopover()) {
             plugin.closePopover();
           }
         });
+
+        // Close all menus
+        const pluginMenu = await this.pluginMenu;
+        pluginMenu.open = false;
+
+        const sidekickMenu = await this.sidekickMenu;
+        sidekickMenu.open = false;
+
         return;
       }
 
-      // Find the plugin and delegate to it
+      // Find the popover plugin and delegate to it
       const plugin = this.visiblePlugins.find((p) => p.getId() === id);
-      if (plugin) {
+      if (plugin && plugin.isPopover()) {
         plugin.closePopover();
       }
     });
@@ -455,7 +463,7 @@ export class PluginActionBar extends ConnectedElement {
 
     this.isDragging = true;
 
-    // Close any open popovers when dragging starts
+    // Close any open popovers, pickers, and menus when dragging starts
     EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER));
 
     this.appStore.sampleRUM('click', { source: 'sidekick', target: 'sidekick-dragged' });

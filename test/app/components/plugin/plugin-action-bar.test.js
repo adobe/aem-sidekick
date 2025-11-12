@@ -1405,6 +1405,39 @@ describe('Plugin action bar', () => {
       actionBar.onDragEnd();
     });
 
+    it('closes plugin menu and sidekick menu on drag start', async () => {
+      // Get references to the menus
+      const pluginMenu = await actionBar.pluginMenu;
+      const sidekickMenu = await actionBar.sidekickMenu;
+
+      // Open both menus
+      pluginMenu.open = true;
+      sidekickMenu.open = true;
+
+      // Verify menus are open
+      expect(pluginMenu.open).to.be.true;
+      expect(sidekickMenu.open).to.be.true;
+
+      const mouseEvent = new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 100,
+        clientY: 200,
+      });
+
+      actionBar.onDragStart(mouseEvent);
+
+      // Wait for event to propagate
+      await Promise.resolve();
+
+      // Verify menus are closed
+      expect(pluginMenu.open).to.be.false;
+      expect(sidekickMenu.open).to.be.false;
+
+      // Clean up
+      actionBar.onDragEnd();
+    });
+
     it('does not start dragging when window width is <= 800px', () => {
       // Mock window.innerWidth to be below 800px
       const originalInnerWidth = window.innerWidth;
