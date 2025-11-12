@@ -218,6 +218,9 @@ export class AppStore {
 
     this.setupPlugins();
 
+    // Check for personal OneDrive and show warning
+    this.checkPersonalOneDrive();
+
     this.fetchStatus();
 
     this.showView();
@@ -653,6 +656,78 @@ export class AppStore {
       return dotIndex > 0; // must contain a dot
     }
     return false;
+  }
+
+  /**
+   * Recognizes a personal OneDrive URL.
+   * Personal OneDrive folders are not supported as content sources.
+   * @param {URL} url The URL
+   * @returns {boolean} <code>true</code> if URL is personal OneDrive, else <code>false</code>
+   */
+  isPersonalOneDrive(url) {
+    if (!this.isSharePoint(url)) return false;
+
+    const { host, pathname } = url;
+
+    // Check for personal OneDrive host pattern (e.g., adobe-my.sharepoint.com)
+    if (/-my\.sharepoint\.com$/.test(host)) return true;
+
+    // Check for personal path patterns
+    if (pathname.includes('/personal/')) return true;
+    if (pathname.match(/\/:f:\/[pr]\//)) {
+      // Check if it's a personal folder sharing link
+      if (pathname.includes('/personal/')) return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Checks if the current location is a personal OneDrive folder
+   * and shows appropriate warnings based on the deadline (July 1, 2025).
+   * @private
+   */
+  @action
+  checkPersonalOneDrive() {
+    if (!this.isPersonalOneDrive(this.location)) {
+      return;
+    }
+
+    const DEADLINE_DATE = new Date('2025-07-01T00:00:00Z');
+    const now = new Date();
+    const isAfterDeadline = now >= DEADLINE_DATE;
+
+    if (isAfterDeadline) {
+      // After deadline: prevent loading entirely
+      this.showModal({
+        type: 'error',
+        data: {
+          headline: this.i18n('personal_onedrive_not_supported'),
+          message: this.i18n('personal_onedrive_deadline_message'),
+          confirmLabel: this.i18n('ok'),
+        },
+      });
+      // Set state to prevent further operations
+      this.state = STATE.UNAUTHORIZED;
+    } else {
+      // Before deadline: show warning with daily reminder
+      const lastShownKey = 'personal_onedrive_warning_shown';
+      const lastShown = localStorage.getItem(lastShownKey);
+      const today = now.toDateString();
+
+      // Show warning if not shown today
+      if (lastShown !== today) {
+        this.showModal({
+          type: 'info',
+          data: {
+            headline: this.i18n('personal_onedrive_not_supported'),
+            message: this.i18n('personal_onedrive_warning_message'),
+            confirmLabel: this.i18n('ok'),
+          },
+        });
+        localStorage.setItem(lastShownKey, today);
+      }
+    }
   }
 
   /**

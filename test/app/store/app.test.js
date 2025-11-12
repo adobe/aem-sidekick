@@ -289,6 +289,35 @@ describe('Test App Store', () => {
     expect(appStore.isSharePointViewer(url)).to.be.true;
   });
 
+  it('isPersonalOneDrive()', async () => {
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+    appStore.location.port = '';
+
+    // Test with -my.sharepoint.com host
+    let url = new URL('https://adobe-my.sharepoint.com/personal/user_adobe_com/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fuser_adobe_com%2FDocuments%2Ffoo');
+    expect(appStore.isPersonalOneDrive(url)).to.be.true;
+
+    // Test with /personal/ path
+    url = new URL('https://foo.sharepoint.com/personal/user_foo_com/Documents/foo.docx');
+    expect(appStore.isPersonalOneDrive(url)).to.be.true;
+
+    // Test with /:f:/p/ sharing link pattern
+    url = new URL('https://foo.sharepoint.com/:f:/p/personal/user_foo_com/Documents');
+    expect(appStore.isPersonalOneDrive(url)).to.be.true;
+
+    // Test with /:f:/r/ sharing link pattern
+    url = new URL('https://foo.sharepoint.com/:f:/r/personal/user_foo_com/Documents');
+    expect(appStore.isPersonalOneDrive(url)).to.be.true;
+
+    // Test with team site (should return false)
+    url = new URL('https://foo.sharepoint.com/sites/foo/Shared%20Documents/Forms/AllItems.aspx');
+    expect(appStore.isPersonalOneDrive(url)).to.be.false;
+
+    // Test with non-SharePoint URL (should return false)
+    url = new URL('https://docs.google.com/document/d/123');
+    expect(appStore.isPersonalOneDrive(url)).to.be.false;
+  });
+
   describe('isAuthenticated()', () => {
     it('not authenticated', async () => {
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);

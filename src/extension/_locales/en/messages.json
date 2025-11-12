@@ -743,5 +743,17 @@
     },
     "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
       "message": "Unable to preview $1: contained image larger than $2"
+    },
+    "personal_onedrive_not_supported": {
+      "message": "Personal OneDrive folders are no longer supported"
+    },
+    "personal_onedrive_warning_message": {
+      "message": "Content sources with type \"onedrive\" must be SharePoint sites. Personal OneDrive folders are not officially supported.\n\nPlease move your content to a SharePoint team site to continue using AEM Sidekick.\n\nStarting July 1, 2025, the Sidekick will no longer load on personal OneDrive folders."
+    },
+    "personal_onedrive_deadline_message": {
+      "message": "Personal OneDrive folders are no longer supported as content sources.\n\nPlease move your content to a SharePoint team site to use AEM Sidekick."
+    },
+    "personal_onedrive_learn_more": {
+      "message": "Learn more"
     }
 }
