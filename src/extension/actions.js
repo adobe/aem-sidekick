@@ -372,8 +372,8 @@ async function addRemoveProject(tab) {
  * @param {chrome.tabs.Tab} tab The tab
  */
 async function enableDisableProject(tab) {
-  const { id } = tab;
-  const cfg = await getProjectFromUrl(tab);
+  const matches = await getProjectMatches(await getProjects(), tab);
+  const cfg = matches.length === 1 ? matches[0] : await getProjectFromUrl(tab);
   const project = await getProject(cfg);
 
   await showSidekickIfHidden();
@@ -390,7 +390,7 @@ async function enableDisableProject(tab) {
         message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
         headline: chrome.i18n.getMessage(i18nHeadlineKey),
       },
-      notificationConfirmCallback(id));
+      notificationConfirmCallback(tab.id));
   }
 }
 
