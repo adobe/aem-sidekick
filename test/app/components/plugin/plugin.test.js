@@ -207,6 +207,20 @@ describe('Plugin', () => {
     overlayTrigger.firstElementChild.click();
   });
 
+  it('popover iframe has clipboard-write permission', async () => {
+    const plugin = new Plugin({ ...TEST_POPOVER_CONFIG }, appStore);
+
+    const container = document.createElement('div');
+    render(plugin.render(), container);
+
+    // Wait for next time to let lit process the update
+    await Promise.resolve();
+
+    const iframe = container.querySelector('iframe');
+    expect(iframe).to.exist;
+    expect(iframe.getAttribute('allow')).to.equal('clipboard-write *');
+  });
+
   it('popover plugin renders as menu item', async () => {
     appStore.location = new URL('https://www.example.com');
     appStore.theme = 'dark';
