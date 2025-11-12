@@ -1,3 +1,10 @@
+## [7.23.3](https://github.com/adobe/aem-sidekick/compare/v7.23.2...v7.23.3) (2025-11-12)
+
+
+### Bug Fixes
+
+* popover iframe should allow clipboard write ([#726](https://github.com/adobe/aem-sidekick/issues/726)) ([6406545](https://github.com/adobe/aem-sidekick/commit/6406545ffbc934ffc85ae736cfe1844063ec625b))
+
 ## [7.23.2](https://github.com/adobe/aem-sidekick/compare/v7.23.1...v7.23.2) (2025-11-10)
 
 
