@@ -226,10 +226,14 @@ export class PluginActionBar extends ConnectedElement {
 
         // Close all menus
         const pluginMenu = await this.pluginMenu;
-        pluginMenu.open = false;
+        if (pluginMenu) {
+          pluginMenu.open = false;
+        }
 
         const sidekickMenu = await this.sidekickMenu;
-        sidekickMenu.open = false;
+        if (sidekickMenu) {
+          sidekickMenu.open = false;
+        }
 
         return;
       }

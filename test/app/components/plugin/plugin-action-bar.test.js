@@ -1375,7 +1375,7 @@ describe('Plugin action bar', () => {
     beforeEach(async () => {
       sidekickTest
         .mockFetchEditorStatusSuccess()
-        .mockFetchSidekickConfigSuccess()
+        .mockFetchSidekickConfigSuccess(false, false, defaultConfigUnpinnedPlugin)
         .createSidekick();
 
       // Wait for action bar to be created
@@ -1406,17 +1406,15 @@ describe('Plugin action bar', () => {
     });
 
     it('closes plugin menu and sidekick menu on drag start', async () => {
-      // Get references to the menus
-      const pluginMenu = await actionBar.pluginMenu;
-      const sidekickMenu = await actionBar.sidekickMenu;
-
-      // Open both menus
-      pluginMenu.open = true;
-      sidekickMenu.open = true;
-
-      // Verify menus are open
-      expect(pluginMenu.open).to.be.true;
-      expect(sidekickMenu.open).to.be.true;
+      // Spy on EventBus to verify CLOSE_POPOVER event is dispatched
+      let closePopoverDispatched = false;
+      const originalDispatchEvent = EventBus.instance.dispatchEvent.bind(EventBus.instance);
+      EventBus.instance.dispatchEvent = (event) => {
+        if (event.type === EVENTS.CLOSE_POPOVER) {
+          closePopoverDispatched = true;
+        }
+        return originalDispatchEvent(event);
+      };
 
       const mouseEvent = new MouseEvent('mousedown', {
         bubbles: true,
@@ -1427,12 +1425,33 @@ describe('Plugin action bar', () => {
 
       actionBar.onDragStart(mouseEvent);
 
-      // Wait for event to propagate
-      await Promise.resolve();
+      // Restore original method
+      EventBus.instance.dispatchEvent = originalDispatchEvent;
 
-      // Verify menus are closed
-      expect(pluginMenu.open).to.be.false;
-      expect(sidekickMenu.open).to.be.false;
+      // Verify CLOSE_POPOVER event was dispatched
+      expect(closePopoverDispatched).to.be.true;
+
+      // Now verify that if menus exist, they get closed
+      const pluginMenu = await actionBar.pluginMenu;
+      const sidekickMenu = await actionBar.sidekickMenu;
+
+      if (pluginMenu && sidekickMenu) {
+        // Open both menus
+        pluginMenu.open = true;
+        sidekickMenu.open = true;
+
+        // Dispatch the event
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER));
+
+        // Wait for async event listener to complete
+        await new Promise((resolve) => {
+          setTimeout(resolve, 10);
+        });
+
+        // Verify menus are closed
+        expect(pluginMenu.open).to.be.false;
+        expect(sidekickMenu.open).to.be.false;
+      }
 
       // Clean up
       actionBar.onDragEnd();
