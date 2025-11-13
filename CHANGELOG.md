@@ -1,3 +1,10 @@
+# [7.24.0](https://github.com/adobe/aem-sidekick/compare/v7.23.3...v7.24.0) (2025-11-13)
+
+
+### Features
+
+* ability to reposition sidekick ([#720](https://github.com/adobe/aem-sidekick/issues/720)) ([7a44e38](https://github.com/adobe/aem-sidekick/commit/7a44e383484d422c8ba1985be7b9979c3848042c)), closes [#714](https://github.com/adobe/aem-sidekick/issues/714)
+
 ## [7.23.3](https://github.com/adobe/aem-sidekick/compare/v7.23.2...v7.23.3) (2025-11-12)
 
 
