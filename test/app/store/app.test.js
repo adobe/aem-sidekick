@@ -111,6 +111,53 @@ describe('Test App Store', () => {
     expect(appStore.siteStore.project).to.eq('AEM Boilerplate');
   });
 
+  it('loadContext - adds theme parameter to palette and popover plugin URLs', async () => {
+    sidekickTest
+      .mockFetchSidekickConfigSuccess(false, false, {
+        plugins: [
+          {
+            id: 'palette-plugin',
+            title: 'Palette Plugin',
+            url: 'https://example.com/palette.html',
+            isPalette: true,
+          },
+          {
+            id: 'popover-plugin',
+            title: 'Popover Plugin',
+            url: 'https://example.com/popover.html',
+            isPopover: true,
+          },
+          {
+            id: 'regular-plugin',
+            title: 'Regular Plugin',
+            url: 'https://example.com/regular.html',
+          },
+        ],
+      });
+
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+
+    // Wait for plugins to be loaded
+    await waitUntil(() => Object.keys(appStore.customPlugins).length > 0);
+
+    // Check palette plugin has theme parameter
+    const palettePlugin = appStore.customPlugins['palette-plugin'];
+    expect(palettePlugin).to.exist;
+    expect(palettePlugin.config.url).to.include('theme=');
+    expect(palettePlugin.config.url).to.include(`theme=${appStore.theme}`);
+
+    // Check popover plugin has theme parameter
+    const popoverPlugin = appStore.customPlugins['popover-plugin'];
+    expect(popoverPlugin).to.exist;
+    expect(popoverPlugin.config.url).to.include('theme=');
+    expect(popoverPlugin.config.url).to.include(`theme=${appStore.theme}`);
+
+    // Check regular plugin does NOT have theme parameter
+    const regularPlugin = appStore.customPlugins['regular-plugin'];
+    expect(regularPlugin).to.exist;
+    expect(regularPlugin.config.url).to.not.include('theme=');
+  });
+
   it('loadContext - loads german dictionary', async () => {
     sidekickTest
       .mockFetchSidekickConfigSuccess(true, true)

@@ -355,7 +355,9 @@ export class AppStore {
           let processedUrl;
           if (url) {
             const target = new URL(url, `https://${innerHost}/`);
-            target.searchParams.set('theme', this.theme);
+            if (isPalette || isPopover) {
+              target.searchParams.set('theme', this.theme);
+            }
             if (passConfig) {
               target.searchParams.append('ref', this.siteStore.ref);
               target.searchParams.append('repo', this.siteStore.repo);

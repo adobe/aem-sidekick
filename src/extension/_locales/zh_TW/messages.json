@@ -317,6 +317,9 @@
   "dark_mode": {
     "message": "深色主題"
   },
+  "drag_to_reposition": {
+    "message": "拖曳以重新定位"
+  },
   "delete": {
     "message": "刪除"
   },
