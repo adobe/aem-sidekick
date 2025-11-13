@@ -26,6 +26,10 @@ export const style = css`
     letter-spacing: initial;
     text-align: initial;
   }
+    
+  :host([dragging='true']) {
+    pointer-events: auto;
+  }
 
   :host([open='true']) {
     display: block;

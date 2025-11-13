@@ -446,6 +446,7 @@ export class PluginActionBar extends ConnectedElement {
     window.removeEventListener('blur', this.onDragEnd, false);
 
     // Remove dragging attribute
+    this.appStore.sidekick.removeAttribute('dragging');
     this.removeAttribute('dragging');
 
     // Constrain to viewport
@@ -497,6 +498,7 @@ export class PluginActionBar extends ConnectedElement {
     window.addEventListener('blur', this.onDragEnd, false);
 
     // Set dragging attribute for CSS styling
+    this.appStore.sidekick.setAttribute('dragging', 'true');
     this.setAttribute('dragging', 'true');
   };
 
