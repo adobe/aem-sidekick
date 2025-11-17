@@ -348,7 +348,7 @@ describe('Test Admin Client', () => {
       expect(toast.variant).to.equal('warning');
     });
 
-    it('should handle 503 error with 429 in x-error header', async () => {
+    it('should handle 503 error with 429 in x-error header for preview', async () => {
       mockFetchError({
         method: 'post',
         api: 'preview',
@@ -361,6 +361,22 @@ describe('Test Admin Client', () => {
       expect(showToastStub.calledOnce).to.be.true;
       expect(toast.message).to.match(/429/);
       expect(toast.message).to.match(/by Microsoft/);
+      expect(toast.variant).to.equal('warning');
+    });
+
+    it('should handle 503 error with 429 in x-error header for status', async () => {
+      mockFetchError({
+        method: 'get',
+        api: 'status',
+        path: '/foo',
+        status: 503,
+        headers: {
+          'x-error': 'Handler onedrive could not lookup https://foo.sharepoint.com/:w:/r/sites/bar/_layouts/15/Doc.aspx?sourcedoc=%0B0F48F114-1C8F-4BC1-959A-DE83CCB6CD4D%7D&file=AEM%20Blog%20-%20Co-Innovate%20-%20Building%20Through%20Curiosity%20and%20Experimentation (429) The request has been throttled',
+        },
+      });
+      await adminClient.getStatus('/foo');
+      expect(showToastStub.calledOnce).to.be.true;
+      expect(toast.message).to.equal('(429) Too many requests: Your project is being throttled by Microsoft SharePoint. Please wait and try again later.');
       expect(toast.variant).to.equal('warning');
     });
   });
