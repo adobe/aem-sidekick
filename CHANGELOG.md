@@ -1,3 +1,10 @@
+## [7.24.1](https://github.com/adobe/aem-sidekick/compare/v7.24.0...v7.24.1) (2025-11-17)
+
+
+### Bug Fixes
+
+* 429 from backend on status request shows generic error message ([#728](https://github.com/adobe/aem-sidekick/issues/728)) ([4396e27](https://github.com/adobe/aem-sidekick/commit/4396e27f5b2d72d8a5c75f7a32eed804a2801f33))
+
 # [7.24.0](https://github.com/adobe/aem-sidekick/compare/v7.23.3...v7.24.0) (2025-11-13)
 
 
