@@ -94,7 +94,9 @@ export class AdminClient {
       return this.#RATE_LIMITER.ADMIN;
     }
     const [error] = this.#getServerError(resp);
-    if (resp.status === 503 && error.includes('(429)') && error.includes('onedrive')) {
+    if (resp.status === 503
+      && error.includes('onedrive')
+      && (error.includes('(429)') || error.endsWith('The request has been throttled'))) {
       return this.#RATE_LIMITER.ONEDRIVE;
     }
     return this.#RATE_LIMITER.NONE;
@@ -286,10 +288,11 @@ export class AdminClient {
       if (resp.ok) {
         return resp.json();
       } else {
-        if (resp.status >= 500) {
+        if (resp.status >= 500 && resp.status !== 503) {
+          // all 5xx errors except 503
           this.handleFatalError(this.#getAction('status'), resp.headers.get('x-error'));
         } else if (resp.status !== 401) {
-          // special handling for 401
+          // all other errors except 401
           this.#handleServerError(this.#getAction('status'), path, resp);
         }
         return { status: resp.status };
