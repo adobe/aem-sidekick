@@ -658,6 +658,24 @@ export class AppStore {
   }
 
   /**
+   * Checks if a content source URL is Document Authoring (DA).
+   * DA content source URLs start with a <code>markup:</code> prefix.
+   * @param {string} contentSourceUrl The content source URL string to check
+   * @returns {boolean} <code>true</code> if URL is DA, else <code>false</code>
+   */
+  isDA(contentSourceUrl) {
+    if (!contentSourceUrl) {
+      return false;
+    }
+    try {
+      const { hostname } = new URL(contentSourceUrl.substring(7));
+      return hostname.endsWith('.da.live');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
    * Returns a label for the content source
    * @returns {string} The content source label
    */
@@ -670,7 +688,11 @@ export class AppStore {
     } else if (sourceLocation?.startsWith('gdrive:')) {
       return 'Google Drive';
     } else if (sourceLocation?.startsWith('markup:')) {
-      return contentSourceEditLabel || 'BYOM';
+      if (contentSourceEditLabel) {
+        return contentSourceEditLabel;
+      } else {
+        return this.isDA(sourceLocation) ? 'Document Authoring' : 'BYOM';
+      }
     } else if (contentSourceType === 'onedrive') {
       return 'SharePoint';
     } else if (contentSourceType === 'google') {
