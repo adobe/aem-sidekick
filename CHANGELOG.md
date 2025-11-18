@@ -1,3 +1,10 @@
+# [7.25.0](https://github.com/adobe/aem-sidekick/compare/v7.24.1...v7.25.0) (2025-11-18)
+
+
+### Features
+
+* **env-switcher:** show source item for DA by default ([#731](https://github.com/adobe/aem-sidekick/issues/731)) ([d868c8f](https://github.com/adobe/aem-sidekick/commit/d868c8f33d4e776f0d57ebe1ef60f2d813c8f965))
+
 ## [7.24.1](https://github.com/adobe/aem-sidekick/compare/v7.24.0...v7.24.1) (2025-11-17)
 
 
