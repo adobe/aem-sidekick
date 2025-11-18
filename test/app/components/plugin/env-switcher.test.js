@@ -352,6 +352,23 @@ describe('Environment Switcher', () => {
       const icon = recursiveQuery(getPicker(), '.env-edit sp-icon svg');
       expect(icon.getElementById('clip0_632_13678')).to.exist;
     });
+
+    it('DA content source', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          preview: {
+            ...defaultSharepointStatusResponse.preview,
+            sourceLocation: 'markup:https://content.da.live/adobe/aem-boilerplate/demo',
+          },
+        })
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getEditLabel()).to.equal('Open in Document Authoring');
+    });
   });
 
   describe('preview and live item variants', () => {
