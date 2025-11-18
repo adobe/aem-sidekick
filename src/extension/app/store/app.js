@@ -664,9 +664,6 @@ export class AppStore {
    * @returns {boolean} <code>true</code> if URL is DA, else <code>false</code>
    */
   isDA(contentSourceUrl) {
-    if (!contentSourceUrl) {
-      return false;
-    }
     try {
       const { hostname } = new URL(contentSourceUrl.substring(7));
       return hostname.endsWith('.da.live');
