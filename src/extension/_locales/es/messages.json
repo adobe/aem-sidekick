@@ -419,11 +419,11 @@
   "error_logout": {
     "message": "No se ha podido cerrar la sesión. Inténtelo de nuevo más tarde."
   },
-  "error_preview_4XX": {
-    "message": "Error al generar la vista previa. Consulte los detalles para obtener más información."
-  },
   "error_preview": {
     "message": "Error al generar la vista previa. Inténtelo de nuevo más tarde."
+  },
+  "error_preview_4XX": {
+    "message": "Error al generar la vista previa. Consulte los detalles para obtener más información."
   },
   "error_preview_config": {
     "message": "Error al activar la configuración: $1"
@@ -528,7 +528,7 @@
     "message": "No se ha encontrado ningún cambio"
   },
   "no_diffs_subheading": {
-    "message": "El contenido de la vista previa y el publicado son idénticos"
+    "message": "El contenido previsualizado y el publicado son idénticos"
   },
   "no_results": {
     "message": "No se han encontrado resultados"

@@ -419,11 +419,11 @@
   "error_logout": {
     "message": "Falha ao fazer logoff. Tente novamente mais tarde."
   },
-  "error_preview_4XX": {
-    "message": "Falha ao gerar a pré-visualização. Verifique os detalhes para obter mais informações."
-  },
   "error_preview": {
     "message": "Falha ao gerar a pré-visualização. Tente novamente mais tarde."
+  },
+  "error_preview_4XX": {
+    "message": "Falha ao gerar a prévia. Verifique os detalhes para mais informações."
   },
   "error_preview_config": {
     "message": "Falha ao ativar a configuração: $1"
