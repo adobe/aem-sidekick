@@ -358,7 +358,7 @@ describe('Environment Switcher', () => {
         .mockFetchStatusSuccess(false, {
           preview: {
             ...defaultSharepointStatusResponse.preview,
-            sourceLocation: 'markup:https://example.da.live/source',
+            sourceLocation: 'markup:https://content.da.live/adobe/aem-boilerplate/demo',
           },
         })
         .mockFetchSidekickConfigSuccess(false)
