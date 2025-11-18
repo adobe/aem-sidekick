@@ -306,7 +306,7 @@
     "message": "Copier l'URL"
   },
   "copy_urls": {
-    "message": "Copier les URL $1"
+    "message": "Copier $1 URL"
   },
   "copy_urls_error": {
     "message": "La copie dans le presse-papiers a échoué. Veuillez réessayer."
@@ -422,11 +422,11 @@
   "error_logout": {
     "message": "Échec de la déconnexion. Réessayez plus tard."
   },
-  "error_preview_4XX": {
-    "message": "La génération de la prévisualisation a échoué. Consultez les détails pour plus d'informations."
-  },
   "error_preview": {
     "message": "La génération de la prévisualisation a échoué. Veuillez réessayer ultérieurement."
+  },
+  "error_preview_4XX": {
+    "message": "Échec de la génération de la prévisualisation. Consultez les détails pour plus d’informations."
   },
   "error_preview_config": {
     "message": "Échec de l’activation de la configuration : $1"
@@ -564,7 +564,7 @@
     "message": "Ouvrir l’URL"
   },
   "open_urls": {
-    "message": "Ouvrir les URL $1"
+    "message": "Ouvrir $1 URL"
   },
   "open_urls_confirm": {
     "message": "Voulez-vous vraiment ouvrir les URL $1 ?"
