@@ -815,7 +815,7 @@ describe('Test actions', () => {
       id: 2,
     }));
     expect(createSpy.calledWithMatch({
-      url: 'https://labs.aem.live/tools/project-admin/index.html',
+      url: 'https://tools.aem.live/tools/project-admin/index.html',
       openerTabId: 2,
       windowId: 0,
     })).to.be.true;

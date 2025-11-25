@@ -425,7 +425,7 @@ async function importProjects(tab) {
  */
 async function manageProjects(tab) {
   await chrome.tabs.create({
-    url: 'https://labs.aem.live/tools/project-admin/index.html',
+    url: 'https://tools.aem.live/tools/project-admin/index.html',
     openerTabId: tab.id,
     windowId: tab.windowId,
   });
