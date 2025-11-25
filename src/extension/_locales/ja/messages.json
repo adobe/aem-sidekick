@@ -419,11 +419,11 @@
   "error_logout": {
     "message": "ログアウトに失敗しました。後でもう一度試してください。"
   },
-  "error_preview_4XX": {
-    "message": "プレビューの生成に失敗しました。詳細については、詳細を確認してください。"
-  },
   "error_preview": {
     "message": "プレビューの生成に失敗しました。後で再試行してください。"
+  },
+  "error_preview_4XX": {
+    "message": "プレビューの生成に失敗しました。詳細を確認してください。"
   },
   "error_preview_config": {
     "message": "設定をアクティブ化できませんでした : $1"
@@ -528,7 +528,7 @@
     "message": "変更が見つかりません"
   },
   "no_diffs_subheading": {
-    "message": "プレビュー済みコンテンツと公開済みコンテンツが同じ"
+    "message": "プレビュー済みコンテンツと公開済みコンテンツが同じです"
   },
   "no_results": {
     "message": "結果が見つかりません"
