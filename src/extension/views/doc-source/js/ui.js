@@ -74,10 +74,12 @@ const copyHTMLToClipboard = (html) => {
  */
 const htmlSourceToEdition = (main, head, url) => {
   main.querySelectorAll('img').forEach((img) => {
-    if (!img.src) return;
-    const content = new URL(url);
-    const pathname = content.pathname.replace(/\/$/, '');
-    img.src = `${content.origin}${pathname}${img.src.substring(img.src.lastIndexOf('/'))}`;
+    const originalSrc = img.getAttribute('src');
+    if (!originalSrc) return;
+
+    // convert image urls to absolute urls
+    const resolvedUrl = new URL(originalSrc, url);
+    img.src = resolvedUrl.href;
   });
 
   main.querySelectorAll('picture source').forEach((source) => {
