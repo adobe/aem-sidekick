@@ -15,14 +15,21 @@
  * @property {string} [owner] The owner of the repository.
  * @property {string} [repo] The name of the repository.
  * @property {string} [ref='main'] The reference branch, defaults to 'main'.
- * @property {string} [adminVersion] - The version of the admin to use
+ * @property {number} [apiVersion] The version of the admin api to use.
+ * @property {string} [adminVersion] The version of the admin serviceto use.
  */
 
 /**
- * The origin of the Admin API.
+ * The origin of the Admin API v1.
  * @type {string}
  */
 export const ADMIN_ORIGIN = 'https://admin.hlx.page';
+
+/**
+ * The origin of the Admin API v2.
+ * @type {string}
+ */
+export const ADMIN_ORIGIN_V2 = 'https://api.aem.live';
 
 /**
  * Creates an Admin API URL for an API and path.
@@ -34,18 +41,33 @@ export const ADMIN_ORIGIN = 'https://admin.hlx.page';
  */
 export function createAdminUrl(
   {
-    owner, repo, ref = 'main', adminVersion,
+    owner: org, repo: site, ref = 'main', apiVersion, adminVersion,
   },
   api,
   path = '',
   searchParams = new URLSearchParams(),
 ) {
-  const adminUrl = new URL(`${ADMIN_ORIGIN}/${api}`);
-  if (owner && repo && ref) {
-    adminUrl.pathname += `/${owner}/${repo}/${ref}`;
+  const adminUrl = new URL(`${apiVersion === 2 ? ADMIN_ORIGIN_V2 : ADMIN_ORIGIN}`);
+  if (api === 'discover') {
+    adminUrl.pathname = `/${api}/`;
+  } else if (org && site) {
+    if (apiVersion === 2) {
+      // use admin api v2
+      if (['login', 'logout', 'profile'].includes(api)) {
+        adminUrl.pathname = `/${api}`;
+        adminUrl.searchParams.append('org', org);
+        adminUrl.searchParams.append('site', site);
+      } else {
+        adminUrl.pathname = `/${org}/sites/${site}/${api}`;
+      }
+    } else {
+      // use legacy admin api
+      adminUrl.pathname = `/${api}/${org}/${site}/${ref}`;
+    }
+    adminUrl.pathname += path;
   }
-  adminUrl.pathname += path;
   if (adminVersion) {
+    // use a specific ci admin version
     searchParams.append('hlx-admin-version', adminVersion);
   }
   searchParams.forEach((value, key) => {
