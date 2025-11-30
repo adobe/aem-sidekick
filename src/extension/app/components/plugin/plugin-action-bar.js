@@ -383,7 +383,9 @@ export class PluginActionBar extends ConnectedElement {
         this.removeAttribute('style');
       }
 
-      this.checkOverflow();
+      if (this.appStore.sidekick.getAttribute('open') === 'true') {
+        this.checkOverflow();
+      }
       this.resizeThrottle = null;
     }, 100);
   };
