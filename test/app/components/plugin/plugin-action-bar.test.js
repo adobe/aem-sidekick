@@ -1711,6 +1711,38 @@ describe('Plugin action bar', () => {
       expect(actionBar.hasAttribute('style')).to.be.false;
     });
 
+    it('calls checkOverflow on resize when sidekick is open', async () => {
+      const checkOverflowSpy = sidekickTest.sandbox.spy(actionBar, 'checkOverflow');
+
+      // Set sidekick to open state
+      appStore.sidekick.setAttribute('open', 'true');
+
+      // Trigger resize
+      actionBar.onWindowResize();
+
+      // Wait for throttled callback to execute
+      await aTimeout(200);
+
+      // checkOverflow should be called when sidekick is open
+      expect(checkOverflowSpy.calledOnce).to.be.true;
+    });
+
+    it('does not call checkOverflow on resize when sidekick is closed', async () => {
+      const checkOverflowSpy = sidekickTest.sandbox.spy(actionBar, 'checkOverflow');
+
+      // Set sidekick to closed state
+      appStore.sidekick.setAttribute('open', 'false');
+
+      // Trigger resize
+      actionBar.onWindowResize();
+
+      // Wait for throttled callback to execute
+      await aTimeout(200);
+
+      // checkOverflow should NOT be called when sidekick is closed
+      expect(checkOverflowSpy.called).to.be.false;
+    });
+
     it('does not move when not dragging', () => {
       expect(actionBar.isDragging).to.be.false;
 
