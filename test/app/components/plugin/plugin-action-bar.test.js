@@ -1280,6 +1280,9 @@ describe('Plugin action bar', () => {
         detail: { id: 'test-popover' },
       }));
 
+      // Wait for event to propagate
+      await Promise.resolve();
+
       // Verify the plugin's closePopover was called
       expect(closePopoverStub.calledOnce).to.be.true;
     });
@@ -1323,7 +1326,7 @@ describe('Plugin action bar', () => {
       expect(closePopoverStub.called).to.be.false;
     });
 
-    it('does nothing when ID is not provided in CLOSE_POPOVER event', async () => {
+    it('closes all popovers when ID is not provided in CLOSE_POPOVER event', async () => {
       sidekickTest.mockFetchEditorStatusSuccess();
       sidekickTest.mockFetchSidekickConfigSuccess(true, false, {
         plugins: [
@@ -1353,13 +1356,443 @@ describe('Plugin action bar', () => {
       // Mock the plugin's closePopover method
       const closePopoverStub = sidekickTest.sandbox.stub(plugin, 'closePopover');
 
-      // Dispatch CLOSE_POPOVER event without ID
+      // Dispatch CLOSE_POPOVER event without ID (close all)
       EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER, {
         detail: {},
       }));
 
-      // Verify the plugin's closePopover was NOT called
-      expect(closePopoverStub.called).to.be.false;
+      // Wait for event to propagate
+      await Promise.resolve();
+
+      // Verify the plugin's closePopover WAS called (closes all)
+      expect(closePopoverStub.calledOnce).to.be.true;
+    });
+  });
+
+  describe('test repositioning', () => {
+    let actionBar;
+
+    beforeEach(async () => {
+      sidekickTest
+        .mockFetchEditorStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false, false, defaultConfigUnpinnedPlugin)
+        .createSidekick();
+
+      // Wait for action bar to be created
+      await waitUntil(() => recursiveQuery(sidekickTest.sidekick, 'plugin-action-bar'), 'Action bar not found');
+
+      actionBar = recursiveQuery(sidekickTest.sidekick, 'plugin-action-bar');
+      expect(actionBar).to.exist;
+    });
+
+    it('starts dragging', () => {
+      const mouseEvent = new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 100,
+        clientY: 200,
+      });
+
+      actionBar.onDragStart(mouseEvent);
+
+      // Check drag state
+      expect(actionBar.isDragging).to.be.true;
+      expect(actionBar.dragStartX).to.equal(100);
+      expect(actionBar.dragStartY).to.equal(200);
+      expect(actionBar.getAttribute('dragging')).to.equal('true');
+
+      // Clean up
+      actionBar.onDragEnd();
+    });
+
+    it('closes plugin menu and sidekick menu on drag start', async () => {
+      // Spy on EventBus to verify CLOSE_POPOVER event is dispatched
+      let closePopoverDispatched = false;
+      const originalDispatchEvent = EventBus.instance.dispatchEvent.bind(EventBus.instance);
+      EventBus.instance.dispatchEvent = (event) => {
+        if (event.type === EVENTS.CLOSE_POPOVER) {
+          closePopoverDispatched = true;
+        }
+        return originalDispatchEvent(event);
+      };
+
+      const mouseEvent = new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 100,
+        clientY: 200,
+      });
+
+      actionBar.onDragStart(mouseEvent);
+
+      // Restore original method
+      EventBus.instance.dispatchEvent = originalDispatchEvent;
+
+      // Verify CLOSE_POPOVER event was dispatched
+      expect(closePopoverDispatched).to.be.true;
+
+      // Now verify that if menus exist, they get closed
+      const pluginMenu = await actionBar.pluginMenu;
+      const sidekickMenu = await actionBar.sidekickMenu;
+
+      if (pluginMenu && sidekickMenu) {
+        // Open both menus
+        pluginMenu.open = true;
+        sidekickMenu.open = true;
+
+        // Dispatch the event
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER));
+
+        // Wait for async event listener to complete
+        await new Promise((resolve) => {
+          setTimeout(resolve, 10);
+        });
+
+        // Verify menus are closed
+        expect(pluginMenu.open).to.be.false;
+        expect(sidekickMenu.open).to.be.false;
+      }
+
+      // Clean up
+      actionBar.onDragEnd();
+    });
+
+    it('does not start dragging when window width is <= 800px', () => {
+      // Mock window.innerWidth to be below 800px
+      const originalInnerWidth = window.innerWidth;
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 600,
+      });
+
+      const mouseEvent = new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 100,
+        clientY: 200,
+      });
+
+      actionBar.onDragStart(mouseEvent);
+
+      // Check drag state - should NOT be dragging
+      expect(actionBar.isDragging).to.be.false;
+
+      // Restore original innerWidth
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: originalInnerWidth,
+      });
+    });
+
+    it('moves element during drag', () => {
+      // Start drag
+      actionBar.onDragStart(new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 100,
+        clientY: 200,
+      }));
+
+      // Simulate mousemove
+      const mouseMoveEvent = new MouseEvent('mousemove', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 150,
+        clientY: 250,
+      });
+      actionBar.onDragMove(mouseMoveEvent);
+
+      // Check that position changed
+      expect(actionBar.style.transform).to.include('translate');
+      expect(actionBar.style.left).to.equal('50%');
+
+      // Clean up
+      actionBar.onDragEnd();
+    });
+
+    it('ends dragging', () => {
+      // Start drag
+      actionBar.onDragStart(new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 100,
+        clientY: 200,
+      }));
+
+      expect(actionBar.isDragging).to.be.true;
+
+      // End drag
+      actionBar.onDragEnd(new MouseEvent('mouseup', {
+        bubbles: true,
+        cancelable: true,
+      }));
+
+      // Check drag state
+      expect(actionBar.isDragging).to.be.false;
+      expect(actionBar.dragStartX).to.equal(0);
+      expect(actionBar.dragStartY).to.equal(0);
+      expect(actionBar.getAttribute('dragging')).to.be.null;
+    });
+
+    it('ends dragging when window loses focus', () => {
+      // Start drag
+      actionBar.onDragStart(new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 100,
+        clientY: 200,
+      }));
+
+      expect(actionBar.isDragging).to.be.true;
+
+      // Simulate window blur
+      window.dispatchEvent(new Event('blur'));
+
+      // Check drag state
+      expect(actionBar.isDragging).to.be.false;
+      expect(actionBar.getAttribute('dragging')).to.be.null;
+    });
+
+    it('prevents text selection during drag', () => {
+      // Start drag
+      actionBar.onDragStart(new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 100,
+        clientY: 200,
+      }));
+
+      // Try to select text
+      const selectEvent = new Event('selectstart', {
+        bubbles: true,
+        cancelable: true,
+      });
+      const preventDefaultSpy = sidekickTest.sandbox.spy(selectEvent, 'preventDefault');
+
+      actionBar.preventSelection(selectEvent);
+
+      // Check that selection was prevented
+      expect(preventDefaultSpy.calledOnce).to.be.true;
+
+      // Clean up
+      actionBar.onDragEnd();
+    });
+
+    it('constrains element to viewport bounds - left edge', async () => {
+      // Set position beyond left edge
+      actionBar.style.left = '50%';
+      actionBar.style.transform = 'translate(-1000px, 0px)';
+      actionBar.style.bottom = '20px';
+
+      actionBar.constrainToViewport();
+
+      // Check that position was constrained
+      // Should be constrained to not go off-screen
+      const rect = actionBar.getBoundingClientRect();
+      expect(rect.left).to.be.at.least(0);
+    });
+
+    it('constrains element to viewport bounds - right edge', async () => {
+      // Set position beyond right edge
+      actionBar.style.left = '50%';
+      actionBar.style.transform = 'translate(1000px, 0px)';
+      actionBar.style.bottom = '20px';
+
+      actionBar.constrainToViewport();
+
+      // Check that position was constrained
+      const rect = actionBar.getBoundingClientRect();
+      expect(rect.right).to.be.at.most(window.innerWidth);
+    });
+
+    it('constrains element to viewport bounds - top edge', async () => {
+      // Set position beyond top edge
+      actionBar.style.left = '50%';
+      actionBar.style.transform = 'translate(0px, 0px)';
+      actionBar.style.bottom = '2000px';
+
+      actionBar.constrainToViewport();
+
+      // Check that position was constrained
+      const rect = actionBar.getBoundingClientRect();
+      expect(rect.top).to.be.at.least(0);
+    });
+
+    it('constrains element to viewport bounds - bottom edge', async () => {
+      // Set position beyond bottom edge
+      actionBar.style.left = '50%';
+      actionBar.style.transform = 'translate(0px, 0px)';
+      actionBar.style.bottom = '-1000px';
+
+      actionBar.constrainToViewport();
+
+      // Check that position was constrained
+      const bottom = parseInt(actionBar.style.bottom, 10);
+      expect(bottom).to.be.at.least(0);
+    });
+
+    it('does not move if not dragging', async () => {
+      // Simulate mousemove without starting drag
+      const initialTransform = actionBar.style.transform;
+
+      window.dispatchEvent(new MouseEvent('mousemove', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 150,
+        clientY: 250,
+      }));
+
+      // Position should not change
+      expect(actionBar.style.transform).to.equal(initialTransform);
+    });
+
+    it('does not end drag if not dragging', async () => {
+      expect(actionBar.isDragging).to.be.false;
+
+      // Try to end drag
+      actionBar.onDragEnd();
+
+      // Should be a no-op
+      expect(actionBar.isDragging).to.be.false;
+    });
+
+    it('clears resize throttle on disconnect', async () => {
+      // Trigger a resize to set the throttle
+      actionBar.onWindowResize();
+
+      // Verify throttle was set
+      expect(actionBar.resizeThrottle).to.not.be.null;
+
+      // Disconnect the component
+      actionBar.disconnectedCallback();
+
+      // Verify throttle was cleared
+      expect(actionBar.resizeThrottle).to.be.null;
+
+      // Verify the timeout was actually cleared by checking it doesn't fire
+      const requestUpdateSpy = sidekickTest.sandbox.spy(actionBar, 'requestUpdate');
+
+      // Wait longer than the throttle delay (150ms)
+      await aTimeout(200);
+
+      // requestUpdate should not have been called because the timeout was cleared
+      expect(requestUpdateSpy.called).to.be.false;
+    });
+
+    it('throttles resize events', () => {
+      // First resize should set throttle
+      actionBar.onWindowResize();
+      expect(actionBar.resizeThrottle).to.not.be.null;
+
+      const firstThrottleId = actionBar.resizeThrottle;
+
+      // Second immediate resize should return early and keep same throttle
+      actionBar.onWindowResize();
+      expect(actionBar.resizeThrottle).to.equal(firstThrottleId);
+    });
+
+    it('removes custom position on resize after throttle', async () => {
+      // Set custom position
+      actionBar.style.left = '50%';
+      actionBar.style.transform = 'translate(100px, 0px)';
+      actionBar.style.bottom = '50px';
+
+      expect(actionBar.hasAttribute('style')).to.be.true;
+
+      // Trigger resize
+      actionBar.onWindowResize();
+
+      // Wait for throttled callback to execute
+      await aTimeout(200);
+
+      // Style should be removed
+      expect(actionBar.hasAttribute('style')).to.be.false;
+    });
+
+    it('does not move when not dragging', () => {
+      expect(actionBar.isDragging).to.be.false;
+
+      const mouseMoveEvent = new MouseEvent('mousemove', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 150,
+        clientY: 250,
+      });
+
+      // Should return early and not throw
+      actionBar.onDragMove(mouseMoveEvent);
+
+      // No error means early return worked
+      expect(actionBar.isDragging).to.be.false;
+    });
+
+    it('handles drag start without existing transform', () => {
+      // Ensure no transform is set
+      actionBar.style.transform = 'none';
+
+      const mouseEvent = new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 100,
+        clientY: 200,
+      });
+
+      actionBar.onDragStart(mouseEvent);
+
+      // initialLeft should be 0 when no transform exists
+      expect(actionBar.initialLeft).to.equal(0);
+      expect(actionBar.isDragging).to.be.true;
+
+      // Clean up
+      actionBar.onDragEnd();
+    });
+
+    it('does not prevent selection when not dragging', () => {
+      expect(actionBar.isDragging).to.be.false;
+
+      const selectEvent = new Event('selectstart', {
+        bubbles: true,
+        cancelable: true,
+      });
+      const preventDefaultSpy = sidekickTest.sandbox.spy(selectEvent, 'preventDefault');
+      const stopPropagationSpy = sidekickTest.sandbox.spy(selectEvent, 'stopPropagation');
+
+      // Call preventSelection when not dragging
+      actionBar.preventSelection(selectEvent);
+
+      // Selection should NOT be prevented
+      expect(preventDefaultSpy.called).to.be.false;
+      expect(stopPropagationSpy.called).to.be.false;
+    });
+
+    it('constrains using computed bottom when style.bottom is not set', () => {
+      // Set position without setting style.bottom (only transform)
+      actionBar.style.left = '50%';
+      actionBar.style.transform = 'translate(-2000px, 0px)';
+      // Don't set actionBar.style.bottom - it should use computed style
+
+      // Call constrainToViewport
+      actionBar.constrainToViewport();
+
+      // Should successfully constrain without error
+      const rect = actionBar.getBoundingClientRect();
+      expect(rect.left).to.be.at.least(0);
+    });
+
+    it('constrains using 0 when bottom value is invalid', () => {
+      // Set invalid bottom value that parseInt cannot parse
+      actionBar.style.left = '50%';
+      actionBar.style.transform = 'translate(-2000px, 0px)';
+      actionBar.style.bottom = 'auto';
+
+      // Call constrainToViewport - should use 0 as fallback
+      actionBar.constrainToViewport();
+
+      // Should successfully constrain without error
+      const rect = actionBar.getBoundingClientRect();
+      expect(rect.left).to.be.at.least(0);
     });
   });
 });

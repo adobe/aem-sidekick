@@ -1,3 +1,46 @@
+# [7.25.0](https://github.com/adobe/aem-sidekick/compare/v7.24.1...v7.25.0) (2025-11-18)
+
+
+### Features
+
+* **env-switcher:** show source item for DA by default ([#731](https://github.com/adobe/aem-sidekick/issues/731)) ([d868c8f](https://github.com/adobe/aem-sidekick/commit/d868c8f33d4e776f0d57ebe1ef60f2d813c8f965))
+
+## [7.24.1](https://github.com/adobe/aem-sidekick/compare/v7.24.0...v7.24.1) (2025-11-17)
+
+
+### Bug Fixes
+
+* 429 from backend on status request shows generic error message ([#728](https://github.com/adobe/aem-sidekick/issues/728)) ([4396e27](https://github.com/adobe/aem-sidekick/commit/4396e27f5b2d72d8a5c75f7a32eed804a2801f33))
+
+# [7.24.0](https://github.com/adobe/aem-sidekick/compare/v7.23.3...v7.24.0) (2025-11-13)
+
+
+### Features
+
+* ability to reposition sidekick ([#720](https://github.com/adobe/aem-sidekick/issues/720)) ([7a44e38](https://github.com/adobe/aem-sidekick/commit/7a44e383484d422c8ba1985be7b9979c3848042c)), closes [#714](https://github.com/adobe/aem-sidekick/issues/714)
+
+## [7.23.3](https://github.com/adobe/aem-sidekick/compare/v7.23.2...v7.23.3) (2025-11-12)
+
+
+### Bug Fixes
+
+* popover iframe should allow clipboard write ([#726](https://github.com/adobe/aem-sidekick/issues/726)) ([6406545](https://github.com/adobe/aem-sidekick/commit/6406545ffbc934ffc85ae736cfe1844063ec625b))
+
+## [7.23.2](https://github.com/adobe/aem-sidekick/compare/v7.23.1...v7.23.2) (2025-11-10)
+
+
+### Bug Fixes
+
+* revert sharepoint lookup optimization ([#722](https://github.com/adobe/aem-sidekick/issues/722)) ([e7aafd4](https://github.com/adobe/aem-sidekick/commit/e7aafd44da9cdca5e9e6ed230505c34c0a98d3df))
+
+## [7.23.1](https://github.com/adobe/aem-sidekick/compare/v7.23.0...v7.23.1) (2025-11-10)
+
+
+### Bug Fixes
+
+* improve error messages ([#719](https://github.com/adobe/aem-sidekick/issues/719)) ([d1b0c12](https://github.com/adobe/aem-sidekick/commit/d1b0c12010c85aa0940669991e07a63cfbada1c4))
+* improve error messages ([#719](https://github.com/adobe/aem-sidekick/issues/719)) ([6cbe8bc](https://github.com/adobe/aem-sidekick/commit/6cbe8bcea0e14b11f0f5ff91857cb42eb1ec432f))
+
 # [7.23.0](https://github.com/adobe/aem-sidekick/compare/v7.22.2...v7.23.0) (2025-11-06)
 
 

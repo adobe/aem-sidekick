@@ -35,33 +35,6 @@ export function isSharePointHost(url, projects = []) {
 }
 
 /**
- * Creates a cache key for URLs to group related resources and reduce API calls.
- * - SharePoint site URLs: Groups by site to share cache across related documents
- * - All other URLs: Returns original URL (no grouping)
- * @param {string} url The URL to create a cache key for
- * @returns {string} The cache key
- */
-function getCacheKey(url) {
-  try {
-    // SharePoint URLs - group by site for optimization
-    if (isSharePointHost(url)) {
-      const { hostname, pathname } = new URL(url);
-
-      // Site collections - group by site
-      // https://tenant.sharepoint.com/sites/sitename/... -> https://tenant.sharepoint.com/sites/sitename
-      const siteMatch = pathname.match(/^\/sites\/([^/]+)/);
-      if (siteMatch) {
-        return `${hostname}/sites/${siteMatch[1]}`;
-      }
-    }
-  } catch (e) {
-    // If URL parsing fails, return original URL
-  }
-  // For all other URLs, return the original URL
-  return url;
-}
-
-/**
  * Determines if a URL has a Google Drive host.
  * @param {string} url The tab URL
  * @returns {boolean} {@code true} if Google Drive host, else {@code false}
@@ -199,9 +172,7 @@ class UrlCache {
    */
   async get({ url }) {
     const urlCache = await getConfig('session', 'urlCache') || [];
-    const cacheKey = getCacheKey(url);
-    const entry = urlCache.find((e) => e.url === cacheKey);
-
+    const entry = urlCache.find((e) => e.url === url);
     if (entry && (!entry.expiry || entry.expiry > Date.now())) {
       // return results from fresh cache entry
       log.info(`url cache entry found for ${url}`, entry);
@@ -284,9 +255,7 @@ class UrlCache {
             // in this case, we don't want to cache a potentially incomplete discovery response.
             // otherwise cache for 2h.
             const expiry = info ? Date.now() + DISCOVERY_CACHE_TTL : 0;
-
-            // Use pattern-based cache key to group related resources
-            const entry = createCacheEntry(getCacheKey(url), results, expiry);
+            const entry = createCacheEntry(url, results, expiry);
             const entryIndex = urlCache.findIndex((e) => e.url === entry.url);
             if (entryIndex >= 0) {
               // update expired cache entry

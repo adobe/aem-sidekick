@@ -317,6 +317,9 @@
   "dark_mode": {
     "message": "Tema escuro"
   },
+  "drag_to_reposition": {
+    "message": "Arraste para reposicionar"
+  },
   "delete": {
     "message": "Excluir"
   },
