@@ -317,9 +317,6 @@
   "dark_mode": {
     "message": "Tema oscuro"
   },
-  "drag_to_reposition": {
-    "message": "Arrastrar para cambiar la posición"
-  },
   "delete": {
     "message": "Eliminar"
   },
@@ -373,6 +370,9 @@
   },
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
+  },
+  "drag_to_reposition": {
+    "message": "Arrastrar para cambiar la posición"
   },
   "edit": {
     "message": "Editar"
