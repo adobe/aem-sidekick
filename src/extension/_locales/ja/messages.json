@@ -317,9 +317,6 @@
   "dark_mode": {
     "message": "ダークテーマ"
   },
-  "drag_to_reposition": {
-    "message": "ドラッグして位置を変更"
-  },
   "delete": {
     "message": "削除"
   },
@@ -373,6 +370,9 @@
   },
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
+  },
+  "drag_to_reposition": {
+    "message": "ドラッグして再配置"
   },
   "edit": {
     "message": "編集"

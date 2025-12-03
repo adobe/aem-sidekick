@@ -317,9 +317,6 @@
   "dark_mode": {
     "message": "Dunkles Design"
   },
-  "drag_to_reposition": {
-    "message": "Zum Neupositionieren ziehen"
-  },
   "delete": {
     "message": "Löschen"
   },
@@ -373,6 +370,9 @@
   },
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
+  },
+  "drag_to_reposition": {
+    "message": "Zum Neupositionieren ziehen"
   },
   "edit": {
     "message": "Bearbeiten"
