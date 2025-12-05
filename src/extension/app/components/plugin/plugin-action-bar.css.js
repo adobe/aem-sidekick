@@ -15,6 +15,10 @@
 import { css } from 'lit';
 
 export const style = css`
+  :host {
+  box-shadow: var(--sidekick-box-shadow);
+}
+
   action-bar > div.action-group {
     display: flex;
     padding: 12px;
