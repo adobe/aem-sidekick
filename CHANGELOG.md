@@ -1,3 +1,12 @@
+## [7.25.1](https://github.com/adobe/aem-sidekick/compare/v7.25.0...v7.25.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* closed sidekick can crash page when being resized ([#739](https://github.com/adobe/aem-sidekick/issues/739)) ([6348766](https://github.com/adobe/aem-sidekick/commit/6348766e946d9ee67a9a583add3cd8045a0ca897))
+* **regression:** add back border radius ([c8754e9](https://github.com/adobe/aem-sidekick/commit/c8754e96fc319acdd08cc4356cf9e4b0a60b7c4c))
+* restore box-shadow visibility for action bar ([#733](https://github.com/adobe/aem-sidekick/issues/733)) ([eaf05aa](https://github.com/adobe/aem-sidekick/commit/eaf05aa7860d11c5e665619a6dccf180e57c3168))
+
 # [7.25.0](https://github.com/adobe/aem-sidekick/compare/v7.24.1...v7.25.0) (2025-11-18)
 
 
