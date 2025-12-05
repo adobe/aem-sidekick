@@ -17,6 +17,7 @@ import { css } from 'lit';
 export const style = css`
   :host {
   box-shadow: var(--sidekick-box-shadow);
+  border-radius: var(--spectrum2-sidekick-border-radius);
 }
 
   action-bar > div.action-group {
@@ -196,6 +197,10 @@ export const style = css`
   }
 
   @media (max-width: 800px) {
+    :host {
+      border-radius: 0;
+    }
+
     action-bar .logo {
       cursor: default;
     }
