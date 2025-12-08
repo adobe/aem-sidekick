@@ -1,3 +1,10 @@
+## [7.25.2](https://github.com/adobe/aem-sidekick/compare/v7.25.1...v7.25.2) (2025-12-08)
+
+
+### Bug Fixes
+
+* ensure relative image urls are handled correctly ([#734](https://github.com/adobe/aem-sidekick/issues/734)) ([f823b5e](https://github.com/adobe/aem-sidekick/commit/f823b5edefe5b732f94d42a14c2380c07ccfdbd7))
+
 ## [7.25.1](https://github.com/adobe/aem-sidekick/compare/v7.25.0...v7.25.1) (2025-12-05)
 
 
