@@ -197,6 +197,30 @@
   "close_sidekick": {
     "message": "Sidekick 닫기"
   },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "urls"
+  },
+  "column_name_path": {
+    "message": "경로"
+  },
+  "column_name_paths": {
+    "message": "경로"
+  },
+  "column_name_href": {
+    "message": "href"
+  },
+  "column_name_hrefs": {
+    "message": "hrefs"
+  },
+  "column_name_link": {
+    "message": "링크"
+  },
+  "column_name_links": {
+    "message": "링크"
+  },
   "code_state": {
     "message": "코드 파일에 대해 사용 가능한 액션 없음"
   },
@@ -307,6 +331,9 @@
   },
   "copy_urls": {
     "message": "$1개 URL 복사"
+  },
+  "copy_all_values": {
+    "message": "모든 값 복사"
   },
   "copy_urls_error": {
     "message": "클립보드에 복사하지 못했습니다. 다시 시도해 주십시오."
