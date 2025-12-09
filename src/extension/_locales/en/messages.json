@@ -137,6 +137,38 @@
     "close_sidekick": {
       "message": "Close Sidekick"
     },
+    "column_name_url": {
+      "message": "url",
+      "description": "URL column name in all lower case"
+    },
+    "column_name_urls": {
+      "message": "urls",
+      "description": "URLs column name in all lower case"
+    },
+    "column_name_path": {
+      "message": "path",
+      "description": "Path column name in all lower case"
+    },
+    "column_name_paths": {
+      "message": "paths",
+      "description": "Paths column name in all lower case"
+    },
+    "column_name_href": {
+      "message": "href",
+      "description": "HREF column name in all lower case"
+    },
+    "column_name_hrefs": {
+      "message": "hrefs",
+      "description": "HREFs column name in all lower case"
+    },
+    "column_name_link": {
+      "message": "link",
+      "description": "Link column name in all lower case"
+    },
+    "column_name_links": {
+      "message": "links",
+      "description": "Links column name in all lower case"
+    },
     "config_add_success": {
       "message": "Project added to Sidekick"
     },
@@ -246,6 +278,9 @@
     },
     "copy_urls": {
       "message": "Copy $1 URLs"
+    },
+    "copy_all_values": {
+      "message": "Copy all values"
     },
     "copy_urls_error": {
       "message": "Copy to clipboard failed. Please try again."
