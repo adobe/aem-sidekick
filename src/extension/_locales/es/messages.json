@@ -197,6 +197,30 @@
   "close_sidekick": {
     "message": "Cerrar Sidekick"
   },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "urls"
+  },
+  "column_name_path": {
+    "message": "ruta"
+  },
+  "column_name_paths": {
+    "message": "rutas"
+  },
+  "column_name_href": {
+    "message": "href"
+  },
+  "column_name_hrefs": {
+    "message": "hrefs"
+  },
+  "column_name_link": {
+    "message": "enlace"
+  },
+  "column_name_links": {
+    "message": "enlaces"
+  },
   "code_state": {
     "message": "No hay acciones disponibles para los archivos de código"
   },
@@ -307,6 +331,9 @@
   },
   "copy_urls": {
     "message": "Copiar direcciones URL de $1"
+  },
+  "copy_all_values": {
+    "message": "Copiar todos los valores de $1"
   },
   "copy_urls_error": {
     "message": "Error al copiar en el portapapeles. Inténtelo de nuevo."
