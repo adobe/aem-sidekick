@@ -198,28 +198,36 @@
     "message": "Cerrar Sidekick"
   },
   "column_name_url": {
-    "message": "url"
+    "message": "url",
+    "description": "URL column name in all lower case"
   },
   "column_name_urls": {
-    "message": "urls"
+    "message": "urls",
+    "description": "URLs column name in all lower case"
   },
   "column_name_path": {
-    "message": "ruta"
+    "message": "ruta",
+    "description": "Path column name in all lower case"
   },
   "column_name_paths": {
-    "message": "rutas"
+    "message": "rutas",
+    "description": "Paths column name in all lower case"
   },
   "column_name_href": {
-    "message": "href"
+    "message": "href",
+    "description": "HREF column name in all lower case"
   },
   "column_name_hrefs": {
-    "message": "hrefs"
+    "message": "hrefs",
+    "description": "HREFs column name in all lower case"
   },
   "column_name_link": {
-    "message": "enlace"
+    "message": "enlace",
+    "description": "Link column name in all lower case"
   },
   "column_name_links": {
-    "message": "enlaces"
+    "message": "enlaces",
+    "description": "Links column name in all lower case"
   },
   "code_state": {
     "message": "No hay acciones disponibles para los archivos de código"

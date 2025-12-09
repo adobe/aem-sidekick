@@ -198,28 +198,36 @@
     "message": "關閉 Sidekick"
   },
   "column_name_url": {
-    "message": "url"
+    "message": "url",
+    "description": "URL column name in all lower case"
   },
   "column_name_urls": {
-    "message": "urls"
+    "message": "urls",
+    "description": "URLs column name in all lower case"
   },
   "column_name_path": {
-    "message": "路徑"
+    "message": "路徑",
+    "description": "Path column name in all lower case"
   },
   "column_name_paths": {
-    "message": "路徑"
+    "message": "路徑",
+    "description": "Paths column name in all lower case"
   },
   "column_name_href": {
-    "message": "href"
+    "message": "href",
+    "description": "HREF column name in all lower case"
   },
   "column_name_hrefs": {
-    "message": "hrefs"
+    "message": "hrefs",
+    "description": "HREFs column name in all lower case"
   },
   "column_name_link": {
-    "message": "連結"
+    "message": "連結",
+    "description": "Link column name in all lower case"
   },
   "column_name_links": {
-    "message": "連結"
+    "message": "連結",
+    "description": "Links column name in all lower case"
   },
   "code_state": {
     "message": "沒有可用於程式碼檔案的動作"
