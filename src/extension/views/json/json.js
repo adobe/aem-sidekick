@@ -518,12 +518,41 @@ export class JSONView extends LitElement {
 
   /**
    * Check if a column name is URL or Path (case insensitive)
+   * Checks against both English terms and localized column names
    * @param {string} columnName The column name to check
    * @returns {boolean} True if the column is URL or Path
    */
   isUrlOrPathColumn(columnName) {
     const normalizedName = columnName.toLowerCase();
-    return ['url', 'urls', 'path', 'paths', 'href', 'link', 'links'].includes(normalizedName);
+
+    // Check English hardcoded values
+    const englishTerms = ['url', 'urls', 'path', 'paths', 'href', 'hrefs', 'link', 'links'];
+    if (englishTerms.includes(normalizedName)) {
+      return true;
+    }
+
+    // Check localized values from all supported languages
+    if (this.languageDict) {
+      const localizedTerms = [
+        'column_name_url',
+        'column_name_urls',
+        'column_name_path',
+        'column_name_paths',
+        'column_name_href',
+        'column_name_hrefs',
+        'column_name_link',
+        'column_name_links',
+      ];
+
+      for (const key of localizedTerms) {
+        const localizedValue = i18n(this.languageDict, key);
+        if (localizedValue && normalizedName === localizedValue.toLowerCase()) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -624,7 +653,7 @@ export class JSONView extends LitElement {
           return `<sp-table-head-cell sortable sort-key="${header}" class="column-with-copy">
             <div class="header-with-copy">
               <span>${displayName}</span>
-              <button class="copy-column-btn" data-column="${header}" title="Copy all ${displayName}s">
+              <button class="copy-column-btn" data-column="${header}" title="${i18n(this.languageDict, 'copy_all_values').replace('$1', displayName)}">
                 <sp-icon-copy></sp-icon-copy>
               </button>
             </div>

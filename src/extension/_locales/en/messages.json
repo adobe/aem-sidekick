@@ -137,6 +137,30 @@
     "close_sidekick": {
       "message": "Close Sidekick"
     },
+    "column_name_url": {
+      "message": "url"
+    },
+    "column_name_urls": {
+      "message": "urls"
+    },
+    "column_name_path": {
+      "message": "path"
+    },
+    "column_name_paths": {
+      "message": "paths"
+    },
+    "column_name_href": {
+      "message": "href"
+    },
+    "column_name_hrefs": {
+      "message": "hrefs"
+    },
+    "column_name_link": {
+      "message": "link"
+    },
+    "column_name_links": {
+      "message": "links"
+    },
     "config_add_success": {
       "message": "Project added to Sidekick"
     },
@@ -246,6 +270,9 @@
     },
     "copy_urls": {
       "message": "Copy $1 URLs"
+    },
+    "copy_all_values": {
+      "message": "Copy all $1 values"
     },
     "copy_urls_error": {
       "message": "Copy to clipboard failed. Please try again."
