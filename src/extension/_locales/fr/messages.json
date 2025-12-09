@@ -333,7 +333,7 @@
     "message": "Copier $1 URL"
   },
   "copy_all_values": {
-    "message": "Copier toutes les valeurs de $1"
+    "message": "Copier toutes les valeurs"
   },
   "copy_urls_error": {
     "message": "La copie dans le presse-papiers a échoué. Veuillez réessayer."

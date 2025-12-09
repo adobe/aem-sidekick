@@ -653,7 +653,7 @@ export class JSONView extends LitElement {
           return `<sp-table-head-cell sortable sort-key="${header}" class="column-with-copy">
             <div class="header-with-copy">
               <span>${displayName}</span>
-              <button class="copy-column-btn" data-column="${header}" title="${i18n(this.languageDict, 'copy_all_values').replace('$1', displayName)}">
+              <button class="copy-column-btn" data-column="${header}" title="${i18n(this.languageDict, 'copy_all_values')}">
                 <sp-icon-copy></sp-icon-copy>
               </button>
             </div>

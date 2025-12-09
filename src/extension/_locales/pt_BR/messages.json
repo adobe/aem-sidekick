@@ -333,7 +333,7 @@
     "message": "Copiar $1 URLs"
   },
   "copy_all_values": {
-    "message": "Copiar todos os valores de $1"
+    "message": "Copiar todos os valores"
   },
   "copy_urls_error": {
     "message": "Falha ao copiar para a área de transferência. Tente novamente."

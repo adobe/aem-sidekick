@@ -272,7 +272,7 @@
       "message": "Copy $1 URLs"
     },
     "copy_all_values": {
-      "message": "Copy all $1 values"
+      "message": "Copy all values"
     },
     "copy_urls_error": {
       "message": "Copy to clipboard failed. Please try again."

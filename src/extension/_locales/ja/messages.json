@@ -333,7 +333,7 @@
     "message": "$1 個の URL をコピー"
   },
   "copy_all_values": {
-    "message": "すべての $1 の値をコピー"
+    "message": "すべての値をコピー"
   },
   "copy_urls_error": {
     "message": "クリップボードへのコピーに失敗しました。もう一度試してください。"

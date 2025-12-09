@@ -333,7 +333,7 @@
     "message": "复制 $1 个 URL"
   },
   "copy_all_values": {
-    "message": "复制所有 $1 值"
+    "message": "复制所有值"
   },
   "copy_urls_error": {
     "message": "无法复制到剪贴板。请稍后再试。"

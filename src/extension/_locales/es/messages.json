@@ -333,7 +333,7 @@
     "message": "Copiar direcciones URL de $1"
   },
   "copy_all_values": {
-    "message": "Copiar todos los valores de $1"
+    "message": "Copiar todos los valores"
   },
   "copy_urls_error": {
     "message": "Error al copiar en el portapapeles. Inténtelo de nuevo."

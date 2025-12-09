@@ -333,7 +333,7 @@
     "message": "$1 URLs kopieren"
   },
   "copy_all_values": {
-    "message": "Alle $1-Werte kopieren"
+    "message": "Alle Werte kopieren"
   },
   "copy_urls_error": {
     "message": "Kopieren in Zwischenablage fehlgeschlagen. Bitte versuchen Sie es erneut."
