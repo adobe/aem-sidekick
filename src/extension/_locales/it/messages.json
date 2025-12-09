@@ -198,36 +198,28 @@
     "message": "Chiudi barra laterale"
   },
   "column_name_url": {
-    "message": "url",
-    "description": "URL column name in all lower case"
+    "message": "url"
   },
   "column_name_urls": {
-    "message": "urls",
-    "description": "URLs column name in all lower case"
+    "message": "urls"
   },
   "column_name_path": {
-    "message": "percorso",
-    "description": "Path column name in all lower case"
+    "message": "percorso"
   },
   "column_name_paths": {
-    "message": "percorsi",
-    "description": "Paths column name in all lower case"
+    "message": "percorsi"
   },
   "column_name_href": {
-    "message": "href",
-    "description": "HREF column name in all lower case"
+    "message": "href"
   },
   "column_name_hrefs": {
-    "message": "hrefs",
-    "description": "HREFs column name in all lower case"
+    "message": "hrefs"
   },
   "column_name_link": {
-    "message": "collegamento",
-    "description": "Link column name in all lower case"
+    "message": "collegamento"
   },
   "column_name_links": {
-    "message": "collegamenti",
-    "description": "Links column name in all lower case"
+    "message": "collegamenti"
   },
   "code_state": {
     "message": "Nessuna azione disponibile per i file di codice"

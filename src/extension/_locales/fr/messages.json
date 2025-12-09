@@ -198,36 +198,28 @@
     "message": "Fermer Sidekick"
   },
   "column_name_url": {
-    "message": "url",
-    "description": "URL column name in all lower case"
+    "message": "url"
   },
   "column_name_urls": {
-    "message": "urls",
-    "description": "URLs column name in all lower case"
+    "message": "urls"
   },
   "column_name_path": {
-    "message": "chemin",
-    "description": "Path column name in all lower case"
+    "message": "chemin"
   },
   "column_name_paths": {
-    "message": "chemins",
-    "description": "Paths column name in all lower case"
+    "message": "chemins"
   },
   "column_name_href": {
-    "message": "href",
-    "description": "HREF column name in all lower case"
+    "message": "href"
   },
   "column_name_hrefs": {
-    "message": "hrefs",
-    "description": "HREFs column name in all lower case"
+    "message": "hrefs"
   },
   "column_name_link": {
-    "message": "lien",
-    "description": "Link column name in all lower case"
+    "message": "lien"
   },
   "column_name_links": {
-    "message": "liens",
-    "description": "Links column name in all lower case"
+    "message": "liens"
   },
   "code_state": {
     "message": "Aucune action disponible pour les fichiers de code"

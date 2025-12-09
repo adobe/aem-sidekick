@@ -198,36 +198,28 @@
     "message": "关闭 Sidekick"
   },
   "column_name_url": {
-    "message": "url",
-    "description": "URL column name in all lower case"
+    "message": "url"
   },
   "column_name_urls": {
-    "message": "urls",
-    "description": "URLs column name in all lower case"
+    "message": "urls"
   },
   "column_name_path": {
-    "message": "路径",
-    "description": "Path column name in all lower case"
+    "message": "路径"
   },
   "column_name_paths": {
-    "message": "路径",
-    "description": "Paths column name in all lower case"
+    "message": "路径"
   },
   "column_name_href": {
-    "message": "href",
-    "description": "HREF column name in all lower case"
+    "message": "href"
   },
   "column_name_hrefs": {
-    "message": "hrefs",
-    "description": "HREFs column name in all lower case"
+    "message": "hrefs"
   },
   "column_name_link": {
-    "message": "链接",
-    "description": "Link column name in all lower case"
+    "message": "链接"
   },
   "column_name_links": {
-    "message": "链接",
-    "description": "Links column name in all lower case"
+    "message": "链接"
   },
   "code_state": {
     "message": "代码文件无可用操作"

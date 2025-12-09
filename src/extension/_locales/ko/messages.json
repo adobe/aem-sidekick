@@ -198,36 +198,28 @@
     "message": "Sidekick 닫기"
   },
   "column_name_url": {
-    "message": "url",
-    "description": "URL column name in all lower case"
+    "message": "url"
   },
   "column_name_urls": {
-    "message": "urls",
-    "description": "URLs column name in all lower case"
+    "message": "urls"
   },
   "column_name_path": {
-    "message": "경로",
-    "description": "Path column name in all lower case"
+    "message": "경로"
   },
   "column_name_paths": {
-    "message": "경로",
-    "description": "Paths column name in all lower case"
+    "message": "경로"
   },
   "column_name_href": {
-    "message": "href",
-    "description": "HREF column name in all lower case"
+    "message": "href"
   },
   "column_name_hrefs": {
-    "message": "hrefs",
-    "description": "HREFs column name in all lower case"
+    "message": "hrefs"
   },
   "column_name_link": {
-    "message": "링크",
-    "description": "Link column name in all lower case"
+    "message": "링크"
   },
   "column_name_links": {
-    "message": "링크",
-    "description": "Links column name in all lower case"
+    "message": "링크"
   },
   "code_state": {
     "message": "코드 파일에 대해 사용 가능한 액션 없음"
