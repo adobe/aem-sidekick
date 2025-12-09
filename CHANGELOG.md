@@ -1,3 +1,10 @@
+## [7.25.3](https://github.com/adobe/aem-sidekick/compare/v7.25.2...v7.25.3) (2025-12-09)
+
+
+### Bug Fixes
+
+* localize tooltip and activate copy all button for localized column names for path/url/href/link ([ad9d866](https://github.com/adobe/aem-sidekick/commit/ad9d86602296c593f42df5c871807b2101cd6fc6))
+
 ## [7.25.2](https://github.com/adobe/aem-sidekick/compare/v7.25.1...v7.25.2) (2025-12-08)
 
 
