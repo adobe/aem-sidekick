@@ -102,7 +102,7 @@ describe('Test auth', () => {
           },
           condition: {
             excludedInitiatorDomains: ['da.live'],
-            regexFilter: '^https://(admin.hlx.page|api.aem.live)/(config/test\\.json|[a-z]+/test/.*)',
+            regexFilter: '^https://(admin.hlx.page|api.aem.live)/(config/test\\.json|(?:[a-z]+/)?test/.*)',
             requestDomains: [
               'admin.hlx.page',
               'api.aem.live',
@@ -187,7 +187,7 @@ describe('Test auth', () => {
           },
           condition: {
             excludedInitiatorDomains: ['da.live'],
-            regexFilter: '^https://(admin.hlx.page|api.aem.live)/(config/test\\.json|[a-z]+/test/.*)',
+            regexFilter: '^https://(admin.hlx.page|api.aem.live)/(config/test\\.json|(?:[a-z]+/)?test/.*)',
             requestDomains: [
               'admin.hlx.page',
               'api.aem.live',
@@ -347,7 +347,7 @@ describe('Test auth', () => {
           },
           condition: {
             excludedInitiatorDomains: ['da.live'],
-            regexFilter: '^https://(admin.hlx.page|api.aem.live)/(config/test\\.json|[a-z]+/test/.*)',
+            regexFilter: '^https://(admin.hlx.page|api.aem.live)/(config/test\\.json|(?:[a-z]+/)?test/.*)',
             requestDomains: [
               'admin.hlx.page',
               'api.aem.live',
