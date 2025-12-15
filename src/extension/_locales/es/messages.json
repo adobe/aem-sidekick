@@ -197,17 +197,8 @@
   "close_sidekick": {
     "message": "Cerrar Sidekick"
   },
-  "column_name_url": {
-    "message": "url"
-  },
-  "column_name_urls": {
-    "message": "urls"
-  },
-  "column_name_path": {
-    "message": "ruta"
-  },
-  "column_name_paths": {
-    "message": "rutas"
+  "code_state": {
+    "message": "No hay acciones disponibles para los archivos de código"
   },
   "column_name_href": {
     "message": "href"
@@ -216,13 +207,22 @@
     "message": "hrefs"
   },
   "column_name_link": {
-    "message": "enlace"
+    "message": "vínculo"
   },
   "column_name_links": {
-    "message": "enlaces"
+    "message": "vínculos"
   },
-  "code_state": {
-    "message": "No hay acciones disponibles para los archivos de código"
+  "column_name_path": {
+    "message": "ruta"
+  },
+  "column_name_paths": {
+    "message": "rutas"
+  },
+  "column_name_url": {
+    "message": "URL"
+  },
+  "column_name_urls": {
+    "message": "URL"
   },
   "config_add_project_headline": {
     "message": "Proyecto añadido"
@@ -308,6 +308,9 @@
   "copy": {
     "message": "Copiar"
   },
+  "copy_all_values": {
+    "message": "Copiar todos los valores"
+  },
   "copy_live_url": {
     "message": "Copiar URL activa"
   },
@@ -331,9 +334,6 @@
   },
   "copy_urls": {
     "message": "Copiar direcciones URL de $1"
-  },
-  "copy_all_values": {
-    "message": "Copiar todos los valores"
   },
   "copy_urls_error": {
     "message": "Error al copiar en el portapapeles. Inténtelo de nuevo."
