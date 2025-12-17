@@ -20,16 +20,16 @@
  */
 
 /**
- * The origin of the Admin API v1.
+ * The origin of the legacy Admin API.
  * @type {string}
  */
 export const ADMIN_ORIGIN = 'https://admin.hlx.page';
 
 /**
- * The origin of the Admin API v2.
+ * The origin of the new Admin API.
  * @type {string}
  */
-export const ADMIN_ORIGIN_V2 = 'https://api.aem.live';
+export const ADMIN_ORIGIN_NEW = 'https://api.aem.live';
 
 /**
  * Creates an Admin API URL for an API and path.
@@ -47,7 +47,7 @@ export function createAdminUrl(
   path = '',
   searchParams = new URLSearchParams(),
 ) {
-  const adminUrl = new URL(`${apiUpgrade ? ADMIN_ORIGIN_V2 : ADMIN_ORIGIN}`);
+  const adminUrl = new URL(`${apiUpgrade ? ADMIN_ORIGIN_NEW : ADMIN_ORIGIN}`);
   if (api === 'discover') {
     adminUrl.pathname = `/${api}/`;
   } else if (org && site) {
