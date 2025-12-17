@@ -15,8 +15,8 @@
  * @property {string} [owner] The owner of the repository.
  * @property {string} [repo] The name of the repository.
  * @property {string} [ref='main'] The reference branch, defaults to 'main'.
- * @property {number} [apiVersion] The version of the admin api to use.
- * @property {string} [adminVersion] The version of the admin serviceto use.
+ * @property {string} [adminVersion] The version of the admin service to use.
+ * @property {boolean} [apiUpgrade=false] <code>true</code> if the API upgrade is available.
  */
 
 /**
@@ -41,18 +41,18 @@ export const ADMIN_ORIGIN_V2 = 'https://api.aem.live';
  */
 export function createAdminUrl(
   {
-    owner: org, repo: site, ref = 'main', apiVersion, adminVersion,
+    owner: org, repo: site, ref = 'main', apiUpgrade, adminVersion,
   },
   api,
   path = '',
   searchParams = new URLSearchParams(),
 ) {
-  const adminUrl = new URL(`${apiVersion === 2 ? ADMIN_ORIGIN_V2 : ADMIN_ORIGIN}`);
+  const adminUrl = new URL(`${apiUpgrade ? ADMIN_ORIGIN_V2 : ADMIN_ORIGIN}`);
   if (api === 'discover') {
     adminUrl.pathname = `/${api}/`;
   } else if (org && site) {
-    if (apiVersion === 2) {
-      // use admin api v2
+    if (apiUpgrade) {
+      // use new api
       if (['login', 'logout', 'profile'].includes(api)) {
         adminUrl.pathname = `/${api}`;
         adminUrl.searchParams.append('org', org);
@@ -61,7 +61,7 @@ export function createAdminUrl(
         adminUrl.pathname = `/${org}/sites/${site}/${api}`;
       }
     } else {
-      // use legacy admin api
+      // use legacy api
       adminUrl.pathname = `/${api}/${org}/${site}/${ref}`;
     }
     adminUrl.pathname += path;

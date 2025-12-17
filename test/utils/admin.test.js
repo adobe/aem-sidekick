@@ -77,28 +77,28 @@ describe('helix-admin', () => {
 
     describe('API v2', () => {
       it('creates correct URL for login endpoint', () => {
-        const config = { ...siteStore, apiVersion: 2 };
+        const config = { ...siteStore, apiUpgrade: true };
         // @ts-ignore
         const url = createAdminUrl(config, 'login');
         expect(url.toString()).to.equal('https://api.aem.live/login?org=adobe&site=aem-boilerplate');
       });
 
       it('creates correct URL for logout endpoint', () => {
-        const config = { ...siteStore, apiVersion: 2 };
+        const config = { ...siteStore, apiUpgrade: true };
         // @ts-ignore
         const url = createAdminUrl(config, 'logout');
         expect(url.toString()).to.equal('https://api.aem.live/logout?org=adobe&site=aem-boilerplate');
       });
 
       it('creates correct URL for profile endpoint', () => {
-        const config = { ...siteStore, apiVersion: 2 };
+        const config = { ...siteStore, apiUpgrade: true };
         // @ts-ignore
         const url = createAdminUrl(config, 'profile');
         expect(url.toString()).to.equal('https://api.aem.live/profile?org=adobe&site=aem-boilerplate');
       });
 
       it('creates correct URL for other endpoints', () => {
-        const config = { ...siteStore, apiVersion: 2 };
+        const config = { ...siteStore, apiUpgrade: true };
         // @ts-ignore
         const url = createAdminUrl(config, 'status', '/path/to/resource');
         expect(url.toString()).to.equal('https://api.aem.live/adobe/sites/aem-boilerplate/status/path/to/resource');
