@@ -74,8 +74,6 @@ export const defaultProfileUrl = 'https://admin.hlx.page/profile/adobe/aem-boile
  */
 export const defaultConfigJSONUrl = 'https://admin.hlx.page/sidekick/adobe/aem-boilerplate/main/config.json';
 
-export const defaultLocalConfigJSONUrl = 'http://localhost:3000/tools/sidekick/config.json';
-
 export const defaultUpgradeConfigJSONUrl = 'https://api.aem.live/adobe/sites/aem-boilerplate/sidekick';
 
 /**
@@ -570,7 +568,6 @@ export class SidekickTest {
    * @param {boolean} withHost Whether to include the host in the response
    * @param {boolean} withPlugins Whether to include plugins in the response
    * @param {Object} overrides Additional overrides for the config response
-   * @param {boolean} local Whether to use the local config URL
    * @param {boolean} apiUpgrade Whether to use the new API
    * @returns {SidekickTest}
    */
@@ -578,7 +575,6 @@ export class SidekickTest {
     withHost = true,
     withPlugins = false,
     overrides = {},
-    local = false,
     apiUpgrade = false,
   ) {
     let body = withHost ? defaultConfigJSONWithHost : defaultConfigJSON;
@@ -591,12 +587,10 @@ export class SidekickTest {
     }
 
     let configUrl = defaultConfigJSONUrl;
-    if (local) {
-      configUrl = defaultLocalConfigJSONUrl;
-    }
     if (apiUpgrade) {
       configUrl = defaultUpgradeConfigJSONUrl;
     }
+
     fetchMock.get(configUrl, {
       status: 200,
       body: {

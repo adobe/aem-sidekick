@@ -225,7 +225,7 @@ describe('Test Site Store', () => {
     it('fetches sidekick config from new api', async () => {
       sidekickTest
         .mockFetchSidekickConfigNotFound()
-        .mockFetchSidekickConfigSuccess(false, false, null, false, true);
+        .mockFetchSidekickConfigSuccess(false, false, null, true);
 
       // use project config with api upgrade flag
       await appStore.loadContext(sidekickElement, { ...defaultConfig, apiUpgrade: true });
