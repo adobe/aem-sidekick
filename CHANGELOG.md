@@ -1,3 +1,10 @@
+## [7.25.4](https://github.com/adobe/aem-sidekick/compare/v7.25.3...v7.25.4) (2025-12-17)
+
+
+### Bug Fixes
+
+* move project admin to tools ([#736](https://github.com/adobe/aem-sidekick/issues/736)) ([ab11423](https://github.com/adobe/aem-sidekick/commit/ab11423d1c06c476b63ce92678c518358228b837))
+
 ## [7.25.3](https://github.com/adobe/aem-sidekick/compare/v7.25.2...v7.25.3) (2025-12-09)
 
 
