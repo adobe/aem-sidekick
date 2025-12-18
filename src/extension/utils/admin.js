@@ -68,7 +68,7 @@ export function createAdminUrl(
   }
   if (adminVersion) {
     // use a specific ci admin version
-    searchParams.append('hlx-admin-version', adminVersion);
+    searchParams.append(apiUpgrade ? 'aem-api-version' : 'hlx-admin-version', adminVersion);
   }
   searchParams.forEach((value, key) => {
     adminUrl.searchParams.append(key, value);
