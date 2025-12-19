@@ -427,7 +427,7 @@ async function importProjects(tab) {
  */
 async function manageProjects(tab) {
   await chrome.tabs.create({
-    url: 'https://labs.aem.live/tools/project-admin/index.html',
+    url: 'https://tools.aem.live/tools/project-admin/index.html',
     openerTabId: tab.id,
     windowId: tab.windowId,
   });
@@ -531,6 +531,56 @@ export async function guessAEMSite(_, { url }) {
 }
 
 /**
+ * Closes the palette in the sender's tab.
+ * @param {Object} message The message object
+ * @param {string} message.id The palette ID to close
+ * @param {chrome.runtime.MessageSender} sender The sender
+ * @returns {Promise<boolean>} True if palette was closed, else false
+ */
+async function closePalette({ id }, { tab }) {
+  if (!id) {
+    log.info('closePalette: no palette id');
+    return false;
+  }
+  if (!tab?.id) {
+    log.warn('closePalette: no tab id');
+    return false;
+  }
+  try {
+    await chrome.tabs.sendMessage(tab.id, { action: 'close_palette', id });
+    return true;
+  } catch (e) {
+    log.warn('closePalette: failed to send message', e);
+    return false;
+  }
+}
+
+/**
+ * Closes the popover in the sender's tab.
+ * @param {Object} message The message object
+ * @param {string} message.id The popover ID to close
+ * @param {chrome.runtime.MessageSender} sender The sender
+ * @returns {Promise<boolean>} True if popover was closed, else false
+ */
+async function closePopover({ id }, { tab }) {
+  if (!id) {
+    log.info('closePopover: no popover id');
+    return false;
+  }
+  if (!tab?.id) {
+    log.warn('closePopover: no tab id');
+    return false;
+  }
+  try {
+    await chrome.tabs.sendMessage(tab.id, { action: 'close_popover', id });
+    return true;
+  } catch (e) {
+    log.warn('closePopover: failed to send message', e);
+    return false;
+  }
+}
+
+/**
  * Updates a project based on the given message and sender.
  * @param {chrome.tabs.Tab} _ The tab
  * @param {Object} message The message object
@@ -583,6 +633,79 @@ export const internalActions = {
 };
 
 /**
+ * Resizes the palette in the sender's tab.
+ * @param {Object} message The message object
+ * @param {string} message.id The palette ID to resize
+ * @param {Object} [message.rect] The rect object with properties width and/or height (CSS values)
+ *   optional: top, left, right, bottom
+ * @param {chrome.runtime.MessageSender} sender The sender
+ * @returns {Promise<boolean>} True if palette was resized, else false
+ */
+async function resizePalette({
+  id, rect,
+}, { tab }) {
+  if (!tab?.id) {
+    log.warn('resizePalette: no tab id');
+    return false;
+  }
+  if (!id) {
+    log.info('resizePalette: no palette id');
+    return false;
+  }
+  if (!rect || !rect.width || !rect.height) {
+    log.info('resizePalette: no rect properties provided');
+    return false;
+  }
+  try {
+    await chrome.tabs.sendMessage(tab.id, {
+      action: 'resize_palette',
+      id,
+      rect,
+    });
+    return true;
+  } catch (e) {
+    log.warn('resizePalette: failed to send message', e);
+    return false;
+  }
+}
+
+/**
+ * Resizes the popover in the sender's tab.
+ * @param {Object} message The message object
+ * @param {string} message.id The popover ID to resize
+ * @param {Object} [message.rect] The rect object with properties width and/or height (CSS values)
+ * @param {chrome.runtime.MessageSender} sender The sender
+ * @returns {Promise<boolean>} True if popover was resized, else false
+ */
+async function resizePopover({
+  id, rect,
+}, { tab }) {
+  if (!tab?.id) {
+    log.warn('resizePopover: no tab id');
+    return false;
+  }
+  if (!id) {
+    log.info('resizePopover: no popover id');
+    return false;
+  }
+  if (!rect || !rect.width || !rect.height) {
+    log.info('resizePopover: no rect properties');
+    return false;
+  }
+  try {
+    await chrome.tabs.sendMessage(tab.id, {
+      action: 'resize_popover',
+      id,
+      rect,
+    });
+    return true;
+  } catch (e) {
+    log.warn('resizePopover: failed to send message', e);
+    return false;
+  }
+}
+
+/**
  * Actions which can be executed via external messaging API.
  * @type {Object} The external actions
  */
@@ -595,4 +718,8 @@ export const externalActions = {
   updateSite,
   removeSite,
   updateAuthToken,
+  resizePalette,
+  resizePopover,
+  closePalette,
+  closePopover,
 };

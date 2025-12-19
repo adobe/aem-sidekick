@@ -197,6 +197,30 @@
   "close_sidekick": {
     "message": "Fermer Sidekick"
   },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "urls"
+  },
+  "column_name_path": {
+    "message": "chemin"
+  },
+  "column_name_paths": {
+    "message": "chemins"
+  },
+  "column_name_href": {
+    "message": "href"
+  },
+  "column_name_hrefs": {
+    "message": "hrefs"
+  },
+  "column_name_link": {
+    "message": "lien"
+  },
+  "column_name_links": {
+    "message": "liens"
+  },
   "code_state": {
     "message": "Aucune action disponible pour les fichiers de code"
   },
@@ -306,7 +330,10 @@
     "message": "Copier l'URL"
   },
   "copy_urls": {
-    "message": "Copier les URL $1"
+    "message": "Copier $1 URL"
+  },
+  "copy_all_values": {
+    "message": "Copier toutes les valeurs"
   },
   "copy_urls_error": {
     "message": "La copie dans le presse-papiers a échoué. Veuillez réessayer."
@@ -371,6 +398,9 @@
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
   },
+  "drag_to_reposition": {
+    "message": "Faire glisser pour repositionner"
+  },
   "edit": {
     "message": "Modifier"
   },
@@ -421,6 +451,9 @@
   },
   "error_preview": {
     "message": "La génération de la prévisualisation a échoué. Veuillez réessayer ultérieurement."
+  },
+  "error_preview_4XX": {
+    "message": "Échec de la génération de la prévisualisation. Consultez les détails pour plus d’informations."
   },
   "error_preview_config": {
     "message": "Échec de l’activation de la configuration : $1"
@@ -558,7 +591,7 @@
     "message": "Ouvrir l’URL"
   },
   "open_urls": {
-    "message": "Ouvrir les URL $1"
+    "message": "Ouvrir $1 URL"
   },
   "open_urls_confirm": {
     "message": "Voulez-vous vraiment ouvrir les URL $1 ?"

@@ -110,7 +110,7 @@ export async function configureAuthAndCorsHeaders() {
             }],
           },
           condition: {
-            regexFilter: `^https://[a-z0-9-]+--${repo}--${owner}\\.aem\\.(page|live|reviews)/.*`,
+            regexFilter: `^(https://[a-z0-9-]+--${repo}--${owner}\\.aem\\.(page|live|reviews)/.*|http://localhost:3000/.*)`,
             requestMethods: ['get', 'post'],
             resourceTypes: [
               'main_frame',

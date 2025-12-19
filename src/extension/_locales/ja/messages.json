@@ -197,6 +197,30 @@
   "close_sidekick": {
     "message": "Sidekick を閉じる"
   },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "urls"
+  },
+  "column_name_path": {
+    "message": "パス"
+  },
+  "column_name_paths": {
+    "message": "パス"
+  },
+  "column_name_href": {
+    "message": "href"
+  },
+  "column_name_hrefs": {
+    "message": "hrefs"
+  },
+  "column_name_link": {
+    "message": "リンク"
+  },
+  "column_name_links": {
+    "message": "リンク"
+  },
   "code_state": {
     "message": "コードファイルに使用できるアクションはありません"
   },
@@ -308,6 +332,9 @@
   "copy_urls": {
     "message": "$1 個の URL をコピー"
   },
+  "copy_all_values": {
+    "message": "すべての値をコピー"
+  },
   "copy_urls_error": {
     "message": "クリップボードへのコピーに失敗しました。もう一度試してください。"
   },
@@ -371,6 +398,9 @@
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
   },
+  "drag_to_reposition": {
+    "message": "ドラッグして再配置"
+  },
   "edit": {
     "message": "編集"
   },
@@ -421,6 +451,9 @@
   },
   "error_preview": {
     "message": "プレビューの生成に失敗しました。後で再試行してください。"
+  },
+  "error_preview_4XX": {
+    "message": "プレビューの生成に失敗しました。詳細を確認してください。"
   },
   "error_preview_config": {
     "message": "設定をアクティブ化できませんでした : $1"
@@ -525,7 +558,7 @@
     "message": "変更が見つかりません"
   },
   "no_diffs_subheading": {
-    "message": "プレビュー済みコンテンツと公開済みコンテンツが同じ"
+    "message": "プレビュー済みコンテンツと公開済みコンテンツが同じです"
   },
   "no_results": {
     "message": "結果が見つかりません"

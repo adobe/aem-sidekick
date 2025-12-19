@@ -197,6 +197,30 @@
   "close_sidekick": {
     "message": "Sidekick schließen"
   },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "urls"
+  },
+  "column_name_path": {
+    "message": "pfad"
+  },
+  "column_name_paths": {
+    "message": "pfade"
+  },
+  "column_name_href": {
+    "message": "href"
+  },
+  "column_name_hrefs": {
+    "message": "hrefs"
+  },
+  "column_name_link": {
+    "message": "link"
+  },
+  "column_name_links": {
+    "message": "links"
+  },
   "code_state": {
     "message": "Keine Aktionen für Code-Dateien verfügbar "
   },
@@ -308,6 +332,9 @@
   "copy_urls": {
     "message": "$1 URLs kopieren"
   },
+  "copy_all_values": {
+    "message": "Alle Werte kopieren"
+  },
   "copy_urls_error": {
     "message": "Kopieren in Zwischenablage fehlgeschlagen. Bitte versuchen Sie es erneut."
   },
@@ -371,6 +398,9 @@
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
   },
+  "drag_to_reposition": {
+    "message": "Ziehen, um neu zu positionieren"
+  },
   "edit": {
     "message": "Bearbeiten"
   },
@@ -421,6 +451,9 @@
   },
   "error_preview": {
     "message": "Das Generieren der Vorschau ist fehlgeschlagen. Bitte versuchen Sie es später erneut."
+  },
+  "error_preview_4XX": {
+    "message": "Das Generieren der Vorschau ist fehlgeschlagen. Weitere Informationen finden Sie in den Details."
   },
   "error_preview_config": {
     "message": "Konfiguration konnte nicht aktiviert werden: $1"

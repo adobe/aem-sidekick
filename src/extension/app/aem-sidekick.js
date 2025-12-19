@@ -18,9 +18,12 @@ import { customElement } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { style } from './aem-sidekick.css.js';
 import { AppStore, appStoreContext } from './store/app.js';
-import { ALLOWED_EXTENSION_IDS, EXTERNAL_EVENTS, MODALS } from './constants.js';
-import { detectBrowser } from './utils/browser.js';
+import {
+  ALLOWED_EXTENSION_IDS, EVENTS, EXTERNAL_EVENTS, MODALS,
+} from './constants.js';
+import { detectBrowser, rectToStyles } from './utils/browser.js';
 import { getConfig } from '../config.js';
+import { EventBus } from './utils/event-bus.js';
 
 @customElement('aem-sidekick')
 export class AEMSidekick extends LitElement {
@@ -78,6 +81,28 @@ export class AEMSidekick extends LitElement {
             confirmCallback: (response) => { sendResponse(response); },
           },
         });
+      } else if (msg.action === 'resize_palette') {
+        const { id, rect } = msg;
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_PALETTE, {
+          detail: { id, styles: rectToStyles(rect) },
+        }));
+        sendResponse(true);
+      } else if (msg.action === 'resize_popover') {
+        const { id, rect } = msg;
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_POPOVER, {
+          detail: { id, styles: rectToStyles(rect) },
+        }));
+        sendResponse(true);
+      } else if (msg.action === 'close_palette') {
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_PALETTE, {
+          detail: { id: msg.id },
+        }));
+        sendResponse(true);
+      } else if (msg.action === 'close_popover') {
+        EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER, {
+          detail: { id: msg.id },
+        }));
+        sendResponse(true);
       }
       return true;
     });

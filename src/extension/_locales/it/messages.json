@@ -197,6 +197,30 @@
   "close_sidekick": {
     "message": "Chiudi barra laterale"
   },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "urls"
+  },
+  "column_name_path": {
+    "message": "percorso"
+  },
+  "column_name_paths": {
+    "message": "percorsi"
+  },
+  "column_name_href": {
+    "message": "href"
+  },
+  "column_name_hrefs": {
+    "message": "hrefs"
+  },
+  "column_name_link": {
+    "message": "collegamento"
+  },
+  "column_name_links": {
+    "message": "collegamenti"
+  },
   "code_state": {
     "message": "Nessuna azione disponibile per i file di codice"
   },
@@ -308,6 +332,9 @@
   "copy_urls": {
     "message": "Copia $1 URL"
   },
+  "copy_all_values": {
+    "message": "Copia tutti i valori"
+  },
   "copy_urls_error": {
     "message": "Copia negli appunti non riuscita. Riprova."
   },
@@ -371,6 +398,9 @@
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
   },
+  "drag_to_reposition": {
+    "message": "Trascina per riposizionare"
+  },
   "edit": {
     "message": "Modifica"
   },
@@ -421,6 +451,9 @@
   },
   "error_preview": {
     "message": "Generazione dell’anteprima non riuscita. Riprova più tardi"
+  },
+  "error_preview_4XX": {
+    "message": "Generazione dell’anteprima non riuscita. Per ulteriori informazioni, controlla i dettagli."
   },
   "error_preview_config": {
     "message": "Impossibile attivare la configurazione: $1"
@@ -696,7 +729,7 @@
     "message": "Questa pagina ha ancora un documento di origine e non è possibile annullarne la pubblicazione."
   },
   "unpublish_page_success": {
-    "message": "Annullamento della pubblicazione della pagina eseguito correttamente, ricarica in corso..."
+    "message": "La pubblicazione della pagina è stata annullata, ricaricamento in corso..."
   },
   "unpublishing_state": {
     "message": "Annullamento della pubblicazione in corso..."
