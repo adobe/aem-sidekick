@@ -62,7 +62,7 @@ export const defaultStatusUrl = 'https://admin.hlx.page/status/adobe/aem-boilerp
 /**
  * Status editUrl API
  */
-export const defaultStatusEditUrl = 'glob:https://admin.hlx.page/status/adobe/aem-boilerplate/main?editUrl=*';
+export const defaultStatusEditUrl = 'glob:https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=*';
 
 /**
  * Profile API
