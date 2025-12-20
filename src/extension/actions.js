@@ -25,7 +25,7 @@ import {
   detectLegacySidekick,
   updateProject as updateProjectConfig,
 } from './project.js';
-import { ADMIN_ORIGIN, createAdminUrl } from './utils/admin.js';
+import { ADMIN_ORIGIN, ADMIN_ORIGIN_NEW, createAdminUrl } from './utils/admin.js';
 import { getConfig } from './config.js';
 import { getDisplay, setDisplay } from './display.js';
 import { urlCache } from './url-cache.js';
@@ -55,7 +55,8 @@ async function updateAuthToken({
 }, { tab }) {
   if (owner) {
     try {
-      if (new URL(tab.url).origin === ADMIN_ORIGIN
+      const { origin } = new URL(tab.url);
+      if ((origin === ADMIN_ORIGIN || origin === ADMIN_ORIGIN_NEW)
         && authToken !== undefined) {
         await setAuthToken(
           owner,
@@ -115,6 +116,7 @@ export async function showSidekickNotification(tabId, data, callback) {
 function isTrustedOrigin(origin) {
   const TRUSTED_ORIGINS = [
     ADMIN_ORIGIN,
+    ADMIN_ORIGIN_NEW,
     'https://labs.aem.live',
     'https://tools.aem.live',
     'http://localhost:3000',
