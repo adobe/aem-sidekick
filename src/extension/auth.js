@@ -14,10 +14,9 @@
 
 import { log } from './log.js';
 import { getConfig, setConfig } from './config.js';
-import { ADMIN_ORIGIN, ADMIN_ORIGIN_NEW } from './utils/admin.js';
+import { ADMIN_ORIGIN } from './utils/admin.js';
 
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
-const { host: newAdminHost } = new URL(ADMIN_ORIGIN_NEW);
 
 function getRandomId() {
   return Math.floor(Math.random() * 1000000);
@@ -56,8 +55,8 @@ export async function configureAuthAndCorsHeaders() {
           },
           condition: {
             excludedInitiatorDomains: ['da.live'],
-            regexFilter: `^https://(${adminHost}|${newAdminHost})/(config/${owner}\\.json|profile\\?org\\=${owner}\\&|(?:[a-z]+/)?${owner}/)`,
-            requestDomains: [adminHost, newAdminHost],
+            regexFilter: `^https://${adminHost}/(config/${owner}\\.json|[a-z]+/${owner}/.*)`,
+            requestDomains: [adminHost],
             requestMethods: ['get', 'put', 'post', 'delete'],
             resourceTypes: ['xmlhttprequest'],
           },
@@ -237,8 +236,8 @@ export async function updateUserAgent() {
       }],
     },
     condition: {
-      regexFilter: `^https://(${adminHost}|${newAdminHost})/.*`,
-      requestDomains: [adminHost, newAdminHost],
+      regexFilter: `^https://${adminHost}/.*`,
+      requestDomains: [adminHost],
       requestMethods: ['get', 'put', 'post', 'delete'],
       resourceTypes: ['xmlhttprequest'],
     },

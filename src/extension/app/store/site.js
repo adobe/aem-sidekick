@@ -127,15 +127,9 @@ export class SiteStore {
   devOrigin;
 
   /**
-   * Is this site enabled for API upgrade?
-   * @type {boolean}
+   * The specific version of admin service to use (optional)
+   * @type {string}
    */
-  apiUpgrade;
-
-  /**
- * The specific version of admin service to use (optional)
- * @type {string}
- */
   adminVersion;
 
   /**
@@ -213,21 +207,17 @@ export class SiteStore {
     if (!devOrigin) {
       devOrigin = 'http://localhost:3000';
     }
-    let { apiUpgrade = false } = config;
     if (owner && repo) {
       // look for custom config in project
       try {
         const res = await callAdmin(
           {
-            owner, repo, ref, adminVersion, apiUpgrade,
+            owner, repo, ref, adminVersion,
           },
           'sidekick',
-          apiUpgrade ? '' : '/config.json',
+          '/config.json',
         );
         this.status = res.status;
-        if (res.headers?.get('x-api-upgrade-available') === 'true') {
-          apiUpgrade = true;
-        }
         if (this.status === 200) {
           config = {
             ...config,
@@ -297,7 +287,6 @@ export class SiteStore {
 
     this.mountpoints = contentSourceUrl ? [contentSourceUrl] : (mountpoints || []);
     [this.mountpoint] = this.mountpoints;
-    this.apiUpgrade = apiUpgrade;
     this.adminVersion = adminVersion;
 
     this.previewHost = previewHost;
@@ -333,7 +322,6 @@ export class SiteStore {
           liveHost: this.liveHost,
           host: this.host,
           mountpoints: this.mountpoints,
-          apiUpgrade: this.apiUpgrade,
         },
       });
     }
@@ -364,7 +352,6 @@ export class SiteStore {
       reviewHost: this.reviewHost,
       stdReviewHost: this.stdReviewHost,
       devOrigin: this.devOrigin,
-      apiUpgrade: this.apiUpgrade,
       adminVersion: this.adminVersion,
       lang: this.lang,
       views: this.views,
