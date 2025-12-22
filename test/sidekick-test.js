@@ -62,7 +62,7 @@ export const defaultStatusUrl = 'https://admin.hlx.page/status/adobe/aem-boilerp
 /**
  * Status editUrl API
  */
-export const defaultStatusEditUrl = 'glob:https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=*';
+export const defaultStatusEditUrl = 'glob:https://admin.hlx.page/status/adobe/aem-boilerplate/main?editUrl=*';
 
 /**
  * Profile API
@@ -74,7 +74,7 @@ export const defaultProfileUrl = 'https://admin.hlx.page/profile/adobe/aem-boile
  */
 export const defaultConfigJSONUrl = 'https://admin.hlx.page/sidekick/adobe/aem-boilerplate/main/config.json';
 
-export const defaultUpgradeConfigJSONUrl = 'https://api.aem.live/adobe/sites/aem-boilerplate/sidekick';
+export const defaultLocalConfigJSONUrl = 'http://localhost:3000/tools/sidekick/config.json';
 
 /**
  * i18n path
@@ -568,14 +568,14 @@ export class SidekickTest {
    * @param {boolean} withHost Whether to include the host in the response
    * @param {boolean} withPlugins Whether to include plugins in the response
    * @param {Object} overrides Additional overrides for the config response
-   * @param {boolean} apiUpgrade Whether to use the new API
+   * @param {boolean} local Whether to use the local config URL
    * @returns {SidekickTest}
    */
   mockFetchSidekickConfigSuccess(
     withHost = true,
     withPlugins = false,
     overrides = {},
-    apiUpgrade = false,
+    local = false,
   ) {
     let body = withHost ? defaultConfigJSONWithHost : defaultConfigJSON;
 
@@ -586,11 +586,7 @@ export class SidekickTest {
       };
     }
 
-    let configUrl = defaultConfigJSONUrl;
-    if (apiUpgrade) {
-      configUrl = defaultUpgradeConfigJSONUrl;
-    }
-
+    const configUrl = local ? defaultLocalConfigJSONUrl : defaultConfigJSONUrl;
     fetchMock.get(configUrl, {
       status: 200,
       body: {
@@ -661,22 +657,6 @@ export class SidekickTest {
       status: 500,
       headers: {
         'x-error': 'just a test',
-      },
-    }, { overwriteRoutes: true });
-    return this;
-  }
-
-  /**
-   * Mocks a response from the config endpoint with the api upgrade available header
-   * @param {string} configUrl The config URL
-   * @returns {SidekickTest}
-   */
-  mockFetchSidekickConfigApiUpgradeAvailable(configUrl = defaultConfigJSONUrl) {
-    fetchMock.get(configUrl, {
-      status: 200,
-      body: {},
-      headers: {
-        'x-api-upgrade-available': 'true',
       },
     }, { overwriteRoutes: true });
     return this;

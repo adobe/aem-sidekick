@@ -15,21 +15,14 @@
  * @property {string} [owner] The owner of the repository.
  * @property {string} [repo] The name of the repository.
  * @property {string} [ref='main'] The reference branch, defaults to 'main'.
- * @property {string} [adminVersion] The version of the admin service to use.
- * @property {boolean} [apiUpgrade=false] <code>true</code> if the API upgrade is available.
+ * @property {string} [adminVersion] - The version of the admin to use
  */
 
 /**
- * The origin of the legacy Admin API.
+ * The origin of the Admin API.
  * @type {string}
  */
 export const ADMIN_ORIGIN = 'https://admin.hlx.page';
-
-/**
- * The origin of the new Admin API.
- * @type {string}
- */
-export const ADMIN_ORIGIN_NEW = 'https://api.aem.live';
 
 /**
  * Creates an Admin API URL for an API and path.
@@ -41,34 +34,19 @@ export const ADMIN_ORIGIN_NEW = 'https://api.aem.live';
  */
 export function createAdminUrl(
   {
-    owner: org, repo: site, ref = 'main', apiUpgrade, adminVersion,
+    owner, repo, ref = 'main', adminVersion,
   },
   api,
   path = '',
   searchParams = new URLSearchParams(),
 ) {
-  const adminUrl = new URL(`${apiUpgrade ? ADMIN_ORIGIN_NEW : ADMIN_ORIGIN}`);
-  if (api === 'discover') {
-    adminUrl.pathname = `/${api}/`;
-  } else if (org && site) {
-    if (apiUpgrade) {
-      // use new api
-      if (['login', 'logout', 'profile'].includes(api)) {
-        adminUrl.pathname = `/${api}`;
-        adminUrl.searchParams.append('org', org);
-        adminUrl.searchParams.append('site', site);
-      } else {
-        adminUrl.pathname = `/${org}/sites/${site}/${api}`;
-      }
-    } else {
-      // use legacy api
-      adminUrl.pathname = `/${api}/${org}/${site}/${ref}`;
-    }
-    adminUrl.pathname += path;
+  const adminUrl = new URL(`${ADMIN_ORIGIN}/${api}`);
+  if (owner && repo && ref) {
+    adminUrl.pathname += `/${owner}/${repo}/${ref}`;
   }
+  adminUrl.pathname += path;
   if (adminVersion) {
-    // use a specific ci admin version
-    searchParams.append(apiUpgrade ? 'aem-api-version' : 'hlx-admin-version', adminVersion);
+    searchParams.append('hlx-admin-version', adminVersion);
   }
   searchParams.forEach((value, key) => {
     adminUrl.searchParams.append(key, value);

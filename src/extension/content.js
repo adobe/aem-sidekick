@@ -63,7 +63,6 @@ function removeCacheParam(href = window.location.href) {
         'host',
         'devOrigin',
         'transient',
-        'apiUpgrade',
       ].includes(k)));
     curatedConfig.scriptUrl = chrome.runtime.getURL('index.js');
 
