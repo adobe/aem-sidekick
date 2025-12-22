@@ -1,3 +1,10 @@
+## [7.26.1](https://github.com/adobe/aem-sidekick/compare/v7.26.0...v7.26.1) (2025-12-22)
+
+
+### Bug Fixes
+
+* revert hlx6 admin support due to regression ([#762](https://github.com/adobe/aem-sidekick/issues/762)) ([e67a8b8](https://github.com/adobe/aem-sidekick/commit/e67a8b8db389208a798f2707c3f12764001b8ad9))
+
 # [7.26.0](https://github.com/adobe/aem-sidekick/compare/v7.25.4...v7.26.0) (2025-12-20)
 
 
