@@ -416,7 +416,9 @@ async function importProjects(tab) {
     {
       message: chrome.i18n.getMessage(i18nKey, `${imported}`),
       headline: chrome.i18n.getMessage('config_project_import_headline'),
-    });
+    },
+    notificationConfirmCallback(tab.id),
+  );
 }
 
 /**
