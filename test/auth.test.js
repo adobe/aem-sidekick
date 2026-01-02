@@ -102,7 +102,7 @@ describe('Test auth', () => {
           },
           condition: {
             excludedInitiatorDomains: ['da.live'],
-            regexFilter: '^https://(admin.hlx.page|api.aem.live)/(config/test\\.json|profile\\?org\\=test\\&|(?:[a-z]+/)?test/)',
+            regexFilter: '^https://[a-z.]+/(config/test\\.json|profile\\?org\\=test\\&|(?:[a-z]+/)?test/)',
             requestDomains: [
               'admin.hlx.page',
               'api.aem.live',
@@ -187,7 +187,7 @@ describe('Test auth', () => {
           },
           condition: {
             excludedInitiatorDomains: ['da.live'],
-            regexFilter: '^https://(admin.hlx.page|api.aem.live)/(config/test\\.json|profile\\?org\\=test\\&|(?:[a-z]+/)?test/)',
+            regexFilter: '^https://[a-z.]+/(config/test\\.json|profile\\?org\\=test\\&|(?:[a-z]+/)?test/)',
             requestDomains: [
               'admin.hlx.page',
               'api.aem.live',
@@ -347,7 +347,7 @@ describe('Test auth', () => {
           },
           condition: {
             excludedInitiatorDomains: ['da.live'],
-            regexFilter: '^https://(admin.hlx.page|api.aem.live)/(config/test\\.json|profile\\?org\\=test\\&|(?:[a-z]+/)?test/)',
+            regexFilter: '^https://[a-z.]+/(config/test\\.json|profile\\?org\\=test\\&|(?:[a-z]+/)?test/)',
             requestDomains: [
               'admin.hlx.page',
               'api.aem.live',
@@ -479,7 +479,6 @@ describe('Test auth', () => {
           }],
         },
         condition: {
-          regexFilter: '^https://(admin.hlx.page|api.aem.live)/.*',
           requestDomains: ['admin.hlx.page', 'api.aem.live'],
           requestMethods: ['get', 'put', 'post', 'delete'],
           resourceTypes: ['xmlhttprequest'],
