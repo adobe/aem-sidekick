@@ -1,3 +1,10 @@
+## [7.26.2](https://github.com/adobe/aem-sidekick/compare/v7.26.1...v7.26.2) (2026-01-05)
+
+
+### Bug Fixes
+
+* refresh page after projct import ([#764](https://github.com/adobe/aem-sidekick/issues/764)) ([18b71c9](https://github.com/adobe/aem-sidekick/commit/18b71c98d8e83abe4ba7f2847a07fc46bdebe1af))
+
 ## [7.26.1](https://github.com/adobe/aem-sidekick/compare/v7.26.0...v7.26.1) (2025-12-22)
 
 
