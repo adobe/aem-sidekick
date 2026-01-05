@@ -43,6 +43,7 @@ export async function configureAuthAndCorsHeaders() {
     }) => {
       const rules = [];
       if (authToken) {
+        // add rule for admin origin
         rules.push({
           id: getRandomId(),
           priority: 1,
@@ -56,8 +57,28 @@ export async function configureAuthAndCorsHeaders() {
           },
           condition: {
             excludedInitiatorDomains: ['da.live'],
-            regexFilter: `^https://[a-z.]+/(config/${owner}\\.json|profile\\?org\\=${owner}\\&|(?:[a-z]+/)?${owner}/)`,
-            requestDomains: [adminHost, newAdminHost],
+            regexFilter: `^https://${adminHost}/(config/${owner}\\.json|[a-z]+/${owner}/.*)`,
+            requestDomains: [adminHost],
+            requestMethods: ['get', 'put', 'post', 'delete'],
+            resourceTypes: ['xmlhttprequest'],
+          },
+        });
+        // add rule for new admin origin
+        rules.push({
+          id: getRandomId(),
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [{
+              operation: 'set',
+              header: 'x-auth-token',
+              value: authToken,
+            }],
+          },
+          condition: {
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: `^https://${newAdminHost}/(${owner}/.*|profile\\?org\\=${owner}\\&)`,
+            requestDomains: [newAdminHost],
             requestMethods: ['get', 'put', 'post', 'delete'],
             resourceTypes: ['xmlhttprequest'],
           },
