@@ -96,19 +96,19 @@
     "eslint": "8.57.1",
     "eslint-plugin-mobx": "0.0.13",
     "fetch-mock": "9.11.0",
-    "fs-extra": "11.3.2",
+    "fs-extra": "11.3.3",
     "husky": "9.1.7",
     "jsdoc-to-markdown": "9.1.3",
     "lint-staged": "16.2.7",
     "nock": "14.0.1",
     "rimraf": "6.1.2",
-    "rollup": "4.53.4",
+    "rollup": "4.54.0",
     "rollup-plugin-copy": "3.5.0",
     "rollup-plugin-esbuild": "6.2.1",
     "semantic-release": "25.0.2",
     "semantic-release-react-native": "1.12.2",
     "shelljs": "0.10.0",
-    "sinon": "21.0.0"
+    "sinon": "21.0.1"
   },
   "lint-staged": {
     "*.js": "eslint"
