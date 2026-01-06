@@ -1,3 +1,10 @@
+# [7.27.0](https://github.com/adobe/aem-sidekick/compare/v7.26.2...v7.27.0) (2026-01-06)
+
+
+### Features
+
+* add support for new admin api ([#765](https://github.com/adobe/aem-sidekick/issues/765)) ([52f17c5](https://github.com/adobe/aem-sidekick/commit/52f17c5ace0714b39ff43b730fe59def56f8a1cd))
+
 ## [7.26.2](https://github.com/adobe/aem-sidekick/compare/v7.26.1...v7.26.2) (2026-01-05)
 
 
