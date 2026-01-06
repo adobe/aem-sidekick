@@ -26,7 +26,7 @@ function getRandomId() {
 /**
  * Sets the x-auth-token header for all requests to the Admin API if project config
  * has an auth token. Also sets the Access-Control-Allow-Origin header for
- * all requests from tools.aem.live and labs.aem.live.
+ * all requests from tools.aem.live.
  * @returns {Promise<void>}
  */
 export async function configureAuthAndCorsHeaders() {
@@ -109,7 +109,7 @@ export async function configureAuthAndCorsHeaders() {
           },
           condition: {
             regexFilter,
-            initiatorDomains: ['tools.aem.live', 'labs.aem.live'],
+            initiatorDomains: ['tools.aem.live'],
             requestMethods: ['get'],
             resourceTypes: ['xmlhttprequest'],
           },
