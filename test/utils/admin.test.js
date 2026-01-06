@@ -40,7 +40,7 @@ describe('helix-admin', () => {
       expect(url.toString()).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/main/path/to/resource');
     });
 
-    it('creates a correct URL with default ref when not specified', () => {
+    it('creates a correct URL with specified ref', () => {
       const storeWithOtherRef = { ...siteStore, ref: 'foo' };
       const url = createAdminUrl(storeWithOtherRef, 'preview', '/path/to/resource');
       expect(url.toString()).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/foo/path/to/resource');
