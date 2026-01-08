@@ -1,3 +1,10 @@
+## [7.27.1](https://github.com/adobe/aem-sidekick/compare/v7.27.0...v7.27.1) (2026-01-08)
+
+
+### Bug Fixes
+
+* remove obsolete scriptUrl from site store ([#767](https://github.com/adobe/aem-sidekick/issues/767)) ([090dc12](https://github.com/adobe/aem-sidekick/commit/090dc1291f813e2835093ad222fcfb0157b08af1))
+
 # [7.27.0](https://github.com/adobe/aem-sidekick/compare/v7.26.2...v7.27.0) (2026-01-06)
 
 
