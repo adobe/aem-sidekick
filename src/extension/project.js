@@ -48,9 +48,10 @@ export async function getProject(project = {}) {
  * @returns {Promise<Object[]>} The project configurations
  */
 export async function getProjects() {
-  return Promise.all((await getConfig('sync', 'projects')
+  const projects = await Promise.all((await getConfig('sync', 'projects')
     || await getConfig('sync', 'hlxSidekickProjects') || []) // legacy
     .map((handle) => getProject(handle)));
+  return projects.filter((project) => project !== undefined);
 }
 
 /**
