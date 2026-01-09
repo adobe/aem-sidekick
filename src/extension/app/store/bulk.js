@@ -200,7 +200,10 @@ export class BulkStore {
    * @returns {BulkSelection} The selection
    */
   #getGoogleDriveBulkSelection(document) {
-    return [...document.querySelectorAll('#drive_main_page [aria-selected="true"]')]
+    return [
+      ...document.querySelectorAll('div[role="main"] [aria-selected="true"]'),
+      ...document.querySelectorAll('#drive_main_page [aria-selected="true"]'), // legacy
+    ]
       // extract file name and type
       .map((row) => {
         const file = (row.querySelector(':scope td div[data-id] > span > strong') // list layout
@@ -253,6 +256,7 @@ export class BulkStore {
     this.setSelection(this.appStore.isSharePointFolder(location)
       ? this.#getSharepointBulkSelection(document)
       : this.#getGoogleDriveBulkSelection(document));
+    console.log('bulk selection', JSON.stringify(this.selection, null, 2));
   }
 
   /**

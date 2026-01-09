@@ -46,7 +46,7 @@ export const DEFAULT_SHAREPOINT_BULK_SELECTION = [
  */
 export function mockGdriveRoot() {
   const root = document.createElement('div');
-  root.id = 'drive_main_page';
+  root.setAttribute('role', 'main');
   return root;
 }
 
