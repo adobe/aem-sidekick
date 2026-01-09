@@ -1,3 +1,10 @@
+## [7.27.2](https://github.com/adobe/aem-sidekick/compare/v7.27.1...v7.27.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* bulk selection in gdrive broken ([#771](https://github.com/adobe/aem-sidekick/issues/771)) ([0b2e51e](https://github.com/adobe/aem-sidekick/commit/0b2e51e90fb3857892291e146a6a619c9965cbe3))
+
 ## [7.27.1](https://github.com/adobe/aem-sidekick/compare/v7.27.0...v7.27.1) (2026-01-08)
 
 
