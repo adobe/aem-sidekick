@@ -256,7 +256,6 @@ export class BulkStore {
     this.setSelection(this.appStore.isSharePointFolder(location)
       ? this.#getSharepointBulkSelection(document)
       : this.#getGoogleDriveBulkSelection(document));
-    console.log('bulk selection', JSON.stringify(this.selection, null, 2));
   }
 
   /**
