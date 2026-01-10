@@ -117,7 +117,6 @@ function isTrustedOrigin(origin) {
   const TRUSTED_ORIGINS = [
     ADMIN_ORIGIN,
     ADMIN_ORIGIN_NEW,
-    'https://labs.aem.live',
     'https://tools.aem.live',
     'http://localhost:3000',
   ];
@@ -127,7 +126,6 @@ function isTrustedOrigin(origin) {
   }
 
   const TRUSTED_ORIGIN_PATTERNS = [
-    /^https:\/\/[a-z0-9-]+--helix-labs-website--adobe\.aem\.(page|live)$/, // labs
     /^https:\/\/[a-z0-9-]+--helix-tools-website--adobe\.aem\.(page|live)$/, // tools
   ];
 
