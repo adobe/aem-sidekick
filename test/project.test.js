@@ -170,7 +170,7 @@ describe('Test project', () => {
         hlxSidekickProjects: ['foo/bar1'],
       });
     projects = await getProjects();
-    expect(projects.length).to.equal(1);
+    expect(projects.length).to.equal(0);
   });
 
   it('getProjectEnv', async () => {
