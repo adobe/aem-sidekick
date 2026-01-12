@@ -1,3 +1,10 @@
+## [7.27.3](https://github.com/adobe/aem-sidekick/compare/v7.27.2...v7.27.3) (2026-01-12)
+
+
+### Bug Fixes
+
+* filter undefined projects ([#769](https://github.com/adobe/aem-sidekick/issues/769)) ([36c18a8](https://github.com/adobe/aem-sidekick/commit/36c18a8d4b1c4ca4546fb31f3e2204c802b53767))
+
 ## [7.27.2](https://github.com/adobe/aem-sidekick/compare/v7.27.1...v7.27.2) (2026-01-09)
 
 
