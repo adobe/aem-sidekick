@@ -132,7 +132,6 @@ describe('Test project', () => {
       let value;
       switch (prop) {
         case 'projects':
-        case 'hlxSidekickProjects': // legacy
           value = ['foo/bar1'];
           break;
         case 'foo/bar1':
@@ -155,20 +154,7 @@ describe('Test project', () => {
     sandbox.restore();
     sandbox.stub(chrome.storage.sync, 'get')
       .withArgs('projects')
-      .resolves({})
-      .withArgs('hlxSidekickProjects')
       .resolves({});
-    projects = await getProjects();
-    expect(projects.length).to.equal(0);
-    // legacy projects
-    sandbox.restore();
-    sandbox.stub(chrome.storage.sync, 'get')
-      .withArgs('projects')
-      .resolves({})
-      .withArgs('hlxSidekickProjects')
-      .resolves({
-        hlxSidekickProjects: ['foo/bar1'],
-      });
     projects = await getProjects();
     expect(projects.length).to.equal(0);
   });

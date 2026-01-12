@@ -353,8 +353,7 @@ export async function deleteProject(project) {
     ({ owner, repo } = project);
     handle = `${owner}/${repo}`;
   }
-  const projects = await getConfig('sync', 'projects')
-    || await getConfig('sync', 'hlxSidekickProjects') || []; // legacy
+  const projects = await getConfig('sync', 'projects') || [];
   const i = projects.indexOf(handle);
   if (i >= 0) {
     // delete admin auth header rule
