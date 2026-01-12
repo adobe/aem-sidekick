@@ -48,9 +48,9 @@ export async function getProject(project = {}) {
  * @returns {Promise<Object[]>} The project configurations
  */
 export async function getProjects() {
-  return Promise.all((await getConfig('sync', 'projects')
-    || await getConfig('sync', 'hlxSidekickProjects') || []) // legacy
-    .map((handle) => getProject(handle)));
+  const configs = await getConfig('sync', 'projects') || [];
+  const projects = await Promise.all(configs.map((handle) => getProject(handle)));
+  return projects.filter((project) => project !== undefined);
 }
 
 /**
@@ -353,8 +353,7 @@ export async function deleteProject(project) {
     ({ owner, repo } = project);
     handle = `${owner}/${repo}`;
   }
-  const projects = await getConfig('sync', 'projects')
-    || await getConfig('sync', 'hlxSidekickProjects') || []; // legacy
+  const projects = await getConfig('sync', 'projects') || [];
   const i = projects.indexOf(handle);
   if (i >= 0) {
     // delete admin auth header rule
