@@ -1,0 +1,27 @@
+name: Translation
+on:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - 'src/extension/_locales/**'
+
+env:
+  CI_BRANCH: ${{ github.ref_name }}
+  CI_REPO: ${{ github.repository }}
+
+jobs:
+  translate:
+    name: Translation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Translation API
+        run: |
+          curl -X POST "${{ vars.TRANSLATION_API_ENDPOINT }}" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.TRANSLATION_API_TOKEN }}" \
+            -d '{
+              "branch": "'"$CI_BRANCH"'",
+              "repository": "'"$CI_REPO"'"
+            }'
+
