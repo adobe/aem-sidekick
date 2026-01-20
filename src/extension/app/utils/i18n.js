@@ -36,6 +36,7 @@ export const LANGS = [
   'it',
   'ja',
   'ko',
+  'pl',
   'pt_BR',
   'zh_CN',
   'zh_TW',
