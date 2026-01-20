@@ -204,6 +204,20 @@ describe('Test project', () => {
     expect(failure).to.eql({});
   });
 
+  it('getProjectEnv with apiUpgrade', async () => {
+    sandbox.stub(window, 'fetch')
+      .resolves(new Response(JSON.stringify(CONFIG_JSON)));
+    const {
+      host, project,
+    } = await getProjectEnv({
+      owner: 'adobe',
+      repo: 'business-website',
+      apiUpgrade: true,
+    });
+    expect(host).to.equal('business.adobe.com');
+    expect(project).to.equal('Adobe Business Website');
+  });
+
   it('assembleProject with giturl', async () => {
     const {
       owner, repo, ref,
