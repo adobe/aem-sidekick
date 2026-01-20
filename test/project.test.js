@@ -205,7 +205,7 @@ describe('Test project', () => {
   });
 
   it('getProjectEnv with apiUpgrade', async () => {
-    sandbox.stub(window, 'fetch')
+    const fetchStub = sandbox.stub(window, 'fetch')
       .resolves(new Response(JSON.stringify(CONFIG_JSON)));
     const {
       host, project,
@@ -214,6 +214,7 @@ describe('Test project', () => {
       repo: 'business-website',
       apiUpgrade: true,
     });
+    expect(new URL(fetchStub.args[0][0]).origin).to.equal('https://api.aem.live');
     expect(host).to.equal('business.adobe.com');
     expect(project).to.equal('Adobe Business Website');
   });
