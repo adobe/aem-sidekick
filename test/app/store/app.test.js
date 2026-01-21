@@ -195,12 +195,6 @@ describe('Test App Store', () => {
     await appStore.loadContext(sidekickElement, defaultSidekickConfig);
     appStore.location.port = '';
 
-    appStore.location.host = 'main--aem-boilerplate--adobe.hlx.page';
-    expect(appStore.isPreview()).to.be.true;
-
-    appStore.location.host = 'main--aem-boilerplate--adobe.hlx.live';
-    expect(appStore.isPreview()).to.be.false;
-
     appStore.location.host = 'main--aem-boilerplate--adobe.aem.page';
     expect(appStore.isPreview()).to.be.true;
 
@@ -688,7 +682,7 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').resolves(true);
 
       const prodHost = 'not-aem.com';
-      const liveHost = 'main--aem-boilerplate--adobe.hlx.live';
+      const liveHost = 'main--aem-boilerplate--adobe.aem.live';
       instance.siteStore.host = prodHost;
       instance.siteStore.liveHost = liveHost;
 
@@ -703,7 +697,7 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').resolves(false);
 
       const prodHost = 'not-aem.com';
-      const liveHost = 'main--aem-boilerplate--adobe.hlx.live';
+      const liveHost = 'main--aem-boilerplate--adobe.aem.live';
       instance.siteStore.host = prodHost;
       instance.siteStore.liveHost = liveHost;
 
@@ -943,7 +937,7 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.stub(instance, 'isDev').returns(false);
       instance.isPreview.returns(true);
       instance.status = { webPath: '/somepath' };
-      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.hlx.page';
+      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.aem.page';
 
       fakeFetch.resolves({
         ok: true,
@@ -955,7 +949,7 @@ describe('Test App Store', () => {
       const response = await instance.update();
 
       expect(response).to.be.true;
-      expect(fakeFetch.args[1][0]).to.equal('https://main--aem-boilerplate--adobe.hlx.page/somepath');
+      expect(fakeFetch.args[1][0]).to.equal('https://main--aem-boilerplate--adobe.aem.page/somepath');
       expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
     });
 
@@ -964,7 +958,7 @@ describe('Test App Store', () => {
       instance.isPreview.returns(true);
       instance.siteStore.devUrl = new URL('http://localhost:3000');
       instance.location = new URL('http://localhost:3000/somepath');
-      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.hlx.page';
+      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.aem.page';
       instance.status = { webPath: '/somepath' };
 
       fakeFetch.resolves({
@@ -1223,8 +1217,8 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
       instance.status = { webPath: '/somepath' };
       instance.siteStore = {
-        innerHost: 'main--aem-boilerplate--adobe.hlx.page',
-        outerHost: 'main--aem-boilerplate--adobe.hlx.live',
+        innerHost: 'main--aem-boilerplate--adobe.aem.page',
+        outerHost: 'main--aem-boilerplate--adobe.aem.live',
         host: 'host',
       };
       instance.location = {
@@ -1254,7 +1248,7 @@ describe('Test App Store', () => {
     it('should handle publish when outerHost is defined', async () => {
       sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
       instance.status = { webPath: '/somepath' };
-      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', outerHost: 'main--aem-boilerplate--adobe.hlx.live' };
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.aem.page', outerHost: 'main--aem-boilerplate--adobe.aem.live' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
@@ -1264,7 +1258,7 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
       sidekickTest.sandbox.stub(instance, 'isEditor').returns(true);
       instance.status = { webPath: '/somepath' };
-      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', host: 'aem-boilerplate.com' };
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.aem.page', host: 'aem-boilerplate.com' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
@@ -1273,7 +1267,7 @@ describe('Test App Store', () => {
     it('should handle publish when host is defined', async () => {
       sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
       instance.status = { webPath: '/somepath' };
-      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', host: 'aem-boilerplate.com' };
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.aem.page', host: 'aem-boilerplate.com' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
@@ -1282,7 +1276,7 @@ describe('Test App Store', () => {
     it('should use correct parameters for fetch call', async () => {
       sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
       instance.status = { webPath: '/somepath' };
-      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page' };
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.aem.page' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
       const expectedUrl = createAdminUrl(instance.siteStore, 'live', '/somepath');
 
@@ -1658,7 +1652,7 @@ describe('Test App Store', () => {
         },
       }, { overwriteRoutes: true });
       findViewsSpy = sinon.spy(instance, 'findViews');
-      instance.location = new URL('https://main--aem-boilerplate--adobe.hlx.page/placeholders.json?path=/path/placeholders.json');
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/placeholders.json?path=/path/placeholders.json');
       isProjectStub.returns(true);
 
       const sidekick = new AEMSidekick(defaultSidekickConfig);
@@ -1673,7 +1667,7 @@ describe('Test App Store', () => {
     it('sets iframe src correctly if a DEFAULT view is found and no overlay exists', async () => {
       sidekickTest.mockFetchSidekickConfigSuccess(true, false);
       isProjectStub.returns(true);
-      instance.location = new URL('https://main--aem-boilerplate--adobe.hlx.page/placeholders.json');
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/placeholders.json');
       findViewsStub = sinon.stub(instance, 'findViews').returns([{ viewer: 'http://viewer.com', title: () => 'Test Title' }]);
       getViewOverlayStub.onCall(0).returns(undefined);
 
@@ -1687,7 +1681,7 @@ describe('Test App Store', () => {
 
       await instance.showView();
 
-      expect(frame.src).to.equal('http://viewer.com/?url=https%3A%2F%2Fmain--aem-boilerplate--adobe.hlx.page%2Fplaceholders.json&title=Test+Title');
+      expect(frame.src).to.equal('http://viewer.com/?url=https%3A%2F%2Fmain--aem-boilerplate--adobe.aem.page%2Fplaceholders.json&title=Test+Title');
       expect(findViewsStub.calledWith(VIEWS.DEFAULT)).to.be.true;
       expect(getViewOverlayStub.calledTwice).to.be.true;
     });

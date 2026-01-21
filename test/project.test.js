@@ -380,14 +380,13 @@ describe('Test project', () => {
   });
 
   it('isValidHost', () => {
-    expect(isValidHost('https://main--bar--foo.hlx.page', 'foo', 'bar')).to.be.true;
-    expect(isValidHost('https://main--bar--foo.hlx.live', 'foo', 'bar')).to.be.true;
     expect(isValidHost('https://main--bar--foo.aem.page', 'foo', 'bar')).to.be.true;
     expect(isValidHost('https://main--bar--foo.aem.live', 'foo', 'bar')).to.be.true;
-    expect(isValidHost('https://main--bar--fake.hlx.live', 'foo', 'bar')).to.be.false;
-    expect(isValidHost('https://main--bar--foo.hlx.random', 'foo', 'bar')).to.be.false;
+    expect(isValidHost('https://main--bar--fake.aem.live', 'foo', 'bar')).to.be.false;
+    expect(isValidHost('https://main--bar--foo.aem.random', 'foo', 'bar')).to.be.false;
+    expect(isValidHost('https://main--bar--foo.hlx.page', 'foo', 'bar')).to.be.false;
     // check without owner & repo
-    expect(isValidHost('https://main--bar--foo.hlx.page')).to.be.true;
+    expect(isValidHost('https://main--bar--foo.aem.page')).to.be.true;
   });
 
   it('isValidProject', () => {
@@ -399,23 +398,23 @@ describe('Test project', () => {
 
   it('getProjectMatches', async () => {
     // match preview URL
-    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar1--foo.hlx.page/'))).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar1--foo.aem.page/'))).length).to.equal(1);
     // match preview URL with any ref
-    expect((await getProjectMatches(CONFIGS, mockTab('https://baz--bar1--foo.hlx.page/'))).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://baz--bar1--foo.aem.page/'))).length).to.equal(1);
     // match custom preview URL
     expect((await getProjectMatches(CONFIGS, mockTab('https://6-preview.foo.bar/'))).length).to.equal(1);
     // match live URL
-    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar1--foo.hlx.live/'))).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar1--foo.aem.live/'))).length).to.equal(1);
     // match custom live URL
     expect((await getProjectMatches(CONFIGS, mockTab('https://6-live.foo.bar/'))).length).to.equal(1);
     // match production host
     expect((await getProjectMatches(CONFIGS, mockTab('https://1.foo.bar/'))).length).to.equal(1);
     // ignore disabled config
-    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar2--foo.hlx.live/'))).length).to.equal(0);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar2--foo.aem.live/'))).length).to.equal(0);
     // match transient URL
-    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar0--foo.hlx.live/'))).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar0--foo.aem.live/'))).length).to.equal(1);
     // testing else paths
-    expect((await getProjectMatches(CONFIGS, mockTab('https://bar--foo.hlx.live/'))).length).to.equal(0);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://bar--foo.aem.live/'))).length).to.equal(0);
     await urlCache.set(mockTab('https://7.foo.bar/'), { owner: 'foo', repo: 'bar6' });
     expect((await getProjectMatches(CONFIGS, mockTab('https://7.foo.bar/'))).length).to.equal(1);
     // match sharepoint URL (docx)
@@ -540,7 +539,7 @@ describe('Test project', () => {
     });
 
     it('resolveProxyUrl: dev url', async () => {
-      const proxyUrl = 'https://main--bar--foo.hlx.page/';
+      const proxyUrl = 'https://main--bar--foo.aem.page/';
       const tabUrl = 'http://localhost:3000/foo';
 
       // add proxyUrl meta tag
@@ -557,7 +556,7 @@ describe('Test project', () => {
     });
 
     it('resolveProxyUrl: non-dev url', async () => {
-      const tabUrl = 'https://main--bar--foo.hlx.page/';
+      const tabUrl = 'https://main--bar--foo.aem.page/';
 
       tab = mockTab(tabUrl);
 

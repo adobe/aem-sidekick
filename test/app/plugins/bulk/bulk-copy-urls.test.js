@@ -101,7 +101,7 @@ describe('Bulk preview plugin', () => {
 
     bulkLivePlugin.click();
 
-    await waitUntil(() => copyUrlsStub.calledWith('main--aem-boilerplate--adobe.hlx.live'));
+    await waitUntil(() => copyUrlsStub.calledWith('main--aem-boilerplate--adobe.aem.live'));
   });
 
   it('bulk copy prod urls calls bulkStore.copyUrls() with prod host', async () => {

@@ -33,7 +33,7 @@ const config = {
   ref: 'main',
   mountpoints: [],
 };
-const url = 'https://main--blog--adobe.hlx.page/';
+const url = 'https://main--blog--adobe.aem.page/';
 const tab = {
   id: 1,
   url,
@@ -79,7 +79,7 @@ describe('Test UI: updateContextMenu', () => {
       menuItemId: 'openViewDocSource',
     }, {
       id: 1,
-      url: 'https://main--blog--adobe.hlx.page/',
+      url: 'https://main--blog--adobe.aem.page/',
     });
     expect(openViewDocSourceStub.called).to.be.true;
   });
