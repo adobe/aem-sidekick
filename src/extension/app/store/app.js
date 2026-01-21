@@ -1268,12 +1268,16 @@ export class AppStore {
     const getCacheBuster = (url) => {
       // Check if cache busting should be applied based on the environment and conditions.
       // The logic prevents cache busting if:
-      // The target environment is 'prod' && the envUrl does not include any of the live
-      // domains & the sidekick is running in transient mode.
-      const liveDomains = ['aem.live', 'hlx.live'];
-      if (cacheBust
-        && !(targetEnv === 'prod' && !liveDomains.some((domain) => url.includes(domain)) && this.siteStore.transient)) {
-        return `?nocache=${Date.now()}`;
+      // The target environment is 'prod' && the envUrl does not include aem.live &
+      // the sidekick is running in transient mode.
+      try {
+        const domain = new URL(url).hostname;
+        if (cacheBust
+          && !(targetEnv === 'prod' && domain !== 'aem.live' && this.siteStore.transient)) {
+          return `?nocache=${Date.now()}`;
+        }
+      } catch (e) {
+        // ignore invalid url
       }
       return '';
     };

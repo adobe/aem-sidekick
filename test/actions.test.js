@@ -546,14 +546,14 @@ describe('Test actions', () => {
     let resp;
 
     // successful close with specific ID
-    resp = await externalActions.closePalette({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.closePalette({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.calledWith(1, { action: 'close_palette', id: 'my-plugin' })).to.be.true;
     expect(resp).to.be.true;
 
     sandbox.resetHistory();
 
     // no palette ID
-    resp = await externalActions.closePalette({}, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.closePalette({}, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
@@ -568,7 +568,7 @@ describe('Test actions', () => {
 
     // error sending message
     sendMessageStub.rejects(error);
-    resp = await externalActions.closePalette({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.closePalette({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(resp).to.be.false;
   });
 
@@ -578,14 +578,14 @@ describe('Test actions', () => {
     let resp;
 
     // successful close with specific ID
-    resp = await externalActions.closePopover({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.closePopover({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.calledWith(1, { action: 'close_popover', id: 'my-plugin' })).to.be.true;
     expect(resp).to.be.true;
 
     sandbox.resetHistory();
 
     // no popover ID
-    resp = await externalActions.closePopover({}, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.closePopover({}, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
@@ -600,7 +600,7 @@ describe('Test actions', () => {
 
     // error sending message
     sendMessageStub.rejects(error);
-    resp = await externalActions.closePopover({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.closePopover({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(resp).to.be.false;
   });
 
@@ -610,7 +610,7 @@ describe('Test actions', () => {
     const i18nSpy = sandbox.spy(chrome.i18n, 'getMessage');
 
     // add project
-    await internalActions.addRemoveProject(mockTab('https://main--bar--foo.hlx.page/', {
+    await internalActions.addRemoveProject(mockTab('https://main--bar--foo.aem.page/', {
       id: 1,
     }));
     expect(set.calledWith({
@@ -630,7 +630,7 @@ describe('Test actions', () => {
     // remove project
     await internalActions.addRemoveProject({
       id: 2,
-      url: 'https://main--bar--foo.hlx.page/',
+      url: 'https://main--bar--foo.aem.page/',
     });
     expect(set.calledWith(
       { projects: [] },
@@ -647,7 +647,7 @@ describe('Test actions', () => {
     }]);
     await internalActions.addRemoveProject({
       id: 1,
-      url: 'https://main--bar--foo.hlx.page/',
+      url: 'https://main--bar--foo.aem.page/',
     });
     expect(set.calledWith({
       'foo/bar': {
@@ -662,7 +662,7 @@ describe('Test actions', () => {
     // remove again
     await internalActions.addRemoveProject({
       id: 1,
-      url: 'https://main--bar--foo.hlx.page/',
+      url: 'https://main--bar--foo.aem.page/',
     });
 
     // testing noop
@@ -677,11 +677,11 @@ describe('Test actions', () => {
   it('internal: enableDisableProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     // add project first
-    await internalActions.addRemoveProject(mockTab('https://main--bar--foo.hlx.page/', {
+    await internalActions.addRemoveProject(mockTab('https://main--bar--foo.aem.page/', {
       id: 1,
     }));
     // disable project
-    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.hlx.page/', {
+    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.aem.page/', {
       id: 1,
     }));
     expect(set.calledWith({
@@ -695,7 +695,7 @@ describe('Test actions', () => {
       },
     })).to.be.true;
     // enable project
-    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.hlx.page/', {
+    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.aem.page/', {
       id: 2,
     }));
     expect(set.calledWith({
@@ -720,7 +720,7 @@ describe('Test actions', () => {
     const i18nSpy = sandbox.spy(chrome.i18n, 'getMessage');
 
     // disable project - should show notification with project name
-    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.hlx.page/', {
+    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.aem.page/', {
       id: 1,
     }));
 
@@ -776,7 +776,7 @@ describe('Test actions', () => {
       mockLegacySidekickResponse([CONFIGS[0]]);
       sandbox.stub(chrome.storage.sync, 'get').resolves({ projects: [] });
 
-      await internalActions.importProjects(mockTab('https://main--bar--foo.hlx.page/', {
+      await internalActions.importProjects(mockTab('https://main--bar--foo.aem.page/', {
         id: 2,
       }));
       expect(i18nSpy.calledWith('config_project_imported_single', '1')).to.be.true;
@@ -788,7 +788,7 @@ describe('Test actions', () => {
       mockLegacySidekickResponse(CONFIGS);
       sandbox.stub(chrome.storage.sync, 'get').resolves({ projects: [] });
 
-      await internalActions.importProjects(mockTab('https://main--bar--foo.hlx.page/', {
+      await internalActions.importProjects(mockTab('https://main--bar--foo.aem.page/', {
         id: 2,
       }));
 
@@ -800,7 +800,7 @@ describe('Test actions', () => {
       mockLegacySidekickResponse([CONFIGS[1]]);
       sandbox.stub(chrome.storage.sync, 'get').resolves({ 'foo/bar2': CONFIGS[1] });
 
-      await internalActions.importProjects(mockTab('https://main--bar--foo.hlx.page/', {
+      await internalActions.importProjects(mockTab('https://main--bar--foo.aem.page/', {
         id: 2,
       }));
 
@@ -811,7 +811,7 @@ describe('Test actions', () => {
 
   it('internal: manageProjects', async () => {
     const createSpy = sandbox.spy(chrome.tabs, 'create');
-    await internalActions.manageProjects(mockTab('https://main--bar--foo.hlx.page/', {
+    await internalActions.manageProjects(mockTab('https://main--bar--foo.aem.page/', {
       id: 2,
     }));
     expect(createSpy.calledWithMatch({
@@ -1286,7 +1286,7 @@ describe('Test actions', () => {
         top: '10px',
         left: '20px',
       },
-    }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.calledWith(1, {
       action: 'resize_palette',
       id: 'my-plugin',
@@ -1302,35 +1302,35 @@ describe('Test actions', () => {
     sandbox.resetHistory();
 
     // width only (missing height)
-    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: { width: '600px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: { width: '600px' } }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
     sandbox.resetHistory();
 
     // height only (missing width)
-    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: { height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: { height: '400px' } }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
     sandbox.resetHistory();
 
     // no palette ID
-    resp = await externalActions.resizePalette({ rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePalette({ rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
     sandbox.resetHistory();
 
     // no rect
-    resp = await externalActions.resizePalette({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePalette({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
     sandbox.resetHistory();
 
     // empty rect
-    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: {} }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: {} }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
@@ -1345,7 +1345,7 @@ describe('Test actions', () => {
 
     // error sending message
     sendMessageStub.rejects(error);
-    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePalette({ id: 'my-plugin', rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(resp).to.be.false;
   });
 
@@ -1363,7 +1363,7 @@ describe('Test actions', () => {
         top: '10px',
         left: '20px',
       },
-    }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.calledWith(1, {
       action: 'resize_popover',
       id: 'my-plugin',
@@ -1379,42 +1379,42 @@ describe('Test actions', () => {
     sandbox.resetHistory();
 
     // successful resize with width and height only
-    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.calledWith(1, { action: 'resize_popover', id: 'my-plugin', rect: { width: '600px', height: '400px' } })).to.be.true;
     expect(resp).to.be.true;
 
     sandbox.resetHistory();
 
     // width only (missing height)
-    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { width: '600px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { width: '600px' } }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
     sandbox.resetHistory();
 
     // height only (missing width)
-    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { height: '400px' } }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
     sandbox.resetHistory();
 
     // no popover ID
-    resp = await externalActions.resizePopover({ rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePopover({ rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
     sandbox.resetHistory();
 
     // no rect
-    resp = await externalActions.resizePopover({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePopover({ id: 'my-plugin' }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
     sandbox.resetHistory();
 
     // empty rect
-    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: {} }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: {} }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(sendMessageStub.called).to.be.false;
     expect(resp).to.be.false;
 
@@ -1429,7 +1429,7 @@ describe('Test actions', () => {
 
     // error sending message
     sendMessageStub.rejects(error);
-    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.hlx.page/', { id: 1 }) });
+    resp = await externalActions.resizePopover({ id: 'my-plugin', rect: { width: '600px', height: '400px' } }, { tab: mockTab('https://main--bar--foo.aem.page/', { id: 1 }) });
     expect(resp).to.be.false;
   });
 });

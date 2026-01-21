@@ -33,15 +33,6 @@ export const HelixMockContentType = {
 };
 
 /**
- * Mock second level domains
- * @enum {string}
- */
-export const HelixSecondLevelDomains = {
-  HLX: 'hlx',
-  AEM: 'aem',
-};
-
-/**
  * Mock helix environments
  * @enum {string}
  */
@@ -93,35 +84,34 @@ export function mockLocation(document, location) {
 }
 
 /**
- * Given a content type and second level domain, returns the default environment locations
+ * Given a content type, returns the default environment locations
  * @param {HelixMockContentType} contentType The content type for the default environment location
- * @param {HelixSecondLevelDomains} sld The second level domain to use in the environment
  * @returns {Object | undefined}
  */
-export function getDefaultHelixEnviromentLocations(contentType, sld) {
+export function getDefaultHelixEnviromentLocations(contentType) {
   switch (contentType) {
     case HelixMockContentType.DOC:
       return {
         dev: 'http://localhost:3000/',
-        preview: `https://main--aem-boilerplate--adobe.${sld}.page`,
+        preview: 'https://main--aem-boilerplate--adobe.aem.page',
         review: 'https://default--main--aem-boilerplate--adobe.aem.reviews',
-        live: `https://main--aem-boilerplate--adobe.${sld}.live`,
+        live: 'https://main--aem-boilerplate--adobe.aem.live',
         prod: 'https://www.aemboilerplate.com',
       };
     case HelixMockContentType.SHEET:
       return {
         dev: 'http://localhost:3000/placeholders.json',
-        preview: `https://main--aem-boilerplate--adobe.${sld}.page/placeholders.json`,
+        preview: 'https://main--aem-boilerplate--adobe.aem.page/placeholders.json',
         review: 'https://default--main--aem-boilerplate--adobe.aem.reviews/placeholders.json',
-        live: `https://main--aem-boilerplate--adobe.${sld}.live/placeholders.json`,
+        live: 'https://main--aem-boilerplate--adobe.aem.live/placeholders.json',
         prod: 'https://www.aemboilerplate.com/placeholders.json',
       };
     case HelixMockContentType.IMAGE:
       return {
         dev: 'http://localhost:3000/media_foobar.png?width=750&format=png&optimize=medium',
-        preview: `https://main--aem-boilerplate--adobe.${sld}.page/media_foobar.png?width=750&format=png&optimize=medium`,
+        preview: 'https://main--aem-boilerplate--adobe.aem.page/media_foobar.png?width=750&format=png&optimize=medium',
         review: 'https://default--main--aem-boilerplate--adobe.aem.reviews/media_foobar.png?width=750&format=png&optimize=medium',
-        live: `https://main--aem-boilerplate--adobe.${sld}.live/media_foobar.png?width=750&format=png&optimize=medium`,
+        live: 'https://main--aem-boilerplate--adobe.aem.live/media_foobar.png?width=750&format=png&optimize=medium',
         prod: 'https://www.aemboilerplate.com/media_foobar.png?width=750&format=png&optimize=medium',
       };
     default:
@@ -183,14 +173,12 @@ export function stubEnvironment(environment, appStore) {
  * @param {HelixMockEnvironments} environment The helix environment
  * @param {HelixMockContentType} contentType The active content type for the environment
  * @param {string} [location] Location override (Optional)
- * @param {string} [sld] Second level domain override (Optional) (Default: hlx)
  */
 export function mockHelixEnvironment(
   appStore,
   environment = HelixMockEnvironments.PREVIEW,
   contentType = HelixMockContentType.DOC,
-  location = undefined,
-  sld = 'hlx') {
+  location = undefined) {
   if (!environment) {
     throw new Error('environment is required');
   }
@@ -201,7 +189,7 @@ export function mockHelixEnvironment(
   // Mock the browsers location
   mockLocation(
     document,
-    location ?? getDefaultHelixEnviromentLocations(contentType, sld)[environment],
+    location ?? getDefaultHelixEnviromentLocations(contentType)[environment],
   );
 }
 
