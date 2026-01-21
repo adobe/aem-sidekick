@@ -1273,7 +1273,7 @@ export class AppStore {
       try {
         const domain = new URL(url).hostname;
         if (cacheBust
-          && !(targetEnv === 'prod' && domain !== 'aem.live' && this.siteStore.transient)) {
+          && !(targetEnv === 'prod' && !domain.endsWith('.aem.live') && this.siteStore.transient)) {
           return `?nocache=${Date.now()}`;
         }
       } catch (e) {
