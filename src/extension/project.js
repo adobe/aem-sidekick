@@ -229,19 +229,26 @@ export function assembleProject({
  * @param {Object} config The config
  * @param {string} config.owner The owner
  * @param {string} config.repo The repository
- * @param {string} [config.ref] The ref or branch (default: main)
- * @param {string} [config.authToken] The auth token
+ * @param {string} [config.ref=main] The ref or branch
+ * @param {boolean} [config.apiUpgrade=false] Is an API upgrade available for this site?
  * @returns {Promise<Object>} The project environment
  */
 export async function getProjectEnv({
   owner,
   repo,
   ref = 'main',
+  apiUpgrade = false,
 }) {
   const env = {};
   let res;
   try {
-    res = await callAdmin({ owner, repo, ref }, 'sidekick', '/config.json');
+    res = await callAdmin(
+      {
+        owner, repo, ref, apiUpgrade,
+      },
+      'sidekick',
+      apiUpgrade ? '' : '/config.json',
+    );
   } catch (e) {
     log.warn(`getProjectEnv: unable to retrieve project config: ${e}`);
   }

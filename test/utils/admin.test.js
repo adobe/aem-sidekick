@@ -62,7 +62,7 @@ describe('helix-admin', () => {
     it('creates discover URL correctly', () => {
       // @ts-ignore
       const url = createAdminUrl({}, 'discover', '', new URLSearchParams('url=https://example.com'));
-      expect(url.toString()).to.equal('https://admin.hlx.page/discover/?url=https%3A%2F%2Fexample.com');
+      expect(url.toString()).to.equal('https://admin.hlx.page/discover?url=https%3A%2F%2Fexample.com');
     });
 
     it('appends search parameters correctly', () => {
