@@ -204,6 +204,21 @@ describe('Test project', () => {
     expect(failure).to.eql({});
   });
 
+  it('getProjectEnv with apiUpgrade', async () => {
+    const fetchStub = sandbox.stub(window, 'fetch')
+      .resolves(new Response(JSON.stringify(CONFIG_JSON)));
+    const {
+      host, project,
+    } = await getProjectEnv({
+      owner: 'adobe',
+      repo: 'business-website',
+      apiUpgrade: true,
+    });
+    expect(new URL(fetchStub.args[0][0]).origin).to.equal('https://api.aem.live');
+    expect(host).to.equal('business.adobe.com');
+    expect(project).to.equal('Adobe Business Website');
+  });
+
   it('assembleProject with giturl', async () => {
     const {
       owner, repo, ref,

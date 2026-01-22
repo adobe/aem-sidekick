@@ -49,7 +49,7 @@ export function createAdminUrl(
 ) {
   const adminUrl = new URL(`${apiUpgrade ? ADMIN_ORIGIN_NEW : ADMIN_ORIGIN}`);
   if (api === 'discover') {
-    adminUrl.pathname = `/${api}/`;
+    adminUrl.pathname = `/${api}${path}`;
   } else if (org && site) {
     if (apiUpgrade) {
       // use new api

@@ -253,7 +253,7 @@ class UrlCache {
         }
         const resp = await callAdmin(
           // @ts-ignore
-          {}, 'discover', '/', { searchParams },
+          { apiUpgrade: true }, 'discover', '', { searchParams },
         );
         if (resp.ok) {
           results = await resp.json();
