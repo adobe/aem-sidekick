@@ -1,3 +1,10 @@
+## [7.27.5](https://github.com/adobe/aem-sidekick/compare/v7.27.4...v7.27.5) (2026-01-22)
+
+
+### Bug Fixes
+
+* ignore buttons from bulk selection in sharepoint ([#782](https://github.com/adobe/aem-sidekick/issues/782)) ([0e70641](https://github.com/adobe/aem-sidekick/commit/0e7064199772d776dfe91ec04a6b8f5296f05370))
+
 ## [7.27.4](https://github.com/adobe/aem-sidekick/compare/v7.27.3...v7.27.4) (2026-01-22)
 
 
