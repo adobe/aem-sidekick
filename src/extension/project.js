@@ -229,8 +229,7 @@ export function assembleProject({
  * @param {Object} config The config
  * @param {string} config.owner The owner
  * @param {string} config.repo The repository
- * @param {string} [config.ref] The ref or branch (default: main)
- * @param {string} [config.authToken] The auth token
+ * @param {string} [config.ref=main] The ref or branch
  * @param {boolean} [config.apiUpgrade=false] Is an API upgrade available for this site?
  * @returns {Promise<Object>} The project environment
  */
