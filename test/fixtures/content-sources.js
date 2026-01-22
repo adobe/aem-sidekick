@@ -196,6 +196,13 @@ export function mockSharePointRoot() {
   const container = document.createElement('div');
   container.setAttribute('role', 'presentation');
   root.appendChild(container);
+
+  const allDocumentsButton = document.createElement('button');
+  allDocumentsButton.textContent = 'All Documents';
+  allDocumentsButton.setAttribute('type', 'button');
+  allDocumentsButton.setAttribute('aria-label', 'All Documents');
+  allDocumentsButton.setAttribute('aria-selected', 'true');
+  root.appendChild(allDocumentsButton);
   return root;
 }
 

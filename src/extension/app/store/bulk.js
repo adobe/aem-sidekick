@@ -159,7 +159,8 @@ export class BulkStore {
     return [...document.querySelectorAll('#appRoot [aria-selected="true"]:not([aria-checked="true"]')]
       // exclude folders
       .filter((row) => !row.querySelector('img')?.getAttribute('src').includes('/foldericons/')
-        && !row.querySelector('img')?.getAttribute('src').endsWith('folder.svg')
+        && !row.getAttribute('type')?.includes('button')
+        && !row.querySelector('img')?.getAttribute('src').endsWith('folder_open.svg')
         && !row.querySelector('svg')?.parentElement.className.toLowerCase().includes('folder'))
       // extract file name and type
       .map((row) => {
