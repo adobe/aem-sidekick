@@ -160,6 +160,7 @@ export class BulkStore {
       // exclude folders
       .filter((row) => !row.querySelector('img')?.getAttribute('src').includes('/foldericons/')
         && !row.getAttribute('type')?.includes('button')
+        && !row.querySelector('img')?.getAttribute('src').endsWith('folder.svg')
         && !row.querySelector('svg')?.parentElement.className.toLowerCase().includes('folder'))
       // extract file name and type
       .map((row) => {
