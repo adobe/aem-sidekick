@@ -1,3 +1,10 @@
+## [7.27.6](https://github.com/adobe/aem-sidekick/compare/v7.27.5...v7.27.6) (2026-01-24)
+
+
+### Bug Fixes
+
+* exclude well-known adobe domains from sharepoint candidates ([#783](https://github.com/adobe/aem-sidekick/issues/783)) ([619d4d6](https://github.com/adobe/aem-sidekick/commit/619d4d6bad6a96fbfeac0e15140fa45c295f9859))
+
 ## [7.27.5](https://github.com/adobe/aem-sidekick/compare/v7.27.4...v7.27.5) (2026-01-22)
 
 
