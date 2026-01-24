@@ -30,7 +30,15 @@ export function isSharePointHost(url, projects = []) {
   return /^[a-z-]+\.sharepoint\.com$/.test(host)
     || !!projects.find((p) => {
       const mp = p.mountpoints && p.mountpoints[0];
-      return !host.endsWith('.google.com') && mp && new URL(mp).host === host;
+      return mp && new URL(mp).host === host
+        && ![
+          '.google.com',
+          '.da.live',
+          '.adobeaemcloud.com',
+          '.adobecqms.net',
+          '.adobeio-static.net',
+          '.adobeioruntime.net',
+        ].some((domain) => host.endsWith(domain));
     });
 }
 
