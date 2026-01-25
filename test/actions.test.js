@@ -157,7 +157,7 @@ describe('Test actions', () => {
     resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://tools.aem.live/test') });
     expect(resp).to.deep.equal(['foo']);
 
-    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://feature--helix-labs-website--adobe.aem.page/feature') });
+    resp = await externalActions.getAuthInfo({}, { tab: mockTab('https://feature--helix-tools-website--adobe.aem.page/feature') });
     expect(resp).to.deep.equal(['foo']);
 
     // untrusted actors
@@ -219,10 +219,7 @@ describe('Test actions', () => {
     resp = await externalActions.getSites({}, { tab: mockTab('https://tools.aem.live/foo') });
     expect(resp).to.deep.equal(expectedOutput);
 
-    resp = await externalActions.getSites({}, { tab: mockTab('https://labs.aem.live/foo') });
-    expect(resp).to.deep.equal(expectedOutput);
-
-    resp = await externalActions.getSites({}, { tab: mockTab('https://feature--helix-labs-website--adobe.aem.page/feature') });
+    resp = await externalActions.getSites({}, { tab: mockTab('https://feature--helix-tools-website--adobe.aem.page/feature') });
     expect(resp).to.deep.equal(expectedOutput);
 
     // untrusted actors

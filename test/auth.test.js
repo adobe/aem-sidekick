@@ -164,7 +164,6 @@ describe('Test auth', () => {
             regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
@@ -278,7 +277,6 @@ describe('Test auth', () => {
             regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
@@ -305,7 +303,6 @@ describe('Test auth', () => {
             regexFilter: '^https://production-host.com/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
@@ -332,7 +329,6 @@ describe('Test auth', () => {
             regexFilter: '^https://custom-preview.com/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
@@ -359,7 +355,6 @@ describe('Test auth', () => {
             regexFilter: '^https://custom-live.com/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
@@ -467,7 +462,6 @@ describe('Test auth', () => {
             regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
