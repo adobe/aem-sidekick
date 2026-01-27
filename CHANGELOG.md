@@ -1,3 +1,10 @@
+## [7.27.7](https://github.com/adobe/aem-sidekick/compare/v7.27.6...v7.27.7) (2026-01-27)
+
+
+### Bug Fixes
+
+* support new jobs api ([#786](https://github.com/adobe/aem-sidekick/issues/786)) ([a91a410](https://github.com/adobe/aem-sidekick/commit/a91a4104abd80cc278b93b1c977d4e464ed668ce))
+
 ## [7.27.6](https://github.com/adobe/aem-sidekick/compare/v7.27.5...v7.27.6) (2026-01-24)
 
 
