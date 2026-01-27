@@ -177,5 +177,12 @@ describe('helix-admin', () => {
       expect(options.method).to.equal('get');
       expect(options.body).to.equal(undefined);
     });
+
+    it('calls admin api with job endpoint and apiUpgrade', async () => {
+      const config = { ...siteStore, apiUpgrade: true };
+      await callAdmin(config, 'job', '/path/to/resource');
+      const url = fetchStub.getCall(0).args[0].toString();
+      expect(url).to.equal('https://api.aem.live/adobe/sites/aem-boilerplate/jobs/path/to/resource');
+    });
   });
 });

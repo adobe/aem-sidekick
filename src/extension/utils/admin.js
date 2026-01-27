@@ -58,6 +58,9 @@ export function createAdminUrl(
         adminUrl.searchParams.append('org', org);
         adminUrl.searchParams.append('site', site);
       } else {
+        if (api === 'job') {
+          api = 'jobs';
+        }
         adminUrl.pathname = `/${org}/sites/${site}/${api}`;
       }
     } else {
