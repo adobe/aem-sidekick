@@ -197,17 +197,8 @@
   "close_sidekick": {
     "message": "Sidekick schließen"
   },
-  "column_name_url": {
-    "message": "url"
-  },
-  "column_name_urls": {
-    "message": "urls"
-  },
-  "column_name_path": {
-    "message": "pfad"
-  },
-  "column_name_paths": {
-    "message": "pfade"
+  "code_state": {
+    "message": "Keine Aktionen für Code-Dateien verfügbar "
   },
   "column_name_href": {
     "message": "href"
@@ -216,13 +207,22 @@
     "message": "hrefs"
   },
   "column_name_link": {
-    "message": "link"
+    "message": "Verknüpfung"
   },
   "column_name_links": {
-    "message": "links"
+    "message": "Links"
   },
-  "code_state": {
-    "message": "Keine Aktionen für Code-Dateien verfügbar "
+  "column_name_path": {
+    "message": "Pfade"
+  },
+  "column_name_paths": {
+    "message": "Pfade"
+  },
+  "column_name_url": {
+    "message": "URL"
+  },
+  "column_name_urls": {
+    "message": "URLs"
   },
   "config_add_project_headline": {
     "message": "Hinzugefügtes Projekt"
@@ -308,6 +308,9 @@
   "copy": {
     "message": "Kopieren"
   },
+  "copy_all_values": {
+    "message": "Alle Werte kopieren"
+  },
   "copy_live_url": {
     "message": "Live-URL kopieren"
   },
@@ -331,9 +334,6 @@
   },
   "copy_urls": {
     "message": "$1 URLs kopieren"
-  },
-  "copy_all_values": {
-    "message": "Alle Werte kopieren"
   },
   "copy_urls_error": {
     "message": "Kopieren in Zwischenablage fehlgeschlagen. Bitte versuchen Sie es erneut."

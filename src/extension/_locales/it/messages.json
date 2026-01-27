@@ -197,17 +197,8 @@
   "close_sidekick": {
     "message": "Chiudi barra laterale"
   },
-  "column_name_url": {
-    "message": "url"
-  },
-  "column_name_urls": {
-    "message": "urls"
-  },
-  "column_name_path": {
-    "message": "percorso"
-  },
-  "column_name_paths": {
-    "message": "percorsi"
+  "code_state": {
+    "message": "Nessuna azione disponibile per i file di codice"
   },
   "column_name_href": {
     "message": "href"
@@ -221,8 +212,17 @@
   "column_name_links": {
     "message": "collegamenti"
   },
-  "code_state": {
-    "message": "Nessuna azione disponibile per i file di codice"
+  "column_name_path": {
+    "message": "percorso"
+  },
+  "column_name_paths": {
+    "message": "percorsi"
+  },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "url"
   },
   "config_add_project_headline": {
     "message": "Progetto aggiunto"
@@ -308,6 +308,9 @@
   "copy": {
     "message": "Copia"
   },
+  "copy_all_values": {
+    "message": "Copia tutti i valori"
+  },
   "copy_live_url": {
     "message": "Copia URL live"
   },
@@ -331,9 +334,6 @@
   },
   "copy_urls": {
     "message": "Copia $1 URL"
-  },
-  "copy_all_values": {
-    "message": "Copia tutti i valori"
   },
   "copy_urls_error": {
     "message": "Copia negli appunti non riuscita. Riprova."

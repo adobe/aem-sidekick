@@ -197,17 +197,8 @@
   "close_sidekick": {
     "message": "Fermer Sidekick"
   },
-  "column_name_url": {
-    "message": "url"
-  },
-  "column_name_urls": {
-    "message": "urls"
-  },
-  "column_name_path": {
-    "message": "chemin"
-  },
-  "column_name_paths": {
-    "message": "chemins"
+  "code_state": {
+    "message": "Aucune action disponible pour les fichiers de code"
   },
   "column_name_href": {
     "message": "href"
@@ -221,8 +212,17 @@
   "column_name_links": {
     "message": "liens"
   },
-  "code_state": {
-    "message": "Aucune action disponible pour les fichiers de code"
+  "column_name_path": {
+    "message": "chemin"
+  },
+  "column_name_paths": {
+    "message": "chemins d’accès"
+  },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "url"
   },
   "config_add_project_headline": {
     "message": "Projet ajouté"
@@ -308,6 +308,9 @@
   "copy": {
     "message": "Copier"
   },
+  "copy_all_values": {
+    "message": "Copier toutes les valeurs"
+  },
   "copy_live_url": {
     "message": "Copier l'URL dynamique"
   },
@@ -331,9 +334,6 @@
   },
   "copy_urls": {
     "message": "Copier $1 URL"
-  },
-  "copy_all_values": {
-    "message": "Copier toutes les valeurs"
   },
   "copy_urls_error": {
     "message": "La copie dans le presse-papiers a échoué. Veuillez réessayer."
