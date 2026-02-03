@@ -39,7 +39,7 @@ export async function configureAuthAndCorsHeaders() {
     // find projects with auth tokens and add rules for each
     const projects = await getConfig('session', 'projects') || [];
     const addRulesPromises = projects.map(async ({
-      owner, repo, authToken, siteToken,
+      owner, repo, authToken, siteToken, imsToken,
     }) => {
       const rules = [];
       if (authToken) {
@@ -148,6 +148,37 @@ export async function configureAuthAndCorsHeaders() {
         });
       }
 
+      if (imsToken) {
+        rules.push({
+          id: getRandomId(),
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [{
+              operation: 'set',
+              header: 'authorization',
+              value: `Bearer ${imsToken}`,
+            }],
+          },
+          condition: {
+            regexFilter: `^https://content\\.da\\.live/${owner}/.*`,
+            requestDomains: ['content.da.live'],
+            requestMethods: ['get', 'put', 'post', 'delete'],
+            resourceTypes: [
+              'main_frame',
+              'sub_frame',
+              'script',
+              'stylesheet',
+              'image',
+              'xmlhttprequest',
+              'media',
+              'font',
+              'other',
+            ],
+          },
+        });
+      }
+
       log.debug(`addAuthTokensHeaders: added rules for ${owner}`);
       return rules;
     });
@@ -228,6 +259,44 @@ export async function setAuthToken(
       // remove site token from session storage
       const siteIndex = projects.findIndex(({ id }) => id === siteHandle);
       projects.splice(siteIndex, 1);
+    }
+    await setConfig('session', { projects });
+    await configureAuthAndCorsHeaders();
+  }
+}
+
+/**
+ * Sets the IMS token for a given organization.
+ * @param {string} owner The project owner (org)
+ * @param {string} repo The project repo (not used, kept for backward compatibility)
+ * @param {string} imsToken The IMS token
+ * @returns {Promise<void>}
+ */
+export async function setImsToken(owner, repo, imsToken) {
+  if (owner) {
+    const projects = await getConfig('session', 'projects') || [];
+    const orgHandle = owner;
+    const orgExists = projects.find(({ id }) => id === orgHandle);
+    if (imsToken) {
+      if (!orgExists) {
+        projects.push({
+          id: orgHandle,
+          owner,
+          repo,
+          imsToken,
+        });
+      } else {
+        const orgIndex = projects.findIndex(({ id }) => id === orgHandle);
+        projects[orgIndex].imsToken = imsToken;
+      }
+    } else if (orgExists) {
+      // remove ims token from session storage
+      const orgIndex = projects.findIndex(({ id }) => id === orgHandle);
+      delete projects[orgIndex].imsToken;
+      // if the org has no other tokens, remove it entirely
+      if (!projects[orgIndex].authToken && !projects[orgIndex].siteToken) {
+        projects.splice(orgIndex, 1);
+      }
     }
     await setConfig('session', { projects });
     await configureAuthAndCorsHeaders();

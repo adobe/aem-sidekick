@@ -11,7 +11,7 @@
  */
 
 import { log } from './log.js';
-import { setAuthToken } from './auth.js';
+import { setAuthToken, setImsToken } from './auth.js';
 import {
   addProject,
   getProjectFromUrl,
@@ -119,6 +119,7 @@ function isTrustedOrigin(origin) {
     ADMIN_ORIGIN_NEW,
     'https://labs.aem.live',
     'https://tools.aem.live',
+    'https://da.live',
     'http://localhost:3000',
   ];
 
@@ -129,6 +130,7 @@ function isTrustedOrigin(origin) {
   const TRUSTED_ORIGIN_PATTERNS = [
     /^https:\/\/[a-z0-9-]+--helix-labs-website--adobe\.aem\.(page|live)$/, // labs
     /^https:\/\/[a-z0-9-]+--helix-tools-website--adobe\.aem\.(page|live)$/, // tools
+    /^https:\/\/[a-z0-9-]+--da-live--adobe\.aem\.(page|live)$/, // da.live
   ];
 
   if (TRUSTED_ORIGIN_PATTERNS.some((trustedOriginPattern) => origin.match(trustedOriginPattern))) {
@@ -283,7 +285,7 @@ async function launch({
  * @returns {Promise<boolean>} True if login flow started, else false
  */
 async function login({
-  owner, repo, org, site, idp, selectAccount = false, tenant,
+  owner, repo, org, site, idp, selectAccount = false, tenant, imsToken,
 }, { tab }) {
   owner = org || owner;
   repo = site || repo;
@@ -297,6 +299,10 @@ async function login({
     return false;
   }
   if (owner && repo) {
+    // store imsToken in session storage if provided
+    if (imsToken) {
+      await setImsToken(owner, repo, imsToken);
+    }
     // start login flow for this org
     const params = new URLSearchParams();
     params.set('extensionId', chrome.runtime.id);
