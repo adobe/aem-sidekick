@@ -130,7 +130,7 @@ describe('Publish plugin', () => {
         .mockHelixEnvironment(HelixMockEnvironments.LIVE)
         .mockFetchSidekickConfigSuccess(false, false);
 
-      const mockFetch = fetchMock.get('https://main--aem-boilerplate--adobe.hlx.live/', {
+      const mockFetch = fetchMock.get('https://main--aem-boilerplate--adobe.aem.live/', {
         status: 200,
       });
 
@@ -150,7 +150,7 @@ describe('Publish plugin', () => {
 
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
       expect(switchEnvStub.calledWith('prod', false, false)).to.be.true;
-      expect(mockFetch._calls[3].identifier).to.eq('https://main--aem-boilerplate--adobe.hlx.live/');
+      expect(mockFetch._calls[3].identifier).to.eq('https://main--aem-boilerplate--adobe.aem.live/');
       expect(mockFetch._calls[3].options.cache).to.eq('reload');
       expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
       expect(sidekickTest.rumStub.calledWith('click', {

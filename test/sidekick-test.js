@@ -277,16 +277,14 @@ export class SidekickTest {
    * @param {HelixMockEnvironments} environment The helix environment
    * @param {HelixMockContentType} contentType The active content type for the environment
    * @param {string} [location] Location override (Optional)
-   * @param {string} [sld] Second level domain override (Optional) (Default: hlx)
    * @returns {SidekickTest}
    */
   mockHelixEnvironment(
     environment = HelixMockEnvironments.PREVIEW,
     contentType = HelixMockContentType.DOC,
     location = undefined,
-    sld = 'hlx',
   ) {
-    mockHelixEnvironment(this.appStore, environment, contentType, location, sld);
+    mockHelixEnvironment(this.appStore, environment, contentType, location);
     return this;
   }
 

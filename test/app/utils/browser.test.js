@@ -70,7 +70,7 @@ describe('browser utils', () => {
 
   describe('getProjectDetails', () => {
     it('returns details for a host with repo and owner, ignoring the ref', () => {
-      const host = 'main--aem-boilerplate--adobe.hlx.page';
+      const host = 'main--aem-boilerplate--adobe.aem.page';
       const result = getProjectDetails(host);
       expect(result).to.deep.equal(['aem-boilerplate', 'adobe']);
     });
@@ -81,7 +81,7 @@ describe('browser utils', () => {
     });
 
     it('no ref', () => {
-      const host = 'aem-boilerplate--adobe.hlx.page';
+      const host = 'aem-boilerplate--adobe.aem.page';
       const result = getProjectDetails(host);
       expect(result).to.deep.equal(['aem-boilerplate', 'adobe']);
     });
