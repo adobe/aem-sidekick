@@ -65,6 +65,10 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "$1 をプレビューできません : $2"
   },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "設定ファイルのアクティベートはサポートされなくなりました。設定サービスを使用してください。"
+  },
+
   "activate": {
     "message": "アクティベート"
   },

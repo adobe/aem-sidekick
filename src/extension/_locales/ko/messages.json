@@ -65,6 +65,10 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "$1 미리보기 불가: $2"
   },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "구성 파일 활성화는 더 이상 지원되지 않습니다. 구성 서비스를 사용하십시오."
+  },
+
   "activate": {
     "message": "활성화"
   },

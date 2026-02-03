@@ -65,6 +65,10 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Impossible de prévisualiser $1 : $2"
   },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "L'activation des fichiers de configuration n'est plus prise en charge. Veuillez utiliser le service de configuration."
+  },
+
   "activate": {
     "message": "Activer"
   },

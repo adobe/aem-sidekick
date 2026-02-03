@@ -593,6 +593,48 @@ describe('Test Admin Client', () => {
       expect(res).to.equal('(500) Failed to activate configuration: Unable to fetch /.helix/config.json from onedrive.');
     });
 
+    it('should return localized error for unsupported config activation', () => {
+      path = '/.helix/config.json';
+      const [res] = adminClient.getLocalizedError(
+        'preview',
+        path,
+        400,
+        '[admin] Activating config files is no longer supported',
+        'AEM_BACKEND_CONFIG_NOT_SUPPORTED',
+      );
+      expect(res).to.equal('(400) Failed to activate configuration: Activating configuration files is no longer supported. Please use the configuration service instead.');
+    });
+
+    it('should add open button for unsupported config activation error', async () => {
+      showToastStub.restore();
+      const showToastSpy = sandbox.spy(appStore, 'showToast');
+      const openPageStub = sandbox.stub(appStore, 'openPage');
+
+      mockFetchError({
+        path: '/.helix/config.json',
+        method: 'post',
+        api: 'preview',
+        status: 400,
+        headers: {
+          'x-error': '[admin] Activating config files is no longer supported',
+          'x-error-code': 'AEM_BACKEND_CONFIG_NOT_SUPPORTED',
+        },
+      });
+
+      await adminClient.updatePreview('/.helix/config.json');
+
+      expect(showToastSpy.calledOnce).to.be.true;
+      const [toast] = showToastSpy.getCall(0).args;
+      expect(toast.message).to.match(/Failed to activate configuration/);
+      expect(toast.actionLabel).to.equal('Open');
+      expect(toast.actionCallback).to.be.a('function');
+
+      // Verify the button opens the correct URL
+      toast.actionCallback();
+      expect(openPageStub.calledOnce).to.be.true;
+      expect(openPageStub.getCall(0).args[0]).to.equal('https://tools.aem.live/tools/simple-config-editor/index.html?org=adobe&site=aem-boilerplate');
+    });
+
     it('should return localized error with details', () => {
       path = '/foo.mp4';
       const [res, details] = adminClient.getLocalizedError(

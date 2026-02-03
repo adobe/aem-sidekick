@@ -476,4 +476,8 @@ export const ERRORS = [
     code: 'AEM_BACKEND_CONFIG_DELETE',
     template: 'Error removing config: $1',
   },
+  {
+    code: 'AEM_BACKEND_CONFIG_NOT_SUPPORTED',
+    template: 'Activating config files is no longer supported',
+  },
 ];
