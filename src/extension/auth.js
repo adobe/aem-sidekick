@@ -14,9 +14,10 @@
 
 import { log } from './log.js';
 import { getConfig, setConfig } from './config.js';
-import { ADMIN_ORIGIN } from './utils/admin.js';
+import { ADMIN_ORIGIN, ADMIN_ORIGIN_NEW } from './utils/admin.js';
 
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
+const { host: newAdminHost } = new URL(ADMIN_ORIGIN_NEW);
 
 function getRandomId() {
   return Math.floor(Math.random() * 1000000);
@@ -42,6 +43,7 @@ export async function configureAuthAndCorsHeaders() {
     }) => {
       const rules = [];
       if (authToken) {
+        // add rule for admin origin
         rules.push({
           id: getRandomId(),
           priority: 1,
@@ -57,6 +59,26 @@ export async function configureAuthAndCorsHeaders() {
             excludedInitiatorDomains: ['da.live'],
             regexFilter: `^https://${adminHost}/(config/${owner}\\.json|[a-z]+/${owner}/.*)`,
             requestDomains: [adminHost],
+            requestMethods: ['get', 'put', 'post', 'delete'],
+            resourceTypes: ['xmlhttprequest'],
+          },
+        });
+        // add rule for new admin origin
+        rules.push({
+          id: getRandomId(),
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [{
+              operation: 'set',
+              header: 'x-auth-token',
+              value: authToken,
+            }],
+          },
+          condition: {
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: `^https://${newAdminHost}/(${owner}/.*|profile\\?org\\=${owner}\\&)`,
+            requestDomains: [newAdminHost],
             requestMethods: ['get', 'put', 'post', 'delete'],
             resourceTypes: ['xmlhttprequest'],
           },
@@ -236,8 +258,7 @@ export async function updateUserAgent() {
       }],
     },
     condition: {
-      regexFilter: `^https://${adminHost}/.*`,
-      requestDomains: [adminHost],
+      requestDomains: [adminHost, newAdminHost],
       requestMethods: ['get', 'put', 'post', 'delete'],
       resourceTypes: ['xmlhttprequest'],
     },

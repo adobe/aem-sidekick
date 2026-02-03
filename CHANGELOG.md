@@ -1,3 +1,87 @@
+## [7.27.7](https://github.com/adobe/aem-sidekick/compare/v7.27.6...v7.27.7) (2026-01-27)
+
+
+### Bug Fixes
+
+* support new jobs api ([#786](https://github.com/adobe/aem-sidekick/issues/786)) ([a91a410](https://github.com/adobe/aem-sidekick/commit/a91a4104abd80cc278b93b1c977d4e464ed668ce))
+
+## [7.27.6](https://github.com/adobe/aem-sidekick/compare/v7.27.5...v7.27.6) (2026-01-24)
+
+
+### Bug Fixes
+
+* exclude well-known adobe domains from sharepoint candidates ([#783](https://github.com/adobe/aem-sidekick/issues/783)) ([619d4d6](https://github.com/adobe/aem-sidekick/commit/619d4d6bad6a96fbfeac0e15140fa45c295f9859))
+
+## [7.27.5](https://github.com/adobe/aem-sidekick/compare/v7.27.4...v7.27.5) (2026-01-22)
+
+
+### Bug Fixes
+
+* ignore buttons from bulk selection in sharepoint ([#782](https://github.com/adobe/aem-sidekick/issues/782)) ([0e70641](https://github.com/adobe/aem-sidekick/commit/0e7064199772d776dfe91ec04a6b8f5296f05370))
+
+## [7.27.4](https://github.com/adobe/aem-sidekick/compare/v7.27.3...v7.27.4) (2026-01-22)
+
+
+### Bug Fixes
+
+* use new admin api if configured ([#777](https://github.com/adobe/aem-sidekick/issues/777)) ([8d2047e](https://github.com/adobe/aem-sidekick/commit/8d2047eebf6d6af6aa23b1e3a87d993ab488acb0))
+
+## [7.27.3](https://github.com/adobe/aem-sidekick/compare/v7.27.2...v7.27.3) (2026-01-12)
+
+
+### Bug Fixes
+
+* filter undefined projects ([#769](https://github.com/adobe/aem-sidekick/issues/769)) ([36c18a8](https://github.com/adobe/aem-sidekick/commit/36c18a8d4b1c4ca4546fb31f3e2204c802b53767))
+
+## [7.27.2](https://github.com/adobe/aem-sidekick/compare/v7.27.1...v7.27.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* bulk selection in gdrive broken ([#771](https://github.com/adobe/aem-sidekick/issues/771)) ([0b2e51e](https://github.com/adobe/aem-sidekick/commit/0b2e51e90fb3857892291e146a6a619c9965cbe3))
+
+## [7.27.1](https://github.com/adobe/aem-sidekick/compare/v7.27.0...v7.27.1) (2026-01-08)
+
+
+### Bug Fixes
+
+* remove obsolete scriptUrl from site store ([#767](https://github.com/adobe/aem-sidekick/issues/767)) ([090dc12](https://github.com/adobe/aem-sidekick/commit/090dc1291f813e2835093ad222fcfb0157b08af1))
+
+# [7.27.0](https://github.com/adobe/aem-sidekick/compare/v7.26.2...v7.27.0) (2026-01-06)
+
+
+### Features
+
+* add support for new admin api ([#765](https://github.com/adobe/aem-sidekick/issues/765)) ([52f17c5](https://github.com/adobe/aem-sidekick/commit/52f17c5ace0714b39ff43b730fe59def56f8a1cd))
+
+## [7.26.2](https://github.com/adobe/aem-sidekick/compare/v7.26.1...v7.26.2) (2026-01-05)
+
+
+### Bug Fixes
+
+* refresh page after projct import ([#764](https://github.com/adobe/aem-sidekick/issues/764)) ([18b71c9](https://github.com/adobe/aem-sidekick/commit/18b71c98d8e83abe4ba7f2847a07fc46bdebe1af))
+
+## [7.26.1](https://github.com/adobe/aem-sidekick/compare/v7.26.0...v7.26.1) (2025-12-22)
+
+
+### Bug Fixes
+
+* revert hlx6 admin support due to regression ([#762](https://github.com/adobe/aem-sidekick/issues/762)) ([e67a8b8](https://github.com/adobe/aem-sidekick/commit/e67a8b8db389208a798f2707c3f12764001b8ad9))
+
+# [7.26.0](https://github.com/adobe/aem-sidekick/compare/v7.25.4...v7.26.0) (2025-12-20)
+
+
+### Features
+
+* support new admin api ([#702](https://github.com/adobe/aem-sidekick/issues/702)) ([77dd085](https://github.com/adobe/aem-sidekick/commit/77dd085ac209ccf56845bb9766074baa3019b352))
+
+## [7.25.4](https://github.com/adobe/aem-sidekick/compare/v7.25.3...v7.25.4) (2025-12-17)
+
+
+### Bug Fixes
+
+* move project admin to tools ([#736](https://github.com/adobe/aem-sidekick/issues/736)) ([ab11423](https://github.com/adobe/aem-sidekick/commit/ab11423d1c06c476b63ce92678c518358228b837))
+
 ## [7.25.3](https://github.com/adobe/aem-sidekick/compare/v7.25.2...v7.25.3) (2025-12-09)
 
 

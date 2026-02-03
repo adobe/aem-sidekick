@@ -132,7 +132,6 @@ describe('Test project', () => {
       let value;
       switch (prop) {
         case 'projects':
-        case 'hlxSidekickProjects': // legacy
           value = ['foo/bar1'];
           break;
         case 'foo/bar1':
@@ -155,22 +154,9 @@ describe('Test project', () => {
     sandbox.restore();
     sandbox.stub(chrome.storage.sync, 'get')
       .withArgs('projects')
-      .resolves({})
-      .withArgs('hlxSidekickProjects')
       .resolves({});
     projects = await getProjects();
     expect(projects.length).to.equal(0);
-    // legacy projects
-    sandbox.restore();
-    sandbox.stub(chrome.storage.sync, 'get')
-      .withArgs('projects')
-      .resolves({})
-      .withArgs('hlxSidekickProjects')
-      .resolves({
-        hlxSidekickProjects: ['foo/bar1'],
-      });
-    projects = await getProjects();
-    expect(projects.length).to.equal(1);
   });
 
   it('getProjectEnv', async () => {
@@ -216,6 +202,21 @@ describe('Test project', () => {
     // @ts-ignore
     const failure = await getProjectEnv({});
     expect(failure).to.eql({});
+  });
+
+  it('getProjectEnv with apiUpgrade', async () => {
+    const fetchStub = sandbox.stub(window, 'fetch')
+      .resolves(new Response(JSON.stringify(CONFIG_JSON)));
+    const {
+      host, project,
+    } = await getProjectEnv({
+      owner: 'adobe',
+      repo: 'business-website',
+      apiUpgrade: true,
+    });
+    expect(new URL(fetchStub.args[0][0]).origin).to.equal('https://api.aem.live');
+    expect(host).to.equal('business.adobe.com');
+    expect(project).to.equal('Adobe Business Website');
   });
 
   it('assembleProject with giturl', async () => {

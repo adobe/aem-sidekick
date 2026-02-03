@@ -122,6 +122,36 @@ describe('Test auth', () => {
           priority: 1,
           action: {
             type: 'modifyHeaders',
+            requestHeaders: [
+              {
+                operation: 'set',
+                header: 'x-auth-token',
+                value: '1234567890',
+              },
+            ],
+          },
+          condition: {
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: '^https://api.aem.live/(test/.*|profile\\?org\\=test\\&)',
+            requestDomains: [
+              'api.aem.live',
+            ],
+            requestMethods: [
+              'get',
+              'put',
+              'post',
+              'delete',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: sinon.match.number,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
             responseHeaders: [
               {
                 header: 'Access-Control-Allow-Origin',
@@ -189,6 +219,36 @@ describe('Test auth', () => {
             regexFilter: '^https://admin.hlx.page/(config/test\\.json|[a-z]+/test/.*)',
             requestDomains: [
               'admin.hlx.page',
+            ],
+            requestMethods: [
+              'get',
+              'put',
+              'post',
+              'delete',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: sinon.match.number,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [
+              {
+                operation: 'set',
+                header: 'x-auth-token',
+                value: '1234567890',
+              },
+            ],
+          },
+          condition: {
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: '^https://api.aem.live/(test/.*|profile\\?org\\=test\\&)',
+            requestDomains: [
+              'api.aem.live',
             ],
             requestMethods: [
               'get',
@@ -365,6 +425,36 @@ describe('Test auth', () => {
           priority: 1,
           action: {
             type: 'modifyHeaders',
+            requestHeaders: [
+              {
+                operation: 'set',
+                header: 'x-auth-token',
+                value: authToken,
+              },
+            ],
+          },
+          condition: {
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: '^https://api.aem.live/(test/.*|profile\\?org\\=test\\&)',
+            requestDomains: [
+              'api.aem.live',
+            ],
+            requestMethods: [
+              'get',
+              'put',
+              'post',
+              'delete',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: sinon.match.number,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
             responseHeaders: [
               {
                 header: 'Access-Control-Allow-Origin',
@@ -476,8 +566,7 @@ describe('Test auth', () => {
           }],
         },
         condition: {
-          regexFilter: '^https://admin.hlx.page/.*',
-          requestDomains: ['admin.hlx.page'],
+          requestDomains: ['admin.hlx.page', 'api.aem.live'],
           requestMethods: ['get', 'put', 'post', 'delete'],
           resourceTypes: ['xmlhttprequest'],
         },
