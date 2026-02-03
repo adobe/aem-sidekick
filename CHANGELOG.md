@@ -1,3 +1,10 @@
+## [7.27.8](https://github.com/adobe/aem-sidekick/compare/v7.27.7...v7.27.8) (2026-02-03)
+
+
+### Bug Fixes
+
+* RC 20260203 ([#791](https://github.com/adobe/aem-sidekick/issues/791)) ([4e7abcd](https://github.com/adobe/aem-sidekick/commit/4e7abcdaff25dc93c4800c97b63c31644e71c8b4))
+
 ## [7.27.7](https://github.com/adobe/aem-sidekick/compare/v7.27.6...v7.27.7) (2026-01-27)
 
 
