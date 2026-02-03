@@ -197,23 +197,14 @@
   "close_sidekick": {
     "message": "Sidekick を閉じる"
   },
-  "column_name_url": {
-    "message": "url"
-  },
-  "column_name_urls": {
-    "message": "urls"
-  },
-  "column_name_path": {
-    "message": "パス"
-  },
-  "column_name_paths": {
-    "message": "パス"
+  "code_state": {
+    "message": "コードファイルに使用できるアクションはありません"
   },
   "column_name_href": {
     "message": "href"
   },
   "column_name_hrefs": {
-    "message": "hrefs"
+    "message": "href"
   },
   "column_name_link": {
     "message": "リンク"
@@ -221,8 +212,17 @@
   "column_name_links": {
     "message": "リンク"
   },
-  "code_state": {
-    "message": "コードファイルに使用できるアクションはありません"
+  "column_name_path": {
+    "message": "パス"
+  },
+  "column_name_paths": {
+    "message": "パス"
+  },
+  "column_name_url": {
+    "message": "URL"
+  },
+  "column_name_urls": {
+    "message": "URL"
   },
   "config_add_project_headline": {
     "message": "プロジェクトを追加しました"
@@ -308,6 +308,9 @@
   "copy": {
     "message": "コピー"
   },
+  "copy_all_values": {
+    "message": "すべての値をコピー"
+  },
   "copy_live_url": {
     "message": "ライブ URL をコピー"
   },
@@ -331,9 +334,6 @@
   },
   "copy_urls": {
     "message": "$1 個の URL をコピー"
-  },
-  "copy_all_values": {
-    "message": "すべての値をコピー"
   },
   "copy_urls_error": {
     "message": "クリップボードへのコピーに失敗しました。もう一度試してください。"

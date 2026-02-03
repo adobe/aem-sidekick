@@ -197,32 +197,32 @@
   "close_sidekick": {
     "message": "关闭 Sidekick"
   },
-  "column_name_url": {
-    "message": "url"
-  },
-  "column_name_urls": {
-    "message": "urls"
-  },
-  "column_name_path": {
-    "message": "路径"
-  },
-  "column_name_paths": {
-    "message": "路径"
+  "code_state": {
+    "message": "代码文件无可用操作"
   },
   "column_name_href": {
     "message": "href"
   },
   "column_name_hrefs": {
-    "message": "hrefs"
+    "message": "多个 href"
   },
   "column_name_link": {
     "message": "链接"
   },
   "column_name_links": {
-    "message": "链接"
+    "message": "多个链接"
   },
-  "code_state": {
-    "message": "代码文件无可用操作"
+  "column_name_path": {
+    "message": "路径"
+  },
+  "column_name_paths": {
+    "message": "多个路径"
+  },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "多个 URL"
   },
   "config_add_project_headline": {
     "message": "已添加项目"
@@ -308,6 +308,9 @@
   "copy": {
     "message": "复制"
   },
+  "copy_all_values": {
+    "message": "复制所有值"
+  },
   "copy_live_url": {
     "message": "复制实时 URL"
   },
@@ -331,9 +334,6 @@
   },
   "copy_urls": {
     "message": "复制 $1 个 URL"
-  },
-  "copy_all_values": {
-    "message": "复制所有值"
   },
   "copy_urls_error": {
     "message": "无法复制到剪贴板。请稍后再试。"
