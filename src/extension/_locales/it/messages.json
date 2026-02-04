@@ -66,7 +66,7 @@
     "message": "Impossibile visualizzare in anteprima $1: $2"
   },
   "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
-    "message": "L'attivazione dei file di configurazione non è più supportata. Utilizzare il servizio di configurazione."
+    "message": "Questo sito è ora gestito nel servizio di configurazione."
   },
 
   "activate": {

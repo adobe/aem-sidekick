@@ -599,10 +599,10 @@ describe('Test Admin Client', () => {
         'preview',
         path,
         400,
-        '[admin] Activating config files is no longer supported',
+        '[admin] File based config no longer supported: /.helix/config.json',
         'AEM_BACKEND_CONFIG_NOT_SUPPORTED',
       );
-      expect(res).to.equal('(400) Failed to activate configuration: Activating configuration files is no longer supported. Please use the configuration service instead.');
+      expect(res).to.equal('(400) Failed to activate configuration: This site is now managed in the configuration service.');
     });
 
     it('should add open button for unsupported config activation error', async () => {
@@ -616,7 +616,7 @@ describe('Test Admin Client', () => {
         api: 'preview',
         status: 400,
         headers: {
-          'x-error': '[admin] Activating config files is no longer supported',
+          'x-error': '[admin] File based config no longer supported: /.helix/config.json',
           'x-error-code': 'AEM_BACKEND_CONFIG_NOT_SUPPORTED',
         },
       });

@@ -66,7 +66,7 @@
     "message": "$1 미리보기 불가: $2"
   },
   "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
-    "message": "구성 파일 활성화는 더 이상 지원되지 않습니다. 구성 서비스를 사용하십시오."
+    "message": "이 사이트는 이제 구성 서비스에서 관리됩니다."
   },
 
   "activate": {

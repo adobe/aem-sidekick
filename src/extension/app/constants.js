@@ -478,6 +478,6 @@ export const ERRORS = [
   },
   {
     code: 'AEM_BACKEND_CONFIG_NOT_SUPPORTED',
-    template: 'Activating config files is no longer supported',
+    template: 'File based config no longer supported: $1',
   },
 ];

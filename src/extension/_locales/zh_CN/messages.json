@@ -66,7 +66,7 @@
     "message": "无法预览 $1：$2"
   },
   "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
-    "message": "不再支持激活配置文件。请使用配置服务。"
+    "message": "此站点现在在配置服务中管理。"
   },
 
   "activate": {
