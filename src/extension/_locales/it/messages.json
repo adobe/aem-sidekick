@@ -65,6 +65,10 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Impossibile visualizzare in anteprima $1: $2"
   },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "Questo sito è ora gestito nel servizio di configurazione."
+  },
+
   "activate": {
     "message": "Attiva"
   },

@@ -201,7 +201,14 @@ export class AdminClient {
       timeout: 0, // keep open
     };
 
-    if (details) {
+    if (errorCode === 'AEM_BACKEND_CONFIG_NOT_SUPPORTED') {
+      // add button to open configuration service
+      const configEditorUrl = `https://tools.aem.live/tools/simple-config-editor/index.html?org=${this.#siteStore.owner}&site=${this.#siteStore.repo}`;
+      toast.actionLabel = this.#appStore.i18n('open');
+      toast.actionCallback = () => {
+        this.#appStore.openPage(configEditorUrl);
+      };
+    } else if (details) {
       toast.actionLabel = this.#appStore.i18n('details');
       toast.actionCallback = () => {
         this.#appStore.showModal({

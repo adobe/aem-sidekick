@@ -65,6 +65,10 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "無法預覽 $1：$2"
   },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "此網站現在在設定服務中管理。"
+  },
+
   "activate": {
     "message": "啟動"
   },

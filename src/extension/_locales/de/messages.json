@@ -65,6 +65,9 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Vorschau von $1 nicht möglich: $2"
   },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "Diese Site wird jetzt im Konfigurationsdienst verwaltet."
+  },
   "activate": {
     "message": "Aktivieren"
   },

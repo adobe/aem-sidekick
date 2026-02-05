@@ -65,6 +65,10 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "$1 미리보기 불가: $2"
   },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "이 사이트는 이제 구성 서비스에서 관리됩니다."
+  },
+
   "activate": {
     "message": "활성화"
   },

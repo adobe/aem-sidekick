@@ -781,5 +781,8 @@
     },
     "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
       "message": "Unable to preview $1: contained image larger than $2"
+    },
+    "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+      "message": "This site is now managed in the configuration service."
     }
 }

@@ -65,6 +65,10 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "$1 をプレビューできません : $2"
   },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "このサイトは設定サービスで管理されるようになりました。"
+  },
+
   "activate": {
     "message": "アクティベート"
   },
