@@ -1,3 +1,10 @@
+## [7.27.9](https://github.com/adobe/aem-sidekick/compare/v7.27.8...v7.27.9) (2026-02-05)
+
+
+### Bug Fixes
+
+* activating config files no longer supported ([#789](https://github.com/adobe/aem-sidekick/issues/789)) ([9c8672b](https://github.com/adobe/aem-sidekick/commit/9c8672b77ca8507f19e3a5b33b001da449c1cc7f))
+
 ## [7.27.8](https://github.com/adobe/aem-sidekick/compare/v7.27.7...v7.27.8) (2026-02-03)
 
 
