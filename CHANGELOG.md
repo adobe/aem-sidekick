@@ -1,3 +1,10 @@
+# [7.28.0](https://github.com/adobe/aem-sidekick/compare/v7.27.9...v7.28.0) (2026-02-10)
+
+
+### Features
+
+* doubleclick on drag handle resets position ([#795](https://github.com/adobe/aem-sidekick/issues/795)) ([9865ba9](https://github.com/adobe/aem-sidekick/commit/9865ba9a88ab51815932e226cb5eccbcc8203423))
+
 ## [7.27.9](https://github.com/adobe/aem-sidekick/compare/v7.27.8...v7.27.9) (2026-02-05)
 
 
