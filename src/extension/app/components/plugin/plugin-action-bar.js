@@ -505,6 +505,16 @@ export class PluginActionBar extends ConnectedElement {
   };
 
   /**
+   * Handle double click
+   */
+  onDblClick = () => {
+    if (this.hasAttribute('style')) {
+      // reset to default position
+      this.removeAttribute('style');
+    }
+  };
+
+  /**
    * Constrain the element to viewport bounds
    */
   constrainToViewport() {
@@ -584,7 +594,7 @@ export class PluginActionBar extends ConnectedElement {
     }
 
     return html`
-      <div class="logo" @mousedown="${this.onDragStart}" title="${this.appStore.i18n('drag_to_reposition')}">
+      <div class="logo" @mousedown="${this.onDragStart}" @dblclick="${this.onDblClick}" title="${this.appStore.i18n('drag_to_reposition')}">
         <div class="drag-handle"></div>
         ${ICONS.SIDEKICK_LOGO}
       </div>

@@ -1557,6 +1557,18 @@ describe('Plugin action bar', () => {
       expect(actionBar.getAttribute('dragging')).to.be.null;
     });
 
+    it('resets position to default on double-click', () => {
+      // Simulate a dragged position
+      actionBar.style.left = '50%';
+      actionBar.style.transform = 'translate(100px, 0px)';
+      actionBar.style.bottom = '20px';
+      expect(actionBar.hasAttribute('style')).to.be.true;
+
+      actionBar.onDblClick();
+
+      expect(actionBar.hasAttribute('style')).to.be.false;
+    });
+
     it('prevents text selection during drag', () => {
       // Start drag
       actionBar.onDragStart(new MouseEvent('mousedown', {
