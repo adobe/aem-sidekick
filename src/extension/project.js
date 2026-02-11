@@ -18,7 +18,7 @@ import {
 } from './config.js';
 import { urlCache } from './url-cache.js';
 import { callAdmin, createAdminUrl } from './utils/admin.js';
-import { setAuthToken } from './auth.js';
+import { configureAuthAndCorsHeaders, setAuthToken } from './auth.js';
 
 export const DEV_URL = 'http://localhost:3000/';
 
@@ -78,6 +78,7 @@ export async function updateProject(project) {
       projects.push(handle);
       await setConfig('sync', { projects });
     }
+    await configureAuthAndCorsHeaders();
     log.info('updated project', project);
     return project;
   }

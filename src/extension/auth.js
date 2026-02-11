@@ -18,8 +18,61 @@ import { ADMIN_ORIGIN } from './utils/admin.js';
 
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
 
+/** Cache-Control max-age in seconds for added project hosts (HTML/JSON). 60 = 1 minute. */
+export const CACHE_MAX_AGE_SECONDS = 60;
+
 function getRandomId() {
   return Math.floor(Math.random() * 1000000);
+}
+
+/**
+ * Returns the hostname (domain) from a project host value (may be domain or full URL).
+ * @param {string} host
+ * @returns {string}
+ */
+function getHostDomain(host) {
+  if (!host || typeof host !== 'string') return '';
+  return host.startsWith('http') ? new URL(host).host : host;
+}
+
+/**
+ * Builds declarativeNetRequest rules that set Cache-Control on responses
+ * for added project hosts.
+ * @param {Object[]} projectConfigs Configs with host, previewHost, liveHost, reviewHost
+ * @returns {Object[]} Rules to add
+ */
+function getCacheControlRules(projectConfigs) {
+  const seen = new Set();
+  const rules = [];
+  const hosts = projectConfigs.flatMap((p) => [
+    p?.host,
+    p?.previewHost,
+    p?.liveHost,
+    p?.reviewHost,
+  ].filter(Boolean).map(getHostDomain)).filter(Boolean);
+  hosts.forEach((domain) => {
+    if (seen.has(domain)) return;
+    seen.add(domain);
+    const escaped = domain.replace(/\./g, '\\.');
+    rules.push({
+      id: getRandomId(),
+      priority: 1,
+      action: {
+        type: 'modifyHeaders',
+        responseHeaders: [{
+          header: 'Cache-Control',
+          operation: 'set',
+          value: `max-age=${CACHE_MAX_AGE_SECONDS}`,
+        }],
+      },
+      condition: {
+        regexFilter: `^https://${escaped}/.*`,
+        requestMethods: ['get'],
+        resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
+      },
+    });
+  });
+  return rules;
 }
 
 /**
@@ -35,6 +88,16 @@ export async function configureAuthAndCorsHeaders() {
       removeRuleIds: (await chrome.declarativeNetRequest.getSessionRules())
         .map((rule) => rule.id),
     });
+    const allRules = [];
+
+    // Cache-Control rules for added project hosts (prod, preview, live, review) – override to 1 min
+    const syncHandles = await getConfig('sync', 'projects')
+      || await getConfig('sync', 'hlxSidekickProjects') || [];
+    const syncConfigs = (await Promise.all(
+      syncHandles.map((handle) => getConfig('sync', handle)),
+    )).filter(Boolean);
+    allRules.push(...getCacheControlRules(syncConfigs));
+
     // find projects with auth tokens and add rules for each
     const projects = await getConfig('session', 'projects') || [];
     const addRulesPromises = projects.map(async ({
@@ -130,10 +193,10 @@ export async function configureAuthAndCorsHeaders() {
       return rules;
     });
 
-    const addRules = (await Promise.all(addRulesPromises)).flat();
-    if (addRules.length > 0) {
+    allRules.push(...(await Promise.all(addRulesPromises)).flat());
+    if (allRules.length > 0) {
       await chrome.declarativeNetRequest.updateSessionRules({
-        addRules,
+        addRules: allRules,
       });
     }
   } catch (e) {
