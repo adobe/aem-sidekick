@@ -1,3 +1,10 @@
+## [7.28.1](https://github.com/adobe/aem-sidekick/compare/v7.28.0...v7.28.1) (2026-02-11)
+
+
+### Bug Fixes
+
+* broken external messaging in chrome v145 ([#796](https://github.com/adobe/aem-sidekick/issues/796)) ([029fd00](https://github.com/adobe/aem-sidekick/commit/029fd009121ab0790458649cf1e4811b796adbc5))
+
 # [7.28.0](https://github.com/adobe/aem-sidekick/compare/v7.27.9...v7.28.0) (2026-02-10)
 
 
