@@ -43,6 +43,22 @@ export function isSharePointHost(url, projects = []) {
 }
 
 /**
+ * Determines if a URL is a personal OneDrive folder.
+ * @param {string} url The tab URL
+ * @returns {boolean} {@code true} if personal OneDrive folder, else {@code false}
+ */
+export function isPersonalOneDriveFolder(url) {
+  const { pathname } = new URL(url);
+  return pathname.toLowerCase().endsWith('/onedrive.aspx')
+    || [
+      '/my',
+      '/personal/',
+      '/:f:/r/personal/',
+      '/:f:/p/',
+    ].some((prefix) => pathname.startsWith(prefix));
+}
+
+/**
  * Determines if a URL has a Google Drive host.
  * @param {string} url The tab URL
  * @returns {boolean} {@code true} if Google Drive host, else {@code false}
@@ -228,7 +244,9 @@ class UrlCache {
         urlCache.push(entry);
       }
     } else {
-      const isSPHost = isSharePointHost(url, Array.isArray(config) ? config : [config]);
+      const isSPHost = isSharePointHost(url, Array.isArray(config) ? config : [config])
+        && !isPersonalOneDriveFolder(url); // no lookup for personal folders
+
       // lookup (for sharepoint and google drive only)
       if (!isSPHost && !isGoogleDriveHost(url)) {
         return;
