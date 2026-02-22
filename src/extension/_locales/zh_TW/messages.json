@@ -1,4 +1,7 @@
 {
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "此網站現在由設定服務進行管理。"
+  },
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
     "message": "無法預覽 $1：包含的影像大於 $2"
   },
@@ -65,10 +68,6 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "無法預覽 $1：$2"
   },
-  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
-    "message": "此網站現在在設定服務中管理。"
-  },
-
   "activate": {
     "message": "啟動"
   },
@@ -201,23 +200,14 @@
   "close_sidekick": {
     "message": "關閉 Sidekick"
   },
-  "column_name_url": {
-    "message": "url"
-  },
-  "column_name_urls": {
-    "message": "urls"
-  },
-  "column_name_path": {
-    "message": "路徑"
-  },
-  "column_name_paths": {
-    "message": "路徑"
+  "code_state": {
+    "message": "沒有可用於程式碼檔案的動作"
   },
   "column_name_href": {
-    "message": "href"
+    "message": "超文字參考"
   },
   "column_name_hrefs": {
-    "message": "hrefs"
+    "message": "超文字參考"
   },
   "column_name_link": {
     "message": "連結"
@@ -225,8 +215,17 @@
   "column_name_links": {
     "message": "連結"
   },
-  "code_state": {
-    "message": "沒有可用於程式碼檔案的動作"
+  "column_name_path": {
+    "message": "路徑"
+  },
+  "column_name_paths": {
+    "message": "路徑"
+  },
+  "column_name_url": {
+    "message": "URL"
+  },
+  "column_name_urls": {
+    "message": "URL"
   },
   "config_add_project_headline": {
     "message": "已新增專案"
@@ -312,6 +311,9 @@
   "copy": {
     "message": "複製"
   },
+  "copy_all_values": {
+    "message": "複製所有值"
+  },
   "copy_live_url": {
     "message": "複製即時 URL"
   },
@@ -335,9 +337,6 @@
   },
   "copy_urls": {
     "message": "複製 $1 個 URL"
-  },
-  "copy_all_values": {
-    "message": "複製所有值"
   },
   "copy_urls_error": {
     "message": "複製到剪貼簿失敗。請再試一次。"
