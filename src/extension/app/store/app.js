@@ -1293,7 +1293,8 @@ export class AppStore {
       }
 
       let updatedStatus = await this.fetchStatus(false, true, isReview);
-      let editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl(updatedStatus);
+      // prefer configured contentSourceEditPattern URL; otherwise fall back to status edit URL.
+      let editUrl = this.getBYOMSourceUrl(updatedStatus) || updatedStatus.edit?.url;
 
       if (isReview) {
         // restore original pathname and state
@@ -1302,7 +1303,8 @@ export class AppStore {
         if (!editUrl) {
           // no snapshot source, fall back to original edit URL
           updatedStatus = await this.fetchStatus(false, true);
-          editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl(updatedStatus);
+          // prefer configured contentSourceEditPattern URL; otherwise fall back to status edit URL.
+          editUrl = this.getBYOMSourceUrl(updatedStatus) || updatedStatus.edit?.url;
         }
       }
 
