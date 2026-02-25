@@ -30,7 +30,7 @@ function getRandomId() {
  * @param {string} host
  * @returns {string}
  */
-function getHostDomain(host) {
+export function getHostDomain(host) {
   if (!host || typeof host !== 'string') return '';
   return host.startsWith('http') ? new URL(host).host : host;
 }
@@ -41,7 +41,7 @@ function getHostDomain(host) {
  * @param {Object[]} projectConfigs Configs with host, previewHost, liveHost, reviewHost
  * @returns {Object[]} Rules to add
  */
-function getCacheControlRules(projectConfigs) {
+export function getCacheControlRules(projectConfigs) {
   const seen = new Set();
   const rules = [];
   const hosts = projectConfigs.flatMap((p) => [

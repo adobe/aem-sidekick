@@ -18,7 +18,10 @@ import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
 import {
+  CACHE_MAX_AGE_SECONDS,
   configureAuthAndCorsHeaders,
+  getCacheControlRules,
+  getHostDomain,
   setAuthToken,
   updateUserAgent,
 } from '../src/extension/auth.js';
@@ -52,6 +55,59 @@ describe('Test auth', () => {
     sandbox.stub(chrome.declarativeNetRequest, 'updateSessionRules')
       .throws(error);
     await configureAuthAndCorsHeaders();
+  });
+
+  describe('getHostDomain', () => {
+    it('returns hostname for full URL', () => {
+      expect(getHostDomain('https://example.com/path')).to.equal('example.com');
+      expect(getHostDomain('https://sub.example.com:443/')).to.equal('sub.example.com');
+    });
+    it('returns input for plain domain', () => {
+      expect(getHostDomain('example.com')).to.equal('example.com');
+      expect(getHostDomain('main--repo--owner.aem.live')).to.equal('main--repo--owner.aem.live');
+    });
+    it('returns empty string for invalid or empty input', () => {
+      expect(getHostDomain('')).to.equal('');
+      expect(getHostDomain(null)).to.equal('');
+      expect(getHostDomain(undefined)).to.equal('');
+      expect(getHostDomain(123)).to.equal('');
+    });
+  });
+
+  describe('getCacheControlRules', () => {
+    it('returns one rule per unique host', () => {
+      const configs = [
+        { host: 'prod.example.com', previewHost: 'preview.example.com' },
+        { liveHost: 'live.example.com' },
+      ];
+      const rules = getCacheControlRules(configs);
+      expect(rules).to.have.lengthOf(3);
+      expect(rules.every((r) => r.action?.responseHeaders?.[0]?.header === 'Cache-Control')).to.be.true;
+      expect(rules.every((r) => r.action.responseHeaders[0].value === `max-age=${CACHE_MAX_AGE_SECONDS}`)).to.be.true;
+      const filters = rules.map((r) => r.condition.regexFilter);
+      expect(filters).to.include('^https://prod\\.example\\.com/.*');
+      expect(filters).to.include('^https://preview\\.example\\.com/.*');
+      expect(filters).to.include('^https://live\\.example\\.com/.*');
+    });
+    it('deduplicates same host across configs', () => {
+      const configs = [
+        { host: 'same.com', previewHost: 'same.com' },
+        { liveHost: 'same.com' },
+      ];
+      const rules = getCacheControlRules(configs);
+      expect(rules).to.have.lengthOf(1);
+      expect(rules[0].condition.regexFilter).to.equal('^https://same\\.com/.*');
+    });
+    it('extracts host from full URL in config', () => {
+      const configs = [{ host: 'https://url-host.com/path' }];
+      const rules = getCacheControlRules(configs);
+      expect(rules).to.have.lengthOf(1);
+      expect(rules[0].condition.regexFilter).to.equal('^https://url-host\\.com/.*');
+    });
+    it('returns empty array for empty or no valid hosts', () => {
+      expect(getCacheControlRules([])).to.deep.equal([]);
+      expect(getCacheControlRules([{ host: '' }, { previewHost: null }])).to.deep.equal([]);
+    });
   });
 
   it('setAuthToken', async () => {
