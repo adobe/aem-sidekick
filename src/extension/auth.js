@@ -42,36 +42,46 @@ export function getHostDomain(host) {
  * @returns {Object[]} Rules to add
  */
 export function getCacheControlRules(projectConfigs) {
-  const seen = new Set();
   const rules = [];
-  const hosts = projectConfigs.flatMap((p) => [
-    p?.host,
-    p?.previewHost,
-    p?.liveHost,
-    p?.reviewHost,
-  ].filter(Boolean).map(getHostDomain)).filter(Boolean);
-  hosts.forEach((domain) => {
-    if (seen.has(domain)) return;
-    seen.add(domain);
-    const escaped = domain.replace(/\./g, '\\.');
-    rules.push({
-      id: getRandomId(),
-      priority: 1,
-      action: {
-        type: 'modifyHeaders',
-        responseHeaders: [{
-          header: 'Cache-Control',
-          operation: 'set',
-          value: `max-age=${CACHE_MAX_AGE_SECONDS}`,
-        }],
-      },
-      condition: {
-        regexFilter: `^https://${escaped}/.*`,
-        requestMethods: ['get'],
-        resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
-      },
+  projectConfigs
+    .map((p) => [
+      p?.host,
+      p?.previewHost,
+      p?.liveHost,
+      p?.reviewHost,
+    ].filter(Boolean).map(getHostDomain))
+    .flat()
+    .filter(Boolean)
+    .forEach((domain) => {
+      const escaped = domain.replace(/\./g, '\\.');
+      rules.push({
+        id: getRandomId(),
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          responseHeaders: [{
+            header: 'Cache-Control',
+            operation: 'set',
+            value: `max-age=${CACHE_MAX_AGE_SECONDS}`,
+          }],
+        },
+        condition: {
+          regexFilter: `^https://${escaped}/.*`,
+          requestMethods: ['get'],
+          resourceTypes: [
+            'main_frame',
+            'sub_frame',
+            'script',
+            'stylesheet',
+            'image',
+            'xmlhttprequest',
+            'media',
+            'font',
+            'other',
+          ],
+        },
+      });
     });
-  });
   return rules;
 }
 
@@ -91,8 +101,7 @@ export async function configureAuthAndCorsHeaders() {
     const allRules = [];
 
     // Cache-Control rules for added project hosts (prod, preview, live, review) – override to 1 min
-    const syncHandles = await getConfig('sync', 'projects')
-      || await getConfig('sync', 'hlxSidekickProjects') || [];
+    const syncHandles = await getConfig('sync', 'projects') || [];
     const syncConfigs = (await Promise.all(
       syncHandles.map((handle) => getConfig('sync', handle)),
     )).filter(Boolean);
