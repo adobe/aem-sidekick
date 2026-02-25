@@ -1,3 +1,10 @@
+## [7.28.2](https://github.com/adobe/aem-sidekick/compare/v7.28.1...v7.28.2) (2026-02-25)
+
+
+### Bug Fixes
+
+* usage of contentSourceEditPattern ([#804](https://github.com/adobe/aem-sidekick/issues/804)) ([e667151](https://github.com/adobe/aem-sidekick/commit/e667151def1da4b34c96fc5efadf18d687a63fa0))
+
 ## [7.28.1](https://github.com/adobe/aem-sidekick/compare/v7.28.0...v7.28.1) (2026-02-11)
 
 
