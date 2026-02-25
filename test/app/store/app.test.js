@@ -708,13 +708,30 @@ describe('Test App Store', () => {
       expect(openPageArgs[0]).to.include(liveHost);
     });
 
-    it('switches from preview to BYOM editor', async () => {
+    it('switches from preview to BYOM editor, no edit URL', async () => {
       instance.siteStore.contentSourceUrl = 'https://aemcloud.com';
       instance.siteStore.contentSourceEditLabel = 'Universal Editor';
       instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}{{pathname}}?cmd=open';
 
       const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
       fetchStatusStub.resolves({ webPath: '/' });
+
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('edit');
+      expect(loadPage.calledWith('https://aemcloud.com/index?cmd=open')).to.be.true;
+    });
+
+    it('switches from preview to BYOM editor, overwrites edit URL ', async () => {
+      instance.siteStore.contentSourceUrl = 'https://aemcloud.com';
+      instance.siteStore.contentSourceEditLabel = 'Universal Editor';
+      instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}{{pathname}}?cmd=open';
+
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      fetchStatusStub.onCall(0).resolves({
+        webPath: '/',
+        edit: { url: 'https://edit.example.com/original-path' },
+      });
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
