@@ -43,47 +43,45 @@ export function getHostDomain(host) {
  */
 export function getCacheControlRules(projectConfigs) {
   const rules = [];
-  const hosts = [
-    ...new Set(
-      projectConfigs
-        .flatMap((p) => [
-          p?.host,
-          p?.previewHost,
-          p?.liveHost,
-          p?.reviewHost,
-        ].filter(Boolean).map(getHostDomain)),
-    ),
-  ].filter(Boolean);
-  hosts.forEach((domain) => {
-    const escaped = domain.replaceAll(/\./g, '\\.');
-    rules.push({
-      id: getRandomId(),
-      priority: 1,
-      action: {
-        type: 'modifyHeaders',
-        responseHeaders: [{
-          header: 'Cache-Control',
-          operation: 'set',
-          value: `max-age=${CACHE_MAX_AGE_SECONDS}`,
-        }],
-      },
-      condition: {
-        regexFilter: `^https://${escaped}/.*`,
-        requestMethods: ['get'],
-        resourceTypes: [
-          'main_frame',
-          'sub_frame',
-          'script',
-          'stylesheet',
-          'image',
-          'xmlhttprequest',
-          'media',
-          'font',
-          'other',
-        ],
-      },
+  projectConfigs
+    .flatMap((p) => [
+      p?.host,
+      p?.previewHost,
+      p?.liveHost,
+      p?.reviewHost,
+    ].filter(Boolean).map(getHostDomain))
+    .filter(Boolean)
+    .filter((domain, i, self) => self.indexOf(domain) === i)
+    .forEach((domain) => {
+      const escaped = domain.replaceAll(/\./g, '\\.');
+      rules.push({
+        id: getRandomId(),
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          responseHeaders: [{
+            header: 'Cache-Control',
+            operation: 'set',
+            value: `max-age=${CACHE_MAX_AGE_SECONDS}`,
+          }],
+        },
+        condition: {
+          regexFilter: `^https://${escaped}/.*`,
+          requestMethods: ['get'],
+          resourceTypes: [
+            'main_frame',
+            'sub_frame',
+            'script',
+            'stylesheet',
+            'image',
+            'xmlhttprequest',
+            'media',
+            'font',
+            'other',
+          ],
+        },
+      });
     });
-  });
   return rules;
 }
 
