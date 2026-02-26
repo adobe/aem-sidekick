@@ -14,9 +14,10 @@
 
 import { log } from './log.js';
 import { getConfig, setConfig } from './config.js';
-import { ADMIN_ORIGIN } from './utils/admin.js';
+import { ADMIN_ORIGIN, ADMIN_ORIGIN_NEW } from './utils/admin.js';
 
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
+const { host: newAdminHost } = new URL(ADMIN_ORIGIN_NEW);
 
 /** Cache-Control max-age in seconds for added project hosts (HTML/JSON). 60 = 1 minute. */
 export const CACHE_MAX_AGE_SECONDS = 60;
@@ -88,7 +89,7 @@ export function getCacheControlRules(projectConfigs) {
 /**
  * Sets the x-auth-token header for all requests to the Admin API if project config
  * has an auth token. Also sets the Access-Control-Allow-Origin header for
- * all requests from tools.aem.live and labs.aem.live.
+ * all requests from tools.aem.live.
  * @returns {Promise<void>}
  */
 export async function configureAuthAndCorsHeaders() {
@@ -114,6 +115,7 @@ export async function configureAuthAndCorsHeaders() {
     }) => {
       const rules = [];
       if (authToken) {
+        // add rule for admin origin
         rules.push({
           id: getRandomId(),
           priority: 1,
@@ -129,7 +131,27 @@ export async function configureAuthAndCorsHeaders() {
             excludedInitiatorDomains: ['da.live'],
             regexFilter: `^https://${adminHost}/(config/${owner}\\.json|[a-z]+/${owner}/.*)`,
             requestDomains: [adminHost],
-            requestMethods: ['get', 'post', 'delete'],
+            requestMethods: ['get', 'put', 'post', 'delete'],
+            resourceTypes: ['xmlhttprequest'],
+          },
+        });
+        // add rule for new admin origin
+        rules.push({
+          id: getRandomId(),
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [{
+              operation: 'set',
+              header: 'x-auth-token',
+              value: authToken,
+            }],
+          },
+          condition: {
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: `^https://${newAdminHost}/(${owner}/.*|profile\\?org\\=${owner}\\&)`,
+            requestDomains: [newAdminHost],
+            requestMethods: ['get', 'put', 'post', 'delete'],
             resourceTypes: ['xmlhttprequest'],
           },
         });
@@ -159,7 +181,7 @@ export async function configureAuthAndCorsHeaders() {
           },
           condition: {
             regexFilter,
-            initiatorDomains: ['tools.aem.live', 'labs.aem.live'],
+            initiatorDomains: ['tools.aem.live'],
             requestMethods: ['get'],
             resourceTypes: ['xmlhttprequest'],
           },
@@ -181,7 +203,7 @@ export async function configureAuthAndCorsHeaders() {
             }],
           },
           condition: {
-            regexFilter: `^https://[a-z0-9-]+--${repo}--${owner}\\.aem\\.(page|live|reviews)/.*`,
+            regexFilter: `^(https://[a-z0-9-]+--${repo}--${owner}\\.aem\\.(page|live|reviews)/.*|http://localhost:3000/.*)`,
             requestMethods: ['get', 'post'],
             resourceTypes: [
               'main_frame',
@@ -308,9 +330,8 @@ export async function updateUserAgent() {
       }],
     },
     condition: {
-      regexFilter: `^https://${adminHost}/.*`,
-      requestDomains: [adminHost],
-      requestMethods: ['get', 'post', 'delete'],
+      requestDomains: [adminHost, newAdminHost],
+      requestMethods: ['get', 'put', 'post', 'delete'],
       resourceTypes: ['xmlhttprequest'],
     },
   }];

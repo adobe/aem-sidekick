@@ -355,7 +355,9 @@ export class AppStore {
           let processedUrl;
           if (url) {
             const target = new URL(url, `https://${innerHost}/`);
-            target.searchParams.set('theme', this.theme);
+            if (isPalette || isPopover) {
+              target.searchParams.set('theme', this.theme);
+            }
             if (passConfig) {
               target.searchParams.append('ref', this.siteStore.ref);
               target.searchParams.append('repo', this.siteStore.repo);
@@ -637,7 +639,7 @@ export class AppStore {
   isSharePointEditor(url) {
     const { pathname, searchParams } = url;
     return this.isSharePoint(url)
-      && pathname.match(/\/_layouts\/15\/[\w]+.aspx/)
+      && pathname.match(/\/_layouts\/15\/[\w]+\.aspx/)
       && (searchParams.has('sourcedoc') || searchParams.has('id'));
   }
 
@@ -656,20 +658,44 @@ export class AppStore {
   }
 
   /**
+   * Checks if a content source URL is Document Authoring (DA).
+   * DA content source URLs start with a <code>markup:</code> prefix.
+   * @param {string} contentSourceUrl The content source URL string to check
+   * @returns {boolean} <code>true</code> if URL is DA, else <code>false</code>
+   */
+  isDA(contentSourceUrl) {
+    try {
+      const { hostname } = new URL(contentSourceUrl.substring(7));
+      return hostname.endsWith('.da.live');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
    * Returns a label for the content source
    * @returns {string} The content source label
    */
   getContentSourceLabel() {
     const { contentSourceType, contentSourceEditLabel } = this.siteStore;
+    const { preview: { sourceLocation } = {} } = this.status;
 
-    if (contentSourceType === 'onedrive') {
+    if (sourceLocation?.startsWith('onedrive:')) {
+      return 'SharePoint';
+    } else if (sourceLocation?.startsWith('gdrive:')) {
+      return 'Google Drive';
+    } else if (sourceLocation?.startsWith('markup:')) {
+      if (contentSourceEditLabel) {
+        return contentSourceEditLabel;
+      } else {
+        return this.isDA(sourceLocation) ? 'Document Authoring' : 'BYOM';
+      }
+    } else if (contentSourceType === 'onedrive') {
       return 'SharePoint';
     } else if (contentSourceType === 'google') {
       return 'Google Drive';
-    } else if (contentSourceEditLabel) {
-      return contentSourceEditLabel;
     } else {
-      return 'BYOM';
+      return contentSourceEditLabel || 'BYOM';
     }
   }
 
@@ -929,7 +955,7 @@ export class AppStore {
     this.setState(STATE.FETCHING_STATUS);
     const isDM = this.isEditor() || this.isAdmin();
     const editUrl = isDM ? this.location.href : (fetchEdit ? 'auto' : '');
-    const path = isDM ? '' : this.location.pathname;
+    const path = isDM ? '/' : this.location.pathname;
 
     status = await this.api.getStatus(path, editUrl);
 
@@ -1012,6 +1038,13 @@ export class AppStore {
           message: this.i18n('activate_success'),
           variant: 'positive',
         });
+      } else if (this.status.webPath.startsWith('/.snapshots/')) {
+        // special handling of snapshot updates
+        this.showToast({
+          message: this.i18n('snapshot_update_success'),
+          variant: 'positive',
+        });
+        this.switchEnv('review', false, true);
       } else {
         this.showToast({
           message: this.i18n('preview_success'),
@@ -1197,7 +1230,7 @@ export class AppStore {
     }
   }
 
-  getBYOMSourceUrl() {
+  getBYOMSourceUrl(status) {
     const {
       owner,
       repo,
@@ -1206,7 +1239,11 @@ export class AppStore {
     } = this.siteStore;
     if (!contentSourceEditPattern || typeof contentSourceEditPattern !== 'string') return undefined;
 
-    let { pathname } = this.location;
+    let { webPath: pathname } = status || this.status;
+    if (!pathname) {
+      return undefined;
+    }
+
     if (pathname.endsWith('/')) pathname += 'index';
 
     const url = contentSourceEditPattern
@@ -1231,19 +1268,46 @@ export class AppStore {
     const getCacheBuster = (url) => {
       // Check if cache busting should be applied based on the environment and conditions.
       // The logic prevents cache busting if:
-      // The target environment is 'prod' && the envUrl does not include any of the live
-      // domains & the sidekick is running in transient mode.
-      const liveDomains = ['aem.live', 'hlx.live'];
-      if (cacheBust
-        && !(targetEnv === 'prod' && !liveDomains.some((domain) => url.includes(domain)) && this.siteStore.transient)) {
-        return `?nocache=${Date.now()}`;
+      // The target environment is 'prod' && the envUrl does not include aem.live &
+      // the sidekick is running in transient mode.
+      try {
+        const domain = new URL(url).hostname;
+        if (cacheBust
+          && !(targetEnv === 'prod' && !domain.endsWith('.aem.live') && this.siteStore.transient)) {
+          return `?nocache=${Date.now()}`;
+        }
+      } catch (e) {
+        // ignore invalid url
       }
       return '';
     };
 
     const getEditUrl = async () => {
-      const updatedStatus = await this.fetchStatus(false, true);
-      const editUrl = updatedStatus.edit?.url || this.getBYOMSourceUrl();
+      const isReview = this.isReview();
+      if (isReview) {
+        // prefix pathname with snapshot
+        const snapshot = this.location.hostname.endsWith(this.siteStore.stdReviewHost)
+          ? this.location.hostname.split('--')[0]
+          : 'default'; // custom review host
+        this.location.pathname = `/.snapshots/${snapshot}${this.location.pathname}`;
+      }
+
+      let updatedStatus = await this.fetchStatus(false, true, isReview);
+      // prefer configured contentSourceEditPattern URL; otherwise fall back to status edit URL.
+      let editUrl = this.getBYOMSourceUrl(updatedStatus) || updatedStatus.edit?.url;
+
+      if (isReview) {
+        // restore original pathname and state
+        this.location = getLocation();
+        this.setState();
+        if (!editUrl) {
+          // no snapshot source, fall back to original edit URL
+          updatedStatus = await this.fetchStatus(false, true);
+          // prefer configured contentSourceEditPattern URL; otherwise fall back to status edit URL.
+          editUrl = this.getBYOMSourceUrl(updatedStatus) || updatedStatus.edit?.url;
+        }
+      }
+
       if (editUrl) {
         return new URL(editUrl);
       }
@@ -1299,6 +1363,15 @@ export class AppStore {
       }
     } else {
       envUrl = getEnvUrl(envHost, status.webPath, location, siteStore.devUrl);
+    }
+
+    if (targetEnv === 'review') {
+      // construct review URL from snapshot webPath
+      const [, snapshotRoot, snapshot, ...rest] = status.webPath.split('/');
+      if (snapshotRoot === '.snapshots') {
+        envUrl.host = `${snapshot}--${envUrl.host}`;
+        envUrl.pathname = `/${rest.join('/')}`;
+      }
     }
 
     if (targetEnv === 'prod' && siteStore[hostType] && prodCheck) {

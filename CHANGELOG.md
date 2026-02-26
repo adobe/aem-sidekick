@@ -1,3 +1,302 @@
+## [7.28.2](https://github.com/adobe/aem-sidekick/compare/v7.28.1...v7.28.2) (2026-02-25)
+
+
+### Bug Fixes
+
+* usage of contentSourceEditPattern ([#804](https://github.com/adobe/aem-sidekick/issues/804)) ([e667151](https://github.com/adobe/aem-sidekick/commit/e667151def1da4b34c96fc5efadf18d687a63fa0))
+
+## [7.28.1](https://github.com/adobe/aem-sidekick/compare/v7.28.0...v7.28.1) (2026-02-11)
+
+
+### Bug Fixes
+
+* broken external messaging in chrome v145 ([#796](https://github.com/adobe/aem-sidekick/issues/796)) ([029fd00](https://github.com/adobe/aem-sidekick/commit/029fd009121ab0790458649cf1e4811b796adbc5))
+
+# [7.28.0](https://github.com/adobe/aem-sidekick/compare/v7.27.9...v7.28.0) (2026-02-10)
+
+
+### Features
+
+* doubleclick on drag handle resets position ([#795](https://github.com/adobe/aem-sidekick/issues/795)) ([9865ba9](https://github.com/adobe/aem-sidekick/commit/9865ba9a88ab51815932e226cb5eccbcc8203423))
+
+## [7.27.9](https://github.com/adobe/aem-sidekick/compare/v7.27.8...v7.27.9) (2026-02-05)
+
+
+### Bug Fixes
+
+* activating config files no longer supported ([#789](https://github.com/adobe/aem-sidekick/issues/789)) ([9c8672b](https://github.com/adobe/aem-sidekick/commit/9c8672b77ca8507f19e3a5b33b001da449c1cc7f))
+
+## [7.27.8](https://github.com/adobe/aem-sidekick/compare/v7.27.7...v7.27.8) (2026-02-03)
+
+
+### Bug Fixes
+
+* RC 20260203 ([#791](https://github.com/adobe/aem-sidekick/issues/791)) ([4e7abcd](https://github.com/adobe/aem-sidekick/commit/4e7abcdaff25dc93c4800c97b63c31644e71c8b4))
+
+## [7.27.7](https://github.com/adobe/aem-sidekick/compare/v7.27.6...v7.27.7) (2026-01-27)
+
+
+### Bug Fixes
+
+* support new jobs api ([#786](https://github.com/adobe/aem-sidekick/issues/786)) ([a91a410](https://github.com/adobe/aem-sidekick/commit/a91a4104abd80cc278b93b1c977d4e464ed668ce))
+
+## [7.27.6](https://github.com/adobe/aem-sidekick/compare/v7.27.5...v7.27.6) (2026-01-24)
+
+
+### Bug Fixes
+
+* exclude well-known adobe domains from sharepoint candidates ([#783](https://github.com/adobe/aem-sidekick/issues/783)) ([619d4d6](https://github.com/adobe/aem-sidekick/commit/619d4d6bad6a96fbfeac0e15140fa45c295f9859))
+
+## [7.27.5](https://github.com/adobe/aem-sidekick/compare/v7.27.4...v7.27.5) (2026-01-22)
+
+
+### Bug Fixes
+
+* ignore buttons from bulk selection in sharepoint ([#782](https://github.com/adobe/aem-sidekick/issues/782)) ([0e70641](https://github.com/adobe/aem-sidekick/commit/0e7064199772d776dfe91ec04a6b8f5296f05370))
+
+## [7.27.4](https://github.com/adobe/aem-sidekick/compare/v7.27.3...v7.27.4) (2026-01-22)
+
+
+### Bug Fixes
+
+* use new admin api if configured ([#777](https://github.com/adobe/aem-sidekick/issues/777)) ([8d2047e](https://github.com/adobe/aem-sidekick/commit/8d2047eebf6d6af6aa23b1e3a87d993ab488acb0))
+
+## [7.27.3](https://github.com/adobe/aem-sidekick/compare/v7.27.2...v7.27.3) (2026-01-12)
+
+
+### Bug Fixes
+
+* filter undefined projects ([#769](https://github.com/adobe/aem-sidekick/issues/769)) ([36c18a8](https://github.com/adobe/aem-sidekick/commit/36c18a8d4b1c4ca4546fb31f3e2204c802b53767))
+
+## [7.27.2](https://github.com/adobe/aem-sidekick/compare/v7.27.1...v7.27.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* bulk selection in gdrive broken ([#771](https://github.com/adobe/aem-sidekick/issues/771)) ([0b2e51e](https://github.com/adobe/aem-sidekick/commit/0b2e51e90fb3857892291e146a6a619c9965cbe3))
+
+## [7.27.1](https://github.com/adobe/aem-sidekick/compare/v7.27.0...v7.27.1) (2026-01-08)
+
+
+### Bug Fixes
+
+* remove obsolete scriptUrl from site store ([#767](https://github.com/adobe/aem-sidekick/issues/767)) ([090dc12](https://github.com/adobe/aem-sidekick/commit/090dc1291f813e2835093ad222fcfb0157b08af1))
+
+# [7.27.0](https://github.com/adobe/aem-sidekick/compare/v7.26.2...v7.27.0) (2026-01-06)
+
+
+### Features
+
+* add support for new admin api ([#765](https://github.com/adobe/aem-sidekick/issues/765)) ([52f17c5](https://github.com/adobe/aem-sidekick/commit/52f17c5ace0714b39ff43b730fe59def56f8a1cd))
+
+## [7.26.2](https://github.com/adobe/aem-sidekick/compare/v7.26.1...v7.26.2) (2026-01-05)
+
+
+### Bug Fixes
+
+* refresh page after projct import ([#764](https://github.com/adobe/aem-sidekick/issues/764)) ([18b71c9](https://github.com/adobe/aem-sidekick/commit/18b71c98d8e83abe4ba7f2847a07fc46bdebe1af))
+
+## [7.26.1](https://github.com/adobe/aem-sidekick/compare/v7.26.0...v7.26.1) (2025-12-22)
+
+
+### Bug Fixes
+
+* revert hlx6 admin support due to regression ([#762](https://github.com/adobe/aem-sidekick/issues/762)) ([e67a8b8](https://github.com/adobe/aem-sidekick/commit/e67a8b8db389208a798f2707c3f12764001b8ad9))
+
+# [7.26.0](https://github.com/adobe/aem-sidekick/compare/v7.25.4...v7.26.0) (2025-12-20)
+
+
+### Features
+
+* support new admin api ([#702](https://github.com/adobe/aem-sidekick/issues/702)) ([77dd085](https://github.com/adobe/aem-sidekick/commit/77dd085ac209ccf56845bb9766074baa3019b352))
+
+## [7.25.4](https://github.com/adobe/aem-sidekick/compare/v7.25.3...v7.25.4) (2025-12-17)
+
+
+### Bug Fixes
+
+* move project admin to tools ([#736](https://github.com/adobe/aem-sidekick/issues/736)) ([ab11423](https://github.com/adobe/aem-sidekick/commit/ab11423d1c06c476b63ce92678c518358228b837))
+
+## [7.25.3](https://github.com/adobe/aem-sidekick/compare/v7.25.2...v7.25.3) (2025-12-09)
+
+
+### Bug Fixes
+
+* localize tooltip and activate copy all button for localized column names for path/url/href/link ([ad9d866](https://github.com/adobe/aem-sidekick/commit/ad9d86602296c593f42df5c871807b2101cd6fc6))
+
+## [7.25.2](https://github.com/adobe/aem-sidekick/compare/v7.25.1...v7.25.2) (2025-12-08)
+
+
+### Bug Fixes
+
+* ensure relative image urls are handled correctly ([#734](https://github.com/adobe/aem-sidekick/issues/734)) ([f823b5e](https://github.com/adobe/aem-sidekick/commit/f823b5edefe5b732f94d42a14c2380c07ccfdbd7))
+
+## [7.25.1](https://github.com/adobe/aem-sidekick/compare/v7.25.0...v7.25.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* closed sidekick can crash page when being resized ([#739](https://github.com/adobe/aem-sidekick/issues/739)) ([6348766](https://github.com/adobe/aem-sidekick/commit/6348766e946d9ee67a9a583add3cd8045a0ca897))
+* **regression:** add back border radius ([c8754e9](https://github.com/adobe/aem-sidekick/commit/c8754e96fc319acdd08cc4356cf9e4b0a60b7c4c))
+* restore box-shadow visibility for action bar ([#733](https://github.com/adobe/aem-sidekick/issues/733)) ([eaf05aa](https://github.com/adobe/aem-sidekick/commit/eaf05aa7860d11c5e665619a6dccf180e57c3168))
+
+# [7.25.0](https://github.com/adobe/aem-sidekick/compare/v7.24.1...v7.25.0) (2025-11-18)
+
+
+### Features
+
+* **env-switcher:** show source item for DA by default ([#731](https://github.com/adobe/aem-sidekick/issues/731)) ([d868c8f](https://github.com/adobe/aem-sidekick/commit/d868c8f33d4e776f0d57ebe1ef60f2d813c8f965))
+
+## [7.24.1](https://github.com/adobe/aem-sidekick/compare/v7.24.0...v7.24.1) (2025-11-17)
+
+
+### Bug Fixes
+
+* 429 from backend on status request shows generic error message ([#728](https://github.com/adobe/aem-sidekick/issues/728)) ([4396e27](https://github.com/adobe/aem-sidekick/commit/4396e27f5b2d72d8a5c75f7a32eed804a2801f33))
+
+# [7.24.0](https://github.com/adobe/aem-sidekick/compare/v7.23.3...v7.24.0) (2025-11-13)
+
+
+### Features
+
+* ability to reposition sidekick ([#720](https://github.com/adobe/aem-sidekick/issues/720)) ([7a44e38](https://github.com/adobe/aem-sidekick/commit/7a44e383484d422c8ba1985be7b9979c3848042c)), closes [#714](https://github.com/adobe/aem-sidekick/issues/714)
+
+## [7.23.3](https://github.com/adobe/aem-sidekick/compare/v7.23.2...v7.23.3) (2025-11-12)
+
+
+### Bug Fixes
+
+* popover iframe should allow clipboard write ([#726](https://github.com/adobe/aem-sidekick/issues/726)) ([6406545](https://github.com/adobe/aem-sidekick/commit/6406545ffbc934ffc85ae736cfe1844063ec625b))
+
+## [7.23.2](https://github.com/adobe/aem-sidekick/compare/v7.23.1...v7.23.2) (2025-11-10)
+
+
+### Bug Fixes
+
+* revert sharepoint lookup optimization ([#722](https://github.com/adobe/aem-sidekick/issues/722)) ([e7aafd4](https://github.com/adobe/aem-sidekick/commit/e7aafd44da9cdca5e9e6ed230505c34c0a98d3df))
+
+## [7.23.1](https://github.com/adobe/aem-sidekick/compare/v7.23.0...v7.23.1) (2025-11-10)
+
+
+### Bug Fixes
+
+* improve error messages ([#719](https://github.com/adobe/aem-sidekick/issues/719)) ([d1b0c12](https://github.com/adobe/aem-sidekick/commit/d1b0c12010c85aa0940669991e07a63cfbada1c4))
+* improve error messages ([#719](https://github.com/adobe/aem-sidekick/issues/719)) ([6cbe8bc](https://github.com/adobe/aem-sidekick/commit/6cbe8bcea0e14b11f0f5ff91857cb42eb1ec432f))
+
+# [7.23.0](https://github.com/adobe/aem-sidekick/compare/v7.22.2...v7.23.0) (2025-11-06)
+
+
+### Bug Fixes
+
+* copy icon with sorting alignment and minor fixes ([a6be3fa](https://github.com/adobe/aem-sidekick/commit/a6be3fa721aaae7664edaa9e7c4499df14c268e5))
+* sorting when no columns obj available ([233ffa7](https://github.com/adobe/aem-sidekick/commit/233ffa70260348caedabcb77a258ca03a59d04ab))
+
+
+### Features
+
+* add copy button to url/path column ([5ba6c01](https://github.com/adobe/aem-sidekick/commit/5ba6c0168d3d3ece9ef7560ba19ee6c129160bd4))
+* add green check confirmation on copy ([81948d4](https://github.com/adobe/aem-sidekick/commit/81948d4bc4fa63ead774d183eea84c99ebcf1f47))
+
+## [7.22.2](https://github.com/adobe/aem-sidekick/compare/v7.22.1...v7.22.2) (2025-10-23)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([#703](https://github.com/adobe/aem-sidekick/issues/703)) ([ab5e96d](https://github.com/adobe/aem-sidekick/commit/ab5e96ddf9a666a9adc0590b1b56558d15af5a4d))
+
+## [7.22.1](https://github.com/adobe/aem-sidekick/compare/v7.22.0...v7.22.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* **login:** display email only if no name ([#707](https://github.com/adobe/aem-sidekick/issues/707)) ([d9bdc73](https://github.com/adobe/aem-sidekick/commit/d9bdc7383439ada3c0b78f033f3072e1de72aa65)), closes [#708](https://github.com/adobe/aem-sidekick/issues/708)
+
+# [7.22.0](https://github.com/adobe/aem-sidekick/compare/v7.21.0...v7.22.0) (2025-10-22)
+
+
+### Features
+
+* add resize popover and palette APIs ([#705](https://github.com/adobe/aem-sidekick/issues/705)) ([573c464](https://github.com/adobe/aem-sidekick/commit/573c46490ffef34953e58764008d8caec7c0cb7d))
+
+# [7.21.0](https://github.com/adobe/aem-sidekick/compare/v7.20.1...v7.21.0) (2025-10-21)
+
+
+### Features
+
+* add palette and popover close APIs ([#704](https://github.com/adobe/aem-sidekick/issues/704)) ([9ab6ed6](https://github.com/adobe/aem-sidekick/commit/9ab6ed64d17afd98a582d0c757c43ddeca9c9b48))
+
+## [7.20.1](https://github.com/adobe/aem-sidekick/compare/v7.20.0...v7.20.1) (2025-10-08)
+
+
+### Bug Fixes
+
+* **auth:** allow localhost during auth CORS header config ([4834f85](https://github.com/adobe/aem-sidekick/commit/4834f85569f4b3c1a9049c211aed38bb6af1bad3))
+* **auth:** simplify localhost regex to port 3000 only ([4cedfee](https://github.com/adobe/aem-sidekick/commit/4cedfee84ab1a10e9a93253d0543a4ff9ea846e3))
+* **auth:** update test to match localhost regex pattern ([36fd793](https://github.com/adobe/aem-sidekick/commit/36fd7934828a8250db5f351656609724b1d0cd15))
+
+# [7.20.0](https://github.com/adobe/aem-sidekick/compare/v7.19.7...v7.20.0) (2025-10-03)
+
+
+### Features
+
+* optimize sharepoint lookups ([#696](https://github.com/adobe/aem-sidekick/issues/696)) ([2a9748e](https://github.com/adobe/aem-sidekick/commit/2a9748e407463c04d6002b735ee6eaa0c0df7e3f))
+
+## [7.19.7](https://github.com/adobe/aem-sidekick/compare/v7.19.6...v7.19.7) (2025-10-03)
+
+
+### Bug Fixes
+
+* add auth token for put requests ([#698](https://github.com/adobe/aem-sidekick/issues/698)) ([12f6387](https://github.com/adobe/aem-sidekick/commit/12f63879cded07f3d4466582dc7782403f8ecd41))
+
+## [7.19.6](https://github.com/adobe/aem-sidekick/compare/v7.19.5...v7.19.6) (2025-09-30)
+
+
+### Bug Fixes
+
+* updated translations ([#693](https://github.com/adobe/aem-sidekick/issues/693)) ([240a1fb](https://github.com/adobe/aem-sidekick/commit/240a1fbab24db11471b17920601f28193d981345))
+
+## [7.19.5](https://github.com/adobe/aem-sidekick/compare/v7.19.4...v7.19.5) (2025-09-23)
+
+
+### Bug Fixes
+
+* **bulk:** permanent spinner after preview & navigation ([#692](https://github.com/adobe/aem-sidekick/issues/692)) ([c1241f6](https://github.com/adobe/aem-sidekick/commit/c1241f69402b209f4f1f0a1cb2a044af3fd6c969))
+
+## [7.19.4](https://github.com/adobe/aem-sidekick/compare/v7.19.3...v7.19.4) (2025-09-23)
+
+
+### Bug Fixes
+
+* support dynamic file size limits ([7b2aab3](https://github.com/adobe/aem-sidekick/commit/7b2aab30de6a4a8c32a2db4142c463c040927406))
+
+## [7.19.3](https://github.com/adobe/aem-sidekick/compare/v7.19.2...v7.19.3) (2025-09-17)
+
+
+### Bug Fixes
+
+* **env-switcher:** source label always falls back on contentSourceType ([#689](https://github.com/adobe/aem-sidekick/issues/689)) ([f91beb8](https://github.com/adobe/aem-sidekick/commit/f91beb865dd7ed370ad1fc07eb75c0473078466a))
+
+## [7.19.2](https://github.com/adobe/aem-sidekick/compare/v7.19.1...v7.19.2) (2025-09-17)
+
+
+### Bug Fixes
+
+* columns key is no longer supported in the OOTB json ([dae88e7](https://github.com/adobe/aem-sidekick/commit/dae88e7113995ffd1481670cb8ce19f06e5fd4c2))
+
+## [7.19.1](https://github.com/adobe/aem-sidekick/compare/v7.19.0...v7.19.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* **env-switcher:** define source label first based on sourceLocation,… ([#683](https://github.com/adobe/aem-sidekick/issues/683)) ([81bf03e](https://github.com/adobe/aem-sidekick/commit/81bf03e38a4a12549d86f5dc1067a340d08289ae))
+
+# [7.19.0](https://github.com/adobe/aem-sidekick/compare/v7.18.2...v7.19.0) (2025-09-15)
+
+
+### Features
+
+* RC 20250910 ([fd23442](https://github.com/adobe/aem-sidekick/commit/fd23442ba7c2d74b7789a5f0b96a1e2da9d3c9d0))
+
 ## [7.18.2](https://github.com/adobe/aem-sidekick/compare/v7.18.1...v7.18.2) (2025-09-05)
 
 

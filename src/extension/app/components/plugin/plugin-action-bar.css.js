@@ -15,6 +15,11 @@
 import { css } from 'lit';
 
 export const style = css`
+  :host {
+  box-shadow: var(--sidekick-box-shadow);
+  border-radius: var(--spectrum2-sidekick-border-radius);
+}
+
   action-bar > div.action-group {
     display: flex;
     padding: 12px;
@@ -55,16 +60,42 @@ export const style = css`
   }
 
   action-bar .logo {
-    padding: 12px;
-    width: 32px;
-    height: 32px;
+    box-sizing: border-box;
+    padding: 0 4px 0 0;
+    min-width: 56px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 4px;
+    cursor: grab;
+  }
+
+  action-bar .logo .drag-handle {
+    width: 2px;
+    height: 16px;
+    background-color: var(--spectrum2-sidekick-color);
+    border-radius: 1px;
+    opacity: 0.2;
+    flex-shrink: 0;
+  }
+
+  action-bar .logo:hover .drag-handle {
+    opacity: 0.6;
+  }
+
+  :host([dragging]) {
+    action-bar .logo {
+      cursor: grabbing;
+    }
+
+    action-bar .logo .drag-handle {
+      opacity: 0.6;
+    } 
   }
 
   action-bar .logo > svg{
-    width: 56px;
+    width: 32px;
   }
 
   #plugin-menu {
@@ -104,7 +135,7 @@ export const style = css`
   }
 
   action-bar sp-action-menu sp-menu-divider {
-    margin: 0;
+    margin: 5px 0;
   }
 
   action-bar > sp-menu-divider {
@@ -126,8 +157,6 @@ export const style = css`
     width: 37px;
     flex-shrink: 0;
     cursor: pointer;
-    border-top-right-radius: var(--spectrum2-sidekick-border-radius);
-    border-bottom-right-radius: var(--spectrum2-sidekick-border-radius);
     background-color: var(--spectrum2-sidekick-background-close);
     backdrop-filter: var(--sidekick-backdrop-filter);
   }
@@ -168,9 +197,16 @@ export const style = css`
   }
 
   @media (max-width: 800px) {
-    action-bar .close-button {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
+    :host {
+      border-radius: 0;
+    }
+
+    action-bar .logo {
+      cursor: default;
+    }
+
+    action-bar .logo .drag-handle {
+      display: none;
     }
   }
 `;

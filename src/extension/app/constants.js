@@ -34,6 +34,9 @@ export const ENVS = {
 export const EVENTS = {
   OPEN_PALETTE: 'open-palette',
   CLOSE_PALETTE: 'close-palette',
+  CLOSE_POPOVER: 'close-popover',
+  RESIZE_PALETTE: 'resize-palette',
+  RESIZE_POPOVER: 'resize-popover',
 };
 
 /**
@@ -410,12 +413,12 @@ export const ERRORS = [
   // ico
   {
     code: 'AEM_BACKEND_ICO_TOO_BIG',
-    template: 'Unable to preview \'$1\': ICO is larger than 16KB: $2',
+    template: 'Unable to preview \'$1\': ICO is larger than $2: $3',
   },
   // pdf
   {
     code: 'AEM_BACKEND_PDF_TOO_BIG',
-    template: 'Unable to preview \'$1\': PDF is larger than 10MB: $2',
+    template: 'Unable to preview \'$1\': PDF is larger than $2: $3',
   },
   // svg validation
   {
@@ -432,7 +435,7 @@ export const ERRORS = [
   },
   {
     code: 'AEM_BACKEND_SVG_TOO_BIG',
-    template: 'Unable to preview \'$1\': SVG is larger than 20KB: $2',
+    template: 'Unable to preview \'$1\': SVG is larger than $2: $3',
   },
   // img validation
   {
@@ -472,5 +475,9 @@ export const ERRORS = [
   {
     code: 'AEM_BACKEND_CONFIG_DELETE',
     template: 'Error removing config: $1',
+  },
+  {
+    code: 'AEM_BACKEND_CONFIG_NOT_SUPPORTED',
+    template: 'File based config no longer supported: $1',
   },
 ];

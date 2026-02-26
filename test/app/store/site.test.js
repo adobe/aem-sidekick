@@ -104,10 +104,10 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.mountpoint).to.equal('https://drive.google.com/drive/folders/folder-id');
       expect(appStore.siteStore.mountpoints.length).to.equal(1);
       expect(appStore.siteStore.mountpoints[0]).to.equal('https://drive.google.com/drive/folders/folder-id');
-      expect(appStore.siteStore.innerHost).to.equal('main--aem-boilerplate--adobe.hlx.page');
-      expect(appStore.siteStore.stdInnerHost).to.equal('main--aem-boilerplate--adobe.hlx.page');
-      expect(appStore.siteStore.stdOuterHost).to.equal('main--aem-boilerplate--adobe.hlx.live');
-      expect(appStore.siteStore.outerHost).to.equal('main--aem-boilerplate--adobe.hlx.live');
+      expect(appStore.siteStore.innerHost).to.equal('main--aem-boilerplate--adobe.aem.page');
+      expect(appStore.siteStore.stdInnerHost).to.equal('main--aem-boilerplate--adobe.aem.page');
+      expect(appStore.siteStore.stdOuterHost).to.equal('main--aem-boilerplate--adobe.aem.live');
+      expect(appStore.siteStore.outerHost).to.equal('main--aem-boilerplate--adobe.aem.live');
       expect(appStore.siteStore.lang).to.equal('en');
       expect(appStore.siteStore.devUrl.origin).to.equal('http://localhost:3000');
       expect(appStore.siteStore.views.length).to.equal(1);
@@ -215,6 +215,23 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.error).to.equal(error.message);
     });
 
+    it('handles api upgrade available header', async () => {
+      sidekickTest.mockFetchSidekickConfigApiUpgradeAvailable();
+
+      await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(appStore.siteStore.apiUpgrade).to.be.true;
+    });
+
+    it('fetches sidekick config from new api', async () => {
+      sidekickTest
+        .mockFetchSidekickConfigNotFound()
+        .mockFetchSidekickConfigSuccess(false, false, null, true);
+
+      // use project config with api upgrade flag
+      await appStore.loadContext(sidekickElement, { ...defaultConfig, apiUpgrade: true });
+      expect(appStore.siteStore.status).to.equal(200);
+    });
+
     it('with window.hlx.sidekickConfig', async () => {
       window.hlx = {};
       window.hlx.sidekickConfig = {
@@ -225,6 +242,13 @@ describe('Test Site Store', () => {
       await appStore.loadContext(sidekickElement, undefined);
       expect(appStore.siteStore.owner).to.equal('adobe');
       expect(appStore.siteStore.repo).to.equal('aem-boilerplate');
+    });
+
+    it('with window.hlx but without sidekickConfig', async () => {
+      window.hlx = {};
+      await appStore.loadContext(sidekickElement, undefined);
+      expect(appStore.siteStore.owner).to.be.undefined;
+      expect(appStore.siteStore.repo).to.be.undefined;
     });
 
     it('with custom sourceEditUrl', async () => {
@@ -271,6 +295,27 @@ describe('Test Site Store', () => {
       await appStore.loadContext(sidekickElement, config);
       expect(appStore.siteStore.wordSaveDelay).to.equal(1500); // default
     });
+
+    it('with custom devOrigin', async () => {
+      /**
+       * @type {SidekickOptionsConfig | ClientConfig}
+       */
+      const config = {
+        ...defaultConfig,
+        devOrigin: 'http://localhost:4000',
+      };
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.devUrl.origin).to.equal('http://localhost:4000');
+    });
+
+    it('with host starting with http', async () => {
+      const config = {
+        ...defaultConfig,
+        host: 'https://www.example.com',
+      };
+      await appStore.loadContext(sidekickElement, config);
+      expect(appStore.siteStore.host).to.equal('www.example.com');
+    });
   });
 
   describe('update project config', () => {
@@ -307,6 +352,7 @@ describe('Test Site Store', () => {
           project: 'business-website',
           mountpoints: ['https://adobe.sharepoint.com/sites/business-website'],
           host: 'business-website.example.com',
+          apiUpgrade: false,
         },
       });
     });

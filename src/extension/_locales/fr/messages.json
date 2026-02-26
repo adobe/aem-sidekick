@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : image contenue de plus de 10 Mo"
+    "message": "Impossible de prévisualiser $1 : l’image contenue dépasse $2."
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Impossible de récupérer $1 depuis $2."
@@ -12,19 +12,19 @@
     "message": "Impossible de prévisualiser $1 : fichier de plus de 100 Mo"
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : l’ICO est supérieure à 16 Ko."
+    "message": "Impossible de prévisualiser $1 : l’ICO dépasse $2."
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : la taille de l'image est supérieure à 10 Mo"
+    "message": "Impossible de prévisualiser $1 : l’image dépasse $2."
   },
   "AEM_BACKEND_JSON_INVALID": {
-    "message": "Impossible de prévisualiser $2 : JSON non valide"
+    "message": "Impossible de prévisualiser $2 : JSON non valide"
   },
   "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
     "message": "Impossible de prévisualiser $1 : le débit MP4 est supérieur à 300 Ko/s."
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
-    "message": "Impossible de prévisualiser $1 : MP4 non valide"
+    "message": "Impossible de prévisualiser $1 : fichier MP4 non valide."
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "Impossible de prévisualiser $1 : le fichier MP4 dépasse 2 minutes."
@@ -36,13 +36,13 @@
     "message": "Fichier introuvable. Document source manquant ou non partagé avec AEM."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Impossible de prévisualiser $1: en-tête du type de contenu manquant"
+    "message": "Impossible de prévisualiser $1 : l’en-tête de type de contenu est manquant."
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Impossible de prévisualiser $1 : aucun gestionnaire trouvé"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : la taille de PDF est supérieure à 10 Mo"
+    "message": "Impossible de prévisualiser $1 : le fichier PDF dépasse $2."
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Impossible de prévisualiser $1 : le SVG contient un XML non valide"
@@ -54,7 +54,7 @@
     "message": "Impossible de prévisualiser $1 : un script illégal a été détecté dans le SVG."
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "Impossible de prévisualiser $1 : la taille de SVG est supérieure à 20 Ko"
+    "message": "Impossible de prévisualiser $1 : le fichier SVG dépasse $2."
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Impossible de prévisualiser $1 : type de fichier non pris en charge"
@@ -65,6 +65,10 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Impossible de prévisualiser $1 : $2"
   },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "Ce site est désormais géré dans le service de configuration."
+  },
+
   "activate": {
     "message": "Activer"
   },
@@ -197,6 +201,30 @@
   "close_sidekick": {
     "message": "Fermer Sidekick"
   },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "urls"
+  },
+  "column_name_path": {
+    "message": "chemin"
+  },
+  "column_name_paths": {
+    "message": "chemins"
+  },
+  "column_name_href": {
+    "message": "href"
+  },
+  "column_name_hrefs": {
+    "message": "hrefs"
+  },
+  "column_name_link": {
+    "message": "lien"
+  },
+  "column_name_links": {
+    "message": "liens"
+  },
   "code_state": {
     "message": "Aucune action disponible pour les fichiers de code"
   },
@@ -306,7 +334,10 @@
     "message": "Copier l'URL"
   },
   "copy_urls": {
-    "message": "Copier les URL $1"
+    "message": "Copier $1 URL"
+  },
+  "copy_all_values": {
+    "message": "Copier toutes les valeurs"
   },
   "copy_urls_error": {
     "message": "La copie dans le presse-papiers a échoué. Veuillez réessayer."
@@ -371,6 +402,9 @@
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
   },
+  "drag_to_reposition": {
+    "message": "Faire glisser pour repositionner"
+  },
   "edit": {
     "message": "Modifier"
   },
@@ -399,7 +433,7 @@
     "message": "Échec de la suppression. Réessayez plus tard."
   },
   "error_details": {
-    "message": "Détails des erreurs"
+    "message": "Détails sur l’erreur"
   },
   "error_fatal": {
     "message": "Nous vous prions de nous excuser pour les problèmes rencontrés actuellement. Veuillez réessayer ultérieurement."
@@ -421,6 +455,9 @@
   },
   "error_preview": {
     "message": "La génération de la prévisualisation a échoué. Veuillez réessayer ultérieurement."
+  },
+  "error_preview_4XX": {
+    "message": "Échec de la génération de la prévisualisation. Consultez les détails pour plus d’informations."
   },
   "error_preview_config": {
     "message": "Échec de l’activation de la configuration : $1"
@@ -558,7 +595,7 @@
     "message": "Ouvrir l’URL"
   },
   "open_urls": {
-    "message": "Ouvrir les URL $1"
+    "message": "Ouvrir $1 URL"
   },
   "open_urls_confirm": {
     "message": "Voulez-vous vraiment ouvrir les URL $1 ?"
@@ -658,6 +695,9 @@
   },
   "site_relogin_required": {
     "message": "Accès arrivé à expiration. Reconnectez-vous pour continuer."
+  },
+  "snapshot_update_success": {
+    "message": "Instantané mis à jour. Ouverture de la révision..."
   },
   "source": {
     "message": "Source"

@@ -348,7 +348,7 @@ describe('Test Admin Client', () => {
       expect(toast.variant).to.equal('warning');
     });
 
-    it('should handle 503 error with 429 in x-error header', async () => {
+    it('should handle 503 error with 429 in x-error header for preview', async () => {
       mockFetchError({
         method: 'post',
         api: 'preview',
@@ -361,6 +361,22 @@ describe('Test Admin Client', () => {
       expect(showToastStub.calledOnce).to.be.true;
       expect(toast.message).to.match(/429/);
       expect(toast.message).to.match(/by Microsoft/);
+      expect(toast.variant).to.equal('warning');
+    });
+
+    it('should handle 503 error with 429 in x-error header for status', async () => {
+      mockFetchError({
+        method: 'get',
+        api: 'status',
+        path: '/foo',
+        status: 503,
+        headers: {
+          'x-error': 'Handler onedrive could not lookup https://foo.sharepoint.com/:w:/r/sites/bar/_layouts/15/Doc.aspx?sourcedoc=%0B0F48F114-1C8F-4BC1-959A-DE83CCB6CD4D%7D&file=AEM%20Blog%20-%20Co-Innovate%20-%20Building%20Through%20Curiosity%20and%20Experimentation (429) The request has been throttled',
+        },
+      });
+      await adminClient.getStatus('/foo');
+      expect(showToastStub.calledOnce).to.be.true;
+      expect(toast.message).to.equal('(429) Too many requests: Your project is being throttled by Microsoft SharePoint. Please wait and try again later.');
       expect(toast.variant).to.equal('warning');
     });
   });
@@ -577,6 +593,48 @@ describe('Test Admin Client', () => {
       expect(res).to.equal('(500) Failed to activate configuration: Unable to fetch /.helix/config.json from onedrive.');
     });
 
+    it('should return localized error for unsupported config activation', () => {
+      path = '/.helix/config.json';
+      const [res] = adminClient.getLocalizedError(
+        'preview',
+        path,
+        400,
+        '[admin] File based config no longer supported: /.helix/config.json',
+        'AEM_BACKEND_CONFIG_NOT_SUPPORTED',
+      );
+      expect(res).to.equal('(400) Failed to activate configuration: This site is now managed in the configuration service.');
+    });
+
+    it('should add open button for unsupported config activation error', async () => {
+      showToastStub.restore();
+      const showToastSpy = sandbox.spy(appStore, 'showToast');
+      const openPageStub = sandbox.stub(appStore, 'openPage');
+
+      mockFetchError({
+        path: '/.helix/config.json',
+        method: 'post',
+        api: 'preview',
+        status: 400,
+        headers: {
+          'x-error': '[admin] File based config no longer supported: /.helix/config.json',
+          'x-error-code': 'AEM_BACKEND_CONFIG_NOT_SUPPORTED',
+        },
+      });
+
+      await adminClient.updatePreview('/.helix/config.json');
+
+      expect(showToastSpy.calledOnce).to.be.true;
+      const [toast] = showToastSpy.getCall(0).args;
+      expect(toast.message).to.match(/Failed to activate configuration/);
+      expect(toast.actionLabel).to.equal('Open');
+      expect(toast.actionCallback).to.be.a('function');
+
+      // Verify the button opens the correct URL
+      toast.actionCallback();
+      expect(openPageStub.calledOnce).to.be.true;
+      expect(openPageStub.getCall(0).args[0]).to.equal('https://tools.aem.live/tools/simple-config-editor/index.html?org=adobe&site=aem-boilerplate');
+    });
+
     it('should return localized error with details', () => {
       path = '/foo.mp4';
       const [res, details] = adminClient.getLocalizedError(
@@ -602,6 +660,16 @@ describe('Test Admin Client', () => {
 
       const [res2] = adminClient.getLocalizedError('publish', path, 500);
       expect(res2).to.match(/Publication failed/);
+    });
+
+    it('should fallback to statusRange (4XX/5XX) when specific status not found', () => {
+      // 409 doesn't have error_preview_409, should fallback to error_preview_4XX
+      const [res2] = adminClient.getLocalizedError('preview', path, 409);
+      expect(res2).to.match(/Preview generation failed\. Check details for more information\./);
+
+      // 503 doesn't have error_publish_503 or error_publish_5XX, should fallback to error_publish
+      const [res4] = adminClient.getLocalizedError('publish', path, 503);
+      expect(res4).to.match(/Publication failed\. Please try again later\./);
     });
 
     it('should return generic localized error with x-error details', async () => {
@@ -632,6 +700,17 @@ describe('Test Admin Client', () => {
         'AEM_BACKEND_NO_CONTENT_TYPE',
       );
       expect(res3).to.equal('(400) An error occurred: foo went wrong');
+    });
+
+    it('should return dynamic file size limit', async () => {
+      const [res] = await adminClient.getLocalizedError(
+        'foo',
+        path,
+        409,
+        '[admin] Unable to preview \'/foo.pdf\': PDF is larger than 30MB: 31MB',
+        'AEM_BACKEND_PDF_TOO_BIG',
+      );
+      expect(res).to.equal('(409) Unable to preview /foo.pdf: PDF is larger than 30MB');
     });
   });
 });

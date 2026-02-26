@@ -104,7 +104,7 @@ describe('Test Bulk Info (sharepoint)', () => {
         path: '/foo/non-latin',
         file: 'non-latin.docx',
         type: 'docx',
-      }, 'list', true));
+      }, 'list'));
 
     const bulkInfo = recursiveQuery(sidekick, 'bulk-info');
     await sidekickTest.toggleAdminItems(['non-latin']);

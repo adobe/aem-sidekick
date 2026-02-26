@@ -48,9 +48,9 @@ export async function getProject(project = {}) {
  * @returns {Promise<Object[]>} The project configurations
  */
 export async function getProjects() {
-  return Promise.all((await getConfig('sync', 'projects')
-    || await getConfig('sync', 'hlxSidekickProjects') || []) // legacy
-    .map((handle) => getProject(handle)));
+  const configs = await getConfig('sync', 'projects') || [];
+  const projects = await Promise.all(configs.map((handle) => getProject(handle)));
+  return projects.filter((project) => project !== undefined);
 }
 
 /**
@@ -165,9 +165,9 @@ export async function getProjectFromUrl(tab) {
       return ghSettings;
     }
     try {
-      // check if hlx.page, hlx.live, aem.page, aem.live or aem.reviews url
+      // check if aem.page, aem.live or aem.reviews url
       const { host } = new URL(url);
-      const res = /(.*--)?(.*)--(.*)--(.*)\.(aem|hlx)\.(page|live|reviews)/.exec(host);
+      const res = /(.*--)?(.*)--(.*)--(.*)\.aem\.(page|live|reviews)/.exec(host);
       const [,, urlRef, urlRepo, urlOwner] = res || [];
       if (urlOwner && urlRepo && urlRef) {
         return {
@@ -230,19 +230,26 @@ export function assembleProject({
  * @param {Object} config The config
  * @param {string} config.owner The owner
  * @param {string} config.repo The repository
- * @param {string} [config.ref] The ref or branch (default: main)
- * @param {string} [config.authToken] The auth token
+ * @param {string} [config.ref=main] The ref or branch
+ * @param {boolean} [config.apiUpgrade=false] Is an API upgrade available for this site?
  * @returns {Promise<Object>} The project environment
  */
 export async function getProjectEnv({
   owner,
   repo,
   ref = 'main',
+  apiUpgrade = false,
 }) {
   const env = {};
   let res;
   try {
-    res = await callAdmin({ owner, repo, ref }, 'sidekick', '/config.json');
+    res = await callAdmin(
+      {
+        owner, repo, ref, apiUpgrade,
+      },
+      'sidekick',
+      apiUpgrade ? '' : '/config.json',
+    );
   } catch (e) {
     log.warn(`getProjectEnv: unable to retrieve project config: ${e}`);
   }
@@ -354,8 +361,7 @@ export async function deleteProject(project) {
     ({ owner, repo } = project);
     handle = `${owner}/${repo}`;
   }
-  const projects = await getConfig('sync', 'projects')
-    || await getConfig('sync', 'hlxSidekickProjects') || []; // legacy
+  const projects = await getConfig('sync', 'projects') || [];
   const i = projects.indexOf(handle);
   if (i >= 0) {
     // delete admin auth header rule
@@ -403,7 +409,7 @@ export function isValidHost(host, owner, repo) {
   const any = '([0-9a-z-]+)';
   return host.endsWith(first)
     && ['page', 'reviews', 'live'].includes(first)
-    && ['aem', 'hlx'].includes(second)
+    && second === 'aem'
     && new RegExp(`--${repo || any}--${owner || any}$`, 'i').test(third);
 }
 

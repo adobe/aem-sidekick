@@ -14,7 +14,12 @@
 
 import { html } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import { EXTERNAL_EVENTS } from '../../constants.js';
+import { EVENTS, EXTERNAL_EVENTS } from '../../constants.js';
+import { EventBus } from '../../utils/event-bus.js';
+
+/**
+ * @typedef {import('@spectrum-web-components/popover').Popover} Popover
+ */
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -64,11 +69,45 @@ export class Plugin {
    */
   config;
 
+  /**
+   * Reference to the popover element for resizing and closing
+   * @type {Popover}
+   */
+  popoverElement;
+
   constructor(plugin, appStore) {
     this.appStore = appStore;
     this.disabled = false;
     this.config = plugin;
     this.id = plugin.id;
+
+    // Listen for popover resize events
+    if (this.isPopover()) {
+      EventBus.instance.addEventListener(EVENTS.RESIZE_POPOVER, (e) => {
+        if (!this.popoverElement || !this.popoverElement.open) {
+          return;
+        }
+        const { id, styles } = e.detail;
+        if (this.id === id && styles) {
+          this.popoverElement.setAttribute('style', this.#filterUserStyles(styles));
+          // Re-render
+          this.popoverElement.open = true;
+        }
+      });
+    }
+  }
+
+  /**
+   * Filters out unsupported user-provided styles.
+   * @param {string} styles The user-provided styles
+   * @return {string} The filtered styles
+   */
+  #filterUserStyles(styles = '') {
+    return `${styles
+      .split(';')
+      .map((s) => s.trim())
+      .filter((s) => s.startsWith('width:') || s.startsWith('height:'))
+      .join('; ')};`;
   }
 
   /**
@@ -220,6 +259,21 @@ export class Plugin {
       // set iframe src to the popover url
       iframe.src = this.config.url;
     }
+    // Store reference to the popover for later closing
+    this.popoverElement = target.parentElement.querySelector('sp-popover');
+  }
+
+  /**
+   * Closes this plugin's popover if it's open
+   */
+  closePopover() {
+    if (!this.isPopover() || !this.popoverElement) {
+      return;
+    }
+
+    if (this.popoverElement.open) {
+      this.popoverElement.dispatchEvent(new Event('close', { bubbles: true }));
+    }
   }
 
   /**
@@ -235,13 +289,9 @@ export class Plugin {
 
     const popoverTitle = titleI18n?.[this.appStore.siteStore.lang] || title;
 
-    let filteredPopoverRect = popoverRect;
+    let filteredPopoverRect;
     if (popoverRect) {
-      filteredPopoverRect = `${popoverRect
-        .split(';')
-        .map((s) => s.trim())
-        .filter((s) => s.startsWith('width:') || s.startsWith('height:'))
-        .join('; ')};`;
+      filteredPopoverRect = this.#filterUserStyles(popoverRect);
     }
 
     return html`
@@ -249,7 +299,7 @@ export class Plugin {
         ${template}
         <sp-popover slot="click-content" placement="${placement}" tip style=${ifDefined(filteredPopoverRect)}>
           <div class="content">
-            <iframe title=${popoverTitle || 'Popover content'}></iframe>
+            <iframe allow="clipboard-write *" title=${popoverTitle || 'Popover content'}></iframe>
           </div>
         </sp-popover>
       </overlay-trigger>

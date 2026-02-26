@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: enthaltenes Bild größer als 10 MB"
+    "message": "Vorschau von $1 nicht möglich: enthaltenes Bild ist größer als $2"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "$1 konnte nicht von $2 abgerufen werden."
@@ -12,10 +12,10 @@
     "message": "Vorschau von $1 nicht möglich: Datei größer als 100 MB"
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: ICO ist größer als 16 KB"
+    "message": "Vorschau von $1 nicht möglich: ICO ist größer als $2"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: Bild ist größer als 10 MB"
+    "message": "Vorschau von $1 nicht möglich: Bild ist größer als $2"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Vorschau von $2 nicht möglich: ungültiges JSON"
@@ -24,7 +24,7 @@
     "message": "Vorschau von $1 nicht möglich: MP4-Bitrate ist höher als 300 KB/s"
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
-    "message": "Vorschau von $1 nicht möglich: ungültiges MP4"
+    "message": "Vorschau von $1 nicht möglich: ungültige MP4-Datei"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "Vorschau von $1 nicht möglich: MP4 ist länger als 2 Minuten"
@@ -36,13 +36,13 @@
     "message": "Datei nicht gefunden. Quelldokument fehlt oder ist nicht für AEM freigegeben."
   },
   "AEM_BACKEND_NO_CONTENT_TYPE": {
-    "message": "Vorschau von $1 nicht möglich: Kopfzeile für Inhaltstyp fehlt"
+    "message": "Vorschau von $1 nicht möglich: Content-Typ-Header fehlt"
   },
   "AEM_BACKEND_NO_HANDLER": {
     "message": "Vorschau von $1 nicht möglich: kein Handler gefunden"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: PDF ist größer als 10 MB"
+    "message": "Vorschau von $1 nicht möglich: PDF ist größer als $2"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Vorschau von $1 nicht möglich: SVG enthält ungültige XML"
@@ -54,7 +54,7 @@
     "message": "Vorschau von $1 kann nicht angezeigt werden: unzulässiges Skripting in SVG erkannt"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "Vorschau von $1 kann nicht angezeigt werden: SVG ist größer als 20 KB"
+    "message": "Vorschau von $1 nicht möglich: SVG ist größer als $2"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Vorschau von $1 nicht möglich: Dateityp nicht unterstützt"
@@ -64,6 +64,9 @@
   },
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Vorschau von $1 nicht möglich: $2"
+  },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "Diese Site wird jetzt im Konfigurationsdienst verwaltet."
   },
   "activate": {
     "message": "Aktivieren"
@@ -197,6 +200,30 @@
   "close_sidekick": {
     "message": "Sidekick schließen"
   },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "urls"
+  },
+  "column_name_path": {
+    "message": "pfad"
+  },
+  "column_name_paths": {
+    "message": "pfade"
+  },
+  "column_name_href": {
+    "message": "href"
+  },
+  "column_name_hrefs": {
+    "message": "hrefs"
+  },
+  "column_name_link": {
+    "message": "link"
+  },
+  "column_name_links": {
+    "message": "links"
+  },
   "code_state": {
     "message": "Keine Aktionen für Code-Dateien verfügbar "
   },
@@ -308,6 +335,9 @@
   "copy_urls": {
     "message": "$1 URLs kopieren"
   },
+  "copy_all_values": {
+    "message": "Alle Werte kopieren"
+  },
   "copy_urls_error": {
     "message": "Kopieren in Zwischenablage fehlgeschlagen. Bitte versuchen Sie es erneut."
   },
@@ -371,6 +401,9 @@
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
   },
+  "drag_to_reposition": {
+    "message": "Ziehen, um neu zu positionieren"
+  },
   "edit": {
     "message": "Bearbeiten"
   },
@@ -421,6 +454,9 @@
   },
   "error_preview": {
     "message": "Das Generieren der Vorschau ist fehlgeschlagen. Bitte versuchen Sie es später erneut."
+  },
+  "error_preview_4XX": {
+    "message": "Das Generieren der Vorschau ist fehlgeschlagen. Weitere Informationen finden Sie in den Details."
   },
   "error_preview_config": {
     "message": "Konfiguration konnte nicht aktiviert werden: $1"
@@ -658,6 +694,9 @@
   },
   "site_relogin_required": {
     "message": "Zugriff abgelaufen. Melden Sie sich erneut an, um fortzufahren."
+  },
+  "snapshot_update_success": {
+    "message": "Momentaufnahme erfolgreich aktualisiert; Überprüfung wird geöffnet …"
   },
   "source": {
     "message": "Quelle"

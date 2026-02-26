@@ -57,13 +57,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // external messaging API to execute actions
-chrome.runtime.onMessageExternal.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
   const { action } = message;
-  let resp = null;
-  if (typeof externalActions[action] === 'function') {
-    resp = await externalActions[action](message, sender);
+
+  if (typeof externalActions[action] !== 'function') {
+    sendResponse(null);
+    return false;
   }
-  sendResponse(resp);
+
+  Promise.resolve(externalActions[action](message, sender))
+    .then(sendResponse)
+    .catch((e) => {
+      sendResponse({ error: e.message });
+    });
+
+  return true;
 });
 
 // Listen for changes in display state in local storage.

@@ -26,6 +26,8 @@ import {
 } from '../../../mocks/environment.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 import { defaultSharepointStatusResponse } from '../../../fixtures/helix-admin.js';
+import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
+import { EVENTS } from '../../../../src/extension/app/constants.js';
 
 /**
  * The AEMSidekick object type
@@ -302,7 +304,11 @@ describe('Environment Switcher', () => {
 
     it('markup content source without edit config', async () => {
       sidekickTest
-        .mockFetchStatusSuccess()
+        .mockFetchStatusSuccess(false, {
+          preview: {
+            sourceLocation: 'markup:foo',
+          },
+        })
         .mockFetchSidekickConfigSuccess(false, false, {
           contentSourceType: 'markup',
         })
@@ -316,7 +322,11 @@ describe('Environment Switcher', () => {
 
     it('markup content source with edit config', async () => {
       sidekickTest
-        .mockFetchStatusSuccess()
+        .mockFetchStatusSuccess(false, {
+          preview: {
+            sourceLocation: 'markup:foo',
+          },
+        })
         .mockFetchSidekickConfigSuccess(false, false, {
           contentSourceType: 'markup',
           editUrlLabel: 'Foo',
@@ -341,6 +351,23 @@ describe('Environment Switcher', () => {
       await sidekickTest.awaitEnvSwitcher();
       const icon = recursiveQuery(getPicker(), '.env-edit sp-icon svg');
       expect(icon.getElementById('clip0_632_13678')).to.exist;
+    });
+
+    it('DA content source', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          preview: {
+            ...defaultSharepointStatusResponse.preview,
+            sourceLocation: 'markup:https://content.da.live/adobe/aem-boilerplate/demo',
+          },
+        })
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getEditLabel()).to.equal('Open in Document Authoring');
     });
   });
 
@@ -424,6 +451,40 @@ describe('Environment Switcher', () => {
       const button = recursiveQuery(picker, '#button');
 
       expect(button.hasAttribute('disabled')).to.be.true;
+    });
+
+    it('closes picker when CLOSE_POPOVER event is dispatched', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+      const button = recursiveQuery(picker, '#button');
+      await waitUntil(() => button.getAttribute('disabled') === null);
+
+      // Open the picker
+      button.click();
+
+      await waitUntil(() => recursiveQuery(picker, 'sp-popover'));
+
+      // Verify picker is open
+      expect(picker.getAttribute('open')).to.not.be.null;
+
+      // Dispatch CLOSE_POPOVER event
+      EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER));
+
+      // Wait for picker to close
+      await waitUntil(() => picker.getAttribute('open') === null);
+
+      // Verify picker is closed
+      expect(picker.getAttribute('open')).to.be.null;
     });
   });
 });

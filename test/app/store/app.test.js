@@ -104,11 +104,57 @@ describe('Test App Store', () => {
     await testDefaultConfig();
 
     expect(appStore.siteStore.plugins.length).to.eq(9);
-    expect(appStore.siteStore.scriptUrl).to.eq('https://www.hlx.live/tools/sidekick/index.js');
     expect(appStore.siteStore.host).to.eq('www.aemboilerplate.com');
     expect(appStore.siteStore.innerHost).to.eq('custom-preview-host.com');
     expect(appStore.siteStore.liveHost).to.eq('custom-live-host.com');
     expect(appStore.siteStore.project).to.eq('AEM Boilerplate');
+  });
+
+  it('loadContext - adds theme parameter to palette and popover plugin URLs', async () => {
+    sidekickTest
+      .mockFetchSidekickConfigSuccess(false, false, {
+        plugins: [
+          {
+            id: 'palette-plugin',
+            title: 'Palette Plugin',
+            url: 'https://example.com/palette.html',
+            isPalette: true,
+          },
+          {
+            id: 'popover-plugin',
+            title: 'Popover Plugin',
+            url: 'https://example.com/popover.html',
+            isPopover: true,
+          },
+          {
+            id: 'regular-plugin',
+            title: 'Regular Plugin',
+            url: 'https://example.com/regular.html',
+          },
+        ],
+      });
+
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+
+    // Wait for plugins to be loaded
+    await waitUntil(() => Object.keys(appStore.customPlugins).length > 0);
+
+    // Check palette plugin has theme parameter
+    const palettePlugin = appStore.customPlugins['palette-plugin'];
+    expect(palettePlugin).to.exist;
+    expect(palettePlugin.config.url).to.include('theme=');
+    expect(palettePlugin.config.url).to.include(`theme=${appStore.theme}`);
+
+    // Check popover plugin has theme parameter
+    const popoverPlugin = appStore.customPlugins['popover-plugin'];
+    expect(popoverPlugin).to.exist;
+    expect(popoverPlugin.config.url).to.include('theme=');
+    expect(popoverPlugin.config.url).to.include(`theme=${appStore.theme}`);
+
+    // Check regular plugin does NOT have theme parameter
+    const regularPlugin = appStore.customPlugins['regular-plugin'];
+    expect(regularPlugin).to.exist;
+    expect(regularPlugin.config.url).to.not.include('theme=');
   });
 
   it('loadContext - loads german dictionary', async () => {
@@ -148,12 +194,6 @@ describe('Test App Store', () => {
   it('isPreview()', async () => {
     await appStore.loadContext(sidekickElement, defaultSidekickConfig);
     appStore.location.port = '';
-
-    appStore.location.host = 'main--aem-boilerplate--adobe.hlx.page';
-    expect(appStore.isPreview()).to.be.true;
-
-    appStore.location.host = 'main--aem-boilerplate--adobe.hlx.live';
-    expect(appStore.isPreview()).to.be.false;
 
     appStore.location.host = 'main--aem-boilerplate--adobe.aem.page';
     expect(appStore.isPreview()).to.be.true;
@@ -642,7 +682,7 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').resolves(true);
 
       const prodHost = 'not-aem.com';
-      const liveHost = 'main--aem-boilerplate--adobe.hlx.live';
+      const liveHost = 'main--aem-boilerplate--adobe.aem.live';
       instance.siteStore.host = prodHost;
       instance.siteStore.liveHost = liveHost;
 
@@ -657,7 +697,7 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').resolves(false);
 
       const prodHost = 'not-aem.com';
-      const liveHost = 'main--aem-boilerplate--adobe.hlx.live';
+      const liveHost = 'main--aem-boilerplate--adobe.aem.live';
       instance.siteStore.host = prodHost;
       instance.siteStore.liveHost = liveHost;
 
@@ -668,18 +708,79 @@ describe('Test App Store', () => {
       expect(openPageArgs[0]).to.include(liveHost);
     });
 
-    it('switches from preview to BYOM editor', async () => {
+    it('switches from preview to BYOM editor, no edit URL', async () => {
       instance.siteStore.contentSourceUrl = 'https://aemcloud.com';
       instance.siteStore.contentSourceEditLabel = 'Universal Editor';
       instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}{{pathname}}?cmd=open';
 
       const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
-      fetchStatusStub.resolves({});
+      fetchStatusStub.resolves({ webPath: '/' });
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
       await instance.switchEnv('edit');
       expect(loadPage.calledWith('https://aemcloud.com/index?cmd=open')).to.be.true;
+    });
+
+    it('switches from preview to BYOM editor, overwrites edit URL ', async () => {
+      instance.siteStore.contentSourceUrl = 'https://aemcloud.com';
+      instance.siteStore.contentSourceEditLabel = 'Universal Editor';
+      instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}{{pathname}}?cmd=open';
+
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      fetchStatusStub.onCall(0).resolves({
+        webPath: '/',
+        edit: { url: 'https://edit.example.com/original-path' },
+      });
+
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('edit');
+      expect(loadPage.calledWith('https://aemcloud.com/index?cmd=open')).to.be.true;
+    });
+
+    it('switches from review to edit with snapshot path', async () => {
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      const isReviewStub = sidekickTest.sandbox.stub(instance, 'isReview');
+
+      isReviewStub.returns(true);
+      instance.siteStore.stdReviewHost = 'aem.reviews';
+      instance.location = new URL('https://test-snapshot--aem-boilerplate--adobe.aem.reviews/path');
+      instance.status = { webPath: '/.snapshots/test-snapshot/path' };
+
+      // Mock the first fetchStatus call with snapshot path
+      fetchStatusStub.onCall(0).resolves({
+        edit: { url: 'https://edit.example.com/snapshot-path' },
+      });
+
+      await instance.switchEnv('edit');
+
+      expect(fetchStatusStub.calledWith(false, true, true)).to.be.true;
+      expect(loadPage.calledWith('https://edit.example.com/snapshot-path')).to.be.true;
+    });
+
+    it('switches from review to edit with fallback to original edit URL', async () => {
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      const isReviewStub = sidekickTest.sandbox.stub(instance, 'isReview');
+
+      isReviewStub.returns(true);
+      instance.siteStore.stdReviewHost = 'aem.reviews';
+      instance.location = new URL('https://test-snapshot--aem-boilerplate--adobe.aem.reviews/path');
+      instance.status = { webPath: '/.snapshots/test-snapshot/path' };
+
+      // Mock the first fetchStatus call with no edit URL
+      fetchStatusStub.onCall(0).resolves({});
+      // Mock the second fetchStatus call with original edit URL
+      fetchStatusStub.onCall(1).resolves({
+        edit: { url: 'https://edit.example.com/original-path' },
+      });
+
+      await instance.switchEnv('edit');
+
+      expect(fetchStatusStub.calledTwice).to.be.true;
+      expect(fetchStatusStub.firstCall.calledWith(false, true, true)).to.be.true;
+      expect(fetchStatusStub.secondCall.calledWith(false, true)).to.be.true;
+      expect(loadPage.calledWith('https://edit.example.com/original-path')).to.be.true;
     });
 
     it('switches from live to preview', async () => {
@@ -694,6 +795,32 @@ describe('Test App Store', () => {
       instance.status = mockStatus;
       await instance.switchEnv('live', true);
       expect(openPage.calledWith(mockStatus.live.url)).to.be.true;
+    });
+
+    it('switches to review environment with snapshot URL construction', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = { webPath: '/.snapshots/test-snapshot/path/to/content' };
+      instance.siteStore.reviewHost = 'aem.reviews';
+
+      await instance.switchEnv('review');
+
+      expect(loadPage.calledOnce).to.be.true;
+      const loadPageArgs = loadPage.args[0];
+      expect(loadPageArgs[0]).to.include('test-snapshot--aem.reviews');
+      expect(loadPageArgs[0]).to.include('/path/to/content');
+    });
+
+    it('switches to review environment without snapshot in webPath', async () => {
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = { webPath: '/regular/path' };
+      instance.siteStore.reviewHost = 'aem.reviews';
+
+      await instance.switchEnv('review');
+
+      expect(loadPage.calledOnce).to.be.true;
+      const loadPageArgs = loadPage.args[0];
+      expect(loadPageArgs[0]).to.include('aem.reviews');
+      expect(loadPageArgs[0]).to.include('/regular/path');
     });
 
     it('switches from preview to live w/cache busting', async () => {
@@ -827,7 +954,7 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.stub(instance, 'isDev').returns(false);
       instance.isPreview.returns(true);
       instance.status = { webPath: '/somepath' };
-      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.hlx.page';
+      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.aem.page';
 
       fakeFetch.resolves({
         ok: true,
@@ -839,7 +966,7 @@ describe('Test App Store', () => {
       const response = await instance.update();
 
       expect(response).to.be.true;
-      expect(fakeFetch.args[1][0]).to.equal('https://main--aem-boilerplate--adobe.hlx.page/somepath');
+      expect(fakeFetch.args[1][0]).to.equal('https://main--aem-boilerplate--adobe.aem.page/somepath');
       expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
     });
 
@@ -848,7 +975,7 @@ describe('Test App Store', () => {
       instance.isPreview.returns(true);
       instance.siteStore.devUrl = new URL('http://localhost:3000');
       instance.location = new URL('http://localhost:3000/somepath');
-      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.hlx.page';
+      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.aem.page';
       instance.status = { webPath: '/somepath' };
 
       fakeFetch.resolves({
@@ -970,6 +1097,23 @@ describe('Test App Store', () => {
         variant: 'positive',
       })).is.true;
     });
+
+    // Test when resp is ok and status.webPath starts with /.snapshots/
+    it('should handle snapshot update success', async () => {
+      updateStub.resolves(true);
+      instance.status = { webPath: '/.snapshots/test-snapshot/foo' };
+
+      const switchEnvSpy = sandbox.spy(instance, 'switchEnv');
+
+      await instance.updatePreview(false);
+
+      expect(showToastStub.calledOnce).is.true;
+      expect(showToastStub.calledWith({
+        message: 'Snapshot successfully updated, opening Review...',
+        variant: 'positive',
+      })).is.true;
+      expect(switchEnvSpy.calledWith('review', false, true)).is.true;
+    });
   });
 
   describe('delete', async () => {
@@ -1090,8 +1234,8 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
       instance.status = { webPath: '/somepath' };
       instance.siteStore = {
-        innerHost: 'main--aem-boilerplate--adobe.hlx.page',
-        outerHost: 'main--aem-boilerplate--adobe.hlx.live',
+        innerHost: 'main--aem-boilerplate--adobe.aem.page',
+        outerHost: 'main--aem-boilerplate--adobe.aem.live',
         host: 'host',
       };
       instance.location = {
@@ -1121,7 +1265,7 @@ describe('Test App Store', () => {
     it('should handle publish when outerHost is defined', async () => {
       sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
       instance.status = { webPath: '/somepath' };
-      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', outerHost: 'main--aem-boilerplate--adobe.hlx.live' };
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.aem.page', outerHost: 'main--aem-boilerplate--adobe.aem.live' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
@@ -1131,7 +1275,7 @@ describe('Test App Store', () => {
       sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
       sidekickTest.sandbox.stub(instance, 'isEditor').returns(true);
       instance.status = { webPath: '/somepath' };
-      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', host: 'aem-boilerplate.com' };
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.aem.page', host: 'aem-boilerplate.com' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
@@ -1140,7 +1284,7 @@ describe('Test App Store', () => {
     it('should handle publish when host is defined', async () => {
       sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
       instance.status = { webPath: '/somepath' };
-      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page', host: 'aem-boilerplate.com' };
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.aem.page', host: 'aem-boilerplate.com' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
 
       await instance.publish();
@@ -1149,7 +1293,7 @@ describe('Test App Store', () => {
     it('should use correct parameters for fetch call', async () => {
       sidekickTest.sandbox.stub(instance, 'isContent').returns(true);
       instance.status = { webPath: '/somepath' };
-      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.hlx.page' };
+      instance.siteStore = { innerHost: 'main--aem-boilerplate--adobe.aem.page' };
       instance.location = { href: 'https://aem-boilerplate.com', host: 'aem-boilerplate.com' };
       const expectedUrl = createAdminUrl(instance.siteStore, 'live', '/somepath');
 
@@ -1525,7 +1669,7 @@ describe('Test App Store', () => {
         },
       }, { overwriteRoutes: true });
       findViewsSpy = sinon.spy(instance, 'findViews');
-      instance.location = new URL('https://main--aem-boilerplate--adobe.hlx.page/placeholders.json?path=/path/placeholders.json');
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/placeholders.json?path=/path/placeholders.json');
       isProjectStub.returns(true);
 
       const sidekick = new AEMSidekick(defaultSidekickConfig);
@@ -1540,7 +1684,7 @@ describe('Test App Store', () => {
     it('sets iframe src correctly if a DEFAULT view is found and no overlay exists', async () => {
       sidekickTest.mockFetchSidekickConfigSuccess(true, false);
       isProjectStub.returns(true);
-      instance.location = new URL('https://main--aem-boilerplate--adobe.hlx.page/placeholders.json');
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/placeholders.json');
       findViewsStub = sinon.stub(instance, 'findViews').returns([{ viewer: 'http://viewer.com', title: () => 'Test Title' }]);
       getViewOverlayStub.onCall(0).returns(undefined);
 
@@ -1554,7 +1698,7 @@ describe('Test App Store', () => {
 
       await instance.showView();
 
-      expect(frame.src).to.equal('http://viewer.com/?url=https%3A%2F%2Fmain--aem-boilerplate--adobe.hlx.page%2Fplaceholders.json&title=Test+Title');
+      expect(frame.src).to.equal('http://viewer.com/?url=https%3A%2F%2Fmain--aem-boilerplate--adobe.aem.page%2Fplaceholders.json&title=Test+Title');
       expect(findViewsStub.calledWith(VIEWS.DEFAULT)).to.be.true;
       expect(getViewOverlayStub.calledTwice).to.be.true;
     });
@@ -1879,24 +2023,120 @@ describe('Test App Store', () => {
     });
 
     it('should return "SharePoint" if sourceLocation includes "onedrive:"', () => {
+      instance.status = {
+        preview: {
+          sourceLocation: 'onedrive:foo',
+        },
+      };
+      expect(instance.getContentSourceLabel()).to.equal('SharePoint');
+    });
+
+    it('should return "SharePoint" if no sourceLocation but contentSourceType is "onedrive"', () => {
       instance.siteStore.contentSourceType = 'onedrive';
       expect(instance.getContentSourceLabel()).to.equal('SharePoint');
     });
 
     it('should return "Google Drive" if sourceLocation includes "gdrive:"', () => {
+      instance.status = {
+        preview: {
+          sourceLocation: 'gdrive:foo',
+        },
+      };
+      expect(instance.getContentSourceLabel()).to.equal('Google Drive');
+    });
+
+    it('should return "Google Drive" if no sourceLocation but contentSourceType is "google"', () => {
       instance.siteStore.contentSourceType = 'google';
       expect(instance.getContentSourceLabel()).to.equal('Google Drive');
     });
 
     it('should return "Document Authoring" if a label is provided', () => {
-      instance.siteStore.contentSourceType = 'markup';
+      instance.status = {
+        preview: {
+          sourceLocation: 'markup:foo',
+        },
+      };
       instance.siteStore.contentSourceEditLabel = 'Document Authoring';
       expect(instance.getContentSourceLabel()).to.equal('Document Authoring');
     });
 
-    it('should return "BYOM" for everything else', () => {
-      instance.siteStore.contentSourceType = 'markup';
+    it('should return "BYOM" if no label is provided', () => {
+      instance.status = {
+        preview: {
+          sourceLocation: 'markup:foo',
+        },
+      };
       expect(instance.getContentSourceLabel()).to.equal('BYOM');
+    });
+
+    it('should return "BYOM" for everything else', () => {
+      instance.status = {
+        preview: { status: 404 },
+      };
+      instance.siteStore.contentSourceType = 'unknown';
+      expect(instance.getContentSourceLabel()).to.equal('BYOM');
+    });
+  });
+
+  describe('getBYOMSourceUrl', () => {
+    let instance;
+
+    beforeEach(() => {
+      instance = new AppStore();
+      // @ts-ignore
+      instance.siteStore = {
+        owner: 'adobe',
+        repo: 'aem-boilerplate',
+        contentSourceUrl: 'https://aemcloud.com',
+        contentSourceEditPattern: '{{contentSourceUrl}}{{pathname}}?cmd=open',
+      };
+    });
+
+    it('should return undefined if contentSourceEditPattern is not a string', () => {
+      instance.siteStore.contentSourceEditPattern = null;
+      expect(instance.getBYOMSourceUrl()).to.be.undefined;
+    });
+
+    it('should return undefined if contentSourceEditPattern is not defined', () => {
+      instance.siteStore.contentSourceEditPattern = undefined;
+      expect(instance.getBYOMSourceUrl()).to.be.undefined;
+    });
+
+    it('should use webPath from status when provided', () => {
+      const status = { webPath: '/custom/path' };
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.equal('https://aemcloud.com/custom/path?cmd=open');
+    });
+
+    it('should use webPath from existing status when no status provided', () => {
+      instance.status = { webPath: '/instance/path' };
+      const result = instance.getBYOMSourceUrl();
+      expect(result).to.equal('https://aemcloud.com/instance/path?cmd=open');
+    });
+
+    it('should return undefined if no webPath in provided status', () => {
+      const status = {};
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.be.undefined;
+    });
+
+    it('should return undefined if no webPath in existing status', () => {
+      instance.status = {};
+      const result = instance.getBYOMSourceUrl();
+      expect(result).to.be.undefined;
+    });
+
+    it('should add index to path ending with slash', () => {
+      const status = { webPath: '/path/' };
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.equal('https://aemcloud.com/path/index?cmd=open');
+    });
+
+    it('should replace all placeholders in contentSourceEditPattern', () => {
+      instance.siteStore.contentSourceEditPattern = '{{contentSourceUrl}}/{{org}}/{{site}}{{pathname}}';
+      const status = { webPath: '/test/path' };
+      const result = instance.getBYOMSourceUrl(status);
+      expect(result).to.equal('https://aemcloud.com/adobe/aem-boilerplate/test/path');
     });
   });
 

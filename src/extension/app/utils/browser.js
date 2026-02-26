@@ -91,13 +91,13 @@ export function matchProjectHost(baseHost, host) {
     return true;
   }
   // check for matching domain suffixes
-  const previewSuffixes = ['.aem.page', '.hlx.page'];
+  const previewSuffix = '.aem.page';
   const reviewSuffix = '.aem.reviews';
-  const liveSuffixes = ['.aem.live', '.hlx.live'];
-  const isPreview = previewSuffixes.some((suffix) => baseHost.endsWith(suffix))
-      && previewSuffixes.some((suffix) => host.endsWith(suffix));
-  const isLive = liveSuffixes.some((suffix) => baseHost.endsWith(suffix))
-    && liveSuffixes.some((suffix) => host.endsWith(suffix));
+  const liveSuffix = '.aem.live';
+  const isPreview = baseHost.endsWith(previewSuffix)
+      && host.endsWith(previewSuffix);
+  const isLive = baseHost.endsWith(liveSuffix)
+    && host.endsWith(liveSuffix);
   const isReview = baseHost.endsWith(reviewSuffix) && host.endsWith(reviewSuffix);
   if (!isPreview && !isReview && !isLive) {
     return false;
@@ -246,4 +246,21 @@ export function isErrorPage(location, document) {
     || location.hostname === 'localhost')
     && !document.querySelector('body > main > div')
     && document.querySelector('body > pre'));
+}
+
+/**
+ * Converts a rect object to a style string.
+ * Only width, height, top, left, right, and bottom properties are accepted.
+ * @param {Object} rect The rect object
+ * @returns {string} The style string
+ */
+export function rectToStyles(rect) {
+  if (!rect || typeof rect !== 'object' || Object.keys(rect).length === 0) {
+    return '';
+  }
+  return Object
+    .entries(rect)
+    .filter(([key]) => ['width', 'height', 'top', 'left', 'right', 'bottom'].includes(key))
+    .map(([key, value]) => `${key}: ${value}`)
+    .join('; ');
 }

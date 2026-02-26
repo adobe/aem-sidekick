@@ -56,7 +56,7 @@ export const defaultConfigPlugins = {
       id: 'library',
       title: 'Library',
       environments: ['edit'],
-      url: 'https://main--aem-boilerplate--adobe.hlx.live/tools/sidekick/library.html',
+      url: 'https://main--aem-boilerplate--adobe.aem.live/tools/sidekick/library.html',
       includePaths: ['**.docx**'],
       passConfig: true,
       passReferrer: true,
@@ -71,7 +71,7 @@ export const defaultConfigPlugins = {
       title: 'Tag Selector',
       id: 'tag-selector',
       environments: ['edit'],
-      url: 'https://main--aem-boilerplate--adobe.hlx.live/tools/tagger',
+      url: 'https://main--aem-boilerplate--adobe.aem.live/tools/tagger',
       isPalette: true,
       paletteRect: 'top: 150px; left: 7%; height: 675px; width: 85vw;',
     },
@@ -197,7 +197,7 @@ export const defaultSharepointStatusResponse = {
   webPath: '/',
   resourcePath: '/index.md',
   live: {
-    url: 'https://main--aem-boilerplate--adobe.hlx.live/',
+    url: 'https://main--aem-boilerplate--adobe.aem.live/',
     status: 200,
     contentBusId: 'helix-content-bus/content-bus-id/live/index.md',
     contentType: 'text/plain; charset=utf-8',
@@ -210,7 +210,7 @@ export const defaultSharepointStatusResponse = {
     ],
   },
   preview: {
-    url: 'https://main--aem-boilerplate--adobe.hlx.page/',
+    url: 'https://main--aem-boilerplate--adobe.aem.page/',
     status: 200,
     contentBusId: 'helix-content-bus/content-bus-id/preview/index.md',
     contentType: 'text/plain; charset=utf-8',
@@ -243,7 +243,7 @@ export const defaultSharepointSheetStatusResponse = {
   webPath: '/placeholders.json',
   resourcePath: '/placeholders.json',
   live: {
-    url: 'https://main--aem-boilerplate--adobe.hlx.live/placeholders.json',
+    url: 'https://main--aem-boilerplate--adobe.aem.live/placeholders.json',
     status: 200,
     contentBusId: 'helix-content-bus/content-bus-id/live/placeholders.json',
     contentType: 'text/plain; charset=utf-8',
@@ -256,7 +256,7 @@ export const defaultSharepointSheetStatusResponse = {
     ],
   },
   preview: {
-    url: 'https://main--aem-boilerplate--adobe.hlx.page/placeholders.json',
+    url: 'https://main--aem-boilerplate--adobe.aem.page/placeholders.json',
     status: 200,
     contentBusId: 'helix-content-bus/content-bus-id/preview/placeholders.json',
     contentType: 'text/plain; charset=utf-8',
@@ -306,7 +306,7 @@ export const defaultGdriveStatusResponse = {
   webPath: '/',
   resourcePath: '/index.md',
   live: {
-    url: 'https://main--aem-boilerplate--adobe.hlx.live/',
+    url: 'https://main--aem-boilerplate--adobe.aem.live/',
     status: 200,
     contentBusId: 'helix-content-bus/content-bus-id/live/index.md',
     contentType: 'text/plain; charset=utf-8',
@@ -319,7 +319,7 @@ export const defaultGdriveStatusResponse = {
     ],
   },
   preview: {
-    url: 'https://main--aem-boilerplate--adobe.hlx.page/',
+    url: 'https://main--aem-boilerplate--adobe.aem.page/',
     status: 200,
     contentBusId: 'helix-content-bus/content-bus-id/preview/index.md',
     contentType: 'text/plain; charset=utf-8',
@@ -391,12 +391,12 @@ export const defaultStatusLoggedInNotAuthorizedResponse = {
   resourcePath: '/index.md',
   live: {
     status: 403,
-    url: 'https://main--aem-boilerplate--adobe.hlx.live/',
+    url: 'https://main--aem-boilerplate--adobe.aem.live/',
     error: 'forbidden',
   },
   preview: {
     status: 403,
-    url: 'https://main--aem-boilerplate--adobe.hlx.page/',
+    url: 'https://main--aem-boilerplate--adobe.aem.page/',
     error: 'forbidden',
   },
   edit: {
@@ -488,7 +488,7 @@ export const defaultDirectorySharepointStatusResponse = {
   webPath: '/',
   resourcePath: '/',
   live: {
-    url: 'https://main--aem-boilerplate--adobe.hlx.live/',
+    url: 'https://main--aem-boilerplate--adobe.aem.live/',
     status: 404,
     contentBusId: 'helix-content-bus/content-bus-id/live/',
     permissions: [
@@ -497,7 +497,7 @@ export const defaultDirectorySharepointStatusResponse = {
     ],
   },
   preview: {
-    url: 'https://main--aem-boilerplate--adobe.hlx.page/',
+    url: 'https://main--aem-boilerplate--adobe.aem.page/',
     status: 404,
     contentBusId: 'helix-content-bus/content-bus-id/preview/',
     permissions: [
@@ -534,7 +534,7 @@ export const defaultDirectoryGdriveStatusResponse = {
   webPath: '/',
   resourcePath: '/',
   live: {
-    url: 'https://main--aem-boilerplate--adobe.hlx.live/',
+    url: 'https://main--aem-boilerplate--adobe.aem.live/',
     status: 404,
     contentBusId: 'helix-content-bus/content-bus-id/live/',
     permissions: [
@@ -543,7 +543,7 @@ export const defaultDirectoryGdriveStatusResponse = {
     ],
   },
   preview: {
-    url: 'https://main--aem-boilerplate--adobe.hlx.page/',
+    url: 'https://main--aem-boilerplate--adobe.aem.page/',
     status: 404,
     contentBusId: 'helix-content-bus/content-bus-id/preview/',
     permissions: [

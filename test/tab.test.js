@@ -26,7 +26,7 @@ window.chrome = chromeMock;
 
 const TABS = {
   0: mockTab(null, { id: '0' }),
-  1: mockTab('https://main--blog--adobe.hlx.page/', { id: '1' }),
+  1: mockTab('https://main--blog--adobe.aem.page/', { id: '1' }),
   2: mockTab('https://www.example.com/', { id: '2' }),
   3: mockTab('http://localhost:2001/', { id: '3' }),
   4: mockTab('http://github.com/foo/bar', { id: '4' }),
@@ -128,7 +128,7 @@ describe('Test check-tab', () => {
     // add proxyUrl meta tag
     const proxyUrl = document.createElement('meta');
     proxyUrl.setAttribute('property', 'hlx:proxyUrl');
-    proxyUrl.setAttribute('content', 'https://main--bar--foo.hlx.page/');
+    proxyUrl.setAttribute('content', 'https://main--bar--foo.aem.page/');
     window.document.head.append(proxyUrl);
 
     onMessageAddListenerStub.restore();

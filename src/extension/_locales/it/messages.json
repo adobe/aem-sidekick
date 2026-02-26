@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: immagine contenuta maggiore di 10 MB"
+    "message": "Impossibile visualizzare in anteprima $1: immagine contenuta superiore a $2"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "Impossibile recuperare $1 da $2."
@@ -12,10 +12,10 @@
     "message": "Impossibile visualizzare in anteprima $1: il file è di dimensioni superiori a 100 MB"
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
-    "message": "Impossibile visualizzare in anteprima $1: ICO è superiore a 16 KB"
+    "message": "Impossibile visualizzare in anteprima $1: ICO è superiore a $2"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: l'immagine ha una dimensione maggiore di 10 MB"
+    "message": "Impossibile visualizzare in anteprima $1: immagine superiore a $2"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Impossibile visualizzare in anteprima $2: JSON non valido"
@@ -24,7 +24,7 @@
     "message": "Impossibile visualizzare in anteprima $1: il bit rate MP4 è superiore a 300 KB/s"
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
-    "message": "Impossibile visualizzare l'anteprima $1: MP4 non valida"
+    "message": "Impossibile visualizzare in anteprima $1: MP4 non valido"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "Impossibile visualizzare in anteprima $1: MP4 è più lungo di 2 minuti"
@@ -42,7 +42,7 @@
     "message": "Impossibile visualizzare in anteprima $1: nessun handler trovato"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: PDF ha una dimensione maggiore di 10 MB"
+    "message": "Impossibile visualizzare in anteprima $1: PDF è superiore a $2"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "Impossibile visualizzare in anteprima $1: SVG contiene XML non valido"
@@ -54,7 +54,7 @@
     "message": "Impossibile visualizzare in anteprima $1: scripting non valido rilevato in SVG"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "Impossibile visualizzare l'anteprima $1: SVG ha una dimensione maggiore di 20 KB"
+    "message": "Impossibile visualizzare in anteprima $1: SVG superiore a $2"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "Impossibile visualizzare in anteprima $1: tipo di file non supportato"
@@ -65,6 +65,10 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Impossibile visualizzare in anteprima $1: $2"
   },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "Questo sito è ora gestito nel servizio di configurazione."
+  },
+
   "activate": {
     "message": "Attiva"
   },
@@ -197,6 +201,30 @@
   "close_sidekick": {
     "message": "Chiudi barra laterale"
   },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "urls"
+  },
+  "column_name_path": {
+    "message": "percorso"
+  },
+  "column_name_paths": {
+    "message": "percorsi"
+  },
+  "column_name_href": {
+    "message": "href"
+  },
+  "column_name_hrefs": {
+    "message": "hrefs"
+  },
+  "column_name_link": {
+    "message": "collegamento"
+  },
+  "column_name_links": {
+    "message": "collegamenti"
+  },
   "code_state": {
     "message": "Nessuna azione disponibile per i file di codice"
   },
@@ -308,6 +336,9 @@
   "copy_urls": {
     "message": "Copia $1 URL"
   },
+  "copy_all_values": {
+    "message": "Copia tutti i valori"
+  },
   "copy_urls_error": {
     "message": "Copia negli appunti non riuscita. Riprova."
   },
@@ -371,6 +402,9 @@
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
   },
+  "drag_to_reposition": {
+    "message": "Trascina per riposizionare"
+  },
   "edit": {
     "message": "Modifica"
   },
@@ -421,6 +455,9 @@
   },
   "error_preview": {
     "message": "Generazione dell’anteprima non riuscita. Riprova più tardi"
+  },
+  "error_preview_4XX": {
+    "message": "Generazione dell’anteprima non riuscita. Per ulteriori informazioni, controlla i dettagli."
   },
   "error_preview_config": {
     "message": "Impossibile attivare la configurazione: $1"
@@ -659,6 +696,9 @@
   "site_relogin_required": {
     "message": "Accesso scaduto. Accedi di nuovo per continuare."
   },
+  "snapshot_update_success": {
+    "message": "Istantanea aggiornata correttamente, apertura Revisione in corso..."
+  },
   "source": {
     "message": "Origine"
   },
@@ -693,7 +733,7 @@
     "message": "Questa pagina ha ancora un documento di origine e non è possibile annullarne la pubblicazione."
   },
   "unpublish_page_success": {
-    "message": "Annullamento della pubblicazione della pagina eseguito correttamente, ricarica in corso..."
+    "message": "La pubblicazione della pagina è stata annullata, ricaricamento in corso..."
   },
   "unpublishing_state": {
     "message": "Annullamento della pubblicazione in corso..."

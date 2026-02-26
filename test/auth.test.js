@@ -164,6 +164,37 @@ describe('Test auth', () => {
             ],
             requestMethods: [
               'get',
+              'put',
+              'post',
+              'delete',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: sinon.match.number,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [
+              {
+                operation: 'set',
+                header: 'x-auth-token',
+                value: '1234567890',
+              },
+            ],
+          },
+          condition: {
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: '^https://api.aem.live/(test/.*|profile\\?org\\=test\\&)',
+            requestDomains: [
+              'api.aem.live',
+            ],
+            requestMethods: [
+              'get',
+              'put',
               'post',
               'delete',
             ],
@@ -189,7 +220,6 @@ describe('Test auth', () => {
             regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
@@ -247,6 +277,37 @@ describe('Test auth', () => {
             ],
             requestMethods: [
               'get',
+              'put',
+              'post',
+              'delete',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: sinon.match.number,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [
+              {
+                operation: 'set',
+                header: 'x-auth-token',
+                value: '1234567890',
+              },
+            ],
+          },
+          condition: {
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: '^https://api.aem.live/(test/.*|profile\\?org\\=test\\&)',
+            requestDomains: [
+              'api.aem.live',
+            ],
+            requestMethods: [
+              'get',
+              'put',
               'post',
               'delete',
             ],
@@ -272,7 +333,6 @@ describe('Test auth', () => {
             regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
@@ -299,7 +359,6 @@ describe('Test auth', () => {
             regexFilter: '^https://production-host.com/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
@@ -326,7 +385,6 @@ describe('Test auth', () => {
             regexFilter: '^https://custom-preview.com/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
@@ -353,7 +411,6 @@ describe('Test auth', () => {
             regexFilter: '^https://custom-live.com/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
@@ -405,6 +462,37 @@ describe('Test auth', () => {
             ],
             requestMethods: [
               'get',
+              'put',
+              'post',
+              'delete',
+            ],
+            resourceTypes: [
+              'xmlhttprequest',
+            ],
+          },
+        },
+        {
+          id: sinon.match.number,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [
+              {
+                operation: 'set',
+                header: 'x-auth-token',
+                value: authToken,
+              },
+            ],
+          },
+          condition: {
+            excludedInitiatorDomains: ['da.live'],
+            regexFilter: '^https://api.aem.live/(test/.*|profile\\?org\\=test\\&)',
+            requestDomains: [
+              'api.aem.live',
+            ],
+            requestMethods: [
+              'get',
+              'put',
               'post',
               'delete',
             ],
@@ -430,7 +518,6 @@ describe('Test auth', () => {
             regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
-              'labs.aem.live',
             ],
             requestMethods: [
               'get',
@@ -454,7 +541,29 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[a-z0-9-]+--site--test\\.aem\\.(page|live|reviews)/.*',
+            regexFilter: sinon.match((value) => {
+              const regex = new RegExp(value);
+              // Should match aem.page, aem.live, and aem.reviews URLs
+              const shouldMatch = [
+                'https://main--site--test.aem.page/',
+                'https://main--site--test.aem.page/index',
+                'https://preview--site--test.aem.live/document',
+                'https://feature-branch--site--test.aem.reviews/test',
+                // Should match localhost:3000
+                'http://localhost:3000/',
+                'http://localhost:3000/index',
+              ];
+              const shouldNotMatch = [
+                'https://example.com/',
+                'http://localhost/', // no port
+                'http://localhost:8080/', // different port
+                'https://localhost:3000/', // https instead of http
+                'http://127.0.0.1:3000/', // IP instead of localhost
+                'http://localhost:3000', // no trailing slash
+              ];
+              return shouldMatch.every((url) => regex.test(url))
+                && shouldNotMatch.every((url) => !regex.test(url));
+            }),
             requestMethods: [
               'get',
               'post',
@@ -507,9 +616,8 @@ describe('Test auth', () => {
           }],
         },
         condition: {
-          regexFilter: '^https://admin.hlx.page/.*',
-          requestDomains: ['admin.hlx.page'],
-          requestMethods: ['get', 'post', 'delete'],
+          requestDomains: ['admin.hlx.page', 'api.aem.live'],
+          requestMethods: ['get', 'put', 'post', 'delete'],
           resourceTypes: ['xmlhttprequest'],
         },
       }],

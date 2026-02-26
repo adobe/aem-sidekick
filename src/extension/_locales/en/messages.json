@@ -137,6 +137,38 @@
     "close_sidekick": {
       "message": "Close Sidekick"
     },
+    "column_name_url": {
+      "message": "url",
+      "description": "URL column name in all lower case"
+    },
+    "column_name_urls": {
+      "message": "urls",
+      "description": "URLs column name in all lower case"
+    },
+    "column_name_path": {
+      "message": "path",
+      "description": "Path column name in all lower case"
+    },
+    "column_name_paths": {
+      "message": "paths",
+      "description": "Paths column name in all lower case"
+    },
+    "column_name_href": {
+      "message": "href",
+      "description": "HREF column name in all lower case"
+    },
+    "column_name_hrefs": {
+      "message": "hrefs",
+      "description": "HREFs column name in all lower case"
+    },
+    "column_name_link": {
+      "message": "link",
+      "description": "Link column name in all lower case"
+    },
+    "column_name_links": {
+      "message": "links",
+      "description": "Links column name in all lower case"
+    },
     "config_add_success": {
       "message": "Project added to Sidekick"
     },
@@ -247,6 +279,9 @@
     "copy_urls": {
       "message": "Copy $1 URLs"
     },
+    "copy_all_values": {
+      "message": "Copy all values"
+    },
     "copy_urls_error": {
       "message": "Copy to clipboard failed. Please try again."
     },
@@ -255,6 +290,9 @@
     },
     "dark_mode": {
       "message": "Dark theme"
+    },
+    "drag_to_reposition": {
+      "message": "Drag to reposition"
     },
     "delete": {
       "message": "Delete"
@@ -336,6 +374,9 @@
     },
     "error_logout": {
       "message": "Sign out failed. Please try again later."
+    },
+    "error_preview_4XX": {
+      "message": "Preview generation failed. Check details for more information."
     },
     "error_preview": {
       "message": "Preview generation failed. Please try again later."
@@ -672,6 +713,9 @@
     "import": {
       "message": "Import"
     },
+    "snapshot_update_success": {
+      "message": "Snapshot successfully updated, opening Review..."
+    },
     "AEM_BACKEND_FETCH_FAILED": {
       "message": "Unable to fetch $1 from $2."
     },
@@ -715,7 +759,7 @@
       "message": "Unable to preview $1: invalid MP4"
     },
     "AEM_BACKEND_ICO_TOO_BIG": {
-      "message": "Unable to preview $1: ICO is larger than 16KB"
+      "message": "Unable to preview $1: ICO is larger than $2"
     },
     "AEM_BACKEND_SVG_SCRIPTING_DETECTED": {
       "message": "Unable to preview $1: illegal scripting detected in SVG"
@@ -727,15 +771,18 @@
       "message": "Unable to preview $1: SVG contains invalid XML"
     },
     "AEM_BACKEND_PDF_TOO_BIG": {
-      "message": "Unable to preview $1: PDF is larger than 10MB"
+      "message": "Unable to preview $1: PDF is larger than $2"
     },
     "AEM_BACKEND_SVG_TOO_BIG": {
-      "message": "Unable to preview $1: SVG is larger than 20KB"
+      "message": "Unable to preview $1: SVG is larger than $2"
     },
     "AEM_BACKEND_IMAGE_TOO_BIG": {
-      "message": "Unable to preview $1: image is larger than 10MB"
+      "message": "Unable to preview $1: image is larger than $2"
     },
     "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-      "message": "Unable to preview $1: contained image larger than 10MB"
+      "message": "Unable to preview $1: contained image larger than $2"
+    },
+    "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+      "message": "This site is now managed in the configuration service."
     }
 }

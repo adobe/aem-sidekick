@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "无法预览$1：包含大于 10MB 的图像"
+    "message": "无法预览 $1：包含的图像大于 $2"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "无法从 $2 中获取 $1。"
@@ -12,10 +12,10 @@
     "message": "无法预览 $1：文件大于 100MB"
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
-    "message": "无法预览 $1：ICO 大于 16KB"
+    "message": "无法预览 $1：ICO 大于 $2"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "无法预览 $1：图像大于 10MB"
+    "message": "无法预览 $1：图像大于 $2"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "无法预览 $2：无效的 JSON"
@@ -42,7 +42,7 @@
     "message": "无法预览 $1：未找到处理程序"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "无法预览 $1：PDF 大于 10MB"
+    "message": "无法预览 $1：PDF 大于 $2"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "无法预览 $1：SVG 包含无效的 XML"
@@ -54,7 +54,7 @@
     "message": "无法预览 $1：SVG 中检测到非法脚本"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "无法预览 $1：SVG 大于 20KB"
+    "message": "无法预览 $1：SVG 大于 $2"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "无法预览 $1：文件类型不受支持"
@@ -65,6 +65,10 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "无法预览 $1：$2"
   },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "此站点现在在配置服务中管理。"
+  },
+
   "activate": {
     "message": "激活"
   },
@@ -197,6 +201,30 @@
   "close_sidekick": {
     "message": "关闭 Sidekick"
   },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "urls"
+  },
+  "column_name_path": {
+    "message": "路径"
+  },
+  "column_name_paths": {
+    "message": "路径"
+  },
+  "column_name_href": {
+    "message": "href"
+  },
+  "column_name_hrefs": {
+    "message": "hrefs"
+  },
+  "column_name_link": {
+    "message": "链接"
+  },
+  "column_name_links": {
+    "message": "链接"
+  },
   "code_state": {
     "message": "代码文件无可用操作"
   },
@@ -308,6 +336,9 @@
   "copy_urls": {
     "message": "复制 $1 个 URL"
   },
+  "copy_all_values": {
+    "message": "复制所有值"
+  },
   "copy_urls_error": {
     "message": "无法复制到剪贴板。请稍后再试。"
   },
@@ -371,6 +402,9 @@
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
   },
+  "drag_to_reposition": {
+    "message": "拖动以重新定位"
+  },
   "edit": {
     "message": "编辑"
   },
@@ -421,6 +455,9 @@
   },
   "error_preview": {
     "message": "预览生成失败。请稍后重试。"
+  },
+  "error_preview_4XX": {
+    "message": "预览生成失败。查看了解详细信息。"
   },
   "error_preview_config": {
     "message": "无法激活配置：$1"
@@ -658,6 +695,9 @@
   },
   "site_relogin_required": {
     "message": "访问过期。请重新登录以继续。"
+  },
+  "snapshot_update_success": {
+    "message": "快照已成功更新，正在打开审阅……"
   },
   "source": {
     "message": "源"

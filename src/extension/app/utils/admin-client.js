@@ -94,7 +94,9 @@ export class AdminClient {
       return this.#RATE_LIMITER.ADMIN;
     }
     const [error] = this.#getServerError(resp);
-    if (resp.status === 503 && error.includes('(429)') && error.includes('onedrive')) {
+    if (resp.status === 503
+      && error.includes('onedrive')
+      && (error.includes('(429)') || error.endsWith('The request has been throttled'))) {
       return this.#RATE_LIMITER.ONEDRIVE;
     }
     return this.#RATE_LIMITER.NONE;
@@ -125,6 +127,7 @@ export class AdminClient {
   getLocalizedError(action, path, status, error = '', errorCode = '') {
     let message = '';
     let details = '';
+    let templateMatched = false;
     error = error.replace('[admin] ', '');
     if (status === 401 && path === '/*') {
       // bulk operation of 100+ files requires login
@@ -137,6 +140,7 @@ export class AdminClient {
         const errorRegex = this.#createTemplateRegExp(errTemplate);
         const matches = error.match(errorRegex);
         if (matches) {
+          templateMatched = true;
           const { first, second, third } = matches.groups || {};
           message = this.#appStore.i18n(errorCode)
             .replace('$1', first)
@@ -150,7 +154,9 @@ export class AdminClient {
     }
     if (!message) {
       // generic fallbacks based on status and action
+      const statusRange = status >= 500 ? '5XX' : '4XX';
       message = this.#appStore.i18n(`error_${action}_${status}`)
+        || this.#appStore.i18n(`error_${action}_${statusRange}`)
         || this.#appStore.i18n(`error_${action}`)
         || (error && this.#appStore.i18n('error_generic')
           .replace('$1', error));
@@ -162,7 +168,10 @@ export class AdminClient {
     }
     if (error) {
       // extract details from the end of the error message
-      details = error.split(': ').slice(1).join(': ');
+      // or use the error message if no template was matched
+      details = templateMatched
+        ? error.split(': ').slice(1).join(': ')
+        : error;
     }
     return [`(${status}) ${message}`, details];
   }
@@ -192,7 +201,14 @@ export class AdminClient {
       timeout: 0, // keep open
     };
 
-    if (details) {
+    if (errorCode === 'AEM_BACKEND_CONFIG_NOT_SUPPORTED') {
+      // add button to open configuration service
+      const configEditorUrl = `https://tools.aem.live/tools/simple-config-editor/index.html?org=${this.#siteStore.owner}&site=${this.#siteStore.repo}`;
+      toast.actionLabel = this.#appStore.i18n('open');
+      toast.actionCallback = () => {
+        this.#appStore.openPage(configEditorUrl);
+      };
+    } else if (details) {
       toast.actionLabel = this.#appStore.i18n('details');
       toast.actionCallback = () => {
         this.#appStore.showModal({
@@ -279,10 +295,11 @@ export class AdminClient {
       if (resp.ok) {
         return resp.json();
       } else {
-        if (resp.status >= 500) {
+        if (resp.status >= 500 && resp.status !== 503) {
+          // all 5xx errors except 503
           this.handleFatalError(this.#getAction('status'), resp.headers.get('x-error'));
         } else if (resp.status !== 401) {
-          // special handling for 401
+          // all other errors except 401
           this.#handleServerError(this.#getAction('status'), path, resp);
         }
         return { status: resp.status };

@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
-    "message": "No se puede obtener una vista previa de $1: Imagen contenida superior a 10 MB"
+    "message": "No se puede previsualizar $1: la imagen contenida supera los $2"
   },
   "AEM_BACKEND_FETCH_FAILED": {
     "message": "No se puede recuperar $1 de $2."
@@ -12,10 +12,10 @@
     "message": "No se puede previsualizar $1: archivo de más de 100 MB"
   },
   "AEM_BACKEND_ICO_TOO_BIG": {
-    "message": "No se puede previsualizar $1: ICO supera los 16 KB"
+    "message": "No se puede previsualizar $1: ICO supera los $2"
   },
   "AEM_BACKEND_IMAGE_TOO_BIG": {
-    "message": "No se puede obtener una vista previa de $1: La imagen supera los 10 MB"
+    "message": "No se puede previsualizar $1: la imagen supera los $2"
   },
   "AEM_BACKEND_JSON_INVALID": {
     "message": "No se puede previsualizar $2: JSON no válido"
@@ -24,7 +24,7 @@
     "message": "No se puede previsualizar $1: la velocidad de bits de MP4 es superior a 300 KB/s"
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
-    "message": "No se puede obtener una vista previa de $1: MP4 no válido"
+    "message": "No se puede previsualizar $1: MP4 no válido"
   },
   "AEM_BACKEND_MP4_TOO_LONG": {
     "message": "No se puede previsualizar $1: MP4 dura más de 2 minutos"
@@ -42,7 +42,7 @@
     "message": "No se puede previsualizar $1: no se ha encontrado ningún controlador"
   },
   "AEM_BACKEND_PDF_TOO_BIG": {
-    "message": "No se puede obtener una vista previa de $1: PDF tiene más de 10 MB"
+    "message": "No se puede previsualizar $1: el PDF supera los $2"
   },
   "AEM_BACKEND_SVG_PARSING_FAILED": {
     "message": "No se puede previsualizar $1: el SVG contiene un XML no válido"
@@ -54,7 +54,7 @@
     "message": "No se puede previsualizar $1: se han detectado scripts no válidos en SVG"
   },
   "AEM_BACKEND_SVG_TOO_BIG": {
-    "message": "No se puede obtener una vista previa de $1: SVG supera los 20 KB"
+    "message": "No se puede previsualizar $1: SVG supera los $2"
   },
   "AEM_BACKEND_TYPE_UNSUPPORTED": {
     "message": "No se puede previsualizar $1: tipo de archivo no admitido"
@@ -64,6 +64,9 @@
   },
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "No se puede previsualizar $1: $2"
+  },
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "Este sitio ahora se administra en el servicio de configuración."
   },
   "activate": {
     "message": "Activar"
@@ -197,6 +200,30 @@
   "close_sidekick": {
     "message": "Cerrar Sidekick"
   },
+  "column_name_url": {
+    "message": "url"
+  },
+  "column_name_urls": {
+    "message": "urls"
+  },
+  "column_name_path": {
+    "message": "ruta"
+  },
+  "column_name_paths": {
+    "message": "rutas"
+  },
+  "column_name_href": {
+    "message": "href"
+  },
+  "column_name_hrefs": {
+    "message": "hrefs"
+  },
+  "column_name_link": {
+    "message": "enlace"
+  },
+  "column_name_links": {
+    "message": "enlaces"
+  },
   "code_state": {
     "message": "No hay acciones disponibles para los archivos de código"
   },
@@ -308,6 +335,9 @@
   "copy_urls": {
     "message": "Copiar direcciones URL de $1"
   },
+  "copy_all_values": {
+    "message": "Copiar todos los valores"
+  },
   "copy_urls_error": {
     "message": "Error al copiar en el portapapeles. Inténtelo de nuevo."
   },
@@ -371,6 +401,9 @@
   "docs": {
     "message": "https://www.aem.live/docs/sidekick"
   },
+  "drag_to_reposition": {
+    "message": "Arrastrar para cambiar la posición"
+  },
   "edit": {
     "message": "Editar"
   },
@@ -421,6 +454,9 @@
   },
   "error_preview": {
     "message": "Error al generar la vista previa. Inténtelo de nuevo más tarde."
+  },
+  "error_preview_4XX": {
+    "message": "Error al generar la vista previa. Consulte los detalles para obtener más información."
   },
   "error_preview_config": {
     "message": "Error al activar la configuración: $1"
@@ -525,7 +561,7 @@
     "message": "No se ha encontrado ningún cambio"
   },
   "no_diffs_subheading": {
-    "message": "El contenido de la vista previa y el publicado son idénticos"
+    "message": "El contenido previsualizado y el publicado son idénticos"
   },
   "no_results": {
     "message": "No se han encontrado resultados"
@@ -658,6 +694,9 @@
   },
   "site_relogin_required": {
     "message": "Acceso caducado. Inicie sesión de nuevo para continuar."
+  },
+  "snapshot_update_success": {
+    "message": "Instantánea actualizada correctamente, abriendo Revisión..."
   },
   "source": {
     "message": "Fuente"

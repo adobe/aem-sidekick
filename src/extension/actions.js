@@ -25,7 +25,7 @@ import {
   detectLegacySidekick,
   updateProject as updateProjectConfig,
 } from './project.js';
-import { ADMIN_ORIGIN, createAdminUrl } from './utils/admin.js';
+import { ADMIN_ORIGIN, ADMIN_ORIGIN_NEW, createAdminUrl } from './utils/admin.js';
 import { getConfig } from './config.js';
 import { getDisplay, setDisplay } from './display.js';
 import { urlCache } from './url-cache.js';
@@ -55,7 +55,8 @@ async function updateAuthToken({
 }, { tab }) {
   if (owner) {
     try {
-      if (new URL(tab.url).origin === ADMIN_ORIGIN
+      const { origin } = new URL(tab.url);
+      if ((origin === ADMIN_ORIGIN || origin === ADMIN_ORIGIN_NEW)
         && authToken !== undefined) {
         await setAuthToken(
           owner,
@@ -115,7 +116,7 @@ export async function showSidekickNotification(tabId, data, callback) {
 function isTrustedOrigin(origin) {
   const TRUSTED_ORIGINS = [
     ADMIN_ORIGIN,
-    'https://labs.aem.live',
+    ADMIN_ORIGIN_NEW,
     'https://tools.aem.live',
     'http://localhost:3000',
   ];
@@ -125,7 +126,6 @@ function isTrustedOrigin(origin) {
   }
 
   const TRUSTED_ORIGIN_PATTERNS = [
-    /^https:\/\/[a-z0-9-]+--helix-labs-website--adobe\.aem\.(page|live)$/, // labs
     /^https:\/\/[a-z0-9-]+--helix-tools-website--adobe\.aem\.(page|live)$/, // tools
   ];
 
@@ -416,7 +416,9 @@ async function importProjects(tab) {
     {
       message: chrome.i18n.getMessage(i18nKey, `${imported}`),
       headline: chrome.i18n.getMessage('config_project_import_headline'),
-    });
+    },
+    notificationConfirmCallback(tab.id),
+  );
 }
 
 /**
@@ -425,7 +427,7 @@ async function importProjects(tab) {
  */
 async function manageProjects(tab) {
   await chrome.tabs.create({
-    url: 'https://labs.aem.live/tools/project-admin/index.html',
+    url: 'https://tools.aem.live/tools/project-admin/index.html',
     openerTabId: tab.id,
     windowId: tab.windowId,
   });
@@ -529,6 +531,56 @@ export async function guessAEMSite(_, { url }) {
 }
 
 /**
+ * Closes the palette in the sender's tab.
+ * @param {Object} message The message object
+ * @param {string} message.id The palette ID to close
+ * @param {chrome.runtime.MessageSender} sender The sender
+ * @returns {Promise<boolean>} True if palette was closed, else false
+ */
+async function closePalette({ id }, { tab }) {
+  if (!id) {
+    log.info('closePalette: no palette id');
+    return false;
+  }
+  if (!tab?.id) {
+    log.warn('closePalette: no tab id');
+    return false;
+  }
+  try {
+    await chrome.tabs.sendMessage(tab.id, { action: 'close_palette', id });
+    return true;
+  } catch (e) {
+    log.warn('closePalette: failed to send message', e);
+    return false;
+  }
+}
+
+/**
+ * Closes the popover in the sender's tab.
+ * @param {Object} message The message object
+ * @param {string} message.id The popover ID to close
+ * @param {chrome.runtime.MessageSender} sender The sender
+ * @returns {Promise<boolean>} True if popover was closed, else false
+ */
+async function closePopover({ id }, { tab }) {
+  if (!id) {
+    log.info('closePopover: no popover id');
+    return false;
+  }
+  if (!tab?.id) {
+    log.warn('closePopover: no tab id');
+    return false;
+  }
+  try {
+    await chrome.tabs.sendMessage(tab.id, { action: 'close_popover', id });
+    return true;
+  } catch (e) {
+    log.warn('closePopover: failed to send message', e);
+    return false;
+  }
+}
+
+/**
  * Updates a project based on the given message and sender.
  * @param {chrome.tabs.Tab} _ The tab
  * @param {Object} message The message object
@@ -581,6 +633,79 @@ export const internalActions = {
 };
 
 /**
+ * Resizes the palette in the sender's tab.
+ * @param {Object} message The message object
+ * @param {string} message.id The palette ID to resize
+ * @param {Object} [message.rect] The rect object with properties width and/or height (CSS values)
+ *   optional: top, left, right, bottom
+ * @param {chrome.runtime.MessageSender} sender The sender
+ * @returns {Promise<boolean>} True if palette was resized, else false
+ */
+async function resizePalette({
+  id, rect,
+}, { tab }) {
+  if (!tab?.id) {
+    log.warn('resizePalette: no tab id');
+    return false;
+  }
+  if (!id) {
+    log.info('resizePalette: no palette id');
+    return false;
+  }
+  if (!rect || !rect.width || !rect.height) {
+    log.info('resizePalette: no rect properties provided');
+    return false;
+  }
+  try {
+    await chrome.tabs.sendMessage(tab.id, {
+      action: 'resize_palette',
+      id,
+      rect,
+    });
+    return true;
+  } catch (e) {
+    log.warn('resizePalette: failed to send message', e);
+    return false;
+  }
+}
+
+/**
+ * Resizes the popover in the sender's tab.
+ * @param {Object} message The message object
+ * @param {string} message.id The popover ID to resize
+ * @param {Object} [message.rect] The rect object with properties width and/or height (CSS values)
+ * @param {chrome.runtime.MessageSender} sender The sender
+ * @returns {Promise<boolean>} True if popover was resized, else false
+ */
+async function resizePopover({
+  id, rect,
+}, { tab }) {
+  if (!tab?.id) {
+    log.warn('resizePopover: no tab id');
+    return false;
+  }
+  if (!id) {
+    log.info('resizePopover: no popover id');
+    return false;
+  }
+  if (!rect || !rect.width || !rect.height) {
+    log.info('resizePopover: no rect properties');
+    return false;
+  }
+  try {
+    await chrome.tabs.sendMessage(tab.id, {
+      action: 'resize_popover',
+      id,
+      rect,
+    });
+    return true;
+  } catch (e) {
+    log.warn('resizePopover: failed to send message', e);
+    return false;
+  }
+}
+
+/**
  * Actions which can be executed via external messaging API.
  * @type {Object} The external actions
  */
@@ -593,4 +718,8 @@ export const externalActions = {
   updateSite,
   removeSite,
   updateAuthToken,
+  resizePalette,
+  resizePopover,
+  closePalette,
+  closePopover,
 };

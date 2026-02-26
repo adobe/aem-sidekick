@@ -51,6 +51,36 @@ describe('Test url-cache', () => {
         mountpoints: ['https://some.custom.host/sites/bar'],
       }],
     )).to.be.true;
+    // excluded host: .da.live
+    expect(isSharePointHost(
+      'https://content.da.live/foo/bar',
+      [{ mountpoints: ['https://content.da.live/foo/bar'] }],
+    )).to.be.false;
+    // excluded host: .google.com
+    expect(isSharePointHost(
+      'https://drive.google.com/drive/folders/1234567890',
+      [{ mountpoints: ['https://drive.google.com/drive/folders/1234567890'] }],
+    )).to.be.false;
+    // excluded host: .adobeaemcloud.com
+    expect(isSharePointHost(
+      'https://author-p00000-e00000.adobeaemcloud.com/content/site',
+      [{ mountpoints: ['https://author-p00000-e00000.adobeaemcloud.com/content/site'] }],
+    )).to.be.false;
+    // excluded host: .adobecqms.net
+    expect(isSharePointHost(
+      'https://author-stage.adobecqms.net/content/site',
+      [{ mountpoints: ['https://author-stage.adobecqms.net/content/site'] }],
+    )).to.be.false;
+    // excluded host: .adobeio-static.net
+    expect(isSharePointHost(
+      'https://test.adobeio-static.net/assets/content/site',
+      [{ mountpoints: ['https://test.adobeio-static.net/assets/content/site'] }],
+    )).to.be.false;
+    // excluded host: .adobeioruntime.net
+    expect(isSharePointHost(
+      'https://test.adobeioruntime.net/content/site',
+      [{ mountpoints: ['https://test.adobeioruntime.net/content/site'] }],
+    )).to.be.false;
   });
 
   describe('set', () => {
