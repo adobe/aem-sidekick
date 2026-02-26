@@ -89,14 +89,14 @@ describe('Test auth', () => {
       expect(filters).to.include('^https://preview\\.example\\.com/.*');
       expect(filters).to.include('^https://live\\.example\\.com/.*');
     });
-    it('adds one rule per host occurrence (no deduplication)', () => {
+    it('deduplicates same host across configs', () => {
       const configs = [
         { host: 'same.com', previewHost: 'same.com' },
         { liveHost: 'same.com' },
       ];
       const rules = getCacheControlRules(configs);
-      expect(rules).to.have.lengthOf(3);
-      expect(rules.every((r) => r.condition.regexFilter === '^https://same\\.com/.*')).to.be.true;
+      expect(rules).to.have.lengthOf(1);
+      expect(rules[0].condition.regexFilter).to.equal('^https://same\\.com/.*');
     });
     it('extracts host from full URL in config', () => {
       const configs = [{ host: 'https://url-host.com/path' }];
