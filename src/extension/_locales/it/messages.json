@@ -744,6 +744,13 @@
   "update_success": {
     "message": "Anteprima aggiornata, ricaricamento in corso..."
   },
+  "reload_clear_cache": {
+    "message": "Reload",
+    "description": "Purge site cache and reload the page"
+  },
+  "reload_clear_cache_state": {
+    "message": "Clearing cache and reloading..."
+  },
   "user_login": {
     "message": "Accedi"
   },

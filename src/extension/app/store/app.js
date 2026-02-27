@@ -40,6 +40,7 @@ import { createEnvPlugin } from '../plugins/env/env.js';
 import { createEditPlugin } from '../plugins/edit/edit.js';
 import { createPreviewPlugin } from '../plugins/preview/preview.js';
 import { createReloadPlugin } from '../plugins/reload/reload.js';
+import { createReloadCachePlugin } from '../plugins/reload-cache/reload-cache.js';
 import { createDeletePlugin } from '../plugins/delete/delete.js';
 import { createPublishPlugin } from '../plugins/publish/publish.js';
 import { createUnpublishPlugin } from '../plugins/unpublish/unpublish.js';
@@ -288,6 +289,7 @@ export class AppStore {
       const editPlugin = createEditPlugin(this);
       const previewPlugin = createPreviewPlugin(this);
       const reloadPlugin = createReloadPlugin(this);
+      const reloadCachePlugin = createReloadCachePlugin(this);
       const deletePlugin = createDeletePlugin(this);
       const publishPlugin = createPublishPlugin(this);
       const unpublishPlugin = createUnpublishPlugin(this);
@@ -302,6 +304,7 @@ export class AppStore {
       this.registerPlugin(this.corePlugins, editPlugin);
       this.registerPlugin(this.corePlugins, previewPlugin);
       this.registerPlugin(this.corePlugins, reloadPlugin);
+      this.registerPlugin(this.corePlugins, reloadCachePlugin);
       this.registerPlugin(this.corePlugins, deletePlugin);
       this.registerPlugin(this.corePlugins, publishPlugin);
       this.registerPlugin(this.corePlugins, unpublishPlugin);

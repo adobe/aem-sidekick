@@ -744,6 +744,13 @@
   "update_success": {
     "message": "預覽已成功更新，正在重新載入…"
   },
+  "reload_clear_cache": {
+    "message": "Reload",
+    "description": "Purge site cache and reload the page"
+  },
+  "reload_clear_cache_state": {
+    "message": "Clearing cache and reloading..."
+  },
   "user_login": {
     "message": "登入"
   },

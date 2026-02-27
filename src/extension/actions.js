@@ -617,6 +617,32 @@ async function updateProject(_, { config }) {
 }
 
 /**
+ * Purges browser cache (and cache storage) for the current tab's origin and reloads the tab.
+ * @param {chrome.tabs.Tab} tab The tab
+ * @returns {Promise<void>}
+ */
+async function purgeCacheAndReload(tab) {
+  if (!tab?.id || !tab.url) {
+    log.warn('purgeCacheAndReload: no tab or url');
+    return;
+  }
+  try {
+    const { origin } = new URL(tab.url);
+    if (!origin.startsWith('http:') && !origin.startsWith('https:')) {
+      log.warn('purgeCacheAndReload: unsupported origin', origin);
+      return;
+    }
+    await chrome.browsingData.remove(
+      { origins: [origin] },
+      { cache: true, cacheStorage: true },
+    );
+    await chrome.tabs.reload(tab.id, { bypassCache: true });
+  } catch (e) {
+    log.warn('purgeCacheAndReload failed', e);
+  }
+}
+
+/**
  * Actions which can be executed via internal messaging API.
  * @type {Object} The internal actions
  */
@@ -630,6 +656,7 @@ export const internalActions = {
   guessAEMSite,
   updateProject,
   saveDocument,
+  purgeCacheAndReload,
 };
 
 /**

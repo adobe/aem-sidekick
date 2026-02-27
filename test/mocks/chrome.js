@@ -80,6 +80,9 @@ export default {
     reload: async () => {},
     update: async () => {},
   },
+  browsingData: {
+    remove: async () => {},
+  },
   scripting: {
     executeScript: async ({ func, args = [] }) => {
       if (typeof func === 'function') {

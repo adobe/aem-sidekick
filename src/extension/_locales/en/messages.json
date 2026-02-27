@@ -664,6 +664,13 @@
     "update_success": {
       "message": "Preview successfully updated, reloading..."
     },
+    "reload_clear_cache": {
+      "message": "Reload",
+      "description": "Purge site cache and reload the page"
+    },
+    "reload_clear_cache_state": {
+      "message": "Clearing cache and reloading..."
+    },
     "preview_success": {
       "message": "Preview successfully updated, opening Preview..."
     },

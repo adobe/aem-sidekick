@@ -744,6 +744,13 @@
   "update_success": {
     "message": "Aperçu mis à jour. Nouveau chargement..."
   },
+  "reload_clear_cache": {
+    "message": "Reload",
+    "description": "Purge site cache and reload the page"
+  },
+  "reload_clear_cache_state": {
+    "message": "Clearing cache and reloading..."
+  },
   "user_login": {
     "message": "Se connecter"
   },

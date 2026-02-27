@@ -744,6 +744,13 @@
   "update_success": {
     "message": "미리보기가 정상적으로 업데이트됨. 다시 로드하는 중..."
   },
+  "reload_clear_cache": {
+    "message": "Reload",
+    "description": "Purge site cache and reload the page"
+  },
+  "reload_clear_cache_state": {
+    "message": "Clearing cache and reloading..."
+  },
   "user_login": {
     "message": "로그인"
   },

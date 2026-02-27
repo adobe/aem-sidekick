@@ -132,6 +132,7 @@ describe('Plugin action bar', () => {
         'env-switcher',
         'edit',
         'reload',
+        'reload-cache',
         'publish',
       ]);
 
@@ -178,6 +179,7 @@ describe('Plugin action bar', () => {
       expectInActionBar([
         'env-switcher',
         'edit',
+        'reload-cache',
         'publish',
       ]);
 
@@ -196,6 +198,7 @@ describe('Plugin action bar', () => {
       expectInActionBar([
         'env-switcher',
         'edit',
+        'reload-cache',
         'publish',
       ]);
 
@@ -324,6 +327,7 @@ describe('Plugin action bar', () => {
         'env-switcher',
         'edit',
         'reload',
+        'reload-cache',
         'publish',
       ]);
 
@@ -361,6 +365,7 @@ describe('Plugin action bar', () => {
         'env-switcher',
         'edit',
         'reload',
+        'reload-cache',
         'publish',
       ]);
 

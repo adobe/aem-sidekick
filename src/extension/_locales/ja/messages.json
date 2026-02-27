@@ -744,6 +744,13 @@
   "update_success": {
     "message": "プレビューが正常に更新されました。リロード中..."
   },
+  "reload_clear_cache": {
+    "message": "Reload",
+    "description": "Purge site cache and reload the page"
+  },
+  "reload_clear_cache_state": {
+    "message": "Clearing cache and reloading..."
+  },
   "user_login": {
     "message": "ログイン"
   },
