@@ -77,22 +77,20 @@ describe('Test auth', () => {
   describe('getCacheControlRules', () => {
     it('returns one rule per unique host', () => {
       const configs = [
-        { host: 'prod.example.com', previewHost: 'preview.example.com' },
+        { host: 'prod.example.com' },
         { liveHost: 'live.example.com' },
       ];
       const rules = getCacheControlRules(configs);
-      expect(rules).to.have.lengthOf(3);
+      expect(rules).to.have.lengthOf(2);
       expect(rules.every((r) => r.action?.responseHeaders?.[0]?.header === 'Cache-Control')).to.be.true;
-      expect(rules.every((r) => r.action.responseHeaders[0].value === `max-age=${CACHE_MAX_AGE_SECONDS}`)).to.be.true;
+      expect(rules.every((r) => r.action.responseHeaders[0].value === `max-age=${CACHE_MAX_AGE_SECONDS}, must-revalidate`)).to.be.true;
       const filters = rules.map((r) => r.condition.regexFilter);
       expect(filters).to.include('^https://prod\\.example\\.com/.*');
-      expect(filters).to.include('^https://preview\\.example\\.com/.*');
       expect(filters).to.include('^https://live\\.example\\.com/.*');
     });
     it('deduplicates same host across configs', () => {
       const configs = [
-        { host: 'same.com', previewHost: 'same.com' },
-        { liveHost: 'same.com' },
+        { host: 'same.com', liveHost: 'same.com' },
       ];
       const rules = getCacheControlRules(configs);
       expect(rules).to.have.lengthOf(1);
@@ -106,7 +104,7 @@ describe('Test auth', () => {
     });
     it('returns empty array for empty or no valid hosts', () => {
       expect(getCacheControlRules([])).to.deep.equal([]);
-      expect(getCacheControlRules([{ host: '' }, { previewHost: null }])).to.deep.equal([]);
+      expect(getCacheControlRules([{ host: '' }, { liveHost: null }])).to.deep.equal([]);
     });
   });
 

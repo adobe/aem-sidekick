@@ -19,7 +19,7 @@ import { ADMIN_ORIGIN, ADMIN_ORIGIN_NEW } from './utils/admin.js';
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
 const { host: newAdminHost } = new URL(ADMIN_ORIGIN_NEW);
 
-/** Cache-Control max-age in seconds for added project hosts (HTML/JSON). 60 = 1 minute. */
+/** Cache-Control max-age in seconds for added project hosts (HTML, JSON and code): 1 minute. */
 export const CACHE_MAX_AGE_SECONDS = 60;
 
 function getRandomId() {
@@ -39,7 +39,7 @@ export function getHostDomain(host) {
 /**
  * Builds declarativeNetRequest rules that set Cache-Control on responses
  * for added project hosts.
- * @param {Object[]} projectConfigs Configs with host, previewHost, liveHost, reviewHost
+ * @param {Object[]} projectConfigs Configs with host, liveHost
  * @returns {Object[]} Rules to add
  */
 export function getCacheControlRules(projectConfigs) {
@@ -47,13 +47,12 @@ export function getCacheControlRules(projectConfigs) {
   projectConfigs
     .flatMap((p) => [
       p?.host,
-      p?.previewHost,
       p?.liveHost,
-      p?.reviewHost,
     ].filter(Boolean).map(getHostDomain))
     .filter(Boolean)
     .filter((domain, i, self) => self.indexOf(domain) === i)
     .forEach((domain) => {
+      // @ts-ignore
       const escaped = domain.replaceAll(/\./g, '\\.');
       rules.push({
         id: getRandomId(),
@@ -63,7 +62,7 @@ export function getCacheControlRules(projectConfigs) {
           responseHeaders: [{
             header: 'Cache-Control',
             operation: 'set',
-            value: `max-age=${CACHE_MAX_AGE_SECONDS}`,
+            value: `max-age=${CACHE_MAX_AGE_SECONDS}, must-revalidate`,
           }],
         },
         condition: {
@@ -74,11 +73,8 @@ export function getCacheControlRules(projectConfigs) {
             'sub_frame',
             'script',
             'stylesheet',
-            'image',
             'xmlhttprequest',
-            'media',
             'font',
-            'other',
           ],
         },
       });
