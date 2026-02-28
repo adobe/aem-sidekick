@@ -19,9 +19,6 @@ import { ADMIN_ORIGIN, ADMIN_ORIGIN_NEW } from './utils/admin.js';
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
 const { host: newAdminHost } = new URL(ADMIN_ORIGIN_NEW);
 
-/** Cache-Control max-age in seconds for added project hosts (HTML, JSON and code): 1 minute. */
-export const CACHE_MAX_AGE_SECONDS = 60;
-
 function getRandomId() {
   return Math.floor(Math.random() * 1000000);
 }
@@ -59,10 +56,14 @@ export function getCacheControlRules(projectConfigs) {
         priority: 1,
         action: {
           type: 'modifyHeaders',
-          responseHeaders: [{
-            header: 'Cache-Control',
+          requestHeaders: [{
             operation: 'set',
-            value: `max-age=${CACHE_MAX_AGE_SECONDS}, must-revalidate`,
+            header: 'Cache-Control',
+            value: 'no-cache',
+          }, {
+            operation: 'set',
+            header: 'Pragma',
+            value: 'no-cache',
           }],
         },
         condition: {

@@ -18,7 +18,6 @@ import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
 import {
-  CACHE_MAX_AGE_SECONDS,
   configureAuthAndCorsHeaders,
   getCacheControlRules,
   getHostDomain,
@@ -82,8 +81,8 @@ describe('Test auth', () => {
       ];
       const rules = getCacheControlRules(configs);
       expect(rules).to.have.lengthOf(2);
-      expect(rules.every((r) => r.action?.responseHeaders?.[0]?.header === 'Cache-Control')).to.be.true;
-      expect(rules.every((r) => r.action.responseHeaders[0].value === `max-age=${CACHE_MAX_AGE_SECONDS}, must-revalidate`)).to.be.true;
+      expect(rules.every((r) => r.action?.requestHeaders?.some((h) => h.header === 'Cache-Control' && h.value === 'no-cache'))).to.be.true;
+      expect(rules.every((r) => r.action?.requestHeaders?.some((h) => h.header === 'Pragma' && h.value === 'no-cache'))).to.be.true;
       const filters = rules.map((r) => r.condition.regexFilter);
       expect(filters).to.include('^https://prod\\.example\\.com/.*');
       expect(filters).to.include('^https://live\\.example\\.com/.*');
