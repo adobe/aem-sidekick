@@ -35,10 +35,8 @@ export class AEMSidekick extends LitElement {
 
   @property({
     type: Boolean,
-    reflect: true,
     converter: {
       fromAttribute: (value) => (value === 'true'),
-      toAttribute: (value) => (value ? 'true' : 'false'),
     },
   })
   accessor open = false;
@@ -54,9 +52,13 @@ export class AEMSidekick extends LitElement {
     this.loadContext(config);
   }
 
+  #boundHandleKeyDown = (e) => {
+    this.#handleKeyDown(e);
+  };
+
   async #handleKeyDown(e) {
-    // only handle Cmd/Ctrl+R
-    if (!(e.metaKey || e.ctrlKey) || e.key !== 'r') {
+    // only handle Cmd/Ctrl+R if sidekick is open
+    if (!this.open || !(e.metaKey || e.ctrlKey) || e.key !== 'r') {
       return;
     }
     e.preventDefault();
@@ -64,12 +66,14 @@ export class AEMSidekick extends LitElement {
     try {
       await chrome.runtime.sendMessage({ action: 'bustCache' });
     } finally {
-      window.location.reload();
+      this.appStore.reloadPage();
     }
   }
 
   async connectedCallback() {
     super.connectedCallback();
+
+    window.addEventListener('keydown', this.#boundHandleKeyDown, true);
 
     reaction(
       () => this.appStore.theme,
@@ -80,19 +84,8 @@ export class AEMSidekick extends LitElement {
   }
 
   disconnectedCallback() {
-    window.removeEventListener('keydown', this.#handleKeyDown, true);
+    window.removeEventListener('keydown', this.#boundHandleKeyDown, true);
     super.disconnectedCallback?.();
-  }
-
-  updated(changedProperties) {
-    super.updated(changedProperties);
-    if (changedProperties.has('open')) {
-      if (this.open) {
-        window.addEventListener('keydown', this.#handleKeyDown, true);
-      } else {
-        window.removeEventListener('keydown', this.#handleKeyDown, true);
-      }
-    }
   }
 
   async loadContext(config) {
