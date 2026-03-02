@@ -36,8 +36,6 @@ export async function configureAuthAndCorsHeaders() {
       removeRuleIds: (await chrome.declarativeNetRequest.getSessionRules())
         .map((rule) => rule.id),
     });
-    const allRules = [];
-
     // find projects with auth tokens and add rules for each
     const projects = await getConfig('session', 'projects') || [];
     const addRulesPromises = projects.map(async ({
@@ -153,11 +151,10 @@ export async function configureAuthAndCorsHeaders() {
       log.debug(`addAuthTokensHeaders: added rules for ${owner}`);
       return rules;
     });
-
-    allRules.push(...(await Promise.all(addRulesPromises)).flat());
-    if (allRules.length > 0) {
+    const addRules = (await Promise.all(addRulesPromises)).flat();
+    if (addRules.length > 0) {
       await chrome.declarativeNetRequest.updateSessionRules({
-        addRules: allRules,
+        addRules,
       });
     }
   } catch (e) {
