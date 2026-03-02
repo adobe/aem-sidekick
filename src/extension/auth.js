@@ -151,6 +151,7 @@ export async function configureAuthAndCorsHeaders() {
       log.debug(`addAuthTokensHeaders: added rules for ${owner}`);
       return rules;
     });
+
     const addRules = (await Promise.all(addRulesPromises)).flat();
     if (addRules.length > 0) {
       await chrome.declarativeNetRequest.updateSessionRules({
