@@ -601,6 +601,24 @@ describe('Test actions', () => {
     expect(resp).to.be.false;
   });
 
+  it('internal: bustCache', async () => {
+    const updateSessionRulesStub = sandbox.stub(chrome.declarativeNetRequest, 'updateSessionRules').resolves();
+
+    const tab = mockTab('https://example.com/page');
+    let result = await internalActions.bustCache(tab, {});
+    expect(result).to.be.true;
+    expect(updateSessionRulesStub.calledOnce).to.be.true;
+
+    updateSessionRulesStub.resetHistory();
+    result = await internalActions.bustCache(tab, { host: 'other.com' });
+    expect(result).to.be.true;
+    expect(updateSessionRulesStub.calledOnce).to.be.true;
+
+    expect(await internalActions.bustCache(null, {})).to.be.false;
+    expect(await internalActions.bustCache({ id: 1, active: true }, {})).to.be.false;
+    expect(await internalActions.bustCache(mockTab('https://a.com', { active: false }), {})).to.be.false;
+  });
+
   it('internal: addRemoveProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const remove = sandbox.spy(chrome.storage.sync, 'remove');
