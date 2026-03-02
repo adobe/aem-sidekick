@@ -24,66 +24,6 @@ function getRandomId() {
 }
 
 /**
- * Returns the hostname (domain) from a project host value (may be domain or full URL).
- * @param {string} host
- * @returns {string}
- */
-export function getHostDomain(host) {
-  if (!host || typeof host !== 'string') return '';
-  return host.startsWith('http') ? new URL(host).host : host;
-}
-
-/**
- * Builds declarativeNetRequest rules that set Cache-Control on responses
- * for added project hosts.
- * @param {Object[]} projectConfigs Configs with host, liveHost
- * @returns {Object[]} Rules to add
- */
-export function getCacheControlRules(projectConfigs) {
-  const rules = [];
-  projectConfigs
-    .flatMap((p) => [
-      p?.host,
-      p?.liveHost,
-    ].filter(Boolean).map(getHostDomain))
-    .filter(Boolean)
-    .filter((domain, i, self) => self.indexOf(domain) === i)
-    .forEach((domain) => {
-      // @ts-ignore
-      const escaped = domain.replaceAll(/\./g, '\\.');
-      rules.push({
-        id: getRandomId(),
-        priority: 1,
-        action: {
-          type: 'modifyHeaders',
-          requestHeaders: [{
-            operation: 'set',
-            header: 'Cache-Control',
-            value: 'no-cache',
-          }, {
-            operation: 'set',
-            header: 'Pragma',
-            value: 'no-cache',
-          }],
-        },
-        condition: {
-          regexFilter: `^https://${escaped}/.*`,
-          requestMethods: ['get'],
-          resourceTypes: [
-            'main_frame',
-            'sub_frame',
-            'script',
-            'stylesheet',
-            'xmlhttprequest',
-            'font',
-          ],
-        },
-      });
-    });
-  return rules;
-}
-
-/**
  * Sets the x-auth-token header for all requests to the Admin API if project config
  * has an auth token. Also sets the Access-Control-Allow-Origin header for
  * all requests from tools.aem.live.
@@ -97,13 +37,6 @@ export async function configureAuthAndCorsHeaders() {
         .map((rule) => rule.id),
     });
     const allRules = [];
-
-    // Cache-Control rules for added project hosts (prod, preview, live, review) – override to 1 min
-    const syncHandles = await getConfig('sync', 'projects') || [];
-    const syncConfigs = (await Promise.all(
-      syncHandles.map((handle) => getConfig('sync', handle)),
-    )).filter(Boolean);
-    allRules.push(...getCacheControlRules(syncConfigs));
 
     // find projects with auth tokens and add rules for each
     const projects = await getConfig('session', 'projects') || [];

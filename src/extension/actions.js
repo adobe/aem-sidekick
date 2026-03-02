@@ -11,6 +11,7 @@
  */
 
 import { log } from './log.js';
+import { addCacheBusterRule } from './cache-buster.js';
 import { setAuthToken } from './auth.js';
 import {
   addProject,
@@ -617,10 +618,25 @@ async function updateProject(_, { config }) {
 }
 
 /**
+ * Adds request headers for the active tab's domain to bypass the browser cache.
+ * @param {chrome.tabs.Tab} tab The tab
+ * @param {object} msg The message object
+ * @param {string} msg.host The host to bust cache for (defaults to tab host)
+ * @returns {Promise<boolean>} True if browser cache was busted, else false
+ */
+async function bustCache(tab, { host }) {
+  if (!tab || !tab.url || !tab.active) {
+    return false;
+  }
+  return addCacheBusterRule(host || new URL(tab.url).hostname);
+}
+
+/**
  * Actions which can be executed via internal messaging API.
  * @type {Object} The internal actions
  */
 export const internalActions = {
+  bustCache,
   addRemoveProject,
   enableDisableProject,
   manageProjects,

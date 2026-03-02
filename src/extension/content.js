@@ -30,9 +30,6 @@ function removeCacheParam(href = window.location.href) {
 
     // Update the URL without changing the browser history
     window.history.replaceState(null, '', location);
-
-    // Now we are on same origin we are safe to reload the cache
-    fetch(location, { cache: 'reload' });
   }
 
   return location.href;
