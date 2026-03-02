@@ -18,6 +18,7 @@ import { log } from './log.js';
  * @returns {string}
  */
 export function getHostDomain(host) {
+  if (host == null || typeof host !== 'string') return '';
   host = host.trim();
   if (!host) {
     return '';
@@ -39,10 +40,6 @@ export async function addCacheBusterRule(domain) {
   }
   // @ts-ignore
   const escapedDomain = domain.trim().replaceAll(/\./g, '\\.');
-  if (!escapedDomain) {
-    log.warn('addCacheBusterRule: invalid domain', domain);
-    return false;
-  }
 
   const ruleId = Math.floor(Math.random() * 1000000);
   const addRules = [{
