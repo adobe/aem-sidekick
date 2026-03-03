@@ -74,7 +74,7 @@ describe('AEM Sidekick', () => {
     })).to.be.true;
   });
 
-  it('reload shortcut when open: busts cache and reloadPage; when other key: no-op', async () => {
+  it('cmd/ctrl+r busts cache and reloads page when sidekick open', async () => {
     sidekick = sidekickTest.createSidekick();
     await sidekickTest.awaitEnvSwitcher();
 
