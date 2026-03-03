@@ -681,7 +681,6 @@ export class JSONView extends LitElement {
           ${item.line ? html`<sp-table-cell class="line" data-diff=${item.diff || ''}>${item.line}</sp-table-cell>` : ''}
           ${Object.entries(item)
             .filter(([key]) => key !== 'diff' && key !== 'line')
-            // @ts-ignore
             .map(([_, value]) => this.renderValue(value, url))}
     `;
     tableContainer.appendChild(table);

@@ -19,7 +19,6 @@ import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
 import { EVENTS } from '../../../../src/extension/app/constants.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 const TEST_CONFIG = {
@@ -116,7 +115,6 @@ describe('Plugin', () => {
 
   it('renders plugin as button', async () => {
     const plugin = new Plugin(TEST_CONFIG, appStore);
-    // @ts-ignore
     const renderedPlugin = plugin.render().strings.join('');
     expect(renderedPlugin).to.contain('sp-action-button');
   });
@@ -125,7 +123,6 @@ describe('Plugin', () => {
     const plugin = new Plugin(TEST_BADGE_CONFIG, appStore);
     const badge = plugin.isBadge();
     expect(badge).to.be.true;
-    // @ts-ignore
     const renderedPlugin = plugin.render().strings.join('');
     expect(renderedPlugin).to.contain('sp-badge');
   });
@@ -196,14 +193,12 @@ describe('Plugin', () => {
     expect(overlayTrigger).to.exist;
 
     // simulate click on plugin
-    // @ts-ignore
     overlayTrigger.firstElementChild.click();
 
     const iframe = container.querySelector('iframe');
     expect(iframe.getAttribute('src')).to.equal(TEST_POPOVER_CONFIG.url);
 
     // test else path
-    // @ts-ignore
     overlayTrigger.firstElementChild.click();
   });
 
@@ -245,7 +240,6 @@ describe('Plugin', () => {
     const iframe = container.querySelector('iframe');
     expect(iframe).to.exist;
 
-    // @ts-ignore
     menuItem.click();
 
     expect(iframe.getAttribute('src')).to.equal(TEST_POPOVER_CONFIG.url);
@@ -354,7 +348,6 @@ describe('Plugin', () => {
       pinned: false,
     }, appStore);
     const renderedPlugin = plugin.render();
-    // @ts-ignore
     expect(renderedPlugin).to.equal('');
   });
 
@@ -367,7 +360,6 @@ describe('Plugin', () => {
     parent.append(child);
 
     const renderedPlugin = parent.render();
-    // @ts-ignore
     expect(renderedPlugin).to.equal('');
   });
 
@@ -560,7 +552,6 @@ describe('Plugin', () => {
         return true;
       },
     };
-    // @ts-ignore
     plugin.popoverElement = mockPopover;
 
     // Call closePopover
@@ -584,7 +575,6 @@ describe('Plugin', () => {
         return true;
       },
     };
-    // @ts-ignore
     plugin.popoverElement = mockPopover;
 
     // Call closePopover

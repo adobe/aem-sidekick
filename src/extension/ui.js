@@ -57,7 +57,6 @@ function getPaths(type) {
   for (const size of ICON_SIZES) {
     paths[size] = `icons/${type}/icon-${size}x${size}.png`;
   }
-  // @ts-ignore
   return paths;
 }
 
@@ -223,7 +222,6 @@ if (chrome.contextMenus) {
           window.hlx = window.hlx || {};
           window.hlx.sidekick = window.hlx.sidekick || { location: window.location };
 
-          // @ts-ignore
           const action = `${menuItemIdVal}`.replaceAll(/([A-Z])/g, `-${'$1'}`).toLowerCase();
           sampleRUM('click', {
             source: 'sidekick',

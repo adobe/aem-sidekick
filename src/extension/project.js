@@ -563,7 +563,6 @@ export async function detectLegacySidekick() {
     extensionIds.map(
       async (id) => new Promise((resolve) => {
         try {
-          // @ts-ignore
           chrome.runtime.lastError = null;
           chrome.runtime.sendMessage(
             id,

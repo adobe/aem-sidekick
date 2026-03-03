@@ -25,7 +25,6 @@ import {
 } from './mocks/discover.js';
 import { error, mockTab } from './test-utils.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Test url-cache', () => {
@@ -96,7 +95,6 @@ describe('Test url-cache', () => {
         expect(listener).to.be.a('function');
         onMessageListener = listener;
       });
-      // @ts-ignore
       sendMessage = sandbox.stub(window.chrome.runtime, 'sendMessage').callsFake((message) => {
         expect(onMessageListener).to.be.a('function');
         expect(message).to.be.an('object');

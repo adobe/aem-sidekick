@@ -23,7 +23,6 @@ import {
   clearConfig,
 } from '../src/extension/config.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Test config', () => {

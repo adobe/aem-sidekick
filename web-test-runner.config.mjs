@@ -14,7 +14,6 @@
 import { fromRollup } from '@web/dev-server-rollup';
 import rollupBabel from '@rollup/plugin-babel';
 
-// @ts-ignore
 const babel = fromRollup(rollupBabel);
 
 export default {

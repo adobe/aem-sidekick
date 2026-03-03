@@ -12,7 +12,6 @@
 
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, max-len */
 
-// @ts-ignore
 import {
   expect, waitUntil, aTimeout,
 } from '@open-wc/testing';
@@ -24,7 +23,6 @@ import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import { HelixMockEnvironments } from '../../../mocks/environment.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 /**

@@ -11,7 +11,6 @@
  */
 /* eslint-disable no-unused-expressions, no-import-assign, import/no-extraneous-dependencies */
 
-// @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import {
@@ -35,7 +34,6 @@ import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } fro
 import { defaultConfigJSONUrl, SidekickTest } from '../../sidekick-test.js';
 import { fetchLanguageDict } from '../../../src/extension/app/utils/i18n.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 /**
@@ -72,7 +70,6 @@ describe('Test App Store', () => {
       .mockFetchStatusSuccess()
       .mockFetchSidekickConfigEmpty();
 
-    // @ts-ignore
     sidekickElement = document.createElement('div');
   });
 
@@ -489,7 +486,6 @@ describe('Test App Store', () => {
       sidekickTest
         .mockFetchStatusError();
       const fetchStatusSpy = sidekickTest.sandbox.spy(instance, 'fetchStatus');
-      // @ts-ignore
       await appStore.loadContext(sidekickElement, {});
       expect(await fetchStatusSpy.returnValues[0]).to.be.undefined;
     });
@@ -497,7 +493,6 @@ describe('Test App Store', () => {
 
   describe('show toast', async () => {
     beforeEach(() => {
-      // @ts-ignore
       appStore.sidekick = document.createElement('div');
       appStore.sidekick.attachShadow({ mode: 'open' });
       appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
@@ -595,7 +590,6 @@ describe('Test App Store', () => {
         edit: { url: 'https://my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx' },
       })));
       instance = appStore;
-      // @ts-ignore
       instance.siteStore = {
         owner: 'adobe',
         repo: 'aem-boilerplate',
@@ -1020,7 +1014,6 @@ describe('Test App Store', () => {
     beforeEach(async () => {
       instance = appStore;
       sandbox = sinon.createSandbox();
-      // @ts-ignore
       instance.sidekick = document.createElement('div');
       instance.languageDict = await fetchLanguageDict(undefined, 'en');
       updateStub = sandbox.stub(instance, 'update');
@@ -1207,7 +1200,6 @@ describe('Test App Store', () => {
     beforeEach(() => {
       instance = appStore;
       fetchStub = sidekickTest.sandbox.stub(window, 'fetch')
-        // @ts-ignore
         .resolves({
           ok: true,
           status: 200,
@@ -1391,7 +1383,6 @@ describe('Test App Store', () => {
     beforeEach(() => {
       instance = appStore;
       instance.status = { webPath: '/some.json' };
-      // @ts-ignore
       instance.siteStore = {
         views: [
           { path: '**.json', viewer: '/test/fixtures/views/json/json.html' },
@@ -1526,7 +1517,6 @@ describe('Test App Store', () => {
 
       // Trigger the event listener manually
       const eventListenerCallback = addEventListenerStub.getCalls().find((call) => call.calledWith('message')).args[1];
-      // @ts-ignore
       eventListenerCallback(messageEvent);
 
       await waitUntil(() => pre.style.display === 'block');
@@ -1556,7 +1546,6 @@ describe('Test App Store', () => {
 
       // Trigger the event listener manually
       const eventListenerCallback = addEventListenerStub.getCalls().find((call) => call.calledWith('message')).args[1];
-      // @ts-ignore
       eventListenerCallback(messageEvent);
 
       expect(loginStub.calledOnce).to.be.true;
@@ -1565,7 +1554,6 @@ describe('Test App Store', () => {
 
   describe('showModal', async () => {
     it('displays a modal', async () => {
-      // @ts-ignore
       appStore.sidekick = document.createElement('div');
       appStore.sidekick.attachShadow({ mode: 'open' });
       appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
@@ -1591,7 +1579,6 @@ describe('Test App Store', () => {
     });
 
     it('removes old modal before showing new one', async () => {
-      // @ts-ignore
       appStore.sidekick = document.createElement('div');
       appStore.sidekick.attachShadow({ mode: 'open' });
       appStore.sidekick.shadowRoot.appendChild(document.createElement('theme-wrapper'));
@@ -1809,7 +1796,6 @@ describe('Test App Store', () => {
       window.hlx = {};
       window.hlx.sidekickConfig = {};
 
-      // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       toastSpy = sandbox.spy(appStore, 'showToast');
       getProfileStub = sandbox.stub(appStore, 'getProfile').resolves(false);
@@ -1909,7 +1895,6 @@ describe('Test App Store', () => {
       clock = sandbox.useFakeTimers();
       window.hlx = {};
       window.hlx.sidekickConfig = {};
-      // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       toastSpy = sandbox.spy(appStore, 'showToast');
       reloadPageStub = sandbox.stub(appStore, 'reloadPage');
@@ -1984,7 +1969,6 @@ describe('Test App Store', () => {
       now = Date.now();
       clock = sinon.useFakeTimers(now);
       instance.login = sinon.spy();
-      // @ts-ignore
       instance.sidekick = { addEventListener: sinon.stub() };
     });
 
@@ -2083,7 +2067,6 @@ describe('Test App Store', () => {
 
     beforeEach(() => {
       instance = new AppStore();
-      // @ts-ignore
       instance.siteStore = {
         owner: 'adobe',
         repo: 'aem-boilerplate',

@@ -12,7 +12,6 @@
 
 /* eslint-disable no-unused-expressions */
 
-// @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import { aTimeout, waitUntil } from '@open-wc/testing';
 import sinon from 'sinon';

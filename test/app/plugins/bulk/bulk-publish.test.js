@@ -32,7 +32,6 @@ import { SidekickTest } from '../../../sidekick-test.js';
  * @typedef {import('../../../../src/extension/app/store/bulk.js').BulkStore} BulkStore
  */
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Bulk preview plugin', () => {

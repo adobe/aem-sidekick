@@ -245,7 +245,6 @@ const load = async () => {
     });
   });
 
-  // @ts-ignore
   editor.addEventListener('input', debounce(() => {
     sendMessage({ fct: 'setMain', params: { html: htmlEditionToSource() } });
   }, 500));

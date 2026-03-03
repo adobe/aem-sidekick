@@ -29,7 +29,6 @@ import { SidekickTest } from '../../../sidekick-test.js';
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 async function expectDeletePlugin(sidekick, expected = true) {
@@ -112,7 +111,6 @@ describe('Delete plugin', async () => {
 
     it('no delete plugin if user not authorized', async () => {
       const { sandbox } = sidekickTest;
-      // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
       sidekickTest.mockFetchStatusSuccess(false, null, null, statusUrl);
       sidekick = sidekickTest.createSidekick();
@@ -122,7 +120,6 @@ describe('Delete plugin', async () => {
 
     it('asks for user confirmation and reloads page after toast timeout', async () => {
       const { sandbox } = sidekickTest;
-      // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
       sidekickTest
         .mockFetchStatusSuccess(false, {
@@ -161,7 +158,6 @@ describe('Delete plugin', async () => {
 
     it('asks for user confirmation and skips reloading page if toast closed', async () => {
       const { sandbox } = sidekickTest;
-      // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
       sidekickTest
         .mockFetchStatusSuccess(false, {

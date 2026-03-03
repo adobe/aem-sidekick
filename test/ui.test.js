@@ -15,7 +15,6 @@ import { aTimeout, expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
-// @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import chromeMock from './mocks/chrome.js';
 import { addProject, getProject, updateProject } from '../src/extension/project.js';
@@ -23,7 +22,6 @@ import { setDisplay } from '../src/extension/display.js';
 import { internalActions } from '../src/extension/actions.js';
 import { error } from './test-utils.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 const sandbox = sinon.createSandbox();
@@ -149,7 +147,6 @@ describe('Test UI: updateContextMenu', () => {
   it('updateContextMenu: chrome.contextMenus API missing', async () => {
     const originalContextMenus = chrome.contextMenus;
     delete chrome.contextMenus;
-    // @ts-ignore
     await updateContextMenu({});
     expect(removeAllSpy.callCount).to.equal(0);
     chrome.contextMenus = originalContextMenus;
@@ -199,7 +196,6 @@ describe('Test UI: updateContextMenu', () => {
     sandbox.stub(chrome.runtime, 'sendMessage')
       .callsFake(async (_, __, callback) => {
         if (callback) {
-          // @ts-ignore
           callback(true);
         }
       });

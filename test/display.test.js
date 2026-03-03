@@ -22,7 +22,6 @@ import {
   toggleDisplay,
 } from '../src/extension/display.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Test display', () => {

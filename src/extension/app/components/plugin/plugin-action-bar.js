@@ -361,7 +361,6 @@ export class PluginActionBar extends ConnectedElement {
 
   // istanbul ignore next 7
   async onPluginMenuSelect() {
-    // @ts-ignore
     const pluginMenu = await this.pluginMenu;
     if (pluginMenu) {
       pluginMenu.value = '';

@@ -25,7 +25,6 @@ import { EditorMockEnvironments, HelixMockContentSources, HelixMockContentType }
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Preview plugin', () => {
@@ -100,7 +99,6 @@ describe('Preview plugin', () => {
 
     it('previewing from sharepoint editor - sheet', async () => {
       const { sandbox } = sidekickTest;
-      // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
 
       sidekickTest

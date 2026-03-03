@@ -26,7 +26,6 @@ import { SidekickTest } from '../../../sidekick-test.js';
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Login', () => {
@@ -65,7 +64,6 @@ describe('Login', () => {
 
   describe('Login/Logout', () => {
     async function login() {
-      // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
@@ -216,7 +214,6 @@ describe('Login', () => {
       await waitUntil(() => appStore.state === STATE.READY);
 
       expect(sendMessageStub.calledWith({
-        // @ts-ignore
         action: 'getProfilePicture',
         owner: appStore.siteStore.owner,
       })).to.be.true;
@@ -231,7 +228,6 @@ describe('Login', () => {
         .mockFetchStatusUnauthorized()
         .mockFetchSidekickConfigUnauthorized();
 
-      // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       sidekick = sidekickTest.createSidekick();
@@ -264,7 +260,6 @@ describe('Login', () => {
         .mockFetchSidekickConfigForbidden()
         .mockFetchProfileUnauthorized();
 
-      // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       sidekick = sidekickTest.createSidekick();
@@ -304,7 +299,6 @@ describe('Login', () => {
 
       await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
 
-      // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
@@ -374,7 +368,6 @@ describe('Login', () => {
 
       await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
 
-      // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));

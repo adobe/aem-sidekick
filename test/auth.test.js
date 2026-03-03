@@ -25,7 +25,6 @@ import {
 import chromeMock from './mocks/chrome.js';
 import { error } from './test-utils.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Test auth', () => {
@@ -41,7 +40,6 @@ describe('Test auth', () => {
 
   it('configureAuthAndCorsHeaders', async () => {
     const getSessionRules = sandbox.stub(chrome.declarativeNetRequest, 'getSessionRules')
-      // @ts-ignore
       .resolves([{ id: 1 }]);
     const updateSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'updateSessionRules');
     await configureAuthAndCorsHeaders();
@@ -80,7 +78,6 @@ describe('Test auth', () => {
     // testing else paths
     getConfig.resetHistory();
     setConfig.resetHistory();
-    // @ts-ignore
     await setAuthToken();
     expect(getConfig.notCalled).to.be.true;
     expect(setConfig.notCalled).to.be.true;

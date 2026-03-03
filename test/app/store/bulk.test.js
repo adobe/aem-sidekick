@@ -12,7 +12,6 @@
 
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, max-len */
 
-// @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { AppStore } from '../../../src/extension/app/store/app.js';
@@ -33,7 +32,6 @@ import {
   mockSharePointFile,
 } from '../../fixtures/content-sources.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 function getAdminLocation(adminEnv) {

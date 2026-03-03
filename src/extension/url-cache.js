@@ -197,7 +197,6 @@ class UrlCache {
    */
   async set(tab, config = {}) {
     const { url } = tab;
-    // @ts-ignore
     const { owner, repo } = config;
     const createCacheEntry = (cacheUrl, results, expiry = 0) => {
       const entry = { url: cacheUrl, results };
@@ -252,7 +251,6 @@ class UrlCache {
             });
         }
         const resp = await callAdmin(
-          // @ts-ignore
           { apiUpgrade: true }, 'discover', '', { searchParams },
         );
         if (resp.ok) {

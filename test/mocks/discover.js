@@ -10,7 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-// @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import {
   DISCOVER_JSON,
@@ -42,7 +41,6 @@ export function mockDiscoveryCall({
     if (failDiscovery) {
       return new Response('', { status: 404 });
     }
-    // @ts-ignore
     const path = new URL(url).pathname;
     if (path.startsWith('/discover')) {
       if (emptyDiscovery) {
@@ -59,7 +57,6 @@ export function mockDiscoveryCall({
     if (failEditInfo) {
       return new Response('', { status: 404 });
     }
-    // @ts-ignore
     const path = new URL(url).pathname;
     if (path.startsWith('/_api/v2.0/shares/')) {
       if (failEditInfo) {

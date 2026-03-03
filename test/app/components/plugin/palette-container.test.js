@@ -11,7 +11,6 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
 import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
@@ -27,7 +26,6 @@ import { EVENTS } from '../../../../src/extension/app/constants.js';
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Palette container', () => {

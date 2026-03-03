@@ -21,7 +21,6 @@ import { error, mockTab } from './test-utils.js';
 import { log } from '../src/extension/log.js';
 import { urlCache } from '../src/extension/url-cache.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 const TABS = {
@@ -56,7 +55,6 @@ describe('Test check-tab', () => {
   function fakeListenerCallback({ msg, api = chrome.runtime.onMessage, tab = TABS[1] }) {
     const stub = sandbox.stub(api, 'addListener')
       .callsFake((callback) => {
-        // @ts-ignore - Chrome types are not fully accurate
         callback(msg, { tab }, () => {});
         return true;
       });
@@ -97,7 +95,6 @@ describe('Test check-tab', () => {
   });
 
   it('checkTab: no tab', async () => {
-    // @ts-ignore
     await checkTab();
     expect(executeScriptSpy.callCount).to.equal(0);
   });
@@ -250,7 +247,6 @@ describe('Test check-tab', () => {
   });
 
   it('getCurrentTab', async () => {
-    // @ts-ignore
     sandbox.stub(chrome.tabs, 'query').withArgs({ active: true, currentWindow: true }).resolves([TABS[1]]);
     const tab = await getCurrentTab();
     expect(tab).to.equal(TABS[1]);

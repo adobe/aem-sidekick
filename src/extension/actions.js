@@ -458,7 +458,6 @@ export async function checkViewDocSource(id) {
     const u = new URL(tab.url);
     const vds = u.searchParams.get('view-doc-source');
     if (vds && vds === 'true') {
-      // @ts-ignore
       await openViewDocSource({ id });
     }
   } catch (e) {

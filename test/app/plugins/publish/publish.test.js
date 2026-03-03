@@ -11,7 +11,6 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, no-underscore-dangle */
 
-// @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
@@ -29,7 +28,6 @@ import { SidekickTest } from '../../../sidekick-test.js';
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Publish plugin', () => {

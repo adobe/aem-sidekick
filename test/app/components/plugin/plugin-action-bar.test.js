@@ -48,7 +48,6 @@ async function resizeWindow(options) {
   window.dispatchEvent(new Event('resize'));
 }
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Plugin action bar', () => {
@@ -1006,7 +1005,6 @@ describe('Plugin action bar', () => {
       await aTimeout(200);
       await waitUntil(() => !sidekickMenuButton.hasAttribute('open'), 'sidekick menu did not close', { timeout: 3000 });
       expect(sendMessageStub.calledWith({
-        // @ts-ignore
         action: 'manageProjects',
       })).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {

@@ -11,7 +11,6 @@
  */
 /* eslint-disable no-unused-expressions */
 
-// @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import { expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
@@ -34,7 +33,6 @@ import {
 } from './fixtures/payloads.js';
 import { urlCache } from '../src/extension/url-cache.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 const CONFIGS = [{
@@ -632,7 +630,6 @@ describe('Test actions', () => {
     expect(set.calledWith(
       { projects: [] },
     )).to.be.true;
-    // @ts-ignore
     expect(remove.calledWith('foo/bar')).to.be.true;
     expect(i18nSpy.calledWith('config_project_removed', 'foo/bar')).to.be.true;
 
@@ -740,15 +737,12 @@ describe('Test actions', () => {
         .callsFake(async (_, { action }, callback) => {
           switch (action) {
             case 'ping':
-              // @ts-ignore
               callback(true);
               break;
             case 'getProjects':
-              // @ts-ignore
               callback(projects);
               break;
             default:
-              // @ts-ignore
               callback();
           }
         });
@@ -833,7 +827,6 @@ describe('Test actions', () => {
     const logSpy = sandbox.spy(log, 'warn');
     let counter = 0;
     sandbox.stub(chrome.tabs, 'get')
-      // @ts-ignore
       .callsFake(async () => {
         counter += 1;
         switch (counter) {

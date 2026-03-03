@@ -34,7 +34,6 @@ import { EVENTS } from '../../../../src/extension/app/constants.js';
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Environment Switcher', () => {

@@ -16,7 +16,6 @@ import sinon from 'sinon';
 import { wordHelper } from '../src/extension/sharepoint.js';
 import chromeMock from './mocks/chrome.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 const sandbox = sinon.createSandbox();
@@ -38,7 +37,6 @@ describe('sharepoint helper', () => {
 
   beforeEach(() => {
     mockWindow = {
-      // @ts-ignore
       location: {
         hostname: 'https://word-edit.officeapps.live.com',
       },
@@ -68,7 +66,6 @@ describe('sharepoint helper', () => {
       action: 'saveDocument',
       url: mockUrl,
     };
-    // @ts-ignore
     await listenerAdded(message, mockSender, sendResponse);
 
     expect(dispatchEventStub.calledWithMatch({ key: 's' })).to.be.true;
@@ -101,7 +98,6 @@ describe('sharepoint helper', () => {
     const message = {
       action: 'somethingElse',
     };
-    // @ts-ignore
     await listenerAdded(message, mockSender, sendResponse);
 
     expect(sendResponse.calledWith(false)).to.be.true;

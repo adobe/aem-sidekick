@@ -11,7 +11,6 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import sinon from 'sinon';
 import { expect, waitUntil } from '@open-wc/testing';
@@ -22,7 +21,6 @@ import '../src/extension/index.js';
 import { recursiveQuery, recursiveQueryAll } from './test-utils.js';
 import enMessages from '../src/extension/_locales/en/messages.json' with { type: 'json' };
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 describe('AEM Config Picker', () => {

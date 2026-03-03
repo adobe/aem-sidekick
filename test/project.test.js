@@ -38,7 +38,6 @@ import { urlCache } from '../src/extension/url-cache.js';
 import { error, mockTab } from './test-utils.js';
 import { mockDiscoveryCall } from './mocks/discover.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 const CONFIGS = [
@@ -199,7 +198,6 @@ describe('Test project', () => {
     });
     expect(empty).to.eql({});
     // error handling
-    // @ts-ignore
     const failure = await getProjectEnv({});
     expect(failure).to.eql({});
   });
@@ -502,7 +500,6 @@ describe('Test project', () => {
       {
         org: 'foo',
         site: 'bar',
-        // @ts-ignore
         originalSite: true,
       },
     ]);
@@ -522,7 +519,6 @@ describe('Test project', () => {
     const shareinvalidgiturl = await getProjectFromUrl(mockTab('https://www.aem.live/tools/sidekick/?giturl=https://www.example.com'));
     expect(shareinvalidgiturl).to.eql({});
 
-    // @ts-ignore
     const none = await getProjectFromUrl();
     expect(none).to.eql({});
   });
@@ -590,7 +586,6 @@ describe('Test project', () => {
 
     it('resolveProxyUrl: dev url with meta tag but no proxyUrl', async () => {
       const tabUrl = 'http://localhost:3000/foo';
-      // @ts-ignore
       chrome.runtime.sendMessage.restore();
       sandbox.stub(chrome.runtime, 'sendMessage')
         .callsFake(async () => {
@@ -611,7 +606,6 @@ describe('Test project', () => {
       const stub = sandbox.stub(chrome.runtime, 'sendMessage');
       stub.callsFake(async (msgId, { action }, callback) => {
         if (lastError) {
-          // @ts-ignore
           chrome.runtime.lastError = lastError;
         }
         switch (action) {

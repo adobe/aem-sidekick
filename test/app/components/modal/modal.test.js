@@ -12,7 +12,6 @@
 
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, max-len */
 
-// @ts-ignore
 import {
   expect, waitUntil, aTimeout,
 } from '@open-wc/testing';
@@ -25,7 +24,6 @@ import { HelixMockEnvironments } from '../../../mocks/environment.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
 
-// @ts-ignore
 window.chrome = chromeMock;
 
 /**
