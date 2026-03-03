@@ -12,7 +12,6 @@
 
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, max-len */
 
-// @ts-ignore
 import { expect, waitUntil } from '@open-wc/testing';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { SidekickTest } from '../../../sidekick-test.js';

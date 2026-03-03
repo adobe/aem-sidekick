@@ -502,7 +502,6 @@ describe('Test project', () => {
       {
         org: 'foo',
         site: 'bar',
-        // @ts-ignore
         originalSite: true,
       },
     ]);
@@ -522,7 +521,6 @@ describe('Test project', () => {
     const shareinvalidgiturl = await getProjectFromUrl(mockTab('https://www.aem.live/tools/sidekick/?giturl=https://www.example.com'));
     expect(shareinvalidgiturl).to.eql({});
 
-    // @ts-ignore
     const none = await getProjectFromUrl();
     expect(none).to.eql({});
   });
