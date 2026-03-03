@@ -42,6 +42,7 @@ export async function addCacheBusterRule(domain) {
   const escapedDomain = domain.trim().replaceAll(/\./g, '\\.');
 
   const ruleId = Math.floor(Math.random() * 1000000);
+  /** @type {chrome.declarativeNetRequest.Rule[]} */
   const addRules = [{
     id: ruleId,
     priority: 1,
@@ -74,7 +75,6 @@ export async function addCacheBusterRule(domain) {
     },
   }];
 
-  // @ts-ignore
   await chrome.declarativeNetRequest.updateSessionRules({ addRules });
 
   // remove rule after 10 seconds
