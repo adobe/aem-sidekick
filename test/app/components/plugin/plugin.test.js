@@ -11,11 +11,8 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
 import { expect } from '@open-wc/testing';
-// @ts-ignore
 import { render } from 'lit';
-// @ts-ignore
 import chromeMock from '../../../mocks/chrome.js';
 import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';

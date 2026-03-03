@@ -12,7 +12,6 @@
 
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, max-len */
 
-// @ts-ignore
 import {
   expect,
   waitUntil,

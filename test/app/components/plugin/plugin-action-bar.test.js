@@ -11,12 +11,9 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
-// @ts-ignore
 import { setViewport, sendKeys } from '@web/test-runner-commands';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
-// @ts-ignore
 import chromeMock from '../../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import '../../../../src/extension/index.js';
