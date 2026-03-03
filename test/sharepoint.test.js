@@ -38,6 +38,7 @@ describe('sharepoint helper', () => {
 
   beforeEach(() => {
     mockWindow = {
+      // @ts-ignore
       location: {
         hostname: 'https://word-edit.officeapps.live.com',
       },

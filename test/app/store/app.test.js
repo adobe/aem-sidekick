@@ -1809,6 +1809,7 @@ describe('Test App Store', () => {
       window.hlx = {};
       window.hlx.sidekickConfig = {};
 
+      // @ts-ignore
       sandbox.stub(appStore, 'openPage').returns({ closed: true });
       toastSpy = sandbox.spy(appStore, 'showToast');
       getProfileStub = sandbox.stub(appStore, 'getProfile').resolves(false);

@@ -100,6 +100,7 @@ describe('Preview plugin', () => {
 
     it('previewing from sharepoint editor - sheet', async () => {
       const { sandbox } = sidekickTest;
+      // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
 
       sidekickTest

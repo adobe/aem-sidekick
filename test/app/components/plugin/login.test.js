@@ -11,8 +11,10 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
+// @ts-ignore
 import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
+// @ts-ignore
 import chromeMock from '../../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import '../../../../src/extension/index.js';
@@ -65,6 +67,7 @@ describe('Login', () => {
 
   describe('Login/Logout', () => {
     async function login() {
+      // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
@@ -215,6 +218,7 @@ describe('Login', () => {
       await waitUntil(() => appStore.state === STATE.READY);
 
       expect(sendMessageStub.calledWith({
+        // @ts-ignore
         action: 'getProfilePicture',
         owner: appStore.siteStore.owner,
       })).to.be.true;
@@ -229,6 +233,7 @@ describe('Login', () => {
         .mockFetchStatusUnauthorized()
         .mockFetchSidekickConfigUnauthorized();
 
+      // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       sidekick = sidekickTest.createSidekick();
@@ -261,6 +266,7 @@ describe('Login', () => {
         .mockFetchSidekickConfigForbidden()
         .mockFetchProfileUnauthorized();
 
+      // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       sidekick = sidekickTest.createSidekick();
@@ -300,6 +306,7 @@ describe('Login', () => {
 
       await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
 
+      // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));
@@ -369,6 +376,7 @@ describe('Login', () => {
 
       await waitUntil(() => appStore.state === STATE.LOGIN_REQUIRED);
 
+      // @ts-ignore
       const openStub = sidekickTest.sandbox.stub(appStore, 'openPage').returns({ closed: true });
 
       await waitUntil(() => recursiveQuery(sidekick, 'login-button'));

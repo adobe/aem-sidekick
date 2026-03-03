@@ -11,8 +11,10 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
+// @ts-ignore
 import { aTimeout, expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
+// @ts-ignore
 import chromeMock from '../../../mocks/chrome.js';
 import { defaultSidekickConfig } from '../../../fixtures/sidekick-config.js';
 import '../../../../src/extension/index.js';
@@ -112,6 +114,7 @@ describe('Delete plugin', async () => {
 
     it('no delete plugin if user not authorized', async () => {
       const { sandbox } = sidekickTest;
+      // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
       sidekickTest.mockFetchStatusSuccess(false, null, null, statusUrl);
       sidekick = sidekickTest.createSidekick();
@@ -121,6 +124,7 @@ describe('Delete plugin', async () => {
 
     it('asks for user confirmation and reloads page after toast timeout', async () => {
       const { sandbox } = sidekickTest;
+      // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
       sidekickTest
         .mockFetchStatusSuccess(false, {
@@ -159,6 +163,7 @@ describe('Delete plugin', async () => {
 
     it('asks for user confirmation and skips reloading page if toast closed', async () => {
       const { sandbox } = sidekickTest;
+      // @ts-ignore
       sandbox.stub(appStore, 'showView').returns();
       sidekickTest
         .mockFetchStatusSuccess(false, {

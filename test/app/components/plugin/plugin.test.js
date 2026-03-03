@@ -11,8 +11,11 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
+// @ts-ignore
 import { expect } from '@open-wc/testing';
+// @ts-ignore
 import { render } from 'lit';
+// @ts-ignore
 import chromeMock from '../../../mocks/chrome.js';
 import { Plugin } from '../../../../src/extension/app/components/plugin/plugin.js';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
@@ -116,6 +119,7 @@ describe('Plugin', () => {
 
   it('renders plugin as button', async () => {
     const plugin = new Plugin(TEST_CONFIG, appStore);
+    // @ts-ignore
     const renderedPlugin = plugin.render().strings.join('');
     expect(renderedPlugin).to.contain('sp-action-button');
   });
@@ -124,6 +128,7 @@ describe('Plugin', () => {
     const plugin = new Plugin(TEST_BADGE_CONFIG, appStore);
     const badge = plugin.isBadge();
     expect(badge).to.be.true;
+    // @ts-ignore
     const renderedPlugin = plugin.render().strings.join('');
     expect(renderedPlugin).to.contain('sp-badge');
   });
@@ -194,12 +199,14 @@ describe('Plugin', () => {
     expect(overlayTrigger).to.exist;
 
     // simulate click on plugin
+    // @ts-ignore
     overlayTrigger.firstElementChild.click();
 
     const iframe = container.querySelector('iframe');
     expect(iframe.getAttribute('src')).to.equal(TEST_POPOVER_CONFIG.url);
 
     // test else path
+    // @ts-ignore
     overlayTrigger.firstElementChild.click();
   });
 
@@ -241,6 +248,7 @@ describe('Plugin', () => {
     const iframe = container.querySelector('iframe');
     expect(iframe).to.exist;
 
+    // @ts-ignore
     menuItem.click();
 
     expect(iframe.getAttribute('src')).to.equal(TEST_POPOVER_CONFIG.url);
@@ -553,6 +561,7 @@ describe('Plugin', () => {
         return true;
       },
     };
+    // @ts-ignore
     plugin.popoverElement = mockPopover;
 
     // Call closePopover
@@ -576,6 +585,7 @@ describe('Plugin', () => {
         return true;
       },
     };
+    // @ts-ignore
     plugin.popoverElement = mockPopover;
 
     // Call closePopover

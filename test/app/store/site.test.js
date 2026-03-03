@@ -47,6 +47,7 @@ describe('Test Site Store', () => {
   /**
    * @type {SidekickOptionsConfig}
    */
+  // @ts-ignore
   const defaultConfig = {
     owner: 'adobe',
     ref: 'main',
@@ -80,6 +81,7 @@ describe('Test Site Store', () => {
       .mockFetchStatusSuccess()
       .mockFetchSidekickConfigEmpty(); // we expect an empty config by default
 
+    // @ts-ignore
     sidekickElement = document.createElement('helix-sidekick');
     document.body.appendChild(sidekickElement);
     sandbox = sidekickTest.sandbox;
@@ -142,6 +144,7 @@ describe('Test Site Store', () => {
         ],
       };
 
+      // @ts-ignore
       await appStore.loadContext(sidekickElement, config);
       expect(appStore.siteStore.views.length).to.equal(2);
       expect(appStore.siteStore.views[0].path).to.equal('**.ext');
@@ -149,6 +152,7 @@ describe('Test Site Store', () => {
 
       expect(appStore.siteStore.views[1].path).to.equal('**.json');
       expect(appStore.siteStore.views[1].viewer).to.equal('/test/fixtures/views/json/json.html');
+      // @ts-ignore
       expect(appStore.siteStore.views[1].title()).to.equal('Data rendition');
     });
 
@@ -156,6 +160,7 @@ describe('Test Site Store', () => {
       sidekickTest
         .mockFetchSidekickConfigSuccess(true, true);
 
+      // @ts-ignore
       await appStore.loadContext(sidekickElement, defaultConfig);
       expect(appStore.siteStore.project).to.equal('AEM Boilerplate');
       expect(appStore.siteStore.innerHost).to.equal('custom-preview-host.com');
@@ -286,6 +291,7 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.toJSON().wordSaveDelay).to.equal(3000);
 
       // reject non-integer value
+      // @ts-ignore
       config.wordSaveDelay = '3000';
       await appStore.loadContext(sidekickElement, config);
       expect(appStore.siteStore.wordSaveDelay).to.equal(1500); // default
@@ -367,6 +373,7 @@ describe('Test Site Store', () => {
       appStore.siteStore.status = 200;
       await appStore.loadContext(sidekickElement, {
         ...config,
+        // @ts-ignore
         transient: true,
       });
 

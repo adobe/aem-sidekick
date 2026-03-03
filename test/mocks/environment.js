@@ -158,8 +158,10 @@ export function stubEnvironment(environment, appStore) {
   environments.forEach((env) => {
     const method = `is${env.charAt(0).toUpperCase() + env.slice(1)}`;
     if (env === environment) {
+      // @ts-ignore
       stubs.push(sinon.stub(appStore, method).returns(true));
     } else {
+      // @ts-ignore
       stubs.push(sinon.stub(appStore, method).returns(false));
     }
   });

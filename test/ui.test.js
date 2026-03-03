@@ -198,6 +198,7 @@ describe('Test UI: updateContextMenu', () => {
     sandbox.stub(chrome.runtime, 'sendMessage')
       .callsFake(async (_, __, callback) => {
         if (callback) {
+          // @ts-ignore
           callback(true);
         }
       });

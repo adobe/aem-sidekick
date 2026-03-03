@@ -199,6 +199,7 @@ describe('Test project', () => {
     });
     expect(empty).to.eql({});
     // error handling
+    // @ts-ignore
     const failure = await getProjectEnv({});
     expect(failure).to.eql({});
   });
@@ -587,6 +588,7 @@ describe('Test project', () => {
 
     it('resolveProxyUrl: dev url with meta tag but no proxyUrl', async () => {
       const tabUrl = 'http://localhost:3000/foo';
+      // @ts-ignore
       chrome.runtime.sendMessage.restore();
       sandbox.stub(chrome.runtime, 'sendMessage')
         .callsFake(async () => {
@@ -607,6 +609,7 @@ describe('Test project', () => {
       const stub = sandbox.stub(chrome.runtime, 'sendMessage');
       stub.callsFake(async (msgId, { action }, callback) => {
         if (lastError) {
+          // @ts-ignore
           chrome.runtime.lastError = lastError;
         }
         switch (action) {

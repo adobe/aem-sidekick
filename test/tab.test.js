@@ -96,6 +96,7 @@ describe('Test check-tab', () => {
   });
 
   it('checkTab: no tab', async () => {
+    // @ts-ignore
     await checkTab();
     expect(executeScriptSpy.callCount).to.equal(0);
   });
