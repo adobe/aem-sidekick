@@ -95,6 +95,7 @@ describe('AEM Sidekick', () => {
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'r', metaKey: true, bubbles: true }));
     await waitUntil(() => reloadPageStub.calledOnce, 'reloadPage was not called', { timeout: 2000 });
+    // @ts-ignore
     expect(sendMessageStub.calledWith({ action: 'bustCache' })).to.be.true;
   }).timeout(5000);
 
