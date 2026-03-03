@@ -130,9 +130,6 @@ describe('Test Site Store', () => {
     });
 
     it('special views ', async () => {
-      /**
-       * @type {SidekickOptionsConfig | ClientConfig}
-       */
       const config = {
         ...defaultConfig,
         specialViews: [

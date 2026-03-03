@@ -96,7 +96,6 @@ describe('Test url-cache', () => {
         expect(listener).to.be.a('function');
         onMessageListener = listener;
       });
-      // @ts-ignore
       sendMessage = sandbox.stub(window.chrome.runtime, 'sendMessage').callsFake((message) => {
         expect(onMessageListener).to.be.a('function');
         expect(message).to.be.an('object');

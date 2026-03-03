@@ -11,7 +11,6 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-// @ts-ignore
 import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery, recursiveQueryAll } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';

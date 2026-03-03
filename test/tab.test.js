@@ -56,7 +56,6 @@ describe('Test check-tab', () => {
   function fakeListenerCallback({ msg, api = chrome.runtime.onMessage, tab = TABS[1] }) {
     const stub = sandbox.stub(api, 'addListener')
       .callsFake((callback) => {
-        // @ts-ignore - Chrome types are not fully accurate
         callback(msg, { tab }, () => {});
         return true;
       });
@@ -250,7 +249,6 @@ describe('Test check-tab', () => {
   });
 
   it('getCurrentTab', async () => {
-    // @ts-ignore
     sandbox.stub(chrome.tabs, 'query').withArgs({ active: true, currentWindow: true }).resolves([TABS[1]]);
     const tab = await getCurrentTab();
     expect(tab).to.equal(TABS[1]);

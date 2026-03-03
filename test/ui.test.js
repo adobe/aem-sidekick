@@ -149,7 +149,6 @@ describe('Test UI: updateContextMenu', () => {
   it('updateContextMenu: chrome.contextMenus API missing', async () => {
     const originalContextMenus = chrome.contextMenus;
     delete chrome.contextMenus;
-    // @ts-ignore
     await updateContextMenu({});
     expect(removeAllSpy.callCount).to.equal(0);
     chrome.contextMenus = originalContextMenus;

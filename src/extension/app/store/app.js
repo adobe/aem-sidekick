@@ -1198,7 +1198,6 @@ export class AppStore {
 
   /**
    * Shows the view.
-   * @private
    */
   async showView() {
     if (!this.isProject()) {

@@ -354,7 +354,6 @@ describe('Plugin', () => {
       pinned: false,
     }, appStore);
     const renderedPlugin = plugin.render();
-    // @ts-ignore
     expect(renderedPlugin).to.equal('');
   });
 
@@ -367,7 +366,6 @@ describe('Plugin', () => {
     parent.append(child);
 
     const renderedPlugin = parent.render();
-    // @ts-ignore
     expect(renderedPlugin).to.equal('');
   });
 
