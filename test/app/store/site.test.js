@@ -130,9 +130,6 @@ describe('Test Site Store', () => {
     });
 
     it('special views ', async () => {
-      /**
-       * @type {SidekickOptionsConfig | ClientConfig}
-       */
       const config = {
         ...defaultConfig,
         specialViews: [
@@ -160,7 +157,6 @@ describe('Test Site Store', () => {
       sidekickTest
         .mockFetchSidekickConfigSuccess(true, true);
 
-      // @ts-ignore
       await appStore.loadContext(sidekickElement, defaultConfig);
       expect(appStore.siteStore.project).to.equal('AEM Boilerplate');
       expect(appStore.siteStore.innerHost).to.equal('custom-preview-host.com');

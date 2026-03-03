@@ -1838,7 +1838,6 @@ describe('Test App Store', () => {
     }).timeout(20000);
 
     it('handles successful login correctly', async () => {
-      // @ts-ignore
       instance.sidekick = document.createElement('div');
 
       getProfileStub.onCall(0).resolves(false);
@@ -1868,7 +1867,6 @@ describe('Test App Store', () => {
 
     it('reloads page after successful login if 401 page', async () => {
       document.body.innerHTML = '<pre>401 Unauthorized</pre>';
-      // @ts-ignore
       instance.sidekick = document.createElement('div');
       document.body.prepend(instance.sidekick);
 
@@ -1943,7 +1941,6 @@ describe('Test App Store', () => {
 
       await appStore.loadContext(sidekickElement, defaultSidekickConfig);
 
-      // @ts-ignore
       instance.sidekick = document.createElement('div');
       getProfileStub = sandbox.stub(appStore, 'getProfile');
       getProfileStub.onCall(0).resolves({ name: 'foo' });
