@@ -11,6 +11,7 @@
  */
 /* eslint-disable no-unused-expressions, no-import-assign, import/no-extraneous-dependencies */
 
+// @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import { expect } from '@open-wc/testing';
 import { AppStore } from '../../../src/extension/app/store/app.js';
@@ -19,6 +20,7 @@ import { defaultConfigJSONUrl, SidekickTest } from '../../sidekick-test.js';
 import { defaultSidekickConfig } from '../../fixtures/sidekick-config.js';
 import { error } from '../../test-utils.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 /**

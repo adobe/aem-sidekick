@@ -16,6 +16,7 @@ import sinon from 'sinon';
 import { wordHelper } from '../src/extension/sharepoint.js';
 import chromeMock from './mocks/chrome.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 const sandbox = sinon.createSandbox();

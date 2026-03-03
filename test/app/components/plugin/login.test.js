@@ -26,6 +26,7 @@ import { SidekickTest } from '../../../sidekick-test.js';
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Login', () => {

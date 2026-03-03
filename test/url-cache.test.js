@@ -25,6 +25,7 @@ import {
 } from './mocks/discover.js';
 import { error, mockTab } from './test-utils.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Test url-cache', () => {

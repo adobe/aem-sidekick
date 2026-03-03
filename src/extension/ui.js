@@ -53,6 +53,7 @@ let updateInProgress = false;
  * @returns {Object<number, string>} The icon paths
  */
 function getPaths(type) {
+  /** @type {Object<number, string>} */
   const paths = {};
   for (const size of ICON_SIZES) {
     paths[size] = `icons/${type}/icon-${size}x${size}.png`;

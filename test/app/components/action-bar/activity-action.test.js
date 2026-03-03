@@ -12,6 +12,7 @@
 
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, max-len */
 
+// @ts-ignore
 import {
   expect,
   waitUntil,
@@ -30,6 +31,7 @@ import { defaultCodeStatusResponse } from '../../../fixtures/helix-admin.js';
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Activity', () => {

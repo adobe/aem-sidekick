@@ -48,6 +48,7 @@ async function resizeWindow(options) {
   window.dispatchEvent(new Event('resize'));
 }
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Plugin action bar', () => {

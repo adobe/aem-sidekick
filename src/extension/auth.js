@@ -264,6 +264,7 @@ export async function updateUserAgent() {
     },
   }];
 
+  // @ts-ignore
   await chrome.declarativeNetRequest.updateDynamicRules({ addRules });
   log.debug(`updateUserAgent: ${userAgent}`);
 }

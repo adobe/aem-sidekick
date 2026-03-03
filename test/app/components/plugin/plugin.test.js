@@ -19,6 +19,7 @@ import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { EventBus } from '../../../../src/extension/app/utils/event-bus.js';
 import { EVENTS } from '../../../../src/extension/app/constants.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 const TEST_CONFIG = {

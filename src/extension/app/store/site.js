@@ -347,6 +347,7 @@ export class SiteStore {
       ref: this.ref,
       giturl: this.giturl,
       devUrl: this.devUrl.href,
+      // @ts-ignore
       mountpoint: this.mountpoint,
       mountpoints: this.mountpoints,
       project: this.project,

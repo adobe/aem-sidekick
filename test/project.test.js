@@ -38,6 +38,7 @@ import { urlCache } from '../src/extension/url-cache.js';
 import { error, mockTab } from './test-utils.js';
 import { mockDiscoveryCall } from './mocks/discover.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 const CONFIGS = [

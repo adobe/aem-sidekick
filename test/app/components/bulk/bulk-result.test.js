@@ -12,6 +12,7 @@
 
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, max-len */
 
+// @ts-ignore
 import { expect, waitUntil } from '@open-wc/testing';
 import { AppStore } from '../../../../src/extension/app/store/app.js';
 import { SidekickTest } from '../../../sidekick-test.js';
@@ -21,6 +22,7 @@ import { MODALS } from '../../../../src/extension/app/constants.js';
 import { recursiveQuery } from '../../../test-utils.js';
 import { BulkResult } from '../../../../src/extension/app/components/bulk/bulk-result/bulk-result.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Test Bulk Result', () => {

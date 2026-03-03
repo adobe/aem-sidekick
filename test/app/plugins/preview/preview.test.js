@@ -25,6 +25,7 @@ import { EditorMockEnvironments, HelixMockContentSources, HelixMockContentType }
  * @typedef {import('../../../../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
  */
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 describe('Preview plugin', () => {

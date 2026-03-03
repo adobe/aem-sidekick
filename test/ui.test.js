@@ -15,6 +15,7 @@ import { aTimeout, expect } from '@open-wc/testing';
 import { setUserAgent } from '@web/test-runner-commands';
 import sinon from 'sinon';
 
+// @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import chromeMock from './mocks/chrome.js';
 import { addProject, getProject, updateProject } from '../src/extension/project.js';
@@ -22,6 +23,7 @@ import { setDisplay } from '../src/extension/display.js';
 import { internalActions } from '../src/extension/actions.js';
 import { error } from './test-utils.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 const sandbox = sinon.createSandbox();

@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+// @ts-ignore
 import fetchMock from 'fetch-mock/esm/client.js';
 import {
   DISCOVER_JSON,

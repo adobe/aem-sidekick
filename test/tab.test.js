@@ -21,6 +21,7 @@ import { error, mockTab } from './test-utils.js';
 import { log } from '../src/extension/log.js';
 import { urlCache } from '../src/extension/url-cache.js';
 
+// @ts-ignore
 window.chrome = chromeMock;
 
 const TABS = {

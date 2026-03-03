@@ -57,6 +57,7 @@ export default function sampleRUM(checkpoint, data = {}) {
         // eslint-disable-next-line no-unused-expressions
         navigator.sendBeacon(url, body);
       };
+      // @ts-ignore
       sendPing(data);
     }
   } catch (error) {
