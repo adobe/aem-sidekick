@@ -38,7 +38,6 @@ export async function addCacheBusterRule(domain) {
     log.warn('addCacheBusterRule: no domain');
     return false;
   }
-  // @ts-ignore
   const escapedDomain = domain.trim().replaceAll(/\./g, '\\.');
 
   const ruleId = Math.floor(Math.random() * 1000000);
