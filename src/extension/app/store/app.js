@@ -1032,26 +1032,35 @@ export class AppStore {
     }
 
     if (res) {
+      let targetEnv = 'preview';
       // special handling of config files
       if (this.status.webPath.startsWith('/.helix/')) {
         this.showToast({
           message: this.i18n('activate_success'),
           variant: 'positive',
         });
+        return;
       } else if (this.status.webPath.startsWith('/.snapshots/')) {
         // special handling of snapshot updates
         this.showToast({
           message: this.i18n('snapshot_update_success'),
           variant: 'positive',
         });
-        this.switchEnv('review', false, true);
+        targetEnv = 'review';
       } else {
         this.showToast({
           message: this.i18n('preview_success'),
           variant: 'positive',
         });
-        this.switchEnv('preview', false, true);
       }
+
+      // bust cache on target host
+      await chrome.runtime.sendMessage({
+        action: 'bustCache',
+        host: this.siteStore[ENVS[targetEnv]],
+      });
+
+      this.switchEnv(targetEnv, false, true);
     }
   }
 
@@ -1073,6 +1082,9 @@ export class AppStore {
 
     // delete preview
     const resp = await this.api.updatePreview(path, true);
+
+    // bust cache on current host
+    await chrome.runtime.sendMessage({ action: 'bustCache' });
 
     // also unpublish if published
     if (resp && status.live && status.live.lastModified) {
@@ -1102,6 +1114,12 @@ export class AppStore {
     // update live
     const resp = await this.api.updateLive(path);
 
+    // bust cache on prod or live host
+    await chrome.runtime.sendMessage({
+      action: 'bustCache',
+      host: this.siteStore.host || this.siteStore.liveHost,
+    });
+
     return !!resp;
   }
 
@@ -1123,6 +1141,13 @@ export class AppStore {
 
     // delete live
     const resp = await this.api.updateLive(path, true);
+
+    // bust cache on prod or live host
+    await chrome.runtime.sendMessage({
+      action: 'bustCache',
+      host: this.siteStore.host || this.siteStore.liveHost,
+    });
+
     return !!resp;
   }
 

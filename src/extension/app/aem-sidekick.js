@@ -14,7 +14,7 @@
 
 import { html, LitElement } from 'lit';
 import { provide } from '@lit/context';
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { reaction } from 'mobx';
 import { style } from './aem-sidekick.css.js';
 import { AppStore, appStoreContext } from './store/app.js';
@@ -33,6 +33,14 @@ export class AEMSidekick extends LitElement {
   @provide({ context: appStoreContext })
   accessor appStore;
 
+  @property({
+    type: Boolean,
+    converter: {
+      fromAttribute: (value) => (value === 'true'),
+    },
+  })
+  accessor open = false;
+
   static get styles() {
     return [style];
   }
@@ -44,8 +52,28 @@ export class AEMSidekick extends LitElement {
     this.loadContext(config);
   }
 
+  #boundHandleKeyDown = (e) => {
+    this.#handleKeyDown(e);
+  };
+
+  async #handleKeyDown(e) {
+    // only handle Cmd/Ctrl+R if sidekick is open
+    if (!this.open || !(e.metaKey || e.ctrlKey) || e.key !== 'r') {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await chrome.runtime.sendMessage({ action: 'bustCache' });
+    } finally {
+      this.appStore.reloadPage();
+    }
+  }
+
   async connectedCallback() {
     super.connectedCallback();
+
+    window.addEventListener('keydown', this.#boundHandleKeyDown, true);
 
     reaction(
       () => this.appStore.theme,
@@ -53,6 +81,11 @@ export class AEMSidekick extends LitElement {
         this.requestUpdate();
       },
     );
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener('keydown', this.#boundHandleKeyDown, true);
+    super.disconnectedCallback?.();
   }
 
   async loadContext(config) {
