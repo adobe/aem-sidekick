@@ -77,29 +77,42 @@ describe('cache-buster', () => {
       const result = await addCacheBusterRule('example.com');
 
       expect(result).to.equal(true);
-      expect(updateSessionRules.calledTwice).to.be.false;
       expect(updateSessionRules.calledOnce).to.be.true;
-      const [firstCall] = updateSessionRules.args;
-      expect(firstCall[0]).to.have.property('addRules');
-      expect(firstCall[0].addRules).to.have.lengthOf(1);
-      const rule = firstCall[0].addRules[0];
-      expect(rule).to.have.property('id');
-      expect(rule.priority).to.equal(1);
-      expect(rule.action.type).to.equal('modifyHeaders');
-      expect(rule.action.requestHeaders).to.deep.include(
-        { operation: 'set', header: 'Cache-Control', value: 'no-cache' },
-      );
-      expect(rule.action.requestHeaders).to.deep.include(
-        { operation: 'set', header: 'Pragma', value: 'no-cache' },
-      );
-      expect(rule.condition.regexFilter).to.equal('^https://example\\.com/.*');
-      expect(rule.condition.requestMethods).to.deep.equal(['get']);
+      const expectedRule = {
+        id: sinon.match.number,
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          requestHeaders: [
+            { operation: 'set', header: 'Cache-Control', value: 'no-cache' },
+            { operation: 'set', header: 'Pragma', value: 'no-cache' },
+            { operation: 'remove', header: 'If-Modified-Since' },
+            { operation: 'remove', header: 'If-Unmodified-Since' },
+            { operation: 'remove', header: 'If-Match' },
+            { operation: 'remove', header: 'If-None-Match' },
+          ],
+        },
+        condition: {
+          regexFilter: '^https://example\\.com/.*',
+          requestMethods: ['get'],
+          resourceTypes: [
+            'main_frame',
+            'sub_frame',
+            'script',
+            'stylesheet',
+            'xmlhttprequest',
+            'font',
+          ],
+        },
+      };
+      const updatePayload = /** @type {object} */ ({ addRules: [expectedRule] });
+      expect(updateSessionRules.firstCall.calledWith(updatePayload)).to.be.true;
 
       clock.tick(10 * 1000);
       expect(updateSessionRules.calledTwice).to.be.true;
-      const removeCall = updateSessionRules.getCall(1).args[0];
-      expect(removeCall).to.have.property('removeRuleIds');
-      expect(removeCall.removeRuleIds).to.deep.equal([rule.id]);
+      expect(updateSessionRules.secondCall.calledWith({
+        removeRuleIds: sinon.match([sinon.match.number]),
+      })).to.be.true;
     });
 
     it('accepts full URL and uses hostname', async () => {

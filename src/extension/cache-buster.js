@@ -58,6 +58,22 @@ export async function addCacheBusterRule(domain) {
           header: 'Pragma',
           value: 'no-cache',
         },
+        {
+          operation: 'remove',
+          header: 'If-Modified-Since',
+        },
+        {
+          operation: 'remove',
+          header: 'If-Unmodified-Since',
+        },
+        {
+          operation: 'remove',
+          header: 'If-Match',
+        },
+        {
+          operation: 'remove',
+          header: 'If-None-Match',
+        },
       ],
     },
     condition: {
