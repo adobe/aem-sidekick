@@ -191,7 +191,7 @@ describe('Modals', () => {
       expect(recursiveQuery(modal, 'sp-dialog-wrapper')).to.be.undefined;
     });
 
-    it('with path', async () => {
+    it('with confirm text', async () => {
       appStore.showModal({
         type: MODALS.DELETE,
         data: {
@@ -240,7 +240,7 @@ describe('Modals', () => {
       const input = recursiveQuery(modal, 'sp-textfield');
       input.value = '/foo';
 
-      // Confirm with the correct path
+      // Confirm with the correct text
       confirmButton.click();
 
       expect(confirmSpy.calledOnce).to.be.true;
@@ -282,7 +282,7 @@ describe('Modals', () => {
       const input = recursiveQuery(modal, 'sp-textfield');
       input.value = '/foo';
 
-      // Confirm with the correct path
+      // Confirm with the correct text
       document.dispatchEvent(event);
 
       expect(confirmSpy.calledOnce).to.be.true;
