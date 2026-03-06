@@ -656,7 +656,8 @@
       "message": "Are you sure you want to $1 this?"
     },
     "destructive_confirmation_prompt": {
-      "message": "Type $1 to confirm"
+      "message": "Type the text below to confirm:",
+      "description": "Instruction in destructive confirmation dialog."
     },
     "destructive_confirmation_invalid": {
       "message": "Sorry, please enter the text exactly as displayed to confirm."

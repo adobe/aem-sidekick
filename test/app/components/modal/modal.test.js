@@ -147,7 +147,8 @@ describe('Modals', () => {
 
       const dialogHeading = recursiveQuery(dialogWrapper, 'h2');
       expect(dialogHeading.textContent.trim()).to.eq('Are you sure you want to delete this?');
-      expect(dialogWrapper.querySelector('.prompt').textContent).to.eq('Type DELETE to confirm');
+      expect(recursiveQuery(modal, '.prompt').textContent).to.eq('Type the text below to confirm:');
+      expect(recursiveQuery(modal, '.confirm-text').textContent).to.eq('DELETE');
     });
 
     it('with action', async () => {
@@ -166,12 +167,34 @@ describe('Modals', () => {
 
       const dialogHeading = recursiveQuery(dialogWrapper, 'h2');
       expect(dialogHeading.textContent.trim()).to.eq('Are you sure you want to unpublish this?');
-      expect(dialogWrapper.querySelector('.prompt').textContent).to.eq('Type UNPUBLISH to confirm');
+      expect(recursiveQuery(modal, '.prompt').textContent).to.eq('Type the text below to confirm:');
+      expect(recursiveQuery(modal, '.confirm-text').textContent).to.eq('UNPUBLISH');
+    });
+
+    it('with path', async () => {
+      appStore.showModal({
+        type: MODALS.DELETE,
+        data: {
+          confirmText: '/test/path',
+        },
+      });
+
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const dialogWrapper = recursiveQuery(modal, 'sp-dialog-wrapper');
+      expect(dialogWrapper.getAttribute('open')).to.equal('');
+
+      expect(recursiveQuery(modal, '.prompt').textContent).to.eq('Type the text below to confirm:');
+      expect(recursiveQuery(modal, '.confirm-text').textContent).to.eq('/test/path');
     });
 
     it('confirmed', async () => {
       appStore.showModal({
         type: MODALS.DELETE,
+        data: {
+          confirmText: '/foo',
+        },
       });
 
       const confirmSpy = sidekickTest.sandbox.spy();
@@ -190,14 +213,14 @@ describe('Modals', () => {
       // To try to confirm without the correct text
       confirmButton.click();
 
-      expect(dialogWrapper.querySelector('.delete-input.invalid')).to.exist;
+      expect(recursiveQuery(modal, '.delete-input.invalid')).to.exist;
       expect(confirmSpy.calledOnce).to.be.false;
       expect(cancelSpy.calledOnce).to.be.false;
 
-      const input = dialogWrapper.querySelector('sp-textfield');
-      input.value = 'DELETE';
+      const input = recursiveQuery(modal, 'sp-textfield');
+      input.value = '/foo';
 
-      // Confirm with the correct text
+      // Confirm with the correct path
       confirmButton.click();
 
       expect(confirmSpy.calledOnce).to.be.true;
@@ -210,6 +233,9 @@ describe('Modals', () => {
     it('confirmed with enter key', async () => {
       appStore.showModal({
         type: MODALS.DELETE,
+        data: {
+          confirmText: '/foo',
+        },
       });
 
       const confirmSpy = sidekickTest.sandbox.spy();
@@ -229,14 +255,14 @@ describe('Modals', () => {
       // To try to confirm without the correct text
       document.dispatchEvent(event);
 
-      expect(dialogWrapper.querySelector('.delete-input.invalid')).to.exist;
+      expect(recursiveQuery(modal, '.delete-input.invalid')).to.exist;
       expect(confirmSpy.calledOnce).to.be.false;
       expect(cancelSpy.calledOnce).to.be.false;
 
-      const input = dialogWrapper.querySelector('sp-textfield');
-      input.value = 'DELETE';
+      const input = recursiveQuery(modal, 'sp-textfield');
+      input.value = '/foo';
 
-      // Confirm with the correct text
+      // Confirm with the correct path
       document.dispatchEvent(event);
 
       expect(confirmSpy.calledOnce).to.be.true;

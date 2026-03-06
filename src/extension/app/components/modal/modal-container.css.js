@@ -27,6 +27,12 @@ export const style = css`
     width: 100%;
   }
 
+  .confirm-text {
+    font-family: ui-monospace, monospace;
+    padding: 12px 0;
+    user-select: none;
+  }
+
   sp-dialog-wrapper .delete-input {
     padding-top: 8px;
   }

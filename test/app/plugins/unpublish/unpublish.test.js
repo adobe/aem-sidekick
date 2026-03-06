@@ -55,11 +55,9 @@ async function clickUnpublishPlugin(sidekick) {
 }
 
 function confirmUnpublish(sidekick) {
-  // enter confirmation text
-  const dialogWrapper = recursiveQuery(sidekick, 'sp-dialog-wrapper');
-  const unpublishInput = recursiveQuery(dialogWrapper, 'sp-textfield');
-  unpublishInput.value = 'UNPUBLISH';
-  // click unpublish button
+  const confirmTextEl = recursiveQuery(sidekick, '.confirm-text');
+  const unpublishInput = recursiveQuery(sidekick, 'sp-textfield');
+  unpublishInput.value = confirmTextEl.textContent.trim();
   const unpublishButton = recursiveQuery(sidekick, 'sp-button[variant="negative"]');
   unpublishButton.click();
 }

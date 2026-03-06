@@ -56,6 +56,13 @@ export class ModalContainer extends LitElement {
   accessor action;
 
   /**
+   * The text the user must type to confirm (e.g. path for delete/unpublish).
+   * @type {string | undefined}
+   */
+  @property({ type: String })
+  accessor confirmText;
+
+  /**
    * The dialog wrapper
    */
   @queryAsync('sp-dialog-wrapper')
@@ -154,7 +161,10 @@ export class ModalContainer extends LitElement {
        * @type {HTMLInputElement}
        */
       const deleteConfirmation = this.shadowRoot.querySelector('#delete-confirmation');
-      if (deleteConfirmation.value !== this.action.toUpperCase()) {
+      const expected = this.confirmText !== undefined && this.confirmText !== ''
+        ? this.confirmText
+        : this.action.toUpperCase();
+      if (deleteConfirmation.value.trim() !== expected) {
         const deleteInput = this.shadowRoot.querySelector('.delete-input');
         deleteInput.classList.add('invalid');
         return;
@@ -247,8 +257,10 @@ export class ModalContainer extends LitElement {
           ${data.message}
         `;
         break;
-      case MODALS.DELETE:
+      case MODALS.DELETE: {
         this.action = data?.action ?? 'delete';
+        const expectedText = data?.confirmText ?? this.action.toUpperCase();
+        this.confirmText = expectedText;
         options.negative = true;
         options.underlay = true;
         options.error = true;
@@ -257,13 +269,15 @@ export class ModalContainer extends LitElement {
         options.cancelLabel = this.appStore.i18n('cancel');
         options.content = html`
           ${data?.message || ''}
-          <div class="prompt">${this.appStore.i18n('destructive_confirmation_prompt').replace('$1', this.action.toUpperCase())}</div>
+          <div class="prompt">${this.appStore.i18n('destructive_confirmation_prompt')}</div>
+          <div class="confirm-text">${expectedText}</div>
           <div class="delete-input">
             <sp-textfield id="delete-confirmation"></sp-textfield>
             <sp-help-text variant="negative">${this.appStore.i18n('destructive_confirmation_invalid')}</sp-help-text>
           </div>
         `;
         break;
+      }
       case MODALS.CONFIRM:
         options.underlay = true;
         options.headline = data?.headline ?? this.appStore.i18n('confirm');
