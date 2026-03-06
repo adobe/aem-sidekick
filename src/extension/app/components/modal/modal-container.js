@@ -115,8 +115,8 @@ export class ModalContainer extends LitElement {
         this.onSecondary();
       });
     }
-    // focus text field if delete modal
-    if (this.modal.type === MODALS.DELETE) {
+    // focus text field if delete modal with confirmation input
+    if (this.modal.type === MODALS.DELETE && this.confirmText) {
       (await this.confirmInput).focus();
     }
   }
@@ -156,15 +156,12 @@ export class ModalContainer extends LitElement {
    * Called when the confirm button is clicked
    */
   onConfirm() {
-    if (this.modal.type === MODALS.DELETE) {
+    if (this.modal.type === MODALS.DELETE && this.confirmText) {
       /**
        * @type {HTMLInputElement}
        */
       const deleteConfirmation = this.shadowRoot.querySelector('#delete-confirmation');
-      const expected = this.confirmText !== undefined && this.confirmText !== ''
-        ? this.confirmText
-        : this.action.toUpperCase();
-      if (deleteConfirmation.value.trim() !== expected) {
+      if (deleteConfirmation && deleteConfirmation.value.trim() !== this.confirmText) {
         const deleteInput = this.shadowRoot.querySelector('.delete-input');
         deleteInput.classList.add('invalid');
         return;
@@ -259,23 +256,24 @@ export class ModalContainer extends LitElement {
         break;
       case MODALS.DELETE: {
         this.action = data?.action ?? 'delete';
-        const expectedText = data?.confirmText ?? this.action.toUpperCase();
-        this.confirmText = expectedText;
+        this.confirmText = data?.confirmText;
         options.negative = true;
         options.underlay = true;
         options.error = true;
         options.headline = data?.headline ?? this.appStore.i18n('destructive_confirmation').replace('$1', this.action);
         options.confirmLabel = data?.confirmLabel ?? this.appStore.i18n('delete');
         options.cancelLabel = this.appStore.i18n('cancel');
-        options.content = html`
-          ${data?.message || ''}
-          <div class="prompt">${this.appStore.i18n('destructive_confirmation_prompt')}</div>
-          <div class="confirm-text">${expectedText}</div>
-          <div class="delete-input">
-            <sp-textfield id="delete-confirmation"></sp-textfield>
-            <sp-help-text variant="negative">${this.appStore.i18n('destructive_confirmation_invalid')}</sp-help-text>
-          </div>
-        `;
+        options.content = this.confirmText
+          ? html`
+              ${data?.message || ''}
+              <div class="prompt">${this.appStore.i18n('destructive_confirmation_prompt')}</div>
+              <div class="confirm-text">${this.confirmText}</div>
+              <div class="delete-input">
+                <sp-textfield id="delete-confirmation"></sp-textfield>
+                <sp-help-text variant="negative">${this.appStore.i18n('destructive_confirmation_invalid')}</sp-help-text>
+              </div>
+            `
+          : html`${data?.message || ''}`;
         break;
       }
       case MODALS.CONFIRM:

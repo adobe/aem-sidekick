@@ -134,7 +134,7 @@ describe('Modals', () => {
       await sidekickTest.awaitEnvSwitcher();
     });
 
-    it('default text', async () => {
+    it('default text (no confirmText)', async () => {
       appStore.showModal({
         type: MODALS.DELETE,
       });
@@ -147,11 +147,11 @@ describe('Modals', () => {
 
       const dialogHeading = recursiveQuery(dialogWrapper, 'h2');
       expect(dialogHeading.textContent.trim()).to.eq('Are you sure you want to delete this?');
-      expect(recursiveQuery(modal, '.prompt').textContent).to.eq('Type the text below to confirm:');
-      expect(recursiveQuery(modal, '.confirm-text').textContent).to.eq('DELETE');
+      expect(recursiveQuery(modal, '.confirm-text')).to.be.undefined;
+      expect(recursiveQuery(modal, 'sp-textfield')).to.be.undefined;
     });
 
-    it('with action', async () => {
+    it('with action (no confirmText)', async () => {
       appStore.showModal({
         type: MODALS.DELETE,
         data: {
@@ -167,8 +167,28 @@ describe('Modals', () => {
 
       const dialogHeading = recursiveQuery(dialogWrapper, 'h2');
       expect(dialogHeading.textContent.trim()).to.eq('Are you sure you want to unpublish this?');
-      expect(recursiveQuery(modal, '.prompt').textContent).to.eq('Type the text below to confirm:');
-      expect(recursiveQuery(modal, '.confirm-text').textContent).to.eq('UNPUBLISH');
+      expect(recursiveQuery(modal, '.confirm-text')).to.be.undefined;
+      expect(recursiveQuery(modal, 'sp-textfield')).to.be.undefined;
+    });
+
+    it('confirm without confirmText fires confirm immediately', async () => {
+      appStore.showModal({
+        type: MODALS.DELETE,
+      });
+
+      const confirmSpy = sidekickTest.sandbox.spy();
+      const modal = recursiveQuery(sidekick, 'modal-container');
+      modal.addEventListener('confirm', confirmSpy);
+
+      await waitUntil(() => recursiveQuery(modal, 'sp-dialog-wrapper'));
+
+      const confirmButton = recursiveQuery(modal, 'sp-button[variant="negative"]');
+      confirmButton.click();
+
+      expect(confirmSpy.calledOnce).to.be.true;
+
+      await aTimeout(100);
+      expect(recursiveQuery(modal, 'sp-dialog-wrapper')).to.be.undefined;
     });
 
     it('with path', async () => {
