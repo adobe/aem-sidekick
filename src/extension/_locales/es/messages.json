@@ -390,7 +390,7 @@
     "message": "Lo sentimos, introduzca el texto exactamente como se muestra para confirmar."
   },
   "destructive_confirmation_prompt": {
-    "message": "Escriba $1 para confirmar"
+    "message": "Escriba el texto de abajo para confirmar:"
   },
   "details": {
     "message": "Detalles"

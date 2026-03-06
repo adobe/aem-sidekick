@@ -186,6 +186,7 @@
  * @prop {Function} [secondaryCallback] The function to call on secondary action
  * @prop {string} [cancelLabel] The cancel button label
  * @prop {string} [action] The action type (delete or unpublish)
+ * @prop {string} [confirmText] Text the user must type to confirm (e.g. path for delete/unpublish)
  */
 
 /**

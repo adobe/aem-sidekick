@@ -391,7 +391,7 @@
     "message": "申し訳ありませんが、確認のため、表示されているとおりにテキストを正確に入力してください。"
   },
   "destructive_confirmation_prompt": {
-    "message": "「$1」と入力して確認"
+    "message": "下のテキストを入力して確認してください："
   },
   "details": {
     "message": "詳細"

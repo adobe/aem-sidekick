@@ -391,7 +391,7 @@
     "message": "Insira o texto exatamente como exibido para confirmar."
   },
   "destructive_confirmation_prompt": {
-    "message": "Digite $1 para confirmar"
+    "message": "Digite o texto abaixo para confirmar:"
   },
   "details": {
     "message": "Detalhes"

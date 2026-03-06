@@ -53,6 +53,7 @@ export function createUnpublishPlugin(appStore) {
             message,
             confirmLabel: appStore.i18n('unpublish'),
             action: 'UNPUBLISH',
+            confirmText: appStore.status.webPath,
           },
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
