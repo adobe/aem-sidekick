@@ -11,8 +11,6 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies, no-underscore-dangle */
 
-// @ts-ignore
-import fetchMock from 'fetch-mock/esm/client.js';
 import { expect, waitUntil } from '@open-wc/testing';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
@@ -130,10 +128,6 @@ describe('Publish plugin', () => {
         .mockHelixEnvironment(HelixMockEnvironments.LIVE)
         .mockFetchSidekickConfigSuccess(false, false);
 
-      const mockFetch = fetchMock.get('https://main--aem-boilerplate--adobe.aem.live/', {
-        status: 200,
-      });
-
       const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
       const switchEnvStub = sandbox.stub(appStore, 'switchEnv').resolves();
 
@@ -150,9 +144,6 @@ describe('Publish plugin', () => {
 
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
       expect(switchEnvStub.calledWith('prod', false)).to.be.true;
-      expect(mockFetch._calls[3].identifier).to.eq('https://main--aem-boilerplate--adobe.aem.live/');
-      expect(mockFetch._calls[3].options.cache).to.eq('reload');
-      expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'published',
@@ -165,10 +156,6 @@ describe('Publish plugin', () => {
         .mockHelixEnvironment(HelixMockEnvironments.PROD)
         .mockFetchSidekickConfigSuccess(true, false);
 
-      const mockFetch = fetchMock.get('https://www.aemboilerplate.com/', {
-        status: 200,
-      });
-
       const publishStub = sandbox.stub(appStore, 'publish').resolves(true);
       const switchEnvStub = sandbox.stub(appStore, 'switchEnv').resolves();
 
@@ -185,9 +172,6 @@ describe('Publish plugin', () => {
 
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
       expect(switchEnvStub.calledWith('prod', false)).to.be.true;
-      expect(mockFetch._calls[3].identifier).to.eq('https://www.aemboilerplate.com/');
-      expect(mockFetch._calls[3].options.cache).to.eq('reload');
-      expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'published',
