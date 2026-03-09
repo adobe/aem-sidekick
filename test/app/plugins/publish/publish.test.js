@@ -149,7 +149,7 @@ describe('Publish plugin', () => {
       await waitUntil(() => publishStub.calledOnce);
 
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
-      expect(switchEnvStub.calledWith('prod', false, false)).to.be.true;
+      expect(switchEnvStub.calledWith('prod', false)).to.be.true;
       expect(mockFetch._calls[3].identifier).to.eq('https://main--aem-boilerplate--adobe.aem.live/');
       expect(mockFetch._calls[3].options.cache).to.eq('reload');
       expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
@@ -184,7 +184,7 @@ describe('Publish plugin', () => {
       await waitUntil(() => publishStub.calledOnce);
 
       await waitUntil(() => switchEnvStub.calledOnce, 'switchEnv was not called', { timeout: 5000 });
-      expect(switchEnvStub.calledWith('prod', false, false)).to.be.true;
+      expect(switchEnvStub.calledWith('prod', false)).to.be.true;
       expect(mockFetch._calls[3].identifier).to.eq('https://www.aemboilerplate.com/');
       expect(mockFetch._calls[3].options.cache).to.eq('reload');
       expect(mockFetch._calls[3].options.mode).to.eq('no-cors');
