@@ -1006,7 +1006,8 @@ export class AppStore {
       path.startsWith('/.helix') ? STATE.CONFIG : STATE.PREVIEWING,
     );
 
-    return !!this.api.updatePreview(path);
+    const previewStatus = await this.api.updatePreview(path);
+    return !!previewStatus;
   }
 
   async updatePreview(ranBefore) {

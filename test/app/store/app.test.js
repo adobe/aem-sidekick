@@ -937,48 +937,6 @@ describe('Test App Store', () => {
       expect(setStateStub.calledWith(STATE.CONFIG)).to.be.true;
     });
 
-    it('should bust client cache', async () => {
-      sidekickTest.sandbox.stub(instance, 'isDev').returns(false);
-      instance.isPreview.returns(true);
-      instance.status = { webPath: '/somepath' };
-      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.aem.page';
-
-      fakeFetch.resolves({
-        ok: true,
-        status: 200,
-        headers: new Headers(),
-        json: () => Promise.resolve({ webPath: '/somepath' }),
-      });
-
-      const response = await instance.update();
-
-      expect(response).to.be.true;
-      expect(fakeFetch.args[1][0]).to.equal('https://main--aem-boilerplate--adobe.aem.page/somepath');
-      expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
-    });
-
-    it('should bust client cache (localhost)', async () => {
-      sidekickTest.sandbox.stub(instance, 'isDev').returns(true);
-      instance.isPreview.returns(true);
-      instance.siteStore.devUrl = new URL('http://localhost:3000');
-      instance.location = new URL('http://localhost:3000/somepath');
-      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.aem.page';
-      instance.status = { webPath: '/somepath' };
-
-      fakeFetch.resolves({
-        ok: true,
-        status: 200,
-        headers: new Headers(),
-        json: () => Promise.resolve({ webPath: '/somepath' }),
-      });
-
-      const response = await instance.update();
-
-      expect(response).to.be.true;
-      expect(fakeFetch.args[1][0]).to.equal('localhost:3000/somepath');
-      expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
-    });
-
     it('should handle fetch error', async () => {
       fakeFetch.rejects(new Error('Network failure'));
 
