@@ -56,11 +56,9 @@ async function clickDeletePlugin(sidekick) {
 }
 
 function confirmDelete(sidekick) {
-  // enter confirmation text
-  const dialogWrapper = recursiveQuery(sidekick, 'sp-dialog-wrapper');
-  const deleteInput = recursiveQuery(dialogWrapper, 'sp-textfield');
-  deleteInput.value = 'DELETE';
-  // click delete button
+  const confirmTextEl = recursiveQuery(sidekick, '.confirm-text');
+  const deleteInput = recursiveQuery(sidekick, 'sp-textfield');
+  deleteInput.value = confirmTextEl.textContent.trim();
   const deleteButton = recursiveQuery(sidekick, 'sp-button[variant="negative"]');
   deleteButton.click();
 }

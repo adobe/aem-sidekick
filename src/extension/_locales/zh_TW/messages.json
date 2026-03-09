@@ -391,7 +391,7 @@
     "message": "抱歉，請確切輸入顯示的文字以進行確認。"
   },
   "destructive_confirmation_prompt": {
-    "message": "請輸入「$1」以確認"
+    "message": "請輸入下方文字以確認："
   },
   "details": {
     "message": "詳細資料"

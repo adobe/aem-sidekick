@@ -57,6 +57,7 @@ export function createDeletePlugin(appStore) {
             headline: appStore.i18n('delete'),
             message,
             confirmLabel: appStore.i18n('delete'),
+            confirmText: status.webPath,
           },
         });
         modal.addEventListener(MODAL_EVENTS.CONFIRM, async () => {
