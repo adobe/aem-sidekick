@@ -17,6 +17,14 @@ This file defines how AI agents should work in this repository. Treat it as the 
 - **New files**
   Use copyright year **2026** in the header of new code files (both under `src/` and `test/`).
 
+## Tech stack
+
+- **Language**
+  The main language is JavaScript ESM (see `jsconfig.json`).
+
+- **Extension**
+  This project is deployed as a Chrome extension (see `src/extension/manifest.json`).
+
 ## Coding style
 
 - **Consistency**
@@ -42,6 +50,10 @@ This file defines how AI agents should work in this repository. Treat it as the 
 
 - **Refactoring**
   When refactoring, always double-check what else was modified earlier in the branch. Remove any code that becomes unused (dead code, unused imports, obsolete helpers).
+
+- **Dependencies**
+  When project dependencies need to be added or updated,
+  always ask first and explain it to the user.
 
 ## Localization and internationalization
 
