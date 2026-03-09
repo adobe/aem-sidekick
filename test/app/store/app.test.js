@@ -633,17 +633,6 @@ describe('Test App Store', () => {
       expect(openPage.calledWith(mockStatus.preview.url)).to.be.true;
     });
 
-    it('switches from editor to preview w/cache busting', async () => {
-      instance.location = new URL(getDefaultEditorEnviromentLocations(
-        HelixMockContentSources.SHAREPOINT,
-        HelixMockContentType.DOC),
-      );
-      instance.status = mockStatus;
-      await instance.switchEnv('preview', false, true);
-      const openPageArgs = openPage.args[0];
-      expect(openPageArgs[0]).to.include('nocache');
-    });
-
     it('switches from preview to editor', async () => {
       const fetchStatusSpy = sidekickTest.sandbox.spy(instance, 'fetchStatus');
       instance.location = new URL(mockStatus.preview.url);
@@ -659,10 +648,9 @@ describe('Test App Store', () => {
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
-      await instance.switchEnv('prod', true, true);
+      await instance.switchEnv('prod', true);
       const openPageArgs = openPage.args[0];
       expect(openPageArgs[0]).to.include(prodHost);
-      expect(openPageArgs[0]).to.include('nocache');
     });
 
     it('switches from preview to production host, maintains url params', async () => {
@@ -671,10 +659,9 @@ describe('Test App Store', () => {
 
       instance.location = new URL(`${mockStatus.preview.url}?foo=bar`);
       instance.status = mockStatus;
-      await instance.switchEnv('prod', true, true);
+      await instance.switchEnv('prod', true);
       const openPageArgs = openPage.args[0];
       expect(openPageArgs[0]).to.include(prodHost);
-      expect(openPageArgs[0]).to.include('nocache');
       expect(openPageArgs[0]).to.include('foo=bar');
     });
 
@@ -688,7 +675,7 @@ describe('Test App Store', () => {
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
-      await instance.switchEnv('prod', true, true, true);
+      await instance.switchEnv('prod', true, true);
       const openPageArgs = openPage.args[0];
       expect(openPageArgs[0]).to.include(prodHost);
     });
@@ -703,7 +690,7 @@ describe('Test App Store', () => {
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
-      await instance.switchEnv('prod', true, true, true);
+      await instance.switchEnv('prod', true, true);
       const openPageArgs = openPage.args[0];
       expect(openPageArgs[0]).to.include(liveHost);
     });
@@ -823,12 +810,12 @@ describe('Test App Store', () => {
       expect(loadPageArgs[0]).to.include('/regular/path');
     });
 
-    it('switches from preview to live w/cache busting', async () => {
+    it('switches from preview to live', async () => {
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
-      await instance.switchEnv('live', true, true);
+      await instance.switchEnv('live', true);
       const openPageArgs = openPage.args[0];
-      expect(openPageArgs[0]).to.include('nocache');
+      expect(openPageArgs[0]).to.include(instance.siteStore.outerHost);
     });
 
     it('switches from preview to dev', async () => {
@@ -1112,7 +1099,7 @@ describe('Test App Store', () => {
         message: 'Snapshot successfully updated, opening Review...',
         variant: 'positive',
       })).is.true;
-      expect(switchEnvSpy.calledWith('review', false, true)).is.true;
+      expect(switchEnvSpy.calledWith('review', false)).is.true;
     });
   });
 

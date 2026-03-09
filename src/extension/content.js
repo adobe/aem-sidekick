@@ -15,26 +15,6 @@
  * @typedef {import('@Types').OptionsConfig} OptionsConfig
  */
 
-/**
- * Removes the cache buster from the URL.
- * @param {string} [href] The URL to remove the cache buster from
- */
-function removeCacheParam(href = window.location.href) {
-  const location = new URL(href);
-  const params = location.searchParams;
-
-  // Check if 'nocache' parameter exists
-  if (params.has('nocache')) {
-    // Remove 'nocache' parameter
-    params.delete('nocache');
-
-    // Update the URL without changing the browser history
-    window.history.replaceState(null, '', location);
-  }
-
-  return location.href;
-}
-
 (async () => {
   // ensure hlx namespace
   window.hlx = window.hlx || {};
@@ -117,9 +97,6 @@ function removeCacheParam(href = window.location.href) {
     if (tab) {
       return;
     }
-
-    // remove cache buster from URL
-    removeCacheParam();
 
     const sidekick = document.querySelector('aem-sidekick');
     if (configMatches.length > 0) {

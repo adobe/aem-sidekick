@@ -1060,7 +1060,7 @@ export class AppStore {
         host: this.siteStore[ENVS[targetEnv]],
       });
 
-      this.switchEnv(targetEnv, false, true);
+      this.switchEnv(targetEnv, false);
     }
   }
 
@@ -1284,28 +1284,10 @@ export class AppStore {
    * @param {string} targetEnv One of the following environments:
    *        edit, dev, preview, live or prod
    * @param {boolean} [open] true if environment should be opened in new tab
-   * @param {boolean} [cacheBust] true if cache busting should be applied
    * @param {boolean} [prodCheck] true if the prod site should be checked
    * @fires Sidekick#envswitched
    */
-  async switchEnv(targetEnv, open = false, cacheBust = false, prodCheck = false) {
-    const getCacheBuster = (url) => {
-      // Check if cache busting should be applied based on the environment and conditions.
-      // The logic prevents cache busting if:
-      // The target environment is 'prod' && the envUrl does not include aem.live &
-      // the sidekick is running in transient mode.
-      try {
-        const domain = new URL(url).hostname;
-        if (cacheBust
-          && !(targetEnv === 'prod' && !domain.endsWith('.aem.live') && this.siteStore.transient)) {
-          return `?nocache=${Date.now()}`;
-        }
-      } catch (e) {
-        // ignore invalid url
-      }
-      return '';
-    };
-
+  async switchEnv(targetEnv, open = false, prodCheck = false) {
     const getEditUrl = async () => {
       const isReview = this.isReview();
       if (isReview) {
@@ -1344,7 +1326,7 @@ export class AppStore {
       if (!this.isEditor()) {
         envUrl += `${location.search}${location.hash}`;
       }
-      return new URL(`${envUrl}${getCacheBuster(envUrl)}`);
+      return new URL(envUrl);
     };
 
     const hostType = ENVS[targetEnv];
