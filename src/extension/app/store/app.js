@@ -999,25 +999,14 @@ export class AppStore {
    * @returns {Promise<boolean>} True if the preview was updated successfully, false otherwise
    */
   async update(path) {
-    const { siteStore, status } = this;
+    const { status } = this;
     path = path || status.webPath;
 
     this.setState(
       path.startsWith('/.helix') ? STATE.CONFIG : STATE.PREVIEWING,
     );
 
-    // update preview
-    const previewStatus = await this.api.updatePreview(path);
-    if (previewStatus) {
-      // If we are on preview, we need to bust the cache on the page to ensure the latest
-      // content is loaded.
-      if (this.isPreview()) {
-        const host = this.isDev() ? siteStore.devUrl.host : `https://${siteStore.innerHost}`;
-        await fetch(`${host}${path}`, { cache: 'reload', mode: 'no-cors' });
-      }
-    }
-
-    return !!previewStatus;
+    return !!this.api.updatePreview(path);
   }
 
   async updatePreview(ranBefore) {
