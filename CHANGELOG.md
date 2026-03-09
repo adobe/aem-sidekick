@@ -1,3 +1,10 @@
+# [7.29.0](https://github.com/adobe/aem-sidekick/compare/v7.28.2...v7.29.0) (2026-03-09)
+
+
+### Features
+
+* confirm delete/unpublish by typing page path ([#813](https://github.com/adobe/aem-sidekick/issues/813)) ([3c9d51f](https://github.com/adobe/aem-sidekick/commit/3c9d51f278087e6771d55d748d95af9bead2eec0))
+
 ## [7.28.2](https://github.com/adobe/aem-sidekick/compare/v7.28.1...v7.28.2) (2026-02-25)
 
 
