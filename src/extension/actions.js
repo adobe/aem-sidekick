@@ -618,9 +618,9 @@ async function updateProject(_, { config }) {
 }
 
 /**
- * Adds request headers for the active tab's domain to bypass the browser cache.
+ * Adds request headers for a given domain to bypass the browser cache.
  * @param {chrome.tabs.Tab} tab The tab
- * @param {object} msg The message object
+ * @param {Object} msg The message object
  * @param {string} msg.host The host to bust cache for (defaults to tab host)
  * @returns {Promise<boolean>} True if browser cache was busted, else false
  */
@@ -632,21 +632,16 @@ async function bustCache(tab, { host }) {
 }
 
 /**
- * Actions which can be executed via internal messaging API.
- * @type {Object} The internal actions
+ * Adds request headers for a given domain to bypass the browser cache.
+ * @param {Object} msg The message object
+ * @param {string} msg.host The host to bust cache for (defaults to tab host)
+ * @param {Object} sender The sender object
+ * @param {chrome.tabs.Tab} sender.tab The tab
+ * @returns {Promise<boolean>} True if browser cache was busted, else false
  */
-export const internalActions = {
-  bustCache,
-  addRemoveProject,
-  enableDisableProject,
-  manageProjects,
-  openViewDocSource,
-  importProjects,
-  getProfilePicture,
-  guessAEMSite,
-  updateProject,
-  saveDocument,
-};
+async function externalBustCache({ host }, { tab }) {
+  return bustCache(tab, { host });
+}
 
 /**
  * Resizes the palette in the sender's tab.
@@ -722,6 +717,23 @@ async function resizePopover({
 }
 
 /**
+ * Actions which can be executed via internal messaging API.
+ * @type {Object} The internal actions
+ */
+export const internalActions = {
+  addRemoveProject,
+  enableDisableProject,
+  manageProjects,
+  openViewDocSource,
+  importProjects,
+  getProfilePicture,
+  guessAEMSite,
+  updateProject,
+  saveDocument,
+  bustCache,
+};
+
+/**
  * Actions which can be executed via external messaging API.
  * @type {Object} The external actions
  */
@@ -738,4 +750,5 @@ export const externalActions = {
   resizePopover,
   closePalette,
   closePopover,
+  bustCache: externalBustCache,
 };
