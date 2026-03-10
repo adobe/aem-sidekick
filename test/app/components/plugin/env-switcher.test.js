@@ -11,7 +11,7 @@
  */
 /* eslint-disable no-unused-expressions, import/no-extraneous-dependencies */
 
-import { aTimeout, expect, waitUntil } from '@open-wc/testing';
+import { expect, waitUntil } from '@open-wc/testing';
 import { sendKeys } from '@web/test-runner-commands';
 import { recursiveQuery } from '../../../test-utils.js';
 import chromeMock from '../../../mocks/chrome.js';
@@ -431,28 +431,6 @@ describe('Environment Switcher', () => {
   });
 
   describe('special cases', () => {
-    it('no env switcher if config file', async () => {
-      sidekickTest
-        .mockEditorAdminEnvironment()
-        .mockFetchEditorStatusSuccess(
-          HelixMockContentSources.SHAREPOINT,
-          HelixMockContentType.SHEET,
-          {
-            webPath: '/.helix/config.json',
-          },
-        );
-      sidekick = sidekickTest.createSidekick();
-
-      await aTimeout(500);
-
-      const actionBar = recursiveQuery(sidekick, 'action-bar');
-      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
-      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
-      const button = recursiveQuery(picker, '#button');
-
-      expect(button.hasAttribute('disabled')).to.be.true;
-    });
-
     it('closes picker when CLOSE_POPOVER event is dispatched', async () => {
       sidekickTest
         .mockFetchStatusSuccess()

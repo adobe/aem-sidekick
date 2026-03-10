@@ -293,26 +293,6 @@ describe('Preview plugin', () => {
         variant: 'warning',
       }));
     });
-
-    it('previewing a config file', async () => {
-      sidekickTest
-        .mockEditorAdminEnvironment(
-          EditorMockEnvironments.EDITOR,
-          HelixMockContentType.DOC,
-          HelixMockContentSources.SHAREPOINT,
-        ).mockFetchEditorStatusSuccess(HelixMockContentSources.SHAREPOINT,
-          HelixMockContentType.ADMIN,
-          {
-            webPath: '/.helix/config.json',
-          },
-        );
-
-      sidekick = sidekickTest.createSidekick();
-      await sidekickTest.awaitEnvSwitcher();
-
-      const previewPlugin = recursiveQuery(sidekick, '.edit-preview');
-      expect(previewPlugin.textContent).to.equal('Activate');
-    });
   });
 
   describe('error handling', () => {

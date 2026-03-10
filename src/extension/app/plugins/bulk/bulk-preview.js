@@ -39,9 +39,7 @@ export function createBulkPreviewPlugin(appStore) {
     callback: (store) => {
       if (store.status.webPath) {
         const { button } = store.corePlugins['bulk-preview'].config;
-        button.text = store.status.webPath.startsWith('/.helix')
-          ? store.i18n('activate') // special button text for config files
-          : store.i18n('preview');
+        button.text = store.i18n('preview');
       }
     },
   },

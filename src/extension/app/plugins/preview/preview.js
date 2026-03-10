@@ -133,9 +133,7 @@ export function createPreviewPlugin(appStore) {
       }
       if (store.status.webPath) {
         const { button } = store.corePlugins['edit-preview'].config;
-        button.text = store.status.webPath.startsWith('/.helix')
-          ? store.i18n('activate') // special button text for config files
-          : store.i18n('preview');
+        button.text = store.i18n('preview');
       }
     },
   },
