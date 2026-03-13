@@ -932,24 +932,6 @@ describe('Test App Store', () => {
       expect(setStateStub.calledWith(STATE.PREVIEWING)).to.be.true;
     });
 
-    it('should detect config path', async () => {
-      sidekickTest.sandbox.stub(instance, 'isDev').returns(false);
-      instance.isContent.returns(true);
-      instance.status = { webPath: '/.helix/config' };
-
-      fakeFetch.resolves({
-        ok: true,
-        status: 200,
-        headers: new Headers(),
-        json: () => Promise.resolve({ webPath: '/.helix/config' }),
-      });
-
-      const response = await instance.update();
-
-      expect(response).to.be.true;
-      expect(setStateStub.calledWith(STATE.CONFIG)).to.be.true;
-    });
-
     it('should bust client cache', async () => {
       sidekickTest.sandbox.stub(instance, 'isDev').returns(false);
       instance.isPreview.returns(true);
@@ -1068,34 +1050,6 @@ describe('Test App Store', () => {
 
       instance.sidekick.dispatchEvent(new CustomEvent('status-fetched', { detail: { status: { webPath: '/somepath' } } }));
       await waitUntil(() => updatePreviewSpy.calledTwice);
-    });
-
-    // Test when resp is ok and status.webPath does not start with /.helix/
-    it('should handle generic success', async () => {
-      updateStub.resolves(true);
-      instance.status = { webPath: '/not-helix/' };
-
-      await instance.updatePreview(false);
-
-      expect(showToastStub.calledOnce).is.true;
-      expect(showToastStub.calledWith({
-        message: 'Preview successfully updated, opening Preview...',
-        variant: 'positive',
-      })).is.true;
-    });
-
-    // Test when resp is ok and status.webPath starts with /.helix/
-    it('should handle config success', async () => {
-      updateStub.resolves(true);
-      instance.status = { webPath: '/.helix/foo' };
-
-      await instance.updatePreview(false);
-
-      expect(showToastStub.calledOnce).is.true;
-      expect(showToastStub.calledWith({
-        message: 'Configuration successfully activated.',
-        variant: 'positive',
-      })).is.true;
     });
 
     // Test when resp is ok and status.webPath starts with /.snapshots/

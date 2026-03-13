@@ -424,50 +424,42 @@ export class BulkStore {
     const succeeded = resources.filter(({ status }) => status < 400);
     const paths = succeeded.map(({ path }) => path);
 
-    if (operation === 'activate' && failed.length === 0) {
-      // special handling for config files
+    const message = this.getSummaryText(operation, resources.length, failed.length);
+    const variant = this.#getSummaryVariant(resources.length, failed.length);
+
+    const openUrlsLabel = this.appStore.i18n(`open_url${paths.length !== 1 ? 's' : ''}`)
+      .replace('$1', `${paths.length}`);
+    const openUrlsCallback = () => this.openUrls(host, paths) && this.appStore.closeToast();
+
+    const copyUrlsLabel = this.appStore.i18n(`copy_url${paths.length !== 1 ? 's' : ''}`)
+      .replace('$1', `${paths.length}`);
+    const copyUrlsCallback = () => this.copyUrls(host, paths);
+
+    if (failed.length === 0) {
+      // show success toast with open and copy buttons
       this.appStore.showToast({
-        message: this.appStore.i18n('activate_success'),
-        variant: 'positive',
+        message,
+        variant,
+        actionCallback: openUrlsCallback,
+        actionLabel: openUrlsLabel,
+        secondaryCallback: copyUrlsCallback,
+        secondaryLabel: copyUrlsLabel,
+        timeout: 0, // keep open
       });
     } else {
-      const message = this.getSummaryText(operation, resources.length, failed.length);
-      const variant = this.#getSummaryVariant(resources.length, failed.length);
-
-      const openUrlsLabel = this.appStore.i18n(`open_url${paths.length !== 1 ? 's' : ''}`)
-        .replace('$1', `${paths.length}`);
-      const openUrlsCallback = () => this.openUrls(host, paths) && this.appStore.closeToast();
-
-      const copyUrlsLabel = this.appStore.i18n(`copy_url${paths.length !== 1 ? 's' : ''}`)
-        .replace('$1', `${paths.length}`);
-      const copyUrlsCallback = () => this.copyUrls(host, paths);
-
-      if (failed.length === 0) {
-        // show success toast with open and copy buttons
-        this.appStore.showToast({
-          message,
-          variant,
-          actionCallback: openUrlsCallback,
-          actionLabel: openUrlsLabel,
-          secondaryCallback: copyUrlsCallback,
-          secondaryLabel: copyUrlsLabel,
-          timeout: 0, // keep open
-        });
-      } else {
-        // show (partial) failure toast with details button
-        this.appStore.showToast({
-          message,
-          variant,
-          actionCallback: () => {
-            this.appStore.showModal({
-              type: MODALS.BULK,
-            });
-            this.appStore.closeToast();
-          },
-          actionLabel: this.appStore.i18n('bulk_result_details'),
-          timeout: 0, // keep open
-        });
-      }
+      // show (partial) failure toast with details button
+      this.appStore.showToast({
+        message,
+        variant,
+        actionCallback: () => {
+          this.appStore.showModal({
+            type: MODALS.BULK,
+          });
+          this.appStore.closeToast();
+        },
+        actionLabel: this.appStore.i18n('bulk_result_details'),
+        timeout: 0, // keep open
+      });
     }
   }
 
@@ -488,8 +480,6 @@ export class BulkStore {
       invalidMessage = this.appStore
         .i18n('bulk_error_illegal_folder_name')
         .replace('$1', illegalPath);
-    } else if (operation === 'activate' && this.selection.length > 1) {
-      invalidMessage = this.appStore.i18n('activate_bulk_not_supported');
     } else {
       // check selected files
       const illegalFileNames = this.selection
@@ -516,7 +506,7 @@ export class BulkStore {
    * Runs a bulk preview operation on the bulk selection.
    */
   async preview() {
-    const operation = this.appStore.status.webPath === '/.helix' ? 'activate' : 'preview';
+    const operation = 'preview';
     if (!this.#validateSelection(operation)) {
       return;
     }

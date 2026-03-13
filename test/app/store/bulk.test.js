@@ -24,7 +24,7 @@ import {
   getDefaultEditorEnviromentLocations,
 } from '../../mocks/environment.js';
 import chromeMock from '../../mocks/chrome.js';
-import { error, recursiveQuery, recursiveQueryAll } from '../../test-utils.js';
+import { error, recursiveQuery } from '../../test-utils.js';
 import { MODALS, MODAL_EVENTS, STATE } from '../../../src/extension/app/constants.js';
 import { log } from '../../../src/extension/log.js';
 import {
@@ -406,78 +406,6 @@ describe('Test Bulk Store', () => {
         openUrlsButton.click();
         await waitUntil(() => copyUrlsSpy.calledWithMatch(appStore.siteStore.innerHost));
         await waitUntil(() => openUrlsSpy.calledWithMatch(appStore.siteStore.innerHost));
-      }).timeout(10000);
-
-      it('bulk activates config file', async () => {
-        updateStub.resolves(true);
-        sidekickTest.mockFetchDirectoryStatusSuccess(HelixMockContentSources.SHAREPOINT, {
-          webPath: '/.helix',
-        });
-        await appStore.loadContext(sidekickTest.sidekick, sidekickTest.config);
-        sidekickTest.bulkRoot.querySelector('#appRoot .file')
-          .insertAdjacentHTML('beforebegin', mockSharePointFile({
-            path: 'config',
-            file: 'config.xslx',
-            type: 'xlsx',
-          }));
-        sidekickTest.toggleAdminItems([
-          'config',
-        ]);
-        await waitUntil(() => bulkStore.selection.length === 1);
-        await bulkStore.preview();
-
-        // confirm dialog says activate instead of preview
-        await waitUntil(() => recursiveQuery(sidekickTest.sidekick, 'sp-dialog-wrapper'));
-        const dialogWrapper = recursiveQuery(sidekickTest.sidekick, 'sp-dialog-wrapper');
-        expect(recursiveQuery(dialogWrapper, 'h2').textContent.trim()).to.equal('Activate');
-        expect(recursiveQuery(dialogWrapper, 'sp-button[variant="accent"]').textContent.trim()).to.equal('Activate');
-
-        dialogWrapper.dispatchEvent(new CustomEvent(MODAL_EVENTS.CONFIRM));
-        await waitUntil(() => updateStub.called);
-
-        expect(showToastSpy.calledWith({
-          message: 'Configuration successfully activated.',
-          variant: 'positive',
-        })).to.be.true;
-        expect(fireEventStub.calledWithMatch('previewed')).to.be.true;
-
-        // no toast actions
-        await waitUntil(() => recursiveQuery(sidekickTest.sidekick, 'activity-action'));
-        const toast = recursiveQuery(sidekickTest.sidekick, 'activity-action');
-        const buttons = [...recursiveQueryAll(toast, 'sp-action-button:not(.close)')];
-        expect(buttons.length).to.equal(0);
-      }).timeout(10000);
-
-      it('refuses to bulk activate multiple config files', async () => {
-        sidekickTest.mockFetchDirectoryStatusSuccess(HelixMockContentSources.SHAREPOINT, {
-          webPath: '/.helix',
-        });
-        await appStore.loadContext(sidekickTest.sidekick, sidekickTest.config);
-        sidekickTest.bulkRoot.querySelector('#appRoot .file')
-          .insertAdjacentHTML('beforebegin', mockSharePointFile({
-            path: 'config',
-            file: 'config.xslx',
-            type: 'xlsx',
-          }));
-        sidekickTest.bulkRoot.querySelector('#appRoot .file')
-          .insertAdjacentHTML('beforebegin', mockSharePointFile({
-            path: 'headers',
-            file: 'headers.xslx',
-            type: 'xlsx',
-          }));
-        sidekickTest.toggleAdminItems([
-          'config',
-          'headers',
-        ]);
-        await waitUntil(() => bulkStore.selection.length === 2);
-        await bulkStore.preview();
-
-        await waitUntil(() => showToastSpy.called);
-        expect(showToastSpy.calledWith({
-          message: 'Activation of multiple configurations not supported.',
-          variant: 'warning',
-          timeout: 0,
-        })).to.be.true;
       }).timeout(10000);
 
       it('bulk previews selection and displays partial success toast', async () => {

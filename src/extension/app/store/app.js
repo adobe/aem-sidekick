@@ -1002,9 +1002,7 @@ export class AppStore {
     const { siteStore, status } = this;
     path = path || status.webPath;
 
-    this.setState(
-      path.startsWith('/.helix') ? STATE.CONFIG : STATE.PREVIEWING,
-    );
+    this.setState(STATE.PREVIEWING);
 
     // update preview
     const previewStatus = await this.api.updatePreview(path);
@@ -1032,13 +1030,7 @@ export class AppStore {
     }
 
     if (res) {
-      // special handling of config files
-      if (this.status.webPath.startsWith('/.helix/')) {
-        this.showToast({
-          message: this.i18n('activate_success'),
-          variant: 'positive',
-        });
-      } else if (this.status.webPath.startsWith('/.snapshots/')) {
+      if (this.status.webPath.startsWith('/.snapshots/')) {
         // special handling of snapshot updates
         this.showToast({
           message: this.i18n('snapshot_update_success'),

@@ -352,7 +352,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       reviewMenuItem.remove();
     }
 
-    if (this.appStore.status?.webPath && !this.appStore.status?.webPath.startsWith('/.helix')) {
+    if (this.appStore.status?.webPath) {
       this.ready = true;
     }
   }

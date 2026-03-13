@@ -161,11 +161,6 @@ export class AdminClient {
         || (error && this.#appStore.i18n('error_generic')
           .replace('$1', error));
     }
-    if (path.startsWith('/.helix/')) {
-      // special error message for config files
-      message = this.#appStore.i18n('error_preview_config')
-        .replace('$1', message);
-    }
     if (error) {
       // extract details from the end of the error message
       // or use the error message if no template was matched

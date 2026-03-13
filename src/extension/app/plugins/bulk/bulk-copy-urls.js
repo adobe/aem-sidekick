@@ -33,7 +33,6 @@ function createPlugin(appStore, env, host, condition = () => true) {
     id: `bulk-copy-${env}-urls`,
     condition: (store) => store.isAdmin()
       && store.bulkStore?.selection.length > 0
-      && !store.status?.webPath?.startsWith('/.helix')
       && condition(),
     container: 'bulk-copy-urls',
     button: {
