@@ -633,17 +633,6 @@ describe('Test App Store', () => {
       expect(openPage.calledWith(mockStatus.preview.url)).to.be.true;
     });
 
-    it('switches from editor to preview w/cache busting', async () => {
-      instance.location = new URL(getDefaultEditorEnviromentLocations(
-        HelixMockContentSources.SHAREPOINT,
-        HelixMockContentType.DOC),
-      );
-      instance.status = mockStatus;
-      await instance.switchEnv('preview', false, true);
-      const openPageArgs = openPage.args[0];
-      expect(openPageArgs[0]).to.include('nocache');
-    });
-
     it('switches from preview to editor', async () => {
       const fetchStatusSpy = sidekickTest.sandbox.spy(instance, 'fetchStatus');
       instance.location = new URL(mockStatus.preview.url);
@@ -659,10 +648,9 @@ describe('Test App Store', () => {
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
-      await instance.switchEnv('prod', true, true);
+      await instance.switchEnv('prod', true);
       const openPageArgs = openPage.args[0];
       expect(openPageArgs[0]).to.include(prodHost);
-      expect(openPageArgs[0]).to.include('nocache');
     });
 
     it('switches from preview to production host, maintains url params', async () => {
@@ -671,10 +659,9 @@ describe('Test App Store', () => {
 
       instance.location = new URL(`${mockStatus.preview.url}?foo=bar`);
       instance.status = mockStatus;
-      await instance.switchEnv('prod', true, true);
+      await instance.switchEnv('prod', true);
       const openPageArgs = openPage.args[0];
       expect(openPageArgs[0]).to.include(prodHost);
-      expect(openPageArgs[0]).to.include('nocache');
       expect(openPageArgs[0]).to.include('foo=bar');
     });
 
@@ -688,7 +675,7 @@ describe('Test App Store', () => {
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
-      await instance.switchEnv('prod', true, true, true);
+      await instance.switchEnv('prod', true, true);
       const openPageArgs = openPage.args[0];
       expect(openPageArgs[0]).to.include(prodHost);
     });
@@ -703,7 +690,7 @@ describe('Test App Store', () => {
 
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
-      await instance.switchEnv('prod', true, true, true);
+      await instance.switchEnv('prod', true, true);
       const openPageArgs = openPage.args[0];
       expect(openPageArgs[0]).to.include(liveHost);
     });
@@ -823,12 +810,12 @@ describe('Test App Store', () => {
       expect(loadPageArgs[0]).to.include('/regular/path');
     });
 
-    it('switches from preview to live w/cache busting', async () => {
+    it('switches from preview to live', async () => {
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
-      await instance.switchEnv('live', true, true);
+      await instance.switchEnv('live', true);
       const openPageArgs = openPage.args[0];
-      expect(openPageArgs[0]).to.include('nocache');
+      expect(openPageArgs[0]).to.include(instance.siteStore.outerHost);
     });
 
     it('switches from preview to dev', async () => {
@@ -948,48 +935,6 @@ describe('Test App Store', () => {
 
       expect(response).to.be.true;
       expect(setStateStub.calledWith(STATE.CONFIG)).to.be.true;
-    });
-
-    it('should bust client cache', async () => {
-      sidekickTest.sandbox.stub(instance, 'isDev').returns(false);
-      instance.isPreview.returns(true);
-      instance.status = { webPath: '/somepath' };
-      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.aem.page';
-
-      fakeFetch.resolves({
-        ok: true,
-        status: 200,
-        headers: new Headers(),
-        json: () => Promise.resolve({ webPath: '/somepath' }),
-      });
-
-      const response = await instance.update();
-
-      expect(response).to.be.true;
-      expect(fakeFetch.args[1][0]).to.equal('https://main--aem-boilerplate--adobe.aem.page/somepath');
-      expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
-    });
-
-    it('should bust client cache (localhost)', async () => {
-      sidekickTest.sandbox.stub(instance, 'isDev').returns(true);
-      instance.isPreview.returns(true);
-      instance.siteStore.devUrl = new URL('http://localhost:3000');
-      instance.location = new URL('http://localhost:3000/somepath');
-      instance.siteStore.innerHost = 'main--aem-boilerplate--adobe.aem.page';
-      instance.status = { webPath: '/somepath' };
-
-      fakeFetch.resolves({
-        ok: true,
-        status: 200,
-        headers: new Headers(),
-        json: () => Promise.resolve({ webPath: '/somepath' }),
-      });
-
-      const response = await instance.update();
-
-      expect(response).to.be.true;
-      expect(fakeFetch.args[1][0]).to.equal('localhost:3000/somepath');
-      expect(fakeFetch.args[1][1]).to.deep.equal({ cache: 'reload', mode: 'no-cors' });
     });
 
     it('should handle fetch error', async () => {
@@ -1112,7 +1057,7 @@ describe('Test App Store', () => {
         message: 'Snapshot successfully updated, opening Review...',
         variant: 'positive',
       })).is.true;
-      expect(switchEnvSpy.calledWith('review', false, true)).is.true;
+      expect(switchEnvSpy.calledWith('review', false)).is.true;
     });
   });
 

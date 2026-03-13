@@ -74,6 +74,31 @@ describe('AEM Sidekick', () => {
     })).to.be.true;
   });
 
+  it('cmd/ctrl+r busts cache and reloads page when sidekick open', async () => {
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    const sendMessageStub = sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage').resolves();
+    const reloadPageStub = sidekickTest.sandbox.stub(sidekickTest.appStore, 'reloadPage');
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'x', bubbles: true }));
+    expect(sendMessageStub.called).to.be.false;
+    expect(reloadPageStub.called).to.be.false;
+
+    sidekick.open = true;
+    await sidekick.updateComplete;
+    expect(sidekick.open).to.be.true;
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'x', bubbles: true }));
+    expect(sendMessageStub.called).to.be.false;
+    expect(reloadPageStub.called).to.be.false;
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'r', metaKey: true, bubbles: true }));
+    await waitUntil(() => reloadPageStub.calledOnce, 'reloadPage was not called', { timeout: 2000 });
+    // @ts-ignore
+    expect(sendMessageStub.calledWith({ action: 'bustCache' })).to.be.true;
+  }).timeout(5000);
+
   it('dispatches sidekick-ready', async () => {
     const readySpy = spy();
     document.addEventListener('sidekick-ready', readySpy);

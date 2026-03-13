@@ -999,24 +999,14 @@ export class AppStore {
    * @returns {Promise<boolean>} True if the preview was updated successfully, false otherwise
    */
   async update(path) {
-    const { siteStore, status } = this;
+    const { status } = this;
     path = path || status.webPath;
 
     this.setState(
       path.startsWith('/.helix') ? STATE.CONFIG : STATE.PREVIEWING,
     );
 
-    // update preview
     const previewStatus = await this.api.updatePreview(path);
-    if (previewStatus) {
-      // If we are on preview, we need to bust the cache on the page to ensure the latest
-      // content is loaded.
-      if (this.isPreview()) {
-        const host = this.isDev() ? siteStore.devUrl.host : `https://${siteStore.innerHost}`;
-        await fetch(`${host}${path}`, { cache: 'reload', mode: 'no-cors' });
-      }
-    }
-
     return !!previewStatus;
   }
 
@@ -1032,26 +1022,35 @@ export class AppStore {
     }
 
     if (res) {
+      let targetEnv = 'preview';
       // special handling of config files
       if (this.status.webPath.startsWith('/.helix/')) {
         this.showToast({
           message: this.i18n('activate_success'),
           variant: 'positive',
         });
+        return;
       } else if (this.status.webPath.startsWith('/.snapshots/')) {
         // special handling of snapshot updates
         this.showToast({
           message: this.i18n('snapshot_update_success'),
           variant: 'positive',
         });
-        this.switchEnv('review', false, true);
+        targetEnv = 'review';
       } else {
         this.showToast({
           message: this.i18n('preview_success'),
           variant: 'positive',
         });
-        this.switchEnv('preview', false, true);
       }
+
+      // bust cache on target host
+      await chrome.runtime.sendMessage({
+        action: 'bustCache',
+        host: this.siteStore[ENVS[targetEnv]],
+      });
+
+      this.switchEnv(targetEnv, false);
     }
   }
 
@@ -1073,6 +1072,9 @@ export class AppStore {
 
     // delete preview
     const resp = await this.api.updatePreview(path, true);
+
+    // bust cache on current host
+    await chrome.runtime.sendMessage({ action: 'bustCache' });
 
     // also unpublish if published
     if (resp && status.live && status.live.lastModified) {
@@ -1102,6 +1104,12 @@ export class AppStore {
     // update live
     const resp = await this.api.updateLive(path);
 
+    // bust cache on prod or live host
+    await chrome.runtime.sendMessage({
+      action: 'bustCache',
+      host: this.siteStore.host || this.siteStore.liveHost,
+    });
+
     return !!resp;
   }
 
@@ -1123,6 +1131,13 @@ export class AppStore {
 
     // delete live
     const resp = await this.api.updateLive(path, true);
+
+    // bust cache on prod or live host
+    await chrome.runtime.sendMessage({
+      action: 'bustCache',
+      host: this.siteStore.host || this.siteStore.liveHost,
+    });
+
     return !!resp;
   }
 
@@ -1259,28 +1274,10 @@ export class AppStore {
    * @param {string} targetEnv One of the following environments:
    *        edit, dev, preview, live or prod
    * @param {boolean} [open] true if environment should be opened in new tab
-   * @param {boolean} [cacheBust] true if cache busting should be applied
    * @param {boolean} [prodCheck] true if the prod site should be checked
    * @fires Sidekick#envswitched
    */
-  async switchEnv(targetEnv, open = false, cacheBust = false, prodCheck = false) {
-    const getCacheBuster = (url) => {
-      // Check if cache busting should be applied based on the environment and conditions.
-      // The logic prevents cache busting if:
-      // The target environment is 'prod' && the envUrl does not include aem.live &
-      // the sidekick is running in transient mode.
-      try {
-        const domain = new URL(url).hostname;
-        if (cacheBust
-          && !(targetEnv === 'prod' && !domain.endsWith('.aem.live') && this.siteStore.transient)) {
-          return `?nocache=${Date.now()}`;
-        }
-      } catch (e) {
-        // ignore invalid url
-      }
-      return '';
-    };
-
+  async switchEnv(targetEnv, open = false, prodCheck = false) {
     const getEditUrl = async () => {
       const isReview = this.isReview();
       if (isReview) {
@@ -1319,7 +1316,7 @@ export class AppStore {
       if (!this.isEditor()) {
         envUrl += `${location.search}${location.hash}`;
       }
-      return new URL(`${envUrl}${getCacheBuster(envUrl)}`);
+      return new URL(envUrl);
     };
 
     const hostType = ENVS[targetEnv];
