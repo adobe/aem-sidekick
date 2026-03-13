@@ -1,3 +1,10 @@
+# [7.30.0](https://github.com/adobe/aem-sidekick/compare/v7.29.0...v7.30.0) (2026-03-13)
+
+
+### Features
+
+* disable caching on modifying actions and manual reload ([#809](https://github.com/adobe/aem-sidekick/issues/809)) ([fe80a6f](https://github.com/adobe/aem-sidekick/commit/fe80a6f0e68be18e86b085a019ff7a646489b174))
+
 # [7.29.0](https://github.com/adobe/aem-sidekick/compare/v7.28.2...v7.29.0) (2026-03-09)
 
 
