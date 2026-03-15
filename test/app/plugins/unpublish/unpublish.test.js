@@ -20,7 +20,7 @@ import { AppStore } from '../../../../src/extension/app/store/app.js';
 import {
   HelixMockEnvironments,
 } from '../../../mocks/environment.js';
-import { MODALS } from '../../../../src/extension/app/constants.js';
+import { EXTERNAL_EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 
 /**
@@ -83,6 +83,7 @@ describe('Unpublish plugin', () => {
     let reloadPageStub;
     let showModalSpy;
     let showToastSpy;
+    let fireEventSpy;
 
     beforeEach(async () => {
       appStore = new AppStore();
@@ -96,6 +97,7 @@ describe('Unpublish plugin', () => {
       reloadPageStub = sandbox.stub(appStore, 'reloadPage');
       showModalSpy = sandbox.spy(appStore, 'showModal');
       showToastSpy = sandbox.spy(appStore, 'showToast');
+      fireEventSpy = sandbox.spy(appStore, 'fireEvent');
 
       sidekick = sidekickTest.createSidekick();
     });
@@ -137,6 +139,7 @@ describe('Unpublish plugin', () => {
 
       expect(unpublishStub.calledOnce).to.be.true;
       expect(reloadPageStub.calledOnce).to.be.true;
+      expect(fireEventSpy.calledOnceWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'unpublished',
@@ -167,6 +170,7 @@ describe('Unpublish plugin', () => {
 
       expect(unpublishStub.calledOnce).to.be.true;
       expect(reloadPageStub.calledOnce).to.be.false;
+      expect(fireEventSpy.calledOnceWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'unpublished',
@@ -200,6 +204,7 @@ describe('Unpublish plugin', () => {
 
       await waitUntil(() => unpublishStub.calledOnce);
 
+      expect(fireEventSpy.calledOnceWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'unpublished',
@@ -225,7 +230,8 @@ describe('Unpublish plugin', () => {
       confirmUnpublish(sidekick);
 
       await waitUntil(() => unpublishStub.calledOnce);
-      expect(unpublishStub.calledOnce);
+      expect(unpublishStub.calledOnce).to.be.true;
+      expect(fireEventSpy.called).to.be.false;
     }).timeout(5000);
   });
 });
