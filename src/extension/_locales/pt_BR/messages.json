@@ -1,4 +1,7 @@
 {
+  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
+    "message": "Este site agora é gerenciado no serviço de configuração."
+  },
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
     "message": "Não é possível pré-visualizar $1: a imagem contida tem mais de $2"
   },
@@ -65,10 +68,6 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Não é possível visualizar $1: $2"
   },
-  "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
-    "message": "Este site agora é gerenciado no serviço de configuração."
-  },
-
   "activate": {
     "message": "Ativar"
   },
@@ -201,17 +200,8 @@
   "close_sidekick": {
     "message": "Fechar Sidekick"
   },
-  "column_name_url": {
-    "message": "url"
-  },
-  "column_name_urls": {
-    "message": "urls"
-  },
-  "column_name_path": {
-    "message": "caminho"
-  },
-  "column_name_paths": {
-    "message": "caminhos"
+  "code_state": {
+    "message": "Nenhuma ação disponível para arquivos de código"
   },
   "column_name_href": {
     "message": "href"
@@ -225,8 +215,17 @@
   "column_name_links": {
     "message": "links"
   },
-  "code_state": {
-    "message": "Nenhuma ação disponível para arquivos de código"
+  "column_name_path": {
+    "message": "caminho"
+  },
+  "column_name_paths": {
+    "message": "caminhos"
+  },
+  "column_name_url": {
+    "message": "URL"
+  },
+  "column_name_urls": {
+    "message": "URLs"
   },
   "config_add_project_headline": {
     "message": "Projeto adicionado"
@@ -312,6 +311,9 @@
   "copy": {
     "message": "Copiar"
   },
+  "copy_all_values": {
+    "message": "Copiar todos os valores"
+  },
   "copy_live_url": {
     "message": "Copiar URL ativo"
   },
@@ -335,9 +337,6 @@
   },
   "copy_urls": {
     "message": "Copiar $1 URLs"
-  },
-  "copy_all_values": {
-    "message": "Copiar todos os valores"
   },
   "copy_urls_error": {
     "message": "Falha ao copiar para a área de transferência. Tente novamente."
