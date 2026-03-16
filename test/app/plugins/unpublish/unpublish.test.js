@@ -20,7 +20,7 @@ import { AppStore } from '../../../../src/extension/app/store/app.js';
 import {
   HelixMockEnvironments,
 } from '../../../mocks/environment.js';
-import { MODALS } from '../../../../src/extension/app/constants.js';
+import { EXTERNAL_EVENTS, MODALS } from '../../../../src/extension/app/constants.js';
 import { SidekickTest } from '../../../sidekick-test.js';
 
 /**
@@ -83,6 +83,7 @@ describe('Unpublish plugin', () => {
     let reloadPageStub;
     let showModalSpy;
     let showToastSpy;
+    let fireEventSpy;
 
     beforeEach(async () => {
       appStore = new AppStore();
@@ -96,6 +97,7 @@ describe('Unpublish plugin', () => {
       reloadPageStub = sandbox.stub(appStore, 'reloadPage');
       showModalSpy = sandbox.spy(appStore, 'showModal');
       showToastSpy = sandbox.spy(appStore, 'showToast');
+      fireEventSpy = sandbox.spy(appStore, 'fireEvent');
 
       sidekick = sidekickTest.createSidekick();
     });
@@ -135,8 +137,11 @@ describe('Unpublish plugin', () => {
 
       await waitUntil(() => reloadPageStub.calledOnce, 'page not reloaded', { timeout: 4000 });
 
+      await waitUntil(() => fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo'));
+
       expect(unpublishStub.calledOnce).to.be.true;
       expect(reloadPageStub.calledOnce).to.be.true;
+      expect(fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'unpublished',
@@ -165,8 +170,11 @@ describe('Unpublish plugin', () => {
       waitUntil(() => showToastSpy.calledOnce);
       sidekickTest.clickToastClose();
 
+      await waitUntil(() => fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo'));
+
       expect(unpublishStub.calledOnce).to.be.true;
       expect(reloadPageStub.calledOnce).to.be.false;
+      expect(fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'unpublished',
@@ -200,6 +208,9 @@ describe('Unpublish plugin', () => {
 
       await waitUntil(() => unpublishStub.calledOnce);
 
+      await waitUntil(() => fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo'));
+
+      expect(fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'unpublished',
@@ -225,7 +236,8 @@ describe('Unpublish plugin', () => {
       confirmUnpublish(sidekick);
 
       await waitUntil(() => unpublishStub.calledOnce);
-      expect(unpublishStub.calledOnce);
+      expect(unpublishStub.calledOnce).to.be.true;
+      expect(fireEventSpy.neverCalledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED)).to.be.true;
     }).timeout(5000);
   });
 });
