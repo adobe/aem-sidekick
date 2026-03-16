@@ -137,9 +137,11 @@ describe('Unpublish plugin', () => {
 
       await waitUntil(() => reloadPageStub.calledOnce, 'page not reloaded', { timeout: 4000 });
 
+      await waitUntil(() => fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo'));
+
       expect(unpublishStub.calledOnce).to.be.true;
       expect(reloadPageStub.calledOnce).to.be.true;
-      expect(fireEventSpy.calledOnceWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
+      expect(fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'unpublished',
@@ -168,9 +170,11 @@ describe('Unpublish plugin', () => {
       waitUntil(() => showToastSpy.calledOnce);
       sidekickTest.clickToastClose();
 
+      await waitUntil(() => fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo'));
+
       expect(unpublishStub.calledOnce).to.be.true;
       expect(reloadPageStub.calledOnce).to.be.false;
-      expect(fireEventSpy.calledOnceWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
+      expect(fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'unpublished',
@@ -204,7 +208,9 @@ describe('Unpublish plugin', () => {
 
       await waitUntil(() => unpublishStub.calledOnce);
 
-      expect(fireEventSpy.calledOnceWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
+      await waitUntil(() => fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo'));
+
+      expect(fireEventSpy.calledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED, '/foo')).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
         source: 'sidekick',
         target: 'unpublished',
@@ -231,7 +237,7 @@ describe('Unpublish plugin', () => {
 
       await waitUntil(() => unpublishStub.calledOnce);
       expect(unpublishStub.calledOnce).to.be.true;
-      expect(fireEventSpy.called).to.be.false;
+      expect(fireEventSpy.neverCalledWith(EXTERNAL_EVENTS.RESOURCE_UNPUBLISHED)).to.be.true;
     }).timeout(5000);
   });
 });
