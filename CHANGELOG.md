@@ -1,3 +1,10 @@
+## [7.30.1](https://github.com/adobe/aem-sidekick/compare/v7.30.0...v7.30.1) (2026-03-16)
+
+
+### Bug Fixes
+
+* remove duplicate fireEvent call in unpublish plugin ([#819](https://github.com/adobe/aem-sidekick/issues/819)) ([29f70de](https://github.com/adobe/aem-sidekick/commit/29f70dee0d61c364e4e8dbcafe9d3932f7e2cf26))
+
 # [7.30.0](https://github.com/adobe/aem-sidekick/compare/v7.29.0...v7.30.0) (2026-03-13)
 
 
