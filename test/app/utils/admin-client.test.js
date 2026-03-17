@@ -641,11 +641,11 @@ describe('Test Admin Client', () => {
         'preview',
         path,
         409,
-        `[admin] Unable to preview '${path}': MP4 is longer than 2 minutes: 2m 20s`,
-        'AEM_BACKEND_MP4_TOO_LONG',
+        `[admin] Unable to preview '${path}': MP4 is larger than 36MB: 41MB`,
+        'AEM_BACKEND_MP4_TOO_BIG',
       );
-      expect(res).to.equal('(409) Unable to preview /foo.mp4: MP4 is longer than 2 minutes');
-      expect(details).to.equal('MP4 is longer than 2 minutes: 2m 20s');
+      expect(res).to.equal('(409) Unable to preview /foo.mp4: MP4 is larger than 36MB');
+      expect(details).to.equal('MP4 is larger than 36MB: 41MB');
     });
 
     it('should return localized error for 401 on bulk operation', () => {
