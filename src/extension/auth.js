@@ -18,10 +18,15 @@ import { ADMIN_ORIGIN, ADMIN_ORIGIN_NEW } from './utils/admin.js';
 
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
 const { host: newAdminHost } = new URL(ADMIN_ORIGIN_NEW);
-const TOOLS_AUTH_ALLOWLIST_DOMAINS = [
-  'helix-json2html.adobeaem.workers.dev',
-  'helix-snapshot-scheduler.adobeaem.workers.dev',
-  'da-etc.adobeaem.workers.dev',
+const TOOLS_AUTH_ALLOWLIST_RULES = [
+  {
+    requestDomain: 'helix-json2html.adobeaem.workers.dev',
+    regexFilter: (owner, repo) => `^https://helix-json2html\\.adobeaem\\.workers\\.dev/((config|api)/)?${owner}/${repo}/[^/?#]+(?:/.*)?(?:\\?.*)?$`,
+  },
+  {
+    requestDomain: 'da-etc.adobeaem.workers.dev',
+    regexFilter: (owner, repo) => `^https://da-etc\\.adobeaem\\.workers\\.dev/[^?]+\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews)%2F.*`,
+  },
 ];
 
 function getRandomId() {
@@ -89,7 +94,7 @@ export async function configureAuthAndCorsHeaders() {
           },
         });
 
-        rules.push({
+        const toolsWorkerRules = TOOLS_AUTH_ALLOWLIST_RULES.map((ruleConfig) => ({
           id: getRandomId(),
           priority: 1,
           action: {
@@ -102,11 +107,14 @@ export async function configureAuthAndCorsHeaders() {
           },
           condition: {
             initiatorDomains: ['tools.aem.live'],
-            requestDomains: TOOLS_AUTH_ALLOWLIST_DOMAINS,
+            regexFilter: ruleConfig.regexFilter(owner, repo),
+            requestDomains: [ruleConfig.requestDomain],
             requestMethods: ['get', 'put', 'post', 'delete'],
             resourceTypes: ['xmlhttprequest'],
           },
-        });
+        }));
+
+        rules.push(...toolsWorkerRules);
 
         const corsFilters = [`^https://[0-9a-z-]+--[0-9a-z-]+--${owner}\\.aem\\.(page|live|reviews)/.*`];
         const project = await getConfig('sync', `${owner}/${repo}`);
