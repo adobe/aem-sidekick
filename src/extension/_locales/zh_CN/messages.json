@@ -23,14 +23,11 @@
   "AEM_BACKEND_JSON_INVALID": {
     "message": "无法预览 $2：无效的 JSON"
   },
-  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
-    "message": "无法预览 $1：MP4 比特率高于 300KB/s"
+  "AEM_BACKEND_MP4_TOO_BIG": {
+    "message": "无法预览 $1：MP4 大于 $2"
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
     "message": "无法预览 $1：无效的 MP4"
-  },
-  "AEM_BACKEND_MP4_TOO_LONG": {
-    "message": "无法预览 $1：MP4 长度超过 2 分钟"
   },
   "AEM_BACKEND_NON_MATCHING_MEDIA": {
     "message": "无法预览 $1：预期为 $2，但实际为 $3"

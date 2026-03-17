@@ -23,14 +23,11 @@
   "AEM_BACKEND_JSON_INVALID": {
     "message": "$2 をプレビューできません : 無効な JSON"
   },
-  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
-    "message": "$1 をプレビューできません : MP4 ビットレートが 300 KB/秒を超えています"
+  "AEM_BACKEND_MP4_TOO_BIG": {
+    "message": "$1 をプレビューできません : MP4 が $2 を超えています"
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
     "message": "$1 をプレビューできません : 無効な MP4"
-  },
-  "AEM_BACKEND_MP4_TOO_LONG": {
-    "message": "$1 をプレビューできません : MP4 が 2 分を超えています"
   },
   "AEM_BACKEND_NON_MATCHING_MEDIA": {
     "message": "$1 をプレビューできません : $2 が期待されましたが、$3 が見つかりました"
