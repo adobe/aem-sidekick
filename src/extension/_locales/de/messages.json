@@ -390,7 +390,7 @@
     "message": "Bitte geben Sie zur Bestätigung den Text genau so ein, wie er angezeigt wird."
   },
   "destructive_confirmation_prompt": {
-    "message": "Geben Sie den Text unten zur Bestätigung ein:"
+    "message": "Geben Sie den folgenden Text zur Bestätigung ein:"
   },
   "details": {
     "message": "Details"

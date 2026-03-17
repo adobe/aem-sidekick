@@ -390,7 +390,7 @@
     "message": "抱歉，请输入与显示内容完全一致的文字进行确认。"
   },
   "destructive_confirmation_prompt": {
-    "message": "键入以下文本以确认："
+    "message": "输入以下文本以确认："
   },
   "details": {
     "message": "详细信息"

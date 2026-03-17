@@ -390,7 +390,7 @@
     "message": "申し訳ありませんが、確認のため、表示されているとおりにテキストを正確に入力してください。"
   },
   "destructive_confirmation_prompt": {
-    "message": "以下にテキストを入力して確定します："
+    "message": "以下にテキストを入力して確定します。"
   },
   "details": {
     "message": "詳細"

@@ -390,7 +390,7 @@
     "message": "Immetti il testo esattamente come visualizzato per confermare."
   },
   "destructive_confirmation_prompt": {
-    "message": "Digita il testo seguente per confermare:"
+    "message": "Digita il testo di seguito per confermare:"
   },
   "details": {
     "message": "Dettagli"
