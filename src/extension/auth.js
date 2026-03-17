@@ -18,15 +18,20 @@ import { ADMIN_ORIGIN, ADMIN_ORIGIN_NEW } from './utils/admin.js';
 
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
 const { host: newAdminHost } = new URL(ADMIN_ORIGIN_NEW);
+const TOOLS_AUTH_ALLOWLIST_DOMAINS = [
+  'helix-json2html.adobeaem.workers.dev',
+  'helix-snapshot-scheduler.adobeaem.workers.dev',
+  'da-etc.adobeaem.workers.dev',
+];
 
 function getRandomId() {
   return Math.floor(Math.random() * 1000000);
 }
 
 /**
- * Sets the x-auth-token header for all requests to the Admin API if project config
- * has an auth token. Also sets the Access-Control-Allow-Origin header for
- * all requests from tools.aem.live.
+ * Sets the x-auth-token header for Admin API requests and TOOLS_AUTH_ALLOWLIST_DOMAINS
+ * when project config has an auth token. Also sets the Access-Control-Allow-Origin header
+ * for all requests from tools.aem.live.
  * @returns {Promise<void>}
  */
 export async function configureAuthAndCorsHeaders() {
@@ -79,6 +84,25 @@ export async function configureAuthAndCorsHeaders() {
             excludedInitiatorDomains: ['da.live'],
             regexFilter: `^https://${newAdminHost}/(${owner}/.*|profile\\?org\\=${owner}\\&)`,
             requestDomains: [newAdminHost],
+            requestMethods: ['get', 'put', 'post', 'delete'],
+            resourceTypes: ['xmlhttprequest'],
+          },
+        });
+
+        rules.push({
+          id: getRandomId(),
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [{
+              operation: 'set',
+              header: 'x-auth-token',
+              value: authToken,
+            }],
+          },
+          condition: {
+            initiatorDomains: ['tools.aem.live'],
+            requestDomains: TOOLS_AUTH_ALLOWLIST_DOMAINS,
             requestMethods: ['get', 'put', 'post', 'delete'],
             resourceTypes: ['xmlhttprequest'],
           },

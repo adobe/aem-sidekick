@@ -28,6 +28,42 @@ import { error } from './test-utils.js';
 // @ts-ignore
 window.chrome = chromeMock;
 
+const TOOLS_WORKER_DOMAINS = [
+  'helix-json2html.adobeaem.workers.dev',
+  'helix-snapshot-scheduler.adobeaem.workers.dev',
+  'da-etc.adobeaem.workers.dev',
+];
+
+function createExpectedToolsWorkerRule(authToken) {
+  return {
+    id: sinon.match.number,
+    priority: 1,
+    action: {
+      type: 'modifyHeaders',
+      requestHeaders: [
+        {
+          operation: 'set',
+          header: 'x-auth-token',
+          value: authToken,
+        },
+      ],
+    },
+    condition: {
+      initiatorDomains: ['tools.aem.live'],
+      requestDomains: TOOLS_WORKER_DOMAINS,
+      requestMethods: [
+        'get',
+        'put',
+        'post',
+        'delete',
+      ],
+      resourceTypes: [
+        'xmlhttprequest',
+      ],
+    },
+  };
+}
+
 describe('Test auth', () => {
   const sandbox = sinon.createSandbox();
 
@@ -147,6 +183,7 @@ describe('Test auth', () => {
             ],
           },
         },
+        createExpectedToolsWorkerRule('1234567890'),
         {
           id: sinon.match.number,
           priority: 1,
@@ -260,6 +297,7 @@ describe('Test auth', () => {
             ],
           },
         },
+        createExpectedToolsWorkerRule(authToken),
         {
           id: sinon.match.number,
           priority: 1,
@@ -445,6 +483,7 @@ describe('Test auth', () => {
             ],
           },
         },
+        createExpectedToolsWorkerRule(authToken),
         {
           id: sinon.match.number,
           priority: 1,
