@@ -28,65 +28,35 @@ import { error } from './test-utils.js';
 // @ts-ignore
 window.chrome = chromeMock;
 
-function createExpectedToolsWorkerRules(authToken, owner = 'test', repo = 'site') {
-  return [
-    {
-      id: sinon.match.number,
-      priority: 1,
-      action: {
-        type: 'modifyHeaders',
-        requestHeaders: [
-          {
-            operation: 'set',
-            header: 'x-auth-token',
-            value: authToken,
-          },
-        ],
-      },
-      condition: {
-        initiatorDomains: ['tools.aem.live'],
-        regexFilter: `^https://helix-json2html\\.adobeaem\\.workers\\.dev/((config|api)/)?${owner}/${repo}/[^/?#]+(?:/.*)?(?:\\?.*)?$`,
-        requestDomains: ['helix-json2html.adobeaem.workers.dev'],
-        requestMethods: [
-          'get',
-          'put',
-          'post',
-          'delete',
-        ],
-        resourceTypes: [
-          'xmlhttprequest',
-        ],
-      },
+function createExpectedAuthToolsRules(authToken, owner = 'test', repo = 'site') {
+  return [{
+    id: sinon.match.number,
+    priority: 1,
+    action: {
+      type: 'modifyHeaders',
+      requestHeaders: [
+        {
+          operation: 'set',
+          header: 'x-auth-token',
+          value: authToken,
+        },
+      ],
     },
-    {
-      id: sinon.match.number,
-      priority: 1,
-      action: {
-        type: 'modifyHeaders',
-        requestHeaders: [
-          {
-            operation: 'set',
-            header: 'x-auth-token',
-            value: authToken,
-          },
-        ],
-      },
-      condition: {
-        initiatorDomains: ['tools.aem.live'],
-        regexFilter: `^https://da-etc\\.adobeaem\\.workers\\.dev/[^?]+\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews)%2F.*`,
-        requestDomains: ['da-etc.adobeaem.workers.dev'],
-        requestMethods: [
-          'get',
-          'put',
-          'post',
-          'delete',
-        ],
-        resourceTypes: [
-          'xmlhttprequest',
-        ],
-      },
+    condition: {
+      initiatorDomains: ['tools.aem.live'],
+      regexFilter: `^https://helix-json2html\\.adobeaem\\.workers\\.dev/((config|api)/)?${owner}/${repo}/[^/?#]+(?:/.*)?(?:\\?.*)?$`,
+      requestDomains: ['helix-json2html.adobeaem.workers.dev'],
+      requestMethods: [
+        'get',
+        'put',
+        'post',
+        'delete',
+      ],
+      resourceTypes: [
+        'xmlhttprequest',
+      ],
     },
-  ];
+  }];
 }
 
 describe('Test auth', () => {
@@ -208,7 +178,6 @@ describe('Test auth', () => {
             ],
           },
         },
-        ...createExpectedToolsWorkerRules('1234567890'),
         {
           id: sinon.match.number,
           priority: 1,
@@ -235,6 +204,7 @@ describe('Test auth', () => {
             ],
           },
         },
+        ...createExpectedAuthToolsRules('1234567890'),
       ],
     },
     )).to.be.true;
@@ -322,7 +292,6 @@ describe('Test auth', () => {
             ],
           },
         },
-        ...createExpectedToolsWorkerRules(authToken),
         {
           id: sinon.match.number,
           priority: 1,
@@ -427,6 +396,7 @@ describe('Test auth', () => {
             ],
           },
         },
+        ...createExpectedAuthToolsRules(authToken),
       ],
     },
     )).to.be.true;
@@ -508,7 +478,6 @@ describe('Test auth', () => {
             ],
           },
         },
-        ...createExpectedToolsWorkerRules(authToken),
         {
           id: sinon.match.number,
           priority: 1,
@@ -535,6 +504,7 @@ describe('Test auth', () => {
             ],
           },
         },
+        ...createExpectedAuthToolsRules(authToken),
         {
           id: sinon.match.number,
           priority: 1,
