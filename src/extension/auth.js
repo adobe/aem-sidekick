@@ -25,6 +25,13 @@ const TOOLS_AUTH_TOKEN_RULES = [
   },
 ];
 
+const TOOLS_SITE_TOKEN_RULES = [
+  {
+    requestDomain: 'da-etc.adobeaem.workers.dev',
+    regexFilter: (owner, repo) => `^https://da-etc\\.adobeaem\\.workers\\.dev/[^?]+\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews)%2F.*`,
+  },
+];
+
 function getRandomId() {
   return Math.floor(Math.random() * 1000000);
 }
@@ -174,6 +181,28 @@ export async function configureAuthAndCorsHeaders() {
             ],
           },
         });
+
+        const siteToolsRules = TOOLS_SITE_TOKEN_RULES.map((ruleConfig) => ({
+          id: getRandomId(),
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [{
+              operation: 'set',
+              header: 'authorization',
+              value: `token ${siteToken}`,
+            }],
+          },
+          condition: {
+            initiatorDomains: ['tools.aem.live'],
+            regexFilter: ruleConfig.regexFilter(owner, repo),
+            requestDomains: [ruleConfig.requestDomain],
+            requestMethods: ['get'],
+            resourceTypes: ['xmlhttprequest'],
+          },
+        }));
+
+        rules.push(...siteToolsRules);
       }
 
       log.debug(`addAuthTokensHeaders: added rules for ${owner}`);

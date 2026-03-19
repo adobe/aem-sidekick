@@ -59,6 +59,34 @@ function createExpectedAuthToolsRules(authToken, owner = 'test', repo = 'site') 
   }];
 }
 
+function createExpectedSiteToolsRules(siteToken, owner = 'test', repo = 'site') {
+  return [{
+    id: sinon.match.number,
+    priority: 1,
+    action: {
+      type: 'modifyHeaders',
+      requestHeaders: [
+        {
+          operation: 'set',
+          header: 'authorization',
+          value: `token ${siteToken}`,
+        },
+      ],
+    },
+    condition: {
+      initiatorDomains: ['tools.aem.live'],
+      regexFilter: `^https://da-etc\\.adobeaem\\.workers\\.dev/[^?]+\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews)%2F.*`,
+      requestDomains: ['da-etc.adobeaem.workers.dev'],
+      requestMethods: [
+        'get',
+      ],
+      resourceTypes: [
+        'xmlhttprequest',
+      ],
+    },
+  }];
+}
+
 describe('Test auth', () => {
   const sandbox = sinon.createSandbox();
 
@@ -559,6 +587,7 @@ describe('Test auth', () => {
             ],
           },
         },
+        ...createExpectedSiteToolsRules(siteToken),
       ],
     },
     )).to.be.true;
