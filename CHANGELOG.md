@@ -1,3 +1,10 @@
+## [7.31.1](https://github.com/adobe/aem-sidekick/compare/v7.31.0...v7.31.1) (2026-03-19)
+
+
+### Bug Fixes
+
+* single configurable video limit ([#823](https://github.com/adobe/aem-sidekick/issues/823)) ([a29066e](https://github.com/adobe/aem-sidekick/commit/a29066ec169a0df06328d3cf9f89b7af06913414))
+
 # [7.31.0](https://github.com/adobe/aem-sidekick/compare/v7.30.1...v7.31.0) (2026-03-19)
 
 
