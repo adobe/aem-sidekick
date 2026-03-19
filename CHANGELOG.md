@@ -1,3 +1,10 @@
+# [7.31.0](https://github.com/adobe/aem-sidekick/compare/v7.30.1...v7.31.0) (2026-03-19)
+
+
+### Features
+
+* allow token from tools.aem.live to trusted domains ([#825](https://github.com/adobe/aem-sidekick/issues/825)) ([5c5f804](https://github.com/adobe/aem-sidekick/commit/5c5f80439612d074149c2f0a5a1455fdd0f0fe2a))
+
 ## [7.30.1](https://github.com/adobe/aem-sidekick/compare/v7.30.0...v7.30.1) (2026-03-16)
 
 
