@@ -387,7 +387,7 @@
     "message": "죄송합니다. 확인을 위해 표시된 대로 정확하게 텍스트를 입력해 주십시오."
   },
   "destructive_confirmation_prompt": {
-    "message": "아래에 텍스트를 입력하여 확인하십시오."
+    "message": "아래 텍스트를 입력하여 확인:"
   },
   "details": {
     "message": "세부 정보"

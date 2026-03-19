@@ -387,7 +387,7 @@
     "message": "Veuillez saisir le texte exactement tel qu’il est affiché pour confirmer."
   },
   "destructive_confirmation_prompt": {
-    "message": "Saisissez le texte ci-dessous pour confirmer :"
+    "message": "Saisissez le texte ci-dessous pour confirmer :"
   },
   "details": {
     "message": "Détails"
