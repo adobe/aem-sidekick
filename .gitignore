@@ -11,5 +11,6 @@ test-results.xml
 dist/
 .vscode
 .cursor
+.claude
 *.env
 tmp
