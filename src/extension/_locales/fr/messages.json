@@ -23,14 +23,11 @@
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Impossible de prévisualiser $2 : JSON non valide"
   },
-  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
-    "message": "Impossible de prévisualiser $1 : le débit MP4 est supérieur à 300 Ko/s."
+  "AEM_BACKEND_MP4_TOO_BIG": {
+    "message": "Impossible de prévisualiser $1 : le MP4 dépasse $2."
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
     "message": "Impossible de prévisualiser $1 : fichier MP4 non valide."
-  },
-  "AEM_BACKEND_MP4_TOO_LONG": {
-    "message": "Impossible de prévisualiser $1 : le fichier MP4 dépasse 2 minutes."
   },
   "AEM_BACKEND_NON_MATCHING_MEDIA": {
     "message": "Impossible de prévisualiser $1 : $2 attendu, mais $3 trouvé"
@@ -390,7 +387,7 @@
     "message": "Veuillez saisir le texte exactement tel qu’il est affiché pour confirmer."
   },
   "destructive_confirmation_prompt": {
-    "message": "Saisissez le texte ci-dessous pour confirmer :"
+    "message": "Saisissez le texte ci-dessous pour confirmer :"
   },
   "details": {
     "message": "Détails"

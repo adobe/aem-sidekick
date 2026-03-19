@@ -23,14 +23,11 @@
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Impossibile visualizzare in anteprima $2: JSON non valido"
   },
-  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
-    "message": "Impossibile visualizzare in anteprima $1: il bit rate MP4 è superiore a 300 KB/s"
+  "AEM_BACKEND_MP4_TOO_BIG": {
+    "message": "Impossibile visualizzare in anteprima $1: MP4 superiore a $2"
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
     "message": "Impossibile visualizzare in anteprima $1: MP4 non valido"
-  },
-  "AEM_BACKEND_MP4_TOO_LONG": {
-    "message": "Impossibile visualizzare in anteprima $1: MP4 è più lungo di 2 minuti"
   },
   "AEM_BACKEND_NON_MATCHING_MEDIA": {
     "message": "Impossibile visualizzare in anteprima $1: previsto $2 ma trovato $3"
@@ -390,7 +387,7 @@
     "message": "Immetti il testo esattamente come visualizzato per confermare."
   },
   "destructive_confirmation_prompt": {
-    "message": "Digita il testo seguente per confermare:"
+    "message": "Digita il testo di seguito per confermare:"
   },
   "details": {
     "message": "Dettagli"

@@ -23,14 +23,11 @@
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Vorschau von $2 nicht möglich: ungültiges JSON"
   },
-  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
-    "message": "Vorschau von $1 nicht möglich: MP4-Bitrate ist höher als 300 KB/s"
+  "AEM_BACKEND_MP4_TOO_BIG": {
+    "message": "Vorschau von $1 nicht möglich: MP4 ist größer als $2"
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
     "message": "Vorschau von $1 nicht möglich: ungültige MP4-Datei"
-  },
-  "AEM_BACKEND_MP4_TOO_LONG": {
-    "message": "Vorschau von $1 nicht möglich: MP4 ist länger als 2 Minuten"
   },
   "AEM_BACKEND_NON_MATCHING_MEDIA": {
     "message": "Vorschau von $1 nicht möglich: $2 erwartet, aber $3 gefunden"
@@ -390,7 +387,7 @@
     "message": "Bitte geben Sie zur Bestätigung den Text genau so ein, wie er angezeigt wird."
   },
   "destructive_confirmation_prompt": {
-    "message": "Geben Sie den Text unten zur Bestätigung ein:"
+    "message": "Geben Sie den folgenden Text zur Bestätigung ein:"
   },
   "details": {
     "message": "Details"

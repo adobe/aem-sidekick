@@ -750,11 +750,8 @@
     "AEM_BACKEND_FILE_TOO_BIG": {
       "message": "Unable to preview $1: file larger than 100MB"
     },
-    "AEM_BACKEND_MP4_TOO_LONG": {
-      "message": "Unable to preview $1: MP4 is longer than 2 minutes"
-    },
-    "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
-      "message": "Unable to preview $1: MP4 bit rate is higher than 300KB/s"
+    "AEM_BACKEND_MP4_TOO_BIG": {
+      "message": "Unable to preview $1: MP4 is larger than $2"
     },
     "AEM_BACKEND_MP4_PARSING_FAILED": {
       "message": "Unable to preview $1: invalid MP4"

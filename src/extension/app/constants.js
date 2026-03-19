@@ -403,12 +403,8 @@ export const ERRORS = [
     template: 'Unable to preview \'$1\': Unable to parse MP4',
   },
   {
-    code: 'AEM_BACKEND_MP4_TOO_LONG',
-    template: 'Unable to preview \'$1\': MP4 is longer than 2 minutes: $2',
-  },
-  {
-    code: 'AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH',
-    template: 'Unable to preview \'$1\': MP4 has a higher bitrate than 300 KB/s: $2',
+    code: 'AEM_BACKEND_MP4_TOO_BIG',
+    template: 'Unable to preview \'$1\': MP4 is larger than $2: $3',
   },
   // ico
   {

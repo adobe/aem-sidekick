@@ -23,14 +23,11 @@
   "AEM_BACKEND_JSON_INVALID": {
     "message": "$2 미리보기 불가: 잘못된 JSON입니다."
   },
-  "AEM_BACKEND_MP4_BIT_RATE_TOO_HIGH": {
-    "message": "$1 미리보기 불가: MP4 비트 전송률이 300KB/s보다 높습니다."
+  "AEM_BACKEND_MP4_TOO_BIG": {
+    "message": "$1 미리보기 불가: MP4 크기가 $2를 초과합니다."
   },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
     "message": "$1 미리보기 불가: 유효하지 않은 MP4입니다."
-  },
-  "AEM_BACKEND_MP4_TOO_LONG": {
-    "message": "$1 미리보기 불가: MP4 재생 시간이 2분을 초과합니다."
   },
   "AEM_BACKEND_NON_MATCHING_MEDIA": {
     "message": "$1 미리보기 불가: $2을(를) 예상했지만 $3이(가) 발견되었습니다."
@@ -390,7 +387,7 @@
     "message": "죄송합니다. 확인을 위해 표시된 대로 정확하게 텍스트를 입력해 주십시오."
   },
   "destructive_confirmation_prompt": {
-    "message": "아래에 텍스트를 입력하여 확인하십시오."
+    "message": "아래 텍스트를 입력하여 확인:"
   },
   "details": {
     "message": "세부 정보"
