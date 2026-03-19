@@ -18,15 +18,28 @@ import { ADMIN_ORIGIN, ADMIN_ORIGIN_NEW } from './utils/admin.js';
 
 const { host: adminHost } = new URL(ADMIN_ORIGIN);
 const { host: newAdminHost } = new URL(ADMIN_ORIGIN_NEW);
+const TOOLS_AUTH_TOKEN_RULES = [
+  {
+    requestDomain: 'helix-json2html.adobeaem.workers.dev',
+    regexFilter: (owner, repo) => `^https://helix-json2html\\.adobeaem\\.workers\\.dev/((config|api)/)?${owner}/${repo}/[^/?#]+(?:/.*)?(?:\\?.*)?$`,
+  },
+];
+
+const TOOLS_SITE_TOKEN_RULES = [
+  {
+    requestDomain: 'da-etc.adobeaem.workers.dev',
+    regexFilter: (owner, repo) => `^https://da-etc\\.adobeaem\\.workers\\.dev/[^?]+\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews)%2F.*`,
+  },
+];
 
 function getRandomId() {
   return Math.floor(Math.random() * 1000000);
 }
 
 /**
- * Sets the x-auth-token header for all requests to the Admin API if project config
- * has an auth token. Also sets the Access-Control-Allow-Origin header for
- * all requests from tools.aem.live.
+ * Sets the x-auth-token header for Admin API requests and auth token tool workers,
+ * the authorization header for site token tool workers, and the
+ * Access-Control-Allow-Origin header for all requests from tools.aem.live.
  * @returns {Promise<void>}
  */
 export async function configureAuthAndCorsHeaders() {
@@ -116,6 +129,28 @@ export async function configureAuthAndCorsHeaders() {
         }));
 
         rules.push(...corsRules);
+
+        const authToolsRules = TOOLS_AUTH_TOKEN_RULES.map((ruleConfig) => ({
+          id: getRandomId(),
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [{
+              operation: 'set',
+              header: 'x-auth-token',
+              value: authToken,
+            }],
+          },
+          condition: {
+            initiatorDomains: ['tools.aem.live'],
+            regexFilter: ruleConfig.regexFilter(owner, repo),
+            requestDomains: [ruleConfig.requestDomain],
+            requestMethods: ['get', 'put', 'post', 'delete'],
+            resourceTypes: ['xmlhttprequest'],
+          },
+        }));
+
+        rules.push(...authToolsRules);
       }
 
       if (siteToken) {
@@ -146,6 +181,28 @@ export async function configureAuthAndCorsHeaders() {
             ],
           },
         });
+
+        const siteToolsRules = TOOLS_SITE_TOKEN_RULES.map((ruleConfig) => ({
+          id: getRandomId(),
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [{
+              operation: 'set',
+              header: 'authorization',
+              value: `token ${siteToken}`,
+            }],
+          },
+          condition: {
+            initiatorDomains: ['tools.aem.live'],
+            regexFilter: ruleConfig.regexFilter(owner, repo),
+            requestDomains: [ruleConfig.requestDomain],
+            requestMethods: ['get'],
+            resourceTypes: ['xmlhttprequest'],
+          },
+        }));
+
+        rules.push(...siteToolsRules);
       }
 
       log.debug(`addAuthTokensHeaders: added rules for ${owner}`);
