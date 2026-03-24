@@ -23,11 +23,11 @@
   "AEM_BACKEND_JSON_INVALID": {
     "message": "無法預覽 $2：無效的 JSON"
   },
-  "AEM_BACKEND_MP4_TOO_BIG": {
-    "message": "無法預覽 $1：MP4 大於 $2"
-  },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
     "message": "無法預覽 $1：無效的 MP4"
+  },
+  "AEM_BACKEND_MP4_TOO_BIG": {
+    "message": "無法預覽 $1：MP4 大於 $2"
   },
   "AEM_BACKEND_NON_MATCHING_MEDIA": {
     "message": "無法預覽 $1：預期為 $2，但找到 $3"
