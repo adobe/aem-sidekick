@@ -79,6 +79,7 @@ function createExpectedSiteToolsRules(siteToken, owner = 'test', repo = 'site') 
       requestDomains: ['da-etc.adobeaem.workers.dev'],
       requestMethods: [
         'get',
+        'head',
       ],
       resourceTypes: [
         'xmlhttprequest',
