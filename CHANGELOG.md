@@ -1,3 +1,10 @@
+## [7.31.2](https://github.com/adobe/aem-sidekick/compare/v7.31.1...v7.31.2) (2026-03-28)
+
+
+### Bug Fixes
+
+* allow head requests for site token rules ([8bac4bb](https://github.com/adobe/aem-sidekick/commit/8bac4bbb0a4995b7219f77d57f33df35c947099a))
+
 ## [7.31.1](https://github.com/adobe/aem-sidekick/compare/v7.31.0...v7.31.1) (2026-03-19)
 
 
