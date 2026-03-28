@@ -197,7 +197,7 @@ export async function configureAuthAndCorsHeaders() {
             initiatorDomains: ['tools.aem.live'],
             regexFilter: ruleConfig.regexFilter(owner, repo),
             requestDomains: [ruleConfig.requestDomain],
-            requestMethods: ['get'],
+            requestMethods: ['get', 'head'],
             resourceTypes: ['xmlhttprequest'],
           },
         }));
