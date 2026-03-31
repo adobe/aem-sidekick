@@ -237,10 +237,10 @@
 
 /**
  * @typedef {Object} AdminJob
- * @property {string} name The job name
- * @property {string} state The job state
- * @property {AdminJobProgress} progress The progress info
- * @property {string} startTime The job start time as UTC string
+ * @property {string} [name] The job name
+ * @property {string} [state] The job state
+ * @property {AdminJobProgress} [progress] The progress info
+ * @property {string} [startTime] The job start time as UTC string
  * @property {string} [stopTime] The job stop time as UTC string
  * @property {Object} [data] The job data
  * @property {AdminJobResource[]} [data.resources] The resources

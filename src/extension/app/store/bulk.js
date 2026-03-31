@@ -291,6 +291,54 @@ export class BulkStore {
   }
 
   /**
+   * Performs a synchronous bulk operation with client-side batching.
+   * @param {string} route The route ("preview" or "live")
+   * @param {string[]} paths The resource paths
+   * @returns {Promise<AdminJob>} The combined job details
+   */
+  async #doSyncBulkOperation(route, paths) {
+    const { appStore } = this;
+    const batchSize = appStore.isSharePointFolder(appStore.location) ? 15 : 30;
+    const allResources = [];
+    let totalProcessed = 0;
+    let totalFailed = 0;
+
+    for (let i = 0; i < paths.length; i += batchSize) {
+      const batchPaths = paths.slice(i, i + batchSize);
+      // eslint-disable-next-line no-await-in-loop
+      const resp = await appStore.api.startJob(route, batchPaths);
+
+      if (!resp) {
+        this.progress = null;
+        return null;
+      }
+
+      const { job } = resp;
+      if (job?.data?.resources) {
+        allResources.push(...job.data.resources);
+      }
+      if (job?.progress) {
+        totalProcessed += job.progress.processed;
+        totalFailed += job.progress.failed;
+      }
+
+      // update activity info with accumulated progress
+      this.progress = {
+        total: paths.length,
+        processed: totalProcessed,
+        failed: totalFailed,
+      };
+    }
+
+    // delayed reset of bulk progress
+    window.setTimeout(() => {
+      this.progress = null;
+    }, 1000);
+
+    return { data: { resources: allResources } };
+  }
+
+  /**
    * Performs a bulk operation.
    * @param {string} operation The bulk operation ("preview" or "publish")
    * @param {Object} [opts] The options
@@ -312,6 +360,10 @@ export class BulkStore {
       processed: 0,
       failed: 0,
     };
+
+    if (appStore.siteStore.apiUpgrade) {
+      return this.#doSyncBulkOperation(route, paths);
+    }
 
     const resp = await api.startJob(route, paths);
     if (resp) {
@@ -553,7 +605,7 @@ export class BulkStore {
         const res = await this.#doBulkOperation('preview');
         if (res) {
           ({ resources } = res.data || {});
-        } else {
+        } else if (!this.appStore.toast) {
           this.appStore.setState();
         }
       }
@@ -607,7 +659,7 @@ export class BulkStore {
         const res = await this.#doBulkOperation('publish', { route: 'live' });
         if (res) {
           ({ resources } = res.data || {});
-        } else {
+        } else if (!this.appStore.toast) {
           this.appStore.setState();
         }
       }

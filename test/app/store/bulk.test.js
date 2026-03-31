@@ -988,6 +988,170 @@ describe('Test Bulk Store', () => {
       });
     });
 
+    describe('sync bulk operations (apiUpgrade)', () => {
+      beforeEach(() => {
+        appStore.siteStore.apiUpgrade = true;
+      });
+
+      it('sync bulk preview succeeds', async () => {
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet', 'other']);
+        await waitUntil(() => bulkStore.selection.length === 3);
+
+        startJobStub.resolves({
+          job: {
+            topic: 'preview',
+            name: 'job-1',
+            state: 'stopped',
+            data: {
+              resources: [
+                { path: '/document', status: 200 },
+                { path: '/spreadsheet.json', status: 200 },
+                { path: '/other.unknown', status: 200 },
+              ],
+            },
+            progress: { total: 3, processed: 3, failed: 0 },
+          },
+        });
+
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => startJobStub.called);
+        expect(startJobStub.calledOnce).to.be.true;
+        expect(startJobStub.calledWith('preview')).to.be.true;
+        expect(getJobStub.called).to.be.false;
+
+        await waitUntil(() => showToastSpy.called);
+        expect(showToastSpy.calledWithMatch({
+          message: 'Preview of 3 files successfully generated.',
+          variant: 'positive',
+        })).to.be.true;
+        expect(fireEventStub.calledWithMatch('previewed')).to.be.true;
+      });
+
+      it('sync bulk publish with multi-batch', async () => {
+        const items = Array.from({ length: 20 }, (_, i) => ({
+          file: `file${i}.docx`,
+          type: 'docx',
+        }));
+        bulkStore.setSelection(items);
+        await waitUntil(() => bulkStore.selection.length === 20);
+
+        startJobStub.callsFake(async (api, paths) => ({
+          job: {
+            topic: 'publish',
+            name: `job-${paths.length}`,
+            state: 'stopped',
+            data: {
+              resources: paths.map((path) => ({ path, status: 200 })),
+            },
+            progress: { total: paths.length, processed: paths.length, failed: 0 },
+          },
+        }));
+
+        await bulkStore.publish();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => startJobStub.calledTwice);
+        // batch size 15 for sharepoint: 15 + 5
+        expect(startJobStub.args[0][1].length).to.equal(15);
+        expect(startJobStub.args[1][1].length).to.equal(5);
+        expect(getJobStub.called).to.be.false;
+
+        await waitUntil(() => showToastSpy.called);
+        expect(showToastSpy.calledWithMatch({
+          message: '20 files successfully published.',
+          variant: 'positive',
+        })).to.be.true;
+        expect(fireEventStub.calledWithMatch('published')).to.be.true;
+      });
+
+      it('sync bulk preview fails (startJob returns null)', async () => {
+        startJobStub.callsFake(async () => {
+          // simulate AdminClient showing error toast
+          appStore.showToast({
+            message: 'Failed to generate preview',
+            variant: 'negative',
+          });
+          return null;
+        });
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => startJobStub.called);
+        expect(getJobStub.called).to.be.false;
+        expect(bulkStore.progress).to.be.null;
+        // error toast from AdminClient must be preserved
+        expect(appStore.state).to.equal(STATE.TOAST);
+      });
+
+      it('sync bulk preview with partial failure', async () => {
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        startJobStub.resolves({
+          job: {
+            topic: 'preview',
+            name: 'job-1',
+            state: 'stopped',
+            data: {
+              resources: [
+                { path: '/document', status: 200 },
+                { path: '/spreadsheet.json', status: 502 },
+              ],
+            },
+            progress: { total: 2, processed: 2, failed: 1 },
+          },
+        });
+
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => showToastSpy.called);
+        expect(showToastSpy.calledWithMatch({
+          message: 'Preview of 1 file successfully generated, but 1 failed.',
+          variant: 'warning',
+        })).to.be.true;
+      });
+
+      it('sync bulk preview with total failure', async () => {
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        startJobStub.resolves({
+          job: {
+            topic: 'preview',
+            name: 'job-1',
+            state: 'stopped',
+            data: {
+              resources: [
+                { path: '/document', status: 502 },
+                { path: '/spreadsheet.json', status: 404 },
+              ],
+            },
+            progress: { total: 2, processed: 2, failed: 2 },
+          },
+        });
+
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => showToastSpy.called);
+        expect(showToastSpy.calledWithMatch({
+          message: 'Failed to generate preview of all files.',
+          variant: 'negative',
+        })).to.be.true;
+
+        // details button available
+        const activityAction = recursiveQuery(sidekickTest.sidekick, 'activity-action');
+        const detailsButton = recursiveQuery(activityAction, 'sp-action-button');
+        expect(detailsButton.textContent.trim()).to.equal('Details');
+      });
+    });
+
     describe('copyUrls', () => {
       const host = 'main--aem-boilerplate--adobe.aem.page';
 
