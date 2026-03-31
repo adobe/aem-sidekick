@@ -13,6 +13,7 @@
 import {
   blockDivToTable,
   blockTableToDiv,
+  sectionMetadataToTable,
   createSectionBreaks,
   removeSectionBreaks,
   addMetadataBlock,
@@ -87,6 +88,7 @@ const htmlSourceToEdition = (main, head, url) => {
   });
 
   blockDivToTable(main);
+  sectionMetadataToTable(main);
   createSectionBreaks(main);
   addMetadataBlock(main, head, url);
 };
