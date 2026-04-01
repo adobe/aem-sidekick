@@ -12,7 +12,7 @@
 
 /**
  * Converts a list of css class names into a block name.
- * @param {Array[String]} classList The list of css class names
+ * @param {String[]} classList The list of css class names
  * @returns {String} The block name
  */
 export const classNameToBlockName = (classList) => {
@@ -30,7 +30,7 @@ export const metaToDisplay = (meta) => classNameToBlockName([meta]);
 /**
  * Converts a block name to a list of css class names.
  * @param {String} text The block name
- * @returns {[String]} A list of css class names
+ * @returns {String[]} A list of css class names
  */
 export const toBlockCSSClassNames = (text) => {
   if (!text) {
@@ -91,6 +91,62 @@ export const blockDivToTable = (main) => {
     th.colSpan = maxCols;
 
     div.replaceWith(table);
+  });
+};
+
+/**
+ * Converts server-processed section metadata (classes and data-attributes on section divs)
+ * into Section Metadata table blocks for display in the doc view.
+ * @param {HTMLElement} main The main element
+ */
+export const sectionMetadataToTable = (main) => {
+  main.querySelectorAll(':scope > div').forEach((section) => {
+    const classes = Array.from(section.classList);
+    const dataAttrs = [];
+    for (const attr of section.attributes) {
+      if (attr.name.startsWith('data-')) {
+        dataAttrs.push({ name: attr.name.slice(5), value: attr.value });
+      }
+    }
+
+    if (!classes.length && !dataAttrs.length) return;
+
+    const table = document.createElement('table');
+
+    const thead = document.createElement('thead');
+    const tr = document.createElement('tr');
+    const th = document.createElement('th');
+    th.colSpan = 2;
+    th.textContent = 'Section Metadata';
+    tr.appendChild(th);
+    thead.appendChild(tr);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    table.appendChild(tbody);
+
+    const addRow = (key, value) => {
+      const row = document.createElement('tr');
+      const keyCell = document.createElement('td');
+      keyCell.textContent = key;
+      row.appendChild(keyCell);
+      const valueCell = document.createElement('td');
+      valueCell.textContent = value;
+      row.appendChild(valueCell);
+      tbody.appendChild(row);
+    };
+
+    if (classes.length) {
+      addRow('Style', classes.join(', '));
+      section.removeAttribute('class');
+    }
+
+    dataAttrs.forEach(({ name, value }) => {
+      addRow(metaToDisplay(name), value);
+      section.removeAttribute(`data-${name}`);
+    });
+
+    section.appendChild(table);
   });
 };
 
@@ -187,7 +243,7 @@ export const addMetadataBlock = (main, head, url) => {
 
     const content = document.createElement('td');
     const img = document.createElement('img');
-    img.src = image.content;
+    img.src = image.getAttribute('content');
     content.appendChild(img);
     row.appendChild(content);
   }
@@ -202,7 +258,7 @@ export const addMetadataBlock = (main, head, url) => {
     row.appendChild(nameCell);
 
     const content = document.createElement('td');
-    content.innerHTML = Array.from(tags).map((tag) => tag.content).join(', ');
+    content.innerHTML = Array.from(tags).map((tag) => tag.getAttribute('content')).join(', ');
     row.appendChild(content);
   }
   // END: special cases
