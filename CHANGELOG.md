@@ -1,3 +1,10 @@
+# [7.32.0](https://github.com/adobe/aem-sidekick/compare/v7.31.2...v7.32.0) (2026-04-01)
+
+
+### Features
+
+* support server-processed section metadata in view doc source ([#834](https://github.com/adobe/aem-sidekick/issues/834)) ([547dd3f](https://github.com/adobe/aem-sidekick/commit/547dd3f9e9866bc8774af740e729eaa1254f251e))
+
 ## [7.31.2](https://github.com/adobe/aem-sidekick/compare/v7.31.1...v7.31.2) (2026-03-28)
 
 
