@@ -73,10 +73,10 @@ export const gdriveFileTypes = {
 };
 
 /**
- * The batch size for bulk operations.
+ * The batch size for synchronous bulk operations.
  * @type {number}
  */
-const batchSize = 15;
+const syncBatchSize = 15;
 
 /**
  * Handles bulk operations.
@@ -308,8 +308,8 @@ export class BulkStore {
     let totalProcessed = 0;
     let totalFailed = 0;
 
-    for (let i = 0; i < paths.length; i += batchSize) {
-      const batchPaths = paths.slice(i, i + batchSize);
+    for (let i = 0; i < paths.length; i += syncBatchSize) {
+      const batchPaths = paths.slice(i, i + syncBatchSize);
       // eslint-disable-next-line no-await-in-loop
       const resp = await appStore.api.startJob(route, batchPaths);
 
