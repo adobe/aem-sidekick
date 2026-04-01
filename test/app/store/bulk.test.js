@@ -1088,7 +1088,7 @@ describe('Test Bulk Store', () => {
         expect(appStore.state).to.equal(STATE.TOAST);
       });
 
-      it('sync bulk preview with partial failure', async () => {
+      it('sync bulk preview with partial success', async () => {
         sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
         await waitUntil(() => bulkStore.selection.length === 2);
 
@@ -1117,7 +1117,7 @@ describe('Test Bulk Store', () => {
         })).to.be.true;
       });
 
-      it('sync bulk preview with total failure', async () => {
+      it('sync bulk preview with failure', async () => {
         sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
         await waitUntil(() => bulkStore.selection.length === 2);
 
