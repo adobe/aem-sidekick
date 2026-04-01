@@ -73,6 +73,12 @@ export const gdriveFileTypes = {
 };
 
 /**
+ * The batch size for bulk operations.
+ * @type {number}
+ */
+const batchSize = 15;
+
+/**
  * Handles bulk operations.
  */
 export class BulkStore {
@@ -298,7 +304,6 @@ export class BulkStore {
    */
   async #doSyncBulkOperation(route, paths) {
     const { appStore } = this;
-    const batchSize = appStore.isSharePointFolder(appStore.location) ? 15 : 30;
     const allResources = [];
     let totalProcessed = 0;
     let totalFailed = 0;
