@@ -102,6 +102,10 @@ export async function callAdmin(
   } = {},
 ) {
   const url = createAdminUrl(config, api, path, searchParams);
+  // force async processing for bulk jobs with api upgrade
+  if (body && config.apiUpgrade && ['preview', 'live'].includes(api) && path === '/*') {
+    body.forceAsync = true;
+  }
   return fetch(url, {
     method,
     cache: 'no-store',
