@@ -23,11 +23,11 @@
   "AEM_BACKEND_JSON_INVALID": {
     "message": "Vorschau von $2 nicht möglich: ungültiges JSON"
   },
-  "AEM_BACKEND_MP4_TOO_BIG": {
-    "message": "Vorschau von $1 nicht möglich: MP4 ist größer als $2"
-  },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
     "message": "Vorschau von $1 nicht möglich: ungültige MP4-Datei"
+  },
+  "AEM_BACKEND_MP4_TOO_BIG": {
+    "message": "Vorschau von $1 nicht möglich: MP4 ist größer als $2"
   },
   "AEM_BACKEND_NON_MATCHING_MEDIA": {
     "message": "Vorschau von $1 nicht möglich: $2 erwartet, aber $3 gefunden"

@@ -23,11 +23,11 @@
   "AEM_BACKEND_JSON_INVALID": {
     "message": "No se puede previsualizar $2: JSON no válido"
   },
-  "AEM_BACKEND_MP4_TOO_BIG": {
-    "message": "No se puede previsualizar $1: el MP4 supera los $2"
-  },
   "AEM_BACKEND_MP4_PARSING_FAILED": {
     "message": "No se puede previsualizar $1: MP4 no válido"
+  },
+  "AEM_BACKEND_MP4_TOO_BIG": {
+    "message": "No se puede previsualizar $1: el MP4 supera los $2"
   },
   "AEM_BACKEND_NON_MATCHING_MEDIA": {
     "message": "No se puede previsualizar $1: se esperaba $2, pero se encontró $3"
