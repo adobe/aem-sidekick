@@ -214,7 +214,7 @@ export class PluginActionBar extends ConnectedElement {
     this.addEventListener('click', this.onClick);
 
     // Listen for close popover events
-    EventBus.instance.addEventListener(EVENTS.CLOSE_POPOVER, async (e) => {
+    EventBus.instance.addEventListener(EVENTS.CLOSE_POPOVER, (e) => {
       const { id } = e.detail || {};
       if (!id) {
         // Close all plugin-based popovers when no ID is provided
@@ -224,16 +224,18 @@ export class PluginActionBar extends ConnectedElement {
           }
         });
 
-        // Close all menus
-        const pluginMenu = await this.pluginMenu;
-        if (pluginMenu) {
-          pluginMenu.open = false;
-        }
-
-        const sidekickMenu = await this.sidekickMenu;
-        if (sidekickMenu) {
-          sidekickMenu.open = false;
-        }
+        // Close all menus and pickers
+        this.renderRoot?.querySelectorAll('sp-action-menu, action-bar-picker').forEach((el) => {
+          /** @type {any} */
+          const menu = el;
+          menu.preventNextToggle = 'no';
+          menu.open = false;
+          // Also close the overlay directly in case open was already false
+          const overlay = menu.overlayElement ?? menu.shadowRoot?.querySelector('sp-overlay');
+          if (overlay?.open) {
+            overlay.open = false;
+          }
+        });
 
         return;
       }

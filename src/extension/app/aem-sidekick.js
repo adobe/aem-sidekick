@@ -56,6 +56,12 @@ export class AEMSidekick extends LitElement {
     this.#handleKeyDown(e);
   };
 
+  #handleDocumentPointerDown = (e) => {
+    if (!e.composedPath().includes(this)) {
+      EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER));
+    }
+  };
+
   async #handleKeyDown(e) {
     // only handle Cmd/Ctrl+R if sidekick is open
     if (!this.open || !(e.metaKey || e.ctrlKey) || e.key !== 'r') {
@@ -74,6 +80,7 @@ export class AEMSidekick extends LitElement {
     super.connectedCallback();
 
     window.addEventListener('keydown', this.#boundHandleKeyDown, true);
+    document.addEventListener('pointerdown', this.#handleDocumentPointerDown, true);
 
     reaction(
       () => this.appStore.theme,
@@ -85,6 +92,7 @@ export class AEMSidekick extends LitElement {
 
   disconnectedCallback() {
     window.removeEventListener('keydown', this.#boundHandleKeyDown, true);
+    document.removeEventListener('pointerdown', this.#handleDocumentPointerDown, true);
     super.disconnectedCallback?.();
   }
 

@@ -1369,6 +1369,67 @@ describe('Plugin action bar', () => {
       // Verify the plugin's closePopover WAS called (closes all)
       expect(closePopoverStub.calledOnce).to.be.true;
     });
+
+    it('closes all menus and pickers and resets their state on CLOSE_POPOVER', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'plugin-action-bar');
+      expect(actionBar).to.exist;
+
+      // Get menus/pickers from the action bar's renderRoot
+      const menus = actionBar.renderRoot.querySelectorAll('sp-action-menu, action-bar-picker');
+      expect(menus.length).to.be.greaterThan(0);
+
+      // Set up mock state: mark menus as open with preventNextToggle
+      menus.forEach((menu) => {
+        menu.preventNextToggle = 'yes';
+        menu.open = true;
+      });
+
+      // Dispatch CLOSE_POPOVER without ID
+      EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER));
+
+      // Verify all menus were reset
+      menus.forEach((menu) => {
+        expect(menu.preventNextToggle).to.equal('no');
+        expect(menu.open).to.be.false;
+      });
+    });
+
+    it('closes overlay directly on menus when overlay is still open', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(true, false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'plugin-action-bar');
+      const menus = actionBar.renderRoot.querySelectorAll('sp-action-menu, action-bar-picker');
+      expect(menus.length).to.be.greaterThan(0);
+
+      const menu = menus[0];
+
+      // Simulate a menu with an open overlay element (overlayElement is a getter)
+      const mockOverlay = { open: true };
+      Object.defineProperty(menu, 'overlayElement', {
+        get: () => mockOverlay,
+        configurable: true,
+      });
+
+      // Dispatch CLOSE_POPOVER without ID
+      EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER));
+
+      // Verify the overlay was closed directly
+      expect(mockOverlay.open).to.be.false;
+    });
   });
 
   describe('test repositioning', () => {

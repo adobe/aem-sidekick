@@ -15,6 +15,8 @@
 
 import { css, html } from '@spectrum-web-components/base';
 import { ActionMenu as SPActionMenu } from '@spectrum-web-components/action-menu';
+import { EVENTS } from '../../../constants.js';
+import { EventBus } from '../../../utils/event-bus.js';
 
 export class ActionMenu extends SPActionMenu {
   static get styles() {
@@ -53,6 +55,13 @@ export class ActionMenu extends SPActionMenu {
     ];
   }
 
+  handleActivate(event) {
+    if (!this.open) {
+      EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER));
+    }
+    super.handleActivate(event);
+  }
+
   handleBeforetoggle(event) {
     if (event.composedPath()[0] !== event.target) {
       return;
@@ -63,7 +72,7 @@ export class ActionMenu extends SPActionMenu {
       } else if (!this.pointerdownState) {
         // Prevent browser driven closure while opening the Picker
         // and the expected event series has not completed.
-        this.overlayElement.manuallyKeepOpen();
+        this.overlayElement?.manuallyKeepOpen();
       }
     }
     if (!this.open && this.optionsMenu) {
@@ -91,7 +100,7 @@ export class ActionMenu extends SPActionMenu {
             .offset=${0}
             .open=${this.open && this.dependencyManager.loaded}
             .placement=${this.isMobile.matches ? undefined : this.placement}
-            .type=${this.isMobile.matches ? 'modal' : 'auto'}
+            .type=${this.isMobile.matches ? 'modal' : 'manual'}
             .receivesFocus=${'true'}
             .willPreventClose=${this.preventNextToggle !== 'no'
             && this.open
