@@ -1,3 +1,10 @@
+## [7.32.1](https://github.com/adobe/aem-sidekick/compare/v7.32.0...v7.32.1) (2026-04-16)
+
+
+### Bug Fixes
+
+* prevent popovers from auto-closing on SharePoint viewer pages ([#669](https://github.com/adobe/aem-sidekick/issues/669)) ([#841](https://github.com/adobe/aem-sidekick/issues/841)) ([446ef11](https://github.com/adobe/aem-sidekick/commit/446ef11f8bd7a43b2ae6e8f4d22924eb70e64ac2))
+
 # [7.32.0](https://github.com/adobe/aem-sidekick/compare/v7.31.2...v7.32.0) (2026-04-01)
 
 
