@@ -22,6 +22,8 @@ import { defaultSidekickConfig } from './fixtures/sidekick-config.js';
 import '../src/extension/index.js';
 import { HelixMockEnvironments, restoreEnvironment } from './mocks/environment.js';
 import { SidekickTest } from './sidekick-test.js';
+import { EVENTS } from '../src/extension/app/constants.js';
+import { EventBus } from '../src/extension/app/utils/event-bus.js';
 /**
  * The AEMSidekick object type
  * @typedef {import('../src/extension/app/aem-sidekick.js').AEMSidekick} AEMSidekick
@@ -265,8 +267,6 @@ describe('AEM Sidekick', () => {
   });
 
   it('handles resizePalette message', async () => {
-    const { EventBus } = await import('../src/extension/app/utils/event-bus.js');
-    const { EVENTS } = await import('../src/extension/app/constants.js');
     const sendResponse = spy();
 
     const message = {
@@ -305,8 +305,6 @@ describe('AEM Sidekick', () => {
   });
 
   it('handles resizePalette message when container does not exist', async () => {
-    const { EventBus } = await import('../src/extension/app/utils/event-bus.js');
-    const { EVENTS } = await import('../src/extension/app/constants.js');
     const sendResponse = spy();
 
     const message = {
@@ -345,8 +343,6 @@ describe('AEM Sidekick', () => {
   });
 
   it('handles resizePopover message', async () => {
-    const { EventBus } = await import('../src/extension/app/utils/event-bus.js');
-    const { EVENTS } = await import('../src/extension/app/constants.js');
     const sendResponse = spy();
 
     const message = {
@@ -430,5 +426,36 @@ describe('AEM Sidekick', () => {
 
     // Verify sendResponse was called with true
     expect(sendResponse.calledWith(true)).to.be.true;
+  });
+
+  describe('document pointerdown handler', () => {
+    it('dispatches CLOSE_POPOVER when clicking outside the sidekick', async () => {
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      const dispatchEventSpy = sidekickTest.sandbox.spy(EventBus.instance, 'dispatchEvent');
+
+      // Simulate a pointerdown outside the sidekick
+      document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+
+      const closePopoverEvent = dispatchEventSpy.getCalls()
+        .find((call) => call.args[0].type === EVENTS.CLOSE_POPOVER);
+      expect(closePopoverEvent).to.exist;
+    });
+
+    it('does not dispatch CLOSE_POPOVER when clicking inside the sidekick', async () => {
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      const dispatchEventSpy = sidekickTest.sandbox.spy(EventBus.instance, 'dispatchEvent');
+
+      // Simulate a pointerdown inside the sidekick
+      const actionBar = recursiveQuery(sidekick, 'plugin-action-bar');
+      actionBar.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }));
+
+      const closePopoverEvent = dispatchEventSpy.getCalls()
+        .find((call) => call.args[0].type === EVENTS.CLOSE_POPOVER);
+      expect(closePopoverEvent).to.not.exist;
+    });
   });
 });

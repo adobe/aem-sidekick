@@ -19,6 +19,8 @@ import { html } from '@spectrum-web-components/base';
 import { Picker as SPPicker } from '@spectrum-web-components/picker';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
+import { EVENTS } from '../../../constants.js';
+import { EventBus } from '../../../utils/event-bus.js';
 import { style } from './picker.css.js';
 
 const chevronClass = {
@@ -63,6 +65,13 @@ export class Picker extends SPPicker {
     return menu;
   }
 
+  handleActivate(event) {
+    if (!this.open) {
+      EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER));
+    }
+    super.handleActivate(event);
+  }
+
   handleBeforetoggle(event) {
     if (event.composedPath()[0] !== event.target) {
       return;
@@ -73,7 +82,7 @@ export class Picker extends SPPicker {
       } else if (!this.pointerdownState) {
         // Prevent browser driven closure while opening the Picker
         // and the expected event series has not completed.
-        this.overlayElement.manuallyKeepOpen();
+        this.overlayElement?.manuallyKeepOpen();
       }
     }
     if (!this.open && this.optionsMenu) {
@@ -145,7 +154,7 @@ export class Picker extends SPPicker {
             .offset=${0}
             .open=${this.open && this.dependencyManager.loaded}
             .placement=${this.isMobile.matches ? undefined : this.placement}
-            .type=${this.isMobile.matches ? 'modal' : 'auto'}
+            .type=${this.isMobile.matches ? 'modal' : 'manual'}
             .receivesFocus=${'true'}
             .willPreventClose=${this.preventNextToggle !== 'no'
             && this.open
