@@ -581,6 +581,48 @@ describe('Test Bulk Store', () => {
         expect(showToastSpy.called).to.be.false;
       }).timeout(10000);
 
+      it('shows toast on 401 response', async () => {
+        startJobStub.restore();
+        fetchMock.post(
+          'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/*',
+          { status: 401, body: {} },
+          { overwriteRoutes: true },
+        );
+
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => showToastSpy.called);
+        expect(showToastSpy.calledWithMatch({
+          message: 'You need to sign in to generate the preview of more than 100 files.',
+          variant: 'warning',
+        })).to.be.true;
+      }).timeout(10000);
+
+      it('shows toast on 403 response', async () => {
+        startJobStub.restore();
+        fetchMock.post(
+          'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/*',
+          { status: 403, body: {} },
+          { overwriteRoutes: true },
+        );
+
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.preview();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => showToastSpy.called);
+        expect(showToastSpy.calledWithMatch({
+          message: '(403) Preview generation failed. Check details for more information.',
+          variant: 'warning',
+        })).to.be.true;
+      }).timeout(10000);
+
       it('start job response contains no job', async () => {
         startJobStub.resolves({ job: null });
         sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
@@ -871,6 +913,27 @@ describe('Test Bulk Store', () => {
         expect(setStateSpy.calledWith());
         expect(getJobStub.called).to.be.false;
         expect(showToastSpy.called).to.be.false;
+      }).timeout(10000);
+
+      it('shows toast on 401 response', async () => {
+        startJobStub.restore();
+        fetchMock.post(
+          'https://admin.hlx.page/live/adobe/aem-boilerplate/main/*',
+          { status: 401, body: {} },
+          { overwriteRoutes: true },
+        );
+
+        sidekickTest.toggleAdminItems(['document', 'spreadsheet']);
+        await waitUntil(() => bulkStore.selection.length === 2);
+
+        await bulkStore.publish();
+        await confirmDialog(sidekickTest.sidekick);
+
+        await waitUntil(() => showToastSpy.called);
+        expect(showToastSpy.calledWithMatch({
+          message: 'You need to sign in to publish more than 100 files.',
+          variant: 'warning',
+        })).to.be.true;
       }).timeout(10000);
 
       it('start job response contains no job', async () => {
