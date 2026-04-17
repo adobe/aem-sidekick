@@ -650,8 +650,7 @@ describe('Test actions', () => {
     expect(set.calledWith(
       { projects: [] },
     )).to.be.true;
-    // @ts-ignore
-    expect(remove.calledWith('foo/bar')).to.be.true;
+    expect(remove.calledWith(sinon.match('foo/bar'))).to.be.true;
     expect(i18nSpy.calledWith('config_project_removed', 'foo/bar')).to.be.true;
 
     // testing transient project
@@ -703,7 +702,7 @@ describe('Test actions', () => {
     ]);
 
     // stub content script to return stored project selection
-    sandbox.stub(chrome.tabs, 'sendMessage').callsFake(async (tabId, { action }) => {
+    sandbox.stub(chrome.tabs, 'sendMessage').callsFake(async (_tabId, { action }) => {
       if (action === 'getStoredProject') {
         return { owner: 'foo', repo: 'bar2', ref: 'main' };
       }
@@ -712,8 +711,8 @@ describe('Test actions', () => {
 
     // remove the stored project (bar2, not bar1)
     await internalActions.addRemoveProject(mockTab('https://foo.sharepoint.com/sites/foo/test', { id: 1 }));
-    expect(remove.calledWith('foo/bar2')).to.be.true;
-    expect(remove.calledWith('foo/bar1')).to.be.false;
+    expect(remove.calledWith(sinon.match('foo/bar2'))).to.be.true;
+    expect(remove.calledWith(sinon.match('foo/bar1'))).to.be.false;
   }).timeout(5000);
 
   it('internal: addRemoveProject refuses without stored project on multiple matches', async () => {
