@@ -120,7 +120,7 @@ async function guessAEMSite(id) {
  * @param {Context} context The context object
  */
 export async function updateContextMenu({
-  id, url, config, numProjects = 0,
+  id, url, config, matches = [], numProjects = 0,
 }) {
   if (id === undefined || !url) {
     return;
@@ -129,6 +129,10 @@ export async function updateContextMenu({
     updateInProgress = true;
     // clear context menu
     await chrome.contextMenus.removeAll();
+
+    if (!config && matches.length === 1) {
+      [config] = matches;
+    }
 
     if (isValidProject(config) && !url.startsWith(GH_URL)) {
       const { owner, repo } = config;
