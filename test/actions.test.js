@@ -689,6 +689,63 @@ describe('Test actions', () => {
     expect(set.notCalled).to.be.true;
   }).timeout(5000);
 
+  it('internal: addRemoveProject uses stored project from content script', async () => {
+    const remove = sandbox.spy(chrome.storage.sync, 'remove');
+
+    // add two projects
+    await internalActions.addRemoveProject(mockTab('https://main--bar1--foo.aem.page/', { id: 1 }));
+    await internalActions.addRemoveProject(mockTab('https://main--bar2--foo.aem.page/', { id: 1 }));
+
+    // stub url cache to match both projects from a content source url
+    sandbox.stub(urlCache, 'get').resolves([
+      { org: 'foo', site: 'bar1' },
+      { org: 'foo', site: 'bar2' },
+    ]);
+
+    // stub content script to return stored project selection
+    sandbox.stub(chrome.tabs, 'sendMessage').callsFake(async (tabId, { action }) => {
+      if (action === 'getStoredProject') {
+        return { owner: 'foo', repo: 'bar2', ref: 'main' };
+      }
+      return undefined;
+    });
+
+    // remove the stored project (bar2, not bar1)
+    await internalActions.addRemoveProject(mockTab('https://foo.sharepoint.com/sites/foo/test', { id: 1 }));
+    expect(remove.calledWith('foo/bar2')).to.be.true;
+    expect(remove.calledWith('foo/bar1')).to.be.false;
+  }).timeout(5000);
+
+  it('internal: addRemoveProject refuses without stored project on multiple matches', async () => {
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+    const remove = sandbox.spy(chrome.storage.sync, 'remove');
+    const sendMessageSpy = sandbox.spy(chrome.tabs, 'sendMessage');
+
+    // add two projects
+    await internalActions.addRemoveProject(mockTab('https://main--bar3--foo.aem.page/', { id: 1 }));
+    await internalActions.addRemoveProject(mockTab('https://main--bar4--foo.aem.page/', { id: 1 }));
+    set.resetHistory();
+    remove.resetHistory();
+
+    // stub url cache to match both projects from a content source url
+    sandbox.stub(urlCache, 'get').resolves([
+      { org: 'foo', site: 'bar3' },
+      { org: 'foo', site: 'bar4' },
+    ]);
+
+    // no stored project (sendMessage returns undefined by default)
+    await internalActions.addRemoveProject(mockTab('https://foo.sharepoint.com/sites/foo/test', { id: 1 }));
+
+    // should not add or remove any project
+    expect(set.notCalled).to.be.true;
+    expect(remove.notCalled).to.be.true;
+
+    // should show notification asking user to pick a project
+    expect(sendMessageSpy.calledWithMatch(1, {
+      action: 'show_notification',
+    })).to.be.true;
+  }).timeout(5000);
+
   it('internal: enableDisableProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     // add project first
