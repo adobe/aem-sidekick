@@ -339,7 +339,26 @@ async function login({
  */
 async function addRemoveProject(tab) {
   const matches = await getProjectMatches(await getProjects(), tab);
-  const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(tab);
+  let config;
+  if (matches.length === 1) {
+    [config] = matches;
+  } else {
+    // multiple matches, check if the content script has a stored project selection
+    try {
+      config = await chrome.tabs.sendMessage(tab.id, { action: 'getStoredProject' });
+    } catch (e) {
+      // content script not available
+    }
+    if (!config) {
+      // multiple matches but no stored project, ask user to pick first
+      await showSidekickIfHidden();
+      await showSidekickNotification(tab.id, {
+        message: chrome.i18n.getMessage('config_project_pick_first'),
+        headline: chrome.i18n.getMessage('config_project_pick'),
+      });
+      return;
+    }
+  }
 
   await showSidekickIfHidden();
   if (isValidProject(config)) {

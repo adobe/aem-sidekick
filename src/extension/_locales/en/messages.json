@@ -232,6 +232,10 @@
     "config_project_pick": {
       "message": "Pick a project"
     },
+    "config_project_pick_first": {
+      "message": "Please pick a project first.",
+      "description": "Error message when user tries to add/remove a project without picking one from the config picker"
+    },
     "config_project_remove": {
       "message": "Remove this project"
     },

@@ -38,6 +38,8 @@
 /**
  * @typedef {Object} OptionsConfig
  * @prop {string} id The id of the config
+ * @prop {string} [owner] The GitHub owner or organization
+ * @prop {string} [repo] The GitHub repo
  * @prop {string} [project] The name of the project
  * @prop {string} [giturl] The url to the repository
  * @prop {string[]} [mountpoints] The content source URL

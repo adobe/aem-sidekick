@@ -248,6 +248,54 @@ describe('Test check-tab', () => {
     })).to.be.true;
   });
 
+  it('checkTab: queries content script for stored project on multiple matches', async () => {
+    const tab = TABS[5]; // sharepoint content source URL
+
+    sandbox.restore();
+
+    sandbox.stub(chrome.storage.local, 'get')
+      .withArgs('display')
+      .resolves({ display: true });
+
+    executeScriptSpy = sandbox.spy(chrome.scripting, 'executeScript');
+
+    onMessageAddListenerStub = fakeListenerCallback({
+      msg: { isAEM: true },
+      tab,
+    });
+
+    getTabSpy = sandbox.stub(chrome.tabs, 'get')
+      .callsFake(async (id) => TABS[String(id)]);
+
+    // two projects that both match the same content source URL
+    const multiProjects = {
+      'foo/bar': { owner: 'foo', repo: 'bar', ref: 'main' },
+      'foo/baz': { owner: 'foo', repo: 'baz', ref: 'main' },
+    };
+    fakeGetProjects(multiProjects);
+
+    // stub url cache to return multiple matches
+    sandbox.stub(urlCache, 'set').resolves();
+    sandbox.stub(urlCache, 'get').resolves([
+      { org: 'foo', site: 'bar' },
+      { org: 'foo', site: 'baz' },
+    ]);
+
+    // stub sendMessage to return stored project
+    const sendMessageStub = sandbox.stub(chrome.tabs, 'sendMessage')
+      .callsFake(async (_tabId, msg) => {
+        if (msg?.action === 'getStoredProject') {
+          return { owner: 'foo', repo: 'baz', ref: 'main' };
+        }
+        return undefined;
+      });
+
+    await checkTab(tab.id);
+
+    // verify content script was queried for stored project
+    expect(sendMessageStub.calledWithMatch(sinon.match.any, { action: 'getStoredProject' })).to.be.true;
+  });
+
   it('getCurrentTab', async () => {
     sandbox.stub(chrome.tabs, 'query').withArgs({ active: true, currentWindow: true }).resolves([TABS[1]]);
     const tab = await getCurrentTab();
