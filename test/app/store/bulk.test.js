@@ -600,6 +600,7 @@ describe('Test Bulk Store', () => {
           message: 'You need to sign in to generate the preview of more than 100 files.',
           variant: 'warning',
         })).to.be.true;
+        expect(appStore.state).to.equal(STATE.TOAST);
       }).timeout(10000);
 
       it('shows toast on 403 response', async () => {
@@ -621,6 +622,7 @@ describe('Test Bulk Store', () => {
           message: '(403) Preview generation failed. Check details for more information.',
           variant: 'warning',
         })).to.be.true;
+        expect(appStore.state).to.equal(STATE.TOAST);
       }).timeout(10000);
 
       it('start job response contains no job', async () => {
@@ -934,6 +936,7 @@ describe('Test Bulk Store', () => {
           message: 'You need to sign in to publish more than 100 files.',
           variant: 'warning',
         })).to.be.true;
+        expect(appStore.state).to.equal(STATE.TOAST);
       }).timeout(10000);
 
       it('start job response contains no job', async () => {
