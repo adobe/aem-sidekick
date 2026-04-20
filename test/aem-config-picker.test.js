@@ -50,6 +50,7 @@ describe('AEM Config Picker', () => {
 
     const configButtons = [...recursiveQueryAll(actionBar, 'sp-action-button')];
     expect(configButtons.length).to.equal(3);
+    expect(configButtons[0].textContent.trim()).to.equal('adobe/aem-boilerplate');
 
     configPicker.addEventListener('configselected', configSelectedSpy);
 
@@ -58,5 +59,26 @@ describe('AEM Config Picker', () => {
 
     expect(configSelectedSpy).to.have.been.calledOnce;
     expect(configSelectedSpy.args[0][0].detail.config).to.deep.equal(matchingConfigs[0]);
+  });
+
+  it('renders project names and disambiguates same-name projects', async () => {
+    const configs = [
+      { id: 'acme/site/main', owner: 'acme', project: 'My Site' },
+      { id: 'other-org/site/main', owner: 'other-org', project: 'My Site' },
+      { id: 'unique/site/main', owner: 'unique', project: 'Unique Site' },
+    ];
+    const configPicker = new AEMConfigPicker(configs);
+    document.body.appendChild(configPicker);
+
+    await waitUntil(() => recursiveQuery(configPicker, 'theme-wrapper'));
+
+    const actionBar = recursiveQuery(configPicker, 'action-bar');
+    const configButtons = [...recursiveQueryAll(actionBar, 'sp-action-button')];
+
+    expect(configButtons[0].textContent.trim()).to.equal('My Site (acme)');
+    expect(configButtons[1].textContent.trim()).to.equal('My Site (other-org)');
+    expect(configButtons[2].textContent.trim()).to.equal('Unique Site');
+
+    configPicker.remove();
   });
 });

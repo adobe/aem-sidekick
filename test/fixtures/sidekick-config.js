@@ -36,12 +36,14 @@ export const matchingConfigs = [
     ...defaultSidekickConfig,
     id: 'foo/aem-boilerplate/main',
     owner: 'foo',
+    repo: 'aem-boilerplate',
     giturl: 'https://github.com/foo/aem-boilerplate',
   },
   {
     ...defaultSidekickConfig,
     id: 'bar/aem-boilerplate/main',
     owner: 'bar',
+    repo: 'aem-boilerplate',
     giturl: 'https://github.com/bar/aem-boilerplate',
   },
 ];
