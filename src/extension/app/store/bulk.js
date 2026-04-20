@@ -553,7 +553,7 @@ export class BulkStore {
         const res = await this.#doBulkOperation('preview');
         if (res) {
           ({ resources } = res.data || {});
-        } else {
+        } else if (!this.appStore.toast) {
           this.appStore.setState();
         }
       }
@@ -607,7 +607,7 @@ export class BulkStore {
         const res = await this.#doBulkOperation('publish', { route: 'live' });
         if (res) {
           ({ resources } = res.data || {});
-        } else {
+        } else if (!this.appStore.toast) {
           this.appStore.setState();
         }
       }

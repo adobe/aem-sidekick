@@ -92,12 +92,23 @@
     window.hlx.sidekick = configPicker;
   }
 
-  async function onMessageListener({ configMatches = [], adminVersion }, { tab }) {
-    // only accept message from background script
-    if (tab) {
+  let configLoaded = false;
+
+  chrome.runtime.onMessage.addListener((message, { tab }, sendResponse) => {
+    if (message.action === 'getStoredProject') {
+      // respond to stored project queries from background script
+      const stored = window.sessionStorage.getItem('aem-sk-project');
+      sendResponse(stored ? JSON.parse(stored) : null);
       return;
     }
 
+    // only accept config matches from background script
+    if (tab || configLoaded) {
+      return;
+    }
+    configLoaded = true;
+
+    const { configMatches = [], adminVersion } = message;
     const sidekick = document.querySelector('aem-sidekick');
     if (configMatches.length > 0) {
       if (sidekick) {
@@ -113,22 +124,22 @@
         }
       } else if (display) {
         // Load custom element polyfill
-        await import('./lib/polyfills.min.js');
+        import('./lib/polyfills.min.js').then(() => {
+          // Check session storage for previously stored project
+          const storedProject = JSON.parse(window.sessionStorage.getItem('aem-sk-project') || null);
 
-        // Check session storage for previously stored project
-        const storedProject = JSON.parse(window.sessionStorage.getItem('aem-sk-project') || null);
-
-        // First check if there is only one config match, if so load it
-        if (configMatches.length === 1) {
-        // Load sidekick
-          const [cfg] = configMatches;
-          loadSidekick(cfg, adminVersion);
-          // If there is more than one config match, check if we previously stored a project
-        } else if (storedProject) {
-          loadSidekick(storedProject, adminVersion);
-        } else {
-          loadConfigPicker(configMatches);
-        }
+          // First check if there is only one config match, if so load it
+          if (configMatches.length === 1) {
+            // Load sidekick
+            const [cfg] = configMatches;
+            loadSidekick(cfg, adminVersion);
+            // If there is more than one config match, check if we previously stored a project
+          } else if (storedProject) {
+            loadSidekick(storedProject, adminVersion);
+          } else {
+            loadConfigPicker(configMatches);
+          }
+        });
       }
     } else if (sidekick) {
       // Remove sidekick
@@ -140,10 +151,5 @@
     if (configPicker) {
       configPicker.setAttribute('open', `${display}`);
     }
-
-    chrome.runtime.onMessage.removeListener(onMessageListener);
-  }
-
-  // wait for config matches
-  chrome.runtime.onMessage.addListener(onMessageListener);
+  });
 })();

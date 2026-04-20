@@ -14,7 +14,6 @@ import { log } from './log.js';
 import {
   getProjects,
   getProjectMatches,
-  getProjectFromUrl,
 } from './project.js';
 import { isSharePointHost, urlCache } from './url-cache.js';
 import { updateUI } from './ui.js';
@@ -62,8 +61,19 @@ export async function checkTab(id) {
     // fill url cache
     await urlCache.set(tab, projects);
 
+    let config;
     const matches = await getProjectMatches(projects, tab);
-    const config = matches.length === 1 ? matches[0] : await getProjectFromUrl(tab);
+    if (matches.length === 1) {
+      [config] = matches;
+    } else {
+      // multiple matches, check if the content script has a stored project selection
+      try {
+        config = await chrome.tabs.sendMessage(tab.id, { action: 'getStoredProject' });
+      } catch (e) {
+        // content script not available
+      }
+    }
+
     const adminVersion = await getConfig('session', 'adminVersion');
 
     injectContentScript(id, matches, adminVersion);

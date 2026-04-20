@@ -281,6 +281,9 @@
   "config_project_pick": {
     "message": "프로젝트 선택"
   },
+  "config_project_pick_first": {
+    "message": "먼저 프로젝트를 선택하세요."
+  },
   "config_project_remove": {
     "message": "이 프로젝트 제거"
   },

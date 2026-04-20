@@ -71,6 +71,21 @@ export class AEMConfigPicker extends LitElement {
     this.remove();
   }
 
+  /**
+   * Returns the display name for a config, disambiguating duplicates with the owner.
+   * @param {OptionsConfig} config The config
+   * @returns {string} The display name
+   */
+  getDisplayName(config) {
+    const title = config.project || `${config.owner}/${config.repo}`;
+    const hasDuplicate = config.project && this.matchedConfigs
+      .some((c) => c !== config && c.project === config.project);
+    if (hasDuplicate && config.owner) {
+      return `${title} (${config.owner})`;
+    }
+    return title;
+  }
+
   render() {
     return html`
       <theme-wrapper theme=${this.theme}>
@@ -79,7 +94,7 @@ export class AEMConfigPicker extends LitElement {
               <span>${this.ctaLabel}</span>
               ${this.matchedConfigs.map((config) => html`
                 <sp-action-button aria-label=${config.id} @click=${() => this.configSelected(config)} quiet>
-                  ${config.project || config.id}
+                  ${this.getDisplayName(config)}
                 </sp-action-button>
               `)}
             </sp-action-group>

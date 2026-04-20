@@ -130,6 +130,15 @@ describe('Test UI: updateContextMenu', () => {
     expect(createSpy.callCount).to.equal(3);
   });
 
+  it('updateContextMenu: config derived from single match', async () => {
+    await updateContextMenu({
+      ...tab,
+      matches: [config],
+    });
+    expect(removeAllSpy.callCount).to.equal(1);
+    expect(createSpy.calledWithMatch({ id: 'addRemoveProject' })).to.be.true;
+  });
+
   it('updateContextMenu: no matching config', async () => {
     isAEM = false;
     await updateContextMenu(tab);
