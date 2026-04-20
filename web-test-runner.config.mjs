@@ -11,11 +11,25 @@
  */
 
 /* eslint-disable import/no-extraneous-dependencies */
-import { fromRollup } from '@web/dev-server-rollup';
+import { rollupAdapter } from '@web/dev-server-rollup';
 import rollupBabel from '@rollup/plugin-babel';
 
+// @rollup/plugin-babel v7 uses object-style hooks ({ filter, handler }) which
+// @web/dev-server-rollup@0.6 does not support — unwrap them to plain functions.
+function fromRollupCompat(rollupPluginFn) {
+  return (...args) => {
+    const plugin = rollupPluginFn(...args);
+    for (const hook of ['transform', 'load', 'resolveId']) {
+      if (plugin[hook] && typeof plugin[hook] === 'object' && plugin[hook].handler) {
+        plugin[hook] = plugin[hook].handler;
+      }
+    }
+    return rollupAdapter(plugin);
+  };
+}
+
 // @ts-ignore
-const babel = fromRollup(rollupBabel);
+const babel = fromRollupCompat(rollupBabel);
 
 export default {
   nodeResolve: true,
