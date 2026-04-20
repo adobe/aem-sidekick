@@ -1,3 +1,10 @@
+## [7.32.2](https://github.com/adobe/aem-sidekick/compare/v7.32.1...v7.32.2) (2026-04-20)
+
+
+### Bug Fixes
+
+* do not swallow bulk error message, remove correct project from shared content source ([4efe913](https://github.com/adobe/aem-sidekick/commit/4efe913c24f0fb04707d23abdb8c87379f6aabc6))
+
 ## [7.32.1](https://github.com/adobe/aem-sidekick/compare/v7.32.0...v7.32.1) (2026-04-16)
 
 
