@@ -264,7 +264,7 @@
     "message": "Choisissez un projet"
   },
   "config_project_pick_first": {
-    "message": "Veuillez d'abord sélectionner un projet."
+    "message": "Veuillez d’abord choisir un projet."
   },
   "config_project_remove": {
     "message": "Supprimer ce projet"

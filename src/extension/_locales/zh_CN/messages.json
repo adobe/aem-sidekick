@@ -1,6 +1,6 @@
 {
   "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
-    "message": "此站点现已在配置服务中进行管理。"
+    "message": "此网站现已在配置服务中进行管理。"
   },
   "AEM_BACKEND_DOC_IMAGE_TOO_BIG": {
     "message": "无法预览 $1：包含的图像大于 $2"
