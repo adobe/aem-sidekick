@@ -257,24 +257,6 @@
   "config_project_exists": {
     "message": "此專案的設定已存在。"
   },
-  "config_project_import": {
-    "message": "從 AEM Sidekick v6 中匯入專案"
-  },
-  "config_project_import_headline": {
-    "message": "匯入專案"
-  },
-  "config_project_import_sidekick_not_found": {
-    "message": "找不到舊版 Sidekick。如果擴充功能已安裝但目前已停用，請將其啟用，然後再試一次。"
-  },
-  "config_project_imported_multiple": {
-    "message": "已成功從 AEM Sidekick v6 中匯入 $1 個專案。"
-  },
-  "config_project_imported_none": {
-    "message": "在 AEM Sidekick v6 中找不到新專案。"
-  },
-  "config_project_imported_single": {
-    "message": "已成功從 AEM Sidekick v6 中匯入 1 個專案。"
-  },
   "config_project_manage": {
     "message": "管理專案"
   },

@@ -257,24 +257,6 @@
   "config_project_exists": {
     "message": "이 프로젝트에 대한 구성이 이미 있습니다."
   },
-  "config_project_import": {
-    "message": "AEM Sidekick v6에서 프로젝트 가져오기"
-  },
-  "config_project_import_headline": {
-    "message": "프로젝트 가져오기"
-  },
-  "config_project_import_sidekick_not_found": {
-    "message": "이전 Sidekick을 찾을 수 없습니다. 확장 기능이 설치되었지만 현재 비활성화되어 있습니다. 활성화하고 다시 시도해 주십시오."
-  },
-  "config_project_imported_multiple": {
-    "message": "AEM Sidekick v6에서 $1개 프로젝트를 정상적으로 가져왔습니다."
-  },
-  "config_project_imported_none": {
-    "message": "AEM Sidekick v6에서 새 프로젝트를 찾을 수 없습니다."
-  },
-  "config_project_imported_single": {
-    "message": "AEM Sidekick v6에서 1개 프로젝트를 정상적으로 가져왔습니다."
-  },
   "config_project_manage": {
     "message": "프로젝트 관리"
   },

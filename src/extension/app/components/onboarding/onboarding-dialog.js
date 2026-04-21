@@ -129,10 +129,6 @@ export class OnBoardingDialog extends ConnectedElement {
     const { action } = this.items[this.selectedIndex];
 
     const actionsMap = {
-      import: () => {
-        this.appStore.sampleRUM('click', { source: 'sidekick', target: 'onboard-modal:import-projects' });
-        chrome.runtime.sendMessage({ action: 'importProjects' });
-      },
       join_discord: () => {
         this.appStore.sampleRUM('click', { source: 'sidekick', target: 'open-discord' });
         this.appStore.openPage('https://discord.gg/aem-live');

@@ -257,24 +257,6 @@
   "config_project_exists": {
     "message": "Já existe uma configuração para este projeto."
   },
-  "config_project_import": {
-    "message": "Importar projetos do AEM Sidekick v6"
-  },
-  "config_project_import_headline": {
-    "message": "Importar projetos"
-  },
-  "config_project_import_sidekick_not_found": {
-    "message": "Sidekick legado não encontrado. Se a extensão estiver instalada, mas desabilitada no momento, habilite-a e tente novamente."
-  },
-  "config_project_imported_multiple": {
-    "message": "$1 projetos importados com sucesso do AEM Sidekick v6."
-  },
-  "config_project_imported_none": {
-    "message": "Nenhum novo projeto encontrado no AEM Sidekick v6."
-  },
-  "config_project_imported_single": {
-    "message": "1 projeto importado com sucesso do AEM Sidekick v6."
-  },
   "config_project_manage": {
     "message": "Gerenciar projetos"
   },

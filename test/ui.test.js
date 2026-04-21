@@ -196,29 +196,6 @@ describe('Test UI: updateContextMenu', () => {
     expect(removeAllSpy.callCount).to.equal(1);
     expect(createSpy.callCount).to.equal(0);
   });
-
-  it('updateContextMenu: import projects', async () => {
-    sandbox.stub(chrome.runtime, 'getManifest').returns({
-      ...chrome.runtime.getManifest(),
-      externally_connectable: {
-        ids: ['klmnopqrstuvwxyz'],
-      },
-    });
-    sandbox.stub(chrome.runtime, 'sendMessage')
-      .callsFake(async (_, __, callback) => {
-        if (callback) {
-          // @ts-ignore
-          callback(true);
-        }
-      });
-
-    await updateContextMenu({
-      ...tab,
-      config,
-    });
-    expect(createSpy.calledWithMatch({ type: 'separator' })).to.be.true;
-    expect(createSpy.calledWithMatch({ id: 'importProjects' })).to.be.true;
-  });
 });
 
 describe('Test UI: updateIcon', () => {
@@ -324,14 +301,6 @@ describe('Test UI: RUM collection when clicked', () => {
     }, tab);
     await aTimeout(1000);
     expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:enable-disable-project' })).to.be.true;
-  });
-
-  it('collects RUM when importProjects', async () => {
-    clickListener({
-      menuItemId: 'importProjects',
-    }, tab);
-    await aTimeout(1000);
-    expect(logSpy.calledWith('sampleRUM', 'click', { source: 'sidekick', target: 'context-menu:import-projects' })).to.be.true;
   });
 
   it('handles error', async () => {

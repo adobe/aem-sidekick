@@ -208,24 +208,6 @@
     "config_project_exists": {
       "message": "A configuration for this project already exists."
     },
-    "config_project_import": {
-      "message": "Import projects from AEM Sidekick v6"
-    },
-    "config_project_imported_none": {
-      "message": "No new projects found in AEM Sidekick v6."
-    },
-    "config_project_imported_single": {
-      "message": "Successfully imported 1 project from AEM Sidekick v6."
-    },
-    "config_project_imported_multiple": {
-      "message": "Successfully imported $1 projects from AEM Sidekick v6."
-    },
-    "config_project_import_headline": {
-      "message": "Import projects"
-    },
-    "config_project_import_sidekick_not_found": {
-      "message": "Legacy sidekick not found. If the extension is installed but currently disabled, please enable it and try again."
-    },
     "config_project_manage": {
       "message": "Manage projects"
     },

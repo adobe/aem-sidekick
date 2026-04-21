@@ -73,33 +73,12 @@ describe('Onboarding modal', () => {
     const environmentsTab = recursiveQuery(onboardingDialog, 'sp-tab[label="Switch environments"]');
     nextButton.click();
     await waitUntil(() => environmentsTab.hasAttribute('selected'));
-    expect(Array.from(recursiveQueryAll(onboardingDialog, 'sp-tab')).length).to.equal(5);
+    expect(Array.from(recursiveQueryAll(onboardingDialog, 'sp-tab')).length).to.equal(4);
 
     const closeButton = recursiveQuery(onboardingDialog, 'sp-button#close-button');
     closeButton.click();
 
     await waitUntil(() => recursiveQuery(themeWrapper, 'onboarding-dialog') === undefined);
-  });
-
-  it('should trigger import', async () => {
-    sidekick = sidekickTest.createSidekick();
-    await sidekickTest.awaitEnvSwitcher();
-
-    const themeWrapper = sidekick.shadowRoot.querySelector('theme-wrapper');
-    await waitUntil(() => recursiveQuery(themeWrapper, 'onboarding-dialog'));
-    const onboardingDialog = recursiveQuery(themeWrapper, 'onboarding-dialog');
-    await waitUntil(() => recursiveQuery(onboardingDialog, 'sp-button#next'));
-
-    const importTab = recursiveQuery(onboardingDialog, 'sp-tab[label="Import your projects"]');
-    importTab.click();
-    await waitUntil(() => importTab.hasAttribute('selected'), 'Tab not selected');
-
-    const messageStub = sidekickTest.sandbox.spy(chrome.runtime, 'sendMessage');
-    const importButton = recursiveQuery(onboardingDialog, 'sp-button[variant="secondary"]');
-    importButton.click();
-
-    expect(messageStub).calledWith({ action: 'importProjects' });
-    expect(sidekickTest.rumStub).calledWith('click', { source: 'sidekick', target: 'onboard-modal:import-projects' });
   });
 
   it('should open community', async () => {

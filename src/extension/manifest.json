@@ -22,11 +22,6 @@
     "type": "module"
   },
   "externally_connectable": {
-    "ids": [
-      "ccfggkjabjahcjoljmgmklhpaccedipo",
-      "olciodlegapfmemadcjicljalmfmlehb",
-      "ahahnfffoakmmahloojpkmlkjjffnial"
-    ],
     "matches": [
       "http://localhost:3000/*",
       "https://*/*"
