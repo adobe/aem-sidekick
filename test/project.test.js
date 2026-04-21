@@ -409,6 +409,7 @@ describe('Test project', () => {
     expect(isValidProject({ owner: 'foo', repo: 'bar' })).to.be.false;
     expect(isValidProject({ owner: 'foo' })).to.be.false;
     expect(isValidProject()).to.be.false;
+    expect(isValidProject(null)).to.be.false;
   });
 
   it('getProjectMatches', async () => {
