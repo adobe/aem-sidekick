@@ -282,7 +282,7 @@
     "message": "選取一個專案"
   },
   "config_project_pick_first": {
-    "message": "請先選擇一個專案。"
+    "message": "請先選取專案。"
   },
   "config_project_remove": {
     "message": "移除此專案"
