@@ -89,7 +89,8 @@ export async function updateProject(project) {
  * @param {Object} config The project config
  * @returns {boolean} true if valid project config, else false
  */
-export function isValidProject({ owner, repo, ref } = {}) {
+export function isValidProject(config) {
+  const { owner, repo, ref } = config || {};
   return !!(owner && repo && ref);
 }
 
