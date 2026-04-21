@@ -22,8 +22,6 @@ import {
   getProject,
   getProjects,
   getProjectMatches,
-  importLegacyProjects,
-  detectLegacySidekick,
   updateProject as updateProjectConfig,
 } from './project.js';
 import { ADMIN_ORIGIN, ADMIN_ORIGIN_NEW, createAdminUrl } from './utils/admin.js';
@@ -415,33 +413,6 @@ async function enableDisableProject(tab) {
 }
 
 /**
- * Imports projects from legacy sidekick.
- */
-async function importProjects(tab) {
-  const sidekickId = await detectLegacySidekick();
-  await showSidekickIfHidden();
-  if (!sidekickId) {
-    await showSidekickNotification(tab.id,
-      {
-        message: chrome.i18n.getMessage('config_project_import_sidekick_not_found'),
-        headline: chrome.i18n.getMessage('config_project_import_headline'),
-      });
-    return;
-  }
-  const imported = await importLegacyProjects(sidekickId);
-  const i18nKey = imported > 0
-    ? `config_project_imported_${imported === 1 ? 'single' : 'multiple'}`
-    : 'config_project_imported_none';
-  await showSidekickNotification(tab.id,
-    {
-      message: chrome.i18n.getMessage(i18nKey, `${imported}`),
-      headline: chrome.i18n.getMessage('config_project_import_headline'),
-    },
-    notificationConfirmCallback(tab.id),
-  );
-}
-
-/**
  * Opens the project admin tab.
  * @param {chrome.tabs.Tab} tab The tab
  */
@@ -744,7 +715,6 @@ export const internalActions = {
   enableDisableProject,
   manageProjects,
   openViewDocSource,
-  importProjects,
   getProfilePicture,
   guessAEMSite,
   updateProject,

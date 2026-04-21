@@ -11,9 +11,9 @@
  */
 
 export const defaultOnboardingResponse = {
-  total: 6,
+  total: 5,
   offset: 0,
-  limit: 6,
+  limit: 5,
   data: [{
     path: '/sidekick/onboarding/en/overview',
     title: 'Overview',
@@ -40,15 +40,6 @@ export const defaultOnboardingResponse = {
     category: 'onboarding',
     publicationDate: '',
     lastModified: '1724340936',
-    locale: 'en',
-  }, {
-    path: '/sidekick/onboarding/en/import-projects',
-    title: 'Import your projects',
-    index: '3',
-    action: 'import',
-    category: 'onboarding',
-    publicationDate: '',
-    lastModified: '1727376655',
     locale: 'en',
   }, {
     path: '/sidekick/onboarding/en/join-our-community',

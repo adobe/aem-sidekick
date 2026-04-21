@@ -37,21 +37,6 @@ import { urlCache } from '../src/extension/url-cache.js';
 // @ts-ignore
 window.chrome = chromeMock;
 
-const CONFIGS = [{
-  owner: 'foo',
-  repo: 'bar1',
-  ref: 'main',
-  host: '1.foo.bar',
-  mountpoints: ['https://foo.sharepoint.com/sites/foo/Shared%20Documents/root1'],
-}, {
-  owner: 'foo',
-  repo: 'bar2',
-  ref: 'main',
-  host: '2.foo.bar',
-  mountpoints: ['https://foo.sharepoint.com/sites/foo/Shared%20Documents/root2'],
-  disabled: true,
-}];
-
 describe('Test actions', () => {
   const sandbox = sinon.createSandbox();
 
@@ -803,81 +788,6 @@ describe('Test actions', () => {
 
     // verify the project name (foo/bar) is used in the message
     expect(i18nSpy.calledWith('config_project_disabled', 'foo/bar')).to.be.true;
-  });
-
-  describe('internal: importProjects', () => {
-    let sendMessageStub;
-    let i18nSpy;
-
-    function mockLegacySidekickResponse(projects = []) {
-      sandbox.stub(chrome.runtime, 'sendMessage')
-        .callsFake(async (_, { action }, callback) => {
-          switch (action) {
-            case 'ping':
-              // @ts-ignore
-              callback(true);
-              break;
-            case 'getProjects':
-              // @ts-ignore
-              callback(projects);
-              break;
-            default:
-              // @ts-ignore
-              callback();
-          }
-        });
-    }
-
-    beforeEach(() => {
-      sendMessageStub = sandbox.spy(chrome.tabs, 'sendMessage');
-      i18nSpy = sandbox.spy(chrome.i18n, 'getMessage');
-      sandbox.stub(chrome.runtime, 'getManifest').returns({
-        ...chrome.runtime.getManifest(),
-        externally_connectable: {
-          ids: ['klmnopqrstuvwxyz'],
-        },
-      });
-    });
-
-    afterEach(() => {
-      sandbox.restore();
-    });
-
-    it('single project', async () => {
-      mockLegacySidekickResponse([CONFIGS[0]]);
-      sandbox.stub(chrome.storage.sync, 'get').resolves({ projects: [] });
-
-      await internalActions.importProjects(mockTab('https://main--bar--foo.aem.page/', {
-        id: 2,
-      }));
-      expect(i18nSpy.calledWith('config_project_imported_single', '1')).to.be.true;
-
-      expect(sendMessageStub.calledWithMatch(2, { action: 'show_notification' })).to.be.true;
-    });
-
-    it('multiple project', async () => {
-      mockLegacySidekickResponse(CONFIGS);
-      sandbox.stub(chrome.storage.sync, 'get').resolves({ projects: [] });
-
-      await internalActions.importProjects(mockTab('https://main--bar--foo.aem.page/', {
-        id: 2,
-      }));
-
-      expect(i18nSpy.calledWith('config_project_imported_multiple', '2')).to.be.true;
-      expect(sendMessageStub.calledWithMatch(2, { action: 'show_notification' })).to.be.true;
-    });
-
-    it('no projects', async () => {
-      mockLegacySidekickResponse([CONFIGS[1]]);
-      sandbox.stub(chrome.storage.sync, 'get').resolves({ 'foo/bar2': CONFIGS[1] });
-
-      await internalActions.importProjects(mockTab('https://main--bar--foo.aem.page/', {
-        id: 2,
-      }));
-
-      expect(i18nSpy.calledWith('config_project_imported_none', '0')).to.be.true;
-      expect(sendMessageStub.calledWithMatch(2, { action: 'show_notification' })).to.be.true;
-    });
   });
 
   it('internal: manageProjects', async () => {

@@ -15,7 +15,6 @@ import { internalActions } from './actions.js';
 import { getDisplay } from './display.js';
 import {
   GH_URL,
-  detectLegacySidekick,
   getProject,
   isValidProject,
 } from './project.js';
@@ -176,23 +175,6 @@ export async function updateContextMenu({
       await chrome.contextMenus.create({
         id: 'openViewDocSource',
         title: chrome.i18n.getMessage('open_view_doc_source'),
-        contexts: [
-          'action',
-        ],
-      });
-    }
-    if (await detectLegacySidekick()) {
-      // import legacy projects
-      await chrome.contextMenus.create({
-        id: 'separator',
-        type: 'separator',
-        contexts: [
-          'action',
-        ],
-      });
-      await chrome.contextMenus.create({
-        id: 'importProjects',
-        title: chrome.i18n.getMessage('config_project_import'),
         contexts: [
           'action',
         ],

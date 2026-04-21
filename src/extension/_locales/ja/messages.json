@@ -257,24 +257,6 @@
   "config_project_exists": {
     "message": "このプロジェクトの設定は既に存在します。"
   },
-  "config_project_import": {
-    "message": "AEM Sidekick v6 からプロジェクトを読み込む"
-  },
-  "config_project_import_headline": {
-    "message": "プロジェクトを読み込む"
-  },
-  "config_project_import_sidekick_not_found": {
-    "message": "レガシーサイドキックが見つかりません。拡張機能がインストールされているが現在無効になっている場合は、有効にしてもう一度試してください。"
-  },
-  "config_project_imported_multiple": {
-    "message": "AEM Sidekick v6 から $1 個のプロジェクトを正常に読み込みました。"
-  },
-  "config_project_imported_none": {
-    "message": "AEM Sidekick v6 に新しいプロジェクトが見つかりません。"
-  },
-  "config_project_imported_single": {
-    "message": "AEM Sidekick v6 から 1 個のプロジェクトを正常に読み込みました。"
-  },
   "config_project_manage": {
     "message": "プロジェクトを管理"
   },

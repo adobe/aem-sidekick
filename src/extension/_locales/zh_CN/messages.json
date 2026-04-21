@@ -257,24 +257,6 @@
   "config_project_exists": {
     "message": "对该项目的配置已存在。"
   },
-  "config_project_import": {
-    "message": "从 AEM Sidekick v6 导入项目"
-  },
-  "config_project_import_headline": {
-    "message": "导入项目"
-  },
-  "config_project_import_sidekick_not_found": {
-    "message": "未找到旧版 Sidekick。如果扩展已安装但当前处于禁用状态，请启用后再试。"
-  },
-  "config_project_imported_multiple": {
-    "message": "已成功从 AEM Sidekick v6 导入 $1 个项目。"
-  },
-  "config_project_imported_none": {
-    "message": "在 AEM Sidekick v6 中未找到新项目。"
-  },
-  "config_project_imported_single": {
-    "message": "已成功从 AEM Sidekick v6 导入 1 个项目。"
-  },
   "config_project_manage": {
     "message": "管理项目"
   },

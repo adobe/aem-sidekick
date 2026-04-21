@@ -31,8 +31,6 @@ import {
   getGitHubSettings,
   getProjectFromUrl,
   resolveProxyUrl,
-  detectLegacySidekick,
-  importLegacyProjects,
 } from '../src/extension/project.js';
 import { urlCache } from '../src/extension/url-cache.js';
 import { error, mockTab } from './test-utils.js';
@@ -599,118 +597,6 @@ describe('Test project', () => {
 
       const res = await resolveProxyUrl(tab, []);
       expect(res.url).to.equal(tabUrl);
-    });
-  });
-
-  describe('legacy project migration', () => {
-    const legacySidekickId = 'klmnopqrstuvwxyz';
-
-    function mockLegacySidekickResponse(extensionId, lastError, projects) {
-      const stub = sandbox.stub(chrome.runtime, 'sendMessage');
-      stub.callsFake(async (msgId, { action }, callback) => {
-        if (lastError) {
-          // @ts-ignore
-          chrome.runtime.lastError = lastError;
-        }
-        switch (action) {
-          case 'ping':
-            callback(msgId === extensionId);
-            break;
-          case 'getProjects':
-            callback(msgId === extensionId ? projects : null);
-            break;
-          default:
-            callback();
-        }
-      });
-      return stub;
-    }
-
-    beforeEach(() => {
-      sandbox.stub(chrome.runtime, 'getManifest').returns({
-        ...chrome.runtime.getManifest(),
-        externally_connectable: {
-          ids: [
-            'some_extension_id',
-            legacySidekickId,
-            'other_extension_id',
-          ],
-        },
-      });
-    });
-
-    describe('detectLegacySidekick', () => {
-      it('detects legacy sidekick and returns id', async () => {
-        mockLegacySidekickResponse(legacySidekickId);
-        const id = await detectLegacySidekick();
-        expect(id).to.equal(legacySidekickId);
-      });
-
-      it('no legacy sidekick present', async () => {
-        mockLegacySidekickResponse(); // no id matches
-        const id = await detectLegacySidekick();
-        expect(id).to.be.undefined;
-      });
-
-      it('chrome.runtime.lastError exists', async () => {
-        mockLegacySidekickResponse(legacySidekickId, error);
-        const id = await detectLegacySidekick();
-        expect(id).to.be.undefined;
-      });
-
-      it('chrome.runtime.sendMessage throws', async () => {
-        sandbox.stub(chrome.runtime, 'sendMessage').throws(error);
-        const id = await detectLegacySidekick();
-        expect(id).to.be.undefined;
-      });
-    });
-
-    describe('importLegacyProjects', () => {
-      it('no legacy sidekick present', async () => {
-        mockLegacySidekickResponse(); // no id matches
-        const imported = await importLegacyProjects();
-        expect(imported).to.equal(0);
-      });
-
-      it('legacy sidekick responds with null', async () => {
-        mockLegacySidekickResponse(legacySidekickId, null, null);
-        const imported = await importLegacyProjects(legacySidekickId);
-        expect(imported).to.equal(0);
-      });
-
-      it('legacy sidekick responds with empty array', async () => {
-        mockLegacySidekickResponse(legacySidekickId, null, []);
-        const imported = await importLegacyProjects(legacySidekickId);
-        expect(imported).to.equal(0);
-      });
-
-      it('legacy sidekick responds with new projects', async () => {
-        mockLegacySidekickResponse(legacySidekickId, null, CONFIGS);
-        const imported = await importLegacyProjects(legacySidekickId);
-        expect(imported).to.equal(6);
-      });
-
-      it('legacy sidekick responds with existing project', async () => {
-        mockLegacySidekickResponse(legacySidekickId, null, [CONFIGS[0]]);
-        sandbox.stub(chrome.storage.sync, 'get')
-          .callsFake(async (prop) => {
-            const value = prop.includes('/')
-              ? CONFIGS.find(({ owner, repo }) => prop === `${owner}/${repo}`) // project
-              : CONFIGS.slice(0, 1).map(({ owner, repo }) => `${owner}/${repo}`); // projects
-            return { [prop]: value };
-          });
-        const imported = await importLegacyProjects(legacySidekickId);
-        expect(imported).to.equal(0);
-      });
-
-      it('chrome.runtime.sendMessage throws', async () => {
-        mockLegacySidekickResponse(legacySidekickId, null, CONFIGS)
-          .withArgs(legacySidekickId)
-          .onFirstCall()
-          .throws(error);
-        const imported = await importLegacyProjects(legacySidekickId);
-        expect(imported).to.equal(0);
-      });
     });
   });
 });
