@@ -1,3 +1,10 @@
+## [7.32.3](https://github.com/adobe/aem-sidekick/compare/v7.32.2...v7.32.3) (2026-04-21)
+
+
+### Bug Fixes
+
+* remove import projects from legacy sidekick ([#849](https://github.com/adobe/aem-sidekick/issues/849)) ([72bf202](https://github.com/adobe/aem-sidekick/commit/72bf2025d5b088bcd99a9895b3b3b1e175df2f23)), closes [#850](https://github.com/adobe/aem-sidekick/issues/850)
+
 ## [7.32.2](https://github.com/adobe/aem-sidekick/compare/v7.32.1...v7.32.2) (2026-04-20)
 
 
