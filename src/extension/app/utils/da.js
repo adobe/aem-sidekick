@@ -89,8 +89,8 @@ export function enableCollab(appStore) {
 
   sidekick.addEventListener('hidden', saveAndDisable);
 
-  sidekick.addEventListener('toggled', (e) => {
-    if (e.detail?.display) {
+  sidekick.addEventListener('toggled', (/** @type {CustomEvent} */ { detail }) => {
+    if (detail?.display) {
       if (wasDaCollab) {
         enableCollab(appStore);
         if (wasQuickEdit) {
