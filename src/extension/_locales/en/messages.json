@@ -561,6 +561,14 @@
     "edit": {
       "message": "Edit"
     },
+    "edit_inline": {
+      "message": "Edit inline",
+      "description": "Hold action label for in-place editing on DA preview pages"
+    },
+    "edit_in_editor": {
+      "message": "Open in editor",
+      "description": "Menu item label for opening the page in the DA editor"
+    },
     "edit_last_updated": {
       "message": "Last edited $1"
     },

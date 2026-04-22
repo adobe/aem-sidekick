@@ -389,6 +389,12 @@
   "edit": {
     "message": "编辑"
   },
+  "edit_inline": {
+    "message": "内联编辑"
+  },
+  "edit_in_editor": {
+    "message": "在编辑器中打开"
+  },
   "edit_date": {
     "message": "已编辑: "
   },

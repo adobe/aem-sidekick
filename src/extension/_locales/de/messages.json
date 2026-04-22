@@ -389,6 +389,12 @@
   "edit": {
     "message": "Bearbeiten"
   },
+  "edit_inline": {
+    "message": "Inline bearbeiten"
+  },
+  "edit_in_editor": {
+    "message": "Im Editor öffnen"
+  },
   "edit_date": {
     "message": "Bearbeitet: "
   },

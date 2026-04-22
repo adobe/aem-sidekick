@@ -159,6 +159,15 @@ export class Plugin {
   }
 
   /**
+   * Does this plugin have an active secondary action?
+   * @returns {boolean} True if the plugin has a secondary action whose condition is met
+   */
+  #hasSecondaryAction() {
+    const { secondaryAction } = this.config.button || {};
+    return secondaryAction && secondaryAction.condition(this.appStore);
+  }
+
+  /**
    * Is this plugin a container?
    * @returns {boolean} True if the plugin is a container, else false
    */
@@ -354,6 +363,31 @@ export class Plugin {
     }
 
     if (this.isPinned()) {
+      if (this.config.button?.secondaryAction) {
+        if (this.#hasSecondaryAction()) {
+          const { secondaryAction, actionText } = this.config.button;
+          this.children = {};
+          this.append(new Plugin({
+            id: 'secondary-action',
+            container: this.id,
+            button: {
+              text: secondaryAction.text,
+              action: (e) => secondaryAction.action(e),
+            },
+          }, this.appStore));
+          this.append(new Plugin({
+            id: 'default-action',
+            container: this.id,
+            button: {
+              text: actionText || this.getButtonText(),
+              action: (e) => this.config.button.action(e),
+            },
+          }, this.appStore));
+        } else {
+          this.children = {};
+        }
+      }
+
       const childPlugins = Object.values(this.children)
         .filter((childPlugin) => childPlugin.isVisible() && childPlugin.isPinned());
 

@@ -389,6 +389,12 @@
   "edit": {
     "message": "편집"
   },
+  "edit_inline": {
+    "message": "인라인 편집"
+  },
+  "edit_in_editor": {
+    "message": "편집기에서 열기"
+  },
   "edit_date": {
     "message": "편집됨: "
   },
