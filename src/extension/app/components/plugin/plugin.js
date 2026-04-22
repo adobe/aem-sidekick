@@ -362,32 +362,30 @@ export class Plugin {
       `;
     }
 
-    if (this.isPinned()) {
-      if (this.config.button?.secondaryAction) {
-        if (this.#hasSecondaryAction()) {
-          const { secondaryAction, actionText } = this.config.button;
-          this.children = {};
-          this.append(new Plugin({
-            id: 'secondary-action',
-            container: this.id,
-            button: {
-              text: secondaryAction.text,
-              action: (e) => secondaryAction.action(e),
-            },
-          }, this.appStore));
-          this.append(new Plugin({
-            id: 'default-action',
-            container: this.id,
-            button: {
-              text: actionText || this.getButtonText(),
-              action: (e) => this.config.button.action(e),
-            },
-          }, this.appStore));
-        } else {
-          this.children = {};
-        }
-      }
+    if (this.#hasSecondaryAction()) {
+      const { secondaryAction, actionText } = this.config.button;
+      this.children = {};
+      this.append(new Plugin({
+        id: 'secondary-action',
+        container: this.id,
+        button: {
+          text: secondaryAction.text,
+          action: (e) => secondaryAction.action(e),
+        },
+      }, this.appStore));
+      this.append(new Plugin({
+        id: 'default-action',
+        container: this.id,
+        button: {
+          text: actionText || this.getButtonText(),
+          action: (e) => this.config.button.action(e),
+        },
+      }, this.appStore));
+    } else if (this.children['secondary-action']) {
+      this.children = {};
+    }
 
+    if (this.isPinned()) {
       const childPlugins = Object.values(this.children)
         .filter((childPlugin) => childPlugin.isVisible() && childPlugin.isPinned());
 
