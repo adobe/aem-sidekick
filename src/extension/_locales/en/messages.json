@@ -563,7 +563,7 @@
     },
     "edit_inline": {
       "message": "Edit inline",
-      "description": "Hold action label for in-place editing on DA preview pages"
+      "description": "Menu item label for in-place editing on DA preview pages"
     },
     "edit_in_editor": {
       "message": "Open in editor",
