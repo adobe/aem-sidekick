@@ -10,8 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-import sampleRUM from './utils/rum.js';
-
 /**
  * The modal type
  * @typedef {import('@Types').OptionsConfig} OptionsConfig
@@ -22,6 +20,7 @@ import sampleRUM from './utils/rum.js';
   window.hlx = window.hlx || {};
 
   const { getDisplay, toggleDisplay } = await import('./display.js');
+
   const display = await getDisplay();
   /**
    * Load the sidekick custom element and add it to the DOM
@@ -96,7 +95,9 @@ import sampleRUM from './utils/rum.js';
 
   let configLoaded = false;
 
-  chrome.runtime.onMessage.addListener((message, { tab }, sendResponse) => {
+  chrome.runtime.onMessage.addListener(async (message, { tab }, sendResponse) => {
+    const { default: sampleRUM } = await import('./utils/rum.js');
+
     if (message.action === 'getStoredProject') {
       // respond to stored project queries from background script
       const stored = window.sessionStorage.getItem('aem-sk-project');
