@@ -20,7 +20,6 @@
   window.hlx = window.hlx || {};
 
   const { getDisplay, toggleDisplay } = await import('./display.js');
-
   const display = await getDisplay();
   /**
    * Load the sidekick custom element and add it to the DOM
