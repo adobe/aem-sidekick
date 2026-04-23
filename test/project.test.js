@@ -423,18 +423,18 @@ describe('Test project', () => {
     expect((await getProjectMatches(CONFIGS, mockTab('https://6-live.foo.bar/'))).length).to.equal(1);
     // match production host
     expect((await getProjectMatches(CONFIGS, mockTab('https://1.foo.bar/'))).length).to.equal(1);
-    // ignore disabled config
-    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar2--foo.aem.live/'))).length).to.equal(0);
+    // match disabled config
+    expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar2--foo.aem.live/'))).length).to.equal(1);
     // match transient URL
     expect((await getProjectMatches(CONFIGS, mockTab('https://main--bar0--foo.aem.live/'))).length).to.equal(1);
     // testing else paths
     expect((await getProjectMatches(CONFIGS, mockTab('https://bar--foo.aem.live/'))).length).to.equal(0);
     await urlCache.set(mockTab('https://7.foo.bar/'), { owner: 'foo', repo: 'bar6' });
     expect((await getProjectMatches(CONFIGS, mockTab('https://7.foo.bar/'))).length).to.equal(1);
-    // match sharepoint URL (docx)
+    // match sharepoint URL (docx) - discovery returns bar1 and bar2 (disabled)
     mockDiscoveryCall();
     await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'));
-    expect((await getProjectMatches(CONFIGS, mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'))).length).to.equal(1);
+    expect((await getProjectMatches(CONFIGS, mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=index.docx&action=default&mobileredirect=true'))).length).to.equal(2);
     // match transient sharepoint URL
     await urlCache.set(mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=test.docx&action=default&mobileredirect=true'));
     expect((await getProjectMatches([], mockTab('https://foo.sharepoint.com/:w:/r/sites/foo/_layouts/15/Doc.aspx?sourcedoc=%7BBFD9A19C-4A68-4DBF-8641-DA2F1283C895%7D&file=test.docx&action=default&mobileredirect=true'))).length).to.equal(1);

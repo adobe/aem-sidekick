@@ -15,7 +15,6 @@ import { addCacheBusterRule } from './cache-buster.js';
 import { setAuthToken } from './auth.js';
 import {
   addProject,
-  getProjectFromUrl,
   toggleProject,
   deleteProject,
   isValidProject,
@@ -390,12 +389,32 @@ async function addRemoveProject(tab) {
  * @param {chrome.tabs.Tab} tab The tab
  */
 async function enableDisableProject(tab) {
-  const { id } = tab;
-  const cfg = await getProjectFromUrl(tab);
-  const project = await getProject(cfg);
+  const matches = await getProjectMatches(await getProjects(), tab);
+  let config;
+  if (matches.length === 1) {
+    [config] = matches;
+  } else {
+    // multiple matches, check if the content script has a stored project selection
+    try {
+      config = await chrome.tabs.sendMessage(tab.id, { action: 'getStoredProject' });
+    } catch (e) {
+      // content script not available
+    }
+    if (!config) {
+      // multiple matches but no stored project, ask user to pick first
+      await showSidekickIfHidden();
+      await showSidekickNotification(tab.id, {
+        message: chrome.i18n.getMessage('config_project_pick_first'),
+        headline: chrome.i18n.getMessage('config_project_pick'),
+      });
+      return;
+    }
+  }
+
+  const project = await getProject(config);
 
   await showSidekickIfHidden();
-  if (await toggleProject(cfg)) {
+  if (await toggleProject(config)) {
     const i18nKey = project.disabled
       ? 'config_project_enabled'
       : 'config_project_disabled';
@@ -408,7 +427,7 @@ async function enableDisableProject(tab) {
         message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
         headline: chrome.i18n.getMessage(i18nHeadlineKey),
       },
-      notificationConfirmCallback(id));
+      notificationConfirmCallback(tab.id));
   }
 }
 

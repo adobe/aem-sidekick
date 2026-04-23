@@ -284,7 +284,7 @@ describe('Test check-tab', () => {
     // stub sendMessage to return stored project
     const sendMessageStub = sandbox.stub(chrome.tabs, 'sendMessage')
       .callsFake(async (_tabId, msg) => {
-        if (msg?.action === 'getStoredProject') {
+        if (/** @type {*} */ (msg)?.action === 'getStoredProject') {
           return { owner: 'foo', repo: 'baz', ref: 'main' };
         }
         return undefined;
@@ -294,6 +294,54 @@ describe('Test check-tab', () => {
 
     // verify content script was queried for stored project
     expect(sendMessageStub.calledWithMatch(sinon.match.any, { action: 'getStoredProject' })).to.be.true;
+  });
+
+  it('checkTab: disabled project excluded from content script but included in UI', async () => {
+    const tab = TABS[1]; // https://main--blog--adobe.aem.page/
+
+    sandbox.restore();
+
+    sandbox.stub(chrome.storage.local, 'get')
+      .withArgs('display')
+      .resolves({ display: true });
+
+    executeScriptSpy = sandbox.spy(chrome.scripting, 'executeScript');
+
+    onMessageAddListenerStub = fakeListenerCallback({
+      msg: { isAEM: true },
+      tab,
+    });
+
+    getTabSpy = sandbox.stub(chrome.tabs, 'get')
+      .callsFake(async (id) => TABS[String(id)]);
+
+    // disabled project matching the tab URL
+    const disabledProject = {
+      'adobe/blog': {
+        owner: 'adobe',
+        repo: 'blog',
+        ref: 'main',
+        disabled: true,
+      },
+    };
+    fakeGetProjects(disabledProject);
+
+    sandbox.stub(urlCache, 'set').resolves();
+    sandbox.stub(urlCache, 'get').resolves([]);
+
+    const sendMessageStub = sandbox.stub(chrome.tabs, 'sendMessage');
+
+    await checkTab(tab.id);
+
+    // content script is injected but receives no config matches (disabled filtered)
+    expect(executeScriptSpy.calledWith({
+      target: { tabId: tab.id },
+      files: ['./content.js'],
+    })).to.be.true;
+    const configMatchesMsg = sendMessageStub.args
+      .find((a) => /** @type {*} */ (a[1])?.configMatches);
+    expect(configMatchesMsg).to.not.be.undefined;
+    expect(/** @type {*} */ (configMatchesMsg[1]).configMatches.length).to.equal(0);
   });
 
   it('getCurrentTab', async () => {

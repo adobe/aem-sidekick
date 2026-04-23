@@ -27,6 +27,7 @@ import { error } from './test-utils.js';
 window.chrome = chromeMock;
 
 const sandbox = sinon.createSandbox();
+/** @type {*} */
 const config = {
   owner: 'adobe',
   repo: 'aem-boilerplate',
@@ -62,7 +63,7 @@ describe('Test UI: updateContextMenu', () => {
     removeAllSpy = sandbox.spy(chrome.contextMenus, 'removeAll');
     createSpy = sandbox.spy(chrome.contextMenus, 'create');
     sandbox.stub(chrome.runtime.onMessage, 'addListener')
-      .callsFake((func, _) => func(
+      .callsFake((/** @type {Function} */ func, /** @type {*} */ _) => func(
         { isAEM },
         { tab: { id: 1 } },
       ));
@@ -136,6 +137,19 @@ describe('Test UI: updateContextMenu', () => {
       matches: [config],
     });
     expect(removeAllSpy.callCount).to.equal(1);
+    expect(createSpy.calledWithMatch({ id: 'addRemoveProject' })).to.be.true;
+  });
+
+  it('updateContextMenu: config derived from single disabled match', async () => {
+    await updateContextMenu({
+      ...tab,
+      matches: [{ ...config, disabled: true }],
+    });
+    expect(removeAllSpy.callCount).to.equal(1);
+    expect(createSpy.calledWithMatch({
+      id: 'enableDisableProject',
+      title: chrome.i18n.getMessage('config_project_enable'),
+    })).to.be.true;
     expect(createSpy.calledWithMatch({ id: 'addRemoveProject' })).to.be.true;
   });
 
@@ -216,6 +230,22 @@ describe('Test UI: updateIcon', () => {
   it('updateIcon: disabled', async () => {
     // disabled
     await updateIcon({});
+    expect(setIconStub.calledWith({
+      path: {
+        16: 'icons/disabled/icon-16x16.png',
+        32: 'icons/disabled/icon-32x32.png',
+        48: 'icons/disabled/icon-48x48.png',
+        128: 'icons/disabled/icon-128x128.png',
+        512: 'icons/disabled/icon-512x512.png',
+      },
+    })).to.be.true;
+  });
+
+  it('updateIcon: disabled project only', async () => {
+    await setDisplay(true);
+    await updateIcon({
+      matches: [{ ...config, disabled: true }],
+    });
     expect(setIconStub.calledWith({
       path: {
         16: 'icons/disabled/icon-16x16.png',
