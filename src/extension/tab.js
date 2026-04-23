@@ -76,8 +76,7 @@ export async function checkTab(id) {
 
     const adminVersion = await getConfig('session', 'adminVersion');
 
-    const activeMatches = matches.filter((m) => !m.disabled);
-    injectContentScript(id, activeMatches, adminVersion);
+    injectContentScript(id, matches.filter((m) => !m.disabled), adminVersion);
 
     updateUI({
       id, url, config, matches, numProjects: projects.length,
