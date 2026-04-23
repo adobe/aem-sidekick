@@ -687,8 +687,11 @@ describe('Test actions', () => {
     ]);
 
     // stub content script to return stored project selection
-    sandbox.stub(chrome.tabs, 'sendMessage').callsFake(async (_tabId, { action }) => {
-      if (action === 'getStoredProject') {
+    sandbox.stub(chrome.tabs, 'sendMessage').callsFake(async (
+      _,
+      /** @type {*} */ msg,
+    ) => {
+      if (msg.action === 'getStoredProject') {
         return { owner: 'foo', repo: 'bar2', ref: 'main' };
       }
       return undefined;
@@ -751,6 +754,8 @@ describe('Test actions', () => {
       },
     })).to.be.true;
     // enable project
+    sandbox.stub(chrome.tabs.onUpdated, 'addListener')
+      .callsFake((/** @type {*} */ cb) => cb(2, { status: 'complete' }));
     await internalActions.enableDisableProject(mockTab('https://main--bar--foo.aem.page/', {
       id: 2,
     }));
@@ -807,8 +812,11 @@ describe('Test actions', () => {
     ]);
 
     // stub content script to return stored project selection
-    sandbox.stub(chrome.tabs, 'sendMessage').callsFake(async (_tabId, { action }) => {
-      if (action === 'getStoredProject') {
+    sandbox.stub(chrome.tabs, 'sendMessage').callsFake(async (
+      _,
+      /** @type {*} */ msg,
+    ) => {
+      if (msg.action === 'getStoredProject') {
         return { owner: 'foo', repo: 'bar2', ref: 'main' };
       }
       return undefined;
@@ -983,6 +991,8 @@ describe('Test actions', () => {
     expect(/** @type {*} */ (bar['foo/bar']).disabled, 'foo/bar is disabled').to.be.true;
 
     const sendMessageStub = sandbox.spy(chrome.tabs, 'sendMessage');
+    sandbox.stub(chrome.tabs.onUpdated, 'addListener')
+      .callsFake((/** @type {*} */ cb) => cb(1, { status: 'complete' }));
 
     // enable project - should show notification with enabled message
     await internalActions.enableDisableProject(mockTab('https://main--bar--foo.aem.page/', {

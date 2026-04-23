@@ -103,7 +103,7 @@ export function notificationConfirmCallback(tabId) {
  * @param {*} callback
  */
 export async function showSidekickNotification(tabId, data, callback) {
-  chrome.tabs.sendMessage(tabId, { action: 'show_notification', ...data }, callback);
+  return chrome.tabs.sendMessage(tabId, { action: 'show_notification', ...data }, callback);
 }
 
 /**
@@ -412,22 +412,42 @@ async function enableDisableProject(tab) {
   }
 
   const project = await getProject(config);
+  if (!project) return;
 
   await showSidekickIfHidden();
-  if (await toggleProject(config)) {
-    const i18nKey = project.disabled
-      ? 'config_project_enabled'
-      : 'config_project_disabled';
-    const i18nHeadlineKey = project.disabled
-      ? 'config_project_enabled_headline'
-      : 'config_project_disabled_headline';
+  const enabling = project.disabled;
+  const i18nKey = enabling
+    ? 'config_project_enabled'
+    : 'config_project_disabled';
+  const i18nHeadlineKey = enabling
+    ? 'config_project_enabled_headline'
+    : 'config_project_disabled_headline';
+  const notification = {
+    message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
+    headline: chrome.i18n.getMessage(i18nHeadlineKey),
+  };
 
-    await showSidekickNotification(tab.id,
-      {
-        message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
-        headline: chrome.i18n.getMessage(i18nHeadlineKey),
-      },
-      notificationConfirmCallback(tab.id));
+  if (await toggleProject(config)) {
+    if (enabling) {
+      // reload tab so the content script and sidekick load before sending the notification
+      await new Promise((resolve) => {
+        chrome.tabs.onUpdated.addListener(function onComplete(tabId, info) {
+          if (tabId === tab.id && info.status === 'complete') {
+            chrome.tabs.onUpdated.removeListener(onComplete);
+            resolve();
+          }
+        });
+        notificationConfirmCallback(tab.id)();
+      });
+      // wait for sidekick to initialize after page load
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    await showSidekickNotification(
+      tab.id,
+      notification,
+      !enabling ? notificationConfirmCallback(tab.id) : undefined,
+    );
   }
 }
 

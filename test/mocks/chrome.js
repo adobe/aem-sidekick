@@ -79,6 +79,10 @@ export default {
     remove: async () => {},
     reload: async () => {},
     update: async () => {},
+    onUpdated: {
+      addListener: () => {},
+      removeListener: () => {},
+    },
   },
   scripting: {
     executeScript: async ({ func, args = [] }) => {
