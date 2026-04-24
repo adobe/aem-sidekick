@@ -783,6 +783,41 @@ describe('Test actions', () => {
     expect(set.notCalled).to.be.true;
   });
 
+  it('internal: enableDisableProject retries ping on enable', async () => {
+    // set up storage directly with a disabled project
+    chrome.storage.sync.clear();
+    chrome.storage.session.clear();
+    chrome.storage.sync.set({
+      projects: ['foo/bar'],
+      'foo/bar': {
+        id: 'foo/bar',
+        giturl: 'https://github.com/foo/bar/tree/main',
+        owner: 'foo',
+        repo: 'bar',
+        ref: 'main',
+        disabled: true,
+      },
+    });
+
+    sandbox.stub(chrome.tabs.onUpdated, 'addListener')
+      .callsFake((/** @type {*} */ cb) => cb(4, { status: 'complete' }));
+
+    // first ping throws (sidekick not ready), second succeeds
+    let pingCount = 0;
+    sandbox.stub(chrome.tabs, 'sendMessage')
+      .callsFake(async (_, /** @type {*} */ msg) => {
+        if (msg.action === 'ping') {
+          pingCount += 1;
+          if (pingCount === 1) throw new Error('not ready');
+          return true;
+        }
+        return undefined;
+      });
+
+    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.aem.page/', { id: 4 }));
+    expect(pingCount).to.be.greaterThan(1);
+  }).timeout(15000);
+
   it('internal: enableDisableProject uses stored project from content script', async () => {
     // ensure clean storage with exactly two projects
     chrome.storage.sync.clear();

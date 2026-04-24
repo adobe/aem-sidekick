@@ -209,6 +209,25 @@ describe('AEM Sidekick', () => {
     expect(sendResponse).to.have.been.calledOnce;
   });
 
+  it('responds to ping message', async () => {
+    const sendResponse = spy();
+
+    const message = { action: 'ping' };
+    const sender = {};
+
+    sidekickTest.sandbox.stub(chrome.runtime.onMessage, 'addListener')
+      .callsFake((func) => func(
+        message,
+        sender,
+        sendResponse,
+      ));
+
+    sidekick = sidekickTest.createSidekick();
+    await sidekickTest.awaitEnvSwitcher();
+
+    expect(sendResponse).to.have.been.calledOnceWith(true);
+  });
+
   it('ignores external notifications from invalid extension', async () => {
     const sendResponse = spy();
 
