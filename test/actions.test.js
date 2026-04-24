@@ -756,6 +756,8 @@ describe('Test actions', () => {
     // enable project
     sandbox.stub(chrome.tabs.onUpdated, 'addListener')
       .callsFake((/** @type {*} */ cb) => cb(2, { status: 'complete' }));
+    sandbox.stub(chrome.tabs, 'sendMessage')
+      .callsFake(async (_, /** @type {*} */ msg) => (msg.action === 'ping' ? true : undefined));
     await internalActions.enableDisableProject(mockTab('https://main--bar--foo.aem.page/', {
       id: 2,
     }));
@@ -990,7 +992,8 @@ describe('Test actions', () => {
     const bar = await chrome.storage.sync.get('foo/bar');
     expect(/** @type {*} */ (bar['foo/bar']).disabled, 'foo/bar is disabled').to.be.true;
 
-    const sendMessageStub = sandbox.spy(chrome.tabs, 'sendMessage');
+    const sendMessageStub = sandbox.stub(chrome.tabs, 'sendMessage')
+      .callsFake(async (_, /** @type {*} */ msg) => (msg.action === 'ping' ? true : undefined));
     sandbox.stub(chrome.tabs.onUpdated, 'addListener')
       .callsFake((/** @type {*} */ cb) => cb(1, { status: 'complete' }));
 

@@ -98,6 +98,28 @@ export function notificationConfirmCallback(tabId) {
 }
 
 /**
+ * Waits for the sidekick's message listener to be ready in a tab.
+ * @param {number} tabId The tab ID
+ * @param {number} [timeout=10000] Maximum time to wait in ms
+ */
+/* eslint-disable no-await-in-loop */
+async function waitForSidekick(tabId, timeout = 10000) {
+  const start = Date.now();
+  while (Date.now() - start < timeout) {
+    try {
+      const resp = await chrome.tabs.sendMessage(tabId, { action: 'ping' });
+      if (resp) return;
+    } catch (e) {
+      // sidekick not ready yet
+    }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 200);
+    });
+  }
+}
+/* eslint-enable no-await-in-loop */
+
+/**
  * Shows a notification in the sidekick
  * @param {*} data
  * @param {*} callback
@@ -440,8 +462,7 @@ async function enableDisableProject(tab) {
         notificationConfirmCallback(tab.id)();
       });
       // wait for sidekick to initialize after page load
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await waitForSidekick(tab.id);
     }
     await showSidekickNotification(
       tab.id,

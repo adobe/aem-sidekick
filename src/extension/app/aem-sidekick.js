@@ -112,7 +112,10 @@ export class AEMSidekick extends LitElement {
       this.appStore.showOnboarding();
     }
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-      if (msg.action === 'show_notification' && ALLOWED_EXTENSION_IDS.includes(sender.id)) {
+      if (msg.action === 'ping') {
+        sendResponse(true);
+        return false;
+      } else if (msg.action === 'show_notification' && ALLOWED_EXTENSION_IDS.includes(sender.id)) {
         const { message, headline } = msg;
         this.appStore.showModal({
           type: MODALS.INFO,
@@ -122,6 +125,7 @@ export class AEMSidekick extends LitElement {
             confirmCallback: (response) => { sendResponse(response); },
           },
         });
+        return true;
       } else if (msg.action === 'resize_palette') {
         const { id, rect } = msg;
         EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_PALETTE, {
@@ -145,7 +149,7 @@ export class AEMSidekick extends LitElement {
         }));
         sendResponse(true);
       }
-      return true;
+      return false;
     });
   }
 
