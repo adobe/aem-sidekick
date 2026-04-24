@@ -768,5 +768,8 @@
     },
     "AEM_BACKEND_CONFIG_NOT_SUPPORTED": {
       "message": "This site is now managed in the configuration service."
+    },
+    "AEM_NOT_PRIMARY_CONTENT": {
+      "message": "Content operations are restricted to the primary site."
     }
 }

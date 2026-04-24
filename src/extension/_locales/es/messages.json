@@ -65,6 +65,9 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "No se puede previsualizar $1: $2"
   },
+  "AEM_NOT_PRIMARY_CONTENT": {
+    "message": "Las operaciones de contenido están restringidas al sitio principal."
+  },
   "activate": {
     "message": "Activar"
   },
