@@ -656,7 +656,7 @@ describe('Test Admin Client', () => {
         'Content operations restricted to the primary site: org/site',
         'AEM_NOT_PRIMARY_CONTENT',
       );
-      expect(res).to.equal('(403) Content operations are restricted to the primary site.');
+      expect(res).to.equal('(403) Content updates are restricted to the primary site.');
       expect(details).to.equal('org/site');
     });
 

@@ -66,7 +66,7 @@
     "message": "$1 미리보기 불가: $2"
   },
   "AEM_NOT_PRIMARY_CONTENT": {
-    "message": "콘텐츠 작업은 기본 사이트로 제한됩니다."
+    "message": "콘텐츠 업데이트는 기본 사이트로 제한됩니다."
   },
   "activate": {
     "message": "활성화"

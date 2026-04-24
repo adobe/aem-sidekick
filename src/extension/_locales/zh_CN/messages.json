@@ -66,7 +66,7 @@
     "message": "无法预览 $1：$2"
   },
   "AEM_NOT_PRIMARY_CONTENT": {
-    "message": "内容操作仅限于主站点。"
+    "message": "内容更新仅限于主站点。"
   },
   "activate": {
     "message": "激活"
