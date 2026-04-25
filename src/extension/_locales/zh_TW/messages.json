@@ -65,6 +65,9 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "無法預覽 $1：$2"
   },
+  "AEM_NOT_PRIMARY_CONTENT": {
+    "message": "內容更新僅限於主要網站。"
+  },
   "activate": {
     "message": "啟動"
   },
