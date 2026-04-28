@@ -111,39 +111,39 @@ export class AEMSidekick extends LitElement {
     if (!onboarded) {
       this.appStore.showOnboarding();
     }
-    chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-      if (msg.action === 'ping') {
+    chrome.runtime.onMessage.addListener(({ action, ...msg }, sender, sendResponse) => {
+      if (action === 'ping') {
         sendResponse(true);
         return false;
-      } else if (msg.action === 'show_notification' && ALLOWED_EXTENSION_IDS.includes(sender.id)) {
+      } else if (action === 'show_notification' && ALLOWED_EXTENSION_IDS.includes(sender.id)) {
         const { message, headline } = msg;
         this.appStore.showModal({
           type: MODALS.INFO,
           data: {
             headline,
             message,
-            confirmCallback: (response) => { sendResponse(response); },
+            confirmCallback: (response) => sendResponse(response),
           },
         });
         return true;
-      } else if (msg.action === 'resize_palette') {
+      } else if (action === 'resize_palette') {
         const { id, rect } = msg;
         EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_PALETTE, {
           detail: { id, styles: rectToStyles(rect) },
         }));
         sendResponse(true);
-      } else if (msg.action === 'resize_popover') {
+      } else if (action === 'resize_popover') {
         const { id, rect } = msg;
         EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.RESIZE_POPOVER, {
           detail: { id, styles: rectToStyles(rect) },
         }));
         sendResponse(true);
-      } else if (msg.action === 'close_palette') {
+      } else if (action === 'close_palette') {
         EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_PALETTE, {
           detail: { id: msg.id },
         }));
         sendResponse(true);
-      } else if (msg.action === 'close_popover') {
+      } else if (action === 'close_popover') {
         EventBus.instance.dispatchEvent(new CustomEvent(EVENTS.CLOSE_POPOVER, {
           detail: { id: msg.id },
         }));
