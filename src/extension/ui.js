@@ -21,7 +21,7 @@ import {
 
 /**
  * The configuration object type
- * @typedef {import('@Types').OptionsDerivedConfig} OptionsDerivedConfig
+ * @typedef {import('@Types').SidekickOptionsConfig} SidekickOptionsConfig
  */
 
 /**
@@ -29,7 +29,7 @@ import {
  * @prop {number} [id] The tab ID
  * @prop {string} [url] The tab URL
  * @prop {Object} [config] The project config
- * @prop {OptionsDerivedConfig[]} [matches] The config matches
+ * @prop {SidekickOptionsConfig[]} [matches] The config matches
  * @prop {number} [numProjects] The total number of project configs
  * @description The context object
  */
@@ -66,7 +66,8 @@ function getPaths(type) {
  */
 export async function updateIcon({ matches = [] }) {
   let iconType = 'disabled';
-  if (matches.length > 0 && isValidProject(matches[0])) {
+  const activeMatches = matches.filter((m) => !m.disabled);
+  if (activeMatches.length > 0 && isValidProject(activeMatches[0])) {
     if (await getDisplay()) {
       iconType = 'default';
     } else {

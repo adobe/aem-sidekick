@@ -15,7 +15,6 @@ import { addCacheBusterRule } from './cache-buster.js';
 import { setAuthToken } from './auth.js';
 import {
   addProject,
-  getProjectFromUrl,
   toggleProject,
   deleteProject,
   isValidProject,
@@ -99,12 +98,34 @@ export function notificationConfirmCallback(tabId) {
 }
 
 /**
+ * Waits for the sidekick's message listener to be ready in a tab.
+ * @param {number} tabId The tab ID
+ * @param {number} [timeout=10000] Maximum time to wait in ms
+ */
+/* eslint-disable no-await-in-loop */
+async function waitForSidekick(tabId, timeout = 10000) {
+  const start = Date.now();
+  while (Date.now() - start < timeout) {
+    try {
+      const resp = await chrome.tabs.sendMessage(tabId, { action: 'ping' });
+      if (resp) return;
+    } catch (e) {
+      // sidekick not ready yet
+    }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 200);
+    });
+  }
+}
+/* eslint-enable no-await-in-loop */
+
+/**
  * Shows a notification in the sidekick
  * @param {*} data
  * @param {*} callback
  */
 export async function showSidekickNotification(tabId, data, callback) {
-  chrome.tabs.sendMessage(tabId, { action: 'show_notification', ...data }, callback);
+  return chrome.tabs.sendMessage(tabId, { action: 'show_notification', ...data }, callback);
 }
 
 /**
@@ -390,25 +411,64 @@ async function addRemoveProject(tab) {
  * @param {chrome.tabs.Tab} tab The tab
  */
 async function enableDisableProject(tab) {
-  const { id } = tab;
-  const cfg = await getProjectFromUrl(tab);
-  const project = await getProject(cfg);
+  const matches = await getProjectMatches(await getProjects(), tab);
+  let config;
+  if (matches.length === 1) {
+    [config] = matches;
+  } else {
+    // multiple matches, check if the content script has a stored project selection
+    try {
+      config = await chrome.tabs.sendMessage(tab.id, { action: 'getStoredProject' });
+    } catch (e) {
+      // content script not available
+    }
+    if (!config) {
+      // multiple matches but no stored project, ask user to pick first
+      await showSidekickIfHidden();
+      await showSidekickNotification(tab.id, {
+        message: chrome.i18n.getMessage('config_project_pick_first'),
+        headline: chrome.i18n.getMessage('config_project_pick'),
+      });
+      return;
+    }
+  }
+
+  const project = await getProject(config);
+  if (!project) return;
 
   await showSidekickIfHidden();
-  if (await toggleProject(cfg)) {
-    const i18nKey = project.disabled
-      ? 'config_project_enabled'
-      : 'config_project_disabled';
-    const i18nHeadlineKey = project.disabled
-      ? 'config_project_enabled_headline'
-      : 'config_project_disabled_headline';
+  const enabling = project.disabled;
+  const i18nKey = enabling
+    ? 'config_project_enabled'
+    : 'config_project_disabled';
+  const i18nHeadlineKey = enabling
+    ? 'config_project_enabled_headline'
+    : 'config_project_disabled_headline';
+  const notification = {
+    message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
+    headline: chrome.i18n.getMessage(i18nHeadlineKey),
+  };
 
-    await showSidekickNotification(tab.id,
-      {
-        message: chrome.i18n.getMessage(i18nKey, project.project || project.id),
-        headline: chrome.i18n.getMessage(i18nHeadlineKey),
-      },
-      notificationConfirmCallback(id));
+  if (await toggleProject(config)) {
+    if (enabling) {
+      // reload tab so the content script and sidekick load before sending the notification
+      await new Promise((resolve) => {
+        chrome.tabs.onUpdated.addListener(function onComplete(tabId, info) {
+          if (tabId === tab.id && info.status === 'complete') {
+            chrome.tabs.onUpdated.removeListener(onComplete);
+            resolve();
+          }
+        });
+        notificationConfirmCallback(tab.id)();
+      });
+      // wait for sidekick to initialize after page load
+      await waitForSidekick(tab.id);
+    }
+    await showSidekickNotification(
+      tab.id,
+      notification,
+      !enabling ? notificationConfirmCallback(tab.id) : undefined,
+    );
   }
 }
 

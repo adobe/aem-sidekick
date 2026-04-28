@@ -300,10 +300,45 @@ describe('Test App Store', () => {
     appStore.location.search = '?id=/foo/video.mp4&referrer=StreamWebApp&view=ebe25cbf-40ca-4fe7-b345-2de37449b94e';
     expect(appStore.isEditor()).to.be.true;
 
+    // personalized share link
+    appStore.location.host = 'adobe.sharepoint.com';
+    appStore.location.pathname = '/:w:/s/InsideAEM/IQB2_1hdZU0gSYp9nMR30_UVARQ7In-vvmVhGh65KMgqaMI';
+    appStore.location.search = '?email=user%40adobe.com&e=narBDC';
+    expect(appStore.isEditor()).to.be.true;
+
     appStore.location.pathname = '';
     appStore.location.search = '';
     appStore.location.host = 'docs.google.com';
     expect(appStore.isEditor()).to.be.true;
+  });
+
+  it('isSharePointShareLink()', async () => {
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+    appStore.location.port = '';
+
+    // word document share link
+    let url = new URL('https://adobe.sharepoint.com/:w:/s/InsideAEM/IQB2_1hdZU0gSYp9nMR30_UVARQ7In-vvmVhGh65KMgqaMI?email=user%40adobe.com&e=narBDC');
+    expect(appStore.isSharePointShareLink(url)).to.be.true;
+
+    // excel document share link
+    url = new URL('https://adobe.sharepoint.com/:x:/s/InsideAEM/EncodedId123?email=user%40adobe.com&e=abc');
+    expect(appStore.isSharePointShareLink(url)).to.be.true;
+
+    // powerpoint share link
+    url = new URL('https://adobe.sharepoint.com/:p:/s/InsideAEM/EncodedId456?email=user%40adobe.com&e=def');
+    expect(appStore.isSharePointShareLink(url)).to.be.true;
+
+    // regular editor URL with /_layouts/15/ is not a share link
+    url = new URL('https://adobe.sharepoint.com/:w:/r/sites/InsideAEM/_layouts/15/Doc.aspx?sourcedoc=%7B5D58FF76%7D&file=doc.docx&action=default&mobileredirect=true');
+    expect(appStore.isSharePointShareLink(url)).to.be.false;
+
+    // regular DM URL is not a share link
+    url = new URL('https://adobe.sharepoint.com/sites/foo/Shared%20Documents/Forms/AllItems.aspx');
+    expect(appStore.isSharePointShareLink(url)).to.be.false;
+
+    // non-SharePoint URL
+    url = new URL('https://docs.google.com/:w:/something');
+    expect(appStore.isSharePointShareLink(url)).to.be.false;
   });
 
   it('isSharePointFolder()', async () => {

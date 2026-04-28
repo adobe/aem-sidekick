@@ -488,9 +488,7 @@ export async function getProjectMatches(configs, tab) {
   const {
     host: checkHost,
   } = new URL(tab.url);
-  // exclude disabled configs
   const matches = configs
-    .filter((cfg) => !cfg.disabled)
     .filter((cfg) => {
       const {
         owner,
@@ -548,8 +546,5 @@ export async function getProjectMatches(configs, tab) {
   }
   return matches
     // ensure each match has an id
-    .map((cfg) => (cfg.id ? cfg : { ...cfg, id: `${cfg.owner}/${cfg.repo}` }))
-    // exclude disabled configs
-    .filter(({ owner, repo }) => !configs
-      .find((cfg) => cfg.owner === owner && cfg.repo === repo && cfg.disabled));
+    .map((cfg) => (cfg.id ? cfg : { ...cfg, id: `${cfg.owner}/${cfg.repo}` }));
 }

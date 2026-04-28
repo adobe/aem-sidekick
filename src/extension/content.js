@@ -99,12 +99,12 @@
       // respond to stored project queries from background script
       const stored = window.sessionStorage.getItem('aem-sk-project');
       sendResponse(stored ? JSON.parse(stored) : null);
-      return;
+      return false;
     }
 
     // only accept config matches from background script
     if (tab || configLoaded) {
-      return;
+      return false;
     }
     configLoaded = true;
 
@@ -151,5 +151,6 @@
     if (configPicker) {
       configPicker.setAttribute('open', `${display}`);
     }
+    return false;
   });
 })();

@@ -687,8 +687,11 @@ describe('Test actions', () => {
     ]);
 
     // stub content script to return stored project selection
-    sandbox.stub(chrome.tabs, 'sendMessage').callsFake(async (_tabId, { action }) => {
-      if (action === 'getStoredProject') {
+    sandbox.stub(chrome.tabs, 'sendMessage').callsFake(async (
+      _,
+      /** @type {*} */ msg,
+    ) => {
+      if (msg.action === 'getStoredProject') {
         return { owner: 'foo', repo: 'bar2', ref: 'main' };
       }
       return undefined;
@@ -751,6 +754,10 @@ describe('Test actions', () => {
       },
     })).to.be.true;
     // enable project
+    sandbox.stub(chrome.tabs.onUpdated, 'addListener')
+      .callsFake((/** @type {*} */ cb) => cb(2, { status: 'complete' }));
+    sandbox.stub(chrome.tabs, 'sendMessage')
+      .callsFake(async (_, /** @type {*} */ msg) => (msg.action === 'ping' ? true : undefined));
     await internalActions.enableDisableProject(mockTab('https://main--bar--foo.aem.page/', {
       id: 2,
     }));
@@ -763,15 +770,223 @@ describe('Test actions', () => {
         ref: 'main',
       },
     })).to.be.true;
-    // testing noop
+    // testing noop (no matches)
     set.resetHistory();
     await internalActions.enableDisableProject(mockTab('https://www.example.com/', {
       url: 'https://www.example.com/',
     }));
     expect(set.notCalled).to.be.true;
+    // testing noop (transient match, project not in storage)
+    await internalActions.enableDisableProject(mockTab('https://main--baz--qux.aem.page/', {
+      id: 3,
+    }));
+    expect(set.notCalled).to.be.true;
   });
 
+  it('internal: enableDisableProject retries ping on enable', async () => {
+    // set up storage directly with a disabled project
+    chrome.storage.sync.clear();
+    chrome.storage.session.clear();
+    chrome.storage.sync.set({
+      projects: ['foo/bar'],
+      'foo/bar': {
+        id: 'foo/bar',
+        giturl: 'https://github.com/foo/bar/tree/main',
+        owner: 'foo',
+        repo: 'bar',
+        ref: 'main',
+        disabled: true,
+      },
+    });
+
+    sandbox.stub(chrome.tabs.onUpdated, 'addListener')
+      .callsFake((/** @type {*} */ cb) => cb(4, { status: 'complete' }));
+
+    // first ping throws (sidekick not ready), second succeeds
+    let pingCount = 0;
+    sandbox.stub(chrome.tabs, 'sendMessage')
+      .callsFake(async (_, /** @type {*} */ msg) => {
+        if (msg.action === 'ping') {
+          pingCount += 1;
+          if (pingCount === 1) throw new Error('not ready');
+          return true;
+        }
+        return undefined;
+      });
+
+    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.aem.page/', { id: 4 }));
+    expect(pingCount).to.be.greaterThan(1);
+  }).timeout(15000);
+
+  it('internal: enableDisableProject uses stored project from content script', async () => {
+    // ensure clean storage with exactly two projects
+    chrome.storage.sync.clear();
+    chrome.storage.session.clear();
+    chrome.storage.sync.set({
+      projects: ['foo/bar1', 'foo/bar2'],
+      'foo/bar1': {
+        id: 'foo/bar1',
+        giturl: 'https://github.com/foo/bar1/tree/main',
+        owner: 'foo',
+        repo: 'bar1',
+        ref: 'main',
+      },
+      'foo/bar2': {
+        id: 'foo/bar2',
+        giturl: 'https://github.com/foo/bar2/tree/main',
+        owner: 'foo',
+        repo: 'bar2',
+        ref: 'main',
+      },
+    });
+
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+
+    // stub url cache to match both projects from a content source url
+    sandbox.stub(urlCache, 'get').resolves([
+      { org: 'foo', site: 'bar1' },
+      { org: 'foo', site: 'bar2' },
+    ]);
+
+    // stub content script to return stored project selection
+    sandbox.stub(chrome.tabs, 'sendMessage').callsFake(async (
+      _,
+      /** @type {*} */ msg,
+    ) => {
+      if (msg.action === 'getStoredProject') {
+        return { owner: 'foo', repo: 'bar2', ref: 'main' };
+      }
+      return undefined;
+    });
+
+    // disable the stored project (bar2, not bar1)
+    await internalActions.enableDisableProject(
+      mockTab('https://foo.sharepoint.com/sites/foo/test', { id: 1 }),
+    );
+    expect(set.calledWith({
+      'foo/bar2': {
+        id: 'foo/bar2',
+        giturl: 'https://github.com/foo/bar2/tree/main',
+        owner: 'foo',
+        repo: 'bar2',
+        ref: 'main',
+        disabled: true,
+      },
+    })).to.be.true;
+
+    // verify which projects were written
+    const setKeys = set.args.map((a) => Object.keys(a[0]).join(','));
+    expect(setKeys.join('|'), 'set call keys').to.not.include('foo/bar1');
+  }).timeout(5000);
+
+  it('internal: enableDisableProject refuses without stored project on multiple matches', async () => {
+    // ensure clean storage with exactly two projects
+    chrome.storage.sync.clear();
+    chrome.storage.session.clear();
+    chrome.storage.sync.set({
+      projects: ['foo/bar3', 'foo/bar4'],
+      'foo/bar3': {
+        id: 'foo/bar3',
+        owner: 'foo',
+        repo: 'bar3',
+        ref: 'main',
+      },
+      'foo/bar4': {
+        id: 'foo/bar4',
+        owner: 'foo',
+        repo: 'bar4',
+        ref: 'main',
+      },
+    });
+
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+    const sendMessageSpy = sandbox.spy(chrome.tabs, 'sendMessage');
+
+    // stub url cache to match both projects from a content source url
+    sandbox.stub(urlCache, 'get').resolves([
+      { org: 'foo', site: 'bar3' },
+      { org: 'foo', site: 'bar4' },
+    ]);
+
+    // no stored project (sendMessage returns undefined by default)
+    await internalActions.enableDisableProject(
+      mockTab('https://foo.sharepoint.com/sites/foo/test', { id: 1 }),
+    );
+
+    // should not toggle any project
+    expect(set.notCalled).to.be.true;
+
+    // should show notification asking user to pick a project
+    expect(sendMessageSpy.calledWithMatch(1, {
+      action: 'show_notification',
+    })).to.be.true;
+  }).timeout(5000);
+
+  it('internal: enableDisableProject handles content script not available on multiple matches', async () => {
+    // ensure clean storage with exactly two projects
+    chrome.storage.sync.clear();
+    chrome.storage.session.clear();
+    chrome.storage.sync.set({
+      projects: ['foo/bar5', 'foo/bar6'],
+      'foo/bar5': {
+        id: 'foo/bar5',
+        owner: 'foo',
+        repo: 'bar5',
+        ref: 'main',
+      },
+      'foo/bar6': {
+        id: 'foo/bar6',
+        owner: 'foo',
+        repo: 'bar6',
+        ref: 'main',
+      },
+    });
+
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+
+    // stub url cache to match both projects from a content source url
+    sandbox.stub(urlCache, 'get').resolves([
+      { org: 'foo', site: 'bar5' },
+      { org: 'foo', site: 'bar6' },
+    ]);
+
+    // content script not available (sendMessage throws)
+    const sendMessageStub = sandbox.stub(chrome.tabs, 'sendMessage')
+      .callsFake(async (_tabId, { action }) => {
+        if (action === 'getStoredProject') {
+          throw new Error('Could not establish connection');
+        }
+        return undefined;
+      });
+
+    await internalActions.enableDisableProject(
+      mockTab('https://foo.sharepoint.com/sites/foo/test', { id: 1 }),
+    );
+
+    // should not toggle any project
+    expect(set.notCalled).to.be.true;
+
+    // should show notification asking user to pick a project
+    expect(sendMessageStub.calledWithMatch(1, {
+      action: 'show_notification',
+    })).to.be.true;
+  }).timeout(5000);
+
   it('internal: enableDisableProject shows correct project name in notification', async () => {
+    // ensure clean storage with a single project
+    chrome.storage.sync.clear();
+    chrome.storage.session.clear();
+    chrome.storage.sync.set({
+      projects: ['foo/bar'],
+      'foo/bar': {
+        id: 'foo/bar',
+        giturl: 'https://github.com/foo/bar/tree/main',
+        owner: 'foo',
+        repo: 'bar',
+        ref: 'main',
+      },
+    });
+
     const sendMessageStub = sandbox.spy(chrome.tabs, 'sendMessage');
     const i18nSpy = sandbox.spy(chrome.i18n, 'getMessage');
 
@@ -788,6 +1003,45 @@ describe('Test actions', () => {
 
     // verify the project name (foo/bar) is used in the message
     expect(i18nSpy.calledWith('config_project_disabled', 'foo/bar')).to.be.true;
+  });
+
+  it('internal: enableDisableProject shows correct notification when enabling', async () => {
+    // ensure clean storage with a single disabled project
+    chrome.storage.sync.clear();
+    chrome.storage.session.clear();
+    chrome.storage.sync.set({
+      projects: ['foo/bar'],
+      'foo/bar': {
+        id: 'foo/bar',
+        giturl: 'https://github.com/foo/bar/tree/main',
+        owner: 'foo',
+        repo: 'bar',
+        ref: 'main',
+        disabled: true,
+      },
+    });
+
+    // verify storage state
+    const stored = await chrome.storage.sync.get('projects');
+    expect(stored.projects, 'projects list').to.deep.equal(['foo/bar']);
+    const bar = await chrome.storage.sync.get('foo/bar');
+    expect(/** @type {*} */ (bar['foo/bar']).disabled, 'foo/bar is disabled').to.be.true;
+
+    const sendMessageStub = sandbox.stub(chrome.tabs, 'sendMessage')
+      .callsFake(async (_, /** @type {*} */ msg) => (msg.action === 'ping' ? true : undefined));
+    sandbox.stub(chrome.tabs.onUpdated, 'addListener')
+      .callsFake((/** @type {*} */ cb) => cb(1, { status: 'complete' }));
+
+    // enable project - should show notification with enabled message
+    await internalActions.enableDisableProject(mockTab('https://main--bar--foo.aem.page/', {
+      id: 1,
+    }));
+
+    const notifCalls = sendMessageStub.args
+      .filter((a) => a[1] && /** @type {*} */ (a[1]).action === 'show_notification')
+      .map((a) => `tabId=${a[0]},headline=${/** @type {*} */ (a[1]).headline},message=${/** @type {*} */ (a[1]).message}`);
+    expect(notifCalls.length, `notification calls: ${notifCalls.join(' | ')}`).to.be.greaterThan(0);
+    expect(notifCalls[0]).to.include('config_project_enabled');
   });
 
   it('internal: manageProjects', async () => {
