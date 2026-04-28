@@ -1,3 +1,10 @@
+## [7.32.4](https://github.com/adobe/aem-sidekick/compare/v7.32.3...v7.32.4) (2026-04-28)
+
+
+### Bug Fixes
+
+* multiple fixes around project management, sharepoint share url recogniton  ([#853](https://github.com/adobe/aem-sidekick/issues/853)) ([6ac1943](https://github.com/adobe/aem-sidekick/commit/6ac19431b1f4b5c24932c517f19ff9bb6ae00046)), closes [#852](https://github.com/adobe/aem-sidekick/issues/852) [#374](https://github.com/adobe/aem-sidekick/issues/374) [#857](https://github.com/adobe/aem-sidekick/issues/857)
+
 ## [7.32.3](https://github.com/adobe/aem-sidekick/compare/v7.32.2...v7.32.3) (2026-04-21)
 
 
