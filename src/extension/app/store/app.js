@@ -545,7 +545,9 @@ export class AppStore {
   isEditor() {
     const { location } = this;
     const { host } = location;
-    if (this.isSharePointEditor(location) || this.isSharePointViewer(location)) {
+    if (this.isSharePointEditor(location)
+      || this.isSharePointViewer(location)
+      || this.isSharePointShareLink(location)) {
       return true;
     }
     if (host === 'docs.google.com') {
@@ -641,6 +643,17 @@ export class AppStore {
     return this.isSharePoint(url)
       && pathname.match(/\/_layouts\/15\/[\w]+\.aspx/)
       && (searchParams.has('sourcedoc') || searchParams.has('id'));
+  }
+
+  /**
+   * Recognizes a SharePoint share link URL (e.g. personalized share URLs).
+   * @param {URL} url The URL
+   * @returns {boolean} <code>true</code> if URL is a SharePoint share link, else <code>false</code>
+   */
+  isSharePointShareLink(url) {
+    return this.isSharePoint(url)
+      && /^\/:[\w]+:\//.test(url.pathname)
+      && !url.pathname.includes('/_layouts/15/');
   }
 
   /**
