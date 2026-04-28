@@ -65,6 +65,9 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "$1 をプレビューできません : $2"
   },
+  "AEM_NOT_PRIMARY_CONTENT": {
+    "message": "コンテンツの更新はプライマリサイトに制限されています。"
+  },
   "activate": {
     "message": "アクティベート"
   },

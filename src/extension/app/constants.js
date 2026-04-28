@@ -476,4 +476,10 @@ export const ERRORS = [
     code: 'AEM_BACKEND_CONFIG_NOT_SUPPORTED',
     template: 'File based config no longer supported: $1',
   },
+
+  // content errors
+  {
+    code: 'AEM_NOT_PRIMARY_CONTENT',
+    template: 'Content operations restricted to the primary site: $1',
+  },
 ];

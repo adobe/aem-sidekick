@@ -648,6 +648,18 @@ describe('Test Admin Client', () => {
       expect(details).to.equal('MP4 is larger than 36MB: 41MB');
     });
 
+    it('should return localized error for non-primary content', () => {
+      const [res, details] = adminClient.getLocalizedError(
+        'preview',
+        path,
+        403,
+        'Content operations restricted to the primary site: org/site',
+        'AEM_NOT_PRIMARY_CONTENT',
+      );
+      expect(res).to.equal('(403) Content updates are restricted to the primary site.');
+      expect(details).to.equal('org/site');
+    });
+
     it('should return localized error for 401 on bulk operation', () => {
       path = '/*';
       const [res] = adminClient.getLocalizedError('publish', path, 401);

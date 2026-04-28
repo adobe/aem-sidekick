@@ -65,6 +65,9 @@
   "AEM_BACKEND_VALIDATION_FAILED": {
     "message": "Impossible de prévisualiser $1 : $2"
   },
+  "AEM_NOT_PRIMARY_CONTENT": {
+    "message": "Les mises à jour de contenu sont limitées au site principal."
+  },
   "activate": {
     "message": "Activer"
   },
