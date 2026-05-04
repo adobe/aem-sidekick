@@ -1,3 +1,10 @@
+## [7.32.5](https://github.com/adobe/aem-sidekick/compare/v7.32.4...v7.32.5) (2026-05-04)
+
+
+### Bug Fixes
+
+* translation updates (french, japanese, portuguese and chinese) ([ebfecad](https://github.com/adobe/aem-sidekick/commit/ebfecad37abe5c2f6a6ac731acaf2ac6296dd4e9))
+
 ## [7.32.4](https://github.com/adobe/aem-sidekick/compare/v7.32.3...v7.32.4) (2026-04-28)
 
 
