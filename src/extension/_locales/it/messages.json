@@ -392,6 +392,12 @@
   "edit": {
     "message": "Modifica"
   },
+  "edit_inline": {
+    "message": "Modifica in linea"
+  },
+  "edit_in_editor": {
+    "message": "Apri nell'editor"
+  },
   "edit_date": {
     "message": "Modificato: "
   },

@@ -76,4 +76,54 @@ describe('Edit plugin', () => {
 
     expect(switchEnvStub.calledWith('edit', true)).to.be.true;
   });
+
+  it('renders as button when collabMode is false', async () => {
+    await sidekickTest.awaitEnvSwitcher();
+
+    const editButton = recursiveQuery(sidekick, 'sp-action-button.edit');
+    expect(editButton).to.exist;
+
+    const editPicker = recursiveQuery(sidekick, 'action-bar-picker.edit');
+    expect(editPicker).to.not.exist;
+  });
+
+  it('renders as dropdown when collabMode is true', async () => {
+    appStore.collabMode = true;
+    await sidekickTest.awaitEnvSwitcher();
+
+    const editPicker = recursiveQuery(sidekick, 'action-bar-picker.edit');
+    expect(editPicker).to.exist;
+
+    const menuItems = editPicker.querySelectorAll('sk-menu-item');
+    expect(menuItems.length).to.equal(2);
+    expect(menuItems[0].getAttribute('value')).to.equal('secondary-action');
+    expect(menuItems[1].getAttribute('value')).to.equal('default-action');
+  });
+
+  it('default action opens editor when collabMode is true', async () => {
+    appStore.collabMode = true;
+    await sidekickTest.awaitEnvSwitcher();
+
+    const editPicker = recursiveQuery(sidekick, 'action-bar-picker.edit');
+    editPicker.value = 'default-action';
+    editPicker.dispatchEvent(new Event('change'));
+
+    await waitUntil(() => switchEnvStub.calledOnce);
+
+    expect(switchEnvStub.calledWith('edit', true)).to.be.true;
+  });
+
+  it('secondary action enables inline editing', async () => {
+    appStore.collabMode = true;
+    appStore.showToast = sidekickTest.sandbox.stub();
+    await sidekickTest.awaitEnvSwitcher();
+
+    const editPicker = recursiveQuery(sidekick, 'action-bar-picker.edit');
+    editPicker.value = 'secondary-action';
+    editPicker.dispatchEvent(new Event('change'));
+
+    await waitUntil(() => appStore.inlineEditingMode);
+
+    expect(appStore.inlineEditingMode).to.be.true;
+  });
 });

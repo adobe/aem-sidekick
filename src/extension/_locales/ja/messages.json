@@ -392,6 +392,12 @@
   "edit": {
     "message": "編集"
   },
+  "edit_inline": {
+    "message": "インラインで編集"
+  },
+  "edit_in_editor": {
+    "message": "エディターで開く"
+  },
   "edit_date": {
     "message": "編集 : "
   },

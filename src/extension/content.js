@@ -94,7 +94,9 @@
 
   let configLoaded = false;
 
-  chrome.runtime.onMessage.addListener((message, { tab }, sendResponse) => {
+  chrome.runtime.onMessage.addListener(async (message, { tab }, sendResponse) => {
+    const { default: sampleRUM } = await import('./utils/rum.js');
+
     if (message.action === 'getStoredProject') {
       // respond to stored project queries from background script
       const stored = window.sessionStorage.getItem('aem-sk-project');
@@ -114,6 +116,8 @@
       if (sidekick) {
         // Toggle sidekick display
         sidekick.setAttribute('open', `${display}`);
+        sidekick.dispatchEvent(new CustomEvent('toggled', { detail: { display } }));
+        sampleRUM('click', { source: 'sidekick', target: 'toggled' });
 
         // Are we on a JSON page?
         const pre = document.querySelector('pre');

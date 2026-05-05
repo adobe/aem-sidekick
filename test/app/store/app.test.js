@@ -34,6 +34,9 @@ import { AEMSidekick } from '../../../src/extension/index.js';
 import { defaultSharepointProfileResponse, defaultSharepointStatusResponse } from '../../fixtures/helix-admin.js';
 import { defaultConfigJSONUrl, SidekickTest } from '../../sidekick-test.js';
 import { fetchLanguageDict } from '../../../src/extension/app/utils/i18n.js';
+import {
+  enableCollab, disableCollab, enableInlineEditing, disableInlineEditing, resetDAState,
+} from '../../../src/extension/app/utils/da.js';
 
 // @ts-ignore
 window.chrome = chromeMock;
@@ -2055,6 +2058,156 @@ describe('Test App Store', () => {
       };
       instance.siteStore.contentSourceType = 'unknown';
       expect(instance.getContentSourceLabel()).to.equal('BYOM');
+    });
+  });
+
+  describe('isDA', () => {
+    let instance;
+
+    beforeEach(() => {
+      instance = new AppStore();
+    });
+
+    it('should return true for DA source location', () => {
+      expect(instance.isDA('markup:https://content.da.live/adobe/aem-boilerplate/index')).to.be.true;
+    });
+
+    it('should return false for non-DA markup source', () => {
+      expect(instance.isDA('markup:https://example.com/content')).to.be.false;
+    });
+
+    it('should return false for invalid markup URL', () => {
+      expect(instance.isDA('markup:not-a-url')).to.be.false;
+    });
+
+    it('should return false for undefined input', () => {
+      expect(instance.isDA(undefined)).to.be.false;
+    });
+  });
+
+  describe('DA collab and quick edit', () => {
+    let instance;
+
+    beforeEach(() => {
+      instance = new AppStore();
+      resetDAState();
+    });
+
+    it('enableCollab sets collabMode to true', () => {
+      expect(instance.collabMode).to.be.false;
+      enableCollab(instance);
+      expect(instance.collabMode).to.be.true;
+    });
+
+    it('enableCollab is idempotent', () => {
+      enableCollab(instance);
+      enableCollab(instance);
+      expect(instance.collabMode).to.be.true;
+    });
+
+    it('disableCollab sets collabMode to false', () => {
+      enableCollab(instance);
+      disableCollab(instance);
+      expect(instance.collabMode).to.be.false;
+    });
+
+    it('disableCollab is idempotent', () => {
+      disableCollab(instance);
+      expect(instance.collabMode).to.be.false;
+    });
+
+    it('enableInlineEditing sets inlineEditingMode to true', () => {
+      expect(instance.inlineEditingMode).to.be.false;
+      instance.showToast = sinon.stub();
+      enableInlineEditing(instance);
+      expect(instance.inlineEditingMode).to.be.true;
+    });
+
+    it('enableInlineEditing is idempotent', () => {
+      instance.showToast = sinon.stub();
+      enableInlineEditing(instance);
+      enableInlineEditing(instance);
+      expect(instance.inlineEditingMode).to.be.true;
+      expect(instance.showToast.calledOnce).to.be.true;
+    });
+
+    it('enableInlineEditing toast closeCallback disables inline editing', () => {
+      instance.showToast = sinon.stub();
+      enableInlineEditing(instance);
+      expect(instance.inlineEditingMode).to.be.true;
+
+      const { closeCallback } = instance.showToast.firstCall.args[0];
+      closeCallback();
+      expect(instance.inlineEditingMode).to.be.false;
+    });
+
+    it('disableInlineEditing sets inlineEditingMode to false', () => {
+      instance.showToast = sinon.stub();
+      enableInlineEditing(instance);
+      disableInlineEditing(instance);
+      expect(instance.inlineEditingMode).to.be.false;
+    });
+
+    it('disableInlineEditing is idempotent', () => {
+      disableInlineEditing(instance);
+      expect(instance.inlineEditingMode).to.be.false;
+    });
+
+    it('disables collab and quick edit on sidekick hidden', () => {
+      instance.sidekick = sidekickElement;
+      enableCollab(instance);
+      instance.showToast = sinon.stub();
+      enableInlineEditing(instance);
+
+      sidekickElement.dispatchEvent(new Event('hidden'));
+
+      expect(instance.collabMode).to.be.false;
+      expect(instance.inlineEditingMode).to.be.false;
+    });
+
+    it('disables collab and quick edit on toggled with display false', () => {
+      instance.sidekick = sidekickElement;
+      enableCollab(instance);
+      instance.showToast = sinon.stub();
+      enableInlineEditing(instance);
+
+      sidekickElement.dispatchEvent(new CustomEvent('toggled', { detail: { display: false } }));
+
+      expect(instance.collabMode).to.be.false;
+      expect(instance.inlineEditingMode).to.be.false;
+    });
+
+    it('re-enables collab on toggled with display true', () => {
+      instance.sidekick = sidekickElement;
+      enableCollab(instance);
+
+      sidekickElement.dispatchEvent(new Event('hidden'));
+      expect(instance.collabMode).to.be.false;
+
+      sidekickElement.dispatchEvent(new CustomEvent('toggled', { detail: { display: true } }));
+      expect(instance.collabMode).to.be.true;
+    });
+
+    it('restores quick edit on toggled with display true if it was active', () => {
+      instance.sidekick = sidekickElement;
+      enableCollab(instance);
+      instance.showToast = sinon.stub();
+      enableInlineEditing(instance);
+
+      sidekickElement.dispatchEvent(new Event('hidden'));
+      expect(instance.inlineEditingMode).to.be.false;
+
+      sidekickElement.dispatchEvent(new CustomEvent('toggled', { detail: { display: true } }));
+      expect(instance.inlineEditingMode).to.be.true;
+    });
+
+    it('does not re-enable collab on toggled if it was not active before', () => {
+      instance.sidekick = sidekickElement;
+      enableCollab(instance);
+      disableCollab(instance);
+
+      sidekickElement.dispatchEvent(new CustomEvent('toggled', { detail: { display: true } }));
+      expect(instance.collabMode).to.be.false;
     });
   });
 

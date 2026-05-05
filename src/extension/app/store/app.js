@@ -54,6 +54,7 @@ import {
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
 import { getConfig, setConfig } from '../../config.js';
+import { enableCollab } from '../utils/da.js';
 
 /**
  * The sidekick configuration object type
@@ -184,6 +185,18 @@ export class AppStore {
    * @type {'light'|'dark'}
    */
   @observable accessor theme;
+
+  /**
+   * Whether collaboration mode is active
+   * @type {boolean}
+   */
+  @observable accessor collabMode = false;
+
+  /**
+   * Whether inline editing mode is active
+   * @type {boolean}
+   */
+  @observable accessor inlineEditingMode = false;
 
   constructor() {
     this.siteStore = new SiteStore(this);
@@ -691,6 +704,7 @@ export class AppStore {
    */
   getContentSourceLabel() {
     const { contentSourceType, contentSourceEditLabel } = this.siteStore;
+    // @ts-ignore
     const { preview: { sourceLocation } = {} } = this.status;
 
     if (sourceLocation?.startsWith('onedrive:')) {
@@ -976,6 +990,11 @@ export class AppStore {
     if (status && !transient) {
       this.updateStatus(status);
       this.fireEvent(EXTERNAL_EVENTS.STATUS_FETCHED, status);
+
+      // enable DA collab on preview
+      if (this.isPreview() && this.isDA(this.status?.preview?.sourceLocation)) {
+        enableCollab(this);
+      }
 
       // Don't set a state if a toast is shown
       // istanbul ignore else

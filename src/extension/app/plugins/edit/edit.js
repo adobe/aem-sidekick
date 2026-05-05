@@ -11,6 +11,7 @@
  */
 
 import { Plugin } from '../../components/plugin/plugin.js';
+import { enableInlineEditing } from '../../utils/da.js';
 
 /**
  * @typedef {import('@AppStore').AppStore} AppStore
@@ -28,6 +29,12 @@ export function createEditPlugin(appStore) {
     button: {
       text: appStore.i18n('edit'),
       action: async () => appStore.switchEnv('edit', true),
+      actionText: appStore.i18n('edit_in_editor'),
+      secondaryAction: {
+        text: appStore.i18n('edit_inline'),
+        action: async () => enableInlineEditing(appStore),
+        condition: (store) => store.collabMode,
+      },
     },
   },
   appStore);

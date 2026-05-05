@@ -392,6 +392,12 @@
   "edit": {
     "message": "編輯"
   },
+  "edit_inline": {
+    "message": "內嵌編輯"
+  },
+  "edit_in_editor": {
+    "message": "在編輯器中開啟"
+  },
   "edit_date": {
     "message": "編輯時間："
   },

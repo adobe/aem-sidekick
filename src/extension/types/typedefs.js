@@ -157,10 +157,19 @@
  * @prop {string} text The button text
  * @prop {Function} action The click listener
  * @prop {Function} [isPressed] Determines whether the button is pressed. Default false.
+ * @prop {string} [actionText] Alternative text for the default action when shown in a dropdown menu.
  * @prop {Function} [isEnabled] Determines whether to enable the button. Default true.
  * @prop {boolean} [isDropdown] Determines whether to turn this button into a dropdown. Default false.
+ * @prop {PluginSecondaryAction} [secondaryAction] A secondary action configuration (optional).
  * @description The configuration for a plugin button. This can be used as
  * a shorthand for {@link elemConfig}.
+ */
+
+/**
+ * @typedef {Object} PluginSecondaryAction
+ * @prop {string} text The secondary action button text
+ * @prop {Function} action The secondary action click listener
+ * @prop {Function} condition Determines whether the secondary action is shown.
  */
 
 /**
