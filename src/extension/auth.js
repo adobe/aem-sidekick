@@ -21,14 +21,14 @@ const { host: newAdminHost } = new URL(ADMIN_ORIGIN_NEW);
 const TOOLS_AUTH_TOKEN_RULES = [
   {
     requestDomain: 'helix-json2html.adobeaem.workers.dev',
-    regexFilter: (owner, repo) => `^https://helix-json2html\\.adobeaem\\.workers\\.dev/((config|api)/)?${owner}/${repo}/[^/?#]+(?:/.*)?(?:\\?.*)?$`,
+    regexFilter: (owner, repo) => `/((config|api)/)?${owner}/${repo}/[^/?#]+(?:/.*)?(?:\\?.*)?$`,
   },
 ];
 
 const TOOLS_SITE_TOKEN_RULES = [
   {
     requestDomain: 'da-etc.adobeaem.workers.dev',
-    regexFilter: (owner, repo) => `^https://da-etc\\.adobeaem\\.workers\\.dev/[^?]+\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews)%2F.*`,
+    regexFilter: (owner, repo) => `\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews)%2F`,
   },
 ];
 
