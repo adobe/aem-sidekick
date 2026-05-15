@@ -1,3 +1,10 @@
+## [7.32.6](https://github.com/adobe/aem-sidekick/compare/v7.32.5...v7.32.6) (2026-05-15)
+
+
+### Bug Fixes
+
+* remove redundant domain prefixes from declarativeNetRequest regexFilters ([#863](https://github.com/adobe/aem-sidekick/issues/863)) ([a8239a4](https://github.com/adobe/aem-sidekick/commit/a8239a4cbeeb3a3de0bd8f94dea92f1278b48b06))
+
 ## [7.32.5](https://github.com/adobe/aem-sidekick/compare/v7.32.4...v7.32.5) (2026-05-04)
 
 
