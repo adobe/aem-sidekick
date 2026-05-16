@@ -539,53 +539,25 @@ describe('Test auth', () => {
           priority: 1,
           action: {
             type: 'modifyHeaders',
-            requestHeaders: [
-              {
-                operation: 'set',
-                header: 'authorization',
-                value: `token ${siteToken}`,
-              },
-            ],
+            requestHeaders: [{ operation: 'set', header: 'authorization', value: `token ${siteToken}` }],
           },
           condition: {
-            regexFilter: sinon.match((value) => {
-              const regex = new RegExp(value);
-              // Should match aem.page, aem.live, and aem.reviews URLs
-              const shouldMatch = [
-                'https://main--site--test.aem.page/',
-                'https://main--site--test.aem.page/index',
-                'https://preview--site--test.aem.live/document',
-                'https://feature-branch--site--test.aem.reviews/test',
-                // Should match localhost:3000
-                'http://localhost:3000/',
-                'http://localhost:3000/index',
-              ];
-              const shouldNotMatch = [
-                'https://example.com/',
-                'http://localhost/', // no port
-                'http://localhost:8080/', // different port
-                'https://localhost:3000/', // https instead of http
-                'http://127.0.0.1:3000/', // IP instead of localhost
-                'http://localhost:3000', // no trailing slash
-              ];
-              return shouldMatch.every((url) => regex.test(url))
-                && shouldNotMatch.every((url) => !regex.test(url));
-            }),
-            requestMethods: [
-              'get',
-              'post',
-            ],
-            resourceTypes: [
-              'main_frame',
-              'sub_frame',
-              'script',
-              'stylesheet',
-              'image',
-              'xmlhttprequest',
-              'media',
-              'font',
-              'other',
-            ],
+            regexFilter: '^https://[a-z0-9-]+--site--test\\.aem\\.(page|live|reviews)/',
+            requestMethods: ['get', 'post'],
+            resourceTypes: ['main_frame', 'sub_frame', 'script', 'stylesheet', 'image', 'xmlhttprequest', 'media', 'font', 'other'],
+          },
+        },
+        {
+          id: sinon.match.number,
+          priority: 1,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders: [{ operation: 'set', header: 'authorization', value: `token ${siteToken}` }],
+          },
+          condition: {
+            regexFilter: '^http://localhost:3000/',
+            requestMethods: ['get', 'post'],
+            resourceTypes: ['main_frame', 'sub_frame', 'script', 'stylesheet', 'image', 'xmlhttprequest', 'media', 'font', 'other'],
           },
         },
         ...createExpectedSiteToolsRules(siteToken),

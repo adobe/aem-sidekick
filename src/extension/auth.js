@@ -154,31 +154,43 @@ export async function configureAuthAndCorsHeaders() {
       }
 
       if (siteToken) {
+        const siteTokenAction = {
+          type: 'modifyHeaders',
+          requestHeaders: [{
+            operation: 'set',
+            header: 'authorization',
+            value: `token ${siteToken}`,
+          }],
+        };
+        const siteTokenResourceTypes = [
+          'main_frame',
+          'sub_frame',
+          'script',
+          'stylesheet',
+          'image',
+          'xmlhttprequest',
+          'media',
+          'font',
+          'other',
+        ];
         rules.push({
           id: getRandomId(),
           priority: 1,
-          action: {
-            type: 'modifyHeaders',
-            requestHeaders: [{
-              operation: 'set',
-              header: 'authorization',
-              value: `token ${siteToken}`,
-            }],
-          },
+          action: siteTokenAction,
           condition: {
-            regexFilter: `^(https://[a-z0-9-]+--${repo}--${owner}\\.aem\\.(page|live|reviews)/.*|http://localhost:3000/.*)`,
+            regexFilter: `^https://[a-z0-9-]+--${repo}--${owner}\\.aem\\.(page|live|reviews)/`,
             requestMethods: ['get', 'post'],
-            resourceTypes: [
-              'main_frame',
-              'sub_frame',
-              'script',
-              'stylesheet',
-              'image',
-              'xmlhttprequest',
-              'media',
-              'font',
-              'other',
-            ],
+            resourceTypes: siteTokenResourceTypes,
+          },
+        });
+        rules.push({
+          id: getRandomId(),
+          priority: 1,
+          action: siteTokenAction,
+          condition: {
+            regexFilter: '^http://localhost:3000/',
+            requestMethods: ['get', 'post'],
+            resourceTypes: siteTokenResourceTypes,
           },
         });
 
