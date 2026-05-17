@@ -1,3 +1,10 @@
+## [7.32.7](https://github.com/adobe/aem-sidekick/compare/v7.32.6...v7.32.7) (2026-05-17)
+
+
+### Bug Fixes
+
+* split siteToken regexFilter to avoid 2KB compiled DFA limit ([#864](https://github.com/adobe/aem-sidekick/issues/864)) ([16f008b](https://github.com/adobe/aem-sidekick/commit/16f008bb97671f512cfc3d104a08010116005733))
+
 ## [7.32.6](https://github.com/adobe/aem-sidekick/compare/v7.32.5...v7.32.6) (2026-05-15)
 
 
