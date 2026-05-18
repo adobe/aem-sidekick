@@ -210,13 +210,13 @@
     "message": "hrefs"
   },
   "column_name_link": {
-    "message": "Verknüpfung"
+    "message": "Link"
   },
   "column_name_links": {
     "message": "Links"
   },
   "column_name_path": {
-    "message": "Pfade"
+    "message": "Pfad"
   },
   "column_name_paths": {
     "message": "Pfade"
