@@ -691,7 +691,7 @@ export class AppStore {
    */
   getContentSourceLabel() {
     const { contentSourceType, contentSourceEditLabel } = this.siteStore;
-    const { preview: { sourceLocation } = {} } = this.status;
+    const { preview: { sourceLocation = '' } = {} } = this.status;
 
     if (sourceLocation?.startsWith('onedrive:')) {
       return 'SharePoint';
