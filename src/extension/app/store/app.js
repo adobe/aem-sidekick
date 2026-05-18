@@ -693,11 +693,11 @@ export class AppStore {
     const { contentSourceType, contentSourceEditLabel } = this.siteStore;
     const { preview: { sourceLocation = '' } = {} } = this.status;
 
-    if (sourceLocation?.startsWith('onedrive:')) {
+    if (sourceLocation.startsWith('onedrive:')) {
       return 'SharePoint';
-    } else if (sourceLocation?.startsWith('gdrive:')) {
+    } else if (sourceLocation.startsWith('gdrive:')) {
       return 'Google Drive';
-    } else if (sourceLocation?.startsWith('markup:')) {
+    } else if (sourceLocation.startsWith('markup:')) {
       if (contentSourceEditLabel) {
         return contentSourceEditLabel;
       } else {
