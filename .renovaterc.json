@@ -30,19 +30,5 @@
     "@spectrum-web-components/textfield",
     "@spectrum-web-components/theme",
     "@spectrum-web-components/toast"
-  ],
-  "packageRules": [
-    {
-      "automerge": false,
-      "matchPackageNames": [
-        "*"
-      ]
-    },
-    {
-      "matchDepTypes": [
-        "devDependencies"
-      ],
-      "automerge": true
-    }
   ]
 }
