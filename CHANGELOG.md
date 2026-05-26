@@ -1,3 +1,10 @@
+## [7.32.9](https://github.com/adobe/aem-sidekick/compare/v7.32.8...v7.32.9) (2026-05-26)
+
+
+### Bug Fixes
+
+* **regression:** adapt zip build to archiver 8 esm api ([#868](https://github.com/adobe/aem-sidekick/issues/868)) ([105e4a4](https://github.com/adobe/aem-sidekick/commit/105e4a4e6c707490087c2943a2a135608044dff3))
+
 ## [7.32.8](https://github.com/adobe/aem-sidekick/compare/v7.32.7...v7.32.8) (2026-05-26)
 
 
