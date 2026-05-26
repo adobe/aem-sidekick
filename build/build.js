@@ -12,7 +12,8 @@
 /* eslint-disable no-console, import/no-extraneous-dependencies */
 
 import fs from 'fs-extra';
-import archiver from 'archiver';
+// @ts-ignore
+import { ZipArchive } from 'archiver';
 
 function copyManifestKeys(sourceObj, browser) {
   const targetObj = {};
@@ -61,9 +62,9 @@ function zipExtension(browser) {
   const dir = `./dist/${browser}`;
   const zip = `${dir}.zip`;
   const output = fs.createWriteStream(zip);
-  const archive = archiver('zip', {
+  const archive = /** @type {any} */ (new ZipArchive({
     zlib: { level: 9 },
-  });
+  }));
   archive.on('error', (e) => {
     throw new Error(`failed to zip extension: ${e.message}`);
   });
