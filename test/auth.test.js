@@ -29,23 +29,42 @@ import { error } from './test-utils.js';
 window.chrome = chromeMock;
 
 function createExpectedAuthToolsRules(authToken, owner = 'test', repo = 'site') {
+  const action = {
+    type: 'modifyHeaders',
+    requestHeaders: [
+      {
+        operation: 'set',
+        header: 'x-auth-token',
+        value: authToken,
+      },
+    ],
+  };
   return [{
     id: sinon.match.number,
     priority: 1,
-    action: {
-      type: 'modifyHeaders',
-      requestHeaders: [
-        {
-          operation: 'set',
-          header: 'x-auth-token',
-          value: authToken,
-        },
-      ],
-    },
+    action,
     condition: {
       initiatorDomains: ['tools.aem.live'],
       regexFilter: `/((config|api)/)?${owner}/${repo}/[^/?#]+(?:/.*)?(?:\\?.*)?$`,
       requestDomains: ['helix-json2html.adobeaem.workers.dev'],
+      requestMethods: [
+        'get',
+        'put',
+        'post',
+        'delete',
+      ],
+      resourceTypes: [
+        'xmlhttprequest',
+      ],
+    },
+  }, {
+    id: sinon.match.number,
+    priority: 1,
+    action,
+    condition: {
+      initiatorDomains: ['tools.aem.live'],
+      regexFilter: `/(register|schedule(?:/(?:page|snapshot))?)/${owner}/${repo}(?:/[^?#]*)?(?:\\?.*)?$`,
+      requestDomains: ['helix-snapshot-scheduler-prod.adobeaem.workers.dev'],
       requestMethods: [
         'get',
         'put',
