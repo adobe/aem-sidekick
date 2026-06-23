@@ -1,3 +1,10 @@
+## [7.32.11](https://github.com/adobe/aem-sidekick/compare/v7.32.10...v7.32.11) (2026-06-23)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([#873](https://github.com/adobe/aem-sidekick/issues/873)) ([d549da5](https://github.com/adobe/aem-sidekick/commit/d549da5e22d5c96807c284233d208502260759a7))
+
 ## [7.32.10](https://github.com/adobe/aem-sidekick/compare/v7.32.9...v7.32.10) (2026-06-08)
 
 
