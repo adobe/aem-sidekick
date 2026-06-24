@@ -77,7 +77,6 @@ export class LoginView extends LitElement {
     const customEventDetail = {
       detail: {
         event: 'hlx-login',
-        selectAccount: this.status === '403',
       },
     };
     window.parent.postMessage(customEventDetail, '*');

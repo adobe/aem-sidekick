@@ -1191,7 +1191,7 @@ export class AppStore {
             view.remove();
           }
           if (data.detail.event === 'hlx-login') {
-            this.login(!!data.detail.selectAccount);
+            this.login(true);
           }
         }
       });
