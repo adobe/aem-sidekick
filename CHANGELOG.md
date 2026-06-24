@@ -1,3 +1,10 @@
+## [7.32.12](https://github.com/adobe/aem-sidekick/compare/v7.32.11...v7.32.12) (2026-06-24)
+
+
+### Bug Fixes
+
+* **login:** always force account selection ([#876](https://github.com/adobe/aem-sidekick/issues/876)) ([41041eb](https://github.com/adobe/aem-sidekick/commit/41041eb2e4948fe67319a6e349d5890b5a65ee15))
+
 ## [7.32.11](https://github.com/adobe/aem-sidekick/compare/v7.32.10...v7.32.11) (2026-06-23)
 
 
