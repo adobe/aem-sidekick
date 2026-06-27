@@ -115,6 +115,15 @@ describe('cache-buster', () => {
       })).to.be.true;
     });
 
+    it('escapes regex metacharacters in the domain so they are matched literally', async () => {
+      const updateSessionRules = sandbox.stub(chrome.declarativeNetRequest, 'updateSessionRules').resolves();
+
+      await addCacheBusterRule('(.*)');
+
+      const rule = updateSessionRules.firstCall.args[0].addRules[0];
+      expect(rule.condition.regexFilter).to.equal('^https://\\(\\.\\*\\)/.*');
+    });
+
     it('accepts full URL and uses hostname', async () => {
       const updateSessionRules = sandbox.stub(chrome.declarativeNetRequest, 'updateSessionRules').resolves();
 
