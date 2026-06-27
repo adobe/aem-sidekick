@@ -1,3 +1,10 @@
+## [7.32.13](https://github.com/adobe/aem-sidekick/compare/v7.32.12...v7.32.13) (2026-06-27)
+
+
+### Bug Fixes
+
+* **status:** use extensionless paths in admin requests for documents ([#878](https://github.com/adobe/aem-sidekick/issues/878)) ([867baf3](https://github.com/adobe/aem-sidekick/commit/867baf389bda9fa57508a27114b892d8bc836f5e))
+
 ## [7.32.12](https://github.com/adobe/aem-sidekick/compare/v7.32.11...v7.32.12) (2026-06-24)
 
 
