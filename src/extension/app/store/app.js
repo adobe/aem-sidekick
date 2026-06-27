@@ -968,7 +968,7 @@ export class AppStore {
     this.setState(STATE.FETCHING_STATUS);
     const isDM = this.isEditor() || this.isAdmin();
     const editUrl = isDM ? this.location.href : (fetchEdit ? 'auto' : '');
-    const path = isDM ? '/' : this.location.pathname;
+    const path = isDM ? '/' : this.location.pathname.replace(/\.html$/, '');
 
     status = await this.api.getStatus(path, editUrl);
 

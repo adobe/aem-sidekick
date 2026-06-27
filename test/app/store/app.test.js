@@ -448,6 +448,26 @@ describe('Test App Store', () => {
       expect(appStore.status.webPath).to.equal('/');
     });
 
+    it('strips trailing .html extension from document paths', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess();
+      await instance.loadContext(sidekickElement, defaultSidekickConfig);
+      sidekickTest.sandbox.stub(instance, 'isEditor').returns(false);
+      sidekickTest.sandbox.stub(instance, 'isAdmin').returns(false);
+      const getStatusStub = sidekickTest.sandbox
+        .stub(instance.api, 'getStatus')
+        .resolves({ webPath: '/foo' });
+
+      instance.location.pathname = '/foo.html';
+      await instance.fetchStatus();
+      expect(getStatusStub.calledWith('/foo')).to.be.true;
+
+      // non-document extensions are left untouched
+      instance.location.pathname = '/data.json';
+      await instance.fetchStatus();
+      expect(getStatusStub.calledWith('/data.json')).to.be.true;
+    });
+
     it('unauthorized', async () => {
       sidekickTest
         .mockFetchStatusUnauthorized();
