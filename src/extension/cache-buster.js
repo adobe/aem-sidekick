@@ -38,7 +38,12 @@ export async function addCacheBusterRule(domain) {
     log.warn('addCacheBusterRule: no domain');
     return false;
   }
-  const escapedDomain = domain.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const trimmedDomain = domain.trim();
+  if (/[*+?^${}()|[\]\\]/.test(trimmedDomain)) {
+    log.warn('addCacheBusterRule: invalid domain');
+    return false;
+  }
+  const escapedDomain = trimmedDomain.replaceAll(/\./g, '\\.');
 
   const ruleId = Math.floor(Math.random() * 1000000);
   /** @type {chrome.declarativeNetRequest.Rule[]} */

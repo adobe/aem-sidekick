@@ -115,13 +115,14 @@ describe('cache-buster', () => {
       })).to.be.true;
     });
 
-    it('escapes regex metacharacters in the domain so they are matched literally', async () => {
+    it('returns false and warns when domain contains regex metacharacters', async () => {
+      const logWarn = sandbox.stub(log, 'warn');
       const updateSessionRules = sandbox.stub(chrome.declarativeNetRequest, 'updateSessionRules').resolves();
 
-      await addCacheBusterRule('(.*)');
-
-      const rule = updateSessionRules.firstCall.args[0].addRules[0];
-      expect(rule.condition.regexFilter).to.equal('^https://\\(\\.\\*\\)/.*');
+      expect(await addCacheBusterRule('(.*)')).to.equal(false);
+      expect(await addCacheBusterRule('evil[a-z].com')).to.equal(false);
+      expect(updateSessionRules.notCalled).to.be.true;
+      expect(logWarn.calledWith('addCacheBusterRule: invalid domain')).to.be.true;
     });
 
     it('accepts full URL and uses hostname', async () => {
