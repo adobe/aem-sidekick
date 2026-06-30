@@ -121,6 +121,7 @@ describe('cache-buster', () => {
 
       expect(await addCacheBusterRule('(.*)')).to.equal(false);
       expect(await addCacheBusterRule('evil[a-z].com')).to.equal(false);
+      expect(await addCacheBusterRule('under_score.com')).to.equal(false);
       expect(updateSessionRules.notCalled).to.be.true;
       expect(logWarn.calledWith('addCacheBusterRule: invalid domain')).to.be.true;
     });

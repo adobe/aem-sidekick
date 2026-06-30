@@ -39,7 +39,7 @@ export async function addCacheBusterRule(domain) {
     return false;
   }
   const trimmedDomain = domain.trim();
-  if (/[*+?^${}()|[\]\\]/.test(trimmedDomain)) {
+  if (/[^a-zA-Z0-9.-]/.test(trimmedDomain)) {
     log.warn('addCacheBusterRule: invalid domain');
     return false;
   }
