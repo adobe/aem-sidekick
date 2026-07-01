@@ -115,6 +115,17 @@ describe('cache-buster', () => {
       })).to.be.true;
     });
 
+    it('returns false and warns when domain contains regex metacharacters', async () => {
+      const logWarn = sandbox.stub(log, 'warn');
+      const updateSessionRules = sandbox.stub(chrome.declarativeNetRequest, 'updateSessionRules').resolves();
+
+      expect(await addCacheBusterRule('(.*)')).to.equal(false);
+      expect(await addCacheBusterRule('evil[a-z].com')).to.equal(false);
+      expect(await addCacheBusterRule('under_score.com')).to.equal(false);
+      expect(updateSessionRules.notCalled).to.be.true;
+      expect(logWarn.calledWith('addCacheBusterRule: invalid domain')).to.be.true;
+    });
+
     it('accepts full URL and uses hostname', async () => {
       const updateSessionRules = sandbox.stub(chrome.declarativeNetRequest, 'updateSessionRules').resolves();
 
