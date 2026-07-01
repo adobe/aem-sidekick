@@ -1,3 +1,10 @@
+## [7.32.14](https://github.com/adobe/aem-sidekick/compare/v7.32.13...v7.32.14) (2026-07-01)
+
+
+### Bug Fixes
+
+* **cache-buster:** escape all regex metacharacters in domain filter ([#880](https://github.com/adobe/aem-sidekick/issues/880)) ([1f4b260](https://github.com/adobe/aem-sidekick/commit/1f4b260e427308ae2fb9c34cbc851dfb2c04b90a))
+
 ## [7.32.13](https://github.com/adobe/aem-sidekick/compare/v7.32.12...v7.32.13) (2026-06-27)
 
 
