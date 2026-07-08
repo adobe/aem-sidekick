@@ -20,7 +20,7 @@ import { isErrorPage } from './utils/error.js';
 const HINT_CLASS = 'aem-sk-login-hint';
 
 /**
- * Detects an AEM admin error page and returns its status.
+ * Detects a pipeline auth error page and returns its status.
  * @returns {(401|403|null)} The error status, or null if not a login-related error page
  */
 function getErrorStatus() {
@@ -65,7 +65,7 @@ function registerUnhideCleanup() {
 }
 
 /**
- * Appends a "sign in" hyperlink to the AEM admin 401/403 error message when the
+ * Appends a "sign in" hyperlink to the pipeline 401/403 auth error message when the
  * sidekick is hidden. Clicking it removes the injected link (restoring the
  * pristine error page) and shows the sidekick, which then renders the login
  * dialog for this error page.

@@ -24,7 +24,7 @@
 
   /**
    * Syncs the visibility of the underlying page content that the sidekick's
-   * special view covers (the <pre> on JSON and AEM admin error pages). The
+   * special view covers (the <pre> on JSON and pipeline auth error pages). The
    * content is hidden only while the sidekick is shown with a special view over
    * it, and restored whenever the sidekick is hidden.
    * @param {Element} sidekick The sidekick element
@@ -33,7 +33,7 @@
   function syncPageContent(sidekick, shown) {
     const pre = document.querySelector('pre');
     // only manage the <pre> on pages where the sidekick renders a special view
-    // over it: JSON views and AEM admin error pages (no body > main > div)
+    // over it: JSON views and pipeline auth error pages (no body > main > div)
     const managesPre = window.location.pathname.endsWith('.json')
       || !document.querySelector('body > main > div');
     if (!pre || !managesPre) {
@@ -160,7 +160,7 @@
           }
         });
       } else if (document.querySelector('body > pre')) {
-        // Sidekick is hidden: on an AEM admin error page, surface a hint to sign in
+        // Pipeline auth error page and sidekick is hidden: surface a login hint
         import('./login-hint.js').then(({ showLoginHint }) => showLoginHint());
       }
     } else if (sidekick) {

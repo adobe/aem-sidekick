@@ -24,7 +24,7 @@ window.chrome = chromeMock;
 const HINT_CLASS = 'aem-sk-login-hint';
 
 /**
- * Adds an AEM admin error page <pre> to the body.
+ * Adds a pipeline auth error page <pre> to the body.
  * @param {string} text The error text
  * @returns {HTMLElement} The pre element
  */
