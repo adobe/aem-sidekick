@@ -521,6 +521,12 @@
   "login_required_state": {
     "message": "Faça logon para continuar"
   },
+  "login_hint_401": {
+    "message": "Fazer logon com o AEM Sidekick"
+  },
+  "login_hint_403": {
+    "message": "Alternar para um usuário diferente com o AEM Sidekick"
+  },
   "login_wait": {
     "message": "Faça logon..."
   },

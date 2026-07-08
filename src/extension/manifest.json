@@ -30,22 +30,22 @@
   "web_accessible_resources": [
     {
       "resources": [
+        "*.js.map",
         "_locales/*",
+        "config.js",
         "content.js",
         "context-menu.js",
-        "index.js",
-        "*.js.map",
         "display.js",
-        "config.js",
+        "index.js",
         "lib/polyfills.min.js",
         "log.js",
+        "login-hint.js",
+        "project.js",
         "sp-popover.js",
         "sp-tray.js",
         "tab.js",
-        "project.js",
-        "utis/admin.js",
-        "utils/rum.js",
         "url-cache.js",
+        "utils/*",
         "views/json/*",
         "views/login/*"
       ],

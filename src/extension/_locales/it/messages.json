@@ -521,6 +521,12 @@
   "login_required_state": {
     "message": "Accedi per continuare"
   },
+  "login_hint_401": {
+    "message": "Accedi con AEM Sidekick"
+  },
+  "login_hint_403": {
+    "message": "Passa a un altro utente con AEM Sidekick"
+  },
   "login_wait": {
     "message": "Accedi..."
   },

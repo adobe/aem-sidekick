@@ -1184,7 +1184,7 @@ export class AppStore {
         if (event.origin === `chrome-extension://${chrome.runtime.id}`) {
           const { data } = event;
           if (data.detail.event === 'hlx-close-view') {
-            // restore the pre element if it exists (JSON view)
+            // restore the pre element if it exists
             if (pre) {
               pre.style.display = 'block';
             }

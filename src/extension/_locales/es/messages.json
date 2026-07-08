@@ -521,6 +521,12 @@
   "login_required_state": {
     "message": "Inicie sesión para continuar"
   },
+  "login_hint_401": {
+    "message": "Iniciar sesión con AEM Sidekick"
+  },
+  "login_hint_403": {
+    "message": "Cambiar a un usuario diferente con AEM Sidekick"
+  },
   "login_wait": {
     "message": "Inicie sesión..."
   },
