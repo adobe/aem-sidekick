@@ -64,6 +64,15 @@ export default {
     sync: new StorageMock(),
     local: new StorageMock(),
     session: new StorageMock(),
+    onChanged: {
+      listeners: [],
+      addListener(fn) {
+        this.listeners.push(fn);
+      },
+      removeListener(fn) {
+        this.listeners = this.listeners.filter((l) => l !== fn);
+      },
+    },
   },
   declarativeNetRequest: {
     getDynamicRules: async () => ([{ id: 1 }, { id: 2 }]),

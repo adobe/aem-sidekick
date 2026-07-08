@@ -21,6 +21,28 @@
 
   const { getDisplay, toggleDisplay } = await import('./display.js');
   const display = await getDisplay();
+
+  /**
+   * Syncs the visibility of the underlying page content that the sidekick's
+   * special view covers (the <pre> on JSON and AEM admin error pages). The
+   * content is hidden only while the sidekick is shown with a special view over
+   * it, and restored whenever the sidekick is hidden.
+   * @param {Element} sidekick The sidekick element
+   * @param {boolean} shown Whether the sidekick is currently shown
+   */
+  function syncPageContent(sidekick, shown) {
+    const pre = document.querySelector('pre');
+    // only manage the <pre> on pages where the sidekick renders a special view
+    // over it: JSON views and AEM admin error pages (no body > main > div)
+    const managesPre = window.location.pathname.endsWith('.json')
+      || !document.querySelector('body > main > div');
+    if (!pre || !managesPre) {
+      return;
+    }
+    const specialViewOpen = sidekick.shadowRoot?.querySelector('.aem-sk-special-view');
+    pre.style.display = shown && specialViewOpen ? 'none' : 'block';
+  }
+
   /**
    * Load the sidekick custom element and add it to the DOM
    * @param {OptionsConfig} config The config to load the sidekick with
@@ -55,6 +77,8 @@
     sidekick.addEventListener('hidden', () => {
       toggleDisplay();
       sidekick.setAttribute('open', 'false');
+      // restore page content hidden behind a special view (e.g. login view)
+      syncPageContent(sidekick, false);
     });
   }
 
@@ -115,13 +139,8 @@
         // Toggle sidekick display
         sidekick.setAttribute('open', `${display}`);
 
-        // Are we on a JSON page?
-        const pre = document.querySelector('pre');
-        if (pre && window.location.pathname.endsWith('.json')) {
-          // If the sidekick is open and the JSON view is open, hide the pre tag, else show it
-          const jsonViewOpen = sidekick.shadowRoot.querySelector('.aem-sk-special-view');
-          pre.style.display = display && jsonViewOpen ? 'none' : 'block';
-        }
+        // sync visibility of page content behind a special view (JSON/error page)
+        syncPageContent(sidekick, display);
       } else if (display) {
         // Load custom element polyfill
         import('./lib/polyfills.min.js').then(() => {
@@ -140,6 +159,9 @@
             loadConfigPicker(configMatches);
           }
         });
+      } else if (document.querySelector('body > pre')) {
+        // Sidekick is hidden: on an AEM admin error page, surface a hint to sign in
+        import('./login-hint.js').then(({ showLoginHint }) => showLoginHint());
       }
     } else if (sidekick) {
       // Remove sidekick

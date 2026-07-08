@@ -521,6 +521,12 @@
   "login_required_state": {
     "message": "登入以繼續"
   },
+  "login_hint_401": {
+    "message": "使用 AEM Sidekick 登入"
+  },
+  "login_hint_403": {
+    "message": "使用 AEM Sidekick 切換至其他使用者"
+  },
   "login_wait": {
     "message": "請登入…"
   },

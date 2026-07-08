@@ -521,6 +521,12 @@
   "login_required_state": {
     "message": "계속하려면 로그인"
   },
+  "login_hint_401": {
+    "message": "AEM Sidekick으로 로그인"
+  },
+  "login_hint_403": {
+    "message": "AEM Sidekick으로 다른 사용자로 전환"
+  },
   "login_wait": {
     "message": "로그인해 주십시오."
   },

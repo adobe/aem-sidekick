@@ -600,6 +600,12 @@
     "not_authorized": {
       "message": "Not authorized"
     },
+    "login_hint_401": {
+      "message": "Sign in with AEM Sidekick"
+    },
+    "login_hint_403": {
+      "message": "Switch to a different user with AEM Sidekick"
+    },
     "login_wait": {
       "message": "Please sign in..."
     },

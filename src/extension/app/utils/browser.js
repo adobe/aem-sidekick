@@ -234,21 +234,6 @@ export function detectBrowser(userAgent) {
 }
 
 /**
- * Detects an AEM error page.
- * @param {Location} location The location object
- * @aparm {Document} document The document object
- * @returns {boolean} True if error page
- */
-export function isErrorPage(location, document) {
-  return ((location.host.endsWith('.aem.page')
-    || location.host.endsWith('.aem.live')
-    || location.host.endsWith('.aem.reviews')
-    || location.hostname === 'localhost')
-    && !document.querySelector('body > main > div')
-    && document.querySelector('body > pre'));
-}
-
-/**
  * Converts a rect object to a style string.
  * Only width, height, top, left, right, and bottom properties are accepted.
  * @param {Object} rect The rect object
@@ -264,3 +249,7 @@ export function rectToStyles(rect) {
     .map(([key, value]) => `${key}: ${value}`)
     .join('; ');
 }
+
+// re-exported from a content-script-accessible module so both the bundled app
+// and the copied content script can share the same error-page detection
+export { isErrorPage } from '../../utils/error.js';
