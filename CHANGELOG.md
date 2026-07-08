@@ -1,3 +1,10 @@
+# [7.33.0](https://github.com/adobe/aem-sidekick/compare/v7.32.14...v7.33.0) (2026-07-08)
+
+
+### Features
+
+* **login:** surface sign-in hint when hidden on 401/403 error page ([#885](https://github.com/adobe/aem-sidekick/issues/885)) ([ddb1f09](https://github.com/adobe/aem-sidekick/commit/ddb1f0952f2b5090ce50407b144d9604edce4827))
+
 ## [7.32.14](https://github.com/adobe/aem-sidekick/compare/v7.32.13...v7.32.14) (2026-07-01)
 
 
