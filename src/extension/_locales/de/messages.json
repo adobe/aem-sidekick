@@ -518,14 +518,14 @@
   "logging_out_state": {
     "message": "Abmeldung erfolgt …"
   },
-  "login_required_state": {
-    "message": "Melden Sie sich an, um fortzufahren"
-  },
   "login_hint_401": {
     "message": "Mit AEM Sidekick anmelden"
   },
   "login_hint_403": {
-    "message": "Mit AEM Sidekick zu einem anderen Benutzer wechseln"
+    "message": "Mit AEM Sidekick zu einer anderen Person wechseln"
+  },
+  "login_required_state": {
+    "message": "Melden Sie sich an, um fortzufahren"
   },
   "login_wait": {
     "message": "Bitte melden Sie sich an …"

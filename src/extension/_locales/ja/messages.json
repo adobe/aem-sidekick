@@ -518,14 +518,14 @@
   "logging_out_state": {
     "message": "ログアウト中..."
   },
-  "login_required_state": {
-    "message": "ログインして続行"
-  },
   "login_hint_401": {
     "message": "AEM Sidekick でログイン"
   },
   "login_hint_403": {
-    "message": "AEM Sidekick で別のユーザーに切り替え"
+    "message": "AEM Sidekick を使用して別のユーザーに切り替え"
+  },
+  "login_required_state": {
+    "message": "ログインして続行"
   },
   "login_wait": {
     "message": "ログインしてください..."
