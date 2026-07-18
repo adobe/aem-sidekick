@@ -23,6 +23,10 @@ const TOOLS_AUTH_TOKEN_RULES = [
     requestDomain: 'helix-json2html.adobeaem.workers.dev',
     regexFilter: (owner, repo) => `/((config|api)/)?${owner}/${repo}/[^/?#]+(?:/.*)?(?:\\?.*)?$`,
   },
+  {
+    requestDomain: 'helix-snapshot-scheduler-prod.adobeaem.workers.dev',
+    regexFilter: (owner, repo) => `/(register|schedule(?:/(?:page|snapshot))?)/${owner}/${repo}(?:/[^?#]*)?(?:\\?.*)?$`,
+  },
 ];
 
 const TOOLS_SITE_TOKEN_RULES = [
