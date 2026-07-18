@@ -518,14 +518,14 @@
   "logging_out_state": {
     "message": "正在注销……"
   },
-  "login_required_state": {
-    "message": "登录以继续"
-  },
   "login_hint_401": {
     "message": "使用 AEM Sidekick 登录"
   },
   "login_hint_403": {
     "message": "使用 AEM Sidekick 切换到其他用户"
+  },
+  "login_required_state": {
+    "message": "登录以继续"
   },
   "login_wait": {
     "message": "请登录……"
