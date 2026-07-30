@@ -518,14 +518,14 @@
   "logging_out_state": {
     "message": "Déconnexion..."
   },
-  "login_required_state": {
-    "message": "Connectez-vous pour continuer."
-  },
   "login_hint_401": {
-    "message": "Se connecter avec AEM Sidekick"
+    "message": "Se connecter avec AEM Sidekick"
   },
   "login_hint_403": {
-    "message": "Changer d'utilisateur avec AEM Sidekick"
+    "message": "Basculer vers une autre personne avec AEM Sidekick"
+  },
+  "login_required_state": {
+    "message": "Connectez-vous pour continuer."
   },
   "login_wait": {
     "message": "Veuillez vous connecter..."
