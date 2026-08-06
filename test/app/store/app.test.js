@@ -697,6 +697,15 @@ describe('Test App Store', () => {
       expect(fetchStatusSpy.calledWith(false, true)).to.be.true;
     });
 
+    it('switches from preview to editor, does not append text directive for non-DA source', async () => {
+      sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage')
+        .resolves(`${mockStatus.preview.url}#existing:~:text=highlighted`);
+      instance.location = new URL(`${mockStatus.preview.url}#existing`);
+      instance.status = mockStatus;
+      await instance.switchEnv('edit', true);
+      expect(openPage.calledWith('https://my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx')).to.be.true;
+    });
+
     it('switches from preview to production host', async () => {
       const prodHost = 'aem-boilerplate.com';
       instance.siteStore.host = prodHost;
@@ -762,6 +771,48 @@ describe('Test App Store', () => {
       instance.status = mockStatus;
       await instance.switchEnv('edit');
       expect(loadPage.calledWith('https://aemcloud.com/index?cmd=open')).to.be.true;
+    });
+
+    it('switches to DA editor, appends highlighted text directive to anchor', async () => {
+      sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage')
+        .resolves(`${mockStatus.preview.url}#existing:~:text=highlighted`);
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      fetchStatusStub.resolves({
+        webPath: '/somepath',
+        edit: { url: 'https://da.live/edit#/adobe/aem-boilerplate/somepath' },
+      });
+
+      instance.location = new URL(`${mockStatus.preview.url}#existing`);
+      instance.status = {
+        ...mockStatus,
+        preview: {
+          ...mockStatus.preview,
+          sourceLocation: 'markup:https://content.da.live/adobe/aem-boilerplate/somepath',
+        },
+      };
+      await instance.switchEnv('edit');
+      expect(loadPage.calledWith('https://da.live/edit#/adobe/aem-boilerplate/somepath:~:text=highlighted')).to.be.true;
+    });
+
+    it('switches to DA editor, ignores pre-existing anchor without text directive', async () => {
+      sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage')
+        .resolves(`${mockStatus.preview.url}#some-anchor`);
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      fetchStatusStub.resolves({
+        webPath: '/somepath',
+        edit: { url: 'https://da.live/edit#/adobe/aem-boilerplate/somepath' },
+      });
+
+      instance.location = new URL(`${mockStatus.preview.url}#some-anchor`);
+      instance.status = {
+        ...mockStatus,
+        preview: {
+          ...mockStatus.preview,
+          sourceLocation: 'markup:https://content.da.live/adobe/aem-boilerplate/somepath',
+        },
+      };
+      await instance.switchEnv('edit');
+      expect(loadPage.calledWith('https://da.live/edit#/adobe/aem-boilerplate/somepath')).to.be.true;
     });
 
     it('switches from preview to BYOM editor, overwrites edit URL ', async () => {
@@ -871,6 +922,17 @@ describe('Test App Store', () => {
       await instance.switchEnv('live', true);
       const openPageArgs = openPage.args[0];
       expect(openPageArgs[0]).to.include(instance.siteStore.outerHost);
+    });
+
+    it('switches from preview to live, persists hash and text directive', async () => {
+      sidekickTest.sandbox.stub(window.chrome.runtime, 'sendMessage')
+        .resolves(`${mockStatus.preview.url}#boilerplate:~:text=highlighted`);
+      instance.location = new URL(`${mockStatus.preview.url}#boilerplate`);
+      instance.status = mockStatus;
+      await instance.switchEnv('live');
+      const loadPageArgs = loadPage.args[0];
+      expect(loadPageArgs[0]).to.include(instance.siteStore.outerHost);
+      expect(loadPageArgs[0]).to.include('#boilerplate:~:text=highlighted');
     });
 
     it('switches from preview to dev', async () => {

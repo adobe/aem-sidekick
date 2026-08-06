@@ -604,6 +604,12 @@ describe('Test actions', () => {
     expect(await internalActions.bustCache(mockTab('https://a.com', { active: false }), {})).to.be.false;
   });
 
+  it('internal: getTabUrl', async () => {
+    const url = 'https://main--bar--foo.aem.page/page#anchor:~:text=highlighted';
+    const result = await internalActions.getTabUrl(mockTab(url));
+    expect(result).to.equal(url);
+  });
+
   it('internal: addRemoveProject', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const remove = sandbox.spy(chrome.storage.sync, 'remove');

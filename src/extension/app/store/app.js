@@ -1291,6 +1291,10 @@ export class AppStore {
    * @fires Sidekick#envswitched
    */
   async switchEnv(targetEnv, open = false, prodCheck = false) {
+    // the text fragment directive (:~:text=...) is stripped from the page's
+    // window.location, so the full hash is read from the tab URL further below
+    let sourceHash = this.location.hash;
+
     const getEditUrl = async () => {
       const isReview = this.isReview();
       if (isReview) {
@@ -1317,6 +1321,17 @@ export class AppStore {
         }
       }
 
+      const { preview: { sourceLocation = '' } = {} } = this.status;
+      if (editUrl && this.isDA(sourceLocation)) {
+        const url = new URL(editUrl);
+        // for DA edit URLs, append only the "link to highlight" directive
+        // (:~:text=...) to the existing anchor, ignoring other pre-existing anchors
+        const directiveIndex = sourceHash.indexOf(':~:');
+        if (directiveIndex !== -1) {
+          url.hash += sourceHash.substring(directiveIndex);
+        }
+        return url;
+      }
       if (editUrl) {
         return new URL(editUrl);
       }
@@ -1327,7 +1342,7 @@ export class AppStore {
       const envOrigin = targetEnv === 'dev' ? devUrl.origin : `https://${envHost}`;
       let envUrl = `${envOrigin}${webPath}`;
       if (!this.isEditor()) {
-        envUrl += `${location.search}${location.hash}`;
+        envUrl += `${location.search}${sourceHash}`;
       }
       return new URL(envUrl);
     };
@@ -1358,6 +1373,17 @@ export class AppStore {
     if (!envHost && hostType === ENVS.prod) {
       // no production host defined yet, use live instead
       envHost = siteStore[ENVS.live];
+    }
+
+    // read the full hash (incl. text fragment directive) from the tab URL,
+    // as the browser strips the directive from window.location
+    try {
+      const tabUrl = await chrome.runtime.sendMessage({ action: 'getTabUrl' });
+      if (tabUrl) {
+        sourceHash = new URL(tabUrl).hash;
+      }
+    } catch (e) {
+      // ignore, fall back to window.location hash
     }
 
     let envUrl;
