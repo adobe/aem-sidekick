@@ -582,16 +582,6 @@ export async function guessAEMSite(_, { url }) {
 }
 
 /**
- * Returns the URL of the sender's tab, including any text fragment directive
- * (:~:text=...), which the browser strips from the page's own window.location.
- * @param {chrome.tabs.Tab} tab The tab
- * @returns {Promise<string>} The tab URL
- */
-export async function getTabUrl(tab) {
-  return tab.url;
-}
-
-/**
  * Closes the palette in the sender's tab.
  * @param {Object} message The message object
  * @param {string} message.id The palette ID to close
@@ -787,7 +777,6 @@ export const internalActions = {
   openViewDocSource,
   getProfilePicture,
   guessAEMSite,
-  getTabUrl,
   updateProject,
   saveDocument,
   bustCache,

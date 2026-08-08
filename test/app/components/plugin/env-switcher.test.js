@@ -154,7 +154,7 @@ describe('Environment Switcher', () => {
       picker.value = 'preview';
       picker.dispatchEvent(new Event('change'));
 
-      await waitUntil(() => openPageStub.called);
+      expect(openPageStub.called).to.be.true;
       expect(openPageStub.calledWith('https://custom-preview-host.com/tools/sidekick/example/index.html?path=%2Fplaceholders.json')).to.be.true;
       expect(sidekickTest.rumStub.called).to.be.true;
       expect(sidekickTest.rumStub.calledWith('click', {
