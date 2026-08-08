@@ -96,49 +96,49 @@ describe('Test App Store', () => {
     await testDefaultConfig();
   });
 
-  function stubSelection(range) {
-    sidekickTest.sandbox.stub(window, 'getSelection').returns(/** @type {Selection} */ ({
-      isCollapsed: !range,
-      rangeCount: range ? 1 : 0,
-      getRangeAt: () => range,
-    }));
+  /**
+   * @param {Node} node
+   * @param {number} start
+   * @param {number} end
+   */
+  function selectRange(node, start, end) {
+    const range = document.createRange();
+    range.setStart(node, start);
+    range.setEnd(node, end);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
   }
 
   it('updateSelection stores selection with surrounding context', () => {
     const el = document.createElement('p');
     el.textContent = 'Test homepage Lorem ipsum dolor sit amet consectetur';
     document.body.append(el);
-    const textNode = el.firstChild;
-    const range = document.createRange();
-    range.setStart(textNode, 'Test homepage '.length);
-    range.setEnd(textNode, 'Test homepage Lorem ipsum dolor'.length);
-    stubSelection(range);
+    selectRange(el.firstChild, 'Test homepage '.length, 'Test homepage Lorem ipsum dolor'.length);
 
     appStore.updateSelection();
     expect(appStore.selection).to.equal(
       'Test%20homepage-,Lorem%20ipsum%20dolor,-sit%20amet%20consectetur',
     );
     el.remove();
+    window.getSelection().removeAllRanges();
   });
 
   it('updateSelection stores selection without context at node boundaries', () => {
     const el = document.createElement('p');
     el.textContent = 'Lorem ipsum';
     document.body.append(el);
-    const textNode = el.firstChild;
-    const range = document.createRange();
-    range.setStart(textNode, 0);
-    range.setEnd(textNode, 'Lorem ipsum'.length);
-    stubSelection(range);
+    selectRange(el.firstChild, 0, 'Lorem ipsum'.length);
 
     appStore.updateSelection();
     expect(appStore.selection).to.equal('Lorem%20ipsum');
     el.remove();
+    window.getSelection().removeAllRanges();
   });
 
   it('updateSelection ignores a collapsed selection', () => {
     appStore.selection = 'previous';
-    stubSelection(null);
+    window.getSelection().removeAllRanges();
     appStore.updateSelection();
     expect(appStore.selection).to.equal('previous');
   });
