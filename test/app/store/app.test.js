@@ -136,11 +136,47 @@ describe('Test App Store', () => {
     window.getSelection().removeAllRanges();
   });
 
-  it('updateSelection ignores a collapsed selection', () => {
+  it('updateSelection clears the cache when the selection collapses outside the sidekick', () => {
+    const sidekickEl = document.createElement('div');
+    const outsideEl = document.createElement('button');
+    document.body.append(sidekickEl, outsideEl);
+    appStore.sidekick = sidekickEl;
     appStore.selection = 'previous';
+    outsideEl.focus();
     window.getSelection().removeAllRanges();
+
+    appStore.updateSelection();
+    expect(appStore.selection).to.equal('');
+    sidekickEl.remove();
+    outsideEl.remove();
+  });
+
+  it('updateSelection keeps the cache when the selection collapses inside the sidekick', () => {
+    const sidekickEl = document.createElement('div');
+    const insideEl = document.createElement('button');
+    sidekickEl.append(insideEl);
+    document.body.append(sidekickEl);
+    appStore.sidekick = sidekickEl;
+    appStore.selection = 'previous';
+    insideEl.focus();
+    window.getSelection().removeAllRanges();
+
     appStore.updateSelection();
     expect(appStore.selection).to.equal('previous');
+    sidekickEl.remove();
+  });
+
+  it('updateSelection ignores a whitespace-only selection', () => {
+    appStore.selection = 'previous';
+    const el = document.createElement('p');
+    el.textContent = '     ';
+    document.body.append(el);
+    selectRange(el.firstChild, 0, 5);
+
+    appStore.updateSelection();
+    expect(appStore.selection).to.equal('previous');
+    el.remove();
+    window.getSelection().removeAllRanges();
   });
 
   it('loadContext - with config.json and custom plugins', async () => {

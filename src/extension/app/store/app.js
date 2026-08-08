@@ -108,6 +108,13 @@ export class AppStore {
   location;
 
   /**
+   * The current document text selection as a text-fragment-style descriptor
+   * (<code>[prefix-,]exact[,-suffix]</code>), or an empty string if there is none.
+   * @type {string}
+   */
+  selection = '';
+
+  /**
    * The sidekick element
    * @type {AEMSidekick}
    */
@@ -190,7 +197,6 @@ export class AppStore {
     this.bulkStore = new BulkStore(this);
     this.keyboardListener = new KeyboardListener();
     this.api = new AdminClient(this);
-    this.selection = '';
     this.updateSelection = this.updateSelection.bind(this);
   }
 
@@ -205,6 +211,11 @@ export class AppStore {
   updateSelection() {
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+      // the selection was cleared: discard the cache unless the collapse was
+      // caused by moving focus into the sidekick (e.g. opening the env switcher)
+      if (!this.sidekick?.contains(document.activeElement)) {
+        this.selection = '';
+      }
       return;
     }
     const range = selection.getRangeAt(0);
