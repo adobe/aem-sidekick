@@ -108,6 +108,13 @@ export class AppStore {
   location;
 
   /**
+   * The current document text selection as a text-fragment-style descriptor
+   * (<code>[prefix-,]exact[,-suffix]</code>), or an empty string if there is none.
+   * @type {string}
+   */
+  selection = '';
+
+  /**
    * The sidekick element
    * @type {AEMSidekick}
    */
@@ -190,6 +197,54 @@ export class AppStore {
     this.bulkStore = new BulkStore(this);
     this.keyboardListener = new KeyboardListener();
     this.api = new AdminClient(this);
+    this.updateSelection = this.updateSelection.bind(this);
+  }
+
+  /**
+   * Stores the current non-empty text selection as a text-fragment-style
+   * descriptor (<code>[prefix-,]exact[,-suffix]</code>), where prefix and
+   * suffix are a few words of surrounding context used to disambiguate
+   * duplicate matches. Kept up to date via a <code>selectionchange</code>
+   * listener because interacting with the sidekick (e.g. the env switcher)
+   * collapses the document selection.
+   */
+  updateSelection() {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+      // the selection was cleared: discard the cache unless the collapse was
+      // caused by moving focus into the sidekick (e.g. opening the env switcher)
+      if (!this.sidekick?.contains(document.activeElement)) {
+        this.selection = '';
+      }
+      return;
+    }
+    const range = selection.getRangeAt(0);
+    const norm = (str) => (str || '').replace(/\s+/g, ' ').trim();
+    const exact = norm(range.toString());
+    if (!exact) {
+      return;
+    }
+    // capture up to 5 words of surrounding context from the boundary text nodes
+    const context = (str, fromEnd) => {
+      const words = norm(str).split(' ').filter(Boolean);
+      return (fromEnd ? words.slice(-5) : words.slice(0, 5)).join(' ');
+    };
+    const {
+      startContainer, startOffset, endContainer, endOffset,
+    } = range;
+    const prefix = startContainer.nodeType === Node.TEXT_NODE
+      ? context(startContainer.textContent.slice(0, startOffset), true)
+      : '';
+    const suffix = endContainer.nodeType === Node.TEXT_NODE
+      ? context(endContainer.textContent.slice(endOffset), false)
+      : '';
+    // encode components so literal separators (, -) never clash with the grammar
+    const enc = (str) => encodeURIComponent(str).replace(/-/g, '%2D');
+    this.selection = [
+      prefix && `${enc(prefix)}-`,
+      enc(exact),
+      suffix && `-${enc(suffix)}`,
+    ].filter(Boolean).join(',');
   }
 
   /**
@@ -202,6 +257,8 @@ export class AppStore {
     this.theme = await getConfig('local', 'theme') || 'dark';
     this.sidekick = sidekick;
     this.location = getLocation();
+
+    document.addEventListener('selectionchange', this.updateSelection);
 
     await this.siteStore.initStore(inputConfig);
 
@@ -1317,6 +1374,16 @@ export class AppStore {
         }
       }
 
+      const { preview: { sourceLocation = '' } = {} } = this.status;
+      if (editUrl && this.isDA(sourceLocation) && this.selection) {
+        // persist the current text selection so DA can restore it in the editor
+        // (assign search directly, the descriptor is already encoded)
+        const url = new URL(editUrl);
+        url.search = url.search
+          ? `${url.search}&select=${this.selection}`
+          : `?select=${this.selection}`;
+        return url;
+      }
       if (editUrl) {
         return new URL(editUrl);
       }

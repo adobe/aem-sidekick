@@ -96,6 +96,89 @@ describe('Test App Store', () => {
     await testDefaultConfig();
   });
 
+  /**
+   * @param {Node} node
+   * @param {number} start
+   * @param {number} end
+   */
+  function selectRange(node, start, end) {
+    const range = document.createRange();
+    range.setStart(node, start);
+    range.setEnd(node, end);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  it('updateSelection stores selection with surrounding context', () => {
+    const el = document.createElement('p');
+    el.textContent = 'Test homepage Lorem ipsum dolor sit amet consectetur';
+    document.body.append(el);
+    selectRange(el.firstChild, 'Test homepage '.length, 'Test homepage Lorem ipsum dolor'.length);
+
+    appStore.updateSelection();
+    expect(appStore.selection).to.equal(
+      'Test%20homepage-,Lorem%20ipsum%20dolor,-sit%20amet%20consectetur',
+    );
+    el.remove();
+    window.getSelection().removeAllRanges();
+  });
+
+  it('updateSelection stores selection without context at node boundaries', () => {
+    const el = document.createElement('p');
+    el.textContent = 'Lorem ipsum';
+    document.body.append(el);
+    selectRange(el.firstChild, 0, 'Lorem ipsum'.length);
+
+    appStore.updateSelection();
+    expect(appStore.selection).to.equal('Lorem%20ipsum');
+    el.remove();
+    window.getSelection().removeAllRanges();
+  });
+
+  it('updateSelection clears the cache when the selection collapses outside the sidekick', () => {
+    const sidekickEl = document.createElement('div');
+    const outsideEl = document.createElement('button');
+    document.body.append(sidekickEl, outsideEl);
+    appStore.sidekick = sidekickEl;
+    appStore.selection = 'previous';
+    outsideEl.focus();
+    window.getSelection().removeAllRanges();
+
+    appStore.updateSelection();
+    expect(appStore.selection).to.equal('');
+    sidekickEl.remove();
+    outsideEl.remove();
+  });
+
+  it('updateSelection keeps the cache when the selection collapses inside the sidekick', () => {
+    const sidekickEl = document.createElement('div');
+    const insideEl = document.createElement('button');
+    sidekickEl.append(insideEl);
+    document.body.append(sidekickEl);
+    appStore.sidekick = sidekickEl;
+    appStore.selection = 'previous';
+    insideEl.focus();
+    window.getSelection().removeAllRanges();
+
+    appStore.updateSelection();
+    expect(appStore.selection).to.equal('previous');
+    sidekickEl.remove();
+  });
+
+  it('updateSelection ignores a whitespace-only selection', () => {
+    appStore.selection = 'previous';
+    const el = document.createElement('p');
+    el.textContent = '     ';
+    document.body.append(el);
+    selectRange(el.firstChild, 0, 5);
+
+    appStore.updateSelection();
+    expect(appStore.selection).to.equal('previous');
+    el.remove();
+    window.getSelection().removeAllRanges();
+  });
+
   it('loadContext - with config.json and custom plugins', async () => {
     sidekickTest
       .mockFetchSidekickConfigSuccess(true, true);
@@ -697,6 +780,14 @@ describe('Test App Store', () => {
       expect(fetchStatusSpy.calledWith(false, true)).to.be.true;
     });
 
+    it('switches from preview to editor, does not append selection for non-DA source', async () => {
+      instance.selection = 'some selected text';
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = mockStatus;
+      await instance.switchEnv('edit', true);
+      expect(openPage.calledWith('https://my.sharepoint.com/:w:/r/personal/directory/_layouts/15/Doc.aspx?sourcedoc=ABC&file=about.docx')).to.be.true;
+    });
+
     it('switches from preview to production host', async () => {
       const prodHost = 'aem-boilerplate.com';
       instance.siteStore.host = prodHost;
@@ -762,6 +853,46 @@ describe('Test App Store', () => {
       instance.status = mockStatus;
       await instance.switchEnv('edit');
       expect(loadPage.calledWith('https://aemcloud.com/index?cmd=open')).to.be.true;
+    });
+
+    it('switches to DA editor, appends selection descriptor as query param', async () => {
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      fetchStatusStub.resolves({
+        webPath: '/somepath',
+        edit: { url: 'https://da.live/edit#/adobe/aem-boilerplate/somepath' },
+      });
+
+      instance.selection = 'Test%20homepage-,Lorem%20ipsum%20dolor,-sit%20amet';
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = {
+        ...mockStatus,
+        preview: {
+          ...mockStatus.preview,
+          sourceLocation: 'markup:https://content.da.live/adobe/aem-boilerplate/somepath',
+        },
+      };
+      await instance.switchEnv('edit');
+      expect(loadPage.calledWith('https://da.live/edit?select=Test%20homepage-,Lorem%20ipsum%20dolor,-sit%20amet#/adobe/aem-boilerplate/somepath')).to.be.true;
+    });
+
+    it('switches to DA editor, no selection leaves edit URL unchanged', async () => {
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      fetchStatusStub.resolves({
+        webPath: '/somepath',
+        edit: { url: 'https://da.live/edit#/adobe/aem-boilerplate/somepath' },
+      });
+
+      instance.selection = '';
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = {
+        ...mockStatus,
+        preview: {
+          ...mockStatus.preview,
+          sourceLocation: 'markup:https://content.da.live/adobe/aem-boilerplate/somepath',
+        },
+      };
+      await instance.switchEnv('edit');
+      expect(loadPage.calledWith('https://da.live/edit#/adobe/aem-boilerplate/somepath')).to.be.true;
     });
 
     it('switches from preview to BYOM editor, overwrites edit URL ', async () => {
@@ -871,6 +1002,15 @@ describe('Test App Store', () => {
       await instance.switchEnv('live', true);
       const openPageArgs = openPage.args[0];
       expect(openPageArgs[0]).to.include(instance.siteStore.outerHost);
+    });
+
+    it('switches from preview to live, persists hash', async () => {
+      instance.location = new URL(`${mockStatus.preview.url}#boilerplate`);
+      instance.status = mockStatus;
+      await instance.switchEnv('live');
+      const loadPageArgs = loadPage.args[0];
+      expect(loadPageArgs[0]).to.include(instance.siteStore.outerHost);
+      expect(loadPageArgs[0]).to.include('#boilerplate');
     });
 
     it('switches from preview to dev', async () => {
