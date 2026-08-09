@@ -108,11 +108,10 @@ export class AppStore {
   location;
 
   /**
-   * The current document text selection with a few words of surrounding context
-   * (used to disambiguate duplicate matches), or null if there is none.
-   * @type {{ exact: string, prefix: string, suffix: string } | null}
+   * The current document text selection, or an empty string if there is none.
+   * @type {string}
    */
-  selection = null;
+  selection = '';
 
   /**
    * The sidekick element
@@ -201,11 +200,9 @@ export class AppStore {
   }
 
   /**
-   * Stores the current non-empty text selection together with a few words of
-   * surrounding context (prefix/suffix) used to disambiguate duplicate matches.
-   * Kept up to date via a <code>selectionchange</code> listener because
-   * interacting with the sidekick (e.g. the env switcher) collapses the
-   * document selection.
+   * Stores the current non-empty text selection. Kept up to date via a
+   * <code>selectionchange</code> listener because interacting with the sidekick
+   * (e.g. the env switcher) collapses the document selection.
    */
   updateSelection() {
     const selection = window.getSelection();
@@ -213,31 +210,14 @@ export class AppStore {
       // the selection was cleared: discard the cache unless the collapse was
       // caused by moving focus into the sidekick (e.g. opening the env switcher)
       if (!this.sidekick?.contains(document.activeElement)) {
-        this.selection = null;
+        this.selection = '';
       }
       return;
     }
-    const range = selection.getRangeAt(0);
-    const norm = (str) => (str || '').replace(/\s+/g, ' ').trim();
-    const exact = norm(range.toString());
-    if (!exact) {
-      return;
+    const text = selection.toString().replace(/\s+/g, ' ').trim();
+    if (text) {
+      this.selection = text;
     }
-    // capture up to 5 words of surrounding context from the boundary text nodes
-    const context = (str, fromEnd) => {
-      const words = norm(str).split(' ').filter(Boolean);
-      return (fromEnd ? words.slice(-5) : words.slice(0, 5)).join(' ');
-    };
-    const {
-      startContainer, startOffset, endContainer, endOffset,
-    } = range;
-    const prefix = startContainer.nodeType === Node.TEXT_NODE
-      ? context(startContainer.textContent.slice(0, startOffset), true)
-      : '';
-    const suffix = endContainer.nodeType === Node.TEXT_NODE
-      ? context(endContainer.textContent.slice(endOffset), false)
-      : '';
-    this.selection = { exact, prefix, suffix };
   }
 
   /**
@@ -1369,17 +1349,9 @@ export class AppStore {
 
       const { preview: { sourceLocation = '' } = {} } = this.status;
       if (editUrl && this.isDA(sourceLocation) && this.selection) {
-        // persist the current text selection so DA can restore it in the editor;
-        // prefix/suffix provide context to disambiguate duplicate matches
+        // persist the current text selection so DA can restore it in the editor
         const url = new URL(editUrl);
-        const { exact, prefix, suffix } = this.selection;
-        url.searchParams.set('select', exact);
-        if (prefix) {
-          url.searchParams.set('selectPrefix', prefix);
-        }
-        if (suffix) {
-          url.searchParams.set('selectSuffix', suffix);
-        }
+        url.searchParams.set('select', this.selection);
         return url;
       }
       if (editUrl) {
