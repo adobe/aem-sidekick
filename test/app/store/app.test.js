@@ -117,9 +117,11 @@ describe('Test App Store', () => {
     selectRange(el.firstChild, 'Test homepage '.length, 'Test homepage Lorem ipsum dolor'.length);
 
     appStore.updateSelection();
-    expect(appStore.selection).to.equal(
-      'Test%20homepage-,Lorem%20ipsum%20dolor,-sit%20amet%20consectetur',
-    );
+    expect(appStore.selection).to.deep.equal({
+      exact: 'Lorem ipsum dolor',
+      prefix: 'Test homepage',
+      suffix: 'sit amet consectetur',
+    });
     el.remove();
     window.getSelection().removeAllRanges();
   });
@@ -131,7 +133,11 @@ describe('Test App Store', () => {
     selectRange(el.firstChild, 0, 'Lorem ipsum'.length);
 
     appStore.updateSelection();
-    expect(appStore.selection).to.equal('Lorem%20ipsum');
+    expect(appStore.selection).to.deep.equal({
+      exact: 'Lorem ipsum',
+      prefix: '',
+      suffix: '',
+    });
     el.remove();
     window.getSelection().removeAllRanges();
   });
@@ -141,12 +147,12 @@ describe('Test App Store', () => {
     const outsideEl = document.createElement('button');
     document.body.append(sidekickEl, outsideEl);
     appStore.sidekick = sidekickEl;
-    appStore.selection = 'previous';
+    appStore.selection = { exact: 'previous', prefix: '', suffix: '' };
     outsideEl.focus();
     window.getSelection().removeAllRanges();
 
     appStore.updateSelection();
-    expect(appStore.selection).to.equal('');
+    expect(appStore.selection).to.equal(null);
     sidekickEl.remove();
     outsideEl.remove();
   });
@@ -157,24 +163,26 @@ describe('Test App Store', () => {
     sidekickEl.append(insideEl);
     document.body.append(sidekickEl);
     appStore.sidekick = sidekickEl;
-    appStore.selection = 'previous';
+    const previous = { exact: 'previous', prefix: '', suffix: '' };
+    appStore.selection = previous;
     insideEl.focus();
     window.getSelection().removeAllRanges();
 
     appStore.updateSelection();
-    expect(appStore.selection).to.equal('previous');
+    expect(appStore.selection).to.equal(previous);
     sidekickEl.remove();
   });
 
   it('updateSelection ignores a whitespace-only selection', () => {
-    appStore.selection = 'previous';
+    const previous = { exact: 'previous', prefix: '', suffix: '' };
+    appStore.selection = previous;
     const el = document.createElement('p');
     el.textContent = '     ';
     document.body.append(el);
     selectRange(el.firstChild, 0, 5);
 
     appStore.updateSelection();
-    expect(appStore.selection).to.equal('previous');
+    expect(appStore.selection).to.equal(previous);
     el.remove();
     window.getSelection().removeAllRanges();
   });
@@ -781,7 +789,7 @@ describe('Test App Store', () => {
     });
 
     it('switches from preview to editor, does not append selection for non-DA source', async () => {
-      instance.selection = 'some selected text';
+      instance.selection = { exact: 'some selected text', prefix: '', suffix: '' };
       instance.location = new URL(mockStatus.preview.url);
       instance.status = mockStatus;
       await instance.switchEnv('edit', true);
@@ -862,7 +870,11 @@ describe('Test App Store', () => {
         edit: { url: 'https://da.live/edit#/adobe/aem-boilerplate/somepath' },
       });
 
-      instance.selection = 'Test%20homepage-,Lorem%20ipsum%20dolor,-sit%20amet';
+      instance.selection = {
+        exact: 'Lorem ipsum dolor',
+        prefix: 'Test homepage',
+        suffix: 'sit amet',
+      };
       instance.location = new URL(mockStatus.preview.url);
       instance.status = {
         ...mockStatus,
@@ -872,7 +884,27 @@ describe('Test App Store', () => {
         },
       };
       await instance.switchEnv('edit');
-      expect(loadPage.calledWith('https://da.live/edit?select=Test%20homepage-,Lorem%20ipsum%20dolor,-sit%20amet#/adobe/aem-boilerplate/somepath')).to.be.true;
+      expect(loadPage.calledWith('https://da.live/edit?select=Lorem+ipsum+dolor&selectPrefix=Test+homepage&selectSuffix=sit+amet#/adobe/aem-boilerplate/somepath')).to.be.true;
+    });
+
+    it('switches to DA editor, appends selection without context', async () => {
+      const fetchStatusStub = sidekickTest.sandbox.stub(instance, 'fetchStatus');
+      fetchStatusStub.resolves({
+        webPath: '/somepath',
+        edit: { url: 'https://da.live/edit#/adobe/aem-boilerplate/somepath' },
+      });
+
+      instance.selection = { exact: 'Lorem ipsum', prefix: '', suffix: '' };
+      instance.location = new URL(mockStatus.preview.url);
+      instance.status = {
+        ...mockStatus,
+        preview: {
+          ...mockStatus.preview,
+          sourceLocation: 'markup:https://content.da.live/adobe/aem-boilerplate/somepath',
+        },
+      };
+      await instance.switchEnv('edit');
+      expect(loadPage.calledWith('https://da.live/edit?select=Lorem+ipsum#/adobe/aem-boilerplate/somepath')).to.be.true;
     });
 
     it('switches to DA editor, no selection leaves edit URL unchanged', async () => {
@@ -882,7 +914,7 @@ describe('Test App Store', () => {
         edit: { url: 'https://da.live/edit#/adobe/aem-boilerplate/somepath' },
       });
 
-      instance.selection = '';
+      instance.selection = null;
       instance.location = new URL(mockStatus.preview.url);
       instance.status = {
         ...mockStatus,

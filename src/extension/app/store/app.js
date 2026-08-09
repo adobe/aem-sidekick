@@ -108,11 +108,11 @@ export class AppStore {
   location;
 
   /**
-   * The current document text selection as a text-fragment-style descriptor
-   * (<code>[prefix-,]exact[,-suffix]</code>), or an empty string if there is none.
-   * @type {string}
+   * The current document text selection with a few words of surrounding context
+   * (used to disambiguate duplicate matches), or null if there is none.
+   * @type {{ exact: string, prefix: string, suffix: string } | null}
    */
-  selection = '';
+  selection = null;
 
   /**
    * The sidekick element
@@ -201,12 +201,11 @@ export class AppStore {
   }
 
   /**
-   * Stores the current non-empty text selection as a text-fragment-style
-   * descriptor (<code>[prefix-,]exact[,-suffix]</code>), where prefix and
-   * suffix are a few words of surrounding context used to disambiguate
-   * duplicate matches. Kept up to date via a <code>selectionchange</code>
-   * listener because interacting with the sidekick (e.g. the env switcher)
-   * collapses the document selection.
+   * Stores the current non-empty text selection together with a few words of
+   * surrounding context (prefix/suffix) used to disambiguate duplicate matches.
+   * Kept up to date via a <code>selectionchange</code> listener because
+   * interacting with the sidekick (e.g. the env switcher) collapses the
+   * document selection.
    */
   updateSelection() {
     const selection = window.getSelection();
@@ -214,7 +213,7 @@ export class AppStore {
       // the selection was cleared: discard the cache unless the collapse was
       // caused by moving focus into the sidekick (e.g. opening the env switcher)
       if (!this.sidekick?.contains(document.activeElement)) {
-        this.selection = '';
+        this.selection = null;
       }
       return;
     }
@@ -238,13 +237,7 @@ export class AppStore {
     const suffix = endContainer.nodeType === Node.TEXT_NODE
       ? context(endContainer.textContent.slice(endOffset), false)
       : '';
-    // encode components so literal separators (, -) never clash with the grammar
-    const enc = (str) => encodeURIComponent(str).replace(/-/g, '%2D');
-    this.selection = [
-      prefix && `${enc(prefix)}-`,
-      enc(exact),
-      suffix && `-${enc(suffix)}`,
-    ].filter(Boolean).join(',');
+    this.selection = { exact, prefix, suffix };
   }
 
   /**
@@ -1376,12 +1369,17 @@ export class AppStore {
 
       const { preview: { sourceLocation = '' } = {} } = this.status;
       if (editUrl && this.isDA(sourceLocation) && this.selection) {
-        // persist the current text selection so DA can restore it in the editor
-        // (assign search directly, the descriptor is already encoded)
+        // persist the current text selection so DA can restore it in the editor;
+        // prefix/suffix provide context to disambiguate duplicate matches
         const url = new URL(editUrl);
-        url.search = url.search
-          ? `${url.search}&select=${this.selection}`
-          : `?select=${this.selection}`;
+        const { exact, prefix, suffix } = this.selection;
+        url.searchParams.set('select', exact);
+        if (prefix) {
+          url.searchParams.set('selectPrefix', prefix);
+        }
+        if (suffix) {
+          url.searchParams.set('selectSuffix', suffix);
+        }
         return url;
       }
       if (editUrl) {
