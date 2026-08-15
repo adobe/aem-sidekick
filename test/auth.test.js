@@ -542,7 +542,7 @@ describe('Test auth', () => {
             requestHeaders: [{ operation: 'set', header: 'authorization', value: `token ${siteToken}` }],
           },
           condition: {
-            regexFilter: '^https://[a-z0-9-]+--site--test\\.aem\\.(page|live|reviews)/',
+            regexFilter: '^https://[a-z0-9-]+--site--test\\.aem\\.(page|live|reviews|network)/',
             requestMethods: ['get', 'post'],
             resourceTypes: ['main_frame', 'sub_frame', 'script', 'stylesheet', 'image', 'xmlhttprequest', 'media', 'font', 'other'],
           },
@@ -577,6 +577,30 @@ describe('Test auth', () => {
     expect(setConfig.callCount).to.equal(3);
     expect(getConfig.callCount).to.equal(6);
     expect(updateSessionRules.callCount).to.equal(5);
+  });
+
+  it('setAuthToken adds site token rule matching aem.network', async () => {
+    const updateSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'updateSessionRules');
+    const owner = 'test';
+    const repo = 'site';
+    const siteToken = '0987654321';
+
+    await setAuthToken(owner, repo, '', undefined, siteToken, Date.now() + 60000);
+
+    const { addRules } = updateSessionRules.args
+      .map(([args]) => args)
+      .findLast(({ addRules: rules }) => rules);
+    const mainFrameRules = addRules
+      .filter(({ condition }) => condition.resourceTypes?.includes('main_frame'));
+    const matches = (url) => mainFrameRules
+      .some(({ condition }) => new RegExp(condition.regexFilter).test(url));
+
+    expect(matches('https://main--site--test.aem.network/de/de/produkte/thermomix-tm7')).to.be.true;
+    expect(matches('https://main--site--test.aem.live/')).to.be.true;
+    expect(matches('https://main--site--other.aem.network/')).to.be.false;
+
+    // clean up
+    await setAuthToken(owner, repo, '', undefined, '', undefined);
   });
 
   it('updateUserAgent', async () => {
