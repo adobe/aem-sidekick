@@ -19,29 +19,40 @@ function createDocument(body) {
   return new DOMParser().parseFromString(`<html><body>${body}</body></html>`, 'text/html');
 }
 
+/**
+ * Creates a minimal location object for the given host.
+ * @param {string} host The host
+ * @returns {Location} The location
+ */
+function createLocation(host) {
+  return /** @type {Location} */ (/** @type {unknown} */ ({
+    host,
+    hostname: host.split(':')[0],
+  }));
+}
+
 const errorBody = '<pre>401 Unauthorized</pre>';
 const contentBody = '<main><div></div></main>';
 
 describe('isErrorPage', () => {
   it('detects an error page on project hosts', () => {
     ['aem.page', 'aem.live', 'aem.reviews', 'aem.network'].forEach((domain) => {
-      const location = { host: `main--site--org.${domain}`, hostname: `main--site--org.${domain}` };
+      const location = createLocation(`main--site--org.${domain}`);
       expect(isErrorPage(location, createDocument(errorBody)), domain).to.be.true;
     });
   });
 
   it('detects an error page on localhost', () => {
-    const location = { host: 'localhost:3000', hostname: 'localhost' };
-    expect(isErrorPage(location, createDocument(errorBody))).to.be.true;
+    expect(isErrorPage(createLocation('localhost:3000'), createDocument(errorBody))).to.be.true;
   });
 
   it('ignores a content page on project hosts', () => {
-    const location = { host: 'main--site--org.aem.network', hostname: 'main--site--org.aem.network' };
+    const location = createLocation('main--site--org.aem.network');
     expect(isErrorPage(location, createDocument(contentBody))).to.be.false;
   });
 
   it('ignores an error page on other hosts', () => {
-    const location = { host: 'www.example.com', hostname: 'www.example.com' };
+    const location = createLocation('www.example.com');
     expect(isErrorPage(location, createDocument(errorBody))).to.be.false;
   });
 });

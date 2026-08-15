@@ -94,10 +94,11 @@ export function matchProjectHost(baseHost, host) {
   const previewSuffix = '.aem.page';
   const reviewSuffix = '.aem.reviews';
   const liveSuffix = '.aem.live';
+  const mixerSuffix = '.aem.network';
   const isPreview = baseHost.endsWith(previewSuffix)
       && host.endsWith(previewSuffix);
   const isLive = baseHost.endsWith(liveSuffix)
-    && host.endsWith(liveSuffix);
+    && (host.endsWith(liveSuffix) || host.endsWith(mixerSuffix));
   const isReview = baseHost.endsWith(reviewSuffix) && host.endsWith(reviewSuffix);
   if (!isPreview && !isReview && !isLive) {
     return false;

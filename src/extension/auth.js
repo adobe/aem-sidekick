@@ -178,7 +178,7 @@ export async function configureAuthAndCorsHeaders() {
           priority: 1,
           action: siteTokenAction,
           condition: {
-            regexFilter: `^https://[a-z0-9-]+--${repo}--${owner}\\.aem\\.(page|live|reviews)/`,
+            regexFilter: `^https://[a-z0-9-]+--${repo}--${owner}\\.aem\\.(page|live|reviews|network)/`,
             requestMethods: ['get', 'post'],
             resourceTypes: siteTokenResourceTypes,
           },
