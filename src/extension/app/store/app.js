@@ -401,10 +401,7 @@ export class AppStore {
               mixer: appStore.isMixer,
               prod: appStore.isProd,
             };
-            // the mixer serves the live content, so it also satisfies a live scope
-            const servedByMixer = (env) => env === 'live' && appStore.isMixer();
-            return environments.some((env) => servedByMixer(env)
-              || (envChecks[env] && envChecks[env].call(appStore)));
+            return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
           };
           // assemble plugin config
           const plugin = {
