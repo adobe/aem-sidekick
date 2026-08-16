@@ -260,9 +260,9 @@ describe('Test App Store', () => {
     expect(liveOnly.isVisible()).to.be.true;
     expect(mixerOnly.isVisible()).to.be.false;
 
-    // the mixer serves the live content, so live plugins show there too
+    // the mixer is its own scope, a live plugin has to opt in to show there
     appStore.location.host = 'main--aem-boilerplate--adobe.aem.network';
-    expect(liveOnly.isVisible()).to.be.true;
+    expect(liveOnly.isVisible()).to.be.false;
     expect(mixerOnly.isVisible()).to.be.true;
 
     appStore.location.host = 'main--aem-boilerplate--adobe.aem.page';
