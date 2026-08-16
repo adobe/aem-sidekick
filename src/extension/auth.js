@@ -28,7 +28,7 @@ const TOOLS_AUTH_TOKEN_RULES = [
 const TOOLS_SITE_TOKEN_RULES = [
   {
     requestDomain: 'da-etc.adobeaem.workers.dev',
-    regexFilter: (owner, repo) => `\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews)%2F`,
+    regexFilter: (owner, repo) => `\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews|network)%2F`,
   },
 ];
 
@@ -97,7 +97,7 @@ export async function configureAuthAndCorsHeaders() {
           },
         });
 
-        const corsFilters = [`^https://[0-9a-z-]+--[0-9a-z-]+--${owner}\\.aem\\.(page|live|reviews)/.*`];
+        const corsFilters = [`^https://[0-9a-z-]+--[0-9a-z-]+--${owner}\\.aem\\.(page|live|reviews|network)/.*`];
         const project = await getConfig('sync', `${owner}/${repo}`);
         if (project) {
           const { host, previewHost, liveHost } = project;

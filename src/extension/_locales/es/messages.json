@@ -500,6 +500,9 @@
   "live": {
     "message": "Activo"
   },
+  "mixer": {
+    "message": "Mixer"
+  },
   "live_last_updated": {
     "message": "Última publicación $1"
   },

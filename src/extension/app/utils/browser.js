@@ -98,9 +98,10 @@ export function matchProjectHost(baseHost, host) {
   const isPreview = baseHost.endsWith(previewSuffix)
       && host.endsWith(previewSuffix);
   const isLive = baseHost.endsWith(liveSuffix)
-    && (host.endsWith(liveSuffix) || host.endsWith(mixerSuffix));
+    && host.endsWith(liveSuffix);
   const isReview = baseHost.endsWith(reviewSuffix) && host.endsWith(reviewSuffix);
-  if (!isPreview && !isReview && !isLive) {
+  const isMixer = baseHost.endsWith(mixerSuffix) && host.endsWith(mixerSuffix);
+  if (!isPreview && !isReview && !isLive && !isMixer) {
     return false;
   }
 
