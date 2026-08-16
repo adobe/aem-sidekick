@@ -75,7 +75,7 @@ function createExpectedSiteToolsRules(siteToken, owner = 'test', repo = 'site') 
     },
     condition: {
       initiatorDomains: ['tools.aem.live'],
-      regexFilter: `\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews)%2F`,
+      regexFilter: `\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews|network)%2F`,
       requestDomains: ['da-etc.adobeaem.workers.dev'],
       requestMethods: [
         'get',
@@ -221,7 +221,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews|network)/.*',
             initiatorDomains: [
               'tools.aem.live',
             ],
@@ -335,7 +335,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews|network)/.*',
             initiatorDomains: [
               'tools.aem.live',
             ],
@@ -521,7 +521,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews|network)/.*',
             initiatorDomains: [
               'tools.aem.live',
             ],

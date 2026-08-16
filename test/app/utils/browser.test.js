@@ -106,16 +106,17 @@ describe('browser utils', () => {
       expect(matchProjectHost('main--repo--owner.aem.live', 'main--repo--owner.aem.live')).to.eq(true);
     });
 
-    it('returns true for an aem.network host matching the live host', () => {
-      expect(matchProjectHost('main--repo--owner.aem.live', 'main--repo--owner.aem.network')).to.eq(true);
-      expect(matchProjectHost('main--repo--owner.aem.live', 'stage--repo--owner.aem.network')).to.eq(true);
+    it('returns true for hosts with same project details and aem.network suffix', () => {
+      expect(matchProjectHost('main--repo--owner.aem.network', 'main--repo--owner.aem.network')).to.eq(true);
+      expect(matchProjectHost('main--repo--owner.aem.network', 'stage--repo--owner.aem.network')).to.eq(true);
     });
 
     it('returns false for an aem.network host of another project', () => {
-      expect(matchProjectHost('main--repo1--owner.aem.live', 'main--repo2--owner.aem.network')).to.eq(false);
+      expect(matchProjectHost('main--repo1--owner.aem.network', 'main--repo2--owner.aem.network')).to.eq(false);
     });
 
-    it('returns false for an aem.network host matching the preview host', () => {
+    it('returns false for an aem.network host matching the live or preview host', () => {
+      expect(matchProjectHost('main--repo--owner.aem.live', 'main--repo--owner.aem.network')).to.eq(false);
       expect(matchProjectHost('main--repo--owner.aem.page', 'main--repo--owner.aem.network')).to.eq(false);
     });
 
