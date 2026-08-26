@@ -13,7 +13,7 @@
 
 import fs from 'fs-extra';
 // @ts-ignore
-import { ZipArchive } from 'archiver';
+import archiver from 'archiver';
 
 function copyManifestKeys(sourceObj, browser) {
   const targetObj = {};
@@ -62,7 +62,7 @@ function zipExtension(browser) {
   const dir = `./dist/${browser}`;
   const zip = `${dir}.zip`;
   const output = fs.createWriteStream(zip);
-  const archive = /** @type {any} */ (new ZipArchive({
+  const archive = /** @type {any} */ (archiver('zip', {
     zlib: { level: 9 },
   }));
   archive.on('error', (e) => {
