@@ -146,6 +146,7 @@ describe('Test auth', () => {
     expect(setConfig.notCalled).to.be.true;
 
     expect(updateSessionRules.calledWith({
+      removeRuleIds: sinon.match.array,
       addRules: [
         {
           id: sinon.match.number,
@@ -260,6 +261,7 @@ describe('Test auth', () => {
     expect(getConfig.callCount).to.equal(2);
 
     expect(updateSessionRules.calledWith({
+      removeRuleIds: sinon.match.array,
       addRules: [
         {
           id: sinon.match.number,
@@ -446,6 +448,7 @@ describe('Test auth', () => {
     expect(getConfig.callCount).to.equal(2);
 
     expect(updateSessionRules.calledWith({
+      removeRuleIds: sinon.match.array,
       addRules: [
         {
           id: sinon.match.number,
@@ -570,13 +573,13 @@ describe('Test auth', () => {
     await setAuthToken(owner, repo, authToken, expiry, siteToken, expiry);
     expect(setConfig.callCount).to.equal(2);
     expect(getConfig.callCount).to.equal(4);
-    expect(updateSessionRules.callCount).to.equal(4);
+    expect(updateSessionRules.callCount).to.equal(2);
 
     // remove existing auth and site tokens
     await setAuthToken(owner, repo, '', undefined, '', undefined);
     expect(setConfig.callCount).to.equal(3);
     expect(getConfig.callCount).to.equal(6);
-    expect(updateSessionRules.callCount).to.equal(5);
+    expect(updateSessionRules.callCount).to.equal(3);
   });
 
   it('updateUserAgent', async () => {
@@ -602,5 +605,59 @@ describe('Test auth', () => {
         },
       }],
     })).to.be.true;
+  });
+
+  it('keeps the site auth rule active during reconfiguration (no gap)', async () => {
+    // DNR session rules persist across service-worker restarts, so on a cold
+    // start the site-token rule is already live. Reconfiguration must swap it
+    // atomically — if the rule is ever absent, an in-flight JS/CSS request 401s.
+    const owner = 'test';
+    const repo = 'site';
+    const siteToken = '0987654321';
+    const siteAsset = 'https://main--site--test.aem.page/scripts/scripts.js';
+
+    // Stateful stand-in for the browser's session ruleset.
+    let sessionRules = [];
+    const siteTokenFor = (url) => sessionRules
+      .filter((r) => r.condition?.regexFilter
+        && new RegExp(r.condition.regexFilter).test(url)
+        && (r.condition.resourceTypes ?? []).includes('script'))
+      .flatMap((r) => r.action?.requestHeaders ?? [])
+      .find((h) => h.header === 'authorization')?.value;
+
+    sandbox.stub(chrome.declarativeNetRequest, 'getSessionRules')
+      .callsFake(async () => sessionRules);
+
+    const observedDuringReconfigure = [];
+    let recording = false;
+    sandbox.stub(chrome.declarativeNetRequest, 'updateSessionRules')
+      .callsFake(async ({ removeRuleIds = [], addRules = [] }) => {
+        sessionRules = sessionRules
+          .filter((r) => !removeRuleIds.includes(r.id))
+          .concat(addRules);
+        if (recording) {
+          // what an in-flight request would see right after this mutation lands
+          observedDuringReconfigure.push(siteTokenFor(siteAsset));
+        }
+      });
+
+    chrome.storage.session.set({
+      projects: [{
+        id: `${owner}/${repo}`, owner, repo, siteToken, siteTokenExpiry: Date.now() + 60000,
+      }],
+    });
+
+    // login: rule goes live
+    await configureAuthAndCorsHeaders();
+    expect(siteTokenFor(siteAsset)).to.equal(`token ${siteToken}`);
+
+    // service-worker cold start re-runs configuration while the rule is live
+    recording = true;
+    await configureAuthAndCorsHeaders();
+
+    expect(observedDuringReconfigure).to.not.include(undefined);
+    expect(siteTokenFor(siteAsset)).to.equal(`token ${siteToken}`);
+
+    chrome.storage.session.set({ projects: [] });
   });
 });
