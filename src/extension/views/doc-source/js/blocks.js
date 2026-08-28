@@ -16,7 +16,9 @@
  * @returns {String} The block name
  */
 export const classNameToBlockName = (classList) => {
-  if (!classList.length) return '';
+  if (!classList.length) {
+    return '';
+  }
   let blockType = classList.shift();
   blockType = blockType.split('-').map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()).join(' ');
   if (classList.length) {
@@ -109,7 +111,9 @@ export const sectionMetadataToTable = (main) => {
       }
     }
 
-    if (!classes.length && !dataAttrs.length) return;
+    if (!classes.length && !dataAttrs.length) {
+      return;
+    }
 
     const table = document.createElement('table');
 

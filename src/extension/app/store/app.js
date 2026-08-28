@@ -362,11 +362,21 @@ export class AppStore {
               target.searchParams.append('ref', this.siteStore.ref);
               target.searchParams.append('repo', this.siteStore.repo);
               target.searchParams.append('owner', this.siteStore.owner);
-              if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
-              if (this.siteStore.previewHost) target.searchParams.append('previewHost', this.siteStore.previewHost);
-              if (this.siteStore.liveHost) target.searchParams.append('liveHost', this.siteStore.liveHost);
-              if (this.siteStore.reviewHost) target.searchParams.append('reviewHost', this.siteStore.reviewHost);
-              if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+              if (this.siteStore.host) {
+                target.searchParams.append('host', this.siteStore.host);
+              }
+              if (this.siteStore.previewHost) {
+                target.searchParams.append('previewHost', this.siteStore.previewHost);
+              }
+              if (this.siteStore.liveHost) {
+                target.searchParams.append('liveHost', this.siteStore.liveHost);
+              }
+              if (this.siteStore.reviewHost) {
+                target.searchParams.append('reviewHost', this.siteStore.reviewHost);
+              }
+              if (this.siteStore.project) {
+                target.searchParams.append('project', this.siteStore.project);
+              }
             }
             if (passReferrer) {
               target.searchParams.append('referrer', location.href);
@@ -1264,14 +1274,18 @@ export class AppStore {
       contentSourceUrl,
       contentSourceEditPattern,
     } = this.siteStore;
-    if (!contentSourceEditPattern || typeof contentSourceEditPattern !== 'string') return undefined;
+    if (!contentSourceEditPattern || typeof contentSourceEditPattern !== 'string') {
+      return undefined;
+    }
 
     let { webPath: pathname } = status || this.status;
     if (!pathname) {
       return undefined;
     }
 
-    if (pathname.endsWith('/')) pathname += 'index';
+    if (pathname.endsWith('/')) {
+      pathname += 'index';
+    }
 
     const url = contentSourceEditPattern
       .replace('{{contentSourceUrl}}', contentSourceUrl)
