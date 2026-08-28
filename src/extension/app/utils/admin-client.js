@@ -70,8 +70,12 @@ export class AdminClient {
    * @param {boolean} [del] True if the request was destructive
    */
   #getAction(api, del) {
-    if (api === 'preview' && del) return 'delete';
-    if (api === 'live') return del ? 'unpublish' : 'publish';
+    if (api === 'preview' && del) {
+      return 'delete';
+    }
+    if (api === 'live') {
+      return del ? 'unpublish' : 'publish';
+    }
     return api;
   }
 

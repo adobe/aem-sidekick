@@ -18,7 +18,9 @@ import { log } from './log.js';
  * @returns {string}
  */
 export function getHostDomain(host) {
-  if (host == null || typeof host !== 'string') return '';
+  if (host == null || typeof host !== 'string') {
+    return '';
+  }
   host = host.trim();
   if (!host) {
     return '';

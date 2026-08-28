@@ -76,7 +76,9 @@ const copyHTMLToClipboard = (html) => {
 const htmlSourceToEdition = (main, head, url) => {
   main.querySelectorAll('img').forEach((img) => {
     const originalSrc = img.getAttribute('src');
-    if (!originalSrc) return;
+    if (!originalSrc) {
+      return;
+    }
 
     // convert image urls to absolute urls
     const resolvedUrl = new URL(originalSrc, url);
@@ -189,12 +191,16 @@ const debounce = (func, wait, immed = false) => {
     const ctx = this;
     const later = () => {
       timeout = null;
-      if (!immed) func.apply(ctx, args);
+      if (!immed) {
+        func.apply(ctx, args);
+      }
     };
     const callNow = immed && !timeout;
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
-    if (callNow) func.apply(ctx, args);
+    if (callNow) {
+      func.apply(ctx, args);
+    }
   };
 };
 

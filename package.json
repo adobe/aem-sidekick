@@ -67,11 +67,12 @@
     "mobx": "6.16.1"
   },
   "devDependencies": {
-    "@adobe/eslint-config-helix": "2.0.9",
+    "@adobe/eslint-config-helix": "3.0.30",
     "@adobe/fetch": "4.3.1",
     "@babel/eslint-parser": "7.29.7",
     "@babel/plugin-proposal-decorators": "7.29.7",
     "@custom-elements-manifest/analyzer": "0.11.0",
+    "@eslint/eslintrc": "3.3.6",
     "@open-wc/eslint-config": "12.0.3",
     "@open-wc/testing": "4.0.0",
     "@rollup/plugin-babel": "7.1.0",
@@ -93,7 +94,7 @@
     "babel-plugin-istanbul": "8.0.0",
     "chokidar": "5.0.0",
     "codecov": "3.8.3",
-    "eslint": "8.57.1",
+    "eslint": "9.39.5",
     "eslint-plugin-mobx": "0.0.14",
     "fetch-mock": "9.11.0",
     "fs-extra": "11.4.0",
