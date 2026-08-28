@@ -108,6 +108,12 @@ export class AppStore {
   location;
 
   /**
+   * The current document text selection, or an empty string if there is none.
+   * @type {string}
+   */
+  selection = '';
+
+  /**
    * The sidekick element
    * @type {AEMSidekick}
    */
@@ -190,6 +196,28 @@ export class AppStore {
     this.bulkStore = new BulkStore(this);
     this.keyboardListener = new KeyboardListener();
     this.api = new AdminClient(this);
+    this.updateSelection = this.updateSelection.bind(this);
+  }
+
+  /**
+   * Stores the current non-empty text selection. Kept up to date via a
+   * <code>selectionchange</code> listener because interacting with the sidekick
+   * (e.g. the env switcher) collapses the document selection.
+   */
+  updateSelection() {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+      // the selection was cleared: discard the cache unless the collapse was
+      // caused by moving focus into the sidekick (e.g. opening the env switcher)
+      if (!this.sidekick?.contains(document.activeElement)) {
+        this.selection = '';
+      }
+      return;
+    }
+    const text = selection.toString().replace(/\s+/g, ' ').trim();
+    if (text) {
+      this.selection = text;
+    }
   }
 
   /**
@@ -202,6 +230,8 @@ export class AppStore {
     this.theme = await getConfig('local', 'theme') || 'dark';
     this.sidekick = sidekick;
     this.location = getLocation();
+
+    document.addEventListener('selectionchange', this.updateSelection);
 
     await this.siteStore.initStore(inputConfig);
 
@@ -1331,6 +1361,13 @@ export class AppStore {
         }
       }
 
+      const { preview: { sourceLocation = '' } = {} } = this.status;
+      if (editUrl && this.isDA(sourceLocation) && this.selection) {
+        // persist the current text selection so DA can restore it in the editor
+        const url = new URL(editUrl);
+        url.searchParams.set('select', this.selection);
+        return url;
+      }
       if (editUrl) {
         return new URL(editUrl);
       }
