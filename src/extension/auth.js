@@ -44,11 +44,6 @@ function getRandomId() {
  */
 export async function configureAuthAndCorsHeaders() {
   try {
-    // remove session rules first
-    await chrome.declarativeNetRequest.updateSessionRules({
-      removeRuleIds: (await chrome.declarativeNetRequest.getSessionRules())
-        .map((rule) => rule.id),
-    });
     // find projects with auth tokens and add rules for each
     const projects = await getConfig('session', 'projects') || [];
     const addRulesPromises = projects.map(async ({
@@ -221,12 +216,12 @@ export async function configureAuthAndCorsHeaders() {
       return rules;
     });
 
+    // swap rules in a single atomic update so a request in flight never hits a
+    // window with no auth rule (which would 401 sub-requests and navigations)
+    const removeRuleIds = (await chrome.declarativeNetRequest.getSessionRules())
+      .map((rule) => rule.id);
     const addRules = (await Promise.all(addRulesPromises)).flat();
-    if (addRules.length > 0) {
-      await chrome.declarativeNetRequest.updateSessionRules({
-        addRules,
-      });
-    }
+    await chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds, addRules });
   } catch (e) {
     log.error('addAuthTokensHeaders: unable to set auth token headers', e);
   }
