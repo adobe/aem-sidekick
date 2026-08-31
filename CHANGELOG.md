@@ -1,3 +1,10 @@
+## [7.33.1](https://github.com/adobe/aem-sidekick/compare/v7.33.0...v7.33.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* **auth:** swap session rules atomically to prevent intermittent 401s ([c91f9a5](https://github.com/adobe/aem-sidekick/commit/c91f9a5dbe65730dceabe5dc4cc69015bf91e739))
+
 # [7.33.0](https://github.com/adobe/aem-sidekick/compare/v7.32.14...v7.33.0) (2026-07-08)
 
 
