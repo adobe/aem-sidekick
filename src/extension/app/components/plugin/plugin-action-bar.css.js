@@ -159,6 +159,10 @@ export const style = css`
     cursor: pointer;
     background-color: var(--spectrum2-sidekick-background-close);
     backdrop-filter: var(--sidekick-backdrop-filter);
+    /* Round the close button's own right corners rather than relying on the
+       action bar's clip-path, which host pages that load SWC can invalidate. */
+    border-top-right-radius: var(--spectrum2-sidekick-border-radius);
+    border-bottom-right-radius: var(--spectrum2-sidekick-border-radius);
   }
 
   action-bar .close-button sp-icon {
@@ -199,6 +203,11 @@ export const style = css`
   @media (max-width: 800px) {
     :host {
       border-radius: 0;
+    }
+
+    action-bar .close-button {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
     }
 
     action-bar .logo {
