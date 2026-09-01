@@ -1,3 +1,10 @@
+## [7.33.2](https://github.com/adobe/aem-sidekick/compare/v7.33.1...v7.33.2) (2026-09-01)
+
+
+### Bug Fixes
+
+* env switcher fails on pages with a global sp-menu ([#901](https://github.com/adobe/aem-sidekick/issues/901)) ([e2cc963](https://github.com/adobe/aem-sidekick/commit/e2cc963052470393672df509ff32073faad82452))
+
 ## [7.33.1](https://github.com/adobe/aem-sidekick/compare/v7.33.0...v7.33.1) (2026-08-31)
 
 
