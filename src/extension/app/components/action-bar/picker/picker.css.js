@@ -183,10 +183,17 @@ export const style = css`
     margin-inline-end: 8px;
   }
 
-  sp-menu {
+  sk-menu {
     padding: 8px;
     gap: 4px;
     overflow-x: hidden;
+    pointer-events: initial;
+  }
+
+  /* Hide the inline menu while the picker is closed (mirrors the base
+     :host > sp-menu rule, which no longer matches our sk-menu tag). */
+  :host > sk-menu {
+    display: none;
   }
 
   sp-popover {
