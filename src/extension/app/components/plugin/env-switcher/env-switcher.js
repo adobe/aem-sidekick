@@ -29,6 +29,15 @@ import { EventBus } from '../../../utils/event-bus.js';
  */
 
 /**
+ * Environments whose menu item reports another environment's status: dev and
+ * review show the preview status, the mixer shows the live status.
+ * @type {Object<string, string>}
+ */
+const STATUS_ENVS = {
+  dev: 'preview', review: 'preview', mixer: 'live',
+};
+
+/**
  * Environment Switcher component
  * @element env-switcher
  * @class EnvironmentSwitcher
@@ -94,6 +103,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
       preview: this.appStore.i18n('preview'),
       review: this.appStore.i18n('review'),
       live: this.appStore.i18n('live'),
+      mixer: this.appStore.i18n('mixer'),
       prod: this.appStore.i18n('production'),
     };
 
@@ -108,6 +118,8 @@ export class EnvironmentSwitcher extends ConnectedElement {
       this.currentEnv = 'review';
     } else if (this.appStore.isLive()) {
       this.currentEnv = 'live';
+    } else if (this.appStore.isMixer()) {
+      this.currentEnv = 'mixer';
     } else if (this.appStore.isProd()) {
       this.currentEnv = 'prod';
     }
@@ -126,7 +138,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
    * @returns {string} - The last modified label
    */
   getLastModifiedLabel(id, lastModified, lastModifiedBy) {
-    const envId = ['review', 'dev'].includes(id) ? 'preview' : id;
+    const envId = STATUS_ENVS[id] || id;
     const i18nKey = `${envId}_last_updated${lastModifiedBy ? '_by' : ''}`;
     if (['anonymous', 'system'].includes(lastModifiedBy)) {
       lastModifiedBy = this.appStore.i18n(lastModifiedBy);
@@ -261,6 +273,7 @@ export class EnvironmentSwitcher extends ConnectedElement {
     const previewMenuItem = this.createMenuItem('preview', {}, previewStatus);
     const reviewMenuItem = this.createMenuItem('review', {}, previewStatus);
     const liveMenuItem = this.createMenuItem('live', {}, liveStatus);
+    const mixerMenuItem = this.createMenuItem('mixer', {}, liveStatus);
     const prodMenuItem = this.createMenuItem('prod', {}, liveStatus);
 
     let showProd = false;
@@ -321,6 +334,17 @@ export class EnvironmentSwitcher extends ConnectedElement {
           previewMenuItem,
           reviewMenuItem,
           liveMenuItem,
+        );
+        break;
+      case 'mixer':
+        mixerMenuItem.classList.add('current-env');
+        picker.append(
+          environmentsHeader,
+          editMenuItem,
+          previewMenuItem,
+          reviewMenuItem,
+          liveMenuItem,
+          mixerMenuItem,
         );
         break;
       case 'prod':

@@ -500,6 +500,9 @@
   "live": {
     "message": "라이브"
   },
+  "mixer": {
+    "message": "Mixer"
+  },
   "live_last_updated": {
     "message": "마지막으로 게시됨: $1"
   },

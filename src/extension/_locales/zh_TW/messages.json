@@ -500,6 +500,9 @@
   "live": {
     "message": "即時"
   },
+  "mixer": {
+    "message": "Mixer"
+  },
   "live_last_updated": {
     "message": "上次發佈時間：$1"
   },

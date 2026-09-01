@@ -222,6 +222,54 @@ describe('Test App Store', () => {
     expect(appStore.isReview()).to.be.false;
   });
 
+  it('isMixer()', async () => {
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+    appStore.location.port = '';
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.network';
+    expect(appStore.isMixer()).to.be.true;
+    expect(appStore.isLive()).to.be.false;
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.live';
+    expect(appStore.isMixer()).to.be.false;
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.page';
+    expect(appStore.isMixer()).to.be.false;
+
+    appStore.location.host = 'foobar.com';
+    expect(appStore.isMixer()).to.be.false;
+  });
+
+  it('custom plugin environments on the mixer host', async () => {
+    await appStore.loadContext(sidekickElement, defaultSidekickConfig);
+    appStore.location.port = '';
+    appStore.siteStore.plugins = [
+      {
+        id: 'live-only', title: 'Live only', environments: ['live'], event: 'live-only',
+      },
+      {
+        id: 'mixer-only', title: 'Mixer only', environments: ['mixer'], event: 'mixer-only',
+      },
+    ];
+    appStore.setupCustomPlugins();
+
+    const liveOnly = appStore.customPlugins['live-only'];
+    const mixerOnly = appStore.customPlugins['mixer-only'];
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.live';
+    expect(liveOnly.isVisible()).to.be.true;
+    expect(mixerOnly.isVisible()).to.be.false;
+
+    // the mixer is its own scope, a live plugin has to opt in to show there
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.network';
+    expect(liveOnly.isVisible()).to.be.false;
+    expect(mixerOnly.isVisible()).to.be.true;
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.page';
+    expect(liveOnly.isVisible()).to.be.false;
+    expect(mixerOnly.isVisible()).to.be.false;
+  });
+
   it('isProd()', async () => {
     const config = {
       ...defaultSidekickConfig,
@@ -271,6 +319,9 @@ describe('Test App Store', () => {
     expect(appStore.isProject()).to.be.true;
 
     appStore.location.host = 'main--aem-boilerplate--adobe.aem.page';
+    expect(appStore.isProject()).to.be.true;
+
+    appStore.location.host = 'main--aem-boilerplate--adobe.aem.network';
     expect(appStore.isProject()).to.be.true;
 
     appStore.location.host = 'aem-boilerplate.com';

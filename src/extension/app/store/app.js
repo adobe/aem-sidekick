@@ -406,8 +406,9 @@ export class AppStore {
               dev: appStore.isDev,
               edit: appStore.isEditor,
               preview: appStore.isPreview,
-              live: appStore.isLive,
               review: appStore.isReview,
+              live: appStore.isLive,
+              mixer: appStore.isMixer,
               prod: appStore.isProd,
             };
             return environments.some((env) => envChecks[env] && envChecks[env].call(appStore));
@@ -521,6 +522,15 @@ export class AppStore {
   }
 
   /**
+   * Checks if the current location is a mixer URL.
+   * @returns {boolean} <code>true</code> if mixer URL, else <code>false</code>
+   */
+  isMixer() {
+    const { siteStore, location } = this;
+    return matchProjectHost(siteStore.mixerHost, location.host);
+  }
+
+  /**
    * Checks if the current location is a production URL.
    * @returns {boolean} <code>true</code> if production URL, else <code>false</code>
    */
@@ -545,7 +555,8 @@ export class AppStore {
   isProject() {
     const { siteStore } = this;
     return siteStore.owner && siteStore.repo
-      && (this.isDev() || this.isPreview() || this.isReview() || this.isLive() || this.isProd());
+      && (this.isDev() || this.isPreview() || this.isReview() || this.isLive()
+        || this.isMixer() || this.isProd());
   }
 
   /**
@@ -1299,7 +1310,7 @@ export class AppStore {
   /**
    * Switches to (or opens) a given environment.
    * @param {string} targetEnv One of the following environments:
-   *        edit, dev, preview, live or prod
+   *        edit, dev, preview, review, live, mixer or prod
    * @param {boolean} [open] true if environment should be opened in new tab
    * @param {boolean} [prodCheck] true if the prod site should be checked
    * @fires Sidekick#envswitched
