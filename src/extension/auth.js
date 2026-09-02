@@ -168,7 +168,11 @@ export async function configureAuthAndCorsHeaders() {
           'font',
           'other',
         ];
-        const siteTokenRequestMethods = ['get', 'post', 'head'];
+        const siteTokenRequestMethods = [
+          'get',
+          'post',
+          'head',
+        ];
         rules.push({
           id: getRandomId(),
           priority: 1,
