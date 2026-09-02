@@ -546,7 +546,7 @@ describe('Test auth', () => {
           },
           condition: {
             regexFilter: '^https://[a-z0-9-]+--site--test\\.aem\\.(page|live|reviews)/',
-            requestMethods: ['get', 'post'],
+            requestMethods: ['get', 'post', 'head'],
             resourceTypes: ['main_frame', 'sub_frame', 'script', 'stylesheet', 'image', 'xmlhttprequest', 'media', 'font', 'other'],
           },
         },
@@ -559,7 +559,7 @@ describe('Test auth', () => {
           },
           condition: {
             regexFilter: '^http://localhost:3000/',
-            requestMethods: ['get', 'post'],
+            requestMethods: ['get', 'post', 'head'],
             resourceTypes: ['main_frame', 'sub_frame', 'script', 'stylesheet', 'image', 'xmlhttprequest', 'media', 'font', 'other'],
           },
         },
