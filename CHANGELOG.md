@@ -1,3 +1,10 @@
+## [7.33.3](https://github.com/adobe/aem-sidekick/compare/v7.33.2...v7.33.3) (2026-09-02)
+
+
+### Bug Fixes
+
+* **auth:** inject site token for HEAD requests to delivery domains ([#907](https://github.com/adobe/aem-sidekick/issues/907)) ([f722891](https://github.com/adobe/aem-sidekick/commit/f722891ea56aa1f12736b40bb2b06c7378f11f0e))
+
 ## [7.33.2](https://github.com/adobe/aem-sidekick/compare/v7.33.1...v7.33.2) (2026-09-01)
 
 
