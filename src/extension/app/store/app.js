@@ -53,7 +53,9 @@ import {
 } from '../plugins/bulk/bulk-copy-urls.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
-import { getConfig, setConfig } from '../../config.js';
+import {
+  getConfig, setConfig, removeConfig,
+} from '../../config.js';
 
 /**
  * The sidekick configuration object type
@@ -1201,7 +1203,7 @@ export class AppStore {
             view.remove();
           }
           if (data.detail.event === 'hlx-login') {
-            this.login(true);
+            this.login(data.detail.selectAccount === true);
           }
         }
       });
@@ -1224,6 +1226,9 @@ export class AppStore {
       },
     } = this;
     let view;
+    // only the 401 (not authenticated) view is eligible for auto sign-in;
+    // 403 (forbidden) would loop on the same unauthorized account
+    let autoLoginEligible = false;
     if (isErrorPage(location, document)) {
       // assert viewport meta tag
       if (!document.head.querySelector('meta[name="viewport"]')) {
@@ -1238,6 +1243,7 @@ export class AppStore {
         view = {
           viewer: chrome.runtime.getURL(`views/login/login.html?status=401&auth=${auth}`),
         };
+        autoLoginEligible = true;
       }
       // 403
       if (document.querySelector('body > pre').textContent.trim() === '403 Forbidden') {
@@ -1245,6 +1251,12 @@ export class AppStore {
           viewer: chrome.runtime.getURL('views/login/login.html?status=403'),
         };
       }
+    }
+
+    // auto sign-in without showing the dialog if the user opted in previously
+    if (autoLoginEligible && await getConfig('local', 'autoLogin') === true) {
+      this.login();
+      return;
     }
 
     const searchParams = new URLSearchParams(search);
@@ -1447,9 +1459,9 @@ export class AppStore {
 
   /**
    * Logs the user in.
-   * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
+   * @param {boolean} [selectAccount] <code>true</code> to allow user to select account (optional)
    */
-  login(selectAccount) {
+  login(selectAccount = false) {
     this.setState(STATE.LOGGING_IN);
     const loginUrl = this.api.createUrl('login');
     loginUrl.searchParams.set('extensionId', window.chrome?.runtime?.id);
@@ -1505,6 +1517,8 @@ export class AppStore {
    * Logs the user out.
    */
   logout() {
+    // clear the auto sign-in preference to avoid an auto-relogin loop after logout
+    removeConfig('local', 'autoLogin');
     this.setState(STATE.LOGGING_OUT);
     const logoutUrl = this.api.createUrl('logout');
     logoutUrl.searchParams.set('extensionId', window.chrome?.runtime?.id);
@@ -1551,7 +1565,7 @@ export class AppStore {
       const { exp } = profile;
       if (now > exp * 1000) {
         // token is expired
-        this.login(true);
+        this.login();
         this.sidekick.addEventListener(EXTERNAL_EVENTS.STATUS_FETCHED, () => {
           resolve();
         }, { once: true });

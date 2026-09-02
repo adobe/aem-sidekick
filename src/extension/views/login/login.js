@@ -13,6 +13,10 @@ import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import '@spectrum-web-components/theme/sp-theme.js';
 import '@spectrum-web-components/dialog/sp-dialog-base.js';
+import '@spectrum-web-components/checkbox/sp-checkbox.js';
+import '@spectrum-web-components/tooltip/sp-tooltip.js';
+import '@spectrum-web-components/overlay/sp-overlay.js';
+import '@spectrum-web-components/overlay/overlay-trigger.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-light-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-dark-core-tokens.js';
 import '@spectrum-web-components/theme/spectrum-two/scale-medium-core-tokens.js';
@@ -21,7 +25,7 @@ import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';
 import { style } from './login.css.js';
 import { spectrum2 } from '../../app/spectrum-2.css.js';
 import sampleRUM from '../../utils/rum.js';
-import { getConfig } from '../../config.js';
+import { getConfig, setConfig, removeConfig } from '../../config.js';
 import { ICONS } from '../../app/constants.js';
 
 /**
@@ -48,6 +52,13 @@ export class LoginView extends LitElement {
   @property({ type: String })
   accessor theme;
 
+  /**
+   * The current auto sign-in preference (reflected by the checkbox).
+   * @type {boolean}
+   */
+  @property({ type: Boolean })
+  accessor autoLogin = false;
+
   async connectedCallback() {
     super.connectedCallback();
 
@@ -64,28 +75,50 @@ export class LoginView extends LitElement {
     const params = new URL(window.location.href).searchParams;
     this.status = params.get('status');
     this.auth = params.get('auth');
-    this.title = i18n(this.languageDict, 'site_protected');
+    this.heading = i18n(this.languageDict, 'site_protected');
     this.description = this.status === '403'
       ? i18n(this.languageDict, 'site_forbidden')
       : i18n(this.languageDict, this.auth === 'false'
         ? 'site_login_required'
         : 'site_relogin_required');
     this.buttonText = i18n(this.languageDict, 'user_login');
+    this.autoLoginLabel = i18n(this.languageDict, 'site_login_auto');
+    this.hint = i18n(this.languageDict, 'site_login_hint');
+
+    // reflect the stored auto sign-in preference in the checkbox
+    this.autoLogin = await getConfig('local', 'autoLogin') === true;
   }
 
-  onClicked({ target: button }) {
-    const customEventDetail = {
+  /**
+   * Triggers the login flow in the parent window.
+   * @param {boolean} selectAccount <code>true</code> to allow user to select account
+   */
+  login(selectAccount) {
+    window.parent.postMessage({
       detail: {
         event: 'hlx-login',
+        selectAccount,
       },
-    };
-    window.parent.postMessage(customEventDetail, '*');
+    }, '*');
 
-    button.closest('sp-dialog-base').removeAttribute('open');
+    this.shadowRoot?.querySelector('sp-dialog-base')?.removeAttribute('open');
     sampleRUM('click', {
       source: 'sidekick',
       target: 'site:logged-in',
     });
+  }
+
+  onClicked({ altKey }) {
+    // hold down alt/option key (or 403) to select a different account
+    this.login(this.status === '403' || altKey === true);
+  }
+
+  onAutoLoginChanged({ target: checkbox }) {
+    if (checkbox.checked) {
+      setConfig('local', { autoLogin: true });
+    } else {
+      removeConfig('local', 'autoLogin');
+    }
   }
 
   render() {
@@ -94,10 +127,18 @@ export class LoginView extends LitElement {
         <div class="container">
           <sp-dialog-base slot="click-content" class=${this.theme} open>
             <div class="content">
+              <overlay-trigger placement="right">
+                <sp-icon slot="trigger" id="login-hint" label=${this.hint}>
+                  ${ICONS.INFO}
+                </sp-icon>
+                <sp-tooltip slot="hover-content">
+                  ${this.hint}
+                </sp-tooltip>
+              </overlay-trigger>
               <sp-icon slot="icon">
                 ${ICONS.USER_ICON_LARGE}
               </sp-icon>
-              <h2>${this.title}</h2>
+              <h2>${this.heading}</h2>
               <span>${this.description}</span>
               <sp-button
                 id="login"
@@ -108,6 +149,14 @@ export class LoginView extends LitElement {
               >
                 ${this.buttonText}
               </sp-button>
+              <sp-checkbox
+                id="auto-login"
+                size="m"
+                ?checked=${this.autoLogin}
+                @change=${this.onAutoLoginChanged}
+              >
+                ${this.autoLoginLabel}
+              </sp-checkbox>
             </div>
           </sp-dialog-base>
         </div>

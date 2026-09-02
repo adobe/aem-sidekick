@@ -680,6 +680,12 @@
   "site_login_required": {
     "message": "Inicie sesión para continuar."
   },
+  "site_login_hint": {
+    "message": "Mantenga pulsada la tecla Alt (Opción) mientras hace clic en «Iniciar sesión» para seleccionar una cuenta específica."
+  },
+  "site_login_auto": {
+    "message": "No volver a mostrar este cuadro de diálogo"
+  },
   "site_protected": {
     "message": "Este sitio está protegido"
   },

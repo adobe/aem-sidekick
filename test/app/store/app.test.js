@@ -2004,7 +2004,8 @@ describe('Test App Store', () => {
       instance.sidekick.addEventListener.callsFake((event, callback) => callback());
 
       await instance.validateSession();
-      expect(instance.login.calledOnceWith(true)).to.be.true;
+      expect(instance.login.calledOnce).to.be.true;
+      expect(instance.login.calledWith(true)).to.be.false;
     });
 
     it('should resolve immediately if token is not expired', async () => {

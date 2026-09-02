@@ -680,6 +680,12 @@
   "site_login_required": {
     "message": "請登入以繼續。"
   },
+  "site_login_hint": {
+    "message": "按一下「登入」時按住 Alt (Option) 鍵可選擇特定帳戶。"
+  },
+  "site_login_auto": {
+    "message": "不再顯示此對話方塊"
+  },
   "site_protected": {
     "message": "此網站已受保護"
   },

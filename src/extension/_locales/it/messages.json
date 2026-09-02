@@ -680,6 +680,12 @@
   "site_login_required": {
     "message": "Accedi per continuare."
   },
+  "site_login_hint": {
+    "message": "Tieni premuto il tasto Alt (Opzione) mentre fai clic su «Accedi» per selezionare un account specifico."
+  },
+  "site_login_auto": {
+    "message": "Non mostrare più questa finestra di dialogo"
+  },
   "site_protected": {
     "message": "Questo sito è protetto"
   },

@@ -680,6 +680,12 @@
   "site_login_required": {
     "message": "Melden Sie sich an, um fortzufahren."
   },
+  "site_login_hint": {
+    "message": "Halten Sie beim Klicken auf „Anmelden“ die Alt-Taste (Wahltaste) gedrückt, um ein bestimmtes Konto auszuwählen."
+  },
+  "site_login_auto": {
+    "message": "Diesen Dialog nicht erneut anzeigen"
+  },
   "site_protected": {
     "message": "Diese Site ist geschützt."
   },
