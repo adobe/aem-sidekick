@@ -168,13 +168,14 @@ export async function configureAuthAndCorsHeaders() {
           'font',
           'other',
         ];
+        const siteTokenRequestMethods = ['get', 'post', 'head'];
         rules.push({
           id: getRandomId(),
           priority: 1,
           action: siteTokenAction,
           condition: {
             regexFilter: `^https://[a-z0-9-]+--${repo}--${owner}\\.aem\\.(page|live|reviews)/`,
-            requestMethods: ['get', 'post'],
+            requestMethods: siteTokenRequestMethods,
             resourceTypes: siteTokenResourceTypes,
           },
         });
@@ -184,7 +185,7 @@ export async function configureAuthAndCorsHeaders() {
           action: siteTokenAction,
           condition: {
             regexFilter: '^http://localhost:3000/',
-            requestMethods: ['get', 'post'],
+            requestMethods: siteTokenRequestMethods,
             resourceTypes: siteTokenResourceTypes,
           },
         });
