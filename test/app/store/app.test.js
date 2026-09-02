@@ -1749,6 +1749,23 @@ describe('Test App Store', () => {
       expect(frameUrl.searchParams.get('url')).to.equal('https://main--aem-boilerplate--adobe.aem.page/protected');
       expect(frameUrl.searchParams.get('status')).to.equal('403');
     });
+
+    it('auto signs in on 401 without showing the dialog if the user opted in', async () => {
+      isProjectStub.returns(true);
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/protected');
+      const loginStub = sinon.stub(instance, 'login');
+      // opt into auto sign-in
+      sidekickTest.localStorageStub.resolves({ onboarded: true, autoLogin: true });
+
+      document.body.innerHTML = '<pre>401 Unauthorized</pre>';
+
+      getViewOverlayStub.resetHistory();
+      await instance.showView();
+
+      expect(loginStub.calledOnce).to.be.true;
+      // the login dialog view should not be created
+      expect(getViewOverlayStub.notCalled).to.be.true;
+    });
   });
 
   describe('getProfile', () => {
