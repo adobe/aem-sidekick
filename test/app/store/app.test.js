@@ -1750,7 +1750,7 @@ describe('Test App Store', () => {
       expect(frameUrl.searchParams.get('status')).to.equal('403');
     });
 
-    it('clears the auto sign-in attempt when the delivery page loads successfully', async () => {
+    it('clears the auto-login attempt when the delivery page loads successfully', async () => {
       isProjectStub.returns(true);
       instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/');
       instance.siteStore.owner = 'adobe';

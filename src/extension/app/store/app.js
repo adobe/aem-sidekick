@@ -1248,8 +1248,7 @@ export class AppStore {
         };
       }
     } else {
-      // the delivery page loaded successfully, so any pending auto sign-in for this
-      // project worked; clear the one-shot guard (the login view is not present here)
+      // page loaded successfully, clear the one-shot guard
       setAutoLoginAttempted(owner, repo, false);
     }
 
@@ -1511,7 +1510,7 @@ export class AppStore {
    * Logs the user out.
    */
   logout() {
-    // clear the auto sign-in preference to avoid an auto-relogin loop after logout
+    // clear the auto-login preference to avoid a login loop
     setAutoLogin(this.siteStore.owner, this.siteStore.repo, false);
     this.setState(STATE.LOGGING_OUT);
     const logoutUrl = this.api.createUrl('logout');

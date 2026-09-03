@@ -79,7 +79,7 @@ describe('Login View', () => {
     expect(postSpy.firstCall.args[0].detail.selectAccount).to.be.true;
   });
 
-  it('stores the auto sign-in preference per project when toggled', async () => {
+  it('stores the auto-login preference per project when toggled', async () => {
     const el = await mountView();
     el.org = 'adobe';
     el.site = 'aem-boilerplate';
@@ -158,7 +158,7 @@ describe('Login View', () => {
     expect(el.autoLoginInProgress).to.be.false;
   });
 
-  it('does not auto sign in on a 403', async () => {
+  it('does not auto-login on a 403', async () => {
     const el = await mountView();
     el.status = '403';
     el.org = 'adobe';

@@ -36,10 +36,10 @@ async function storeProjectId(area, prop, id, add) {
 }
 
 /**
- * Returns whether auto sign-in is enabled for the given project.
+ * Returns whether auto-login is enabled for the given project.
  * @param {string} org The organization
  * @param {string} site The site
- * @returns {Promise<boolean>} <code>true</code> if auto sign-in is enabled
+ * @returns {Promise<boolean>} <code>true</code> if auto-login is enabled
  */
 export async function isAutoLogin(org, site) {
   const autoLogin = await getConfig('local', 'autoLogin') || [];
@@ -47,10 +47,10 @@ export async function isAutoLogin(org, site) {
 }
 
 /**
- * Enables or disables auto sign-in for the given project.
+ * Enables or disables auto-login for the given project.
  * @param {string} org The organization
  * @param {string} site The site
- * @param {boolean} enabled <code>true</code> to enable auto sign-in
+ * @param {boolean} enabled <code>true</code> to enable auto-login
  * @returns {Promise<void>}
  */
 export async function setAutoLogin(org, site, enabled) {
@@ -58,7 +58,7 @@ export async function setAutoLogin(org, site, enabled) {
 }
 
 /**
- * Returns whether an auto sign-in has already been attempted for the given
+ * Returns whether an auto-login has already been attempted for the given
  * project (used to break a repeated-401 loop). Stored in local (not session)
  * storage so it is also reachable from the content script, which clears it
  * once the delivery page loads successfully.
@@ -72,7 +72,7 @@ export async function isAutoLoginAttempted(org, site) {
 }
 
 /**
- * Records or clears an auto sign-in attempt for the given project.
+ * Records or clears an auto-login attempt for the given project.
  * @param {string} org The organization
  * @param {string} site The site
  * @param {boolean} attempted <code>true</code> to record, <code>false</code> to clear

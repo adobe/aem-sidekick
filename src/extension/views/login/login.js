@@ -59,14 +59,14 @@ export class LoginView extends LitElement {
   accessor theme;
 
   /**
-   * The current auto sign-in preference (reflected by the checkbox).
+   * The current auto-login preference (reflected by the checkbox).
    * @type {boolean}
    */
   @property({ type: Boolean })
   accessor autoLogin = false;
 
   /**
-   * Whether an auto sign-in is in progress (dialog stays hidden).
+   * Whether an auto-login is in progress (dialog stays hidden).
    * @type {boolean}
    */
   @property({ type: Boolean })
@@ -115,13 +115,13 @@ export class LoginView extends LitElement {
   buttonText;
 
   /**
-   * The auto sign-in checkbox label.
+   * The auto-login checkbox label.
    * @type {string}
    */
   autoLoginLabel;
 
   /**
-   * The auto sign-in hint text.
+   * The auto-login hint text.
    * @type {string}
    */
   hint;
@@ -154,7 +154,7 @@ export class LoginView extends LitElement {
     this.autoLoginLabel = i18n(this.languageDict, 'site_login_auto');
     this.hint = i18n(this.languageDict, 'site_login_hint');
 
-    // reflect the stored auto sign-in preference in the checkbox
+    // reflect the stored auto-login preference in the checkbox
     this.autoLogin = await isAutoLogin(this.org, this.site);
 
     await this.checkAutoLogin();
