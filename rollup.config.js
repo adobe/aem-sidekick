@@ -83,6 +83,8 @@ function rewriteSPTagNames() {
           file.code = file.code.replaceAll('sp-action-menu', 'sk-action-menu');
           file.code = file.code.replaceAll('sp-action-button', 'sk-action-button');
           file.code = file.code.replaceAll('sp-progress-circle', 'sk-progress-circle');
+          file.code = file.code.replaceAll('sp-checkbox', 'sk-checkbox');
+          file.code = file.code.replaceAll('sp-tooltip', 'sk-tooltip');
         }
       }
     },
