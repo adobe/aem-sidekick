@@ -53,9 +53,8 @@ import {
 } from '../plugins/bulk/bulk-copy-urls.js';
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
-import {
-  getConfig, setConfig, removeConfig,
-} from '../../config.js';
+import { getConfig, setConfig } from '../../config.js';
+import { setAutoLogin, setAutoLoginAttempted } from '../../auto-login.js';
 
 /**
  * The sidekick configuration object type
@@ -1226,9 +1225,7 @@ export class AppStore {
       },
     } = this;
     let view;
-    // only the 401 (not authenticated) view is eligible for auto sign-in;
-    // 403 (forbidden) would loop on the same unauthorized account
-    let autoLoginEligible = false;
+    const { owner, repo } = this.siteStore;
     if (isErrorPage(location, document)) {
       // assert viewport meta tag
       if (!document.head.querySelector('meta[name="viewport"]')) {
@@ -1241,22 +1238,19 @@ export class AppStore {
       // 401
       if (document.querySelector('body > pre').textContent.trim() === '401 Unauthorized') {
         view = {
-          viewer: chrome.runtime.getURL(`views/login/login.html?status=401&auth=${auth}`),
+          viewer: chrome.runtime.getURL(`views/login/login.html?status=401&auth=${auth}&org=${owner}&site=${repo}`),
         };
-        autoLoginEligible = true;
       }
       // 403
       if (document.querySelector('body > pre').textContent.trim() === '403 Forbidden') {
         view = {
-          viewer: chrome.runtime.getURL('views/login/login.html?status=403'),
+          viewer: chrome.runtime.getURL(`views/login/login.html?status=403&org=${owner}&site=${repo}`),
         };
       }
-    }
-
-    // auto sign-in without showing the dialog if the user opted in previously
-    if (autoLoginEligible && await getConfig('local', 'autoLogin') === true) {
-      this.login();
-      return;
+    } else {
+      // the delivery page loaded successfully, so any pending auto sign-in for this
+      // project worked; clear the one-shot guard (the login view is not present here)
+      setAutoLoginAttempted(owner, repo, false);
     }
 
     const searchParams = new URLSearchParams(search);
@@ -1518,7 +1512,7 @@ export class AppStore {
    */
   logout() {
     // clear the auto sign-in preference to avoid an auto-relogin loop after logout
-    removeConfig('local', 'autoLogin');
+    setAutoLogin(this.siteStore.owner, this.siteStore.repo, false);
     this.setState(STATE.LOGGING_OUT);
     const logoutUrl = this.api.createUrl('logout');
     logoutUrl.searchParams.set('extensionId', window.chrome?.runtime?.id);

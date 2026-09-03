@@ -25,7 +25,13 @@ import { fetchLanguageDict, getLanguage, i18n } from '../../app/utils/i18n.js';
 import { style } from './login.css.js';
 import { spectrum2 } from '../../app/spectrum-2.css.js';
 import sampleRUM from '../../utils/rum.js';
-import { getConfig, setConfig, removeConfig } from '../../config.js';
+import { getConfig } from '../../config.js';
+import {
+  isAutoLogin,
+  setAutoLogin,
+  isAutoLoginAttempted,
+  setAutoLoginAttempted,
+} from '../../auto-login.js';
 import { ICONS } from '../../app/constants.js';
 
 /**
@@ -59,6 +65,67 @@ export class LoginView extends LitElement {
   @property({ type: Boolean })
   accessor autoLogin = false;
 
+  /**
+   * Whether an auto sign-in is in progress (dialog stays hidden).
+   * @type {boolean}
+   */
+  @property({ type: Boolean })
+  accessor autoLoginInProgress = false;
+
+  /**
+   * The error status (<code>401</code> or <code>403</code>).
+   * @type {string}
+   */
+  status;
+
+  /**
+   * Whether the user was previously authenticated (<code>true</code>/<code>false</code>).
+   * @type {string}
+   */
+  auth;
+
+  /**
+   * The organization of the current project.
+   * @type {string}
+   */
+  org;
+
+  /**
+   * The site of the current project.
+   * @type {string}
+   */
+  site;
+
+  /**
+   * The dialog heading.
+   * @type {string}
+   */
+  heading;
+
+  /**
+   * The dialog description.
+   * @type {string}
+   */
+  description;
+
+  /**
+   * The sign-in button label.
+   * @type {string}
+   */
+  buttonText;
+
+  /**
+   * The auto sign-in checkbox label.
+   * @type {string}
+   */
+  autoLoginLabel;
+
+  /**
+   * The auto sign-in hint text.
+   * @type {string}
+   */
+  hint;
+
   async connectedCallback() {
     super.connectedCallback();
 
@@ -75,6 +142,8 @@ export class LoginView extends LitElement {
     const params = new URL(window.location.href).searchParams;
     this.status = params.get('status');
     this.auth = params.get('auth');
+    this.org = params.get('org');
+    this.site = params.get('site');
     this.heading = i18n(this.languageDict, 'site_protected');
     this.description = this.status === '403'
       ? i18n(this.languageDict, 'site_forbidden')
@@ -86,14 +155,44 @@ export class LoginView extends LitElement {
     this.hint = i18n(this.languageDict, 'site_login_hint');
 
     // reflect the stored auto sign-in preference in the checkbox
-    this.autoLogin = await getConfig('local', 'autoLogin') === true;
+    this.autoLogin = await isAutoLogin(this.org, this.site);
+
+    await this.checkAutoLogin();
+  }
+
+  /**
+   * Signs in automatically on a 401 page if the user opted in for this project,
+   * but only once per session: if a previous attempt did not grant access (e.g. no
+   * permission), the reload lands here again, so the preference is forgotten and the
+   * dialog is shown instead of looping on repeated 401 responses.
+   * @returns {Promise<void>}
+   */
+  async checkAutoLogin() {
+    if (this.status !== '401' || !this.autoLogin) {
+      return;
+    }
+    if (await isAutoLoginAttempted(this.org, this.site)) {
+      await setAutoLoginAttempted(this.org, this.site, false);
+      await setAutoLogin(this.org, this.site, false);
+      this.autoLogin = false;
+    } else {
+      this.autoLoginInProgress = true;
+      await this.login(false);
+    }
   }
 
   /**
    * Triggers the login flow in the parent window.
    * @param {boolean} selectAccount <code>true</code> to allow user to select account
+   * @returns {Promise<void>}
    */
-  login(selectAccount) {
+  async login(selectAccount) {
+    // when opted in on a 401 page, record the attempt so a failed sign-in (manual
+    // or automatic) isn't followed by another automatic one
+    if (this.status === '401' && this.autoLogin) {
+      await setAutoLoginAttempted(this.org, this.site, true);
+    }
+
     window.parent.postMessage({
       detail: {
         event: 'hlx-login',
@@ -114,14 +213,16 @@ export class LoginView extends LitElement {
   }
 
   onAutoLoginChanged({ target: checkbox }) {
-    if (checkbox.checked) {
-      setConfig('local', { autoLogin: true });
-    } else {
-      removeConfig('local', 'autoLogin');
-    }
+    // keep the property in sync so login() sees the current preference
+    this.autoLogin = checkbox.checked;
+    setAutoLogin(this.org, this.site, checkbox.checked);
   }
 
   render() {
+    // signing in automatically, keep the dialog hidden
+    if (this.autoLoginInProgress) {
+      return html`<theme-wrapper theme=${this.theme}></theme-wrapper>`;
+    }
     return html`
       <theme-wrapper theme=${this.theme}>
         <div class="container">
