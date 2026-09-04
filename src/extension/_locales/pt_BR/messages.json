@@ -680,6 +680,12 @@
   "site_login_required": {
     "message": "Faça logon para continuar."
   },
+  "site_login_hint": {
+    "message": "Mantenha pressionada a tecla Alt (Option) ao clicar em «Fazer logon» para selecionar uma conta específica."
+  },
+  "site_login_auto": {
+    "message": "Não mostrar esta caixa de diálogo novamente"
+  },
   "site_protected": {
     "message": "Este site está protegido"
   },

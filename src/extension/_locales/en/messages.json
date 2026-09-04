@@ -484,6 +484,12 @@
     "site_login_required": {
       "message": "Please sign in to continue."
     },
+    "site_login_hint": {
+      "message": "Hold down the Alt (Option) key while clicking “Sign in” to select a specific account."
+    },
+    "site_login_auto": {
+      "message": "Don't show this dialog again"
+    },
     "site_relogin_required": {
       "message": "Access expired. Please sign in again to continue."
     },

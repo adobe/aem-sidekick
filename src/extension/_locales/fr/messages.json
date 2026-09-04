@@ -680,6 +680,12 @@
   "site_login_required": {
     "message": "Connectez-vous pour continuer."
   },
+  "site_login_hint": {
+    "message": "Maintenez la touche Alt (Option) enfoncée en cliquant sur « Se connecter » pour sélectionner un compte spécifique."
+  },
+  "site_login_auto": {
+    "message": "Ne plus afficher cette boîte de dialogue"
+  },
   "site_protected": {
     "message": "Site protégé"
   },

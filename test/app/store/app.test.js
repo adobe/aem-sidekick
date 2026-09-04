@@ -1749,6 +1749,22 @@ describe('Test App Store', () => {
       expect(frameUrl.searchParams.get('url')).to.equal('https://main--aem-boilerplate--adobe.aem.page/protected');
       expect(frameUrl.searchParams.get('status')).to.equal('403');
     });
+
+    it('clears the auto-login attempt when the delivery page loads successfully', async () => {
+      isProjectStub.returns(true);
+      instance.location = new URL('https://main--aem-boilerplate--adobe.aem.page/');
+      instance.siteStore.owner = 'adobe';
+      instance.siteStore.repo = 'aem-boilerplate';
+      sinon.stub(instance, 'findViews').returns([]);
+      const removeLocal = sinon.spy(chrome.storage.local, 'remove');
+
+      // no error <pre>, so the page is not an error page
+      document.body.innerHTML = '';
+      await instance.showView();
+
+      // the attempt is cleared asynchronously (fire-and-forget)
+      await waitUntil(() => removeLocal.calledWith('autoLoginAttempt'));
+    });
   });
 
   describe('getProfile', () => {
@@ -2004,7 +2020,8 @@ describe('Test App Store', () => {
       instance.sidekick.addEventListener.callsFake((event, callback) => callback());
 
       await instance.validateSession();
-      expect(instance.login.calledOnceWith(true)).to.be.true;
+      expect(instance.login.calledOnce).to.be.true;
+      expect(instance.login.calledWith(true)).to.be.false;
     });
 
     it('should resolve immediately if token is not expired', async () => {

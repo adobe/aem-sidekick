@@ -680,6 +680,12 @@
   "site_login_required": {
     "message": "请登录以继续。"
   },
+  "site_login_hint": {
+    "message": "单击“登录”时按住 Alt (Option) 键可选择特定帐户。"
+  },
+  "site_login_auto": {
+    "message": "不再显示此对话框"
+  },
   "site_protected": {
     "message": "此网站受保护"
   },

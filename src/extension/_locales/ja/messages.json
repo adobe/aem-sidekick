@@ -680,6 +680,12 @@
   "site_login_required": {
     "message": "続行するには、ログインしてください。"
   },
+  "site_login_hint": {
+    "message": "特定のアカウントを選択するには、Alt（Option）キーを押しながら「サインイン」をクリックします。"
+  },
+  "site_login_auto": {
+    "message": "このダイアログを再表示しない"
+  },
   "site_protected": {
     "message": "このサイトは保護されています"
   },
