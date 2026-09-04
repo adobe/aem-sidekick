@@ -108,7 +108,9 @@ async function waitForSidekick(tabId, timeout = 10000) {
   while (Date.now() - start < timeout) {
     try {
       const resp = await chrome.tabs.sendMessage(tabId, { action: 'ping' });
-      if (resp) return;
+      if (resp) {
+        return;
+      }
     } catch (e) {
       // sidekick not ready yet
     }
@@ -434,7 +436,9 @@ async function enableDisableProject(tab) {
   }
 
   const project = await getProject(config);
-  if (!project) return;
+  if (!project) {
+    return;
+  }
 
   await showSidekickIfHidden();
   const enabling = project.disabled;

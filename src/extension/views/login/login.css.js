@@ -27,6 +27,7 @@ export const style = css`
   }
 
   .container .content {
+    position: relative;
     width: 90vw;
     max-width: 420px;
     height: 378px;
@@ -34,11 +35,11 @@ export const style = css`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 0 32px;
+    padding: 0 32px 32px;
     box-sizing: border-box;
   }
     
-  sp-icon {
+  sp-icon[slot="icon"] {
     position: relative;
     padding: 0;
     width: 164px;
@@ -58,5 +59,20 @@ export const style = css`
     font-size: 16px;
     line-height: 20px;
     text-align: center;
+  }
+
+  sp-checkbox {
+    margin-top: 16px;
+  }
+
+  sp-icon#login-hint {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 20px;
+    height: 20px;
+    color: var(--spectrum2-sidekick-color);
+    opacity: 0.6;
+    cursor: default;
   }
 `;

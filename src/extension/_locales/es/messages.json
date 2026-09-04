@@ -521,14 +521,14 @@
   "logging_out_state": {
     "message": "Cerrando sesión..."
   },
-  "login_required_state": {
-    "message": "Inicie sesión para continuar"
-  },
   "login_hint_401": {
     "message": "Iniciar sesión con AEM Sidekick"
   },
   "login_hint_403": {
     "message": "Cambiar a un usuario diferente con AEM Sidekick"
+  },
+  "login_required_state": {
+    "message": "Inicie sesión para continuar"
   },
   "login_wait": {
     "message": "Inicie sesión..."
@@ -682,6 +682,12 @@
   },
   "site_login_required": {
     "message": "Inicie sesión para continuar."
+  },
+  "site_login_hint": {
+    "message": "Mantenga pulsada la tecla Alt (Opción) mientras hace clic en «Iniciar sesión» para seleccionar una cuenta específica."
+  },
+  "site_login_auto": {
+    "message": "No volver a mostrar este cuadro de diálogo"
   },
   "site_protected": {
     "message": "Este sitio está protegido"

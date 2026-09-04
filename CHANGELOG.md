@@ -1,3 +1,31 @@
+# [7.34.0](https://github.com/adobe/aem-sidekick/compare/v7.33.3...v7.34.0) (2026-09-04)
+
+
+### Features
+
+* **login:** streamline sign-in flow with auto sign-in option ([#905](https://github.com/adobe/aem-sidekick/issues/905)) ([d0d10bf](https://github.com/adobe/aem-sidekick/commit/d0d10bf4b93b5268787023054b3080312d6dc63a))
+
+## [7.33.3](https://github.com/adobe/aem-sidekick/compare/v7.33.2...v7.33.3) (2026-09-02)
+
+
+### Bug Fixes
+
+* **auth:** inject site token for HEAD requests to delivery domains ([#907](https://github.com/adobe/aem-sidekick/issues/907)) ([f722891](https://github.com/adobe/aem-sidekick/commit/f722891ea56aa1f12736b40bb2b06c7378f11f0e))
+
+## [7.33.2](https://github.com/adobe/aem-sidekick/compare/v7.33.1...v7.33.2) (2026-09-01)
+
+
+### Bug Fixes
+
+* env switcher fails on pages with a global sp-menu ([#901](https://github.com/adobe/aem-sidekick/issues/901)) ([e2cc963](https://github.com/adobe/aem-sidekick/commit/e2cc963052470393672df509ff32073faad82452))
+
+## [7.33.1](https://github.com/adobe/aem-sidekick/compare/v7.33.0...v7.33.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* **auth:** swap session rules atomically to prevent intermittent 401s ([c91f9a5](https://github.com/adobe/aem-sidekick/commit/c91f9a5dbe65730dceabe5dc4cc69015bf91e739))
+
 # [7.33.0](https://github.com/adobe/aem-sidekick/compare/v7.32.14...v7.33.0) (2026-07-08)
 
 

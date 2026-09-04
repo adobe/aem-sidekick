@@ -164,8 +164,9 @@ export class LoginButton extends ConnectedElement {
     );
   }
 
-  login() {
-    this.appStore.login(true);
+  login(e) {
+    // hold down alt/option key to select a different account
+    this.appStore.login(e?.altKey === true);
   }
 
   logout() {

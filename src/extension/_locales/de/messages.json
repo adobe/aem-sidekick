@@ -521,14 +521,14 @@
   "logging_out_state": {
     "message": "Abmeldung erfolgt …"
   },
-  "login_required_state": {
-    "message": "Melden Sie sich an, um fortzufahren"
-  },
   "login_hint_401": {
     "message": "Mit AEM Sidekick anmelden"
   },
   "login_hint_403": {
-    "message": "Mit AEM Sidekick zu einem anderen Benutzer wechseln"
+    "message": "Mit AEM Sidekick zu einer anderen Person wechseln"
+  },
+  "login_required_state": {
+    "message": "Melden Sie sich an, um fortzufahren"
   },
   "login_wait": {
     "message": "Bitte melden Sie sich an …"
@@ -682,6 +682,12 @@
   },
   "site_login_required": {
     "message": "Melden Sie sich an, um fortzufahren."
+  },
+  "site_login_hint": {
+    "message": "Halten Sie beim Klicken auf „Anmelden“ die Alt-Taste (Wahltaste) gedrückt, um ein bestimmtes Konto auszuwählen."
+  },
+  "site_login_auto": {
+    "message": "Diesen Dialog nicht erneut anzeigen"
   },
   "site_protected": {
     "message": "Diese Site ist geschützt."

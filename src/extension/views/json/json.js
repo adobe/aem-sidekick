@@ -380,8 +380,12 @@ export class JSONView extends LitElement {
     return rows.map((row) => {
       const newRow = {};
       // Preserve diff and line information
-      if (row.diff) newRow.diff = row.diff;
-      if (row.line) newRow.line = row.line;
+      if (row.diff) {
+        newRow.diff = row.diff;
+      }
+      if (row.line) {
+        newRow.line = row.line;
+      }
       // Sort other columns according to headers
       headers.forEach((key) => {
         newRow[key] = row[key] || '';
@@ -562,7 +566,9 @@ export class JSONView extends LitElement {
    */
   async copyColumnValues(columnName, button) {
     const data = this.diffMode ? this.diffData?.data : this.filteredData?.data;
-    if (!data?.length) return;
+    if (!data?.length) {
+      return;
+    }
 
     // Get hostname prefix from current URL
     let hostnamePrefix = '';
@@ -576,7 +582,9 @@ export class JSONView extends LitElement {
     const textToCopy = data
       .map((row) => {
         const value = row[columnName];
-        if (!value) return null;
+        if (!value) {
+          return null;
+        }
         const valueStr = String(value);
         return valueStr.startsWith('/') && !valueStr.startsWith('//') && hostnamePrefix
           ? hostnamePrefix + valueStr
@@ -585,7 +593,9 @@ export class JSONView extends LitElement {
       .filter(Boolean)
       .join('\n');
 
-    if (!textToCopy) return;
+    if (!textToCopy) {
+      return;
+    }
 
     try {
       await navigator.clipboard.writeText(textToCopy);
@@ -873,7 +883,9 @@ export class JSONView extends LitElement {
 
       return allData;
     } finally {
-      if (this.isLoading) this.isLoading = false;
+      if (this.isLoading) {
+        this.isLoading = false;
+      }
     }
   }
 

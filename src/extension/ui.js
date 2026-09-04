@@ -197,7 +197,9 @@ export async function updateUI(context = {}) {
 // add listener for clicks on context menu item
 if (chrome.contextMenus) {
   chrome.contextMenus.onClicked.addListener(async ({ menuItemId }, tab) => {
-    if (!tab.url) return;
+    if (!tab.url) {
+      return;
+    }
     internalActions[menuItemId](tab);
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },

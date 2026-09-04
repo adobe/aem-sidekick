@@ -521,14 +521,14 @@
   "logging_out_state": {
     "message": "Saindo..."
   },
-  "login_required_state": {
-    "message": "Faça logon para continuar"
-  },
   "login_hint_401": {
     "message": "Fazer logon com o AEM Sidekick"
   },
   "login_hint_403": {
     "message": "Alternar para um usuário diferente com o AEM Sidekick"
+  },
+  "login_required_state": {
+    "message": "Faça logon para continuar"
   },
   "login_wait": {
     "message": "Faça logon..."
@@ -682,6 +682,12 @@
   },
   "site_login_required": {
     "message": "Faça logon para continuar."
+  },
+  "site_login_hint": {
+    "message": "Mantenha pressionada a tecla Alt (Option) ao clicar em «Fazer logon» para selecionar uma conta específica."
+  },
+  "site_login_auto": {
+    "message": "Não mostrar esta caixa de diálogo novamente"
   },
   "site_protected": {
     "message": "Este site está protegido"

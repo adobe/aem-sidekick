@@ -54,6 +54,7 @@ import {
 import { KeyboardListener } from '../utils/keyboard.js';
 import { ModalContainer } from '../components/modal/modal-container.js';
 import { getConfig, setConfig } from '../../config.js';
+import { setAutoLogin, setAutoLoginAttempted } from '../../auto-login.js';
 
 /**
  * The sidekick configuration object type
@@ -362,11 +363,21 @@ export class AppStore {
               target.searchParams.append('ref', this.siteStore.ref);
               target.searchParams.append('repo', this.siteStore.repo);
               target.searchParams.append('owner', this.siteStore.owner);
-              if (this.siteStore.host) target.searchParams.append('host', this.siteStore.host);
-              if (this.siteStore.previewHost) target.searchParams.append('previewHost', this.siteStore.previewHost);
-              if (this.siteStore.liveHost) target.searchParams.append('liveHost', this.siteStore.liveHost);
-              if (this.siteStore.reviewHost) target.searchParams.append('reviewHost', this.siteStore.reviewHost);
-              if (this.siteStore.project) target.searchParams.append('project', this.siteStore.project);
+              if (this.siteStore.host) {
+                target.searchParams.append('host', this.siteStore.host);
+              }
+              if (this.siteStore.previewHost) {
+                target.searchParams.append('previewHost', this.siteStore.previewHost);
+              }
+              if (this.siteStore.liveHost) {
+                target.searchParams.append('liveHost', this.siteStore.liveHost);
+              }
+              if (this.siteStore.reviewHost) {
+                target.searchParams.append('reviewHost', this.siteStore.reviewHost);
+              }
+              if (this.siteStore.project) {
+                target.searchParams.append('project', this.siteStore.project);
+              }
             }
             if (passReferrer) {
               target.searchParams.append('referrer', location.href);
@@ -1202,7 +1213,7 @@ export class AppStore {
             view.remove();
           }
           if (data.detail.event === 'hlx-login') {
-            this.login(true);
+            this.login(data.detail.selectAccount === true);
           }
         }
       });
@@ -1225,6 +1236,7 @@ export class AppStore {
       },
     } = this;
     let view;
+    const { owner, repo } = this.siteStore;
     if (isErrorPage(location, document)) {
       // assert viewport meta tag
       if (!document.head.querySelector('meta[name="viewport"]')) {
@@ -1237,15 +1249,18 @@ export class AppStore {
       // 401
       if (document.querySelector('body > pre').textContent.trim() === '401 Unauthorized') {
         view = {
-          viewer: chrome.runtime.getURL(`views/login/login.html?status=401&auth=${auth}`),
+          viewer: chrome.runtime.getURL(`views/login/login.html?status=401&auth=${auth}&org=${owner}&site=${repo}`),
         };
       }
       // 403
       if (document.querySelector('body > pre').textContent.trim() === '403 Forbidden') {
         view = {
-          viewer: chrome.runtime.getURL('views/login/login.html?status=403'),
+          viewer: chrome.runtime.getURL(`views/login/login.html?status=403&org=${owner}&site=${repo}`),
         };
       }
+    } else {
+      // page loaded successfully, clear the one-shot guard
+      setAutoLoginAttempted(owner, repo, false);
     }
 
     const searchParams = new URLSearchParams(search);
@@ -1275,14 +1290,18 @@ export class AppStore {
       contentSourceUrl,
       contentSourceEditPattern,
     } = this.siteStore;
-    if (!contentSourceEditPattern || typeof contentSourceEditPattern !== 'string') return undefined;
+    if (!contentSourceEditPattern || typeof contentSourceEditPattern !== 'string') {
+      return undefined;
+    }
 
     let { webPath: pathname } = status || this.status;
     if (!pathname) {
       return undefined;
     }
 
-    if (pathname.endsWith('/')) pathname += 'index';
+    if (pathname.endsWith('/')) {
+      pathname += 'index';
+    }
 
     const url = contentSourceEditPattern
       .replace('{{contentSourceUrl}}', contentSourceUrl)
@@ -1444,9 +1463,9 @@ export class AppStore {
 
   /**
    * Logs the user in.
-   * @param {boolean} selectAccount <code>true</code> to allow user to select account (optional)
+   * @param {boolean} [selectAccount] <code>true</code> to allow user to select account (optional)
    */
-  login(selectAccount) {
+  login(selectAccount = false) {
     this.setState(STATE.LOGGING_IN);
     const loginUrl = this.api.createUrl('login');
     loginUrl.searchParams.set('extensionId', window.chrome?.runtime?.id);
@@ -1502,6 +1521,8 @@ export class AppStore {
    * Logs the user out.
    */
   logout() {
+    // clear the auto-login preference to avoid a login loop
+    setAutoLogin(this.siteStore.owner, this.siteStore.repo, false);
     this.setState(STATE.LOGGING_OUT);
     const logoutUrl = this.api.createUrl('logout');
     logoutUrl.searchParams.set('extensionId', window.chrome?.runtime?.id);
@@ -1548,7 +1569,7 @@ export class AppStore {
       const { exp } = profile;
       if (now > exp * 1000) {
         // token is expired
-        this.login(true);
+        this.login();
         this.sidekick.addEventListener(EXTERNAL_EVENTS.STATUS_FETCHED, () => {
           resolve();
         }, { once: true });

@@ -808,7 +808,9 @@ describe('Test actions', () => {
       .callsFake(async (_, /** @type {*} */ msg) => {
         if (msg.action === 'ping') {
           pingCount += 1;
-          if (pingCount === 1) throw new Error('not ready');
+          if (pingCount === 1) {
+            throw new Error('not ready');
+          }
           return true;
         }
         return undefined;

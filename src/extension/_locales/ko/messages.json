@@ -521,14 +521,14 @@
   "logging_out_state": {
     "message": "로그아웃하는 중..."
   },
-  "login_required_state": {
-    "message": "계속하려면 로그인"
-  },
   "login_hint_401": {
     "message": "AEM Sidekick으로 로그인"
   },
   "login_hint_403": {
-    "message": "AEM Sidekick으로 다른 사용자로 전환"
+    "message": "AEM Sidekick을 사용하여 다른 사용자로 전환"
+  },
+  "login_required_state": {
+    "message": "계속하려면 로그인"
   },
   "login_wait": {
     "message": "로그인해 주십시오."
@@ -682,6 +682,12 @@
   },
   "site_login_required": {
     "message": "계속하려면 로그인하십시오."
+  },
+  "site_login_hint": {
+    "message": "특정 계정을 선택하려면 Alt(Option) 키를 누른 채 「로그인」을 클릭하십시오."
+  },
+  "site_login_auto": {
+    "message": "이 대화 상자를 다시 표시하지 않음"
   },
   "site_protected": {
     "message": "이 사이트는 보호됩니다."
