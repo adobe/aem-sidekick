@@ -1,3 +1,10 @@
+# [7.34.0](https://github.com/adobe/aem-sidekick/compare/v7.33.3...v7.34.0) (2026-09-04)
+
+
+### Features
+
+* **login:** streamline sign-in flow with auto sign-in option ([#905](https://github.com/adobe/aem-sidekick/issues/905)) ([d0d10bf](https://github.com/adobe/aem-sidekick/commit/d0d10bf4b93b5268787023054b3080312d6dc63a))
+
 ## [7.33.3](https://github.com/adobe/aem-sidekick/compare/v7.33.2...v7.33.3) (2026-09-02)
 
 
