@@ -75,7 +75,7 @@ function createExpectedSiteToolsRules(siteToken, owner = 'test', repo = 'site') 
     },
     condition: {
       initiatorDomains: ['tools.aem.live'],
-      regexFilter: `\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews|network)%2F`,
+      regexFilter: `\\?url=https%3A%2F%2F(?:[a-z0-9-]+--)?${repo}--${owner}\\.aem\\.(page|live|reviews)%2F`,
       requestDomains: ['da-etc.adobeaem.workers.dev'],
       requestMethods: [
         'get',
@@ -222,7 +222,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews|network)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
             ],
@@ -337,7 +337,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews|network)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
             ],
@@ -524,7 +524,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews|network)/.*',
+            regexFilter: '^https://[0-9a-z-]+--[0-9a-z-]+--test\\.aem\\.(page|live|reviews)/.*',
             initiatorDomains: [
               'tools.aem.live',
             ],
@@ -545,7 +545,7 @@ describe('Test auth', () => {
             requestHeaders: [{ operation: 'set', header: 'authorization', value: `token ${siteToken}` }],
           },
           condition: {
-            regexFilter: '^https://[a-z0-9-]+--site--test\\.aem\\.(page|live|reviews|network)/',
+            regexFilter: '^https://[a-z0-9-]+--site--test\\.aem\\.(page|live|reviews)/',
             requestMethods: ['get', 'post', 'head'],
             resourceTypes: ['main_frame', 'sub_frame', 'script', 'stylesheet', 'image', 'xmlhttprequest', 'media', 'font', 'other'],
           },
@@ -582,7 +582,7 @@ describe('Test auth', () => {
     expect(updateSessionRules.callCount).to.equal(3);
   });
 
-  it('setAuthToken adds site token rule matching aem.network', async () => {
+  it('setAuthToken does not add a site token rule matching aem.network', async () => {
     const updateSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'updateSessionRules');
     const owner = 'test';
     const repo = 'site';
@@ -598,7 +598,7 @@ describe('Test auth', () => {
     const matches = (url) => mainFrameRules
       .some(({ condition }) => new RegExp(condition.regexFilter).test(url));
 
-    expect(matches('https://main--site--test.aem.network/de/de/produkte/thermomix-tm7')).to.be.true;
+    expect(matches('https://main--site--test.aem.network/de/de/produkte/thermomix-tm7')).to.be.false;
     expect(matches('https://main--site--test.aem.live/')).to.be.true;
     expect(matches('https://main--site--other.aem.network/')).to.be.false;
 

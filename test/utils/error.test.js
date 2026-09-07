@@ -36,7 +36,7 @@ const contentBody = '<main><div></div></main>';
 
 describe('isErrorPage', () => {
   it('detects an error page on project hosts', () => {
-    ['aem.page', 'aem.live', 'aem.reviews', 'aem.network'].forEach((domain) => {
+    ['aem.page', 'aem.live', 'aem.reviews'].forEach((domain) => {
       const location = createLocation(`main--site--org.${domain}`);
       expect(isErrorPage(location, createDocument(errorBody)), domain).to.be.true;
     });
@@ -44,6 +44,11 @@ describe('isErrorPage', () => {
 
   it('detects an error page on localhost', () => {
     expect(isErrorPage(createLocation('localhost:3000'), createDocument(errorBody))).to.be.true;
+  });
+
+  it('ignores an error page on aem.network', () => {
+    const location = createLocation('main--site--org.aem.network');
+    expect(isErrorPage(location, createDocument(errorBody))).to.be.false;
   });
 
   it('ignores a content page on project hosts', () => {
