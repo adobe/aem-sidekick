@@ -20,7 +20,6 @@ export function isErrorPage(location, document) {
   return !!((location.host.endsWith('.aem.page')
     || location.host.endsWith('.aem.live')
     || location.host.endsWith('.aem.reviews')
-    || location.host.endsWith('.aem.network')
     || location.hostname === 'localhost')
     && !document.querySelector('body > main > div')
     && document.querySelector('body > pre'));
