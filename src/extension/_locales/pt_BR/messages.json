@@ -677,14 +677,14 @@
   "site_forbidden": {
     "message": "Acesso negado. Tente fazer logon com um usuário diferente ou peça permissões suficientes à administração."
   },
-  "site_login_required": {
-    "message": "Faça logon para continuar."
-  },
-  "site_login_hint": {
-    "message": "Mantenha pressionada a tecla Alt (Option) ao clicar em «Fazer logon» para selecionar uma conta específica."
-  },
   "site_login_auto": {
     "message": "Não mostrar esta caixa de diálogo novamente"
+  },
+  "site_login_hint": {
+    "message": "Mantenha pressionada a tecla Alt (Opção) enquanto clica em \"Entrar\" para selecionar uma conta específica."
+  },
+  "site_login_required": {
+    "message": "Faça logon para continuar."
   },
   "site_protected": {
     "message": "Este site está protegido"

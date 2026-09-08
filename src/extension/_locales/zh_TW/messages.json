@@ -677,14 +677,14 @@
   "site_forbidden": {
     "message": "存取已遭拒。請嘗試使用不同的使用者登入，或向管理員要求足夠的權限。"
   },
-  "site_login_required": {
-    "message": "請登入以繼續。"
+  "site_login_auto": {
+    "message": "不要再顯示此對話"
   },
   "site_login_hint": {
-    "message": "按一下「登入」時按住 Alt (Option) 鍵可選擇特定帳戶。"
+    "message": "按住 Alt 鍵 (選項) 並同時按一下「登入」以選取特定帳戶。"
   },
-  "site_login_auto": {
-    "message": "不再顯示此對話方塊"
+  "site_login_required": {
+    "message": "請登入以繼續。"
   },
   "site_protected": {
     "message": "此網站已受保護"

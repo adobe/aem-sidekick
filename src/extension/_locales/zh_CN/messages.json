@@ -677,14 +677,14 @@
   "site_forbidden": {
     "message": "访问被拒。请尝试以其他用户身份登录或向管理员申请足够的权限。"
   },
-  "site_login_required": {
-    "message": "请登录以继续。"
+  "site_login_auto": {
+    "message": "不再显示此对话"
   },
   "site_login_hint": {
-    "message": "单击“登录”时按住 Alt (Option) 键可选择特定帐户。"
+    "message": "按住 Alt (Option) 键的同时单击“登录”，以选择特定帐户。"
   },
-  "site_login_auto": {
-    "message": "不再显示此对话框"
+  "site_login_required": {
+    "message": "请登录以继续。"
   },
   "site_protected": {
     "message": "此网站受保护"
