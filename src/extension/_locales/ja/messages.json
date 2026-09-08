@@ -677,14 +677,14 @@
   "site_forbidden": {
     "message": "アクセスが拒否されました。別のユーザーでログインするか、管理者に十分な権限を求めてください。"
   },
-  "site_login_required": {
-    "message": "続行するには、ログインしてください。"
+  "site_login_auto": {
+    "message": "今後このダイアログを表示しない"
   },
   "site_login_hint": {
-    "message": "特定のアカウントを選択するには、Alt（Option）キーを押しながら「サインイン」をクリックします。"
+    "message": "Alt キー (Option) を押しながら「サインイン」をクリックして、特定のアカウントを選択します。"
   },
-  "site_login_auto": {
-    "message": "このダイアログを再表示しない"
+  "site_login_required": {
+    "message": "続行するには、ログインしてください。"
   },
   "site_protected": {
     "message": "このサイトは保護されています"

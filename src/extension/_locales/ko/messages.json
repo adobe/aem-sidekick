@@ -677,14 +677,14 @@
   "site_forbidden": {
     "message": "액세스가 거부되었습니다. 다른 사용자로 로그인을 시도하거나 관리자에게 권한을 요청하시기 바랍니다."
   },
-  "site_login_required": {
-    "message": "계속하려면 로그인하십시오."
+  "site_login_auto": {
+    "message": "이 대화 상자 다시 표시 안 함"
   },
   "site_login_hint": {
-    "message": "특정 계정을 선택하려면 Alt(Option) 키를 누른 채 「로그인」을 클릭하십시오."
+    "message": "특정 계정을 선택하려면 Alt(옵션) 키를 누른 상태에서 '로그인'을 클릭합니다."
   },
-  "site_login_auto": {
-    "message": "이 대화 상자를 다시 표시하지 않음"
+  "site_login_required": {
+    "message": "계속하려면 로그인하십시오."
   },
   "site_protected": {
     "message": "이 사이트는 보호됩니다."

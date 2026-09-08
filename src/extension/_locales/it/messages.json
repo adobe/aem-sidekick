@@ -677,14 +677,14 @@
   "site_forbidden": {
     "message": "Accesso negato. Prova ad accedere con un altro nome utente o chiedi all’amministratore le autorizzazioni necessarie."
   },
-  "site_login_required": {
-    "message": "Accedi per continuare."
+  "site_login_auto": {
+    "message": "Non visualizzare più questa finestra di dialogo"
   },
   "site_login_hint": {
-    "message": "Tieni premuto il tasto Alt (Opzione) mentre fai clic su «Accedi» per selezionare un account specifico."
+    "message": "Per selezionare un account specifico, tenere premuto il tasto Alt (Opzione) mentre si fa clic su \"Accedi\"."
   },
-  "site_login_auto": {
-    "message": "Non mostrare più questa finestra di dialogo"
+  "site_login_required": {
+    "message": "Accedi per continuare."
   },
   "site_protected": {
     "message": "Questo sito è protetto"

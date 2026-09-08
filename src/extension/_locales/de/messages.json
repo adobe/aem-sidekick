@@ -677,14 +677,14 @@
   "site_forbidden": {
     "message": "Zugriff verweigert. Versuchen Sie, sich mit einem anderen Benutzerkonto anzumelden, oder bitten Sie Ihre bzw. Ihren Admin um ausreichende Berechtigungen."
   },
-  "site_login_required": {
-    "message": "Melden Sie sich an, um fortzufahren."
+  "site_login_auto": {
+    "message": "Diesen Dialog nicht mehr anzeigen"
   },
   "site_login_hint": {
-    "message": "Halten Sie beim Klicken auf „Anmelden“ die Alt-Taste (Wahltaste) gedrückt, um ein bestimmtes Konto auszuwählen."
+    "message": "Halten Sie die Alt-Taste (Option) gedrückt, während Sie auf \"Anmelden\" klicken, um ein bestimmtes Konto auszuwählen."
   },
-  "site_login_auto": {
-    "message": "Diesen Dialog nicht erneut anzeigen"
+  "site_login_required": {
+    "message": "Melden Sie sich an, um fortzufahren."
   },
   "site_protected": {
     "message": "Diese Site ist geschützt."
