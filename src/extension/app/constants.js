@@ -24,6 +24,7 @@ export const ENVS = {
   preview: 'innerHost',
   review: 'reviewHost',
   live: 'outerHost',
+  mixer: 'mixerHost',
   prod: 'host',
 };
 

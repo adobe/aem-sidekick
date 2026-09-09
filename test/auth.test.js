@@ -582,6 +582,30 @@ describe('Test auth', () => {
     expect(updateSessionRules.callCount).to.equal(3);
   });
 
+  it('setAuthToken does not add a site token rule matching aem.network', async () => {
+    const updateSessionRules = sandbox.spy(chrome.declarativeNetRequest, 'updateSessionRules');
+    const owner = 'test';
+    const repo = 'site';
+    const siteToken = '0987654321';
+
+    await setAuthToken(owner, repo, '', undefined, siteToken, Date.now() + 60000);
+
+    const { addRules } = updateSessionRules.args
+      .map(([args]) => args)
+      .findLast(({ addRules: rules }) => rules);
+    const mainFrameRules = addRules
+      .filter(({ condition }) => condition.resourceTypes?.includes('main_frame'));
+    const matches = (url) => mainFrameRules
+      .some(({ condition }) => new RegExp(condition.regexFilter).test(url));
+
+    expect(matches('https://main--site--test.aem.network/de/de/produkte/thermomix-tm7')).to.be.false;
+    expect(matches('https://main--site--test.aem.live/')).to.be.true;
+    expect(matches('https://main--site--other.aem.network/')).to.be.false;
+
+    // clean up
+    await setAuthToken(owner, repo, '', undefined, '', undefined);
+  });
+
   it('updateUserAgent', async () => {
     const updateDynamicRules = sandbox.spy(chrome.declarativeNetRequest, 'updateDynamicRules');
     await updateUserAgent();

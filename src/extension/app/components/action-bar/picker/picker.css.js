@@ -104,18 +104,23 @@ export const style = css`
   }
 
   :host(.env-live) #button #label,
+  :host(.env-mixer) #button #label,
   :host(.env-prod) #button #label,
   :host(.env-live) #button sp-icon-chevron100,
+  :host(.env-mixer) #button sp-icon-chevron100,
   :host(.env-prod) #button sp-icon-chevron100,
   :host(.env-live) #button:hover sp-icon-chevron100,
+  :host(.env-mixer) #button:hover sp-icon-chevron100,
   :host(.env-prod) #button:hover sp-icon-chevron100,
   :host(.env-live[open]) #button:hover sp-icon-chevron100,
+  :host(.env-mixer[open]) #button:hover sp-icon-chevron100,
   :host(.env-prod[open]) #button:hover sp-icon-chevron100  {
     color: var(--spectrum2-live-content-default);
     --spectrum-picker-icon-color-default-open: var(--spectrum2-live-content-default);
   }
 
   :host(.env-live) #button,
+  :host(.env-mixer) #button,
   :host(.env-prod) #button {
     background-color: var(--spectrum2-live-background-default);
     border: 1px solid var(--spectrum2-live-border-default);
@@ -124,27 +129,33 @@ export const style = css`
   }
 
   :host(.env-live[disabled]) #button,
+  :host(.env-mixer[disabled]) #button,
   :host(.env-prod[disabled]) #button {
     opacity: 0.48;
   }
 
   :host(.env-live[disabled]) #button #label,
+  :host(.env-mixer[disabled]) #button #label,
   :host(.env-prod[disabled]) #button #label,
   :host(.env-live[disabled]) #button sp-icon-chevron100,
+  :host(.env-mixer[disabled]) #button sp-icon-chevron100,
   :host(.env-prod[disabled]) #button sp-icon-chevron100,
   :host(.env-live[disabled]) #button:hover sp-icon-chevron100,
+  :host(.env-mixer[disabled]) #button:hover sp-icon-chevron100,
   :host(.env-prod[disabled]) #button:hover sp-icon-chevron100 {
     color: var(--spectrum2-live-border-default);
     --spectrum-picker-icon-color-default-open: var(--spectrum2-live-border-default);
   }
 
   :host(.env-live) #button:hover,
+  :host(.env-mixer) #button:hover,
   :host(.env-prod) #button:hover {
     background-color: var(--spectrum2-live-background-hover);
     border: 1px solid var(--spectrum2-live-border-hover);
   }
 
   :host(.env-live) #button[aria-expanded="true"],
+  :host(.env-mixer) #button[aria-expanded="true"],
   :host(.env-prod) #button[aria-expanded="true"] {
     background-color: var(--spectrum2-live-background-hover);
     border: 1px solid var(--spectrum2-live-border-open);
