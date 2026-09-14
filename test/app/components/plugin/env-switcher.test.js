@@ -294,10 +294,11 @@ describe('Environment Switcher', () => {
       const picker = recursiveQuery(envPlugin, 'action-bar-picker');
 
       expect(picker.classList.contains('env-mixer')).to.be.true;
-      expect(picker.label).to.equal('Mixer');
+      expect(picker.label).to.equal('Network');
 
       const mixerItem = recursiveQuery(picker, 'sk-menu-item.env-mixer');
       expect(mixerItem).to.exist;
+      expect(mixerItem.textContent).to.match(/^Network/);
       // mixer reuses the live last modified label
       expect(mixerItem.querySelector('span[slot="description"]').textContent)
         .to.match(/^Last published /);
