@@ -501,7 +501,7 @@
     "message": "라이브"
   },
   "mixer": {
-    "message": "Mixer"
+    "message": "네트워크"
   },
   "live_last_updated": {
     "message": "마지막으로 게시됨: $1"

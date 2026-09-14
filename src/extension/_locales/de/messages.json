@@ -501,7 +501,7 @@
     "message": "Live"
   },
   "mixer": {
-    "message": "Mixer"
+    "message": "Netzwerk"
   },
   "live_last_updated": {
     "message": "Zuletzt veröffentlicht: $1"

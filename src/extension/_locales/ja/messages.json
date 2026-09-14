@@ -501,7 +501,7 @@
     "message": "ライブ"
   },
   "mixer": {
-    "message": "Mixer"
+    "message": "ネットワーク"
   },
   "live_last_updated": {
     "message": "最終公開日 : $1"

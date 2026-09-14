@@ -501,7 +501,7 @@
     "message": "实时"
   },
   "mixer": {
-    "message": "Mixer"
+    "message": "网络"
   },
   "live_last_updated": {
     "message": "上次发布：$1"
