@@ -278,6 +278,48 @@ describe('Environment Switcher', () => {
 
       expect(reviewItem).to.exist;
     });
+
+    it('shows mixer menu item in mixer env', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.MIXER);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+
+      expect(picker.classList.contains('env-mixer')).to.be.true;
+      expect(picker.label).to.equal('Network');
+
+      const mixerItem = recursiveQuery(picker, 'sk-menu-item.env-mixer');
+      expect(mixerItem).to.exist;
+      expect(mixerItem.textContent).to.match(/^Network/);
+      // mixer reuses the live last modified label
+      expect(mixerItem.querySelector('span[slot="description"]').textContent)
+        .to.match(/^Last published /);
+    });
+
+    it('hides mixer menu item outside mixer env', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess()
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.LIVE);
+
+      sidekick = sidekickTest.createSidekick();
+
+      await sidekickTest.awaitEnvSwitcher();
+
+      const actionBar = recursiveQuery(sidekick, 'action-bar');
+      const envPlugin = recursiveQuery(actionBar, 'env-switcher');
+      const picker = recursiveQuery(envPlugin, 'action-bar-picker');
+
+      expect(recursiveQuery(picker, 'sk-menu-item.env-mixer')).to.not.exist;
+    });
   });
 
   describe('edit item variants', () => {

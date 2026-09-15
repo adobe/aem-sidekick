@@ -127,6 +127,7 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.stdOuterHost).to.equal('main--aem-boilerplate--adobe.aem.live');
       expect(appStore.siteStore.outerHost).to.equal('main--aem-boilerplate--adobe.aem.live');
       expect(appStore.siteStore.reviewHost).to.equal('main--aem-boilerplate--adobe.aem.reviews');
+      expect(appStore.siteStore.mixerHost).to.equal('main--aem-boilerplate--adobe.aem.network');
     });
 
     it('special views ', async () => {

@@ -410,6 +410,9 @@
     "live": {
       "message": "Live"
     },
+    "mixer": {
+      "message": "Network"
+    },
     "media_state": {
       "message": "No actions available for media files"
     },

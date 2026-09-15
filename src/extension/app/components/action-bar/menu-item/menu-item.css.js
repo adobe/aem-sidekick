@@ -83,6 +83,7 @@ export const style = css`
   }
 
   :host(.current-env.env-live),
+  :host(.current-env.env-mixer),
   :host(.current-env.env-prod) {
     background-color: var(--spectrum2-live-background-default);
     border: 1px solid var(--spectrum2-live-border-default);
@@ -91,8 +92,10 @@ export const style = css`
   }
 
   :host(.current-env.env-live[aria-disabled="true"]) [name="description"]::slotted(*),
+  :host(.current-env.env-mixer[aria-disabled="true"]) [name="description"]::slotted(*),
   :host(.current-env.env-prod[aria-disabled="true"]) [name="description"]::slotted(*),
   :host(.current-env.env-live[disabled]) [name="description"]::slotted(*),
+  :host(.current-env.env-mixer[disabled]) [name="description"]::slotted(*),
   :host(.current-env.env-prod[disabled]) [name="description"]::slotted(*) {
     color: var(--spectrum2-live-content-default);
   }

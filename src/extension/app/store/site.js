@@ -121,6 +121,12 @@ export class SiteStore {
   stdOuterHost;
 
   /**
+   * Mixer CDN host name
+   * @type {string}
+   */
+  mixerHost;
+
+  /**
    * URL of the local development environment
    * @type {string}
    */
@@ -270,6 +276,7 @@ export class SiteStore {
     const stdInnerHost = hostPrefix ? `${hostPrefix}.aem.page` : null;
     const stdOuterHost = hostPrefix ? `${hostPrefix}.aem.live` : null;
     const stdReviewHost = hostPrefix ? `${hostPrefix}.aem.reviews` : null;
+    const mixerHost = hostPrefix ? `${hostPrefix}.aem.network` : null;
     const devUrl = new URL(devOrigin);
 
     // default views
@@ -307,6 +314,7 @@ export class SiteStore {
     this.stdInnerHost = stdInnerHost;
     this.stdOuterHost = stdOuterHost;
     this.stdReviewHost = stdReviewHost;
+    this.mixerHost = mixerHost;
     this.host = publicHost;
     this.project = project;
     this.devUrl = devUrl;
@@ -360,6 +368,7 @@ export class SiteStore {
       stdOuterHost: this.stdOuterHost,
       reviewHost: this.reviewHost,
       stdReviewHost: this.stdReviewHost,
+      mixerHost: this.mixerHost,
       devOrigin: this.devOrigin,
       apiUpgrade: this.apiUpgrade,
       adminVersion: this.adminVersion,

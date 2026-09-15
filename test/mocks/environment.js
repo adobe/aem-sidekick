@@ -42,6 +42,7 @@ export const HelixMockEnvironments = {
   PREVIEW: 'preview',
   REVIEW: 'review',
   LIVE: 'live',
+  MIXER: 'mixer',
   PROD: 'prod',
 };
 
@@ -96,6 +97,7 @@ export function getDefaultHelixEnviromentLocations(contentType) {
         preview: 'https://main--aem-boilerplate--adobe.aem.page',
         review: 'https://default--main--aem-boilerplate--adobe.aem.reviews',
         live: 'https://main--aem-boilerplate--adobe.aem.live',
+        mixer: 'https://main--aem-boilerplate--adobe.aem.network',
         prod: 'https://www.aemboilerplate.com',
       };
     case HelixMockContentType.SHEET:
@@ -104,6 +106,7 @@ export function getDefaultHelixEnviromentLocations(contentType) {
         preview: 'https://main--aem-boilerplate--adobe.aem.page/placeholders.json',
         review: 'https://default--main--aem-boilerplate--adobe.aem.reviews/placeholders.json',
         live: 'https://main--aem-boilerplate--adobe.aem.live/placeholders.json',
+        mixer: 'https://main--aem-boilerplate--adobe.aem.network/placeholders.json',
         prod: 'https://www.aemboilerplate.com/placeholders.json',
       };
     case HelixMockContentType.IMAGE:
@@ -112,6 +115,7 @@ export function getDefaultHelixEnviromentLocations(contentType) {
         preview: 'https://main--aem-boilerplate--adobe.aem.page/media_foobar.png?width=750&format=png&optimize=medium',
         review: 'https://default--main--aem-boilerplate--adobe.aem.reviews/media_foobar.png?width=750&format=png&optimize=medium',
         live: 'https://main--aem-boilerplate--adobe.aem.live/media_foobar.png?width=750&format=png&optimize=medium',
+        mixer: 'https://main--aem-boilerplate--adobe.aem.network/media_foobar.png?width=750&format=png&optimize=medium',
         prod: 'https://www.aemboilerplate.com/media_foobar.png?width=750&format=png&optimize=medium',
       };
     default:

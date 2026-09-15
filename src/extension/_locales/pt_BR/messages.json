@@ -500,6 +500,9 @@
   "live": {
     "message": "Em tempo real"
   },
+  "mixer": {
+    "message": "Rede"
+  },
   "live_last_updated": {
     "message": "Última publicação $1"
   },
