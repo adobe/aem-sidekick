@@ -1,3 +1,15 @@
+## [7.34.1](https://github.com/adobe/aem-sidekick/compare/v7.34.0...v7.34.1) (2026-09-15)
+
+
+### Bug Fixes
+
+* defer mixer site authentication ([bf011d7](https://github.com/adobe/aem-sidekick/commit/bf011d7fefcfd343ac4e448e1735496cea3e8909))
+* give the mixer its own env instead of folding it into live ([6245822](https://github.com/adobe/aem-sidekick/commit/6245822527413c3935ac30ac965ae01477c3ca97))
+* recognize aem.network hosts ([8f92a87](https://github.com/adobe/aem-sidekick/commit/8f92a8773478256f343f94210354f2dd41fc5c5d))
+* recognize aem.network hosts ([afddf80](https://github.com/adobe/aem-sidekick/commit/afddf8083965682beca602579d799042bbe71bfe))
+* rename Mixer environment to Network ([b9d9f63](https://github.com/adobe/aem-sidekick/commit/b9d9f63925f6ba3be7716f5ac5cb12e88ab8b7ce))
+* require plugins to declare the mixer scope explicitly ([7e55841](https://github.com/adobe/aem-sidekick/commit/7e5584172ffc4372c239f0bcfba5a93b366d2008))
+
 # [7.34.0](https://github.com/adobe/aem-sidekick/compare/v7.33.3...v7.34.0) (2026-09-04)
 
 
