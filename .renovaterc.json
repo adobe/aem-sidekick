@@ -11,6 +11,7 @@
     "@spectrum-web-components/badge",
     "@spectrum-web-components/base",
     "@spectrum-web-components/button",
+    "@spectrum-web-components/checkbox",
     "@spectrum-web-components/dialog",
     "@spectrum-web-components/divider",
     "@spectrum-web-components/icon",
@@ -29,6 +30,7 @@
     "@spectrum-web-components/table",
     "@spectrum-web-components/textfield",
     "@spectrum-web-components/theme",
-    "@spectrum-web-components/toast"
+    "@spectrum-web-components/toast",
+    "@spectrum-web-components/tooltip"
   ]
 }
