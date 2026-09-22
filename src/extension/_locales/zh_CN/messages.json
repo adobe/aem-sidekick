@@ -500,9 +500,6 @@
   "live": {
     "message": "实时"
   },
-  "mixer": {
-    "message": "网络"
-  },
   "live_last_updated": {
     "message": "上次发布：$1"
   },
@@ -538,6 +535,9 @@
   },
   "minutes_ago": {
     "message": "$1 分钟前"
+  },
+  "mixer": {
+    "message": "网络"
   },
   "never": {
     "message": "无"
