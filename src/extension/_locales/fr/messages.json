@@ -500,9 +500,6 @@
   "live": {
     "message": "En direct"
   },
-  "mixer": {
-    "message": "Réseau"
-  },
   "live_last_updated": {
     "message": "Dernière publication : $1"
   },
@@ -538,6 +535,9 @@
   },
   "minutes_ago": {
     "message": "Il y a $1 minutes"
+  },
+  "mixer": {
+    "message": "Réseau"
   },
   "never": {
     "message": "Jamais"
@@ -681,10 +681,10 @@
     "message": "Accès refusé. Essayez de vous connecter avec un autre compte ou demandez à votre équipe d’administration des autorisations suffisantes."
   },
   "site_login_auto": {
-    "message": "Ne plus afficher ce dialogue"
+    "message": "Ne plus afficher cette boîte de dialogue"
   },
   "site_login_hint": {
-    "message": "Maintenez la touche Alt (Option) enfoncée tout en cliquant sur \"Se connecter\" pour sélectionner un compte spécifique."
+    "message": "Maintenez la touche Alt (Option) enfoncée tout en cliquant sur « Se connecter » pour sélectionner un compte spécifique."
   },
   "site_login_required": {
     "message": "Connectez-vous pour continuer."

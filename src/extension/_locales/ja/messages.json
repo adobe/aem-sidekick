@@ -500,9 +500,6 @@
   "live": {
     "message": "ライブ"
   },
-  "mixer": {
-    "message": "ネットワーク"
-  },
   "live_last_updated": {
     "message": "最終公開日 : $1"
   },
@@ -538,6 +535,9 @@
   },
   "minutes_ago": {
     "message": "$1 分前"
+  },
+  "mixer": {
+    "message": "ネットワーク"
   },
   "never": {
     "message": "なし"
@@ -681,10 +681,10 @@
     "message": "アクセスが拒否されました。別のユーザーでログインするか、管理者に十分な権限を求めてください。"
   },
   "site_login_auto": {
-    "message": "今後このダイアログを表示しない"
+    "message": "次回からこのダイアログを表示しない"
   },
   "site_login_hint": {
-    "message": "Alt キー (Option) を押しながら「サインイン」をクリックして、特定のアカウントを選択します。"
+    "message": "Alt (Option) キーを押しながら「ログイン」をクリックして、特定のアカウントを選択します。"
   },
   "site_login_required": {
     "message": "続行するには、ログインしてください。"
