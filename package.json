@@ -66,7 +66,7 @@
     "@spectrum-web-components/toast": "0.43.0",
     "@spectrum-web-components/tooltip": "0.43.0",
     "lit": "3.3.3",
-    "mobx": "6.16.1"
+    "mobx": "7.0.3"
   },
   "devDependencies": {
     "@adobe/eslint-config-helix": "3.0.32",
