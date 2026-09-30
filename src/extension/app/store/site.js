@@ -219,7 +219,7 @@ export class SiteStore {
     if (!devOrigin) {
       devOrigin = 'http://localhost:3000';
     }
-    let { apiUpgrade = false } = config;
+    const { apiUpgrade = true } = config;
     if (owner && repo) {
       // look for custom config in project
       try {
@@ -231,9 +231,6 @@ export class SiteStore {
           apiUpgrade ? '' : '/config.json',
         );
         this.status = res.status;
-        if (res.headers?.get('x-api-upgrade-available') === 'true') {
-          apiUpgrade = true;
-        }
         if (this.status === 200) {
           config = {
             ...config,
@@ -338,7 +335,6 @@ export class SiteStore {
           liveHost: this.liveHost,
           host: this.host,
           mountpoints: this.mountpoints,
-          apiUpgrade: this.apiUpgrade,
         },
       });
     }

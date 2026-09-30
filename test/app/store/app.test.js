@@ -1713,7 +1713,7 @@ describe('Test App Store', () => {
 
     it('exits early if "path" search param is present', async () => {
       sidekickTest.mockFetchSidekickConfigSuccess(true, false);
-      fetchMock.get('https://admin.hlx.page/status/adobe/aem-boilerplate/main/path/placeholders.json?editUrl=auto', {
+      fetchMock.get('https://api.aem.live/adobe/sites/aem-boilerplate/status/path/placeholders.json?editUrl=auto', {
         status: 200,
         body: {
           body: { },

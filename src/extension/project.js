@@ -231,14 +231,14 @@ export function assembleProject({
  * @param {string} config.owner The owner
  * @param {string} config.repo The repository
  * @param {string} [config.ref=main] The ref or branch
- * @param {boolean} [config.apiUpgrade=false] Is an API upgrade available for this site?
+ * @param {boolean} [config.apiUpgrade=true] Should the new Admin API be used for this site?
  * @returns {Promise<Object>} The project environment
  */
 export async function getProjectEnv({
   owner,
   repo,
   ref = 'main',
-  apiUpgrade = false,
+  apiUpgrade = true,
 }) {
   const env = {};
   let res;

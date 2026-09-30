@@ -213,21 +213,23 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.error).to.equal(error.message);
     });
 
-    it('handles api upgrade available header', async () => {
-      sidekickTest.mockFetchSidekickConfigApiUpgradeAvailable();
+    it('fetches sidekick config from new api by default', async () => {
+      sidekickTest.mockFetchSidekickConfigSuccess();
 
       await appStore.loadContext(sidekickElement, defaultConfig);
+      expect(appStore.siteStore.status).to.equal(200);
       expect(appStore.siteStore.apiUpgrade).to.be.true;
     });
 
-    it('fetches sidekick config from new api', async () => {
+    it('fetches sidekick config from legacy api', async () => {
       sidekickTest
         .mockFetchSidekickConfigNotFound()
         .mockFetchSidekickConfigSuccess(false, false, null, true);
 
-      // use project config with api upgrade flag
-      await appStore.loadContext(sidekickElement, { ...defaultConfig, apiUpgrade: true });
+      // use project config without api upgrade
+      await appStore.loadContext(sidekickElement, { ...defaultConfig, apiUpgrade: false });
       expect(appStore.siteStore.status).to.equal(200);
+      expect(appStore.siteStore.apiUpgrade).to.be.false;
     });
 
     it('with window.hlx.sidekickConfig', async () => {
@@ -350,7 +352,6 @@ describe('Test Site Store', () => {
           project: 'business-website',
           mountpoints: ['https://adobe.sharepoint.com/sites/business-website'],
           host: 'business-website.example.com',
-          apiUpgrade: false,
         },
       });
     });
