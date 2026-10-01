@@ -24,6 +24,7 @@ import {
   assembleProject,
   addProject,
   updateProject,
+  cleanupApiUpgradeFlag,
   deleteProject,
   isValidHost,
   isValidProject,
@@ -360,6 +361,45 @@ describe('Test project', () => {
     expect(set.calledWith({
       'test/project': project,
     })).to.be.true;
+  });
+
+  it('cleanupApiUpgradeFlag', async () => {
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+    const get = sandbox.stub(chrome.storage.sync, 'get');
+    get
+      .withArgs('apiUpgradeCleanup')
+      .resolves({})
+      .withArgs('projects')
+      .resolves({ projects: ['foo/bar1', 'foo/bar2'] })
+      .withArgs('foo/bar1')
+      .resolves({
+        'foo/bar1': {
+          owner: 'foo', repo: 'bar1', ref: 'main', apiUpgrade: false,
+        },
+      })
+      .withArgs('foo/bar2')
+      .resolves({
+        'foo/bar2': { owner: 'foo', repo: 'bar2', ref: 'main' },
+      });
+
+    await cleanupApiUpgradeFlag();
+    // stale flag removed from project config
+    expect(set.calledWith({
+      'foo/bar1': { owner: 'foo', repo: 'bar1', ref: 'main' },
+    })).to.be.true;
+    // project without flag untouched
+    expect(set.calledWith({
+      'foo/bar2': { owner: 'foo', repo: 'bar2', ref: 'main' },
+    })).to.be.false;
+    expect(set.calledWith({ apiUpgradeCleanup: true })).to.be.true;
+
+    // cleanup only runs once, also on other devices
+    set.resetHistory();
+    get
+      .withArgs('apiUpgradeCleanup')
+      .resolves({ apiUpgradeCleanup: true });
+    await cleanupApiUpgradeFlag();
+    expect(set.called).to.be.false;
   });
 
   it('deleteProject', async () => {

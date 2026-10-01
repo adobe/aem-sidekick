@@ -1380,6 +1380,36 @@ describe('Test actions', () => {
       expect(updateProjectStub.called).to.be.false;
     });
 
+    it('updates existing project config when boolean property has changed', async () => {
+      const project = {
+        owner: 'adobe',
+        repo: 'business-website',
+        ref: 'main',
+        apiUpgrade: false,
+      };
+
+      const existingProject = {
+        ...project,
+        apiUpgrade: true, // trigger an update
+      };
+
+      // mock getProject to return existing project
+      const getStub = sandbox.stub(chrome.storage.sync, 'get');
+      getStub.withArgs('projects').resolves({ projects: ['adobe/business-website'] });
+      getStub.withArgs('adobe/business-website').resolves({ 'adobe/business-website': existingProject });
+
+      // mock updateProject to verify it's called
+      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set')
+        .resolves();
+
+      await internalActions.updateProject({}, { config: project });
+
+      expect(updateProjectStub.calledOnce).to.be.true;
+      expect(updateProjectStub.firstCall.args[0]).to.deep.equal({
+        'adobe/business-website': project,
+      });
+    });
+
     it('does not overwrite existing project name', async () => {
       const project = {
         owner: 'adobe',

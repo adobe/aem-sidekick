@@ -15,6 +15,7 @@ import {
   toggleDisplay,
 } from './display.js';
 import { checkTab, getCurrentTab } from './tab.js';
+import { cleanupApiUpgradeFlag } from './project.js';
 import {
   externalActions,
   internalActions,
@@ -88,5 +89,8 @@ configureAuthAndCorsHeaders();
 
 // update the user agent for requests to the Admin API
 updateUserAgent();
+
+// remove the obsolete api upgrade flag from stored project configs
+cleanupApiUpgradeFlag();
 
 log.info('sidekick initialized');

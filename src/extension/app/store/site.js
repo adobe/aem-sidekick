@@ -219,16 +219,17 @@ export class SiteStore {
     if (!devOrigin) {
       devOrigin = 'http://localhost:3000';
     }
-    const { apiUpgrade = true } = config;
+    // use the new admin api unless the project config explicitly opts out
+    const { apiUpgrade: projectApiUpgrade = true } = config;
     if (owner && repo) {
       // look for custom config in project
       try {
         const res = await callAdmin(
           {
-            owner, repo, ref, adminVersion, apiUpgrade,
+            owner, repo, ref, adminVersion, apiUpgrade: projectApiUpgrade,
           },
           'sidekick',
-          apiUpgrade ? '' : '/config.json',
+          projectApiUpgrade ? '' : '/config.json',
         );
         this.status = res.status;
         if (this.status === 200) {
@@ -267,6 +268,8 @@ export class SiteStore {
       specialViews,
       wordSaveDelay,
       transient = false,
+      // the server config takes precedence over the project config
+      apiUpgrade = projectApiUpgrade,
     } = config;
     const publicHost = host && host.startsWith('http') ? new URL(host).host : host;
     const hostPrefix = owner && repo ? `${ref}--${repo}--${owner}` : null;
@@ -335,6 +338,7 @@ export class SiteStore {
           liveHost: this.liveHost,
           host: this.host,
           mountpoints: this.mountpoints,
+          apiUpgrade: this.apiUpgrade,
         },
       });
     }

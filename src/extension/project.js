@@ -85,6 +85,28 @@ export async function updateProject(project) {
 }
 
 /**
+ * Removes the obsolete <code>apiUpgrade</code> flag from stored project configurations.
+ * Earlier versions persisted the API upgrade availability detected in the Admin API
+ * response, so projects not migrated back then would remain stuck on the legacy API
+ * until the server config tells them otherwise. Runs only once and is tracked in sync
+ * storage, so projects are not reset again on another device.
+ * @returns {Promise<void>}
+ */
+export async function cleanupApiUpgradeFlag() {
+  if (await getConfig('sync', 'apiUpgradeCleanup')) {
+    return;
+  }
+  const projects = await getProjects();
+  await Promise.all(projects
+    .filter(({ apiUpgrade }) => apiUpgrade !== undefined)
+    .map((project) => {
+      delete project.apiUpgrade;
+      return updateProject(project);
+    }));
+  await setConfig('sync', { apiUpgradeCleanup: true });
+}
+
+/**
  * Validates a project config.
  * @param {Object} config The project config
  * @returns {boolean} true if valid project config, else false
