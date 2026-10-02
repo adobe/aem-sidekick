@@ -363,6 +363,20 @@ describe('Test project', () => {
     })).to.be.true;
   });
 
+  it('cleanupApiUpgradeFlag does nothing when already completed', async () => {
+    const get = sandbox.stub(chrome.storage.sync, 'get')
+      .withArgs('apiUpgradeCleanup')
+      .resolves({ apiUpgradeCleanup: true });
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+    const modulePath = '../src/extension/project.js?apiUpgradeCleanupTest';
+    const { cleanupApiUpgradeFlag: cleanupAlreadyCompleted } = await import(modulePath);
+
+    await cleanupAlreadyCompleted();
+
+    expect(get.calledOnce).to.be.true;
+    expect(set.called).to.be.false;
+  });
+
   it('cleanupApiUpgradeFlag', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const get = sandbox.stub(chrome.storage.sync, 'get');
