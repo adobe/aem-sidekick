@@ -24,12 +24,14 @@ export const DEV_URL = 'http://localhost:3000/';
 
 export const GH_URL = 'https://github.com/';
 
+let apiUpgradeCleanupPromise;
+
 /**
  * Returns an existing project configuration.
  * @param {Object|string} project The project settings or handle
  * @returns {Promise<Object>} The project configuration
  */
-export async function getProject(project = {}) {
+async function getStoredProject(project = {}) {
   let owner;
   let repo;
   if (typeof project === 'string' && project.includes('/')) {
@@ -44,13 +46,32 @@ export async function getProject(project = {}) {
 }
 
 /**
+ * Returns an existing project configuration.
+ * @param {Object|string} project The project settings or handle
+ * @returns {Promise<Object>} The project configuration
+ */
+export async function getProject(project = {}) {
+  await apiUpgradeCleanupPromise;
+  return getStoredProject(project);
+}
+
+/**
+ * Returns all project configurations.
+ * @returns {Promise<Object[]>} The project configurations
+ */
+async function getStoredProjects() {
+  const configs = await getConfig('sync', 'projects') || [];
+  const projects = await Promise.all(configs.map((handle) => getStoredProject(handle)));
+  return projects.filter((project) => project !== undefined);
+}
+
+/**
  * Returns all project configurations.
  * @returns {Promise<Object[]>} The project configurations
  */
 export async function getProjects() {
-  const configs = await getConfig('sync', 'projects') || [];
-  const projects = await Promise.all(configs.map((handle) => getProject(handle)));
-  return projects.filter((project) => project !== undefined);
+  await apiUpgradeCleanupPromise;
+  return getStoredProjects();
 }
 
 /**
@@ -58,7 +79,7 @@ export async function getProjects() {
  * @param {Object} project The project settings
  * @returns {Promise<Object>} The project configuration
  */
-export async function updateProject(project) {
+async function updateStoredProject(project) {
   const { owner, repo } = project;
   if (owner && repo) {
     // sanitize input - only remove undefined or null values, not false or 0
@@ -85,6 +106,16 @@ export async function updateProject(project) {
 }
 
 /**
+ * Updates a project configuration.
+ * @param {Object} project The project settings
+ * @returns {Promise<Object>} The project configuration
+ */
+export async function updateProject(project) {
+  await apiUpgradeCleanupPromise;
+  return updateStoredProject(project);
+}
+
+/**
  * Removes the obsolete <code>apiUpgrade</code> flag from stored project configurations.
  * Earlier versions persisted the API upgrade availability detected in the Admin API
  * response, so projects not migrated back then would remain stuck on the legacy API
@@ -92,18 +123,23 @@ export async function updateProject(project) {
  * storage, so projects are not reset again on another device.
  * @returns {Promise<void>}
  */
-export async function cleanupApiUpgradeFlag() {
-  if (await getConfig('sync', 'apiUpgradeCleanup')) {
-    return;
+export function cleanupApiUpgradeFlag() {
+  if (!apiUpgradeCleanupPromise) {
+    apiUpgradeCleanupPromise = (async () => {
+      if (await getConfig('sync', 'apiUpgradeCleanup')) {
+        return;
+      }
+      const projects = await getStoredProjects();
+      await Promise.all(projects
+        .filter(({ apiUpgrade }) => apiUpgrade === false)
+        .map((project) => {
+          delete project.apiUpgrade;
+          return updateStoredProject(project);
+        }));
+      await setConfig('sync', { apiUpgradeCleanup: true });
+    })();
   }
-  const projects = await getProjects();
-  await Promise.all(projects
-    .filter(({ apiUpgrade }) => apiUpgrade !== undefined)
-    .map((project) => {
-      delete project.apiUpgrade;
-      return updateProject(project);
-    }));
-  await setConfig('sync', { apiUpgradeCleanup: true });
+  return apiUpgradeCleanupPromise;
 }
 
 /**
@@ -373,6 +409,7 @@ export async function addProject(input, loggedIn = false, { idp, tenant } = {}) 
  * @returns {Promise<Boolean>}
  */
 export async function deleteProject(project) {
+  await apiUpgradeCleanupPromise;
   let owner;
   let repo;
   let handle;

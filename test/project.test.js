@@ -366,9 +366,13 @@ describe('Test project', () => {
   it('cleanupApiUpgradeFlag', async () => {
     const set = sandbox.spy(chrome.storage.sync, 'set');
     const get = sandbox.stub(chrome.storage.sync, 'get');
+    let resolveCleanupCheck;
+    const cleanupCheck = new Promise((resolve) => {
+      resolveCleanupCheck = resolve;
+    });
     get
       .withArgs('apiUpgradeCleanup')
-      .resolves({})
+      .returns(cleanupCheck)
       .withArgs('projects')
       .resolves({ projects: ['foo/bar1', 'foo/bar2'] })
       .withArgs('foo/bar1')
@@ -379,17 +383,28 @@ describe('Test project', () => {
       })
       .withArgs('foo/bar2')
       .resolves({
-        'foo/bar2': { owner: 'foo', repo: 'bar2', ref: 'main' },
+        'foo/bar2': {
+          owner: 'foo', repo: 'bar2', ref: 'main', apiUpgrade: true,
+        },
       });
 
-    await cleanupApiUpgradeFlag();
+    const cleanup = cleanupApiUpgradeFlag();
+    const project = getProject('foo/bar1');
+    const projects = getProjects();
+    await Promise.resolve();
+    expect(get.calledWith('foo/bar1')).to.be.false;
+    expect(get.calledWith('projects')).to.be.false;
+    resolveCleanupCheck({});
+    await Promise.all([cleanup, project, projects]);
     // stale flag removed from project config
     expect(set.calledWith({
       'foo/bar1': { owner: 'foo', repo: 'bar1', ref: 'main' },
     })).to.be.true;
-    // project without flag untouched
+    // true flag is preserved
     expect(set.calledWith({
-      'foo/bar2': { owner: 'foo', repo: 'bar2', ref: 'main' },
+      'foo/bar2': {
+        owner: 'foo', repo: 'bar2', ref: 'main', apiUpgrade: true,
+      },
     })).to.be.false;
     expect(set.calledWith({ apiUpgradeCleanup: true })).to.be.true;
 
