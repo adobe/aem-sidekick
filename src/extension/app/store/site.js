@@ -220,7 +220,8 @@ export class SiteStore {
       devOrigin = 'http://localhost:3000';
     }
     // use the new admin api unless the project config explicitly opts out
-    const { apiUpgrade: projectApiUpgrade = true } = config;
+    const projectApiUpgrade = config.apiUpgrade !== false;
+    let serverApiUpgrade;
     if (owner && repo) {
       // look for custom config in project
       try {
@@ -233,9 +234,13 @@ export class SiteStore {
         );
         this.status = res.status;
         if (this.status === 200) {
+          const serverConfig = await res.json();
+          if (typeof serverConfig.apiUpgrade === 'boolean') {
+            serverApiUpgrade = serverConfig.apiUpgrade;
+          }
           config = {
             ...config,
-            ...await res.json(),
+            ...serverConfig,
             // no overriding below
             owner,
             repo,
@@ -268,9 +273,8 @@ export class SiteStore {
       specialViews,
       wordSaveDelay,
       transient = false,
-      // the server config takes precedence over the project config
-      apiUpgrade = projectApiUpgrade,
     } = config;
+    const apiUpgrade = serverApiUpgrade ?? projectApiUpgrade;
     const publicHost = host && host.startsWith('http') ? new URL(host).host : host;
     const hostPrefix = owner && repo ? `${ref}--${repo}--${owner}` : null;
     const stdInnerHost = hostPrefix ? `${hostPrefix}.aem.page` : null;
@@ -338,7 +342,9 @@ export class SiteStore {
           liveHost: this.liveHost,
           host: this.host,
           mountpoints: this.mountpoints,
-          apiUpgrade: this.apiUpgrade,
+          ...(typeof serverApiUpgrade === 'boolean'
+            ? { apiUpgrade: serverApiUpgrade }
+            : {}),
         },
       });
     }

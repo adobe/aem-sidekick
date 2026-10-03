@@ -1386,11 +1386,13 @@ describe('Test actions', () => {
         repo: 'business-website',
         ref: 'main',
         apiUpgrade: false,
+        project: '',
       };
 
       const existingProject = {
         ...project,
         apiUpgrade: true, // trigger an update
+        project: 'Existing project name',
       };
 
       // mock getProject to return existing project
@@ -1406,7 +1408,10 @@ describe('Test actions', () => {
 
       expect(updateProjectStub.calledOnce).to.be.true;
       expect(updateProjectStub.firstCall.args[0]).to.deep.equal({
-        'adobe/business-website': project,
+        'adobe/business-website': {
+          ...project,
+          project: 'Existing project name',
+        },
       });
     });
 

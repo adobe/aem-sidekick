@@ -130,14 +130,23 @@ export function cleanupApiUpgradeFlag() {
         return;
       }
       const projects = await getStoredProjects();
-      await Promise.all(projects
-        .filter(({ apiUpgrade }) => apiUpgrade === false)
-        .map((project) => {
-          delete project.apiUpgrade;
-          return updateStoredProject(project);
-        }));
-      await setConfig('sync', { apiUpgradeCleanup: true });
-    })();
+      const staleProjects = projects.filter(({ apiUpgrade, owner, repo }) => (
+        apiUpgrade === false && owner && repo
+      ));
+      const updates = Object.fromEntries(staleProjects.map((project) => {
+        const { owner, repo } = project;
+        const config = { ...project };
+        delete config.apiUpgrade;
+        return [`${owner}/${repo}`, config];
+      }));
+      await setConfig('sync', {
+        ...updates,
+        apiUpgradeCleanup: true,
+      });
+    })().catch((e) => {
+      apiUpgradeCleanupPromise = undefined;
+      log.warn('cleanupApiUpgradeFlag: unable to clean up project configs', e);
+    });
   }
   return apiUpgradeCleanupPromise;
 }

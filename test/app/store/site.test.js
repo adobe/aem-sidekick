@@ -250,6 +250,33 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.apiUpgrade).to.be.false;
     });
 
+    it('does not persist project api upgrade when server config omits it', async () => {
+      const sendMessage = sandbox.spy(chrome.runtime, 'sendMessage');
+      sidekickTest.mockFetchSidekickConfigSuccess(false, false, {}, true);
+
+      await appStore.loadContext(sidekickElement, {
+        ...defaultConfig,
+        apiUpgrade: false,
+      });
+
+      const update = sendMessage.getCalls()
+        .find(({ args }) => args[0]?.action === 'updateProject');
+      expect(appStore.siteStore.apiUpgrade).to.be.false;
+      expect(update.args[0].config).not.to.have.property('apiUpgrade');
+    });
+
+    it('normalizes invalid server api upgrade values', async () => {
+      const sendMessage = sandbox.spy(chrome.runtime, 'sendMessage');
+      sidekickTest.mockFetchSidekickConfigSuccess(false, false, { apiUpgrade: null });
+
+      await appStore.loadContext(sidekickElement, defaultConfig);
+
+      const update = sendMessage.getCalls()
+        .find(({ args }) => args[0]?.action === 'updateProject');
+      expect(appStore.siteStore.apiUpgrade).to.be.true;
+      expect(update.args[0].config).not.to.have.property('apiUpgrade');
+    });
+
     it('with window.hlx.sidekickConfig', async () => {
       window.hlx = {};
       window.hlx.sidekickConfig = {
@@ -370,7 +397,6 @@ describe('Test Site Store', () => {
           project: 'business-website',
           mountpoints: ['https://adobe.sharepoint.com/sites/business-website'],
           host: 'business-website.example.com',
-          apiUpgrade: true,
         },
       });
     });
