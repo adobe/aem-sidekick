@@ -24,12 +24,14 @@ export const DEV_URL = 'http://localhost:3000/';
 
 export const GH_URL = 'https://github.com/';
 
+let apiUpgradeCleanupPromise;
+
 /**
  * Returns an existing project configuration.
  * @param {Object|string} project The project settings or handle
  * @returns {Promise<Object>} The project configuration
  */
-export async function getProject(project = {}) {
+async function getStoredProject(project = {}) {
   let owner;
   let repo;
   if (typeof project === 'string' && project.includes('/')) {
@@ -44,13 +46,32 @@ export async function getProject(project = {}) {
 }
 
 /**
+ * Returns an existing project configuration.
+ * @param {Object|string} project The project settings or handle
+ * @returns {Promise<Object>} The project configuration
+ */
+export async function getProject(project = {}) {
+  await apiUpgradeCleanupPromise;
+  return getStoredProject(project);
+}
+
+/**
+ * Returns all project configurations.
+ * @returns {Promise<Object[]>} The project configurations
+ */
+async function getStoredProjects() {
+  const configs = await getConfig('sync', 'projects') || [];
+  const projects = await Promise.all(configs.map((handle) => getStoredProject(handle)));
+  return projects.filter((project) => project !== undefined);
+}
+
+/**
  * Returns all project configurations.
  * @returns {Promise<Object[]>} The project configurations
  */
 export async function getProjects() {
-  const configs = await getConfig('sync', 'projects') || [];
-  const projects = await Promise.all(configs.map((handle) => getProject(handle)));
-  return projects.filter((project) => project !== undefined);
+  await apiUpgradeCleanupPromise;
+  return getStoredProjects();
 }
 
 /**
@@ -58,7 +79,7 @@ export async function getProjects() {
  * @param {Object} project The project settings
  * @returns {Promise<Object>} The project configuration
  */
-export async function updateProject(project) {
+async function updateStoredProject(project) {
   const { owner, repo } = project;
   if (owner && repo) {
     // sanitize input - only remove undefined or null values, not false or 0
@@ -82,6 +103,52 @@ export async function updateProject(project) {
     return project;
   }
   return null;
+}
+
+/**
+ * Updates a project configuration.
+ * @param {Object} project The project settings
+ * @returns {Promise<Object>} The project configuration
+ */
+export async function updateProject(project) {
+  await apiUpgradeCleanupPromise;
+  return updateStoredProject(project);
+}
+
+/**
+ * Removes the obsolete <code>apiUpgrade</code> flag from stored project configurations.
+ * Earlier versions persisted the API upgrade availability detected in the Admin API
+ * response, so projects not migrated back then would remain stuck on the legacy API
+ * until the server config tells them otherwise. Runs only once and is tracked in sync
+ * storage, so projects are not reset again on another device.
+ * @returns {Promise<void>}
+ */
+export function cleanupApiUpgradeFlag() {
+  if (!apiUpgradeCleanupPromise) {
+    apiUpgradeCleanupPromise = (async () => {
+      if (await getConfig('sync', 'apiUpgradeCleanup')) {
+        return;
+      }
+      const projects = await getStoredProjects();
+      const staleProjects = projects.filter(({ apiUpgrade, owner, repo }) => (
+        apiUpgrade === false && owner && repo
+      ));
+      const updates = Object.fromEntries(staleProjects.map((project) => {
+        const { owner, repo } = project;
+        const config = { ...project };
+        delete config.apiUpgrade;
+        return [`${owner}/${repo}`, config];
+      }));
+      await setConfig('sync', {
+        ...updates,
+        apiUpgradeCleanup: true,
+      });
+    })().catch((e) => {
+      apiUpgradeCleanupPromise = undefined;
+      log.warn('cleanupApiUpgradeFlag: unable to clean up project configs', e);
+    });
+  }
+  return apiUpgradeCleanupPromise;
 }
 
 /**
@@ -231,14 +298,14 @@ export function assembleProject({
  * @param {string} config.owner The owner
  * @param {string} config.repo The repository
  * @param {string} [config.ref=main] The ref or branch
- * @param {boolean} [config.apiUpgrade=false] Is an API upgrade available for this site?
+ * @param {boolean} [config.apiUpgrade=true] Should the new Admin API be used for this site?
  * @returns {Promise<Object>} The project environment
  */
 export async function getProjectEnv({
   owner,
   repo,
   ref = 'main',
-  apiUpgrade = false,
+  apiUpgrade = true,
 }) {
   const env = {};
   let res;
@@ -351,6 +418,7 @@ export async function addProject(input, loggedIn = false, { idp, tenant } = {}) 
  * @returns {Promise<Boolean>}
  */
 export async function deleteProject(project) {
+  await apiUpgradeCleanupPromise;
   let owner;
   let repo;
   let handle;

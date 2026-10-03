@@ -35,7 +35,7 @@ window.chrome = chromeMock;
 function mockFetchSuccess({
   method = 'get', api = 'status', path = '/', editUrl = '',
 } = {}) {
-  const url = new URL(`https://admin.hlx.page/${api}/adobe/aem-boilerplate/main${path}`);
+  const url = new URL(`https://api.aem.live/adobe/sites/aem-boilerplate/${api === 'job' ? 'jobs' : api}${path}`);
   if (editUrl) {
     url.searchParams.append('editUrl', editUrl);
   }
@@ -60,7 +60,7 @@ function mockFetchSuccess({
 function mockFetchError({
   method = 'get', api = 'status', path = '/', editUrl = '', status = 502, headers = {},
 } = {}) {
-  const url = new URL(`https://admin.hlx.page/${api}/adobe/aem-boilerplate/main${path}`);
+  const url = new URL(`https://api.aem.live/adobe/sites/aem-boilerplate/${api === 'job' ? 'jobs' : api}${path}`);
   if (editUrl) {
     url.searchParams.append('editUrl', editUrl);
   }
@@ -101,12 +101,12 @@ describe('Test Admin Client', () => {
   describe('createUrl', () => {
     it('creates an admin url', () => {
       const url = adminClient.createUrl('status');
-      expect(url.toString()).to.equal('https://admin.hlx.page/status/adobe/aem-boilerplate/main');
+      expect(url.toString()).to.equal('https://api.aem.live/adobe/sites/aem-boilerplate/status');
     });
 
     it('creates an admin url with path and search params', () => {
       const url = adminClient.createUrl('status', '/', new URLSearchParams({ foo: 'bar' }));
-      expect(url.toString()).to.equal('https://admin.hlx.page/status/adobe/aem-boilerplate/main/?foo=bar');
+      expect(url.toString()).to.equal('https://api.aem.live/adobe/sites/aem-boilerplate/status/?foo=bar');
     });
   });
 
