@@ -24,40 +24,28 @@ describe('helix-admin', () => {
   describe('getAdminUrl', () => {
     it('creates a correct URL with all parameters', () => {
       const url = createAdminUrl(siteStore, 'preview', '/path/to/resource');
-      expect(url.toString()).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/main/path/to/resource');
+      expect(url.toString()).to.equal('https://api.aem.live/adobe/sites/aem-boilerplate/preview/path/to/resource');
     });
 
     it('creates a correct URL with default path', () => {
-      const url = createAdminUrl(siteStore, 'preview', '/path/to/resource');
-      expect(url.toString()).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/main/path/to/resource');
-    });
-
-    it('creates a correct URL with default ref when not specified', () => {
-      const { ref: _, ...storeWithoutRef } = siteStore;
-      const url = createAdminUrl(storeWithoutRef, 'preview', '/path/to/resource');
-      expect(url.toString()).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/main/path/to/resource');
-    });
-
-    it('creates a correct URL with specified ref', () => {
-      const storeWithOtherRef = { ...siteStore, ref: 'foo' };
-      const url = createAdminUrl(storeWithOtherRef, 'preview', '/path/to/resource');
-      expect(url.toString()).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/foo/path/to/resource');
+      const url = createAdminUrl(siteStore, 'preview');
+      expect(url.toString()).to.equal('https://api.aem.live/adobe/sites/aem-boilerplate/preview');
     });
 
     it('includes adminVersion when specified', () => {
       const adminVersion = 'ci12345678';
       const url = createAdminUrl({ ...siteStore, adminVersion }, 'apiEndpoint', '/path', new URLSearchParams());
-      expect(url.searchParams.get('hlx-admin-version')).to.equal(adminVersion);
+      expect(url.searchParams.get('aem-api-version')).to.equal(adminVersion);
     });
 
     it('omits adminVersion when not specified', () => {
       const url = createAdminUrl(siteStore, 'apiEndpoint', '/path');
-      expect(url.searchParams.has('hlx-admin-version')).to.equal(false);
+      expect(url.searchParams.has('aem-api-version')).to.equal(false);
     });
 
     it('creates discover URL correctly', () => {
       const url = createAdminUrl({}, 'discover', '', new URLSearchParams('url=https://example.com'));
-      expect(url.toString()).to.equal('https://admin.hlx.page/discover?url=https%3A%2F%2Fexample.com');
+      expect(url.toString()).to.equal('https://api.aem.live/discover?url=https%3A%2F%2Fexample.com');
     });
 
     it('appends search parameters correctly', () => {
@@ -71,27 +59,55 @@ describe('helix-admin', () => {
 
     describe('API v2', () => {
       it('creates correct URL for login endpoint', () => {
-        const config = { ...siteStore, apiUpgrade: true };
-        const url = createAdminUrl(config, 'login');
+        const url = createAdminUrl(siteStore, 'login');
         expect(url.toString()).to.equal('https://api.aem.live/login?org=adobe&site=aem-boilerplate');
       });
 
       it('creates correct URL for logout endpoint', () => {
-        const config = { ...siteStore, apiUpgrade: true };
-        const url = createAdminUrl(config, 'logout');
+        const url = createAdminUrl(siteStore, 'logout');
         expect(url.toString()).to.equal('https://api.aem.live/logout?org=adobe&site=aem-boilerplate');
       });
 
       it('creates correct URL for profile endpoint', () => {
-        const config = { ...siteStore, apiUpgrade: true };
-        const url = createAdminUrl(config, 'profile');
+        const url = createAdminUrl(siteStore, 'profile');
         expect(url.toString()).to.equal('https://api.aem.live/profile?org=adobe&site=aem-boilerplate');
       });
 
       it('creates correct URL for other endpoints', () => {
-        const config = { ...siteStore, apiUpgrade: true };
-        const url = createAdminUrl(config, 'status', '/path/to/resource');
+        const url = createAdminUrl(siteStore, 'status', '/path/to/resource');
         expect(url.toString()).to.equal('https://api.aem.live/adobe/sites/aem-boilerplate/status/path/to/resource');
+      });
+    });
+
+    describe('legacy API', () => {
+      const legacyStore = { ...siteStore, apiUpgrade: false };
+
+      it('creates a correct URL with all parameters', () => {
+        const url = createAdminUrl(legacyStore, 'preview', '/path/to/resource');
+        expect(url.toString()).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/main/path/to/resource');
+      });
+
+      it('creates a correct URL with default ref when not specified', () => {
+        const { ref: _, ...storeWithoutRef } = legacyStore;
+        const url = createAdminUrl(storeWithoutRef, 'preview', '/path/to/resource');
+        expect(url.toString()).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/main/path/to/resource');
+      });
+
+      it('creates a correct URL with specified ref', () => {
+        const storeWithOtherRef = { ...legacyStore, ref: 'foo' };
+        const url = createAdminUrl(storeWithOtherRef, 'preview', '/path/to/resource');
+        expect(url.toString()).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/foo/path/to/resource');
+      });
+
+      it('includes adminVersion when specified', () => {
+        const adminVersion = 'ci12345678';
+        const url = createAdminUrl({ ...legacyStore, adminVersion }, 'apiEndpoint', '/path', new URLSearchParams());
+        expect(url.searchParams.get('hlx-admin-version')).to.equal(adminVersion);
+      });
+
+      it('creates discover URL correctly', () => {
+        const url = createAdminUrl({ apiUpgrade: false }, 'discover', '', new URLSearchParams('url=https://example.com'));
+        expect(url.toString()).to.equal('https://admin.hlx.page/discover?url=https%3A%2F%2Fexample.com');
       });
     });
   });
@@ -112,7 +128,7 @@ describe('helix-admin', () => {
       await callAdmin(siteStore, 'preview', '/path/to/resource');
       const url = fetchStub.getCall(0).args[0].toString();
       const options = fetchStub.getCall(0).args[1];
-      expect(url).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/main/path/to/resource');
+      expect(url).to.equal('https://api.aem.live/adobe/sites/aem-boilerplate/preview/path/to/resource');
       expect(options.method).to.equal('get');
       expect(options.cache).to.equal('no-store');
       expect(options.credentials).to.equal('omit');
@@ -157,7 +173,7 @@ describe('helix-admin', () => {
     it('calls admin api with default path', async () => {
       await callAdmin(siteStore, 'preview');
       const url = fetchStub.getCall(0).args[0].toString();
-      expect(url).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/main');
+      expect(url).to.equal('https://api.aem.live/adobe/sites/aem-boilerplate/preview');
     });
 
     it('calls admin api with default options', async () => {
@@ -167,19 +183,25 @@ describe('helix-admin', () => {
       expect(options.body).to.equal(undefined);
     });
 
-    it('calls admin api with job endpoint and apiUpgrade', async () => {
-      const config = { ...siteStore, apiUpgrade: true };
-      await callAdmin(config, 'job', '/path/to/resource');
+    it('calls admin api with job endpoint', async () => {
+      await callAdmin(siteStore, 'job', '/path/to/resource');
       const url = fetchStub.getCall(0).args[0].toString();
       expect(url).to.equal('https://api.aem.live/adobe/sites/aem-boilerplate/jobs/path/to/resource');
     });
 
-    it('sets forceAsync in body when apiUpgrade is enabled', async () => {
-      const config = { ...siteStore, apiUpgrade: true };
-      await callAdmin(config, 'preview', '/*', { body: { paths: ['/foo'] } });
+    it('sets forceAsync in body when using the new api', async () => {
+      await callAdmin(siteStore, 'preview', '/*', { body: { paths: ['/foo'] } });
       const options = fetchStub.getCall(0).args[1];
       const body = JSON.parse(options.body);
       expect(body.forceAsync).to.equal(true);
+    });
+
+    it('omits forceAsync in body when using the legacy api', async () => {
+      const config = { ...siteStore, apiUpgrade: false };
+      await callAdmin(config, 'preview', '/*', { body: { paths: ['/foo'] } });
+      const options = fetchStub.getCall(0).args[1];
+      const body = JSON.parse(options.body);
+      expect(body.forceAsync).to.equal(undefined);
     });
   });
 });

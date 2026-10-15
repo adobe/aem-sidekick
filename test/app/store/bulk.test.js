@@ -275,7 +275,7 @@ describe('Test Bulk Store', () => {
 
       // catch any stray job requests to admin api
       fetchMock.sticky(
-        'glob:https://admin.hlx.page/job/*',
+        'glob:https://api.aem.live/adobe/sites/aem-boilerplate/jobs/*',
         { status: 200, body: {} },
         { overwriteRoutes: true },
       );
@@ -584,7 +584,7 @@ describe('Test Bulk Store', () => {
       it('shows toast on 401 response', async () => {
         startJobStub.restore();
         fetchMock.post(
-          'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/*',
+          'https://api.aem.live/adobe/sites/aem-boilerplate/preview/*',
           { status: 401, body: {} },
           { overwriteRoutes: true },
         );
@@ -606,7 +606,7 @@ describe('Test Bulk Store', () => {
       it('shows toast on 403 response', async () => {
         startJobStub.restore();
         fetchMock.post(
-          'https://admin.hlx.page/preview/adobe/aem-boilerplate/main/*',
+          'https://api.aem.live/adobe/sites/aem-boilerplate/preview/*',
           { status: 403, body: {} },
           { overwriteRoutes: true },
         );
@@ -920,7 +920,7 @@ describe('Test Bulk Store', () => {
       it('shows toast on 401 response', async () => {
         startJobStub.restore();
         fetchMock.post(
-          'https://admin.hlx.page/live/adobe/aem-boilerplate/main/*',
+          'https://api.aem.live/adobe/sites/aem-boilerplate/live/*',
           { status: 401, body: {} },
           { overwriteRoutes: true },
         );
