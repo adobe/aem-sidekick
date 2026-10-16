@@ -500,9 +500,6 @@
   "live": {
     "message": "라이브"
   },
-  "mixer": {
-    "message": "네트워크"
-  },
   "live_last_updated": {
     "message": "마지막으로 게시됨: $1"
   },
@@ -538,6 +535,9 @@
   },
   "minutes_ago": {
     "message": "$1분 전"
+  },
+  "mixer": {
+    "message": "네트워크"
   },
   "never": {
     "message": "사용 안 함"

@@ -500,9 +500,6 @@
   "live": {
     "message": "Live"
   },
-  "mixer": {
-    "message": "Netzwerk"
-  },
   "live_last_updated": {
     "message": "Zuletzt veröffentlicht: $1"
   },
@@ -538,6 +535,9 @@
   },
   "minutes_ago": {
     "message": "Vor $1 Minuten"
+  },
+  "mixer": {
+    "message": "Netzwerk"
   },
   "never": {
     "message": "Nie"
@@ -681,10 +681,10 @@
     "message": "Zugriff verweigert. Versuchen Sie, sich mit einem anderen Benutzerkonto anzumelden, oder bitten Sie Ihre bzw. Ihren Admin um ausreichende Berechtigungen."
   },
   "site_login_auto": {
-    "message": "Diesen Dialog nicht mehr anzeigen"
+    "message": "Dieses Dialogfeld nicht mehr anzeigen"
   },
   "site_login_hint": {
-    "message": "Halten Sie die Alt-Taste (Option) gedrückt, während Sie auf \"Anmelden\" klicken, um ein bestimmtes Konto auszuwählen."
+    "message": "Halten Sie die Alt-Taste (Wahltaste) gedrückt, während Sie auf „Anmelden“ klicken, um ein bestimmtes Konto auszuwählen."
   },
   "site_login_required": {
     "message": "Melden Sie sich an, um fortzufahren."
