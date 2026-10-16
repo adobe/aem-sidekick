@@ -22,7 +22,6 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { EVENTS } from '../../../constants.js';
 import { EventBus } from '../../../utils/event-bus.js';
 import { style } from './picker.css.js';
-import '../menu/menu.js';
 
 const chevronClass = {
   s: 'spectrum-UIIcon-ChevronDown75',
@@ -39,21 +38,9 @@ export class Picker extends SPPicker {
     ];
   }
 
-  /**
-   * The internal menu element.
-   *
-   * Overridden to query the Sidekick's `sk-menu` wrapper instead of the base
-   * class's `sp-menu`, so selection keeps working on pages that register their
-   * own global `sp-menu` custom element.
-   * @returns {HTMLElement}
-   */
-  get optionsMenu() {
-    return this.shadowRoot?.querySelector('sk-menu');
-  }
-
   get renderMenu() {
     const menu = html`
-        <sk-menu
+        <sp-menu
           aria-labelledby="applied-label"
           @change=${this.handleChange}
           id="menu"
@@ -66,7 +53,7 @@ export class Picker extends SPPicker {
           @sp-menu-item-added-or-updated=${this.shouldManageSelection}
         >
           <slot @slotchange=${this.shouldScheduleManageSelection}></slot>
-        </sk-menu>
+        </sp-menu>
     `;
     this.hasRenderedOverlay = this.hasRenderedOverlay
         || this.focused
