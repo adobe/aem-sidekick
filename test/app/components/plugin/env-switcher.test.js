@@ -417,7 +417,7 @@ describe('Environment Switcher', () => {
         .mockFetchStatusSuccess(false, {
           preview: {
             ...defaultSharepointStatusResponse.preview,
-            sourceLocation: 'source:/path/to/page',
+            sourceLocation: 'sourcebus:/path/to/page',
           },
         })
         .mockFetchSidekickConfigSuccess(false)

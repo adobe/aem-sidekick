@@ -2118,10 +2118,10 @@ describe('Test App Store', () => {
       expect(instance.getContentSourceLabel()).to.equal('Google Drive');
     });
 
-    it('should return "Document Authoring" if sourceLocation starts with "source:"', () => {
+    it('should return "Document Authoring" if sourceLocation starts with "sourcebus:"', () => {
       instance.status = {
         preview: {
-          sourceLocation: 'source:/path/to/page',
+          sourceLocation: 'sourcebus:/path/to/page',
         },
       };
       expect(instance.getContentSourceLabel()).to.equal('Document Authoring');
