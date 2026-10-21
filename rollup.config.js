@@ -71,20 +71,29 @@ function extensionPlugins(browser) {
   ];
 }
 
+/**
+ * Rewrites every Spectrum custom-element tag from `sp-*` to `sk-*` in each chunk,
+ * so the Sidekick's Spectrum elements never resolve against a host page's global
+ * custom-element registry (e.g. a page that defines its own `sp-menu`). The
+ * lookarounds match whole tags only, leaving CSS custom properties (`--spectrum-*`)
+ * untouched.
+ */
 function rewriteSPTagNames() {
+  const rename = (str) => str.replace(/(?<![-\w])sp-(?=[a-z])/g, 'sk-');
   return {
     name: 'rename-sp-custom-elements',
     generateBundle(_, bundle) {
-      for (const [_, file] of Object.entries(bundle)) {
+      for (const [key, file] of Object.entries(bundle)) {
         if (file.type === 'chunk') {
-          file.code = file.code.replaceAll('sp-theme', 'sk-theme');
-          file.code = file.code.replaceAll('sp-overlay', 'sk-overlay');
-          file.code = file.code.replaceAll('sp-button', 'sk-button');
-          file.code = file.code.replaceAll('sp-action-menu', 'sk-action-menu');
-          file.code = file.code.replaceAll('sp-action-button', 'sk-action-button');
-          file.code = file.code.replaceAll('sp-progress-circle', 'sk-progress-circle');
-          file.code = file.code.replaceAll('sp-checkbox', 'sk-checkbox');
-          file.code = file.code.replaceAll('sp-tooltip', 'sk-tooltip');
+          file.code = rename(file.code);
+        }
+        // rename emitted chunk files (e.g. sp-tray.js) to match the renamed
+        // import paths written into the code above
+        const fileName = rename(file.fileName);
+        if (fileName !== file.fileName) {
+          file.fileName = fileName;
+          bundle[fileName] = file;
+          delete bundle[key];
         }
       }
     },
