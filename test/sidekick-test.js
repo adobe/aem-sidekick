@@ -57,24 +57,27 @@ import { defaultOnboardingResponse, onboardingHtml } from './fixtures/onboarding
 /**
  * Status API
  */
-export const defaultStatusUrl = 'https://admin.hlx.page/status/adobe/aem-boilerplate/main/';
+export const defaultStatusUrl = 'https://api.aem.live/adobe/sites/aem-boilerplate/status/';
 
 /**
  * Status editUrl API
  */
-export const defaultStatusEditUrl = 'glob:https://admin.hlx.page/status/adobe/aem-boilerplate/main/?editUrl=*';
+export const defaultStatusEditUrl = 'glob:https://api.aem.live/adobe/sites/aem-boilerplate/status/?editUrl=*';
 
 /**
  * Profile API
  */
-export const defaultProfileUrl = 'https://admin.hlx.page/profile/adobe/aem-boilerplate/main';
+export const defaultProfileUrl = 'https://api.aem.live/profile?org=adobe&site=aem-boilerplate';
 
 /**
  * Sidekick Config API
  */
-export const defaultConfigJSONUrl = 'https://admin.hlx.page/sidekick/adobe/aem-boilerplate/main/config.json';
+export const defaultConfigJSONUrl = 'https://api.aem.live/adobe/sites/aem-boilerplate/sidekick';
 
-export const defaultUpgradeConfigJSONUrl = 'https://api.aem.live/adobe/sites/aem-boilerplate/sidekick';
+/**
+ * Legacy Sidekick Config API
+ */
+export const defaultLegacyConfigJSONUrl = 'https://admin.hlx.page/sidekick/adobe/aem-boilerplate/main/config.json';
 
 /**
  * i18n path
@@ -566,14 +569,14 @@ export class SidekickTest {
    * @param {boolean} withHost Whether to include the host in the response
    * @param {boolean} withPlugins Whether to include plugins in the response
    * @param {Object} overrides Additional overrides for the config response
-   * @param {boolean} apiUpgrade Whether to use the new API
+   * @param {boolean} legacy Whether to use the legacy API
    * @returns {SidekickTest}
    */
   mockFetchSidekickConfigSuccess(
     withHost = true,
     withPlugins = false,
     overrides = {},
-    apiUpgrade = false,
+    legacy = false,
   ) {
     let body = withHost ? defaultConfigJSONWithHost : defaultConfigJSON;
 
@@ -584,10 +587,7 @@ export class SidekickTest {
       };
     }
 
-    let configUrl = defaultConfigJSONUrl;
-    if (apiUpgrade) {
-      configUrl = defaultUpgradeConfigJSONUrl;
-    }
+    const configUrl = legacy ? defaultLegacyConfigJSONUrl : defaultConfigJSONUrl;
 
     fetchMock.get(configUrl, {
       status: 200,
@@ -659,22 +659,6 @@ export class SidekickTest {
       status: 500,
       headers: {
         'x-error': 'just a test',
-      },
-    }, { overwriteRoutes: true });
-    return this;
-  }
-
-  /**
-   * Mocks a response from the config endpoint with the api upgrade available header
-   * @param {string} configUrl The config URL
-   * @returns {SidekickTest}
-   */
-  mockFetchSidekickConfigApiUpgradeAvailable(configUrl = defaultConfigJSONUrl) {
-    fetchMock.get(configUrl, {
-      status: 200,
-      body: {},
-      headers: {
-        'x-api-upgrade-available': 'true',
       },
     }, { overwriteRoutes: true });
     return this;

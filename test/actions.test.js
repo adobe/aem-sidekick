@@ -239,7 +239,7 @@ describe('Test actions', () => {
     getStub.withArgs('projects').resolves({
       projects: [],
     });
-    fetchMock.get('glob:https://admin.hlx.page/sidekick/**/main/config.json', {
+    fetchMock.get('glob:https://api.aem.live/*/sites/*/sidekick', {
       status: 200,
       body: resultingConfig,
     });
@@ -420,7 +420,7 @@ describe('Test actions', () => {
       listener({
         action: 'updateAuthToken',
       }, {
-        tab: mockTab('https://admin.hlx.page/login/foo/bar/main?extensionId=dummy', { id: 7 }),
+        tab: mockTab('https://api.aem.live/login?org=foo&site=bar&extensionId=dummy', { id: 7 }),
       }, () => {});
     });
     let resp;
@@ -432,7 +432,7 @@ describe('Test actions', () => {
     );
     expect(resp).to.be.true;
     expect(createTabStub.calledWith({
-      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy',
+      url: 'https://api.aem.live/login?org=foo&site=bar&extensionId=dummy',
       openerTabId: 0,
       windowId: 0,
     })).to.be.true;
@@ -447,7 +447,7 @@ describe('Test actions', () => {
     );
     expect(resp).to.be.true;
     expect(createTabStub.calledWith({
-      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&selectAccount=true',
+      url: 'https://api.aem.live/login?org=foo&site=bar&extensionId=dummy&selectAccount=true',
       openerTabId: 0,
       windowId: 0,
     })).to.be.true;
@@ -459,7 +459,7 @@ describe('Test actions', () => {
     );
     expect(resp).to.be.true;
     expect(createTabStub.calledWith({
-      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&idp=microsoft',
+      url: 'https://api.aem.live/login?org=foo&site=bar&extensionId=dummy&idp=microsoft',
       openerTabId: 0,
       windowId: 0,
     })).to.be.true;
@@ -476,7 +476,7 @@ describe('Test actions', () => {
     );
     expect(resp).to.be.true;
     expect(createTabStub.calledWith({
-      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&idp=microsoft&tenantId=common',
+      url: 'https://api.aem.live/login?org=foo&site=bar&extensionId=dummy&idp=microsoft&tenantId=common',
       openerTabId: 0,
       windowId: 0,
     })).to.be.true;
@@ -488,7 +488,7 @@ describe('Test actions', () => {
     );
     expect(resp).to.be.false;
     expect(createTabStub.calledWith({
-      url: 'https://admin.hlx.page/login/foo/bar/main?extensionId=dummy&idp=foo',
+      url: 'https://api.aem.live/login?org=foo&site=bar&extensionId=dummy&idp=foo',
       openerTabId: 0,
       windowId: 0,
     })).to.be.false;
@@ -512,7 +512,7 @@ describe('Test actions', () => {
       listener({
         action: 'somethingElse',
       }, {
-        tab: mockTab('https://admin.hlx.page/login/foo/bar/main?extensionId=dummy', { id: 8 }),
+        tab: mockTab('https://api.aem.live/login?org=foo&site=bar&extensionId=dummy', { id: 8 }),
       }, () => {});
     });
     resp = await externalActions.login(
@@ -1378,6 +1378,41 @@ describe('Test actions', () => {
       await internalActions.updateProject({}, { config: project });
 
       expect(updateProjectStub.called).to.be.false;
+    });
+
+    it('updates existing project config when boolean property has changed', async () => {
+      const project = {
+        owner: 'adobe',
+        repo: 'business-website',
+        ref: 'main',
+        apiUpgrade: false,
+        project: '',
+      };
+
+      const existingProject = {
+        ...project,
+        apiUpgrade: true, // trigger an update
+        project: 'Existing project name',
+      };
+
+      // mock getProject to return existing project
+      const getStub = sandbox.stub(chrome.storage.sync, 'get');
+      getStub.withArgs('projects').resolves({ projects: ['adobe/business-website'] });
+      getStub.withArgs('adobe/business-website').resolves({ 'adobe/business-website': existingProject });
+
+      // mock updateProject to verify it's called
+      const updateProjectStub = sandbox.stub(chrome.storage.sync, 'set')
+        .resolves();
+
+      await internalActions.updateProject({}, { config: project });
+
+      expect(updateProjectStub.calledOnce).to.be.true;
+      expect(updateProjectStub.firstCall.args[0]).to.deep.equal({
+        'adobe/business-website': {
+          ...project,
+          project: 'Existing project name',
+        },
+      });
     });
 
     it('does not overwrite existing project name', async () => {
