@@ -1,3 +1,17 @@
+## [7.34.3](https://github.com/adobe/aem-sidekick/compare/v7.34.2...v7.34.3) (2026-10-20)
+
+
+### Bug Fixes
+
+* show source menu item for hlx6 sites in env switcher ([#926](https://github.com/adobe/aem-sidekick/issues/926)) ([87bf83a](https://github.com/adobe/aem-sidekick/commit/87bf83adb67e3c5ca806e75923bc7334ebb39214))
+
+## [7.34.2](https://github.com/adobe/aem-sidekick/compare/v7.34.1...v7.34.2) (2026-10-15)
+
+
+### Bug Fixes
+
+* **auth:** exclude aem.adobe.com from token injection ([#925](https://github.com/adobe/aem-sidekick/issues/925)) ([12135fe](https://github.com/adobe/aem-sidekick/commit/12135fe3e0657440b556c5180e982f07067a0bd2))
+
 ## [7.34.1](https://github.com/adobe/aem-sidekick/compare/v7.34.0...v7.34.1) (2026-09-15)
 
 

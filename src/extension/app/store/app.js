@@ -719,6 +719,8 @@ export class AppStore {
       return 'SharePoint';
     } else if (sourceLocation.startsWith('gdrive:')) {
       return 'Google Drive';
+    } else if (sourceLocation.startsWith('sourcebus:')) {
+      return 'Document Authoring';
     } else if (sourceLocation.startsWith('markup:')) {
       if (contentSourceEditLabel) {
         return contentSourceEditLabel;

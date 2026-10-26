@@ -162,7 +162,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: '^https://admin.hlx.page/(config/test\\.json|[a-z]+/test/.*)',
             requestDomains: [
               'admin.hlx.page',
@@ -192,7 +192,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: '^https://api.aem.live/(test/.*|profile\\?org\\=test\\&)',
             requestDomains: [
               'api.aem.live',
@@ -277,7 +277,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: '^https://admin.hlx.page/(config/test\\.json|[a-z]+/test/.*)',
             requestDomains: [
               'admin.hlx.page',
@@ -307,7 +307,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: '^https://api.aem.live/(test/.*|profile\\?org\\=test\\&)',
             requestDomains: [
               'api.aem.live',
@@ -464,7 +464,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: '^https://admin.hlx.page/(config/test\\.json|[a-z]+/test/.*)',
             requestDomains: [
               'admin.hlx.page',
@@ -494,7 +494,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: '^https://api.aem.live/(test/.*|profile\\?org\\=test\\&)',
             requestDomains: [
               'api.aem.live',

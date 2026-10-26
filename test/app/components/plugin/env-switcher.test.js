@@ -411,6 +411,23 @@ describe('Environment Switcher', () => {
 
       expect(getEditLabel()).to.equal('Open in Document Authoring');
     });
+
+    it('HLX6 content source', async () => {
+      sidekickTest
+        .mockFetchStatusSuccess(false, {
+          preview: {
+            ...defaultSharepointStatusResponse.preview,
+            sourceLocation: 'sourcebus:/path/to/page',
+          },
+        })
+        .mockFetchSidekickConfigSuccess(false)
+        .mockHelixEnvironment(HelixMockEnvironments.PREVIEW);
+
+      sidekick = sidekickTest.createSidekick();
+      await sidekickTest.awaitEnvSwitcher();
+
+      expect(getEditLabel()).to.equal('Open in Document Authoring');
+    });
   });
 
   describe('preview and live item variants', () => {
