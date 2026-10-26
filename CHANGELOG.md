@@ -1,3 +1,10 @@
+## [7.34.4](https://github.com/adobe/aem-sidekick/compare/v7.34.3...v7.34.4) (2026-10-26)
+
+
+### Bug Fixes
+
+* **build:** namespace all spectrum components sp-* to sk-* ([#909](https://github.com/adobe/aem-sidekick/issues/909)) ([37238e2](https://github.com/adobe/aem-sidekick/commit/37238e2ba71ac160c29c9c819def8424ae7a9ce4))
+
 ## [7.34.3](https://github.com/adobe/aem-sidekick/compare/v7.34.2...v7.34.3) (2026-10-20)
 
 
