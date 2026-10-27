@@ -1,3 +1,10 @@
+# [7.35.0](https://github.com/adobe/aem-sidekick/compare/v7.34.4...v7.35.0) (2026-10-27)
+
+
+### Features
+
+* use api.aem.live by default ([#919](https://github.com/adobe/aem-sidekick/issues/919)) ([2029a8f](https://github.com/adobe/aem-sidekick/commit/2029a8f26be1edb3bfd7d553404d520e82370c08))
+
 ## [7.34.4](https://github.com/adobe/aem-sidekick/compare/v7.34.3...v7.34.4) (2026-10-26)
 
 
