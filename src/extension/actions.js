@@ -240,7 +240,7 @@ async function updateSite({ config }, { tab }) {
   const owner = config.owner || config.org;
   const repo = config.repo || config.site;
   if (owner && repo) {
-    const project = await getConfig('sync', `${owner}/${repo}`);
+    const project = await getProject({ owner, repo });
     if (!project) {
       log.warn(`updateSite: project ${owner}/${repo} not found`);
       return false;
@@ -650,7 +650,7 @@ async function updateProject(_, { config }) {
   if (existingProject) {
     const hasChanges = Object.keys(config)
       .filter((key) => key !== 'owner' && key !== 'repo')
-      .filter((key) => config[key])
+      .filter((key) => config[key] || typeof config[key] === 'boolean')
       .some((key) => {
         if (key === 'mountpoints') {
           return config[key][0] !== existingProject[key][0];
@@ -666,6 +666,7 @@ async function updateProject(_, { config }) {
       await updateProjectConfig({
         ...existingProject,
         ...config,
+        project: existingProject.project || config.project,
       });
     }
   }

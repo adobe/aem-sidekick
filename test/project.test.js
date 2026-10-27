@@ -24,6 +24,7 @@ import {
   assembleProject,
   addProject,
   updateProject,
+  cleanupApiUpgradeFlag,
   deleteProject,
   isValidHost,
   isValidProject,
@@ -360,6 +361,117 @@ describe('Test project', () => {
     expect(set.calledWith({
       'test/project': project,
     })).to.be.true;
+  });
+
+  it('cleanupApiUpgradeFlag does nothing when already completed', async () => {
+    const get = sandbox.stub(chrome.storage.sync, 'get')
+      .withArgs('apiUpgradeCleanup')
+      .resolves({ apiUpgradeCleanup: true });
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+    const modulePath = '../src/extension/project.js?apiUpgradeCleanupTest';
+    const { cleanupApiUpgradeFlag: cleanupAlreadyCompleted } = await import(modulePath);
+
+    await cleanupAlreadyCompleted();
+
+    expect(get.calledOnce).to.be.true;
+    expect(set.called).to.be.false;
+  });
+
+  it('cleanupApiUpgradeFlag logs storage errors and retries on next call', async () => {
+    const get = sandbox.stub(chrome.storage.sync, 'get');
+    get.onFirstCall().rejects(error);
+    get.onSecondCall().resolves({ apiUpgradeCleanup: true });
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+    const { log } = await import('../src/extension/log.js');
+    const warn = sandbox.spy(log, 'warn');
+    const modulePath = '../src/extension/project.js?apiUpgradeCleanupFailureTest';
+    const { cleanupApiUpgradeFlag: cleanupAfterFailure } = await import(modulePath);
+
+    await cleanupAfterFailure();
+    await cleanupAfterFailure();
+
+    expect(warn.calledOnce).to.be.true;
+    expect(warn.firstCall.args[0]).to.equal(
+      'cleanupApiUpgradeFlag: unable to clean up project configs',
+    );
+    expect(warn.firstCall.args[1]).to.equal(error);
+    expect(get.callCount).to.equal(2);
+    expect(set.called).to.be.false;
+  });
+
+  it('cleanupApiUpgradeFlag skips projects without owner or repo', async () => {
+    const get = sandbox.stub(chrome.storage.sync, 'get');
+    get.withArgs('apiUpgradeCleanup').resolves({});
+    get.withArgs('projects').resolves({ projects: ['foo/bar'] });
+    get.withArgs('foo/bar').resolves({
+      'foo/bar': { apiUpgrade: false },
+    });
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+    const { log } = await import('../src/extension/log.js');
+    const warn = sandbox.spy(log, 'warn');
+    const modulePath = '../src/extension/project.js?apiUpgradeCleanupInvalidProjectTest';
+    const { cleanupApiUpgradeFlag: cleanupInvalidProject } = await import(modulePath);
+
+    await cleanupInvalidProject();
+    await cleanupInvalidProject();
+
+    expect(warn.called).to.be.false;
+    expect(set.calledOnceWithExactly({ apiUpgradeCleanup: true })).to.be.true;
+  });
+
+  it('cleanupApiUpgradeFlag', async () => {
+    const set = sandbox.spy(chrome.storage.sync, 'set');
+    const get = sandbox.stub(chrome.storage.sync, 'get');
+    let resolveCleanupCheck;
+    const cleanupCheck = new Promise((resolve) => {
+      resolveCleanupCheck = resolve;
+    });
+    get
+      .withArgs('apiUpgradeCleanup')
+      .returns(cleanupCheck)
+      .withArgs('projects')
+      .resolves({ projects: ['foo/bar1', 'foo/bar2'] })
+      .withArgs('foo/bar1')
+      .resolves({
+        'foo/bar1': {
+          owner: 'foo', repo: 'bar1', ref: 'main', apiUpgrade: false,
+        },
+      })
+      .withArgs('foo/bar2')
+      .resolves({
+        'foo/bar2': {
+          owner: 'foo', repo: 'bar2', ref: 'main', apiUpgrade: true,
+        },
+      });
+
+    const cleanup = cleanupApiUpgradeFlag();
+    const project = getProject('foo/bar1');
+    const projects = getProjects();
+    await Promise.resolve();
+    expect(get.calledWith('foo/bar1')).to.be.false;
+    expect(get.calledWith('projects')).to.be.false;
+    resolveCleanupCheck({});
+    await Promise.all([cleanup, project, projects]);
+    // stale flag removed and completion marker written together
+    expect(set.calledWith({
+      'foo/bar1': { owner: 'foo', repo: 'bar1', ref: 'main' },
+      apiUpgradeCleanup: true,
+    })).to.be.true;
+    // true flag is preserved
+    expect(set.calledWith({
+      'foo/bar2': {
+        owner: 'foo', repo: 'bar2', ref: 'main', apiUpgrade: true,
+      },
+    })).to.be.false;
+    expect(set.calledOnce).to.be.true;
+
+    // cleanup only runs once, also on other devices
+    set.resetHistory();
+    get
+      .withArgs('apiUpgradeCleanup')
+      .resolves({ apiUpgradeCleanup: true });
+    await cleanupApiUpgradeFlag();
+    expect(set.called).to.be.false;
   });
 
   it('deleteProject', async () => {

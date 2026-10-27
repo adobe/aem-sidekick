@@ -219,25 +219,28 @@ export class SiteStore {
     if (!devOrigin) {
       devOrigin = 'http://localhost:3000';
     }
-    let { apiUpgrade = false } = config;
+    // use the new admin api unless the project config explicitly opts out
+    const projectApiUpgrade = config.apiUpgrade !== false;
+    let serverApiUpgrade;
     if (owner && repo) {
       // look for custom config in project
       try {
         const res = await callAdmin(
           {
-            owner, repo, ref, adminVersion, apiUpgrade,
+            owner, repo, ref, adminVersion, apiUpgrade: projectApiUpgrade,
           },
           'sidekick',
-          apiUpgrade ? '' : '/config.json',
+          projectApiUpgrade ? '' : '/config.json',
         );
         this.status = res.status;
-        if (res.headers?.get('x-api-upgrade-available') === 'true') {
-          apiUpgrade = true;
-        }
         if (this.status === 200) {
+          const serverConfig = await res.json();
+          if (typeof serverConfig.apiUpgrade === 'boolean') {
+            serverApiUpgrade = serverConfig.apiUpgrade;
+          }
           config = {
             ...config,
-            ...await res.json(),
+            ...serverConfig,
             // no overriding below
             owner,
             repo,
@@ -271,6 +274,7 @@ export class SiteStore {
       wordSaveDelay,
       transient = false,
     } = config;
+    const apiUpgrade = serverApiUpgrade ?? projectApiUpgrade;
     const publicHost = host && host.startsWith('http') ? new URL(host).host : host;
     const hostPrefix = owner && repo ? `${ref}--${repo}--${owner}` : null;
     const stdInnerHost = hostPrefix ? `${hostPrefix}.aem.page` : null;
@@ -338,7 +342,9 @@ export class SiteStore {
           liveHost: this.liveHost,
           host: this.host,
           mountpoints: this.mountpoints,
-          apiUpgrade: this.apiUpgrade,
+          ...(typeof serverApiUpgrade === 'boolean'
+            ? { apiUpgrade: serverApiUpgrade }
+            : {}),
         },
       });
     }
