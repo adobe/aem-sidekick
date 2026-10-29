@@ -1,3 +1,10 @@
+## [7.35.1](https://github.com/adobe/aem-sidekick/compare/v7.35.0...v7.35.1) (2026-10-29)
+
+
+### Bug Fixes
+
+* target resource root for bulk operations on new admin api ([#931](https://github.com/adobe/aem-sidekick/issues/931)) ([4e57623](https://github.com/adobe/aem-sidekick/commit/4e57623f1c3ab419b0ea164d5f1250e45654e76a))
+
 # [7.35.0](https://github.com/adobe/aem-sidekick/compare/v7.34.4...v7.35.0) (2026-10-27)
 
 
