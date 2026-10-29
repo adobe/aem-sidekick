@@ -33,7 +33,7 @@ import {
 window.chrome = chromeMock;
 
 function mockFetchSuccess({
-  method = 'get', api = 'status', path = '/', editUrl = '',
+  method = 'get', api = 'status', path = '/', editUrl = '', bulk = false,
 } = {}) {
   const url = new URL(`https://api.aem.live/adobe/sites/aem-boilerplate/${api === 'job' ? 'jobs' : api}${path}`);
   if (editUrl) {
@@ -47,7 +47,7 @@ function mockFetchSuccess({
       ? defaultJobDetailsResponse
       : defaultJobStatusResponse;
   } else if (api === 'preview' || api === 'live') {
-    body = path.endsWith('/*')
+    body = bulk
       ? defaultStartJobResponse
       : defaultJobStatusResponse[api];
   }
@@ -243,7 +243,7 @@ describe('Test Admin Client', () => {
       mockFetchSuccess({
         method: 'post',
         api: 'preview',
-        path: '/*',
+        bulk: true,
       });
       const res = await adminClient.startJob('preview', ['/foo', '/bar']);
       expect(res).to.be.instanceOf(Object);
@@ -253,7 +253,7 @@ describe('Test Admin Client', () => {
       mockFetchSuccess({
         method: 'post',
         api: 'live',
-        path: '/*',
+        bulk: true,
       });
       const res = await adminClient.startJob('live', ['/foo', '/bar']);
       expect(res).to.be.instanceOf(Object);
@@ -263,7 +263,6 @@ describe('Test Admin Client', () => {
       mockFetchError({
         method: 'post',
         api: 'preview',
-        path: '/*',
         status: 502,
         headers: {
           'x-error': 'AWS timeout',
@@ -277,7 +276,6 @@ describe('Test Admin Client', () => {
       mockFetchError({
         method: 'post',
         api: 'preview',
-        path: '/*',
       });
       sandbox.stub(window, 'fetch').throws(error);
       const res = await adminClient.startJob('preview', ['/foo', '/bar']);
@@ -501,7 +499,6 @@ describe('Test Admin Client', () => {
       mockFetchError({
         method: 'post',
         api: 'live',
-        path: '/*',
         status: 500,
       });
       const res = await adminClient.startJob('live', ['/foo', '/bar']);

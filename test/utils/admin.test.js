@@ -191,6 +191,8 @@ describe('helix-admin', () => {
 
     it('sets forceAsync in body when using the new api', async () => {
       await callAdmin(siteStore, 'preview', '/*', { body: { paths: ['/foo'] } });
+      const url = fetchStub.getCall(0).args[0].toString();
+      expect(url).to.equal('https://api.aem.live/adobe/sites/aem-boilerplate/preview/');
       const options = fetchStub.getCall(0).args[1];
       const body = JSON.parse(options.body);
       expect(body.forceAsync).to.equal(true);
@@ -199,6 +201,8 @@ describe('helix-admin', () => {
     it('omits forceAsync in body when using the legacy api', async () => {
       const config = { ...siteStore, apiUpgrade: false };
       await callAdmin(config, 'preview', '/*', { body: { paths: ['/foo'] } });
+      const url = fetchStub.getCall(0).args[0].toString();
+      expect(url).to.equal('https://admin.hlx.page/preview/adobe/aem-boilerplate/main/*');
       const options = fetchStub.getCall(0).args[1];
       const body = JSON.parse(options.body);
       expect(body.forceAsync).to.equal(undefined);
