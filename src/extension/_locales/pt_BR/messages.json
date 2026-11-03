@@ -500,9 +500,6 @@
   "live": {
     "message": "Em tempo real"
   },
-  "mixer": {
-    "message": "Rede"
-  },
   "live_last_updated": {
     "message": "Última publicação $1"
   },
@@ -538,6 +535,9 @@
   },
   "minutes_ago": {
     "message": "$1 minutos atrás"
+  },
+  "mixer": {
+    "message": "Rede"
   },
   "never": {
     "message": "Nunca"
@@ -684,7 +684,7 @@
     "message": "Não mostrar esta caixa de diálogo novamente"
   },
   "site_login_hint": {
-    "message": "Mantenha pressionada a tecla Alt (Opção) enquanto clica em \"Entrar\" para selecionar uma conta específica."
+    "message": "Mantenha pressionada a tecla Alt (Opção) enquanto clica em “Fazer logon” para selecionar uma conta específica."
   },
   "site_login_required": {
     "message": "Faça logon para continuar."
