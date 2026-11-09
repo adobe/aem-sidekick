@@ -500,9 +500,6 @@
   "live": {
     "message": "Activo"
   },
-  "mixer": {
-    "message": "Red"
-  },
   "live_last_updated": {
     "message": "Última publicación $1"
   },
@@ -538,6 +535,9 @@
   },
   "minutes_ago": {
     "message": "Hace $1 minutos"
+  },
+  "mixer": {
+    "message": "Red"
   },
   "never": {
     "message": "Nunca"
@@ -681,10 +681,10 @@
     "message": "Acceso denegado. Intente iniciar sesión con un usuario diferente o solicite al administrador los permisos necesarios."
   },
   "site_login_auto": {
-    "message": "No volver a mostrar este cuadro de diálogo"
+    "message": "No volver a mostrar este diálogo"
   },
   "site_login_hint": {
-    "message": "Mantenga pulsada la tecla Alt (Opción) mientras hace clic en \"Iniciar sesión\" para seleccionar una cuenta específica."
+    "message": "Mantenga pulsada la tecla Alt (Opción) mientras hace clic en “Iniciar sesión” para seleccionar una cuenta específica."
   },
   "site_login_required": {
     "message": "Inicie sesión para continuar."

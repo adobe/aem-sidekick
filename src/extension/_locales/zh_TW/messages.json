@@ -500,9 +500,6 @@
   "live": {
     "message": "即時"
   },
-  "mixer": {
-    "message": "網路"
-  },
   "live_last_updated": {
     "message": "上次發佈時間：$1"
   },
@@ -538,6 +535,9 @@
   },
   "minutes_ago": {
     "message": "$1 分鐘前"
+  },
+  "mixer": {
+    "message": "網路"
   },
   "never": {
     "message": "從未"
