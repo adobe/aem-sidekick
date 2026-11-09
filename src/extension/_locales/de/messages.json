@@ -681,7 +681,7 @@
     "message": "Zugriff verweigert. Versuchen Sie, sich mit einem anderen Benutzerkonto anzumelden, oder bitten Sie Ihre bzw. Ihren Admin um ausreichende Berechtigungen."
   },
   "site_login_auto": {
-    "message": "Diesen Dialog nicht mehr anzeigen"
+    "message": "Dieses Dialogfeld nicht mehr anzeigen"
   },
   "site_login_hint": {
     "message": "Halten Sie die Alt-Taste (Wahltaste) gedrückt, während Sie auf „Anmelden“ klicken, um ein bestimmtes Konto auszuwählen."
