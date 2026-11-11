@@ -1,3 +1,10 @@
+# [7.36.0](https://github.com/adobe/aem-sidekick/compare/v7.35.1...v7.36.0) (2026-11-11)
+
+
+### Features
+
+* add support for author.aem.live ([#936](https://github.com/adobe/aem-sidekick/issues/936)) ([#937](https://github.com/adobe/aem-sidekick/issues/937)) ([e1973e2](https://github.com/adobe/aem-sidekick/commit/e1973e2dc72b73988d2d9637bf793c4fc4b5ff87))
+
 ## [7.35.1](https://github.com/adobe/aem-sidekick/compare/v7.35.0...v7.35.1) (2026-10-29)
 
 
