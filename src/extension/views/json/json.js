@@ -51,6 +51,23 @@ const LOW_BATCH_SIZE = 5000;
 const HIGH_BATCH_SIZE = 10000;
 const DEFAULT_BATCH_SIZE = 1000;
 
+/**
+ * Parses a value as a JSON array.
+ * @param {string} value The value to parse
+ * @returns {Array|undefined} The array, or undefined if the value is not a JSON array
+ */
+function parseList(value) {
+  if (!value.startsWith('[') || !value.endsWith(']')) {
+    return undefined;
+  }
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    // text in square brackets, e.g. a css attribute selector
+    return undefined;
+  }
+}
+
 @customElement('json-view')
 export class JSONView extends LitElement {
   static get styles() {
@@ -447,10 +464,10 @@ export class JSONView extends LitElement {
         // Text
         valueContainer.textContent = value;
       }
-    } else if (!Array.isArray(value) && value.startsWith('[') && value.endsWith(']')) {
+    } else if (!Array.isArray(value) && parseList(value)) {
       valueContainer.classList.add('list');
       const list = valueContainer.appendChild(document.createElement('ul'));
-      JSON.parse(value).forEach((v) => {
+      parseList(value).forEach((v) => {
         const item = list.appendChild(document.createElement('li'));
         item.textContent = v;
       });
